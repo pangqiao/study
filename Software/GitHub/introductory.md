@@ -1,4 +1,4 @@
-一个在线的基础入门教程：https://github.com/happypeter/gitbeijing
+一个在线的基础入门教程：http://azeril.me/blog/Build-Your-First-GitHub-Pages-Blog.html
 
 1.github网页怎么创建文件夹？
 
