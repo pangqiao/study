@@ -1,4 +1,4 @@
-﻿# Linux中的awk命令
+# Linux中的awk命令
 ---
 
 > 

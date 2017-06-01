@@ -1,3 +1,7 @@
 Linux相关的领域知识，非工具、软件、网站使用
 
 《Linux 鸟哥的私房菜》在线网站：http://cn.linux.vbird.org/
+
+Linux资源-IBM：http://www.ibm.com/developerworks/cn/linux/
+
+浅谈如何学习Linux：http://www.360doc.com/content/06/0526/21/1523_122775.shtml

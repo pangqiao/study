@@ -1,7 +1,7 @@
-﻿# Python2中的函数参数
+# Python2中的函数参数
 
 > 
-原文：[点击进入](http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/001374738449338c8a122a7f2e047899fc162f4a7205ea3000 "廖雪峰的网站")
+原文：[点击进入](http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/001374738449338c8a122a7f2e047899fc162f4a7205ea3000 "廖雪峰的网站")  
 作者：廖雪峰  
 
 ---
@@ -167,3 +167,7 @@ a = 1 b = 2 c = 3 args = (4,) kw = {'x': 99}
 关键字参数既可以直接传入：func(a-1, b=2)，又可以先组装dict，通过**kw传入:func(**{'a':1, 'b':2})
 注：使用*args和**kw是Python的习惯用法，当然也可以用其他参数名，但最好使用习惯用法
 ```
+
+参考链接
+---
+函数对象：https://github.com/Vamei/Python-Tutorial-Vamei/blob/master/content/intermediate07.md  

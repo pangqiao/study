@@ -1,5 +1,4 @@
-﻿# Linux命令基础
----
+# Linux命令基础
 
  - commands not found的错误原因
      - 输错命令
@@ -7,6 +6,7 @@
      - 这个命令所在的目录，当前用户没有将它加入命令搜寻路径中，echo $PATH可以查看。
  - 系统的所有环境变量env可以查看
  - Linux在线求助：man page | info page  
+ - 中文网站：http://man.linuxde.net/
 
 man page
 ========
