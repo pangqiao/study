@@ -7,6 +7,8 @@ https://read.douban.com/reader/ebook/10181845/
 
 https://yuedu.baidu.com/ebook/07b32608caaedd3383c4d3a5?pn=4&pa=43
 
+原书连载：http://smilejay.com/2016/09/kvm-user-mode-networking/
+
 全书一共9章：
 
 第1章介绍了云计算和虚拟化的概念，并对KVM等几种流行的虚拟化技术做了比较；
