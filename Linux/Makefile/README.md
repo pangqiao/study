@@ -3,7 +3,7 @@
 参考：  
 GNU Make：http://www.gnu.org/software/make/manual/make.html  
 跟我一起写Makefile：http://blog.csdn.net/haoel/article/details/2886  
-Makefile文件编写：http://www.veryarm.com/1226.html
+Makefile文件编写：http://www.veryarm.com/1226.html  
 一个简单的通用Makefile实现：http://www.cnblogs.com/fanzhidongyzby/p/3141041.html  
 makefile的简单使用：http://blog.csdn.net/bdss58/article/details/40667907  
 手动建立makefile简单实例解析：http://wenku.baidu.com/view/0911e4abd1f34693dbef3e05.html

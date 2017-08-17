@@ -22,3 +22,7 @@
  - Rest工具：Postman
  - Linux下面的图形化文本比较软件：kocompare
  - Linux下面的VNC软件：tigervnc
+ - Linux命令搜索：http://man.linuxde.net/
+ - 论文搜索：[国家社科文献中心](http://ncpssd.org/index.aspx)
+ - 上交国家精品资源共享课：http://share.onlinesjtu.com/
+ - 清华国家精品课：http://www.tsinghua.edu.cn/publish/newthu/newthu_cnt/education/edu-1-4.html

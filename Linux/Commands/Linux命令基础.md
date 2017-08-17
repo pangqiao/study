@@ -6,24 +6,24 @@
      - 这个命令所在的目录，当前用户没有将它加入命令搜寻路径中，echo $PATH可以查看。
  - 系统的所有环境变量env可以查看
  - Linux在线求助：man page | info page  
- - 中文网站：http://man.linuxde.net/
+ - 中文命令网站：http://man.linuxde.net/
 
 man page
 ========
  - man page适用于所有Unix like系统。
  - man page的数字说明：
 ```
-    1：用户可以在shell环境中操作的命令或可执行文件
-    2：系统内核可调用的函数与工具
-    3：一些常用的函数（function）与函数库（library），大部分为C的函数库
-    4：设备文件的说明，通常在/dev/下面的文件
-    5：配置文件或某些文件的格式
-    6：游戏（games）
-    7：惯例与协议等，例如Linux文件系统、网络协议、ASCII code等说明
-    8：系统管理员可以使用的管理命令
-    9：与kernel相关的文件
+1：用户可以在shell环境中操作的命令或可执行文件
+2：系统内核可调用的函数与工具
+3：一些常用的函数（function）与函数库（library），大部分为C的函数库
+4：设备文件的说明，通常在/dev/下面的文件
+5：配置文件或某些文件的格式
+6：游戏（games）
+7：惯例与协议等，例如Linux文件系统、网络协议、ASCII code等说明
+8：系统管理员可以使用的管理命令
+9：与kernel相关的文件
     
-    注：man null会显示“NULL(4)”，可以看出null是一个设备文件
+注：man null会显示“NULL(4)”，可以看出null是一个设备文件
 ```
  - man page大致分为如下部分，见图  
  ![man page](images/man1.PNG "man page 说明")  
