@@ -1,8 +1,8 @@
 #### KVM基础
 
----
 ```
 KVM网站：http://www.linux-kvm.org/page/Main_Page
+KVM博客：http://blog.csdn.net/RichardYSteven/article/category/841588
 ```
 
 
