@@ -9,3 +9,5 @@ Linux相关的领域知识，非工具、软件、网站使用
 - Linux命令在线搜索：http://man.linuxde.net/
 
 - Linux所有相关文档：https://www.kernel.org/doc/Documentation/
+
+- Linus，一生只为寻找欢笑:https://zhuanlan.zhihu.com/p/19796979?columnSlug=mactalk

@@ -27,3 +27,23 @@ git checkout -- README.md  // 注意, add添加后(同commit提交后)就无法�
 
 然后在Checkout过去修改，就能够达到保存当前工作区，并及时恢复的作用。
 ```
+
+5. 删除某个远程分支
+
+```
+$ git push origin :master
+# 等同于
+$ git push origin --delete master
+```
+
+6. git log的通用配置命令
+
+$ git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+
+7. 基于某个分支创建分支
+
+```
+$ git checkout <remote>/<branch> -b <branch> //设置跟踪关系
+
+$ git pull origin auto-test-v0.9:autotest
+```
