@@ -27,3 +27,4 @@
  - 上交国家精品资源共享课：http://share.onlinesjtu.com/
  - 清华国家精品课：http://www.tsinghua.edu.cn/publish/newthu/newthu_cnt/education/edu-1-4.html
  - gvim：Windows等多平台vim工具
+ - chrome的VPN插件：[tunnello](https://tunnello.com)
