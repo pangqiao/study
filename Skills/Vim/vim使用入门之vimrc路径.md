@@ -27,3 +27,10 @@ Windows下面输入“:version”查看结果
 在windows版本的vim安装时，缺省会安装一个$VIM/\_vimrc的，你可以直接修改这个\_vimrc，加入你自己的配置(使用:e $VIM/\_vimrc可以打开此文件。或者，你也可以在windows中增加一个名为HOME的环境变量(控制面板->系统–>高级–>环境变量)，然后把你的vimrc放在HOME环境变量所指定的目录中。从上面:version命令的输出看到，$HOME/\_vimrc如果存在，就会执行这个文件中的配置，而跳过$VIM/\_vimrc。
 
 如果使用”vim -u filename“命令来启动vim，则会用你指定的filename作为vim的配置文件(在调试你的vimrc时有用)；如果用”vim -u NORC“命令启动vim，则不读取任何vimrc文件：当你怀疑你的vimrc配置有问题时，可以用这种方式跳过vimrc的执行。
+
+通过命令
+
+```
+:echo $MYVIMRC
+```
+查看当前vim配置文件路径
