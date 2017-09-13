@@ -47,3 +47,17 @@ $ git checkout <remote>/<branch> -b <branch> //设置跟踪关系
 
 $ git pull origin auto-test-v0.9:autotest
 ```
+
+8. 查看某文件修改历史
+
+```
+git log -- filename （git log filename）可以看到该文件相关的commit记录
+
+git log -p filename    可以显示该文件每次提交的diff
+
+git show commit-id     根据commit-id查看某个提交
+
+git show commit-id filename    查看某次提交中的某个文件变化
+```
+
+9. 
