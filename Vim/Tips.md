@@ -6,7 +6,7 @@
     3.1 缩进
 4. 显示相关
     4. 高亮
-
+5. 文件目录查找字符串
 ```
 
 ## 1. 跳转相关
@@ -122,4 +122,31 @@ CTRL+SHIFT+D      当前行减少缩进
 就能高亮多个，最多有三个，见:help match
 
 #### 方法三：插件mark.vim
+
+## 5. 文件目录查找字符串
+
+```
+vimgrep /匹配模式/[g][j]    要搜索的文件/范围 
+```
+
+g：没有参数g的话,则行只查找一次关键字。反之会查找所有的关键字  
+j：没有参数j的话,查找后,VIM会跳转至第一个关键字所在的文件。反之,只更新结果列表(quickfix)
+
+```
+vimgrep /pattern/ %                 在当前打开文件中查找
+vimgrep /pattern/ *                 在当前目录下查找所有
+vimgrep /pattern/ **                在当前目录及子目录下查找所有
+vimgrep /pattern/ *.c               查找当前目录下所有.c文件
+vimgrep /pattern/ **/*              只查找子目录
+:vimgrep /pattern/ ./includes/*.*   在当前目录中的"includes"目录里的所有文件中查找
+```
+
+```
+cn                                 查找下一个
+cp                                 查找上一个
+copen                              打开quickfix
+cw                                 打开quickfix
+cclose                             关闭qucikfix
+help vimgrep                       查看vimgrep帮助
+```
 
