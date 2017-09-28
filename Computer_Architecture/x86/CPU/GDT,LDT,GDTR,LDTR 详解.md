@@ -11,7 +11,7 @@ http://blog.csdn.net/u013982161/article/details/52138155
 
 选择器：存储段描述符的索引
 
-![段寄存器构成](images/11.png)
+![段寄存器构成](images/images11.png)
 
 ![GDTR、LDTR、IDTR、TR](images/images15.png)
 
