@@ -39,12 +39,19 @@ set ruler
 set incsearch                                                                                        
 set wrap
 
-设置折叠  
+设置折叠   
 set fdm=indent
 
-设置行线
+设置行线  
 set cursorline
 
 敲入tab键时实际占有的列数  
 set softtabstop=4  
 
+syntax on
+
+#关闭鼠标功能  
+set mouse-=a  
+
+#打开鼠标功能  
+set mouse=a 
