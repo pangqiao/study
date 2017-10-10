@@ -7,6 +7,7 @@
 4. 显示相关
     4. 高亮
 5. 文件目录查找字符串
+6. 空格和tab
 ```
 
 ## 1. 跳转相关
@@ -158,3 +159,53 @@ cclose                             关闭qucikfix
 help vimgrep                       查看vimgrep帮助
 ```
 
+## 6. 空格和tab
+
+### 6.1 默认设置tab为4个空格
+
+为了vim更好的支持python写代码,修改tab默认4个空格有两种设置方法
+
+方法一：
+
+```
+set tabstop=4
+set shiftwidth=4
+```
+
+方法二：
+
+```
+set tabstop=4
+set expandtab
+set autoindent
+```
+
+其中 tabstop 表示一个 tab 显示出来是多少个空格的长度，默认 8。
+
+softtabstop 表示在编辑模式的时候按退格键的时候退回缩进的长度，当使用 expandtab 时特别有用。
+
+shiftwidth 表示每一级缩进的长度，一般设置成跟 softtabstop 一样。
+
+当设置成 expandtab 时，缩进用空格来表示，noexpandtab 则是用制表符表示一个缩进。
+
+推荐使用第二种方法，按tab键时产生的是4个空格，这种方式具有最好的兼容性。
+
+### 6.2 修改已经保存的文件
+
+#### tab替换为空格
+
+```
+:set ts=4
+:set expandtab
+:%retab!
+```
+
+#### 空格替换为TAB
+
+```
+:set ts=4
+:set noexpandtab
+:%retab!
+```
+
+加!是用于处理非空白字符之后的TAB，即所有的TAB，若不加!，则只处理行首的TAB。
