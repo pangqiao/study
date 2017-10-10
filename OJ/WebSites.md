@@ -1,1 +1,3 @@
-国外OJ网站：[leetcode](https://leetcode.com/ "点击进入")
+- 国外OJ网站：[leetcode](https://leetcode.com/ "点击进入")
+- OJ在线：https://acmore.cc/
+- 玲珑学院：各种知识学习平台，http://ifrog.cc/
