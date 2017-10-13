@@ -1,8 +1,10 @@
 # KVM基本框架
 
-> 参考
+```
+参考
 虚拟化中KVM, Xen, Qemu的区别：http://yansu.org/2013/03/20/different-bewteen-kvm-xen-qemu.html
 qemu,kvm,qemu-kvm,xen,libvirt的区别：https://my.oschina.net/qefarmer/blog/386843
+```
 
 ## 背景
 
