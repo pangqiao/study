@@ -50,8 +50,17 @@ set softtabstop=4
 
 syntax on
 
-#关闭鼠标功能  
+关闭鼠标功能  
 set mouse-=a  
 
-#打开鼠标功能  
+打开鼠标功能  
 set mouse=a 
+
+vim运行路径  
+let $VIMRUNTIME = "/usr/share/vim/vim61"
+
+"vim运行时库路径  
+set runtimepath=/usr/share/vim/vim61
+
+"关闭vi兼容模式
+set nocp
