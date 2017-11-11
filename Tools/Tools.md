@@ -30,3 +30,7 @@
  - chrome的VPN插件：[tunnello](https://tunnello.com)
  - IBM中文开发者社区：[IBM developerWorks](https://www.ibm.com/developerworks/cn/)，包含开发教程、工具和社区
  - 玲珑学院：线上学习平台，http://ifrog.cc/
+ - PDF word PPT互相免费转换：https://smallpdf.com/
+ - 搜歌，听歌chrome工具：https://github.com/Gerry-Lee/listen1_chrome_extension
+ - 下载器：可以下载各种网盘内容，http://jdownloader.org/
+ - 全能截图工具：Snipaste
