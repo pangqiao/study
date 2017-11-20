@@ -16,7 +16,7 @@
  - IPOP：网络工具
  - Stack overflow：IT技术问答网站
  - StarUML：UML编辑
- - 网盘搜索：[网盘搜素](http://www.wangpansou.cn/ "点击进入")
+ - 网盘搜索：[网盘搜素](http://www.wangpansou.cn/ "点击进入")，www.pansoso.com
  - Q-dir：多窗口文件管理
  - 阮一峰：[个人网站](http://www.ruanyifeng.com/home.html)
  - Rest工具：Postman
@@ -34,3 +34,4 @@
  - 搜歌，听歌chrome工具：https://github.com/Gerry-Lee/listen1_chrome_extension
  - 下载器：可以下载各种网盘内容，http://jdownloader.org/
  - 全能截图工具：Snipaste
+ - 英文书籍下载网站：http://www.steporebook.com/
