@@ -23,3 +23,8 @@ https://www.zhihu.com/question/38836382?sort=created
 Unix/Linux/BSD命令和任务：http://cb.vu/unixtoolbox_zh_CN.xhtml
 
 Arch Linux：https://www.archlinux.org/
+
+Linux多种资源网站（important）：https://kernelnewbies.org/
+
+Linux论坛：https://lkml.org/
+
