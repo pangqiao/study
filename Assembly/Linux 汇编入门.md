@@ -121,7 +121,7 @@ Linux平台下汇编工具很多，最基本的仍是汇编器、链接器和调
 as -o hello.o hello.s
 ```
 
-Linux平台另一个常用的汇编器是NASM，它提供很好的宏指令功能，并能支持相当多的目标代码格式，包括bin、a.out、coff、elf、rdf等。NASM采用人工编写的语法分析器，因而比GAS速度快很多，更重要使用Intel汇编语法，可用来编译Intel语法格式编写的汇编程序：
+**Linux平台**另一个常用的汇编器是NASM，它提供很好的宏指令功能，并能**支持相当多的目标代码格式**，**包括bin、a.out、coff、elf、rdf**等。NASM采用人工编写的语法分析器，因而比GAS速度快很多，更重要使用Intel汇编语法，可用来编译Intel语法格式编写的汇编程序：
 
 ```
 nasm -f elf hello.asm
@@ -158,7 +158,7 @@ Linux有两种方式使用系统调用：**利用C库（libc）或通过汇编�
 
 **与DOS一样，Linux下的系统调用也是通过中断（int 0x80）来实现的。在执行int 80指令时，寄存器eax中存放的是系统调用的功能号，而传给系统调用的参数则必须按照顺序放到寄存器ebx，ecx，edx，esi，edi中，当系统调用完成后，返回值可以在寄存器eax中获得。**
 
-所有的系统调用功能号都可以在文件/usr/include/bits/syscall.h中找到，为方便使用，它们是用SYS\_\<name\>这样的宏来定义，如SYS\_write、SYS\_exit等。例如，经常用到的write函数是如下定义：
+所有的系统调用功能号都可以在文件/usr/include/bits/syscall.h中找到（号码定义不同架构不同文件，例如x86是/usr/include/x86\_64-linux-gnu/asm/unistd\_32.h，x86\_64是/usr/include/x86\_64-linux-gnu/asm/unistd\_64.h），为方便使用，它们是用SYS\_\<name\>这样的宏来定义，如SYS\_write、SYS\_exit等。例如，经常用到的write函数是如下定义：
 
 ```
 ssize_t write(int fd, const void *buf, size_t count);
