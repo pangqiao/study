@@ -1,8 +1,12 @@
 ## 1. 基本配置
 
-### 1.1 Core
+### 1.1 配置文件
 
-### 1.2 Editor
+styleles.less
+
+### 1.2 Core
+
+### 1.3 Editor
 
 font-family: Consolas,SimHei,Microsoft YaHei
 
@@ -10,11 +14,7 @@ font: 15
 
 tab length: 4
 
-### 1.3 System
-
-全选
-
-
+### 1.4 System
 
 ## 2. themes
 
