@@ -37,3 +37,19 @@ tab length: 4
 ![config](images/2.png)
 
 ### 3.4 tree-view-background
+
+### 3.5 vim相关
+
+使用vim-mode一定要安装ex-mode和relative-numbers插件
+
+地址：https://atom.io/packages/ex-mode
+
+地址：https://atom.io/packages/relative-numbers
+
+### 3.6 minimap
+
+地址：https://atom.io/packages/minimap
+
+### 3.7 terminal-plus
+
+地址：https://atom.io/packages/terminal-plus
