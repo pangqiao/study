@@ -16,9 +16,7 @@ http://wiki.osdev.org/Main_Page
 
 ## 2. Project
 
-### 2.1. 基于x86
-
-#### 1. hurlex
+### 2.1. hurlex
 
 - 项目开发文档：
 
@@ -34,4 +32,14 @@ git clone https://github.com/hurley25/hurlex-doc.git
  
 https://github.com/hurley25/Hurlex-II
 
-#### 2. 
+### 2.2. lmosem
+
+支持ARM，x86平台的嵌入式操作系统内核
+
+https://github.com/Gerry-Lee/lmosem
+
+### 2.3. MyOS
+
+使用X86汇编和C写的小型操作系统
+
+https://github.com/Gerry-Lee/MyOS

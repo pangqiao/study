@@ -2,6 +2,8 @@
 
 https://www.ibm.com/developerworks/cn/linux/l-assembly/index.html
 
+以下内容皆为32位系统
+
 ## 1. 简介
 
 Linux 下用汇编语言编写的代码具有两种不同的形式。第一种是完全的汇编代码，指的是整个程序全部用汇编语言编写。尽管是完全的汇编代码，Linux 平台下的汇编工具也吸收了 C 语言的长处，使得程序员可以使用 #include、#ifdef 等预处理指令，并能够通过宏定义来简化代码。第二种是内嵌的汇编代码，指的是可以嵌入到C语言程序中的汇编代码片段。虽然 ANSI 的 C 语言标准中没有关于内嵌汇编代码的相应规定，但各种实际使用的 C 编译器都做了这方面的扩充，这其中当然就包括 Linux 平台下的 GCC。
@@ -118,13 +120,13 @@ Linux平台下汇编工具很多，最基本的仍是汇编器、链接器和调
 汇编器（assembler）作用是将汇编源码转换成二进制形式的目标代码。Linux平台的标准汇编器是GAS，它是GCC依赖的后台汇编工具，通常包含在**binutils软件包**中。GAS使用标准的AT&T汇编语法，可以用来汇编用AT&T格式的程序。
 
 ```
-as -o hello.o hello.s
+as -o hello.o hello.s -m32
 ```
 
 **Linux平台**另一个常用的汇编器是NASM，它提供很好的宏指令功能，并能**支持相当多的目标代码格式**，**包括bin、a.out、coff、elf、rdf**等。NASM采用人工编写的语法分析器，因而比GAS速度快很多，更重要使用Intel汇编语法，可用来编译Intel语法格式编写的汇编程序：
 
 ```
-nasm -f elf hello.asm
+nasm -f elf32 hello.asm
 ```
 
 ### 4.2 链接器
@@ -132,7 +134,21 @@ nasm -f elf hello.asm
 由汇编器产生的目标代码是不能直接在计算机上运行的，它必须经过链接器处理才能生成可执行文件。链接器用来将多个目标代码链接成一个可执行代码，这样可以先将整个程序分为几个模块单独开发，然后才将它们链接成一个应用程序。Linux使用ld作为标准链接程序，它同样在binutils软件包中。汇编程序在成功通过GAS或NASM的编译成目标代码后，就可以通过ld进行链接成可执行文件：
 
 ```
-ld -s -o hello hello.o
+ld -s -o -m elf_i386 hello hello.o
+```
+
+通过ld -V可以查看仿真的模式
+
+```
+[root@tsinghua-pcm nasm]# ld -V
+GNU ld version 2.25.1-32.base.el7_4.1 
+  支持的仿真：
+   elf_x86_64
+   elf32_x86_64
+   elf_i386
+   i386linux
+   elf_l1om
+   elf_k1om
 ```
 
 ### 4.3 调试器
@@ -142,8 +158,8 @@ Linux下调试汇编代码既可以用GDB、DDD这类通用的调试器，也可
 从调试角度来看，使用GAS的好处是可以在生成的目标代码中包含符号表（symbol table），这样就可以使用GDB和DDD来进行源码级调试了。要在生成的可执行程序中包含符号表，可以采用下面的方式进行编译和链接：
 
 ```
-as --gstabs -o hello.o hello.s
-ld -o hello hello.o
+as --gstabs -o hello.o hello.s -m32
+ld -o -m elf_i386 hello hello.o
 ```
 
 执行as命令时带上参数--gstabs可以告诉汇编器在生成的目标代码中加上符号表，同时需要注意的是，在用ld命令进行链接时不要加上-s参数，否则目标代码中的符号表在链接时将被删除。
