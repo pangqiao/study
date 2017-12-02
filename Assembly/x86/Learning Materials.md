@@ -4,4 +4,4 @@
 
 - 汇编语言学习：使用王爽写的《汇编语言》第三版：https://github.com/Gerry-Lee/assembly-language-learning
 
-- 
+- 《x86汇编语言：从实模式到保护模式》读书笔记：http://blog.csdn.net/u013490896/article/category/5903749/3
