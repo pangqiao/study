@@ -144,7 +144,7 @@ nasm -f elf32 hello.asm
 由汇编器产生的目标代码是不能直接在计算机上运行的，它必须经过链接器处理才能生成可执行文件。链接器用来将多个目标代码链接成一个可执行代码，这样可以先将整个程序分为几个模块单独开发，然后才将它们链接成一个应用程序。Linux使用ld作为标准链接程序，它同样在binutils软件包中。汇编程序在成功通过GAS或NASM的编译成目标代码后，就可以通过ld进行链接成可执行文件：
 
 ```
-ld -s -o -m elf_i386 hello hello.o
+ld -m elf_i386 -o hello hello.o
 ```
 
 通过ld -V可以查看仿真的模式
@@ -169,6 +169,7 @@ Linux下调试汇编代码既可以用GDB、DDD这类通用的调试器，也可
 
 ```
 as --gstabs -o hello.o hello.s -32
+nasm -g -o hello.o -f elf32 hello.asm
 ld -m elf_i386 -o hello hello.o
 ```
 
