@@ -3,9 +3,9 @@
 1.1、两个commit间的修改（包含两个commit）
 
 ```
-git format-patch <r1>..<r2>
+git format-patch <r1> <r2>
 如：
-git format-patch d77aaac74845435744c49ae65511d9e1be79ed5c...046ee8f8423302f5070ca81b4e246516e919cd7a -o patch
+git format-patch d77aaac74845435744c49ae65511d9e1be79ed5c 046ee8f8423302f5070ca81b4e246516e919cd7a -o patch
 ```
 
 1.2、单个commit
