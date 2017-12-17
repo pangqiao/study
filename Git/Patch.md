@@ -20,6 +20,12 @@ git format-patch -1 <r1>
 git format-patch <r1>
 ```
 
+1.4、最后一次commit的修改
+
+```
+git format-patch HEAD^
+```
+
 2、 把生成的patch文件拷贝到目标git目录下
 
 3、测试patch

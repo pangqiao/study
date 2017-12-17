@@ -47,12 +47,12 @@ unix  2      [ ACC ]     STREAM     LISTENING     40202    @/dbus-vfs-daemon/soc
 
 上述命令列出tcp, udp和unix协议下所有套接字的所有连接。然而这些信息还不够详细，管理员往往需要查看某个协议或端口的具体连接情况。
 
-### 2. 只列出 TCP 或 UDP 协议的连接
+### 2. 只列出 TCP 或 UDP 或 Unix socket的连接
 
 使用 -t 选项列出 TCP 协议的连接：
 
 ```
-$ netstat-at
+$ netstat -at
 ActiveInternet connections (servers and established)
 ProtoRecv-Q Send-Q LocalAddressForeignAddressState
 tcp        00 enlightened:domain      *:*                     LISTEN     
@@ -81,6 +81,12 @@ udp6       0      0 [::]:ntp                [::]:*
 ```
 
 上面同时显示了 IPv4 和 IPv6 的连接。
+
+使用 -x 选项只列出unix socket连接：
+
+```
+$ netstat -ax
+```
 
 ### 3. 禁用反向域名解析，加快查询速度
 

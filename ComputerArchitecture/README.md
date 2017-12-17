@@ -6,6 +6,8 @@
 
 如果想链接体系结构和操作系统的交互，可以读Randal Bryant和David O'Hallaron的《Computer System：A Programmer's Perspective》
 
+知乎专栏：https://zhuanlan.zhihu.com/UEFIBlog
+
 ### 计算机组成结构
 
 - Bochs/Bochs 项目源码分析与注释/1. x86体系结构与PC系统概要
