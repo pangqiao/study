@@ -33,6 +33,8 @@ make
 make install
 ```
 
+然后根据cscope的路径修改vimrc配置文件
+
 ### 5. 安装SuperTag
 
 第一步，下载supertab插件到任意目录

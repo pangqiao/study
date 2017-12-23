@@ -20,7 +20,7 @@
  - Q-dir：多窗口文件管理
  - 阮一峰：[个人网站](http://www.ruanyifeng.com/home.html)
  - Rest工具：Postman
- - Linux下面的图形化文本比较软件：kocompare
+ - Linux下面的图形化文本比较软件：Kompare、Meld
  - Linux下面的VNC软件：tigervnc
  - Linux命令搜索：http://man.linuxde.net/
  - 论文搜索：[国家社科文献中心](http://ncpssd.org/index.aspx)
