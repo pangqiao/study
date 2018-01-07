@@ -3,3 +3,5 @@
 参考：
 
 http://blog.csdn.net/mrbuffoon/article/details/53606356
+
+http://oenhan.com/category/virtualization

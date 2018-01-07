@@ -3,55 +3,43 @@
 
 https://github.com/Gerry-Lee/vim
 
-### 1. 配置文件
-
-参考当前目录下vimrc
-
-### 2. 安装ctags
+### 1. 安装软件
 
 ```
-yum install ctags*
-```
-
-执行操作参照tags
-
-### 3. 安装taglist
-
-拷贝下面文件到相应目录
-
-```
-plugin/taglist.vim – taglist插件
-doc/taglist.txt    - taglist帮助文件
-```
-
-### 4. cscope安装
-
-源码编译安装
-```
-./configure
-make
-make install
+apt-get install ctags cscope git wmctrl fonts-powerline
 ```
 
 然后根据cscope的路径修改vimrc配置文件
 
-### 5. 安装SuperTag
-
-第一步，下载supertab插件到任意目录
-
-http://www.vim.org/scripts/script.php?script_id=1643
-
-第二步，打开该插件
+### 2. 备份原有.vim和.vimrc
 
 ```
-$ vim supertab.vmb
+mv ~/.vim ~/.vim.orig
+mv ~/.vimrc ~/.vimrc.orig
 ```
 
-第三步，执行命令，作用是从文件中读取可执行命令（shell命令）来执行
+### 3. 添加配置文件
 
 ```
-:so %
+git clone https://github.com/Gerry-Lee/VimConfig.git ~/.vim
+ln -s ~/.vim/vimrc ~/.vimrc
 ```
+
+### 4. 安装插件
+
+```
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/vundle
+```
+
+在vim执行“:BundleInstall”进行插件安装。
+
+```
+vim
+:BundleInstall
+```
+
+参考当前目录下vimrc
+
 
 ### 6. 对库进行ctags
 
@@ -60,18 +48,13 @@ cd /usr/include
 ctags -R ./
 ```
 
-### 7. 针对Python空格
+### 7. 快捷键
 
-```
-cd /usr/share/vim/vim74/ftplugin/
-vim python.vim
-```
-
-添加
-
-```
-set tabstop=4
-set shiftwidth=4
-```
+- <F5> :TagbarToggle
+- <F6> :NERDTreeToggle
+- <F3> :GundoToggle
+- <F4> :IndentGuidesToggle
+- <C-F11> :!cscope -bRq
+- <C-F12> :!ctags -R --c-kinds=+l+x+p --fields=+lS -I __THROW,__nonnull --extra=+ .
 
 ### 8.
