@@ -1,1 +1,0 @@
-Linux中的KVM模块，会涉及到用户空间QEMU
