@@ -4,4 +4,8 @@
 
 作者主页：http://my.csdn.net/sholber
 
-笔记：http://blog.csdn.net/u013490896/article/category/5903749 / http://blog.csdn.net/column/details/protectedmode.html
+笔记：
+
+http://blog.csdn.net/u013490896/article/category/5903749 
+
+http://blog.csdn.net/column/details/protectedmode.html
