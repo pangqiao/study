@@ -8,6 +8,8 @@ http://blog.csdn.net/ztguang
 
 http://blog.chinaunix.net/uid/14735472/list/1.html
 
+Linux专栏：[http://zhuanlan.zhihu.com/LearningLinux](http://zhuanlan.zhihu.com/LearningLinux)
+
 - 书籍资料：
 
 赵炯书籍网站：http://www.oldlinux.org/
