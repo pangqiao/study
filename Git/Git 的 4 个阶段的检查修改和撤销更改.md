@@ -40,7 +40,7 @@ git diff
 ### 已暂存，未提交
 
 ```
-git diff --cached
+git diff --cached [filename]
 ```
 
 git diff这个命令只检查我们的工作区和暂存区之间的差异，如果我们想看到暂存区和本地仓库之间的差异，就需要加一个参数git diff --cached。
@@ -48,7 +48,7 @@ git diff这个命令只检查我们的工作区和暂存区之间的差异，如
 ### 已提交，未推送
 
 ```
-git diff master origin/master
+git diff master origin/master [filename]
 ```
 
 在这里，master就是你的本地仓库，而origin/master就是你的远程仓库，master是主分支的意思，因为我们都在主分支上工作，所以这里两边都是master，而origin是远程。
