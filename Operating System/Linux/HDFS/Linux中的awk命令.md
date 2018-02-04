@@ -1,5 +1,4 @@
-﻿# Linux中的awk命令
----
+# Linux中的awk命令
 
 > 
 作者：李天炜
