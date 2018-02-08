@@ -17,7 +17,7 @@
 
 首先硬件会主动读取BIOS或者URFI BIOS来载入硬件信息并进行硬件系统的自我检测，之后系统主动读取第一个可启动的装置（BIOS配置），此时就可以读取Boot loader了。
 
-Boot Loader可以指定使用哪个核心文件来启动，并实际加载kernel到内存中解压缩与运行，kernel会检测所有硬件信息、加载适当的驱动程序来使整部主机开始运行。
+Boot Loader可以指定**使用哪个核心文件来启动**，并实际**加载kernel到内存中解压缩与运行**，kernel会检测所有硬件信息、加载适当的驱动程序来使整部主机开始运行。
 
 主机系统开始运行后，此时Linux才会调用外部程序开始准备软件运行的环境，并实际加载所有系统运行的所需的软件程序。最后，OS开始等待登录和操作。
 
@@ -55,7 +55,7 @@ MBR：分割表有传统的MBR以及新式GPT，不过GPT也保留了一块相�
 
 获取这些信息后，BIOS会进行自我测试（**Power-on Self Test，POST**）。然后开始运行硬件检测的初始化，并配置PnP装置，之后再定义出可启动的装置顺序，然后读取启动装置的数据（MBR相关任务开始）。
 
-由于不同OS的文件系统格式不同，所以必须要一个启动管理程序来处理核心文件加载（load）的问题，这个启动管理程序就是Boot Loader。Boot Loader会安装在在启动装置的第一个扇区（sector）内，也就是MBR（Mater Boot Record）。
+由于**不同OS的文件系统格式不同**，所以必须要一个**启动管理程序来处理核心文件加载（load）的问题**，这个启动管理程序就是Boot Loader。Boot Loader会安装在在启动装置的第一个扇区（sector）内，也就是MBR（Mater Boot Record）。
 
 既然核心文件需要loader来读取，每个OS的loader都不相同，BIOS是如何读取MBR内的loader呢？其实BIOS是通过硬件的INT 13中断来读取MBR内容的，也就是说只要BIOS能检测你的磁盘，那就有办法通过INT 13通道读取磁盘的第一sector的MBR。
 
@@ -63,15 +63,15 @@ MBR：分割表有传统的MBR以及新式GPT，不过GPT也保留了一块相�
 
 #### 1.2.2 Boot Loader的功能
 
-主要用来认识OS的文件格式并加载kernel到memory中，不同OS的boot loader不同。那多OS呢？
+主要用来**认识OS的文件格式并加载kernel到memory**中，不同OS的boot loader不同。那多OS呢？
 
-每个文件系统（FileSystem）会保留一块启动扇区（boot sector）提供OS安装boot loader，而通常OS会默认安装一份loader到根目录所在的文件系统的boot loader上。
+**每个文件系统（FileSystem）会保留一块启动扇区（boot sector）提供OS安装boot loader**，而通常OS会默认安装一份loader到根目录所在的文件系统的boot loader上。
 
 ![boot loader 安装在 MBR, boot sector 与操作系统的关系](images/1.png)
 
-每个OS会安装一套boot loader到自己的文件系统中（即每个filesystem左下角的方框）。而Linux在安装时候可以选择将boot loader安装到MBR，也可不安装。若安装到MBR，理论上在MBR和boot sector都会有一份boot loader程序。而Windows会将MBR和boot sector都装一份boot loader！
+每个OS会安装一套boot loader到自己的文件系统中（即每个filesystem左下角的方框）。而Linux在安装时候可以选择将boot loader安装到MBR，**也可不安装**。若安装到MBR，理论上在MBR和boot sector都会有一份boot loader程序。而Windows会将MBR和boot sector都装一份boot loader！
 
-虽然各个OS都可以安装一份boot loader到boot sector中，这样OS可以通过透过自己的boot loader来加载核心了。问题是系统的MBR只有一个！怎么运行boot sector里面的loader？
+虽然各个OS都可以安装一份boot loader到boot sector中，这样OS可以通过通过自己的boot loader来加载核心了。问题是系统的MBR只有一个！怎么运行boot sector里面的loader？
 
 boot loader功能如下：
 
@@ -108,9 +108,9 @@ vmlinuz-3.10.0-229.el7.x86_64*              <==核心文件
 
 U盘、SATA、SCSI等磁盘驱动程序通常被编译为模块存在。假设Linux是安装在SATA磁盘上，可以通过BIOS的INT 13取得boot loader与kernel文件来启动，然后kernel会开始接管系统并检测硬件以及尝试挂载根目录来取得额外驱动程序。
 
-但是，核心根本不认识 SATA 磁盘，所以需要加载 SATA 磁盘的驱动程序，否则根本就无法挂载根目录。但是 SATA 的驱动程序在 /lib/modules 内，你根本无法挂载根目录又怎么读取到 /lib/modules/ 内的驱动程序？通过虚拟文件系统来处理这个问题（如果不是模块，而是编译进kernel就不用initramfs）。
+但是，**核心根本不认识 SATA 磁盘，所以需要加载 SATA 磁盘的驱动程序，否则根本就无法挂载根目录**。但是 SATA 的驱动程序在 /lib/modules 内，你根本无法挂载根目录又怎么读取到 /lib/modules/ 内的驱动程序？通过虚拟文件系统来处理这个问题（如果不是模块，而是编译进kernel就不用initramfs）。
 
-虚拟文件系统 (Initial RAM Disk 或 Initial RAM Filesystem) 一般使用 /boot/initrd 或 /boot/initramfs，这个文件的特色是，也能够通过 boot loader 来加载到内存中， 然后这个文件会被解压缩并且在内存当中模拟成一个根目录， 且此模拟在内存当中的文件系统能够提供一个可运行的程序，通过该程序来加载启动过程中所最需要的核心模块， 通常这些模块就是 U盘, RAID, LVM, SCSI 等文件系统与磁盘的驱动程序啦！等加载完成后，会帮助核心重新调用 systemd 来开始后续的正常启动流程。
+虚拟文件系统 (Initial RAM Disk 或 Initial RAM Filesystem) 一般使用 /boot/initrd 或 /boot/initramfs，这个文件的特色是，也能够**通过 boot loader 来加载到内存中**， 然后这个文件会**被解压缩并且在内存当中模拟成一个根目录**，且此**模拟在内存当中的文件系统能够提供一个可运行的程序，通过该程序来加载启动过程中所最需要的核心模块， 通常这些模块就是 U盘, RAID, LVM, SCSI 等文件系统与磁盘的驱动程序**啦！等加载完成后，会帮助核心重新调用 systemd 来开始后续的正常启动流程。
 
 ![BIOS 与 boot loader 及核心载入流程](images/3.png)
 
