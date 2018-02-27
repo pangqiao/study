@@ -1,3 +1,4 @@
 - 偏机器学习、算法：http://www.cnblogs.com/maybe2030/
 - 全计算机知识：https://www.mnstory.net/
 - Linux/虚拟化/算法：http://oenhan.com/
+- 各种源码分析：http://blog.csdn.net/tiantao2012/article/category/6345432

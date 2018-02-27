@@ -26,7 +26,10 @@
 
 ## 2. 文件相关
 
-- :e anotherFile 新增一个编辑文件，:e#返回之前的文件
+- :e anotherFile                      新增一个编辑文件，
+- :e#                                 返回之前的文件
+- :e ftp://192.168.10.76/abc.txt      打开远程文件
+- :e \\\\qadrive\test\1.txt           打开share file
 
 - vim打开多个文件
 
@@ -43,11 +46,21 @@ vim a b c
 :b2  回到第2个文件
 :b3  回到第3个文件
 
-如果文件已經被修改,
-需要加上!強制執行, 如:
+如果文件已经被修改,
+需要加上!强制执行, 如:
 :b!2
-```
 
+:n   切换到下一个文件
+:N   切换到上一个文件
+:n filename2    切换到文件filename2
+
+:ls             列出vim打开的所有文件的信息，包括文件名，buffer id等
+:bn             切换到当前buffer的下一个buffer
+:bp             切换当前buffer的前一个buffer
+:bd             关闭当前buffer，对应文件也随之关闭
+:bd2            关闭buffer id为2的buffer，对应文件也随之关闭
+:args           查看当前打开的文件列表，当前正在编辑的文件会用[]括起来。
+```
 
 ## 3. 编辑相关
 
