@@ -35,3 +35,5 @@ Linux论坛：https://lkml.org/
 蜗窝：http://www.wowotech.net/
 
 http://blog.csdn.net/u012398362
+
+各模块详细讲解：http://blog.csdn.net/gatieme/article/details/52384965

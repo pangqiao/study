@@ -2,6 +2,8 @@
 
 http://blog.csdn.net/unclerunning/article/details/51917605
 
+http://blog.csdn.net/gatieme/article/details/52403148
+
 ## 系统启动之Linux内存管理基础
 
 ## Keywords

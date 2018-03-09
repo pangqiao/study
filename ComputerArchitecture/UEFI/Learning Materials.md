@@ -9,3 +9,4 @@
 4. UEFI为什么选择FAT作为UEFI分区标准？
 
 - 知乎专栏：https://zhuanlan.zhihu.com/UEFIBlog?topic=UEFI
+- UEFI学习：http://blog.csdn.net/jiangwei0512/article/category/6259511

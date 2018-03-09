@@ -1,2 +1,2 @@
-浅谈PCIe体系结构：http://blog.sina.com.cn/s/articlelist_1685243084_3_1.html
+《PCI Experss体系结构导读》作者博客：http://blog.sina.com.cn/s/articlelist_1685243084_3_1.html
 
