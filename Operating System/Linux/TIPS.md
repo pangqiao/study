@@ -12,6 +12,8 @@ Linux专栏：[http://zhuanlan.zhihu.com/LearningLinux](http://zhuanlan.zhihu.co
 
 http://blog.csdn.net/unclerunning/article/category/6189110
 
+https://blog.csdn.net/chenyu105
+
 - 书籍资料：
 
 赵炯书籍网站：http://www.oldlinux.org/
