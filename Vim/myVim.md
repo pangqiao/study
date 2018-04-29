@@ -3,6 +3,8 @@
 
 https://github.com/Gerry-Lee/vim
 
+VIM配置参照项目：https://github.com/SpaceVim/SpaceVim
+
 ### 1. 安装软件
 
 ```
