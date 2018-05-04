@@ -18,6 +18,8 @@ http://blog.csdn.net/unclerunning/article/category/6189110
 
 https://blog.csdn.net/chenyu105
 
+http://www.360doc.com/userhome/12892305
+
 - 书籍资料：
 
 赵炯书籍网站：http://www.oldlinux.org/
