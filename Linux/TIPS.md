@@ -20,6 +20,8 @@ https://blog.csdn.net/chenyu105
 
 http://www.360doc.com/userhome/12892305
 
+https://blog.csdn.net/wjlkoorey
+
 - 书籍资料：
 
 赵炯书籍网站：http://www.oldlinux.org/
