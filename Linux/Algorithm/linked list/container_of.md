@@ -2,7 +2,7 @@
 
 https://blog.csdn.net/wjlkoorey/article/details/52012996
 
-container\_of()这个宏，还包括一个叫做offsetof()的家伙。在这两个宏定义里都出现将“零”地址强转成目标结构体类型，然后再访问其成员属性的情形。0地址不可以访问，那container\_of()和offsetof()宏定义里用0时怎么没报错呢？到底该TM如何理解“零”地址？结构体被编译时有没有什么猫腻呢？程序到底是如何访问结构体里的每个成员属性的？
+container\_of()这个宏，还包括一个叫做offsetof()的家伙。在这两个宏定义里都出现将“零”地址强转成目标结构体类型，然后再访问其成员属性的情形。0地址不可以访问（参见Segmentation fault文章），那container\_of()和offsetof()宏定义里用0时怎么没报错呢？到底该如何理解“零”地址？结构体被编译时有没有什么猫腻呢？程序到底是如何访问结构体里的每个成员属性的？
 
 内核宏定义container\_of()：
 
@@ -54,27 +54,37 @@ int main(int argc,char** argv)
 }
 ```
 
-其中第三行代码是取消编译默认的结构体对齐优化，这样一来Student结构体所占内存空间大小为37字节。运行结果如下：
+其中第三行代码是取消编译默认的结构体对齐优化，这样一来Student结构体所占内存空间大小为37字节。编译运行结果如下：
 
-![config](images/11.png)
+```
+[root@tsinghua-pcm C]# gcc -g -m32 student.c -o student
+
+[root@tsinghua-pcm C]# ./student 
+size_of_stu = 37
+add_of_stu = 0xff962e1b
+add_of_sex = 0xff962e1b
+add_of_age = 0xff962e1c
+add_of_name = 0xff962e20
+
+[root@tsinghua-pcm C]# file student
+student: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), for GNU/Linux 2.6.32, BuildID[sha1]=403f53056b00dd2ac46f64af9e04f6daf3d3dd7f, not stripped
+```
 
 Student结构体对象stu里的三个成员属性的地址，按照我们的预期进行排列的。此时我们知道stu对象的地址是个随机值，每次运行的时候都会变，但是无论怎么变stu.sex的地址永远和stu的地址是一致：
 
-![config](images/12.png)
+![config](images/17.png)
 
 反汇编一下：
 
 ![config](images/13.png)
 
 ```
-root@Gerry:/home/project/C# objdump -d student > student_asm
-
-
+[root@tsinghua-pcm C]# objdump -S student
 ```
 
 上面的反汇编代码已经和C源代码关联起来了，注意看第20行反汇编代码“lea    0x1b(%esp),%edx”，用lea指令将esp向高地址偏移27字节的地址，也就是栈空间上stu的地址装载到edx寄存器里，lea指令的全称是load effective address，所以该指令是将要操作的地址装载到目标寄存器里。另外，我们看到，在打印stu.age地址时，第26行也装载的是 0x1b(%esp)地址；打印stu.age时，注意第32、33行代码，因为栈是向高地址增长的，所以age的地址比stu.sex的地址值要大，这里在编译阶段编译器就已经完成了地址偏移的计算过程；同样地，stu.name的地址，观察第39、40行代码，是在0x1b(%esp)的基础上，增加了stu.sex和stu.age的偏移，即5个字节后找到了stu.name的地址。
 
-也就是说，编译器在编译阶段就已经知道结构体里每个成员属性的相对偏移量，我们源代码里的所有对结构体成员的访问，最终都会被编译器转化成对其相对地址的访问，代码在运行时根本没有变量名、成员属性一说，有的也只有地址。OK，那就简单了，我们再看一下下面的程序：
+也就是说，编译器在编译阶段就已经知道结构体里每个成员属性的相对偏移量，我们源代码里的所有对结构体成员的访问，最终都会被编译器转化成对其相对地址的访问，**代码在运行时根本没有变量名、成员属性一说，有的也只有地址**。OK，那就简单了，我们再看一下下面的程序：
 
 ```
 #include <stdio.h>
