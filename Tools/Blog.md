@@ -7,3 +7,4 @@
 - 全网优秀IT博客导航：http://blog.csdn.net/gatieme/article/details/50658902
 - 底层和内核：http://blog.csdn.net/yuzhihui_no1/article/category/3117997/2
 - 操作系统、BMC、UEFI等：http://blog.csdn.net/jiangwei0512/article/category/6259511
+- 全知识博客：https://blog.csdn.net/ljy1988123

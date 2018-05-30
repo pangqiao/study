@@ -22,6 +22,12 @@ http://www.360doc.com/userhome/12892305
 
 https://blog.csdn.net/wjlkoorey
 
+http://blog.chinaunix.net/uid/23769728/list/1.html
+
+https://blog.csdn.net/ljy1988123/article/category/1490573
+
+Linux工程导论：https://blog.csdn.net/column/details/linux-kernel-no-code.html
+
 - 书籍资料：
 
 赵炯书籍网站：http://www.oldlinux.org/

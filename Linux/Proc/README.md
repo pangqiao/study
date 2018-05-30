@@ -1,1 +1,1 @@
-about proc文件系统
+Linux proc文件系统

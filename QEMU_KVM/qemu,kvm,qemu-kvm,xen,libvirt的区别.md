@@ -1,8 +1,8 @@
-﻿# qemu,kvm,qemu-kvm,xen,libvirt的区别
+# qemu,kvm,qemu-kvm,xen,libvirt的区别
 
 > 
 参考
-区别：https://my.oschina.net/qefarmer/blog/386843
+区别：https://my.oschina.net/qefarmer/blog/386843  
 虚拟化之QEMU和KVM：http://blog.chinaunix.net/uid-23769728-id-3256677.html
 
 ## 虚拟化类型
