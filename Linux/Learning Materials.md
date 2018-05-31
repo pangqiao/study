@@ -28,6 +28,8 @@ https://blog.csdn.net/ljy1988123/article/category/1490573
 
 Linux工程导论：https://blog.csdn.net/column/details/linux-kernel-no-code.html
 
+重要：http://www.360doc.com/userhome/12892305#
+
 - 书籍资料：
 
 赵炯书籍网站：http://www.oldlinux.org/
