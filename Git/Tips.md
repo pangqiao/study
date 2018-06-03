@@ -62,4 +62,36 @@ git show commit-id     根据commit-id查看某个提交
 git show commit-id filename    查看某次提交中的某个文件变化
 ```
 
-9. 
+9. git不区分文件名大小写
+
+只好用 --force了，强制更新掉远程的文件
+
+> git mv --force filename FILENAME
+
+或者实在喜欢简短命令的
+
+> git mv -f filename FILENAME
+
+简单粗暴点的办法就是直接配置git更省事儿
+
+可以通过git config --get --global core.ignorecase 查看默认配置
+
+通过git config core.ignorecase false设置为区分大小写
+
+> git config --global core.ignorecase false
+
+10. git 的matching
+
+git push时有俩参数，‘matching’ 参数是 Git 1.x 的默认行为，其意是如果你执行 git push 但没有指定分支，它将 push 所有你本地的分支到远程仓库中对应匹配的分支。
+
+而 Git 2.x 默认的是 simple，意味着执行 git push 没有指定分支时，只有当前分支会被 push 到你使用 git pull 获取的代码
+
+11. Windows/Unix换行符
+
+> git config --global core.autocrlf false //* 让Git不要管Windows/Unix换行符转换的事
+
+12. 中文乱码
+
+> git config --global gui.encoding utf-8 #//避免git gui中的中文乱码
+
+> git config --global core.quotepath off // 避免git status显示的中文文件名乱码
