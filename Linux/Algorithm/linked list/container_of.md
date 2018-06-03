@@ -14,7 +14,7 @@ container\_of()这个宏，还包括一个叫做offsetof()的家伙。在这两�
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
 
 /* include/linux/kernel.h */
-/**                                                                                                                                                                 
+/**                                                          
  * container_of - cast a member of a structure out to the containing structure
  * @ptr:    the pointer to the member.
  * @type:   the type of the container struct this is embedded in.
@@ -72,7 +72,7 @@ student: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically l
 
 Student结构体对象stu里的三个成员属性的地址，按照我们的预期进行排列的。此时我们知道stu对象的地址是个随机值，每次运行的时候都会变，但是无论怎么变stu.sex的地址永远和stu的地址是一致：
 
-![config](images/17.png)
+![config](images/12.png)
 
 反汇编一下：
 
