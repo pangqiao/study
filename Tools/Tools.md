@@ -35,3 +35,4 @@
  - 下载器：可以下载各种网盘内容，http://jdownloader.org/
  - 全能截图工具：Snipaste
  - 英文书籍下载网站：http://www.steporebook.com/
+ - 本地视频播放器：potplayer、VLC
