@@ -9,3 +9,5 @@
 - July（算法、机器学习等专家）：https://blog.csdn.net/v_JULY_v/
 
 - 算法和数据结构：https://www.cnblogs.com/skywang12345/category/508186.html
+
+- 算法和数据结构：https://www.cnblogs.com/maybe2030/category/709561.html
