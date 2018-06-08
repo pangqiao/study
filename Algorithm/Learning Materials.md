@@ -11,3 +11,9 @@
 - 算法和数据结构：https://www.cnblogs.com/skywang12345/category/508186.html
 
 - 算法和数据结构：https://www.cnblogs.com/maybe2030/category/709561.html
+
+- 算法数据结构：https://www.cnblogs.com/1-2-3/category/235329.html
+
+- 常用数据结构与算法C/C++实现：https://github.com/mmc-maodun/Data-Structure-And-Algorithm
+
+- 数据结构与算法的C语言实现：https://github.com/Wangchangchung/Data-structure

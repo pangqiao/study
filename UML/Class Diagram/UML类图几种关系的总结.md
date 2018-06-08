@@ -1,3 +1,5 @@
+https://blog.csdn.net/tianhai110/article/details/6339565
+
 在UML类图中，常见的有以下几种关系：泛化（Generalization）,  实现（Realization）,关联（Association）,聚合（Aggregation）,组合(Composition)，依赖(Dependency)
 
 ## 1.泛化(Generalization)
