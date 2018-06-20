@@ -1,4 +1,4 @@
-说明：本文从B树开始谈起，然后论述B+树、B*树，最后谈到R 树。其中B树、B+树及B*树部分由weedge完成，R 树部分由Frankie完成，全文最终由July统稿修订完成。
+说明：本文从B树开始谈起，然后论述B+树、B\*树，最后谈到R 树。其中B树、B\+树及B\*树部分由weedge完成，R 树部分由Frankie完成，全文最终由July统稿修订完成。
 
 出处：http://blog.csdn.net/v_JULY_v。
 

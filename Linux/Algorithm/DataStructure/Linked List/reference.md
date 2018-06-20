@@ -1,11 +1,5 @@
-https://www.ibm.com/developerworks/cn/linux/kernel/l-chain/index.html
+双向循环链表：https://www.linuxidc.com/Linux/2016-12/137929.htm
 
-http://blog.chinaunix.net/uid-23069658-id-4576255.html
+双向循环链表：https://blog.csdn.net/qq_26501341/article/details/53612641
 
-https://www.linuxidc.com/Linux/2016-12/137929.htm
-
-https://blog.csdn.net/qq_26501341/article/details/53612641
-
-https://www.cnblogs.com/wzjhoutai/p/7057848.html
-
-https://blog.csdn.net/ljy1988123/article/details/48391745
+哈希表和哈希链表：https://www.cnblogs.com/wzjhoutai/p/7057848.html

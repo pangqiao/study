@@ -15,7 +15,7 @@
 
 在启动过程中，那个启动管理程序（**Boot Loader**）使用的软件可能不一样，目前各大Linux distributions主流是grub2，但早期Linux默认使用LILO或者grub1。
 
-首先硬件会主动读取BIOS或者URFI BIOS来载入硬件信息并进行硬件系统的自我检测，之后系统主动读取第一个可启动的装置（BIOS配置），此时就可以读取Boot loader了。
+首先硬件会主动读取BIOS或者UEFI BIOS来载入硬件信息并进行硬件系统的自我检测，之后系统主动读取第一个可启动的装置（BIOS配置），此时就可以读取Boot loader了。
 
 Boot Loader可以指定**使用哪个核心文件来启动**，并实际**加载kernel到内存中解压缩与运行**，kernel会检测所有硬件信息、加载适当的驱动程序来使整部主机开始运行。
 
@@ -265,7 +265,7 @@ initrd.target
 # 通过systemd方式将服务载入
 ```
 
-通过上面解开 initramfs 的结果，其实 initramfs 就是一个小型根目录，这个小型根目录也是通过 systemd 来管理，同时查看 default.target 的连接，这个小型系统是通过initrd.target来开机，而 initrd.target 也是需要读入一堆例如 basic.target, sysinit.target 等等的硬件检测、系统初始化的流程。最终才又卸载 initramfs 的小型文件系統，实际挂载系统的根目录！
+通过上面解开 initramfs 的结果，其实 initramfs 就是一个小型根目录，这个小型根目录也是通过 systemd 来管理，同时查看 default.target 的连接，这个小型系统是通过initrd.target来开机，**而 initrd.target 也是需要读入一堆例如 basic.target, sysinit.target 等等的硬件检测、系统初始化的流程**。**最终才又卸载 initramfs 的小型文件系統，实际挂载系统的根目录**！
 
 initramfs 仅仅加载开机过程中会用到的核心模块而已（如果已经编译进kernel，可以不需要）。所以如果你在 initramfs 里面去找 modules ，就可以发现主要的核心模块大概就是 SCSI、virtio、RAID 等等跟磁盘相关性比较高的模块！现在由于磁盘大多使用SATA，并没有IDE格式。所以，没有 initramfs 的话，你的 Linux 几乎不能顺利开机！除非你将 SATA 的模块直接编译到核心！ 
 

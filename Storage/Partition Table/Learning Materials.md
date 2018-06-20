@@ -1,0 +1,8 @@
+- Linux/Init/开机启动流程
+- GPT+UEFI与BIOS+MBR有什么不同？：https://zhuanlan.zhihu.com/p/22510295
+- BIOS和UEFI的启动项：https://zhuanlan.zhihu.com/p/31365115
+- BIOS与UEFI 、 MBR和GPT介绍：https://zhuanlan.zhihu.com/p/30452319
+- BIOS, UEFI, MBR, Legacy, GPT等概念整理：https://zhuanlan.zhihu.com/p/36976698
+- UEFI到操作系统的虚拟地址转换：https://zhuanlan.zhihu.com/p/26035864
+- UEFI和UEFI论坛：https://zhuanlan.zhihu.com/p/25676417
+- UEFI+BIOS探秘：https://zhuanlan.zhihu.com/UEFIBlog

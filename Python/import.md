@@ -105,15 +105,20 @@ import和from import都是将其他模块导入当前模块中。刚开始一直
 
 ```
 #a.py
+
 test = 2
 print 'in a'
+
 #b.py
+
 from a import *
 print test
 test = 3
 from c import *
 print test
+
 #c.py
+
 from a import *
 print test
 test = 4
@@ -122,7 +127,8 @@ test = 4
 结果为：
 
 ```
-python b.py
+#python b.py
+
 in a
 2
 2
@@ -133,15 +139,20 @@ in a
 
 ```
 #a.py
+
 test = 2
 print 'in a'
+
 #b.py
+
 import a
 print a.test
 a.test = 3
 import c
 print c.a.test
+
 #c.py
+
 import a
 print a.test
 a.test = 4
@@ -150,37 +161,47 @@ a.test = 4
 结果为：
 
 ```
-python b.py
+#python b.py
+
 in a
 2
 3
 4
 ```
+
 如果，我们把a.py中的test = 2修改为 test = [2]，后面对test的修改改为对test[0]的修改，则会发现，import和from import的结果完全一致。
 
 通过以上的分析。基本可以得到这样的结论：
 
-1 重复import或from import多次都只会作用一次.import和from  import语句可以出现在程序中的任何位置。但是有一点是：无论import语句被使用了多少次，每个模块中的代码仅加载和执行一次，后续的import语句仅将模块名称绑定到前一次导入所创建的模块对象上。
+1 重复import或from import多次都只会作用一次。import和from  import语句可以出现在程序中的任何位置。但是有一点是：无论import语句被使用了多少次，每个模块中的代码仅加载和执行一次，后续的import语句仅将模块名称绑定到前一次导入所创建的模块对象上。
 
 2 import和from import的作用机制完全不同
 
-3 import的机制是将目标模块中的对象完整的引入当前模块，但并不引入新的变量名
+3 **import的机制是将目标模块中的对象完整的引入当前模块，但并不引入新的变量名**
 
 4 from import的机制则是通过引入新的变量名的形式，将目标模块的对象的引用拷贝到新的变量名下的方式引入当前模块
 
 5 在Python解释里可以通过globals(),locals(),vars(),dir()等函数查看到当前环境下加载的模块及其位置，使用sys.modules可查看当前加载的所有模块（比globals多，默认会加载一些额外的模块）。
 
 这样描述可能有点抽象，根据上面的例子来说就是：
-1 当使用import时，只存在一个名为a.test变量，且只有这一个，无论是在b模块，还是c模块中
-2 当使用from import时，在b模块中，存在一个新的变量b.test，开始时，b.test = a.test(它们共同指向同一个对象)，当发生赋值时，b.test指向了一个新的对象，但a.test仍指向原来的对象。
+
+1. 当使用import时，只存在一个名为a.test变量，且只有这一个，无论是在b模块，还是c模块中
+2. 当使用from import时，在b模块中，存在一个新的变量b.test，开始时，b.test=a.test(它们共同指向同一个对象)，当发生赋值时，b.test指向了一个新的对象，但a.test仍指向原来的对象。
+
 具体来说就是：
+
 (1) 初始时，在a中存在a.test变量，它指向一个整数对象‘2’
+
 (2) 在执行b.py时，from a import * 的执行，相当于引入了一个新的变量名b.test，b.test = a.test，这时，b.test和a.test都指向整数对象‘2’
+
 (3) 之后的赋值操作(test = 3)，使得b.test = 3，使得b.test指向了整数对象'3'，而a.test仍指向整数对象'2'
+
 (4) 继续执行from c import * 时，进入c.py，在c模块中，执行from a import *，将引入新的变量名c.test，c.test = a.test，它们都指向整数对象'2'，之后的赋值操作(test = 4),使得c.test = 4，现在，c.test指向了整数对象'4'，而a.test仍指向整数对象'2'
+
 (5) 回到b.py，由于b.test已存在，因此，不引人新的变量，而是直接执行b.test = c.test，这时，b.test指向整数对象'4'
 最终的结果，a.test指向'2'，b.test指向'4'，c.test指向'4'
-3 当test变为list时，b.test[0]的修改，并没有引起b.test本身的变化，换言之，b.test和a.test仍指向同一个对象，只不过这个对象内部被修改了
+
+3. 当test变为list时，b.test[0]的修改，并没有引起b.test本身的变化，换言之，b.test和a.test仍指向同一个对象，只不过这个对象内部被修改了
 
 总结：
 1 from import很危险，如果不了解其作用机制，慎用

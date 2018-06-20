@@ -10,3 +10,4 @@
 
 - 知乎专栏：https://zhuanlan.zhihu.com/UEFIBlog?topic=UEFI
 - UEFI学习：http://blog.csdn.net/jiangwei0512/article/category/6259511
+- UEFI+BIOS探秘：https://zhuanlan.zhihu.com/UEFIBlog

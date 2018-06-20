@@ -82,9 +82,9 @@ git show commit-id filename    查看某次提交中的某个文件变化
 
 10. git 的matching
 
-git push时有俩参数，‘matching’ 参数是 Git 1.x 的默认行为，其意是如果你执行 git push 但没有指定分支，它将 push 所有你本地的分支到远程仓库中对应匹配的分支。
+git push时有俩参数，‘matching’ 参数是 Git 1.x 的默认行为，其意是如果你执行 git push 但没有指定分支，它将 push **所有你本地的分支**到远程仓库中对应匹配的分支。
 
-而 Git 2.x 默认的是 simple，意味着执行 git push 没有指定分支时，只有当前分支会被 push 到你使用 git pull 获取的代码
+而 Git 2.x 默认的是 simple，意味着执行 git push 没有指定分支时，只有**当前分支**会被 push 到你使用 git pull 获取的代码
 
 11. Windows/Unix换行符
 
