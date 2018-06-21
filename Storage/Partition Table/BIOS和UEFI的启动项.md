@@ -6,13 +6,21 @@ https://zhuanlan.zhihu.com/p/31365115
 4. EFI系统分区
 5. Windows 8/8.1/10在UEFI和BIOS下，各种启动文件的顺序
     5.1 BIOS下
+
     5.2 UEFI下
+
 6. 问题
+    
     6.1 以前我一直装Ghost版的Windows，UEFI之后真的没法Ghost了么？
+    
     6.2 Windows无法定位现有分区，也无法。。。。。
+    
     6.3 不需要第三方工具就能做UEFI下的Windows安装盘？
+    
     6.4 我电脑是UEFI的，想装Linux，但我手头没优盘，听说也能搞定？
+    
     6.5 装个Linux，但我希望默认还是Windows；重装Windows，可是我开机不再默认Grub，怎么回Linux？
+    
     6.6 重装Windows，提示我什么MBR、GPT，不让装？
 
 ## 1. 传统BIOS
@@ -74,9 +82,9 @@ UEFI作为一个模糊了**固件**和**操作系统界限**的东西，作为�
 
 UEFI启动后，**进入了DXE阶段，就开始加载设备驱动（这里是设备驱动），然后UEFI就会有设备列表**了。
 
-对于其中的磁盘，UEFI会加载对应的驱动解析其中的分区表（GPT和MBR）。然后UEFI就会有**所有分区的列表**了。然后UEFI就会用**内置的文件系统驱动（这里是文件系统驱动）**，解析每个**分区**。然后UEFI就会**认识分区里的文件**了。比如“\EFI\Boot\bootX64.efi”。
+对于其中的磁盘，**UEFI会加载对应的驱动解析其中的分区表（GPT和MBR）**。然后UEFI就会有**所有分区的列表**了。然后UEFI就会用**内置的文件系统驱动（这里是文件系统驱动）**，解析每个**分区**。然后UEFI就会**认识分区里的文件**了。比如“\EFI\Boot\bootX64.efi”。
 
-作为UEFI标准里，钦定的文件系统，FAT32.efi是每个主板都会带的。**所有UEFI的主板都认识FAT32分区**。这就是UEFI的Windows安装盘为啥非得是FAT32的。除此之外，苹果的主板还会支持hfs分区。如果某天Linus Torvalds推出了主板，我猜这主板一定会带EXT4.efi，哈哈哈哈哈。
+作为UEFI标准里，钦定的文件系统，**FAT32.efi是每个主板都会带的**。**所有UEFI的主板都认识FAT32分区**。这就是UEFI的Windows安装盘为啥非得是FAT32的。除此之外，苹果的主板还会支持hfs分区。如果某天Linus Torvalds推出了主板，我猜这主板一定会带EXT4.efi，哈哈哈哈哈。
 
 如同Windows可以安装驱动一样，**UEFI也能在后期加载驱动**。比如CloverX64.efi启动之后，会加载\EFI\Clover\drivers64UEFI下的所有驱动。包括VboxHFS.efi等各种efi。网上你也能搜到NTFS.efi。再比如，**UEFIShell下，你可以手动执行命令加载驱动**。
 
