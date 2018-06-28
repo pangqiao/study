@@ -43,11 +43,13 @@ vim
 参考当前目录下vimrc
 
 
-### 6. 对库进行ctags
+### 6. 对库进行ctags\+cscope
 
 ```
 cd /usr/include
 ctags -R ./
+find . -name "*.h" -o -name "*.c" -o -name "*.cc" -o -name "*.cpp" > cscope.files
+cscope -bq -i cscope.files
 ```
 
 ### 7. 快捷键
