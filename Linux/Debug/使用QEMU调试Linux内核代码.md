@@ -35,10 +35,10 @@ Kernel hacking  --->
     [*] Kernel debugging
     Compile-time checks and compiler options  --->
         [*] Compile the kernel with debug info
-        [*]   Provide GDB scripts for kernel debugging
+        [*] Provide GDB scripts for kernel debugging
 ```
 
-编译后，bzImage这个是被压缩了的，供qemu虚拟机使用（arch/x86/boot/bzImage），vmlinux里面带了某些信息，没有压缩，供gdb使用。
+编译后，bzImage这个是被压缩了的，不带调试信息的内核，供qemu虚拟机使用（arch/x86/boot/bzImage），vmlinux里面带了调试信息，没有压缩，供gdb使用。
 
 当编译结束后，可以将vmlinux和bzImage文件copy到一个干净的目录下。
 
@@ -122,10 +122,11 @@ qemu 是一款虚拟机，可以模拟x86 & arm 等等硬件平台<似乎可模�
 
 ```
 $ cd busybox-1.28.0
-$ qemu-system-x86_64 -s -kernel arch/x86/boot/bzImage -initrd initramfs.cpio.gz -nographic -append "console=ttyS0"
+$ qemu-system-x86_64 -s -S -m 512 -kernel arch/x86/boot/bzImage -initrd initramfs.cpio.gz -nographic -append "console=ttyS0"
 ```
 
 - \-s是-gdb tcp::1234缩写，监听1234端口，在GDB中可以通过target remote localhost:1234连接；
+- \-S表示 QEMU 虚拟机会冻结 CPU 直到远程的 GDB 输入相应控制命令，所以运行后看不到任何输出；
 - \-kernel指定编译好的调试版内核；
 - \-initrd指定制作的initramfs，这个文件可以从   /boot/initrd.img\-3.13.0\-43\-generic  拷贝而来，关于它是什么东西呢？ 可以参考这个： http://www.linuxfly.org/post/94/ ，或者是这个 http://blog.csdn.net/chrisniu1984/article/details/3907874;
 - \-nographic取消图形输出窗口，使QEMU成简单的命令行程序；
@@ -174,6 +175,10 @@ $ /usr/local/bin/gdb
 (gdb) target remote localhost:1234
 ```
 
+```
+break *0x7c00
+```
+
 使用内核提供的GDB辅助调试功能：
 
 ```
@@ -201,6 +206,7 @@ console=ttyS0
 ```
 
 在函数cmdline\_proc\_show设置断点，虚拟机中运行cat /proc/cmdline命令即会触发。
+
 ```
 (gdb) b cmdline_proc_show                           
 Breakpoint 1 at 0xffffffff81298d99: file fs/proc/cmdline.c, line 9.                                      
