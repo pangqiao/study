@@ -1,5 +1,7 @@
 https://consen.github.io/2018/01/17/debug-linux-kernel-with-qemu-and-gdb/
 
+奔跑吧Linux内核/下内容
+
 1. 编译调试版内核
 2. 构建initramfs根文件系统
 3. 调试
@@ -9,6 +11,12 @@ https://consen.github.io/2018/01/17/debug-linux-kernel-with-qemu-and-gdb/
 排查Linux内核Bug，研究内核机制，除了查看资料阅读源码，还可通过调试器，动态分析内核执行流程。
 
 QEMU模拟器原生支持GDB调试器，这样可以很方便地使用GDB的强大功能对操作系统进行调试，如设置断点；单步执行；查看调用栈、查看寄存器、查看内存、查看变量；修改变量改变执行流程等。
+
+用qemu+GDB来调试内核和ko，当然我们需要准备如下：
+
+- 带调试信息的内核vmlinux
+- 一个压缩的内核vmlinuz或者bzImage
+- 一份裁剪过的文件系统initrd
 
 ## 1. 编译调试版内核
 
@@ -30,6 +38,10 @@ Kernel hacking  --->
         [*]   Provide GDB scripts for kernel debugging
 ```
 
+编译后，bzImage这个是被压缩了的，供qemu虚拟机使用（arch/x86/boot/bzImage），vmlinux里面带了某些信息，没有压缩，供gdb使用。
+
+当编译结束后，可以将vmlinux和bzImage文件copy到一个干净的目录下。
+
 ## 2. 构建initramfs根文件系统
 
 Linux系统启动阶段，boot loader加载完**内核文件vmlinuz后**，内核**紧接着**需要挂载磁盘根文件系统，但如果此时内核没有相应驱动，无法识别磁盘，就需要先加载驱动，而驱动又位于/lib/modules，得挂载根文件系统才能读取，这就陷入了一个两难境地，系统无法顺利启动。于是有了**initramfs根文件系统**，其中包含必要的设备驱动和工具，boot loader加载initramfs到内存中，内核会将其挂载到根目录/,然后**运行/init脚本**，挂载真正的磁盘根文件系统。
@@ -44,8 +56,17 @@ $ make menuconfig
 ```
 
 ```
-Settings  --->
-    [*] Build static binary (no shared libs)
+BusyBox Settings  --->
+    Build Options  --->
+        [*] Build BusyBox as a static binary (no shared libs)
+```
+
+Don't use /usr也一定要选,否则make install后busybox将安装在原系统的/usr下,这将覆盖掉系统原有的命令。选择这个选项后,make install后会在busybox目录下生成一个叫_install的目录,里面有busybox和指向它的链接.
+
+```
+BusyBox Settings  --->
+    General Configuration  --->
+        [*] Don't use /usr
 ```
 
 ```
@@ -91,20 +112,26 @@ exec /sbin/init
 $ find . -print0 | cpio --null -ov --format=newc | gzip -9 > ../initramfs.cpio.gz
 ```
 
+当然也可以使用既有的initramfs，或者将其进行裁剪（https://blog.csdn.net/weijitao/article/details/79477792）
+
 ## 3. 调试
+
+qemu 是一款虚拟机，可以模拟x86 & arm 等等硬件平台<似乎可模拟的硬件平台很多...>，而qemu 也内嵌了一个 gdbserver。这个gdbserver于是就可以和gdb构成一个远程合作伙伴，通过ip:port 网络方式或者是通过串口/dev/ttyS\*来进行工作，一个在这头，一个在那头。
 
 启动内核：
 
 ```
 $ cd busybox-1.28.0
-$ qemu-system-x86_64 -s -kernel /path/to/vmlinux -initrd initramfs.cpio.gz -nographic -append "console=ttyS0"
+$ qemu-system-x86_64 -s -kernel arch/x86/boot/bzImage -initrd initramfs.cpio.gz -nographic -append "console=ttyS0"
 ```
 
 - \-s是-gdb tcp::1234缩写，监听1234端口，在GDB中可以通过target remote localhost:1234连接；
 - \-kernel指定编译好的调试版内核；
-- \-initrd指定制作的initramfs;
+- \-initrd指定制作的initramfs，这个文件可以从   /boot/initrd.img\-3.13.0\-43\-generic  拷贝而来，关于它是什么东西呢？ 可以参考这个： http://www.linuxfly.org/post/94/ ，或者是这个 http://blog.csdn.net/chrisniu1984/article/details/3907874;
 - \-nographic取消图形输出窗口，使QEMU成简单的命令行程序；
 - \-append "console=ttyS0"将输出重定向到console，将会显示在标准输出stdio。
+
+**内核安装**的vmlinuz-2.6.32-504.el6.x86_64是bzImage格式（需要使用arch/x86/boot/bzImage文件），而内核编译完，内核源码{KERNEL}根目录下的vmlinux是ELF格式。
 
 启动后的根目录, 就是initramfs中包含的内容：
 
@@ -125,8 +152,25 @@ $ sudo make install
 启动GDB:
 
 ```
+./configure --prefix=../../tools/
+make 
+make install
+```
+
+上面是重新编译gdb，gdb-7.8/目录下并没有Makefile文件，需要使用\./configure来生产。在配置的时候，如果要指定gdb安装的路径(目录)，那么就需要跟上\-\-prefix=$PATH的相关参数，一般这种情况可能会针对系统已经有一个gdb了但无法使用，同时也未删除，那么新编译的gdb可能需要安装在另外的目录了。当然我自己的是安装在 ../../tools/ 目录下。
+
+```
 $ cd linux-4.14
 $ /usr/local/bin/gdb vmlinux
+(gdb) target remote localhost:1234
+```
+
+或者
+
+```
+$ cd linux-4.14
+$ /usr/local/bin/gdb 
+(gdb) file vmlinux
 (gdb) target remote localhost:1234
 ```
 
