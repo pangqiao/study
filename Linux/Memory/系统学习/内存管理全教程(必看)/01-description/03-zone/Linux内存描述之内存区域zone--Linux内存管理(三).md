@@ -1,5 +1,59 @@
+- 1 前景回顾
 
+    - 1.1 UMA和NUMA两种模型
+    
+    - 1.2 (N)UMA模型中linux内存的架构
+    
+    - 1.3 Linux如何描述物理内存
+    
+    - 1.4 用pd\_data\_t描述内存节点node
+    
+    - 1.5 今日内容(内存管理域zone)
 
+- 2 为什么要将内存node分成不同的区域zone
+
+- 3 内存管理区类型zone\_type    
+
+    - 3.1 内存区域类型zone\_type
+
+    - 3.2 不同的内存区域的作用
+    
+    - 3.3 典型架构(x86)上内存区域划分
+    
+- 4 管理区结构zone\_t    
+    
+    - 4.1 struct zone管理域数据结构
+    
+    - 4.2 ZONE\_PADDING将数据保存在高速缓冲行
+    
+    - 4.3 水印watermark[NR\_WMARK]与kswapd内核线程
+    
+    - 4.4 内存域标志
+    
+    - 4.5 内存域统计信息vm\_stat
+    
+    - 4.6 Zone等待队列表(zone wait queue table)
+    
+    - 4.7 zone的初始化
+    
+    - 4.8 冷热页与Per-CPU上的页面高速缓存
+    
+    - 4.9 内存域的第一个页帧zone\_start\_pfn
+    
+- 5 管理区表zone_table与管理区节点的映射
+
+- 6 zonelist内存域存储层次
+
+    - 6.1 内存域之间的层级结构
+    
+    - 6.2 zonelist结构
+    
+    - 6.3 内存域的排列方式
+    
+    - 6.4 build\_all\_zonelists初始化内存节点
+    
+- 7 总结
+    
 # 1 前景回顾
 
 前面我们讲到[服务器体系(SMP, NUMA, MPP)与共享存储器架构(UMA和NUMA)](http://blog.csdn.net/gatieme/article/details/52098615)
@@ -21,7 +75,7 @@
 
 NUMA模式下，处理器被划分成多个"节点"（node）， 每个节点被分配有的本地存储器空间。 所有节点中的处理器都可以访问全部的系统物理存储器，但是访问本节点内的存储器所需要的时间，比访问某些远程节点内的存储器所花的时间要少得多。
 
-## 1.2 (N)UMA模型中linux内存的机构
+## 1.2 (N)UMA模型中linux内存的架构
 
 #### NUMA
 
@@ -124,11 +178,11 @@ enum zone_type
 管理区的类型用zone_type表示, 有如下几种
 
 | 管理内存域 | 描述 |
-|:---------:|:---:|
+|:---------|:-------|
 | ZONE\_DMA | 标记了适合DMA的内存域.该区域的**长度依赖于处理器类型**.这是由于古老的ISA设备强加的边界. 但是为了兼容性,现代的计算机也可能受此影响 |
 | ZONE\_DMA32 | 标记了**使用32位地址字可寻址,适合DMA的内存域**(**4GB？？？**).显然,只有在**53位系统中ZONE\_DMA32才和ZONE\_DMA有区别**,在**32位系统中,本区域是空的**, 即长度为0MB,在Alpha和AMD64系统上,该内存的长度可能是从0到4GB |
-| ZONE\_NORMAL | 标记了可**直接映射到内存段的普通内存域**.这是在**所有体系结构上保证会存在的唯一内存区域**(**任何体系结构中都会有ZONE\_NORMAL!!!**),但**无法保证该地址范围对应了实际的物理地址**(**!!!**). 例如, 如果**AMD64系统只有两2G内存**,那么**所有的内存都属于ZONE\_DMA32范围**,而**ZONE\_NORMAL则为空** |
-| ZONE\_HIGHMEM | 标记了**超出内核虚拟地址空间**的**物理内存段**, 因此这段地址**不能被内核直接映射** |
+| ZONE\_NORMAL | 标记了可**直接映射到内存段的普通内存域**.这是在**所有体系结构上保证会存在的唯一内存区域**(**任何体系结构中都会有ZONE\_NORMAL,但是可能是空的!!!**),但**无法保证该地址范围对应了实际的物理地址**(**!!!**). 例如,如果**AMD64系统只有两2G内存**,那么**所有的内存都属于ZONE\_DMA32范围**,而**ZONE\_NORMAL则为空** |
+| ZONE\_HIGHMEM | 标记了**超出内核虚拟地址空间**的**物理内存段**,因此这段地址**不能被内核直接映射** |
 | ZONE\_MOVABLE | 内核定义了一个伪内存域ZONE\_MOVABLE,在**防止物理内存碎片的机制memory migration中需要使用**该内存域.供防止**物理内存碎片的极致使用** |
 | ZONE\_DEVICE | 为支持**热插拔设备**而分配的Non Volatile Memory非易失性内存 |
 | MAX\_NR\_ZONES | 充当结束标记, 在内核中想要迭代系统中所有内存域, 会用到该常量 |
@@ -140,7 +194,6 @@ ZONE\_MOVABLE和ZONE\_DEVICE其实是和其他的ZONE的用途有异,
 - ZONE\_MOVABLE在防止物理内存碎片的机制中需要使用该内存区域,
 
 - ZONE\_DEVICE笔者也第一次知道了，理解有错的话欢迎大家批评指正, 这个应该是为**支持热插拔设备**而分配的Non Volatile Memory非易失性内存, 
-
 
 >关于ZONE\_DEVICE, 具体的信息可以参见[ATCH v2 3/9] mm: ZONE_DEVICE for "device memory"](https://lkml.org/lkml/2015/8/25/844)
 >
@@ -157,22 +210,20 @@ unbinding the driver of the device.
 对于**x86机器**(**32位！！！**)，管理区(内存区域)类型如下分布
 
 | 类型 | 区域 |
-| :------- | ----: |
+| :------- | :------ |
 | ZONE_DMA | 0~15MB |
 | ZONE_NORMAL | 16MB~895MB |
 | ZONE_HIGHMEM | 896MB~物理内存结束 |
 
-而由于**32位系统**中,Linux内核**虚拟地址空间只有1G**(**虚拟地址空间！！！**),而0~895M这个**896MB**被用于DMA和直接映射,**剩余的物理内存**(**物理内存！！！**)被成为高端内存. 
+而由于**32位系统**中,Linux内核**虚拟地址空间只有1G**(**虚拟地址空间！！！**),而0~895M这个**896MB**被用于DMA和直接映射(**这个既说的是物理内存空间，也说的是虚拟地址空间！！！**),**剩余的物理内存**(**物理内存！！！**)被成为高端内存. 
 
-<font color=0x00ffff>
-内核是如何借助剩余128MB高端内存地址空间是如何实现访问可以所有物理内存？
-</font>
+内核是如何借助剩余**128MB高端内存地址空间**是如何实现访问可以**所有物理内存**？
 
 当内核想**访问高于896MB物理地址**（**物理内存！！！**）内存时，从0xF8000000 \~ 0xFFFFFFFF地址空间范围内找一段相应大小空闲的**逻辑地址空间**（**虚拟地址空间！！！**），借用一会。借用这段**逻辑地址空间**，**建立映射到想访问的那段物理内存**（即**填充内核PTE页面表,这段空间用来建立页框表！！！**），临时用一会，**用完后归还**（**虚拟地址空间！！！**）。这样别人也可以借用这段地址空间访问其他物理内存，实现了使用**有限的地址空间**，访问**所有物理内存**。
 
 >关于高端内存的内容, 我们后面会专门抽出一章进行讲解
 
-因此, 传统**x86\_32位系统**中,前16M划分给ZONE\_DMA,该区域**包含的页框**可以由老式的基于ISAS的设备通过DMA使用"**直接内存访问**(DMA)",ZONE\_DMA和ZONE\_NORMAL区域包含了**内存的常规页框**,通过把他们线性的映射到现行地址的第4个GB, 内核就可以直接进行访问,相反ZONE\_HIGHME包含的内存页不能由内核直接访问, 尽管他们也线性地映射到了现行地址空间的第4个GB.
+因此, 传统**x86\_32位系统**中,前16M划分给ZONE\_DMA,该区域**包含的页框**可以由老式的基于ISAS的设备通过DMA使用"**直接内存访问**(DMA)",ZONE\_DMA和ZONE\_NORMAL区域包含了**内存的常规页框**,通过把他们线性的映射到现行地址的第4个GB,内核就可以直接进行访问,相反ZONE\_HIGHME包含的内存页不能由内核直接访问, 尽管他们也线性地映射到了现行地址空间的第4个GB.
 
 在64位体系结构中,线性地址空间的大小远远好过了系统的实际物理地址,内核可知直接将所有的物理内存映射到线性地址空间,因此**64位体系结构上ZONE\_HIGHMEM区域总是空的**.
 
@@ -423,7 +474,7 @@ struct zone
 | lock | **对zone并发访问的保护的自旋锁** |
 | free\_area[MAX\_ORDER] | **页面使用状态**的信息，以**每个bit标识对应的page**是否可以分配 |
 | lru\_lock | **LRU(最近最少使用算法)的自旋锁** |
-| wait\_table | **待一个page释放的等待队列哈希表**。它会被wait\_on\_page()，unlock\_page()函数使用.用哈希表，而**不用一个等待队列**的原因，防止进程长期等待资源 |
+| wait\_table | **待一个page释放的等待队列哈希表**。它会被wait\_on\_page()，unlock\_page()函数使用.用哈希表，而**不用一个等待队列**的原因，防止进程**长期等待资源** |
 | wait\_table\_hash\_nr\_entries | **哈希表**中的**等待队列的数量** |
 | zone\_pgdat | 指向这个zone所在的pglist\_data对象 |
 | zone\_start\_pfn | 和node\_start\_pfn的含义一样。这个成员是用于表示zone中的**开始那个page在物理内存中的位置的present\_pages**， spanned\_pages: 和node中的类似的成员含义一样 |
@@ -465,7 +516,6 @@ ZONE\_PADDING宏定义在[include/linux/mmzone.h?v4.7, line 105](http://lxr.free
  #endif
 ```
 
-
 内核还用了\_\_\_\_cacheline\_internodealigned\_in\_smp,来实现**最优的高速缓存行对其方式**.
 
 该宏定义在[include/linux/cache.h](http://lxr.free-electrons.com/source/include/linux/cache.h?v=4.7#L68)
@@ -481,7 +531,7 @@ ZONE\_PADDING宏定义在[include/linux/mmzone.h?v4.7, line 105](http://lxr.free
 #endif
 ```
 
-## 4.3 水印watermark[NR\_WMARK]与kswapd内核线程
+## 4.3 水位watermark[NR\_WMARK]与kswapd内核线程
 
 Zone的管理调度的一些参数watermarks水印,**水存量很小(MIN)增加进水量**，**水存量达到一个标准(LOW**)**减小进水量**，当**快要满(HIGH**)的时候，**可能就关闭了进水口**
 
@@ -502,7 +552,7 @@ enum zone_watermarks
 #define high_wmark_pages(z) (z->watermark[WMARK_HIGH])
 ```
 
-在**linux-2.4**中, zone结构中使用如下方式表示水印, 参照[include/linux/mmzone.h?v=2.4.37, line 171](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=2.4.37#L171)
+在**linux-2.4**中, zone结构中使用如下方式表示水位, 参照[include/linux/mmzone.h?v=2.4.37, line 171](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=2.4.37#L171)
 
 ``` c
 typedef struct zone_watermarks_s
@@ -533,10 +583,13 @@ typedef struct zone_struct {
 
 - 如果空闲页的数目低于pages\_min = watermark[WMARK\_MIN], 则内存页面非常紧张, 页回收工作的压力就比较大
 
-## 4.3 内存域标志
+kswapd和这3个参数的互动关系如下图：
+
+![config](images/6.jpg)
+
+## 4.4 内存域标志
 
 [内存管理域zone\_t结构中的flags字段](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v4.7#L475)描述了内存域的当前状态
-
 
 ```cpp
 //  http://lxr.free-electrons.com/source/include/linux/mmzone.h#L475
@@ -578,7 +631,7 @@ enum zone_flags
 | ZONE\_WRITEBACK | 最近的**回收扫描**发现有**很多页在写回** |
 | ZONE\_FAIR\_DEPLETED | 公平区策略耗尽(没懂) |
 
-## 4.4 内存域统计信息vm\_stat
+## 4.5 内存域统计信息vm\_stat
 
 内存域struct zone的vm\_stat维护了大量有关该内存域的**统计信息**.由于其中维护的大部分信息没有多大意义
 
@@ -646,9 +699,9 @@ enum zone_stat_item
 
 内核提供了很多方式来获取当前内存域的状态信息, 这些函数大多定义在[include/linux/vmstat.h?v=4.7](http://lxr.free-electrons.com/source/include/linux/vmstat.h?v=4.7)
 
-## 4.5 Zone等待队列表(zone wait queue table)
+## 4.6 zone等待队列表(zone wait queue table)
 
-struct zone中实现了一个**等待队列**,可用于等待某一页的进程,内核**将进程排成一个列队**, 等待某些条件. 在条件变成真时, 内核会通知进程恢复工作.
+struct zone中实现了一个**等待队列**,可用于等待某一页的进程,内核**将进程排成一个列队**,等待某些条件. 在条件变成真时, 内核会通知进程恢复工作.
 
 ```cpp
 struct zone
@@ -661,37 +714,45 @@ struct zone
 
 | 字段 | 描述 |
 |:-----:|:-----:|
-| wait\_table | 待一个page释放的等待队列哈希表。它会被wait\_on\_page()，unlock\_page()函数使用. 用哈希表，而不用一个等待队列的原因，防止进程长期等待资源 |
+| wait\_table | 待一个page释放的**等待队列哈希表**。它会被wait\_on\_page()，unlock\_page()函数使用. 用哈希表，而不用一个等待队列的原因，防止进程长期等待资源 |
 | wait\_table\_hash\_nr\_entries | 哈希表中的等待队列的数量 |
 | wait\_table\_bits | 等待队列散列表数组大小, wait\_table\_size == (1 << wait\_table\_bits)  |
 
-当对一个page做I/O操作的时候，I/O操作需要被锁住，防止不正确的数据被访问。进程在访问page前，wait_on_page_locked函数，使进程加入一个等待队列
+当对**一个page做I/O操作**的时候，I/O操作需要**被锁住**，防止不正确的数据被访问。**进程在访问page前**，**wait\_on\_page\_locked函数**，使进程**加入一个等待队列**
 
-访问完成后，UnlockPage函数解锁其他进程对page的访问。其他正在等待队列中的进程被唤醒。每个page都可以有一个等待队列，但是太多的分离的等待队列使得花费太多的内存访问周期。替代的解决方法，就是将所有的队列放在struct zone数据结构中
+访问完成后，**unlock\_page函数解锁**其他进程对page的访问。其他正在**等待队列**中的进程**被唤醒**。
 
+- **每个page**都**可以有一个等待队列**，但是太多的**分离的等待队列**使得花费**太多的内存访问周期**。替代的解决方法，就是将**所有的队列**放在**struct zone数据结构**中
 
-也可以有一种可能，就是struct zone中只有一个队列，但是这就意味着，当一个page unlock的时候，访问这个zone里内存page的所有休眠的进程将都被唤醒，这样就会出现拥堵（thundering herd）的问题。建立一个哈希表管理多个等待队列，能解决这个问题，zone->wait_table就是这个哈希表。哈希表的方法可能还是会造成一些进程不必要的唤醒。但是这种事情发生的机率不是很频繁的。下面这个图就是进程及等待队列的运行关系：
+- 也可以有一种可能，就是**struct zone中只有一个队列**，但是这就意味着，当**一个page unlock**的时候，访问这个zone里**内存page的所有休眠的进程**(**所有的，而不管是不是访问这个page的进程！！！**)将都**被唤醒**，这样就会出现拥堵（thundering herd）的问题。建立**一个哈希表**管理**多个等待队列**，能解决这个问题，zone->wait_table就是这个哈希表。哈希表的方法**可能**还是会**造成一些进程不必要的唤醒**。但是这种事情发生的机率不是很频繁的。下面这个图就是进程及等待队列的运行关系：
 
+![config](images/5.jpg)
 
-等待队列的哈希表的分配和建立在`free_area_init_core`函数中进行。哈希表的表项的数量在wait_table_size() 函数中计算，并且保持在zone->wait_table_size成员中。最大4096个等待队列。最小是NoPages / PAGES_PER_WAITQUEUE的2次方，NoPages是zone管理的page的数量，PAGES_PER_WAITQUEUE被定义256
+**等待队列的哈希表的分配和建立**在`free_area_init_core`函数中进行。哈希表的表项的数量在wait\_table\_size() 函数中计算，并且保持在**zone->wait\_table\_size成员**中。最大**4096个等待队列**。最小是NoPages / PAGES\_PER\_WAITQUEUE的2次方，NoPages是zone管理的**page的数量**，PAGES\_PER\_WAITQUEUE被定**义256**
 
-`zone->wait_table_bits`用于计算：根据page 地址得到需要使用的等待队列在哈希表中的索引的算法因子. page_waitqueue()函数负责返回zone中page所对应等待队列。它用一个基于struct page虚拟地址的简单的乘法哈希算法来确定等待队列的.
+下面这个公式可以用于计算这个值：
 
-page_waitqueue()函数用GOLDEN_RATIO_PRIME的地址和“右移zone→wait_table_bits一个索引值”的一个乘积来确定等待队列在哈希表中的索引的。
+![config](images/7.jpg)
 
-Zone的初始化, 在kernel page table通过paging_init()函数完全建立起z来以后，zone被初始化。下面章节将描述这个。当然不同的体系结构这个过程肯定也是不一样的，但它们的目的却是相同的：确定什么参数需要传递给free_area_init()函数（对于UMA体系结构）或者free_area_init_node()函数（对于NUMA体系结构）。这里省略掉NUMA体系结构的说明。
-free_area_init()函数的参数：
-unsigned long *zones_sizes: 系统中每个zone所管理的page的数量的数组。这个时候，还没能确定zone中那些page是可以分配使用的（free）。这个信息知道boot memory allocator完成之前还无法知道。
+`zone->wait_table_bits`用于计算：根据**page地址**得到需要使用的**等待队列**在**哈希表中的索引**的算法因子. page\_waitqueue()函数负责返回**zone中page所对应等待队列**。它用一个基于struct page虚拟地址的简单的**乘法哈希算法**来确定等待队列的.
+
+page\_waitqueue()函数用GOLDEN\_RATIO\_PRIME的地址和“右移zone→wait\_table\_bits一个索引值”的一个乘积来确定等待队列在哈希表中的索引的。
+
+## 4.7 zone的初始化
+
+在**kernel page table**(**内核页表！！！**)通过**paging\_init**()函数完全**建立起来以后**，**zone被初始化**。下面章节将描述这个。当然**不同的体系结构这个过程**肯定也是**不一样**的，但它们的**目的是相同的**：确定**什么参数**需要传递给**free\_area\_init()函数**（对于**UMA**体系结构）或者**free\_area\_init\_node**()函数（对于**NUMA**体系结构）。这里省略掉NUMA体系结构的说明。
+
+free\_area\_init()函数的参数：
+
+unsigned long \*zones\_sizes: 系统中每个zone**所管理的page的数量的数组**。这个时候，还**没能确定**zone中那些page是**可以分配使用**的（free）。这个信息直到**boot memory allocator完成之前**还无法知道。
+
 来源： http://www.uml.org.cn/embeded/201208071.asp
 
+## 4.8 冷热页与Per-CPU上的页面高速缓存
 
-##4.6	冷热页与Per-CPU上的页面高速缓存
--------
+内核经常**请求和释放单个页框**.为了提升性能,**每个内存管理区**(**zone级别定义！！！**)都定义了一个每CPU(Per-CPU)的**页面高速缓存**.所有"每CPU高速缓存"包含一些**预先分配的页框**,他们被定义满足**本地CPU发出的单一内存请求**.
 
-
-内核经常请求和释放单个页框. 为了提升性能, 每个内存管理区都定义了一个每CPU(Per-CPU)的页面高速缓存. 所有"每CPU高速缓存"包含一些预先分配的页框, 他们被定义满足本地CPU发出的单一内存请求.
-
-`struct zone`的pageset成员用于实现冷热分配器(hot-n-cold allocator)
+`struct zone`的pageset成员用于实现冷热分配器(hot-cold allocator)
 
 ```cpp
 struct zone
@@ -699,15 +760,13 @@ struct zone
     struct per_cpu_pageset __percpu *pageset;
 };
 ```
-内核说页面是热的， 意味着页面已经加载到CPU的高速缓存, 与在内存中的页相比, 其数据访问速度更快. 相反, 冷页则不再高速缓存中. 在多处理器系统上每个CPU都有一个或者多个告诉缓存. 各个CPU的管理必须是独立的.
+内核说**页面是热的**，意味着**页面**已经加载到**CPU的高速缓存**,与在内存中的页相比,其数据访问速度更快. 相反,**冷页**则**不在高速缓存**中.在多处理器系统上**每个CPU**都有**一个或者多个高速缓存**.各个**CPU的管理必须是独立**的.
 
->尽管内存域可能属于一个特定的NUMA结点, 因而关联到某个特定的CPU。 但其他CPU的告诉缓存仍然可以包含该内存域中的页面. 最终的效果是, 每个处理器都可以访问系统中的所有页, 尽管速度不同. 因而, 特定于内存域的数据结构不仅要考虑到所属NUMA结点相关的CPU, 还必须照顾到系统中其他的CPU.
+>尽管**内存域**可能属于一个**特定的NUMA结点**,因而**关联**到某个**特定的CPU**。但**其他CPU**的**高速缓存**仍然可以包含**该内存域中的页面**（也就是说**CPU的高速缓存可以包含其他CPU的内存域的页！！！**）. 最终的效果是, **每个处理器**都可以访问系统中的**所有页**,尽管速度不同.因而,**特定于内存域的数据结构**不仅要考虑到**所属NUMA结点相关的CPU**, 还必须照顾到系统中**其他的CPU**.
 
+pageset是一个指针, 其容量与系统能够容纳的**CPU的数目的最大值相同**（该数组大小是编译时确定的）.
 
-pageset是一个指针, 其容量与系统能够容纳的CPU的数目的最大值相同.
-
-
-数组元素类型为per_cpu_pageset, 定义在[include/linux/mmzone.h?v4.7, line 254](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v4.7#L254), 如下所示
+数组元素类型为**per\_cpu\_pageset**, 定义在[include/linux/mmzone.h?v4.7, line 254](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v4.7#L254), 如下所示
 
 ```cpp
 struct per_cpu_pageset {
@@ -722,9 +781,7 @@ struct per_cpu_pageset {
 };
 ```
 
-该结构由一个per_cpu_pages pcp变量组成, 该数据结构定义如下, 位于[include/linux/mmzone.h?v4.7, line 245](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v4.7#L245)
-
-
+该结构由一个per\_cpu\_pages pcp变量组成, 该数据结构定义如下, 位于[include/linux/mmzone.h?v4.7, line 245](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v4.7#L245)
 
 ```cpp
 struct per_cpu_pages {
@@ -739,28 +796,24 @@ struct per_cpu_pages {
 
 | 字段 | 描述 |
 |:---:|:----:|
-| count | 记录了与该列表相关的页的数目 |
-| high  | 是一个水印. 如果count的值超过了high, 则表明列表中的页太多了 |
-| batch | 如果可能, CPU的高速缓存不是用单个页来填充的, 而是欧诺个多个页组成的块, batch作为每次添加/删除页时多个页组成的块大小的一个参考值 |
-| list | 一个双链表, 保存了当前CPU的冷页或热页, 可使用内核的标准方法处理 |
+| count | 记录了与该列表相关的**页的数目** |
+| high  | 是一个**水位**. 如果count的值超过了high, 则表明列表中的页太多了 |
+| batch | 如果可能, **CPU的高速缓存**不是用**单个页**来填充的,而是**多个页组成的块**,batch作为每次添加/删除页时多个页组成的**块大小**的一个参考值 |
+| list | 一个**双链表**, 保存了当前CPU的冷页或热页, 可使用内核的标准方法处理 |
 
+在内核中只有一个子系统会积极的尝试为任何对象**维护per-cpu上的list链表**,这个子系统就是**slab分配器**.
 
-在内核中只有一个子系统会积极的尝试为任何对象维护per-cpu上的list链表, 这个子系统就是slab分配器.
+- struct per\_cpu\_pageset具有一个字段, 该字段
 
-*	struct per_cpu_pageset具有一个字段, 该字段
+- struct per\_cpu\_pages则维护了链表中目前已有的一系列页面, 高极值和低极值决定了何时填充该集合或者释放一批页面, 变量决定了一个块中应该分配多少个页面, 并最后决定在页面前的实际链表中分配多少各页面
 
-*	struct per_cpu_pages则维护了链表中目前已有的一系列页面, 高极值和低极值决定了何时填充该集合或者释放一批页面, 变量决定了一个块中应该分配多少个页面, 并最后决定在页面前的实际链表中分配多少各页面
+## 4.9 内存域的第一个页帧zone\_start\_pfn(zone大小的计算)
 
+setup_memory()函数计算每个zone的大小
 
+struct zone中通过zone\_start\_pfn成员标记了内存管理区的页面地址.
 
-
-#4.7	内存域的第一个页帧zone_start_pfn
--------
-
-struct zone中通过zone_start_pfn成员标记了内存管理区的页面地址.
-
-
-然后内核也通过一些全局变量标记了物理内存所在页面的偏移, 这些变量定义在[mm/nobootmem.c?v4.7, line 31](http://lxr.free-electrons.com/source/mm/nobootmem.c?v4.7#L31)
+然后内核也通过一些**全局变量**标记了**物理内存所在页面的偏移**,这些变量定义在[mm/nobootmem.c?v4.7, line 31](http://lxr.free-electrons.com/source/mm/nobootmem.c?v4.7#L31)
 
 ```cpp
 unsigned long max_low_pfn;
@@ -773,30 +826,22 @@ PFN是物理内存以Page为单位的偏移量
 
 | 变量 | 描述 |
 |:----:|:---:|
-| max_low_pfn 		|  x86中，max_low_pfn变量是由find_max_low_pfn函数计算并且初始化的，它被初始化成ZONE_NORMAL的最后一个page的位置。这个位置是kernel直接访问的物理内存, 也是关系到kernel/userspace通过“PAGE_OFFSET宏”把线性地址内存空间分开的内存地址位置 |
-| min_low_pfn 		| 系统可用的第一个pfn是[min_low_pfn变量](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v4.7#L16), 开始与_end标号的后面, 也就是kernel结束的地方.在文件mm/bootmem.c中对这个变量作初始化
-| max_pfn 			| 系统可用的最后一个PFN是[max_pfn变量](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v4.7#L21), 这个变量的初始化完全依赖与硬件的体系结构. |
-| max_possible_pfn 	|
+| max\_low\_pfn 		|  x86中，max\_low\_pfn变量是由**find\_max\_low\_pfn函数**计算并且初始化的，它被初始化成**ZONE\_NORMAL**的**最后一个page的位置**。这个位置是kernel直接访问的物理内存,也是关系到**kernel/userspace**通过“**PAGE_OFFSET宏**”把线性地址内存空间**分开**的内存地址位置 |
+| min\_low\_pfn 		| 系统可用的**第一个pfn**是[min_low_pfn变量](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v4.7#L16),开始于\_end标号的后面,也就是kernel结束的地方.在文件mm/bootmem.c中对这个变量作初始化 |
+| max\_pfn 			| 系统可用的**最后一个PFN**是[max_pfn变量](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v4.7#L21), 这个变量的初始化**完全依赖与硬件的体系结构**. |
+| max\_possible\_pfn 	|
 
-
-
-
-
-
-x86的系统中, find_max_pfn函数通过读取e820表获得最高的page frame的数值, 同样在文件mm/bootmem.c中对这个变量作初始化。e820表是由BIOS创建的
+x86的系统中, **find\_max\_pfn函数**通过读取**e820表**获得**最高的page frame的数值**,同样在文件mm/bootmem.c中对这个变量作初始化。e820表是由BIOS创建的
 
 >This is the physical memory directly accessible by the kernel and is related to the kernel/userspace split in the linear address space marked by PAGE OFFSET.
 
-我理解为这段地址kernel可以直接访问，可以通过PAGE_OFFSET宏直接将kernel所用的虚拟地址转换成物理地址的区段。在文件mm/bootmem.c中对这个变量作初始化。在内存比较小的系统中max_pfn和max_low_pfn的值相同
-min_low_pfn， max_pfn和max_low_pfn这3个值，也要用于对高端内存（high memory)的起止位置的计算。在arch/i386/mm/init.c文件中会对类似的highstart_pfn和highend_pfn变量作初始化。这些变量用于对高端内存页面的分配。后面将描述。
+我理解为这段地址kernel可以直接访问，可以通过PAGE\_OFFSET宏直接将kernel所用的虚拟地址转换成物理地址的区段。在文件mm/bootmem.c中对这个变量作初始化。在**内存比较小**的系统中max\_pfn和max\_low\_pfn的值相同
 
+min\_low\_pfn， max\_pfn和max\_low\_pfn这3个值，也要用于对**高端内存**（high memory)的**起止位置**的计算。在arch/i386/mm/init.c文件中会对类似的highstart\_pfn和highend\_pfn变量作初始化。这些变量用于对高端内存页面的分配。后面将描述。
 
+# 5 管理区表zone_table与管理区节点的映射
 
-#5  管理区表zone_table与管理区节点的映射
--------
-
-
-内核在初始化内存管理区时, 首先建立管理区表zone_table. 参见[mm/page_alloc.c?v=2.4.37, line 38](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=2.4.37#L38)
+内核在**初始化内存管理区**时, 首先**建立管理区表zone\_table**. 参见[mm/page_alloc.c?v=2.4.37, line 38](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=2.4.37#L38)
 
 ```cpp
 /*
@@ -809,55 +854,39 @@ zone_t *zone_table[MAX_NR_ZONES*MAX_NR_NODES];
 EXPORT_SYMBOL(zone_table);
 ```
 
+MAX\_NR\_ZONES是一个节点中所能包容纳的管理区的最大数,如3个,定义在[include/linux/mmzone.h?v=2.4.37, line 25](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=2.4.37#L25), 与zone区域的类型(ZONE\_DMA,ZONE\_NORMAL,ZONE\_HIGHMEM)定义在一起.当然这时候我们这些标识都是通过宏的方式来实现的, 而不是如今的枚举类型
 
-MAX_NR_ZONES是一个节点中所能包容纳的管理区的最大数, 如3个, 定义在[include/linux/mmzone.h?v=2.4.37, line 25](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=2.4.37#L25), 与zone区域的类型(ZONE_DMA, ZONE_NORMAL, ZONE_HIGHMEM)定义在一起. 当然这时候我们这些标识都是通过宏的方式来实现的, 而不是如今的枚举类型
+MAX\_NR\_NODES是可以存在的**节点的最大数**.
 
-MAX_NR_NODES是可以存在的节点的最大数.
+函数EXPORT\_SYMBOL使得内核的变量或者函数可以被载入的模块(比如我们的驱动模块)所访问.
 
-函数EXPORT_SYMBOL使得内核的变量或者函数可以被载入的模块(比如我们的驱动模块)所访问.
+该表处理起来就像一个多维数组, 在**函数free\_area\_init\_core**中, **一个节点**的**所有页面**都会被**初始化**.
 
-该表处理起来就像一个多维数组, 在函数free_area_init_core中, 一个节点的所有页面都会被初始化.
+# 6 zonelist内存域存储层次
 
+## 6.1 内存域之间的层级结构
 
+**当前结点**与系统中**其他结点**的**内存域**之间存在一种等级次序
 
+我们考虑一个例子, 其中内核想要**分配高端内存**. 
 
-#6	zonelist内存域存储层次
--------
+1.	它首先企图在**当前结点的高端内存域**找到一个大小适当的空闲段.如果**失败**,则查看**该结点**的**普通内存域**. 如果还失败, 则试图在**该结点**的**DMA内存域**执行分配.
 
+2.	如果在3个本地内存域都无法找到空闲内存, 则查看**其他结点**. 在这种情况下, **备选结点**应该**尽可能靠近主结点**, 以最小化由于访问非本地内存引起的性能损失.
 
+内核定义了内存的一个**层次结构**, 首先试图分配"廉价的"内存. 如果失败, 则根据访问速度和容量, 逐渐尝试分配"更昂贵的"内存.
 
-##6.1	内存域之间的层级结构
--------
+**高端内存是最廉价的**, 因为内核**没有**任何部分**依赖**于从该内存域分配的内存. 如果**高端内存域用尽**, 对内核**没有任何副作用**, 这也是优先分配高端内存的原因.
 
-
-当前结点与系统中其他结点的内存域之前存在一种等级次序
-
-
-我们考虑一个例子, 其中内核想要分配高端内存. 
-
-1.	它首先企图在当前结点的高端内存域找到一个大小适当的空闲段. 如果失败, 则查看该结点的普通内存域. 如果还失败, 则试图在该结点的DMA内存域执行分配.
-
-2.	如果在3个本地内存域都无法找到空闲内存, 则查看其他结点. 在这种情况下, 备
-选结点应该尽可能靠近主结点, 以最小化由于访问非本地内存引起的性能损失.
-
-内核定义了内存的一个层次结构, 首先试图分配"廉价的"内存. 如果失败, 则根据访问速度和容量, 逐渐尝试分配"更昂贵的"内存.
-
-
-**高端内存是最廉价的**, 因为内核没有任何部份依赖于从该内存域分配的内存. 如果高端内存域用尽, 对内核没有任何副作用, 这也是优先分配高端内存的原因.
-
-**其次是普通内存域**, 这种情况有所不同. 许多内核数据结构必须保存在该内存域, 而不能放置到高端内存域.
+**其次是普通内存域**, 这种情况有所不同. **许多内核数据结构必须保存在该内存域**, 而不能放置到高端内存域.
 
 因此如果普通内存完全用尽, 那么内核会面临紧急情况. 所以只要高端内存域的内存没有用尽, 都不会从普通内存域分配内存.
 
 **最昂贵的是DMA内存域**, 因为它用于外设和系统之间的数据传输. 因此从该内存域分配内存是最后一招.
 
+## 6.2 zonelist结构
 
-
-##6.2	zonelist结构
--------
-
-
-内核还针对当前内存结点的备选结点, 定义了一个等级次序. 这有助于在当前结点所有内存域的内存都用尽时, 确定一个备选结点
+内核还针对当前内存结点的**备选结点**,定义了一个**等级次序**.这有助于在当前结点所有内存域的内存都用尽时, 确定一个备选结点
 
 内核使用[pg_data_t](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L627)中的[zonelist数组](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L629), 来表示所描述的层次结构.
 
@@ -870,9 +899,9 @@ typedef struct pglist_data {
 
 >关于该结构zonelist的所有相关信息定义[include/linux/mmzone.h?v=4.7, line 568](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L568), 我们下面慢慢来讲.
 
-node_zonelists数组对每种可能的内存域类型, 都配置了一个独立的数组项.
+node\_zonelists数组对每种可能的**内存域类型**, 都配置了一个**独立的数组项**.
 
-该数组项的大小MAX_ZONELISTS用一个匿名的枚举常量定义, 定义在[include/linux/mmzone.h?v=4.7, line 571](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L571)
+该数组项的大小MAX\_ZONELISTS用一个匿名的**枚举常量定义**, 定义在[include/linux/mmzone.h?v=4.7, line 571](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L571)
 
 ```cpp
 enum
@@ -889,10 +918,9 @@ enum
 };
 ```
 
+我们会发现在**UMA结构**下, 数组大小**MAX\_ZONELISTS = 1**,因为只有一个内存结点,zonelist中只会存储一个`ZONELIST_FALLBACK`类型的结构,但是NUMA下需要多余的`ZONELIST_NOFALLBACK`用以表示**当前结点**的信息
 
-我们会发现在UMA结构下, 数组大小MAX_ZONELISTS = 1, 因为只有一个内存结点, zonelist中只会存储一个`ZONELIST_FALLBACK`类型的结构, 但是NUMA下需要多余的`ZONELIST_NOFALLBACK`用以表示当前结点的信息
-
-pg_data_t->node_zonelists数组项用struct zonelis结构体定义, 该结构包含了类型为`struct zoneref`的一个备用列表由于该备用列表必须包括所有结点的所有内存域，因此由MAX_NUMNODES * MAX_NZ_ZONES项组成，外加一个用于标记列表结束的空指针
+pg\_data\_t->node\_zonelists数组项用**struct zonelis**结构体定义, 该结构包含了类型为`struct zoneref`的一个备用列表.由于该**备用列表**必须包括**所有结点**的**所有内存域**(**!!!**)，因此由MAX\_NUMNODES * MAX\_NZ\_ZONES项组成，外加一个用于标记列表结束的空指针
 
 struct zonelist结构的定义在[include/linux/mmzone.h?v=4.7, line 606](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L606)
 
@@ -930,32 +958,25 @@ struct zoneref {
 };
 ```
 
-##6.3	内存域的排列方式
--------
+## 6.3 内存域的排列方式
 
+那么我们内核是如何组织在**zonelist**中**组织内存域**的呢?
 
-那么我们内核是如何组织在zonelist中组织内存域的呢?
+NUMA系统中存在**多个节点**, 每个节点对应一个`struct pglist_data`结构,**每个结点**中可以包含**多个zone**, 如: ZONE\_DMA, ZONE\_NORMAL, 这样就产生几种排列顺序, 以2个节点2个zone为例(zone从高到低排列, ZONE\_DMA0表示节点0的ZONE_DMA，其它类似).
 
-NUMA系统中存在多个节点, 每个节点对应一个`struct pglist_data`结构, 每个结点中可以包含多个zone, 如: ZONE_DMA, ZONE_NORMAL, 这样就产生几种排列顺序, 以2个节点2个zone为例(zone从高到低排列, ZONE_DMA0表示节点0的ZONE_DMA，其它类似).
-
-*	Legacy方式, 每个节点只排列自己的zone；
+- Legacy方式, **每个节点只排列自己的zone**；
 
 ![Legacy方式](./images/legacy-order.jpg)
 
-*	Node方式, 按节点顺序依次排列，先排列本地节点的所有zone，再排列其它节点的所有zone。
-
+- Node方式, 按**节点顺序**依次排列，先排列本地节点的所有zone，再排列其它节点的所有zone。
 
 ![Node方式](./images/node-order.jpg)
 
-
-*	Zone方式, 按zone类型从高到低依次排列各节点的同相类型zone
-
+- Zone方式, 按**zone类型**从高到低依次排列各节点的相同类型zone
 
 ![Zone方式](./images/zone-order.jpg)
 
-
-
-可通过启动参数"numa_zonelist_order"来配置zonelist order，内核定义了3种配置, 这些顺序定义在[mm/page_alloc.c?v=4.7, line 4551](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4551)
+可通过启动参数"**numa\_zonelist\_order**"来配置**zonelist order**，内核定义了3种配置, 这些顺序定义在[mm/page_alloc.c?v=4.7, line 4551](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4551)
 
 ```cpp
 // http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4551
@@ -968,12 +989,9 @@ NUMA系统中存在多个节点, 每个节点对应一个`struct pglist_data`结
 
 >注意
 >
->在非NUMA系统中(比如UMA), 由于只有一个内存结点, 因此ZONELIST_ORDER_ZONE和ZONELIST_ORDER_NODE选项会配置相同的内存域排列方式, 因此, 只有NUMA可以配置这几个参数
+>在**非NUMA系统**中(比如UMA),由于只有一个内存结点,因此ZONELIST\_ORDER\_ZONE和ZONELIST\_ORDER\_NODE选项会配置相同的内存域排列方式, 因此, 只有NUMA可以配置这几个参数
 
-
-
-全局的`current_zonelist_order`变量标识了系统中的当前使用的内存域排列方式, 默认配置为`ZONELIST_ORDER_DEFAULT`, 参见[`mm/page_alloc.c?v=4.7, line 4564`](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4564)
-
+全局的`current_zonelist_order`变量标识了系统中的**当前使用的内存域排列方式**, 默认配置为`ZONELIST_ORDER_DEFAULT`, 参见[`mm/page_alloc.c?v=4.7, line 4564`](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4564)
 
 ```cpp
 //  http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4564
@@ -984,65 +1002,52 @@ static int current_zonelist_order = ZONELIST_ORDER_DEFAULT;
 static char zonelist_order_name[3][8] = {"Default", "Node", "Zone"};
 ```
 
-而zonelist_order_name方式分别对应了Legacy方式, Node方式和Zone方式. 其zonelist_order_name[current_zonelist_order]就标识了当前系统中所使用的内存域排列方式的名称"Default", "Node", "Zone".
+而zonelist\_order\_name方式分别对应了Legacy方式, Node方式和Zone方式. 其zonelist\_order\_name[current\_zonelist\_order]就标识了**当前系统中所使用的内存域排列方式**的名称"Default", "Node", "Zone".
 
-
-| 宏 | zonelist_order_name[宏](排列名称) | 排列方式 | 描述 |
+| 宏 | zonelist\_order\_name[宏](排列名称) | 排列方式 | 描述 |
 |:--:|:-------------------:|:------:|:----:|
-| ZONELIST_ORDER_DEFAULT | Default |  | 由系统智能选择Node或Zone方式 |
-| ZONELIST_ORDER_NODE | Node | Node方式 | 按节点顺序依次排列，先排列本地节点的所有zone，再排列其它节点的所有zone |
-| ZONELIST_ORDER_ZONE | Zone | Zone方式 | 按zone类型从高到低依次排列各节点的同相类型zone |
+| ZONELIST\_ORDER\_DEFAULT | Default |  | 由系统智能选择Node或Zone方式 |
+| ZONELIST\_ORDER\_NODE | Node | Node方式 | 按节点顺序依次排列，先排列本地节点的所有zone，再排列其它节点的所有zone |
+| ZONELIST\_ORDER\_ZONE | Zone | Zone方式 | 按zone类型从高到低依次排列各节点的同相类型zone |
 
+内核就通过通过**set\_zonelist\_order函数**设置当前系统的内存域排列方式current\_zonelist\_order, 其定义依据系统的NUMA结构还是UMA结构有很大的不同. 该函数定义在[mm/page_alloc.c?v=4.7, line 4571](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4571)
 
-内核就通过通过set_zonelist_order函数设置当前系统的内存域排列方式current_zonelist_order, 其定义依据系统的NUMA结构还是UMA结构有很大的不同. 该函数定义在[mm/page_alloc.c?v=4.7, line 4571](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4571)
+## 6.4 build\_all\_zonelists初始化内存节点
 
+内核通过build\_all\_zonelists初始化了内存结点的**zonelists域**
 
-##6.4	build_all_zonelists初始化内存节点
--------
+- 首先内核通过**set\_zonelist\_order函数**设置了`zonelist_order`,如下所示, 参见[mm/page_alloc.c?v=4.7, line 5031](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5031)
 
-内核通过build_all_zonelists初始化了内存结点的zonelists域
+- 建立备用**层次结构**的任务委托给**build\_zonelists**,该函数为**每个NUMA结点**都创建了相应的数据结构. 它需要指向相关的pg\_data\_t实例的指针作为参数
 
-*	首先内核通过set_zonelist_order函数设置了`zonelist_order`,如下所示, 参见[mm/page_alloc.c?v=4.7, line 5031](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5031)
+# 7 总结
 
-*	建立备用层次结构的任务委托给build_zonelists, 该函数为每个NUMA结点都创建了相应的数据结构. 它需要指向相关的pg_data_t实例的指针作为参数
-
-
-
-
-
-#7	总结
--------
-
-
-在linux中，内核也不是对所有物理内存都一视同仁，内核而是把页分为不同的区, 使用区来对具有相似特性的页进行分组.
+在linux中，内核也不是对所有物理内存都一视同仁，内核而是把页分为不同的区,使用区来对具有相似特性的页进行分组.
 
 Linux必须处理如下两种硬件存在缺陷而引起的内存寻址问题：
 
-1.	一些硬件只能用某些特定的内存地址来执行DMA
+1. 一些硬件只能用某些特定的内存地址来执行DMA
 
-2.	一些体系结构其内存的物理寻址范围比虚拟寻址范围大的多。这样，就有一些内存不能永久地映射在内核空间上。
+2. 一些体系结构其内存的物理寻址范围比虚拟寻址范围大的多。这样，就有一些内存不能永久地映射在内核空间上。
 
 为了解决这些制约条件，Linux使用了三种区:
 
-1.	ZONE_DMA : 这个区包含的页用来执行DMA操作。
+1. ZONE\_DMA: 这个区包含的页用来执行DMA操作。
 
-2.	ZONE_NOMAL : 这个区包含的都是能正常映射的页。
+2. ZONE\_NOMAL: 这个区包含的都是能正常映射的页。
 
-3.	ZONE_HIGHEM : 这个区包"高端内存"，其中的页能不永久地映射到内核地址空间
+3. ZONE\_HIGHEM: 这个区包"高端内存"，其中的页能不永久地映射到内核地址空间
 
 而为了兼容一些设备的热插拔支持以及内存碎片化的处理, 内核也引入一些逻辑上的内存区.
 
-1.	ZONE_MOVABLE	:	内核定义了一个伪内存域ZONE_MOVABLE, 在防止物理内存碎片的机制memory migration中需要使用该内存域. 供防止物理内存碎片的极致使用
+1. ZONE\_MOVABLE: 内核定义了一个伪内存域ZONE_MOVABLE, 在防止物理内存碎片的机制memory migration中需要使用该内存域. 供防止物理内存碎片的极致使用
 
-2.	ZONE_DEVICE	:	为支持热插拔设备而分配的Non Volatile Memory非易失性内存
+2. ZONE\_DEVICE: 为支持热插拔设备而分配的Non Volatile Memory非易失性内存
 
 区的实际使用与体系结构是相关的。linux把系统的内存结点划分区, 一个区包含了若干个内存页面, 形成不同的内存池，这样就可以根据用途进行分配了
 
 需要说明的是，区的划分没有任何物理意义, 只不过是内核为了管理页而采取的一种逻辑上的分组. 尽管某些分配可能需要从特定的区中获得页, 但这并不是说, 某种用途的内存一定要从对应的区来获取，如果这种可供分配的资源不够用了，内核就会占用其他可用去的内存.
 
-
 下表给出每个区及其在X86上所占的列表
 
-
 ![每个区及其在X86上所占的列表](./images/zone_x86_32.png)
-

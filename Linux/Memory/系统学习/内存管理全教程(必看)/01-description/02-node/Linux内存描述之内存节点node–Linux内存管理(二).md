@@ -188,8 +188,8 @@ typedef struct pglist_data {
 } pg_data_t;
 ```
 
-| 字段| 描述 |
-| :------- | ----: |
+| 字段 | 描述 |
+| :------- | :---- |
 |node\_zones | 每个Node划分为不同的zone，分别为ZONE\_DMA，ZONE\_NORMAL，ZONE\_HIGHMEM |
 |node\_zonelists | 这个是**备用节点及其内存域**的列表，当当前节点的内存不够分配时，会选取访问代价最低的内存进行分配。分配内存操作时的区域顺序，当调用free\_area\_init\_core()时，由mm/page\_alloc.c文件中的build\_zonelists()函数设置 |
 |nr\_zones | 当前节点中不同内存域**zone的数量**，1到3个之间。并不是所有的node都有3个zone的，比如一个CPU簇就可能没有ZONE\_DMA区域 |
@@ -233,7 +233,7 @@ typedef struct pglist_data
     系统中所有的页帧是依次编号的，每个页帧的号码都是全局唯一的（不只是结点内唯一）  */
     unsigned long node_start_pfn;
     unsigned long node_present_pages; /* total number of physical pages 结点中页帧的数目 */
-    unsigned long node_spanned_pages; /* total size of physical page range, including holes  					该结点以页帧为单位计算的长度，包含内存空洞 */
+    unsigned long node_spanned_pages; /* total size of physical page range, including holes  该结点以页帧为单位计算的长度，包含内存空洞 */
     int node_id;		/*  全局结点ID，系统中的NUMA结点都从0开始编号  */
 } pg_data_t;
 ```
@@ -399,7 +399,7 @@ node\_id作为**全局节点id**。系统中的NUMA结点都是**从0开始编�
 
 在**新的linux3.x~linux4.x的内核**中，内核移除了pg\_data\_t的pgdat\_next之指针域, 同时也**删除了pgdat\_list链表**, 参见[Remove pgdat list](http://marc.info/?l=lhms-devel&m=111595348412761)和[Remove pgdat list ver.2 ](http://www.gelato.unsw.edu.au/archives/linux-ia64/0509/15528.html)
 
-但是定义了一个大小为[MAX_NUMNODES](http://lxr.free-electrons.com/source/include/linux/numa.h#L11)类型为[`pg_data_t`](http://lxr.free-electrons.com/source/arch/ia64/mm/discontig.c#L50)数组**node\_data**,数组的大小根据[**CONFIG_NODES\_SHIFT**](http://lxr.free-electrons.com/source/include/linux/numa.h#L6)的配置决定. 对于UMA来说，NODES\_SHIFT为0，所以MAX\_NUMNODES的值为1.
+但是定义了一个大小为[MAX_NUMNODES](http://lxr.free-electrons.com/source/include/linux/numa.h#L11)类型为[`pg_data_t`](http://lxr.free-electrons.com/source/arch/ia64/mm/discontig.c#L50)数组**node\_data**,数组的大小根据[**CONFIG_NODES\_SHIFT**](http://lxr.free-electrons.com/source/include/linux/numa.h#L6)的配置决定. 对于UMA来说，**NODES\_SHIFT为0**，所以MAX\_NUMNODES的值为1.
 
 **for_each_online_pgdat遍历所有的内存结点**
 
