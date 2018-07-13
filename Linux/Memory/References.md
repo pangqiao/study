@@ -10,6 +10,8 @@
 
 3.14.12教程：http://blog.chinaunix.net/uid/26859697/cid-175604-list-2.html
 
+2.6: https://blog.csdn.net/vanbreaker/article/category/1132690/2
+
 ## 知识汇总
 
 http://www.cnblogs.com/wuchanming/category/684643.html
