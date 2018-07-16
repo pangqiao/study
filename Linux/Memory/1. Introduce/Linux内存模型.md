@@ -48,7 +48,7 @@ Discontiguous memory**本质**上是**flat memory内存模型的扩展**，整�
 
 ### 3、什么是Sparse Memory Model？
 
-Memory model也是一个演进过程，刚开始的时候，使用flat memory去抽象一个连续的内存地址空间（mem\_maps[]），出现NUMA之后，整个不连续的内存空间被分成若干个node，每个node上是连续的内存地址空间，也就是说，原来的单一的一个mem\_maps[]变成了若干个mem\_maps[]了。一切看起来已经完美了，但是**memory hotplug**的出现让原来完美的设计变得不完美了，因为即便是**一个node中的mem\_maps[]也有可能是不连续**了。其实，在出现了sparse memory之后，Discontiguous memory内存模型已经不是那么重要了，按理说sparse memory最终可以替代Discontiguous memory的，这个替代过程正在进行中，**4.4的内核**仍然是有**3内存模型**可以选择。
+Memory model也是一个演进过程，刚开始的时候，使用flat memory去抽象一个连续的内存地址空间（mem\_maps[]），出现NUMA之后，整个不连续的内存空间被分成若干个node，每个node上是连续的内存地址空间，也就是说，原来的单一的一个mem\_maps[]变成了若干个mem\_maps[]了。一切看起来已经完美了，但是**memory hotplug**的出现让原来完美的设计变得不完美了，因为即便是**一个node中的mem\_maps[]也有可能是不连续**了。其实，在出现了sparse memory之后，Discontiguous memory内存模型已经不是那么重要了，按理说sparse memory最终可以替代Discontiguous memory的，这个替代过程正在进行中，**4.4的内核**仍然是有**3内存模型**可以选择。（Processor type and features  ---> Memory model，但是4.18已经不可选，只有sparse memory）
 
 为什么说sparse memory最终可以替代Discontiguous memory呢？实际上在sparse memory内存模型下，**连续的地址空间**按照**SECTION**（例如1G）被分成了一段一段的，其中**每一section都是hotplug的**，因此sparse memory下，内存地址空间可以**被切分的更细**，支持**更离散**的Discontiguous memory。此外，在sparse memory出现之前，NUMA和Discontiguous memory总是剪不断，理还乱的关系：**NUMA并没有规定其内存的连续性**，而Discontiguous memory系统也**并非一定是NUMA系统**，但是这两种配置都是multi node的。有了sparse memory之后，我们终于可以把**内存的连续性**和**NUMA的概念**剥离开来：一个NUMA系统可以是flat memory，也可以是sparse memory，而一个sparse memory系统可以是NUMA，也可以是UMA的。
 
@@ -62,7 +62,9 @@ Memory model也是一个演进过程，刚开始的时候，使用flat memory去
 
 我们首先看看如何**从PFN到page结构的转换**：kernel中**静态定义**了一个**mem\_section的指针数组**，**一个section**中往往包括**多个page**，因此需要通过**右移**将**PFN**转换成**section number**，用**section number**做为index在**mem\_section指针数组**可以找到**该PFN对应的section数据结构**。找到section之后，沿着其**section\_mem\_map**就可以找到对应的page数据结构。顺便一提的是，在**开始的时候**，sparse memory使用了**一维的memory\_section数组**（**不是指针数组**），这样的实现对于特别稀疏（**CONFIG\_SPARSEMEM\_EXTREME**）的系统非常浪费内存。此外，**保存指针对hotplug的支持是比较方便**的，指针等于NULL就意味着该section不存在。上面的图片描述的是一维mem\_section指针数组的情况（配置了SPARSEMEM\_EXTREME），对于非SPARSEMEM_EXTREME配置，概念是类似的，具体操作大家可以自行阅读代码。
 
-从**page到PFN**稍微有一点麻烦，实际上**PFN分成两个部分**：一部分是**section index**，另外一个部分是**page在该section的偏移**。我们需要**首先**从page得到**section index**，也就得到对应的**memory\_section**(**PFN第一部分get**)，知道了memory\_section也就知道该page在**section\_mem\_map**，也就知道了page在该section的偏移（**PFN第二部分get**），最后可以合成PFN。对于page到section index的转换，sparse memory有**2种方案**，我们先看看经典的方案，也就是**保存在page->flags**中（配置了**SECTION\_IN\_PAGE\_FLAGS**）。这种方法的最大的问题是page->flags中的**bit数目不一定够用**，因为这个flag中承载了太多的信息，各种page flag，node id，zone id现在又增加一个section id，在不同的architecture中无法实现一致性的算法，有没有一种通用的算法呢？这就是**CONFIG\_SPARSEMEM\_VMEMMAP**。具体的算法可以参考下图：
+从**page到PFN**稍微有一点麻烦，实际上**PFN分成两个部分**：一部分是**section index**，另外一个部分是**page在该section的偏移**。我们需要**首先**从page得到**section index**，也就得到对应的**memory\_section**(**PFN第一部分get**)，知道了memory\_section也就知道该page在**section\_mem\_map**，也就知道了page在该section的偏移（**PFN第二部分get**），最后可以合成PFN。
+
+对于page到section index的转换，sparse memory有**2种方案**，我们先看看经典的方案，也就是**保存在page->flags**中（配置了**SECTION\_IN\_PAGE\_FLAGS**）。这种方法的最大的问题是page->flags中的**bit数目不一定够用**，因为这个flag中承载了太多的信息，各种page flag，node id，zone id现在又增加一个section id，在不同的architecture中无法实现一致性的算法，有没有一种通用的算法呢？这就是**CONFIG\_SPARSEMEM\_VMEMMAP（可配置项**）。具体的算法可以参考下图：
 
 ![config](images/22.gif)
 
