@@ -1,5 +1,35 @@
 - 1 非bootmem下的memblock内存管理
 - 2 memblock的数据结构
+    - 2.1 struct memblock结构
+    - 2.2 struct memblock\_type
+    - 2.3 内存区域memblock\_region
+    - 2.4 内存区域标识
+    - 2.5 结构总体布局
+    - 2.6 初始化memblock静态变量
+- 3 Memblock-API函数接口
+    - 3.1 Memblock-API函数接口
+    - 3.2 memblock\_add将内存区域加入到memblock中
+        - 3.2.1 memblock\_add函数
+        - 3.2.2 memblock\_add\_range函数代码
+        - 3.2.3 memblock\_add\_range函数流程解析
+    - 3.3 memblock\_remove删除内存区域
+    - 3.4 memblock\_alloc申请内存
+        - 3.4.1 memblock\_alloc函数代码
+        - 3.4.2 memblock\_alloc\_range\_nid函数
+        - 3.4.3 memblock\_find\_in\_range\_node函数        
+        - 3.4.4 \_\_memblock\_find\_range\_top\_down查找内存区域
+        - 3.4.5 memblock\_reserve标记申请的内存
+    - 3.5 memblock\_free释放内存区域
+- 4 兼容bootmem的接口API
+    - 4.1 memblock与bootmem
+    - 4.2 memblock与bootmem接口对比
+    - 4.3 实现差异
+- 5 memblock初始化
+    - 5.1 x86架构下的memblock初始化
+    - 5.2 arm架构下的memblock初始化
+    - 5.3 arm64下的memblock初始化
+- 6 总结
+- 7 链接
 
 # 1 非bootmem下的memblock内存管理
 前面我们讲解了引导内存管理bootmem机制,它基于**最先适配算法**,早期的Linux内核在引导阶段都是通过bootmem来完成初期的内存管理的.但是后来的版本(笔者分析的是3.19)开始把**bootmem弃用**了,`__alloc_memory_core_early()`取代了bootmem的`__alloc_memory_core()`来完成内存分配,而前者其实就是调用的memblock来分配内的.
@@ -30,13 +60,6 @@ endif
 
 Memblock是在早期引导过程中管理内存的方法之一，此时内核内存分配器还没运行.Memblock以前被定义为Logical Memory Block( 逻辑内存块), 但根据[Yinghai Lu的补丁](https://lkml.org/lkml/2010/7/13/68), 它被重命名为memblock.
 
->参考
->
->[Linux 内核内存管理（1）](http://blog.jobbole.com/88452)
->
->[Linux内核初期内存管理---memblock](http://www.maxwellxxx.com/linuxmemblock)
->
->[Linux kernel memory management Part 1.](https://0xax.gitbooks.io/linux-insides/content/mm/linux-mm-1.html)
 
 # 2 memblock的数据结构
 
@@ -63,8 +86,8 @@ struct memblock {
 | 字段 | 描述 |
 |:---:|:----|
 | bottom\_up | 表示分配器分配内存的方式<br>true:从**低地址(内核映像的尾部**)向高地址分配<br>false:也就是top-down,从高地址向地址分配内存. |
-| current\_limit | 指出了内存块的大小限制, 用于**限制通过memblock\_alloc的内存申请** |
-| memory | **可用内存的集合** |
+| current\_limit | 指出了内存块的大小限制, 用于**限制通过memblock\_alloc等函数的内存申请** |
+| memory | **可用内存的集合（不是说未分配的！！！**） |
 | reserved | **已分配内存的集合** |
 | physmem | **物理内存的集合**(需要配置CONFIG\_HAVE\_MEMBLOCK\_PHYS\_MAP参数) |
 
@@ -96,7 +119,7 @@ struct memblock_type
 |:---:|:----:|
 | cnt | 当前集合(memory或者reserved)中记录的**内存区域个数** |
 | max | 当前集合(memory或者reserved)中可记录的**内存区域的最大个数** |
-| total\_size | 集合记录**区域信息大小** |
+| total\_size | 集合记录**区域信息大小（region的size和，不是个数**） |
 | regions | 内存区域结构指针 |
 
 它包含的域分别描述了当前内存块含有的内存区域数量，所有内存区域的总共大小，已经分配的内存区域大小和一个指向memblock\_region结构体的数组指针
@@ -159,7 +182,9 @@ enum {
 +---------------------------+   +---------------------------+
 ```
 
-一个memblock有多个memblock\_type，每个memblock\_type有一个memblock\_region指针
+![config](images/1.png)
+
+一个memblock有3个memblock\_type，每个memblock\_type有一个memblock\_region指针
 
 Memblock主要包含三个结构体：**memblock**,**memblock\_type**和**memblock\_region**。现在我们已了解了Memblock, 接下来我们将看到Memblock的初始化过程。
 
@@ -210,13 +235,13 @@ struct memblock memblock __initdata_memblock = {
 #endif
 ```
 
-如果启用`CONFIG_ARCH_DISCARD_MEMBLOCK`宏配置选项，memblock代码会被放到**.init代码段**,在内核启动完成后memblock代码会从.init代码段释放。
+如果启用`CONFIG_ARCH_DISCARD_MEMBLOCK`宏配置选项，memblock代码会被放**到\.init代码段**,在内核启动完成后memblock代码会从.init代码段释放。
 
 **3个memblock\_type的初始化**
 
 接下来的是memblock结构体中3个memblock\_type类型数据 **memory**, **reserved**和**physmem**的初始化
 
-它们的**memblock\_typecnt域**(当前集合中区域个数)被初始化为1.**memblock\_typemax域**(当前集合中最大区域个数)被初始化为`INIT_MEMBLOCK_REGIONS`和`INIT_PHYSMEM_REGIONS`
+它们的**memblock\_typecnt域**(当前集合中区域个数)被初始化为1。**memblock\_typemax域**(当前集合中**最大区域个数**)被初始化为`INIT_MEMBLOCK_REGIONS`和`INIT_PHYSMEM_REGIONS`
 
 其中`INIT_MEMBLOCK_REGIONS`为128, 参见[include/linux/memblock.h?v=4.7, line 20](http://lxr.free-electrons.com/source/include/linux/memblock.h?v=4.7#L20)
 
@@ -227,7 +252,7 @@ struct memblock memblock __initdata_memblock = {
 
 而**memblock\_type.regions**域都是通过memblock\_region数组初始化的,所有的数组定义都带有\_\_initdata\_memblock宏
 
-memblock结构体中最后两个域**bottom\_up**内存分配模式被禁用(bottom\_up = false, 因此内存分配方式为top-down.), 当前 Memblock的大小限制是`MEMBLOCK\_ALLOC_ANYWHERE`为~(phys\_addr\_t)0即为**0xffffffff**.
+memblock结构体中最后两个域**bottom\_up**,**内存分配模式(从低地址往高地址！！！）被禁用**(bottom\_up = **false**, 因此内存分配方式为top-down.), 当前memblock的大小限制(memblock\_alloc等的）是`MEMBLOCK\_ALLOC_ANYWHERE`为\~(phys\_addr\_t)0即为**0xffffffff(32个1**).
 
 ```cpp
 /* Flags for memblock_alloc_base() amd __memblock_alloc_base() */
@@ -249,17 +274,13 @@ memblock结构体中最后两个域**bottom\_up**内存分配模式被禁用(bot
 /////////////////////////////////////////
 //   基本接口
 /////////////////////////////////////////
-// 向memory区中添加内存区域.
+//  向memory区中添加内存区域.
 memblock_add(phys_addr_t base, phys_addr_t size)
-
 //  向memory区中删除区域.
 memblock_remove(phys_addr_t base, phys_addr_t size)
-
 //  申请内存
 memblock_alloc(phys_addr_t size, phys_addr_t align)
-
-
-// 释放内存
+//  释放内存
 memblock_free(phys_addr_t base, phys_addr_t size)
 
 
@@ -269,7 +290,6 @@ memblock_free(phys_addr_t base, phys_addr_t size)
 /////////////////////////////////////////
 //  在给定的范围内找到未使用的内存
 phys_addr_t memblock_find_in_range(phys_addr_t start, phys_addr_t end, phys_addr_t size, phys_addr_t align)
-
 //  反复迭代 memblock
 for_each_mem_range(i, type_a, type_b, nid, flags, p_start, p_end, p_nid)
 
@@ -290,7 +310,7 @@ phys_addr_t get_allocated_memblock_reserved_regions_info(phys_addr_t *addr);
 	if (memblock_debug) printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__)
 ```
 
-大致翻看了一下内核代码, 发现很少使用memblock\_free(),因为很多地方都是申请了**内存做永久使用**的. 再者,其实在内核中通过**memblock\_alloc**来分配内存其实比较少,一般都是在调用memblock底层的一些函数来简单粗暴的分配的.
+大致翻看了一下内核代码,发现很少使用memblock\_free(),因为很多地方都是申请了**内存做永久使用**的. 再者,其实在内核中通过**memblock\_alloc**来分配内存其实比较少,一般都是在调用memblock底层的一些函数来简单粗暴的分配的.
 
 ## 3.2 memblock\_add将内存区域加入到memblock中
 
@@ -314,15 +334,23 @@ memblock\_add传递的参数依次是 : **内存块类型(memory**), **物理基
 
 ### 3.2.2 memblock\_add\_range函数代码
 
+1、 如果memblock算法**管理内存为空**的时候，则将当前空间**添加**进去；
+
+2、 **不为空**的情况下，则先检查**是否存在内存重叠**的情况，如果**有**的话，则**剔除重叠部分**，然后将其余**非重叠的部分添加**进去；
+
+3、 如果出现**region[]数组空间不够**的情况，则通过**memblock\_double\_array()添加新的region[]空间**；
+
+4、 最后通过**memblock\_merge\_regions**()把紧挨着的**内存合并**了。
+
 memblock\_add\_range函数添加新的**内存区域到内存块**中, 定义在[mm/memblock.c?v=4.7, line 504](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L504)
 
 - 首先，该函数**检查给定的内存区域大小**, 如果是**0就返回**.
 
 - 在这之后,memblock\_add\_range用给定的**memblock\_type**检查memblock结构体中**是否存在**内存区域
 
-- 如果**没有**,我们就用给定的值填充新的**memory\_region**然后返回
+- 如果**没有**,我们就用给定的值**填充**新的**memory\_region**然后返回
 
-- 如果memblock\_type不为空，我们就把新的内存区域添加到memblock\_type类型的memblock中。
+- 如果**memblock\_type不为空**，我们就把新的内存区域添加到memblock\_type类型的memblock中。
 
 ```cpp
 /**
@@ -429,7 +457,7 @@ repeat:
 
 ### 3.2.3 memblock\_add\_range函数流程解析
 
-首先，我们用如下代码**获得内存区域的结束位置**：
+**首先**，我们用如下代码**获得内存区域的结束位置**：
 
 ```cpp
 phys_addr_t end = base + memblock_cap_size(base, &size);
@@ -447,13 +475,13 @@ static inline phys_addr_t memblock_cap_size(phys_addr_t base, phys_addr_t *size)
 
 memblock\_cap\_size返回size和ULLONG_MAX \- base中的最小值
 
-在那之后我们得到了新的内存区域的结束地址, 然后
+在那之后我们**得到**了**新内存区域**的**结束地址**, 然后
 
 - 查内存区域**是否重叠**
+- 将新的**添加**到memblock
+- 看**是否能**和已经添加到memblock中的内存区域进行**合并**
 
-- 将新的添加到memblock, 并且看**是否能**和已经添加到memblock中的内存区域进行**合并**
-
-首先**遍历所有已经存储的内存区域**并检查有没有和新的内存区域重叠
+首先**遍历所有已经存储的内存区域**并检查有没有和新的内存区域**重叠**
 
 ```cpp
 for_each_memblock_type(type, rgn) {
@@ -470,7 +498,7 @@ for_each_memblock_type(type, rgn) {
 }
 ```
 
-如果新内存区域没有和已经存储在memblock的内存区域重叠,把该新内存区域插入到memblock中.
+如果新内存区域**没有**和已经存储在memblock的内存区域**重叠**,把该新内存区域插入到memblock中.
 
 如果有重叠通通过一个小巧的来完成冲突处理
 
@@ -480,15 +508,15 @@ base = min(rend, end);
 
 重叠检查完毕后, **新的内存区域**已经是一块干净的**不包含重叠区域的内存**,把新的内存区域插入到memblock中包含两步：
 
-- 把新的内存区域中非重叠的部分作为**独立的区域**加入到memblock
+- 把新的内存区域中非重叠的部分作为**独立的区域**加入到**memblock**
 
 - **合并所有相邻的内存区域**
 
 这个过程分为**两次循环**来完成, 由一个[标识变量insert](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L582)和[repeat代码跳转标签](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L543)控制
 
-- 第一次循环的时候, 检查新内存区域是否可以放入内存块中并调用memblock\_double\_array， 而由于[insert = false](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L524), 则执行[!insert条件语句标记的代码块](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L591), 并设置[insert = true](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L595), 然后[goto 跳转到report标签](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L596)继续开始第二次循环
+- 第一次**循环**的时候,检查**新内存区域是否可以放入内存块**中,region数组不够就调用memblock\_double\_array，而由于[insert = false](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L524), 则执行[!insert条件语句标记的代码块](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L591), 并设置[insert = true](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L595), 然后[goto 跳转到report标签](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L596)继续开始第二次循环
 
-- 第二次循环中, insert = true, 则执行相应的insert == true的代码块, 并且执行[memblock_insert_region将新内存区域插入](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L583), 最后执行[memblock\_merge\_regions(type)](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L598)合并内存区域
+- 第二次循环中, insert = true, 则执行相应的insert == true的代码块, 并且执行[memblock\_insert\_region将新内存区域插入](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L583), 最后执行[memblock\_merge\_regions(type)](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L598)合并内存区域
 
 这是第一次循环, 我们需要**检查新内存区域是否可以放入内存块**中并调用memblock\_double\_array:
 
@@ -521,7 +549,7 @@ if (base < end) {
 }
 ```
 
-由于我们在第一次循环中把insert设为true, 现在memblock\_insert\_region函数将会被调用
+由于我们在第一次循环中把insert设为true,现在memblock\_insert\_region函数将会被调用
 
 [memblock\_insert\_region函数](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L476)几乎和把新内存区域插入到空的memblock\_type代码块有同样的实现, 定义在[mm/memblock.c?v=4.7, line 476](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L476)该函数获得最后一个内存区域：
 
@@ -609,7 +637,7 @@ phys_addr_t __init __memblock_alloc_base(phys_addr_t size, phys_addr_t align, ph
                        MEMBLOCK_NONE);
 }
 ```
-memblock\_alloc()很粗暴的**从能用的内存里分配**, 而有些情况下**需要从特定的内存范围内分配**内存. 解决方法就是通过memblock\_alloc\_range\_nid函数或者实现类似机制的函数
+memblock\_alloc()很粗暴的**从能用的内存里分配**,而有些情况下**需要从特定的内存范围内分配**内存.解决方法就是通过memblock\_alloc\_range\_nid函数或者实现类似机制的函数
 
 最终memblock\_alloc的也是通过memblock\_alloc\_range\_nid函数来完成内存分配的
 
@@ -703,11 +731,11 @@ phys_addr_t __init_memblock memblock_find_in_range_node(phys_addr_t size,
 }
 ```
 
-- 如果从memblock\_alloc过来,end就是MEMBLOCK\_ALLOC\_ACCESSIBLE,这个时候会设置为current\_limit.
+- 如果从memblock\_alloc过来,**end**就是MEMBLOCK\_ALLOC\_ACCESSIBLE,这个时候会设置为**current\_limit**.
 
-- 如果不通过memblock\_alloc分配,内存范围就是**指定的范围**.紧接着对start做调整，为的是避免申请到第一个页面
+- 如果不通过memblock\_alloc分配,内存范围就是**指定的范围**.紧接着对start做调整，为的是**避免申请到第一个页面**
 
-memblock\_bottom\_up返回的是memblock.bottom\_up，前面初始化的时候也知道这个值是false（在numa初始化时会设置为true），所以初始化前期应该调用的是\_\_memblock\_find\_range\_top\_down函数去查找内存:
+memblock\_bottom\_up返回的是memblock.bottom\_up，前面初始化的时候也知道这个值是false（**在numa初始化时会设置为true**），所以初始化前期应该调用的是\_\_memblock\_find\_range\_top\_down函数去查找内存:
 
 ### 3.4.4 \_\_memblock\_find\_range\_top\_down查找内存区域
 
@@ -740,21 +768,21 @@ __memblock_find_range_top_down(phys_addr_t start, phys_addr_t end,
 }
 ```
 
-- 函数通过使用for\_each\_free\_mem\_range\_reverse宏封装调用\_\_next\_free\_mem\_range\_rev()函数，此函数逐一将memblock.memory里面的内存块信息提取出来与memblock.reserved的各项信息进行检验，确保返回的this\_start和this\_end不会是分配过的内存块。
+- 函数通过使用for\_each\_free\_mem\_range\_reverse宏封装调用\_\_next\_free\_mem\_range\_rev()函数，此函数**逐一**将**memblock.memory**里面的**内存块信息**提取出来与**memblock.reserved**的**各项信息**进行检验，**确保**返回的**this\_start和this\_end**不会是分配过的内存块。
 
-- 然后通过clamp取中间值，判断大小是否满足，满足的情况下，将自末端向前（因为这是top-down申请方式）的size大小的空间的起始地址（前提该地址不会超出this_start）返回回去
+- 然后通过**clamp取中间值**，判断**大小是否满足**，**满足**的情况下，将**自末端向前**（因为这是**top-down申请方式**）的size大小的空间的**起始地址（从down到up的起始地址**，不是从up到down的，而且前提该地址不会超出this\_start）**返回**回去
 
 至此满足要求的内存块算是找到了。
 
 ### 3.4.5 memblock\_reserve标记申请的内存
 
-现在我们回到[memblock\_alloc\_range\_nid函数](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L1133), 我们说该函数完成了两项工作
+现在我们回到[**memblock\_alloc\_range\_nid**函数](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L1133), 我们说该函数完成了两项工作
 
 - 首先通过memblock\_find\_in\_range\_node指定内存区域和大小查找内存区域
 
-- 找到内存区域后, 调用memblock\_reserve后将其标为已经分配
+- 找到内存区域后, 调用memblock\_reserve后**将其标为已经分配**
 
-现在我们已经找到了内存区域了, 那么我们继续看看memblock\_reserve函数是如何对内存进行标记的, 该函数定义在[mm/memblock.c?v=4.7, line 727](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L727)
+现在我们已经找到了内存区域了,那么我们继续看看memblock\_reserve函数是如何对内存进行标记的, 该函数定义在[mm/memblock.c?v=4.7, line 727](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L727)
 
 ```cpp
 //  http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L727
@@ -780,13 +808,13 @@ int __init_memblock memblock_add(phys_addr_t base, phys_addr_t size)
 }
 ```
 
-我们会发现首先memblock\_reserve函数也是通过**memblock\_add\_range**来实现的, 我们把memblock\_add的实现贴出来进行对比, 我们会发现他们就**第一个参数不一样**
+我们会发现首先**memblock\_reserve**函数也是通过**memblock\_add\_range**来**实现的**, 我们把memblock\_add的实现贴出来进行对比,我们会发现他们就**第一个参数不一样**
 
 - memblock\_reserve使用**全局变量memblock**的**reserved域**,最终将分配到的内存块信息添加到reserved区域中
 
-- memblock\_add则使用了**全局变量的memory域**, 最终将内存块添加到了memory区域
+- memblock\_add则使用了**全局变量的memory域**,最终将内存块添加到了memory区域
 
-memblock\_add\_range函数的流程我们前面已经将的很详细了, 这里只简单的叙述一下子
+memblock\_add\_range函数的流程我们前面已经将的很详细了,这里只简单的叙述一下子
 
 - 如果memblock算法管理内存为空的时候，则将当前空间添加进去
 
@@ -796,7 +824,7 @@ memblock\_add\_range函数的流程我们前面已经将的很详细了, 这里�
 
 - 最后通过memblock\_merge\_regions()把紧挨着的内存合并了
 
-## 2.5 memblock\_free释放内存区域
+## 3.5 memblock\_free释放内存区域
 
 ```cpp
 //  http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L695
@@ -826,9 +854,10 @@ int __init_memblock memblock_free(phys_addr_t base, phys_addr_t size)
     return memblock_remove_range(&memblock.reserved, base, size);
 }
 ```
-# 3 兼容bootmem的接口API
 
-## 3.1 memblock与bootmem
+# 4 兼容bootmem的接口API
+
+## 4.1 memblock与bootmem
 
 我们了解到memblock是作为bootmem的替代品而引入内核的
 
@@ -846,7 +875,7 @@ endif
 
 为了保证系统的兼容性, 内核为bootmem和memblock提供了相同的API接口.
 
-## 3.2 memblock与bootmem接口对比
+## 4.2 memblock与bootmem接口对比
 
 由于接口是一致的, 那么他们共同使用一份头文件
 
@@ -862,7 +891,7 @@ endif
 
 为了实现接口兼容, 内核用[mm/memblock.c](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7)定义的memblock接口, 实现了一套bootmem的接口机制,而bootmem的接口我们在上一篇引导内存管理bootmem机制中已经讲过了, 这些实现的bootmem函数接口API,就定义在[mm/nobootmem.c](http://lxr.free-electrons.com/source/mm/nobootmem.c)文件中, 然后内核把他们进行了封装, 然后提供了与bootmem相同功能和函数的接口, **这些接口**都在[**include/linux/memblock.h**](http://lxr.free-electrons.com/source/include/linux/memblock.h?v=4.7).
 
-在NUMA系统上, 基本的API是相同的, 但是函数增加了\_node后缀, 与UMA系统的函数相比, 还**需要一些额外的参数**, 用于**指定内存分配的结点**.
+在NUMA系统上, 基本的API是相同的, 但是函数增加了\_node后缀, 与UMA系统的函数相比,还**需要一些额外的参数**,用于**指定内存分配的结点（！！！**）.
 
 | 函数 | bootmem定义 | nobootmem定义 |
 |:-----:|:------------------|:----------------------:|
@@ -871,7 +900,7 @@ endif
 | alloc\_bootmem\_align(size) | [alloc\_bootmem\_align](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L124)<br>基于\_\_alloc\_bootmem实现 | [alloc\_bootmem\_align](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L124)<br>[\_\_alloc\_bootmem](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L309)<br>[\_\_\_alloc\_bootmem](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L281)  |
 | alloc\_bootmem\_pages(size)) | [alloc\_bootmem\_pages](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L128)<br>基于\_\_alloc\_bootmem实现 | [alloc\_bootmem\_pages](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L128)<br>基于\_\_alloc\_bootmem实现 |
 |alloc\_bootmem\_nopanic(size) | [alloc\_bootmem\_nopanic](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L126)<br>[\_\_alloc\_bootmem\_nopanic](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L664)<br>[\_\_\_alloc\_bootmem\_nopanic](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L632) | [alloc\_bootmem\_nopanic](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L126)<br>[\_\_alloc\_bootmem\_nopanic](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L261)<br>[\_\_\_alloc\_bootmem\_nopanic](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L235) |
-| ZONE\_DMA区域的分配函数 |  |
+| **ZONE\_DMA区域的分配函数** |  |
 | alloc\_bootmem\_low(size) | [alloc\_bootmem\_low](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L141)<br>[\_\_alloc\_bootmem\_low](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L415)底层基于\_\_\_alloc\_bootmem | [alloc\_bootmem\_low](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L141)<br>底层基于\_\_\_alloc\_bootmem  |
 |alloc\_bootmem\_low\_pages\_nopanic(size) | [alloc\_bootmem\_low\_pages\_nopanic](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L143)<br>底层基于[\_\_alloc\_bootmem\_low\_nopanic](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L838)<br>[\_\_\_alloc\_bootmem\_nopanic](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L632) | [alloc\_bootmem\_low\_pages\_nopanic](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L143)<br>底层基于[\_\_alloc\_bootmem\_low\_nopanic](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L421)<br>[\_\_\_alloc\_bootmem\_nopanic](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L235) |
 |alloc\_bootmem\_low\_pages(size) | [alloc\_bootmem\_low\_pages](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L832)<br>底层基于[\_\_alloc\_bootmem\_low\_nopanic](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L838) | [alloc\_bootmem\_low\_pages](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L832)<br>底层基于[\_\_alloc\_bootmem\_low\_nopanic](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L421) |
@@ -884,54 +913,40 @@ endif
 
 我们可以看到最基本的实现思路都是一样的, 只是最底层的实现函数有细微的区别.
 
-## 3.3 实现差异
+## 4.3 实现差异
 
-- UMA结构下这些函数最终都是通过___alloc_bootmem_nopanic函数来实现的
+- UMA结构下这些函数最终都是通过\_\_\_alloc\_bootmem\_nopanic函数来实现的
 
-- NUMA架构下, 最终这些函数都是简介的调用___alloc_bootmem_node_nopanic函数来实现的,
-
-
-
+- NUMA架构下, 最终这些函数都是简介的调用\_\_\_alloc\_bootmem\_node\_nopanic函数来实现的,
 
 | 函数 | bootmem | memblock |
 |:-----:|:-----------:|:------------:|
-| ___alloc_bootmem_nopanic | [mm/bootmem.c?v=4.7, line 632](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L632), 通过[alloc_bootmem_core](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L607)函数来实现 | [mm/nobootmem.c?v=4.7, line 235](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L235), 通过[__alloc_memory_core_early](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L36) |
-| ___alloc_bootmem_node_nopanic | [mm/bootmem.c?v=4.7, line 708](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L708), 通过调用[alloc_bootmem_core](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L607)和[alloc_bootmem_bdata](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L500)来实现 | [mm/nobootmem.c?v=4.7, line 317](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L317), 通过调用[__alloc_memory_core_early](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L36)来实现 |
+| \_\_\_alloc\_bootmem\_nopanic | [mm/bootmem.c?v=4.7, line 632](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L632), 通过[alloc\_bootmem\_core](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L607)函数来实现 | [mm/nobootmem.c?v=4.7, line 235](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L235), 通过[\_\_alloc\_memory\_core\_early](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L36) |
+| \_\_\_alloc\_bootmem\_node\_nopanic | [mm/bootmem.c?v=4.7, line 708](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L708), 通过调用[alloc\_bootmem\_core](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L607)和[alloc\_bootmem\_bdata](http://lxr.free-electrons.com/source/mm/bootmem.c?v=4.7#L500)来实现 | [mm/nobootmem.c?v=4.7, line 317](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L317), 通过调用[\_\_alloc\_memory\_core\_early](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L36)来实现 |
 
+bootmem的核心函数**\_\_alloc\_memory\_core()**的实现机制我们前一篇文章[**引导分配器bootmem**]已经讲过了, 那么memblock下nobootmem的核心函数**\_\_alloc\_memory\_core\_early**是怎么实现的呢?
 
-bootmem的核心函数__alloc_memory_core()的实现机制我们前一篇博文[引导分配器bootmem](待添加链接)已经讲过了, 那么memblock下nobootmem的核心函数__alloc_memory_core_early是怎么实现的呢?
+前面[**3.4.1节memblock\_alloc函数代码**]我们分析memblock\_alloc函数的时候提到, 该函数最终通过memblock\_alloc\_range\_nid函数粗暴粗暴的进行内存分配, 而有些情况下需要从特定的内存范围内分配内存.解决方法就是通过memblock\_alloc\_range\_nid函数或者实现类似机制的函数,这里的**\_\_alloc\_memory\_core\_early函数**就是基于memblock\_alloc\_range\_nid同样的思路实现的函数
 
-前面[2.4.1节memblock_alloc函数代码](待添加链接)我们分析memblock_alloc函数的时候提到, 该函数最终通过memblock_alloc_range_nid函数粗暴粗暴的进行内存分配, 而有些情况下需要从特定的内存范围内分配内存. 解决方法就是通过memblock_alloc_range_nid函数或者实现类似机制的函数, 这里的__alloc_memory_core_early函数就是基于memblock_alloc_range_nid同样的思路实现的函数
+- 首先使用memblock\_find\_in\_range\_node指定内存区域和大小查找内存区域
 
+- memblock\_reserve后将其标为已经分配
 
-*	首先使用memblock_find_in_range_node指定内存区域和大小查找内存区域
+我们列出memblock\_alloc\_range\_nid函数与\_\_alloc\_memory\_core\_early函数的实现对比
 
-*	memblock_reserve后将其标为已经分配
-
-
-我们列出 memblock_alloc_range_nid函数与__alloc_memory_core_early函数的实现对比
-
-| memblock_alloc_range_nid | __alloc_memory_core_early |
+| memblock\_alloc\_range\_nid | \_\_alloc\_memory\_core\_early |
 |:------------------------------:|:------------------------------:|
 | [mm/memblock.c?v=4.7, line 1133](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L1133) | [mm/nobootmem.c?v=4.7, line 36](http://lxr.free-electrons.com/source/mm/nobootmem.c?v=4.7#L36) |
 
+# 5 memblock初始化
 
-#4	memblock初始化
--------
+## 5.1 x86架构下的memblock初始化
 
-如果从整个linux生命周期来讲,涉及到各种初始化等,这里来详细分析,因为还没有分析完内核,所以这里是分析到哪里就记录到哪里了.
+要**理解memblock是如何工作和实现**的, 我们首先看一下**它的用法**.
 
-##4.1	x86架构下的memblock初始化
--------
+在Linux内核中有几处用到了memblock,例如**arch/x86/kernel/e820.c**中的函数**memblock\_x86\_fill**该函数**遍历**由`e820`提供的**内存映射表**并且通过**memblock\_add**函数把**内核预留的内存区域**添加到memblock。既然我们首先遇到了memblock\_add函数，那就从它开始吧。
 
-要理解memblock是如何工作和实现的, 我们首先看一下它的用法.
-
-
-
-在Linux内核中有几处用到了memblock, 例如 arch/x86/kernel/e820.c中的函数`memblock_x86_fill`. 该函数遍历由`e820`提供的内存映射表并且通过`memblock_add`函数把内核预留的内存区域添加到memblock。既然我们首先遇到了`memblock_add`函数，那就从它开始吧。
-
-
-在内核初始化初期,物理内存会通过`Int 0x15`来被探测和整理, 存放到`e820`中.而初始化就发生在这个以后. 参见[arch/x86/kernel/setup.c?v=4.7, line 1096](http://lxr.free-electrons.com/source/arch/x86/kernel/setup.c?v=4.7#L1096)
+在内核初始化初期,**物理内存**会通过**int 0x15**来被探测和整理,存放到**e820**中.而**初始化**就发生在**这个以后**.参见[arch/x86/kernel/setup.c?v=4.7, line 1096](http://lxr.free-electrons.com/source/arch/x86/kernel/setup.c?v=4.7#L1096)
 
 ```cpp
 void __init setup_arch(char **cmdline_p)
@@ -950,9 +965,9 @@ void __init setup_arch(char **cmdline_p)
 }
 ```
 
-首先内核建立内核页表需要扩展__brk, 而扩展后的brk就立即被声明为已分配. 这项工作是由reserve_brk通过调用memblock_reserve完成的， 而其实并不是正真通过memblock分配的, 因为此时memblock还没有完成初始化
+首先**内核建立内核页表**需要**扩展\_\_brk**,而**扩展后的brk**就立即**被声明为已分配**. 这项工作是由**reserve\_brk**通过调用**memblock\_reserve**完成的，而其实**并不是真正通过memblock分配**的,因为此时**memblock还没有完成初始化**
 
-[reserve_brk](http://lxr.free-electrons.com/source/arch/x86/kernel/setup.c?v=4.9#L209)函数定义在[arch/x86/kernel/setup.c?v=4.7, line 209](http://lxr.free-electrons.com/source/arch/x86/kernel/setup.c?v=4.9#L209), 此时memblock还没有初始化, 只能通过[memblock_reserve](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L727)来完成内存的分配
+[reserve\_brk](http://lxr.free-electrons.com/source/arch/x86/kernel/setup.c?v=4.9#L209)函数定义在[arch/x86/kernel/setup.c?v=4.7, line 209](http://lxr.free-electrons.com/source/arch/x86/kernel/setup.c?v=4.9#L209), 此时memblock还没有初始化,只能通过[memblock\_reserve](http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L727)来完成内存的分配
 
 ```cpp
 static void __init reserve_brk(void)
@@ -967,7 +982,7 @@ static void __init reserve_brk(void)
 }
 ```
 
-设置完__brk后, 可以看到,setup_arch()函数通过memblock_x86_fill(),依据e820中的信息来初始化memblock.
+设置完\_\_brk后,可以看到,setup\_arch()函数通过**memblock\_x86\_fill**(),依据**e820中的信息**来**初始化memblock**.
 
 ```cpp
 void __init memblock_x86_fill(void)
@@ -1002,17 +1017,13 @@ void __init memblock_x86_fill(void)
 }
 ```
 
-比较简单,通过e820中的信息memblock_add(),将内存添加到memblock中的memory中,当做可分配内存.后两个函数主要是修剪内存使之对齐和输出信息.
+比较简单,通过e820中的信息**memblock\_add**(),将内存添加到memblock中的**memory**中,当做可分配内存.**后两个函数**主要是修剪内存**使之对齐和输出信息**.
 
 至此, 我们的memblock就初始化好了, 简单而且粗暴
 
+## 5.2 arm架构下的memblock初始化
 
-
-##4.2	arm架构下的memblock初始化
--------
-
-
-arm下的memblock初始化也是从start_kernel()->[setup_arch()](http://lxr.free-electrons.com/source/arch/arm/kernel/setup.c#L1034)开始的, 在setup_arch()中arm架构通过arm_memblock_init完成了memblock的初始化工作.
+arm下的memblock初始化也是从start\_kernel()->[setup\_arch()](http://lxr.free-electrons.com/source/arch/arm/kernel/setup.c#L1034)开始的, 在setup\_arch()中arm架构通过**arm\_memblock\_init**完成了**memblock的初始化**工作.
 
 ```cpp
 void __init setup_arch(char **cmdline_p)
@@ -1021,8 +1032,7 @@ void __init setup_arch(char **cmdline_p)
 }
 ```
 
-arm_memblock_init定义在[arch/arm/mm/init.c](http://lxr.free-electrons.com/source/arch/arm/mm/init.c?v=4.7#L230), 如下所示
-
+arm\_memblock\_init定义在[arch/arm/mm/init.c](http://lxr.free-electrons.com/source/arch/arm/mm/init.c?v=4.7#L230), 如下所示
 
 ```cpp
 void __init arm_memblock_init(const struct machine_desc *mdesc)
@@ -1078,10 +1088,9 @@ void __init arm_memblock_init(const struct machine_desc *mdesc)
 }
 ```
 
-##4.3	arm64下的memblock初始化
--------
+## 5.3 arm64下的memblock初始化
 
-前面我们的内核从start_kernel开始, 进入setup_arch(), 并完成了早期内存分配器的初始化和设置工作.
+前面我们的内核从start\_kernel开始,进入setup\_arch(),并完成了早期内存分配器的初始化和设置工作.
 
 ```cpp
 void __init setup_arch(char **cmdline_p)
@@ -1102,21 +1111,24 @@ void __init setup_arch(char **cmdline_p)
 | [paging_init](http://lxr.free-electrons.com/source/arch/arm64/mm/mmu.c?v=4.7#L538) | 初始化分页机制 |
 | [bootmem_init](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L306) | 初始化内存管理 |
 
+其中arm64\_memblock\_init就完成了arm64架构下的memblock的初始化
 
+与arm架构类似, arm64的memblock初始化没有意外,只是初始化函数成为[arm64\_memblock\_init()](http://lxr.free-electrons.com/source/arch/arm64/kernel/setup.c?v=4.7#L261), 该函数定义在[arch/arm64/mm/init.c?v=4.7, line 192](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L192)
 
+# 6 总结
 
-其中arm64_memblock_init就完成了arm64架构下的memblock的初始化
+memblock内存管理是将**所有的物理内存**放到**memblock.memory**中作为可用内存来管理, **分配过**的内存**只加入**到**memblock.reserved**中,并**不从memory中移出**.
 
+同理**释放内存**仅仅从**reserved**中移除.也就是说,**memory**在**fill过后**基本就是**不动**的了. 申请和分配内存仅仅修改reserved就达到目的.
 
-与arm架构类似, arm64的memblock初始化没有意外, 只是初始化函数成为[arm64_memblock_init()](http://lxr.free-electrons.com/source/arch/arm64/kernel/setup.c?v=4.7#L261), 该函数定义在[arch/arm64/mm/init.c?v=4.7, line 192](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L192)
+在初始化阶段没有那么多复杂的内存操作场景,甚至**很多地方**都是**申请了内存做永久使用**的, 所以这样的内存管理方式已经足够凑合着用了,毕竟内核也不指望用它一辈子. 在系统完成初始化之后所有的工作会移交给强大的`buddy`系统来进行内存管理
 
+# 7 链接
 
-
-#5	总结
--------
-
-
-memblock内存管理是将所有的物理内存放到`memblock.memory`中作为可用内存来管理, 分配过的内存只加入到`memblock.reserved`中, 并不从`memory`中移出.
-
-同理释放内存也会加入到`memory`中. 也就是说, `memory`在`fill`过后基本就是不动的了. 申请和分配内存仅仅修改`reserved`就达到目的. 在初始化阶段没有那么多复杂的内存操作场景, 甚至很多地方都是申请了内存做永久使用的, 所以这样的内存管理方式已经足够凑合着用了, 毕竟内核也不指望用它一辈子. 在系统完成初始化之后所有的工作会移交给强大的`buddy`系统来进行内存管理
-
+>参考
+>
+>[Linux 内核内存管理（1）](http://blog.jobbole.com/88452)
+>
+>[Linux内核初期内存管理---memblock](http://www.maxwellxxx.com/linuxmemblock)
+>
+>[Linux kernel memory management Part 1.](https://0xax.gitbooks.io/linux-insides/content/mm/linux-mm-1.html)
