@@ -1,65 +1,30 @@
-初始化内存管理
-=======
+- 1 前景回顾
+    - 1.1 start\_kernel系统启动阶段的内存初始化过程
+    - 1.2 arm64下setup\_arch函数初始化内存流程
+    - 1.3 arm64下setup\_arch函数初始化内存流程
+    - 1.4 (第一阶段)启动过程中的内存分配器
+    - 1.5 今日内容(第二阶段(一)--初始化内存管理数据结构)
+        - 1.5.1 特定于体系结构的设置
+        - 1.5.2 建立内存管理的数据结构
+        - 1.5.3 移交早期的分配器到内存管理器
 
+# 1 前景回顾
 
+## 1.1 start\_kernel系统启动阶段的内存初始化过程
 
-| 日期 | 内核版本 | 架构| 作者 | GitHub| CSDN |
-| ------- |:-------:|:-------:|:-------:|:-------:|:-------:|
-| 2016-06-14 | [Linux-4.7](http://lxr.free-electrons.com/source/?v=4.7) | X86 & arm | [gatieme](http://blog.csdn.net/gatieme) | [LinuxDeviceDrivers](https://github.com/gatieme/LDD-LinuxDeviceDrivers) | [Linux内存管理](http://blog.csdn.net/gatieme/article/category/6225543) |
+在初始化过程中, 还必须建立内存管理的数据结构,以及很多事务.因为内核在内存管理完全初始化之前就需要使用内存.在系统启动过程期间,使用了额外的简化的**内存管理模块**,然后在初始化完成后,将**旧的模块丢弃**掉.
 
-
-在内存管理的上下文中, 初始化(initialization)可以有多种含义. 在许多CPU上, 必须显式设置适用于Linux内核的内存模型. 例如在x86_32上需要切换到保护模式, 然后奇偶内核才能检测到可用内存和寄存器.
-
-
-
-#1	前景回顾
--------
-
-
-##1.1	Linux内存管理的层次结构
--------
-
-
-Linux把物理内存划分为三个层次来管理
-
-| 层次 | 描述 |
-|:----:|:----:|
-| 存储节点(Node) |  CPU被划分为多个节点(node), 内存则被分簇, 每个CPU对应一个本地物理内存, 即一个CPU-node对应一个内存簇bank，即每个内存簇被认为是一个节点 |
-| 管理区(Zone)   | 每个物理内存节点node被划分为多个内存管理区域, 用于表示不同范围的内存, 内核可以使用不同的映射方式映射物理内存 |
-| 页面(Page) 	   |	内存被细分为多个页面帧, 页面是最基本的页面分配的单位　｜
-
-为了支持NUMA模型，也即CPU对不同内存单元的访问时间可能不同，此时系统的物理内存被划分为几个节点(node), 一个node对应一个内存簇bank，即每个内存簇被认为是一个节点
-
-
-*	首先, 内存被划分为**结点**. 每个节点关联到系统中的一个处理器, 内核中表示为`pg_data_t`的实例. 系统中每个节点被链接到一个以NULL结尾的`pgdat_list`链表中<而其中的每个节点利用`pg_data_tnode_next`字段链接到下一节．而对于PC这种UMA结构的机器来说, 只使用了一个成为contig_page_data的静态pg_data_t结构.
-
-*	接着各个节点又被划分为内存管理区域, 一个**管理区域**通过struct zone_struct描述, 其被定义为zone_t, 用以表示内存的某个范围, 低端范围的16MB被描述为ZONE_DMA, 某些工业标准体系结构中的(ISA)设备需要用到它, 然后是可直接映射到内核的普通内存域ZONE_NORMAL,最后是超出了内核段的物理地址域ZONE_HIGHMEM, 被称为高端内存.　是系统中预留的可用内存空间, 不能被内核直接映射.
-
-
-*	最后**页帧(page frame)**代表了系统内存的最小单位, 堆内存中的每个页都会创建一个struct page的一个实例. 传统上，把内存视为连续的字节，即内存为字节数组，内存单元的编号(地址)可作为字节数组的索引. 分页管理时，将若干字节视为一页，比如4K byte. 此时，内存变成了连续的页，即内存为页数组，每一页物理内存叫页帧，以页为单位对内存进行编号，该编号可作为页数组的索引，又称为页帧号.
-
-
-##1.2	今日内容(启动过程中的内存初始化)
--------
-
-
-在初始化过程中, 还必须建立内存管理的数据结构, 以及很多事务. 因为内核在内存管理完全初始化之前就需要使用内存. 在系统启动过程期间, 使用了额外的简化悉尼股市的内存管理模块, 然后在初始化完成后, 将旧的模块丢弃掉.
-
-
-因此我们可以把linux内核的内存管理分三个阶段。
+因此我们可以把linux内核的**内存管理分三个阶段**。
 
 | 阶段 | 起点 | 终点 | 描述 |
-|:-----:|:-----:|:-----:|
-| 第一阶段 | 系统启动 | bootmem或者memblock初始化完成 | 此阶段只能使用memblock_reserve函数分配内存， 早期内核中使用init_bootmem_done = 1标识此阶段结束 |
-| 第二阶段 | bootmem或者memblock初始化完 | buddy完成前 | 引导内存分配器bootmem或者memblock接受内存的管理工作, 早期内核中使用mem_init_done = 1标记此阶段的结束 |
-| 第三阶段 | buddy初始化完成 | 系统停止运行 | 可以用cache和buddy分配内存 |
+|:-----|:-----|:-----|:-----|
+| 第一阶段 | 系统启动 | bootmem或者memblock初始化完成 | 此阶段只能使用**memblock\_reserve函数**分配内存，**早期内核**中使用init\_bootmem\_done = 1标识此阶段结束 |
+| 第二阶段 | bootmem或者memblock初始化完 | buddy完成前 | **引导内存分配器bootmem**或者**memblock**接受内存的管理工作, **早期内核**中使用mem\_init\_done = 1标记此阶段的结束 |
+| 第三阶段 | buddy初始化完成 | 系统停止运行 | 可以用**cache和buddy分配**内存 |
 
+## 1.2 start\_kernel系统启动阶段的内存初始化过程
 
-
-##1.3	start_kernel系统启动阶段的内存初始化过程
--------
-
-首先我们来看看start_kernel是如何初始化系统的, start_kerne定义在[init/main.c?v=4.7, line 479](http://lxr.free-electrons.com/source/init/main.c?v=4.7#L479)
+首先我们来看看start\_kernel是如何初始化系统的,start\_kernel定义在[init/main.c?v=4.7, line 479](http://lxr.free-electrons.com/source/init/main.c?v=4.7#L479)
 
 其代码很复杂, 我们只截取出其中与内存管理初始化相关的部分, 如下所示
 
@@ -68,12 +33,14 @@ Linux把物理内存划分为三个层次来管理
 asmlinkage __visible void __init start_kernel(void)
 {
 
+    /*  设置特定架构的信息
+     *	同时初始化memblock  */
     setup_arch(&command_line);
     mm_init_cpumask(&init_mm);
 
     setup_per_cpu_areas();
 
-
+	/*  初始化内存结点和内段区域  */
     build_all_zonelists(NULL, NULL);
     page_alloc_init();
 
@@ -94,26 +61,20 @@ asmlinkage __visible void __init start_kernel(void)
 }
 ```
 
-
 | 函数  | 功能 |
-|:----:|:----:|
-| [setup_arch](http://lxr.free-electrons.com/ident?v=4.7;i=setup_arch) | 是一个特定于体系结构的设置函数, 其中一项任务是负责初始化自举分配器 |
-| [mm_init_cpumask](http://lxr.free-electrons.com/source/include/linux/mm_types.h?v=4.7#L522) | 初始化CPU屏蔽字 |
-| [setup_per_cpu_areas](http://lxr.free-electrons.com/ident?v=4.7;i=setup_per_cpu_areas) | 函数[(查看定义)](http://lxr.free-electrons.com/source/mm/percpu.c?v4.7#L2205])给每个CPU分配内存，并拷贝.data.percpu段的数据. 为系统中的每个CPU的per_cpu变量申请空间.<br>在SMP系统中, setup_per_cpu_areas初始化源代码中(使用[per_cpu宏](http://lxr.free-electrons.com/source/include/linux/percpu-defs.h#L256))定义的静态per-cpu变量, 这种变量对系统中每个CPU都有一个独立的副本. <br>此类变量保存在内核二进制影像的一个独立的段中, setup_per_cpu_areas的目的就是为系统中各个CPU分别创建一份这些数据的副本<br>在非SMP系统中这是一个空操作 |
-| [build_all_zonelists](http://lxr.free-electrons.com/source/mm/page_alloc.c?v4.7#L5029) | 建立并初始化结点和内存域的数据结构 |
-| [mm_init](http://lxr.free-electrons.com/source/init/main.c?v4.7#L464) | 建立了内核的内存分配器, <br>其中通过[mem_init](http://lxr.free-electrons.com/ident?v=4.7&i=mem_init)停用bootmem分配器并迁移到实际的内存管理器(比如伙伴系统)<br>然后调用kmem_cache_init函数初始化内核内部用于小块内存区的分配器 |
-| [kmem_cache_init_late](http://lxr.free-electrons.com/source/mm/slab.c?v4.7#L1378) | 在kmem_cache_init之后, 完善分配器的缓存机制,　当前3个可用的内核内存分配器[slab](http://lxr.free-electrons.com/source/mm/slab.c?v4.7#L1378), [slob](http://lxr.free-electrons.com/source/mm/slob.c?v4.7#L655), [slub](http://lxr.free-electrons.com/source/mm/slub.c?v=4.7#L3960)都会定义此函数　|
-| [kmemleak_init](http://lxr.free-electrons.com/source/mm/kmemleak.c?v=4.7#L1857) | Kmemleak工作于内核态，Kmemleak 提供了一种可选的内核泄漏检测，其方法类似于跟踪内存收集器。当独立的对象没有被释放时，其报告记录在 [/sys/kernel/debug/kmemleak](http://lxr.free-electrons.com/source/mm/kmemleak.c?v=4.7#L1467)中, Kmemcheck能够帮助定位大多数内存错误的上下文 |
-| [setup_per_cpu_pageset](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5392) | 初始化CPU高速缓存行, 为pagesets的第一个数组元素分配内存, 换句话说, 其实就是第一个系统处理器分配<br>由于在分页情况下，每次存储器访问都要存取多级页表，这就大大降低了访问速度。所以，为了提高速度，在CPU中设置一个最近存取页面的高速缓存硬件机制，当进行存储器访问时，先检查要访问的页面是否在高速缓存中. |
+|:----|:----|
+| [setup\_arch](http://lxr.free-electrons.com/ident?v=4.7;i=setup_arch) | 是一个特定于体系结构的设置函数, 其中一项任务是负责**初始化自举分配器** |
+| [mm\_init\_cpumask](http://lxr.free-electrons.com/source/include/linux/mm_types.h?v=4.7#L522) | 初始化**CPU屏蔽字** |
+| [setup\_per\_cpu\_areas](http://lxr.free-electrons.com/ident?v=4.7;i=setup_per_cpu_areas) | 函数[(查看定义)](http://lxr.free-electrons.com/source/mm/percpu.c?v4.7#L2205])给每个CPU分配内存，并拷贝.data.percpu段的数据.为系统中的**每个CPU的per\_cpu变量申请空**间.<br>在SMP系统中,setup\_per\_cpu\_areas初始化源代码中(使用[per_cpu宏](http://lxr.free-electrons.com/source/include/linux/percpu-defs.h#L256))定义的静态per-cpu变量,这种变量对系统中每个CPU都有一个独立的副本. <br>此类变量保存在内核二进制影像的一个独立的段中,setup\_per\_cpu\_areas的目的就是为系统中各个CPU分别创建一份这些数据的副本<br>在**非SMP系统**中这是一个**空操作** |
+| [build\_all\_zonelists](http://lxr.free-electrons.com/source/mm/page_alloc.c?v4.7#L5029) | 建立并初始化**结点**和**内存域**的数据结构 |
+| [mm\_init](http://lxr.free-electrons.com/source/init/main.c?v4.7#L464) | 建立了内核的**内存分配器**,<br>其中通过[**mem\_init**](http://lxr.free-electrons.com/ident?v=4.7&i=mem_init)**停用bootmem**分配器并迁移到实际的内存管理器(比如伙伴系统)<br>然后调用**kmem\_cache\_init**函数初始化内核内部**用于小块内存区的分配器** |
+| [kmem\_cache\_init\_late](http://lxr.free-electrons.com/source/mm/slab.c?v4.7#L1378) | 在**kmem\_cache\_init**之后,完善分配器的**缓存机制**,　当前3个可用的内核内存分配器[slab](http://lxr.free-electrons.com/source/mm/slab.c?v4.7#L1378), [slob](http://lxr.free-electrons.com/source/mm/slob.c?v4.7#L655), [slub](http://lxr.free-electrons.com/source/mm/slub.c?v=4.7#L3960)都会定义此函数　|
+| [kmemleak\_init](http://lxr.free-electrons.com/source/mm/kmemleak.c?v=4.7#L1857) | Kmemleak工作于内核态，Kmemleak提供了一种**可选的内核泄漏检测**，其方法类似于**跟踪内存收集器**。当独立的对象没有被释放时，其报告记录在 [/sys/kernel/debug/kmemleak](http://lxr.free-electrons.com/source/mm/kmemleak.c?v=4.7#L1467)中, Kmemcheck能够帮助定位大多数内存错误的上下文 |
+| [setup\_per\_cpu\_pageset](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5392) | **初始化CPU高速缓存行**, 为pagesets的第一个数组元素分配内存, 换句话说, 其实就是第一个系统处理器分配<br>由于在分页情况下，**每次存储器访问都要存取多级页表**，这就大大降低了访问速度。所以，为了提高速度，在CPU中设置一个最近存取页面的**高速缓存硬件机制**，当进行存储器访问时，先检查要访问的页面是否在高速缓存中. |
 
+## 1.3 arm64下setup\_arch函数初始化内存流程
 
-
-
-##1.4	setup_arch函数初始化内存流程
--------
-
-
-前面我们的内核从start_kernel开始, 进入setup_arch(), 并完成了早期内存分配器的初始化和设置工作.
+前面我们的内核从start\_kernel开始,进入setup\_arch(),并完成了早期内存分配器的初始化和设置工作.
 
 ```cpp
 void __init setup_arch(char **cmdline_p)
@@ -134,27 +95,22 @@ void __init setup_arch(char **cmdline_p)
 | [paging_init](http://lxr.free-electrons.com/source/arch/arm64/mm/mmu.c?v=4.7#L538) | 初始化分页机制 |
 | [bootmem_init](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L306) | 初始化内存管理 |
 
+其中arm64\_memblock\_init就完成了arm64架构下的memblock的初始化
+
+与arm架构类似, arm64的memblock初始化没有意外,只是初始化函数成为[arm64\_memblock\_init()](http://lxr.free-electrons.com/source/arch/arm64/kernel/setup.c?v=4.7#L261), 该函数定义在[arch/arm64/mm/init.c?v=4.7, line 192](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L192)
 
 该函数主要执行了如下操作
 
+1. 使用arm64\_memblock\_init来完成**memblock机制的初始化**工作,至此memblock分配器接受系统中系统中内存的分配工作
 
-1.	使用arm64_memblock_init来完成memblock机制的初始化工作, 至此memblock分配器接受系统中系统中内存的分配工作
+2. 调用paging\_init来完成**系统分页机制的初始化**工作,建立页表,从而内核可以完成虚拟内存的映射和转换工作
 
-2.	调用paging_init来完成系统分页机制的初始化工作, 建立页表, 从而内核可以完成虚拟内存的映射和转换工作
+3. 最后调用bootmem\_init来完成实现**buddy内存管理所需要的**工作
 
-3.	最后调用bootmem_init来完成实现buddy内存管理所需要的工作
+## 1.4 (第一阶段)启动过程中的内存分配器
 
+早期的内核中内存分配器使用的**bootmem引导分配器**, 它基于一个内存位图bitmap, 使用最优适配算法来查找内存, 但是这个分配器有很大的缺陷, 最严重的就是**内存碎片**的问题, 因此在后来的内核中将其舍弃《而使用了**新的memblock机制**.memblock机制的初始化在arm64上是通过[arm64\_memblock\_init](http://lxr.free-electrons.com/source/arch/arm64/kernel/setup.c?v=4.7#L229)函数来实现的
 
-
-##1.5	(第一阶段)启动过程中的内存分配器
--------
-
-
-在初始化过程中, 还必须建立内存管理的数据结构, 以及很多事务. 因为内核在内存管理完全初始化之前就需要使用内存. 在系统启动过程期间, 使用了额外的简化悉尼股市的内存管理模块, 然后在初始化完成后, 将旧的模块丢弃掉.
-
-这个阶段的内存分配其实很简单, 因此我们往往称之为内存分配器(而不是内存管理器), 早期的内核中内存分配器使用的**bootmem引导分配器**, 它基于一个内存位图bitmap, 使用最优适配算法来查找内存, 但是这个分配器有很大的缺陷, 最严重的就是内存碎片的问题, 因此在后来的内核中将其舍弃《而使用了**新的memblock机制**. memblock机制的初始化在arm64上是通过[arm64_memblock_init](http://lxr.free-electrons.com/source/arch/arm64/kernel/setup.c?v=4.7#L229)函数来实现的
-
-```cpp
 ```cpp
 start_kernel()
     |---->page_address_init()
@@ -204,28 +160,21 @@ start_kernel()
 ```
 
 
-##1.6	今日内容(第二阶段(一)--初始化内存管理数据结构)
--------
+## 1.5 今日内容(第二阶段(一)--初始化内存管理数据结构)
 
+我们之前讲了在memblock完成之后, 内存初始化开始进入第二阶段, 第二阶段是一个漫长的过程,它执行了一系列复杂的操作, 从体系结构相关信息的初始化慢慢向上层展开, 其主要执行了如下操作
 
-我们之前讲了在memblock完成之后, 内存初始化开始进入第二阶段, 第二阶段是一个漫长的过程, 它执行了一系列复杂的操作, 从体系结构相关信息的初始化慢慢向上层展开, 其主要执行了如下操作
+### 1.5.1 特定于体系结构的设置
 
+在完成了基础的内存结点和内存域的初始化工作以后, 我们必须克服一些**硬件的特殊设置**
 
+- 在初始化内存的**结点和内存区域之前**, 内核先通过**paging\_init初始化了内核的分页机制**, 这样我们的**虚拟运行空间就初步建立**, 并可以完成**物理地址**到**虚拟地址空间**的映射工作.
 
-**特定于体系结构的设置**
+在arm64架构下, 内核在start\_kernel()->setup\_arch()中通过arm64\_memblock\_init()完成了memblock的初始化之后, 接着通过setup\_arch()->paging\_init()开始初始化分页机制
 
+paging\_init负责建立只能用于内核的页表,用户空间是无法访问的.这对管理普通应用程序和内核访问内存的方式，有深远的影响
 
-在完成了基础的内存结点和内存域的初始化工作以后, 我们必须克服一些硬件的特殊设置
-
-*	在初始化内存的结点和内存区域之前, 内核先通过pagging_init初始化了内核的分页机制, 这样我们的虚拟运行空间就初步建立, 并可以完成物理地址到虚拟地址空间的映射工作.
-
-在arm64架构下, 内核在start_kernel()->setup_arch()中通过arm64_memblock_init( )完成了memblock的初始化之后, 接着通过setup_arch()->paging_init()开始初始化分页机制
-
-
-paging_init负责建立只能用于内核的页表, 用户空间是无法访问的. 这对管理普通应用程序和内核访问内存的方式，有深远的影响
-
-
-*	在分页机制完成后, 内核通过setup_arch()->bootmem_init开始进行内存基本数据结构(内存结点pg_data_t, 内存域zone和页帧)的初始化工作, 就是在这个函数中, 内核开始从体系结构相关的部分逐渐展开到体系结构无关的部分, 在zone_sizes_init->free_area_init_node中开始, 内核开始进行内存基本数据结构的初始化, 也不再依赖于特定体系结构无关的层次
+- 在分页机制完成后, 内核通过setup\_arch()->**bootmem\_init**开始进行**内存基本数据结构**(**内存结点pg\_data\_t, 内存域zone和页帧**)的初始化工作,就是在这个函数中,内核开始从**体系结构相关**的部分逐渐展开到**体系结构无关**的部分,在**zone\_sizes\_init**->**free\_area\_init\_node**中开始,内核开始进行**内存基本数据结构的初始化**, 也不再依赖于**特定体系结构无关**的层次
 
 ```cpp
 bootmem_init()
@@ -250,34 +199,19 @@ bootmem_init()
 |   初始化完成, 显示memblock的保留的所有内存信息
 ```
 
+### 1.5.2 建立内存管理的数据结构
 
+对**相关数据结构的初始化**是从全局启动函数**start\_kernel**中开始的,该函数在加载内核并激活各个子系统之后执行. 由于内存管理是内核一个**非常重要**的部分,因此在特定体系结构的设置步骤中**检测并确定**系统中**内存**的**分配情况**后, 会立即执行**内存管理的初始化**.
 
+### 1.5.3 移交早期的分配器到内存管理器
 
-**建立内存管理的数据结构**
+最后我们的内存管理器已经初始化并设置完成,可以投入运行了,因此内核将内存管理的工作从早期的内存分配器(bootmem或者memblock)移交到我们的buddy伙伴系统.
 
+# 2 初始化前的准备工作
 
-对相关数据结构的初始化是从全局启动函数start_kernel中开始的, 该函数在加载内核并激活各个子系统之后执行. 由于内存管理是内核一个非常重要的部分, 因此在特定体系结构的设置步骤中检测并确定系统中内存的分配情况后, 会立即执行内存管理的初始化.
+## 2.1	回到setup_arch函数(当前已经完成的工作)
 
-
-
-**移交早期的分配器到内存管理器**
-
-
-
-最后我们的内存管理器已经初始化并设置完成, 可以投入运行了, 因此内核将内存管理的工作从早期的内存分配器(bootmem或者memblock)移交到我们的buddy伙伴系统.
-
-
-
-
-#2	初始化前的准备工作
--------
-
-
-##2.1	回到setup_arch函数(当前已经完成的工作)
--------
-
-
-现在我们回到start_kernel()->setup_arch()函数
+现在我们回到start\_kernel()->setup\_arch()函数
 
 
 ```cpp
@@ -294,35 +228,33 @@ void __init setup_arch(char **cmdline_p)
 ```
 
 
-到目前位置我们已经完成了如下工作
+到目前为止我们已经完成了如下工作
 
-*	memblock已经通过arm64_memblock_init完成了初始化, 至此系统中的内存可以通过memblock分配了
+- memblock已经通过arm64\_memblock\_init完成了初始化, 至此系统中的内存可以通过memblock分配了
 
-*	paging_init完成了分页机制的初始化, 至此内核已经布局了一套完整的虚拟内存空间
+- paging\_init完成了**分页机制**的初始化, 至此内核已经**布局了一套完整的虚拟内存空间**
 
-
-至此我们所有的内存都可以通过memblock机制来分配和释放, 尽管它实现的笨拙而简易, 但是已经足够我们初始化阶段使用了, 反正内核页不可能指着它过一辈子, 而我们也通过pagging_init创建了页表, 为内核提供了一套可供内核和进程运行的虚拟运行空间, 我们可以安全的进行内存的分配了
+通过pagging\_init创建了页表,为内核提供了一套可供内核和进程运行的虚拟运行空间,我们可以安全的**进行内存的分配**了
 
 因此该是时候初始化我们强大的buddy系统了.
 
-内核接着setup_arch()->bootmem_init()函数开始执行
+内核接着setup\_arch()->bootmem\_init()函数开始执行
 
 体系结构相关的代码需要在启动期间建立如下信息 
 
-*	系统中各个内存域的页帧边界，保存在max_zone_pfn数组
+- 系统中**各个内存域的页帧边界**，保存在**max\_zone\_pfn数组(不是全局变量，所有内存域！！！**）
 
-早期的内核还需记录各结点页帧的分配情况，保存在全局变量early_node_map中
+- **早期的内核**还需记录**各结点(！！！)页帧的分配情况**，保存在**全局变量early\_node\_map**中
 
-![zone_sizes_init函数](../images/arch_do_somethig.png)
+zone\_sizes\_init函数：
 
-内核提供了一个通用的框架, 用于将上述信息转换为伙伴系统预期的节点和内存域数据结构, 但是在此之前各个体系结构必须自行建立相关结构. 
+![zone_sizes_init函数](./images/arch_do_somethig.png)
 
+内核提供了一个**通用的框架**,用于将上述信息转换为伙伴系统预期的**节点**和**内存域数据结构**,但是在此之前各个体系结构必须自行建立相关结构. 
 
-##2.2	bootmem_init函数初始化内存结点和管理域
--------
+## 2.2 bootmem\_init函数初始化内存结点和管理域
 
-
-arm64架构下, 在setup_arch中通过paging_init函数初始化内核分页机制之后, 内核通过`bootmem_init()`开始完成内存结点和内存区域的初始化工作, 该函数定义在[arch/arm64/mm/init.c, line 306](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L306)
+arm64架构下, 在setup\_arch中通过paging\_init函数初始化内核分页机制之后,内核通过`bootmem_init()`开始完成**内存结点和内存区域的初始化**工作, 该函数定义在[arch/arm64/mm/init.c, line 306](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L306)
 
 ```cpp
 void __init bootmem_init(void)
@@ -351,16 +283,11 @@ void __init bootmem_init(void)
 }
 ```
 
+## 2.3 zone\_sizes\_init函数
 
-##2.3	zone_sizes_init函数
--------
+在初始化内存结点和内存域之前,内核首先通过**setup\_arch**()-->**bootmem\_init**()-->**zone\_sizes\_init**()来**初始化节点和管理区**的一些数据项,其中关键的是**初始化**了系统中**各个内存域的页帧边界**，保存在**max\_zone\_pfn数组（非全局变量！！！**）.
 
-
-在初始化内存结点和内存域之前, 内核首先通过setup_arch()-->bootmem_init()-->zone_sizes_init()来初始化节点和管理区的一些数据项, 其中关键的是初始化了系统中各个内存域的页帧边界，保存在max_zone_pfn数组.
-
-
-
-[zone_sizes_init](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L92)函数定义在[arch/arm64/mm/init.c?v=4.7, line 92](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L92), 由于arm64支持NUMA和UMA两种存储器架构, 因此该函数依照NUMA和UMA, 有两种不同的实现.
+[zone\_sizes\_init](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L92)函数定义在[arch/arm64/mm/init.c?v=4.7, line 92](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L92), 由于**arm64支持NUMA和UMA两种存储器架构**, 因此该函数**依照NUMA和UMA**, 有**两种不同的实现**.
 
 ```cpp
 #ifdef CONFIG_NUMA
@@ -421,13 +348,11 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
 #endif /* CONFIG_NUMA */
 ```
 
-在获取了三个管理区的页面数后, NUMA架构下通过free_area_init_nodes()来完成后续工作, 其中核心函数为free_area_init_node(),用来针对特定的节点进行初始化, 由于UMA架构下只有一个内存结点, 因此直接通过free_area_init_node来完成内存结点的初始化
+在获取了**三个管理区的页面数**后, **NUMA架构**下通过free\_area\_init\_nodes()来完成后续工作, 其中核心函数为free\_area\_init\_node(),用来针对**特定的节点**进行初始化,由于**UMA架构**下只有一个内存结点, 因此直接通过free\_area\_init\_node来完成内存结点的初始化
 
+截至到目前为止, 体系结构相关的部分已经结束了,各个体系结构已经自行建立了自己所需的一些底层数据结构, 这些结构建立好以后, 内核将繁重的**内存数据结构创建和初始化**的工作交给free\_area\_init\_node(s)函数来完成
 
-截至到目前为止, 体系结构相关的部分已经结束了, 各个体系结构已经自行建立了自己所需的一些底层数据结构, 这些结构建立好以后, 内核将繁重的内存数据结构创建和初始化的工作交给free_area_init_node(s)函数来完成,
-
-#3	free_area_init_nodes初始化NUMA管理数据结构
--------
+# 3 free\_area\_init\_nodes初始化NUMA管理数据结构
 
 >注意
 >
@@ -437,11 +362,9 @@ static void __init zone_sizes_init(unsigned long min, unsigned long max)
 >
 >[linux 内存管理 - paging_init 函数](http://blog.csdn.net/decload/article/details/8080126)
 
+[free\_area\_init\_nodes](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6460)初始化了**NUMA系统**中**所有结点**的**pg\_data\_t和zone、page的数据**,并打印了管理区信息,该函数定义在[mm/page_alloc.c?v=4.7, line 6460](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6460)
 
-[free_area_init_nodes](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6460)初始化了NUMA系统中所有结点的pg_data_t和zone、page的数据, 并打印了管理区信息, 该函数定义在[mm/page_alloc.c?v=4.7, line 6460](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6460)
-
-##3.1	代码注释
--------
+## 3.1 代码注释
 
 ```cpp
 //  初始化各个节点的所有pg_data_t和zone、page的数据
@@ -558,14 +481,11 @@ void __init free_area_init_nodes(unsigned long *max_zone_pfn)
 }
 ```
 
-free_area_init_nodes函数中通过循环遍历各个节点，循环中调用了free_area_init_node函数初始化该节点对应的pg_data_t和zone、page的数据.
+free\_area\_init\_nodes函数中通过**循环遍历各个节点**，循环中调用了free\_area\_init\_node函数初始化该节点对应的pg\_data\_t和zone、page的数据.
 
+## 3.2 设置可使用的页帧编号
 
-##3.2	设置可使用的页帧编号
--------
-
-
-free_area_init_nodes首先必须分析并改写特定于体系结构的代码提供的信息。其中，需要对照在zone_max_pfn和zone_min_pfn中指定的内存域的边界，计算各个内存域可使用的最低和最高的页帧编号。使用了两个全局数组来存储这些信息：
+free\_area\_init\_nodes首先必须分析并改写特定于体系结构的代码提供的信息。其中，需要对照在**zone\_max\_pfn和zone\_min\_pfn**中指定的**内存域的边界**，计算**各个内存域**可使用的**最低和最高的页帧编号**。使用了**两个全局数组来存储这些信息**：
 
 参见[mm/page_alloc.c?v=4.7, line 259)](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L259)
 
@@ -575,10 +495,7 @@ static unsigned long __meminitdata arch_zone_lowest_possible_pfn[MAX_NR_ZONES];
 static unsigned long __meminitdata arch_zone_highest_possible_pfn[MAX_NR_ZONES];
 ```
 
-通过max_zone_pfn传递给free_area_init_nodes的信息记录了各个内存域包含的最大页帧号。
-free_area_init_nodes将该信息转换为一种更方便的表示形式，即以［low, high］形式描述各个内
-存域的页帧区间，存储在前述的全局变量中（我省去了对这些变量填充字节0的初始化过程）：
-
+通过max\_zone\_pfn传递给free\_area\_init\_nodes的信息记录了各个内存域包含的最大页帧号。free\_area\_init\_nodes将该信息转换为一种更方便的表示形式，即以［low,high］形式描述各个内存域的页帧区间，存储在前述的**全局变量**中（我省去了对这些变量填充字节0的初始化过程）：
 
 ```cpp
 void __init free_area_init_nodes(unsigned long *max_zone_pfn)
@@ -611,12 +528,11 @@ void __init free_area_init_nodes(unsigned long *max_zone_pfn)
     /*  ......  */
 }
 ```
-辅助函数find_min_pfn_with_active_regions用于找到注册的最低内存域中可用的编号最小的页帧。该内存域不必一定是ZONE_DMA，例如，在计算机不需要DMA内存的情况下也可以是ZONE_NORMAL。最低内存域的最大页帧号可以从max_zone_pfn提供的信息直接获得。
+辅助函数find\_min\_pfn\_with\_active\_regions用于找到注册的**最低内存域中可用的编号最小的页帧**。该内存域不必一定是ZONE\_DMA，例如，在计算机不需要DMA内存的情况下也可以是ZONE\_NORMAL。**最低内存域**的最大页帧号可以从max\_zone\_pfn提供的信息直接获得。
 
-##3.3	构建其他内存域的页帧区间
--------
+## 3.3 构建其他内存域的页帧区间
 
-接下来构建其他内存域的页帧区间，方法很直接：第n个内存域的最小页帧，即前一个（第n-1个）内存域的最大页帧。当前内存域的最大页帧由max_zone_pfn给出
+接下来构建**其他内存域**的页帧区间，方法很直接：第n个内存域的最小页帧，即前一个（第n-1个）内存域的最大页帧。当前内存域的最大页帧由max\_zone\_pfn给出
 
 ```cpp
 void __init free_area_init_nodes(unsigned long *max_zone_pfn)
@@ -634,11 +550,11 @@ void __init free_area_init_nodes(unsigned long *max_zone_pfn)
     /*  ......  */
 }
 ```
-由于ZONE_MOVABLE是一个虚拟内存域，不与真正的硬件内存域关联，该内存域的边界总是设置为0。回忆前文，可知只有在指定了内核命令行参数kernelcore或movablecore之一时，该内存域才会存在.
-该内存域一般开始于各个结点的某个特定内存域的某一页帧号。相应的编号在find_zone_movable_pfns_for_nodes里计算。
+由于ZONE\_MOVABLE是一个**虚拟内存域**，不与真正的硬件内存域关联，该内存域的边界总是设置为0。回忆前文，可知只有在指定了**内核命令行参数kernelcore或movablecore**之一时，该内存域才会存在.
+
+该内存域一般开始于各个结点的某个特定内存域的某一页帧号。相应的编号在find\_zone\_movable\_pfns\_for\_nodes里计算。
 
 现在可以向用户提供一些有关已确定的页帧区间的信息。举例来说，其中可能包括下列内容（输出取自AMD64系统，有4 GiB物理内存）：
-
 
 ```cpp
 > dmesg
@@ -649,12 +565,9 @@ DMA32 4096 -> 1048576
 Normal 1048576 -> 1245184
 ```
 
+## 3.4 建立结点数据结构
 
-##3.4	建立结点数据结构
--------
-
-
-free_area_init_nodes剩余的部分遍历所有结点，分别建立其数据结构
+free\_area\_init\_nodes剩余的部分遍历所有结点，分别建立其数据结构
 
 ```cpp
 void __init free_area_init_nodes(unsigned long *max_zone_pfn)
@@ -687,20 +600,15 @@ void __init free_area_init_nodes(unsigned long *max_zone_pfn)
 }
 ```
 
+代码遍历所有活动结点，并分别对各个结点调用free\_area\_init\_node建立数据结构。该函数需要结点第一个可用的页帧作为一个参数，而find\_min\_pfn\_for\_node则从early\_node\_map数组提取该信息。
 
-代码遍历所有活动结点，并分别对各个结点调用free_area_init_node建立数据结构。该函数需要结点第一个可用的页帧作为一个参数，而find_min_pfn_for_node则从early_node_map数组提取该信息。
+如果根据node\_present\_pages字段判断结点具有内存，则在结点位图中设置N\_HIGH\_MEMORY标志。我们知道该标志只表示结点上存在普通或高端内存，因此check\_for\_regular\_memory进一步检查低于ZONE\_HIGHMEM的内存域中是否有内存，并据此在结点位图中相应地设置N\_NORMAL\_MEMORY标志
 
-如果根据node_present_pages字段判断结点具有内存，则在结点位图中设置N_HIGH_MEMORY标志。我们知道该标志只表示结点上存在普通或高端内存，因此check_for_regular_memory进一步检查低于ZONE_HIGHMEM的内存域中是否有内存，并据此在结点位图中相应地设置N_NORMAL_MEMORY标志
+# 4 free\_area\_init\_node初始化UMA内存结点
 
+[free\_area\_init\_nodes](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6076)函数初始化所有结点的pg\_data\_t和zone、page的数据，并打印了管理区信息.
 
-#4	free_area_init_node初始化UMA内存结点
--------
-
-[free_area_init_nodes](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6076)函数初始化所有结点的pg_data_t和zone、page的数据，并打印了管理区信息.
-
-
-##4.1	free_area_init_node函数注释
--------
+## 4.1 free\_area\_init\_node函数注释
 
 该函数定义在[mm/page_alloc.c?v=4.7, line 6076](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6076)
 
@@ -746,27 +654,23 @@ void __paginginit free_area_init_node(int nid, unsigned long *zones_size,
     free_area_init_core(pgdat);
 }
 ```
-##4.2	流程分析
--------
+## 4.2 流程分析
 
-*	[calculate_node_totalpages](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5789)函数累计各个内存域的页数，计算结点中页的总数。对连续内存模型而言，这可以通过zone_sizes_init完成，但calculate_node_totalpages还考虑了内存空洞,该函数定义在[mm/page_alloc.c, line 5789](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5789)
+- [calculate\_node\_totalpages](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5789)函数累计各个内存域的页数，计算结点中页的总数。对连续内存模型而言，这可以通过zone\_sizes\_init完成，但calculate\_node\_totalpages还考虑了内存空洞,该函数定义在[mm/page_alloc.c, line 5789](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5789)
 
-	以下例子取自一个UMA系统, 具有512 MiB物理内存。
+以下例子取自一个UMA系统, 具有512 MiB物理内存。
+
 ```cpp
 > dmesg
 ...
 On node 0 totalpages: 131056
 ```
 
+- [alloc\_node\_mem\_map(pgdat)](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6030)函数分配了该节点的页面描述符数组[pgdat->node\_mem\_map数组的内存分配.
 
-*	[alloc_node_mem_map(pgdat)](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6030)函数分配了该节点的页面描述符数组[pgdat->node_mem_map数组的内存分配.
+- 继续调用[free\_area\_init\_core](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5932)函数，继续初始化该节点的pg\_data\_t结构，初始化zone以及page结构 ，##2.6	free\_area\_init\_core函数是初始化zone的核心
 
-
-*	继续调用[free_area_init_core](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5932)函数，继续初始化该节点的pg_data_t结构，初始化zone以及page结构 ，##2.6	free_area_init_core函数是初始化zone的核心
-
-
-
-##4.3	alloc_node_mem_map函数
+## 4.3 alloc_node_mem_map函数
 -------
 
 
@@ -1243,3 +1147,10 @@ void build_all_zonelists(void)
     |---->page_group_by_mobility_disabled = 0;
     |     对于代码中的判断条件一般不会成立，因为页数会最够多（内存较大）
 ```
+
+## 8 链接
+
+>
+>[Linux内存管理伙伴算法](http://www.linuxidc.com/Linux/2012-09/70711p3.htm)
+>
+>[linux 内存管理 - paging_init 函数](http://blog.csdn.net/decload/article/details/8080126)

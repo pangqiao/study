@@ -374,19 +374,19 @@ start_kernel()
     | 
     |---->setup_arch(&command_line);   
     |     初始化特定体系结构的内容
-    	|---->arm64_memblock_init( );				[参见memblock和bootmem]
+    	|---->arm64_memblock_init( );  [参见memblock和bootmem]
         |     初始化引导阶段的内存分配器memblock
         |
-        |---->paging_init();						 [参见分页机制初始化paging_init]
+        |---->paging_init();  [参见分页机制初始化paging_init]
         |     分页机制初始化
         |
-        |---->bootmem_init();						[与build_all_zonelist共同完成内存数据结构的初始化]
+        |---->bootmem_init();  [与build_all_zonelist共同完成内存数据结构的初始化]
         |       初始化内存数据结构包括内存节点和内存域
         |
     |---->setup_per_cpu_areas();
     |     为per-CPU变量分配空间
     |
-    |---->build_all_zonelist()						[bootmem_init初始化数据结构, 该函数初始化zonelists]
+    |---->build_all_zonelist();  [bootmem_init初始化数据结构, 该函数初始化zonelists]
     |     为系统中的zone建立后备zone的列表.
     |     所有zone的后备列表都在
     |     pglist_data->node_zonelists[0]中;
