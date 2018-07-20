@@ -328,9 +328,37 @@ int __init_memblock memblock_add(phys_addr_t base, phys_addr_t size)
              (unsigned long long)base + size - 1,
              0UL, (void *)_RET_IP_);
 	return memblock_add_range(&memblock.memory, base, size, MAX_NUMNODES, 0);
+
+
+
+// include/linux/numa.h	
+#ifdef CONFIG_NODES_SHIFT
+#define NODES_SHIFT     CONFIG_NODES_SHIFT
+#else
+#define NODES_SHIFT     0
+#endif
+ 
+#define MAX_NUMNODES    (1 << NODES_SHIFT)
 ```
 
-memblock\_add传递的参数依次是 : **内存块类型(memory**), **物理基址**, **内存区域大小**, **最大节点数**(0如果CONFIG\_NODES\_SHIFT没有在配置文件中设置，不然就是CONFIG\_NODES\_SHIFT）和标志
+memblock\_add传递的参数依次是 : **内存块类型(memory**), **物理基址**, **内存区域大小**, **最大节点数**(0如果CONFIG\_NODES\_SHIFT没有在配置文件中设置，不然就是**2\^CONFIG\_NODES\_SHIFT**）和标志
+
+```cpp
+// arch/x86/Kconfig
+
+config NODES_SHIFT
+    int "Maximum NUMA Nodes (as a power of 2)" if !MAXSMP
+    range 1 10 
+    default "10" if MAXSMP
+    default "6" if X86_64
+    default "3"
+    depends on NEED_MULTIPLE_NODES
+    ---help---
+      Specify the maximum number of NUMA Nodes available on the target
+      system.  Increases memory reserved to accommodate various tables.
+```
+
+这样配置的结果就是生成的autoconf.h（**include/generated/autoconf.h**）定义了#define CONFIG\_NODES\_SHIFT 10等值，所以**所有的调用memblock\_add函数的都是属于node：2\^CONFIG\_NODES\_SHIFT（还有一个函数叫memblock\_add\_node,会传入nid！！！不是这儿使用！！！**）。
 
 ### 3.2.2 memblock\_add\_range函数代码
 
@@ -631,15 +659,23 @@ phys_addr_t __init __memblock_alloc_base(phys_addr_t size, phys_addr_t align, ph
 }
 
 //  http://lxr.free-electrons.com/source/mm/memblock.c?v=4.7#L1163
-phys_addr_t __init __memblock_alloc_base(phys_addr_t size, phys_addr_t align, phys_addr_t max_addr)
-{
-    return memblock_alloc_base_nid(size, align, max_addr, NUMA_NO_NODE,
-                       MEMBLOCK_NONE);
+phys_addr_t __init memblock_alloc_base_nid(phys_addr_t size,
+                    phys_addr_t align, phys_addr_t max_addr,
+                    int nid, ulong flags)
+{   
+    return memblock_alloc_range_nid(size, align, 0, max_addr, nid, flags);
 }
 ```
 memblock\_alloc()很粗暴的**从能用的内存里分配**,而有些情况下**需要从特定的内存范围内分配**内存.解决方法就是通过memblock\_alloc\_range\_nid函数或者实现类似机制的函数
 
 最终memblock\_alloc的也是通过memblock\_alloc\_range\_nid函数来完成内存分配的
+
+注意这里使用的是**NUMA\_NO\_NODE**，值为-1,NUMA\_NO\_NODE入参表示**无NUMA的节点**，毕竟当前**还没初始化**到那一步
+
+```cpp
+//include/linux/numa.h
+#define NUMA_NO_NODE    (-1)
+```
 
 ### 3.4.2 memblock\_alloc\_range_nid函数
 
@@ -766,6 +802,24 @@ __memblock_find_range_top_down(phys_addr_t start, phys_addr_t end,
 
     return 0;
 }
+
+// include/linux/memblock.h
+#define for_each_free_mem_range_reverse(i, nid, flags, p_start, p_end,  \
+                    p_nid)              \
+    for_each_mem_range_rev(i, &memblock.memory, &memblock.reserved, \
+                   nid, flags, p_start, p_end, p_nid)
+                   
+#define for_each_mem_range_rev(i, type_a, type_b, nid, flags,       \
+                    p_start, p_end, p_nid)           \
+    for (i = (u64)ULLONG_MAX,                   \
+             __next_mem_range_rev(&i, nid, flags, type_a, type_b,\
+                      p_start, p_end, p_nid);   \
+         i != (u64)ULLONG_MAX;                  \
+         __next_mem_range_rev(&i, nid, flags, type_a, type_b,   \
+                  p_start, p_end, p_nid))
+
+// include/linux/kernel.h
+#define ULLONG_MAX  (~0ULL)
 ```
 
 - 函数通过使用for\_each\_free\_mem\_range\_reverse宏封装调用\_\_next\_free\_mem\_range\_rev()函数，此函数**逐一**将**memblock.memory**里面的**内存块信息**提取出来与**memblock.reserved**的**各项信息**进行检验，**确保**返回的**this\_start和this\_end**不会是分配过的内存块。
@@ -926,7 +980,7 @@ endif
 
 bootmem的**核心函数\_\_alloc\_memory\_core()**的实现机制我们前一篇文章[**引导分配器bootmem**]已经讲过了,那么memblock下nobootmem的**核心函数\_\_alloc\_memory\_core\_early**是怎么实现的呢?
 
-前面[**3.4.1节memblock\_alloc函数代码**]我们分析memblock\_alloc函数的时候提到, 该函数最终通过memblock\_alloc\_range\_nid函数粗暴粗暴的进行内存分配, 而有些情况下需要从特定的内存范围内分配内存.解决方法就是通过memblock\_alloc\_range\_nid函数或者实现类似机制的函数,这里的**\_\_alloc\_memory\_core\_early函数**就是基于memblock\_alloc\_range\_nid同样的思路实现的函数
+前面[**3.4.1节memblock\_alloc函数代码**]我们分析memblock\_alloc函数的时候提到, 该函数最终通过memblock\_alloc\_range\_nid函数粗暴粗暴的进行内存分配, 而有些情况下需要从特定的内存范围内分配内存.解决方法就是通过memblock\_alloc\_range\_nid函数或者实现类似机制的函数,这里**的\_\_alloc\_memory\_core\_early函数**就是基于memblock\_alloc\_range\_nid同样的思路实现的函数
 
 - 首先使用memblock\_find\_in\_range\_node指定内存区域和大小查找内存区域
 
@@ -1017,7 +1071,9 @@ void __init memblock_x86_fill(void)
 }
 ```
 
-比较简单,通过e820中的信息**memblock\_add**(),将内存添加到memblock中的**memory**中,当做可分配内存.**后两个函数**主要是修剪内存**使之对齐和输出信息**.
+比较简单,通过e820中的信息**memblock\_add**(),将内存添加到memblock中的**memory**中（**这儿参见上面memblock\_add，其实现中使用nid是2\^CONFIG\_NODES\_SHIFT！！！初始化这儿是不区分node的！！！**）,当做可分配内存.**后两个函数**主要是修剪内存**使之对齐和输出信息**.
+
+**参见memblock\_add实现，我们知道e820信息添加到memblock阶段是不涉及区分node的！！！**
 
 至此, 我们的memblock就初始化好了, 简单而且粗暴
 

@@ -157,13 +157,13 @@ void __init setup_arch(char **cmdline_p)
 
 ## 1.4 (第一阶段)启动过程中的内存分配器
 
-使用memblock\_reserve函数分配内存，终点是bootmem或者memblock初始化完成
+因为**bootmem或memblock没有初始化**，所以**只是使用memblock\_reserve函数分配内存**，终点是**bootmem或者memblock初始化完成后，进入第二阶段，bootmem或memblock开始接管**。
 
 早期的内核中内存分配器使用的**bootmem引导分配器**,它基于一个内存位图bitmap, 使用最优适配算法来查找内存,但是这个分配器有很大的缺陷,最严重的就是**内存碎片**的问题, 因此在后来的内核中将其舍弃《而使用了**新的memblock机制**.**memblock机制的初始化**在arm64上是通过[**arm64\_memblock\_init**](http://lxr.free-electrons.com/source/arch/arm64/kernel/setup.c?v=4.7#L229)函数来实现的.
 
 ## 1.5 第二阶段(一)初始化内存管理数据结构
 
-我们之前讲了在**memblock完成**之后,内存初始化开始进入第二阶段,第二阶段是一个漫长的过程,它执行了一系列复杂的操作,从体系结构相关信息的初始化慢慢向上层展开, 其主要执行了如下操作
+我们之前讲了在**memblock完成**之后,内存初始化开始进入**第二阶段**,第二阶段是一个漫长的过程,**使用bootmem或memblock管理内存**,它执行了一系列复杂的操作,从体系结构相关信息的初始化慢慢向上层展开, 其**主要执行了如下操作**
 
 ### 1.5.1 特定于体系结构的设置
 
@@ -208,7 +208,7 @@ bootmem_init()
 
 最后我们的内存管理器已经初始化并设置完成,可以投入运行了,因此内核将内存管理的工作从早期的内存分配器(bootmem或者memblock)移交到我们的buddy伙伴系统.
 
-# 2 初始化前的准备工作
+# 2 buddy系统初始化前的准备工作
 
 ## 2.1 回到setup_arch函数(当前已经完成的工作)
 
@@ -230,7 +230,7 @@ void __init setup_arch(char **cmdline_p)
 
 到目前为止我们已经完成了如下工作
 
-- memblock已经通过arm64\_memblock\_init完成了初始化,至此系统中的内存可以通过memblock分配了
+- memblock已经通过arm64\_memblock\_init完成了初始化,至此系统中的**内存可以通过memblock分配**了
 
 - paging\_init完成了**分页机制**的初始化,至此内核已经**布局了一套完整的虚拟内存空间**
 
@@ -283,18 +283,36 @@ void __init bootmem_init(void)
 }
 ```
 
+```cpp
+// mm/memblock.c
+phys_addr_t __init_memblock memblock_start_of_DRAM(void)
+{
+	return memblock.memory.regions[0].base;
+}
+
+phys_addr_t __init_memblock memblock_end_of_DRAM(void)
+{
+	int idx = memblock.memory.cnt - 1;
+
+	return (memblock.memory.regions[idx].base + memblock.memory.regions[idx].size);
+}
+```
+
+**min、max是所有内存信息中最小、最大页帧号**。
+
 ## 2.3 zone\_sizes\_init函数
 
 在初始化内存结点和内存域之前,内核首先通过**setup\_arch**()-->**bootmem\_init**()-->**zone\_sizes\_init**()来**初始化节点和管理区**的一些数据项,其中关键的是**初始化**了系统中**各个内存域的页帧边界**，保存在**max\_zone\_pfn数组（非全局变量！！！**）.
 
-[zone\_sizes\_init](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L92)函数定义在[**arch/arm64/mm/init.c**?v=4.7, line 92](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L92), 由于**arm64支持NUMA和UMA两种存储器架构**, 因此该函数**依照NUMA和UMA**, 有**两种不同的实现**.
+[zone\_sizes\_init](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L92)函数定义在[**arch/arm64/mm/init.c**?v=4.7, line 92](http://lxr.free-electrons.com/source/arch/arm64/mm/init.c?v=4.7#L92),由于**arm64支持NUMA和UMA两种存储器架构**, 因此该函数**依照NUMA和UMA**, 有**两种不同的实现**.
 
 ```cpp
 #ifdef CONFIG_NUMA
 
 static void __init zone_sizes_init(unsigned long min, unsigned long max)
 {
-    // MAX_NR_ZONES是一个节点能容纳的zone的最大个数，enum类型最后一个
+    // MAX_NR_ZONES是一个节点能容纳的zone的最大个数（5），静态定义的宏，不是enum zone_type的__MAX_NR_ZONES
+    // 每个zone的pfn都初始化为0
     unsigned long max_zone_pfns[MAX_NR_ZONES]  = {0};
 
     if (IS_ENABLED(CONFIG_ZONE_DMA))
@@ -394,11 +412,13 @@ void __init free_area_init_nodes(unsigned long *max_zone_pfn)
 
     /*  依次遍历，确定各个内存域的边界    */
     for (i = 1; i < MAX_NR_ZONES; i++) {
+    
     	/*  由于ZONE_MOVABLE是一个虚拟内存域
          *  不与真正的硬件内存域关联
          *  该内存域的边界总是设置为0 */
         if (i == ZONE_MOVABLE)
             continue;
+            
         /*  第n个内存域的最小页帧
          *  即前一个（第n-1个）内存域的最大页帧  */
         arch_zone_lowest_possible_pfn[i] =
@@ -482,7 +502,7 @@ void __init free_area_init_nodes(unsigned long *max_zone_pfn)
 }
 ```
 
-free\_area\_init\_nodes函数中通过**循环遍历各个节点**，循环中调用了free\_area\_init\_node函数初始化该节点对应的pg\_data\_t和zone、page的数据.
+free\_area\_init\_nodes函数中通过**循环遍历各个节点**，循环中调用了**free\_area\_init\_node**函数初始化**该节点对应的pg\_data\_t和zone、page**的数据.
 
 ## 3.2 设置可使用的页帧编号
 
@@ -496,62 +516,52 @@ static unsigned long __meminitdata arch_zone_lowest_possible_pfn[MAX_NR_ZONES];
 static unsigned long __meminitdata arch_zone_highest_possible_pfn[MAX_NR_ZONES];
 ```
 
-- 全局数组arch\_zone\_lowest\_possible\_pfn用来存储**各个内存域**可使用的**最低内存页帧编号**
+- **全局数组arch\_zone\_lowest\_possible\_pfn**用来存储**各个内存域**可使用的**最低内存页帧编号**
 
-- 全局数组arch\_zone\_highest\_possible\_pfn用来存储**各个内存域**可使用的**最高内存页帧编号**
+- **全局数组arch\_zone\_highest\_possible\_pfn**用来存储**各个内存域**可使用的**最高内存页帧编号**
 
-**这两个值都是静态编译产生的！！！**
-
-通过max\_zone\_pfn传递给free\_area\_init\_nodes的信息记录了**各个内存域**包含的**最大页帧号**。free\_area\_init\_nodes将该信息转换为一种更方便的表示形式，即以［**low,high**］形式描述**各个内存域的页帧区间**，存储在前述的**全局变量**中（我省去了对这些变量填充字节0的初始化过程）：
-
+```cpp
+// include/generated/bounds.h
+#define MAX_NR_ZONES 5
 ```
+
+**MAX\_NR\_ZONES和这两个值都是静态编译产生的！！！**
+
+通过**max\_zone\_pfn**传递给free\_area\_init\_nodes的信息记录了**各个内存域**包含的**最大页帧号**。
+
+free\_area\_init\_nodes将该信息转换为一种更方便的表示形式，即以［**low,high**］形式描述**各个内存域的页帧区间**，存储在前述的**全局变量**中（我省去了对这些变量填充字节0的初始化过程）：
+
+```cpp
 /* 辅助函数find_min_pfn_with_active_regions
 * 用于找到注册的最低内存域中可用的编号最小的页帧 */
 arch_zone_lowest_possible_pfn[0] = find_min_pfn_with_active_regions();
 
 /*  max_zone_pfn记录了各个内存域包含的最大页帧号  */
 arch_zone_highest_possible_pfn[0] = max_zone_pfn[0];
-```
 
-辅助函数**find\_min\_pfn\_with\_active\_regions**用于找到注册的**最低内存域中可用的编号最小的页帧**。该内存域不必一定是ZONE\_DMA，例如，在计算机不需要DMA内存的情况下也可以是ZONE\_NORMAL。**最低内存域**的**最大页帧号**可以从max\_zone\_pfn提供的信息直接获得。
-
-```cpp
-void __init free_area_init_nodes(unsigned long *max_zone_pfn)
-{
-	/*  ......  */
-    arch_zone_lowest_possible_pfn[ZONE_MOVABLE] = 0;
-    arch_zone_highest_possible_pfn[ZONE_MOVABLE] = 0;
-
-    /* Find the PFNs that ZONE_MOVABLE begins at in each node */
-    memset(zone_movable_pfn, 0, sizeof(zone_movable_pfn));
-    
-    /*  用于计算进入ZONE_MOVABLE的内存数量  */
-    find_zone_movable_pfns_for_nodes();
-    
-    /*  依次遍历，确定各个内存域的边界    */
-    for (i = 1; i < MAX_NR_ZONES; i++) {
-    	/*  由于ZONE_MOVABLE是一个虚拟内存域
-         *  不与真正的硬件内存域关联
-         *  该内存域的边界总是设置为0 */
-        if (i == ZONE_MOVABLE)
-            continue;
-        /*  第n个内存域的最小页帧
-         *  即前一个（第n-1个）内存域的最大页帧  */
-        arch_zone_lowest_possible_pfn[i] =
-            arch_zone_highest_possible_pfn[i-1];
-        /*  不出意外，当前内存域的最大页帧
-         *  由max_zone_pfn给出  */
-        arch_zone_highest_possible_pfn[i] =
-            max(max_zone_pfn[i], arch_zone_lowest_possible_pfn[i]);
-    }
-
-    /*  ......  */
+/*  从1开始依次遍历，确定各个内存域的边界    */
+for (i = 1; i < MAX_NR_ZONES; i++) {
+    /*  由于ZONE_MOVABLE是一个虚拟内存域
+     *  不与真正的硬件内存域关联
+     *  该内存域的边界总是设置为0 */
+    if (i == ZONE_MOVABLE)
+        continue;
+    /*  第n个内存域的最小页帧
+     *  即前一个（第n-1个）内存域的最大页帧  */
+    arch_zone_lowest_possible_pfn[i] =
+        arch_zone_highest_possible_pfn[i-1];
+    /*  不出意外，当前内存域的最大页帧
+     *  由max_zone_pfn给出  */
+    arch_zone_highest_possible_pfn[i] =
+        max(max_zone_pfn[i], arch_zone_lowest_possible_pfn[i]);
 }
 ```
 
-## 3.3 构建其他内存域的页帧区间
+辅助函数**find\_min\_pfn\_with\_active\_regions**用于找到注册的**最低内存域中可用的编号最小的页帧**。该内存域**不一定是ZONE\_DMA**，例如，在计算机不需要DMA内存的情况下也可以是ZONE\_NORMAL。**最低内存域**的**最大页帧号**可以从max\_zone\_pfn提供的信息直接获得。
 
 接下来构建**其他内存域**的页帧区间，方法很直接：第n个内存域的最小页帧，即前一个（第n-1个）内存域的最大页帧。当前内存域的最大页帧由max\_zone\_pfn给出
+
+## 3.3 构建其他内存域的页帧区间
 
 ```cpp
 void __init free_area_init_nodes(unsigned long *max_zone_pfn)
@@ -571,7 +581,7 @@ void __init free_area_init_nodes(unsigned long *max_zone_pfn)
 ```
 由于ZONE\_MOVABLE是一个**虚拟内存域**，不与真正的硬件内存域关联，该内存域的边界总是设置为0。回忆前文，可知只有在指定了**内核命令行参数kernelcore或movablecore**之一时，该**内存域才会存在**.
 
-该内存域一般开始于各个结点的某个特定内存域的某一页帧号。相应的编号在find\_zone\_movable\_pfns\_for\_nodes里计算。
+该内存域一般开始于**各个结点**的**某个特定内存域**的**某一页帧号**。相应的编号在**find\_zone\_movable\_pfns\_for\_nodes**里计算。
 
 现在可以向用户提供一些有关已确定的页帧区间的信息。举例来说，其中可能包括下列内容（输出取自AMD64系统，有4 GiB物理内存）：
 
@@ -584,9 +594,55 @@ DMA32 4096 -> 1048576
 Normal 1048576 -> 1245184
 ```
 
+x86\_64系统，16GB物理内存：
+
+```
+[root@tsinghua-pcm ~]# free -h
+              total        used        free      shared  buff/cache   available
+Mem:            15G        912M         11G         28M        3.7G         14G
+Swap:          2.0G          0B        2.0G
+```
+
+```
+[root@tsinghua-pcm ~]#dmesg
+···
+BIOS-provided physical RAM map:
+BIOS-e820: [mem 0x0000000000000000-0x000000000009ebff] usable
+BIOS-e820: [mem 0x000000000009ec00-0x000000000009ffff] reserved
+BIOS-e820: [mem 0x00000000000dc000-0x00000000000fffff] reserved
+BIOS-e820: [mem 0x0000000000100000-0x00000000bfecffff] usable
+BIOS-e820: [mem 0x00000000bfed0000-0x00000000bfefefff] ACPI data
+BIOS-e820: [mem 0x00000000bfeff000-0x00000000bfefffff] ACPI NVS
+BIOS-e820: [mem 0x00000000bff00000-0x00000000bfffffff] usable
+BIOS-e820: [mem 0x00000000f0000000-0x00000000f7ffffff] reserved
+BIOS-e820: [mem 0x00000000fec00000-0x00000000fec0ffff] reserved
+BIOS-e820: [mem 0x00000000fee00000-0x00000000fee00fff] reserved
+BIOS-e820: [mem 0x00000000fffe0000-0x00000000ffffffff] reserved
+BIOS-e820: [mem 0x0000000100000000-0x000000043fffffff] usable
+···
+NUMA: Node 0 [mem 0x00000000-0x0009ffff] + [mem 0x00100000-0xbfffffff] -> [mem 0x00000000-0xbfffffff]
+NUMA: Node 0 [mem 0x00000000-0xbfffffff] + [mem 0x100000000-0x43fffffff] -> [mem 0x00000000-0x43fffffff]
+NODE_DATA(0) allocated [mem 0x43ffd5000-0x43fffffff]
+crashkernel: memory value expected
+···
+Zone ranges:
+   DMA      [mem 0x0000000000001000-0x0000000000ffffff]
+   DMA32    [mem 0x0000000001000000-0x00000000ffffffff]
+   Normal   [mem 0x0000000100000000-0x000000043fffffff]
+   Device   empty    
+Movable zone start for each node
+Early memory node ranges
+   node   0: [mem 0x0000000000001000-0x000000000009dfff]
+   node   0: [mem 0x0000000000100000-0x00000000bfecffff]
+   node   0: [mem 0x00000000bff00000-0x00000000bfffffff]
+   node   0: [mem 0x0000000100000000-0x000000043fffffff]
+```
+
+注：**0x000000043fffffff即16GB，BIOS全部已经识别到了！！！**
+
 ## 3.4 建立结点数据结构
 
-free\_area\_init\_nodes剩余的部分遍历所有结点，分别建立其数据结构
+free\_area\_init\_nodes剩余的部分**遍历所有结点**，分别建立其数据结构
 
 ```cpp
 void __init free_area_init_nodes(unsigned long *max_zone_pfn)
@@ -619,13 +675,11 @@ void __init free_area_init_nodes(unsigned long *max_zone_pfn)
 }
 ```
 
-代码遍历所有活动结点，并分别对各个结点调用free\_area\_init\_node建立数据结构。该函数需要结点第一个可用的页帧作为一个参数，而find\_min\_pfn\_for\_node则从early\_node\_map数组提取该信息。
+代码遍历**所有活动结点**，并分别对**各个结点**调用**free\_area\_init\_node**建立数据结构。该函数需要**结点第一个可用的页帧**作为一个参数，而find\_min\_pfn\_for\_node则从**early\_node\_map数组**提取该信息。
 
-如果根据node\_present\_pages字段判断结点具有内存，则在结点位图中设置N\_HIGH\_MEMORY标志。我们知道该标志只表示结点上存在普通或高端内存，因此check\_for\_regular\_memory进一步检查低于ZONE\_HIGHMEM的内存域中是否有内存，并据此在结点位图中相应地设置N\_NORMAL\_MEMORY标志
+如果根据**node\_present\_pages**字段判断**结点具有内存**，则在结点位图中设置N\_HIGH\_MEMORY标志。我们知道该标志**只表示**结点上存在**普通或高端内存**，因此**check\_for\_regular\_memory**进一步检查**低于ZONE\_HIGHMEM**的内存域中是否有内存，并据此在结点位图中相应地**设置N\_NORMAL\_MEMORY标志**
 
 # 4 free\_area\_init\_node初始化UMA内存结点
-
-[free\_area\_init\_nodes](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6076)函数初始化所有结点的pg\_data\_t和zone、page的数据，并打印了管理区信息.
 
 ## 4.1 free\_area\_init\_node函数注释
 
@@ -675,7 +729,7 @@ void __paginginit free_area_init_node(int nid, unsigned long *zones_size,
 ```
 ## 4.2 流程分析
 
-- [calculate\_node\_totalpages](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5789)函数累计各个内存域的页数，计算结点中页的总数。对连续内存模型而言，这可以通过zone\_sizes\_init完成，但calculate\_node\_totalpages还考虑了内存空洞,该函数定义在[mm/page_alloc.c, line 5789](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5789)
+- [calculate\_node\_totalpages](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5789)函数累计各个内存域的页数，计算结点中页的总数。对**连续内存模型**而言，这可以通过**zone\_sizes\_init完成**，但calculate\_node\_totalpages还考虑了内存空洞,该函数定义在[**mm/page_alloc.c**, line 5789](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5789)
 
 以下例子取自一个UMA系统, 具有512 MiB物理内存。
 
@@ -685,15 +739,28 @@ void __paginginit free_area_init_node(int nid, unsigned long *zones_size,
 On node 0 totalpages: 131056
 ```
 
-- [alloc\_node\_mem\_map(pgdat)](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6030)函数分配了该节点的页面描述符数组[pgdat->node\_mem\_map数组的内存分配.
+UMA系统，x86\_64系统，16GB内存
 
-- 继续调用[free\_area\_init\_core](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5932)函数，继续初始化该节点的pg\_data\_t结构，初始化zone以及page结构 ，##2.6	free\_area\_init\_core函数是初始化zone的核心
+```
+On node 0 totalpages: 4194157
+    DMA zone: 64 pages used for memmap
+    DMA zone: 21 pages reserved
+    DMA zone: 3997 pages, LIFO batch:0
+    DMA32 zone: 12224 pages used for memmap
+    DMA32 zone: 782288 pages, LIFO batch:31
+    Normal zone: 53248 pages used for memmap
+    Normal zone: 3407872 pages, LIFO batch:31
+```
 
-## 4.3 alloc_node_mem_map函数
--------
+4194157个页面，一个页面4KB，一共15GB内存大小
 
+- [alloc\_node\_mem\_map(pgdat)](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6030)函数分配了**该节点的页面描述符数组**[pgdat->node\_mem\_map数组的内存分配.
 
-alloc_node_mem_map负责初始化一个简单但非常重要的数据结构。如上所述，系统中的各个物理内存页，都对应着一个struct page实例。该结构的初始化由alloc_node_mem_map执行
+- 继续调用[free\_area\_init\_core](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5932)函数，继续初始化**该节点的pg\_data\_t结构**，**初始化zone以及page结构** ，##2.6	**free\_area\_init\_core函数是初始化zone的核心**
+
+## 4.3 alloc\_node\_mem\_map函数
+
+alloc\_node\_mem\_map负责初始化一个简单但非常重要的数据结构。如上所述，系统中的**各个物理内存页**，都对应着一个**struct page实例**。该结构的初始化由alloc\_node\_mem\_map执行
 
 
 ```cpp
@@ -745,27 +812,19 @@ static void __init_refok alloc_node_mem_map(struct pglist_data *pgdat)
 ```
 没有页的空结点显然可以跳过。如果特定于体系结构的代码尚未建立内存映射（这是可能的，例如，在IA-64系统上），则必须分配与该结点关联的所有struct page实例所需的内存。各个体系结构可以为此提供一个特定的函数。但目前只有在IA-32系统上使用不连续内存配置时是这样。在所有其他的配置上，则使用普通的自举内存分配器进行分配。请注意，代码将内存映射对齐到伙伴系统的最大分配阶，因为要使所有的计算都工作正常，这是必需的。
 
-
-指向该空间的指针不仅保存在pglist_data实例中，还保存在全局变量mem_map中，前提是当前考察的结点是系统的第0个结点（如果系统只有一个内存结点，则总是这样）。mem_map是一个全局数组，在讲解内存管理时，我们会经常遇到, 定义在[mm/memory.c?v=4.7, line 85](http://lxr.free-electrons.com/source/mm/memory.c?v=4.7#L85)
+指向该空间的指针不仅保存在pglist\_data实例中，还保存在全局变量mem\_map中，前提是当前考察的结点是系统的第0个结点（如果系统只有一个内存结点，则总是这样）。mem\_map是一个全局数组，在讲解内存管理时，我们会经常遇到, 定义在[mm/memory.c?v=4.7, line 85](http://lxr.free-electrons.com/source/mm/memory.c?v=4.7#L85)
 
 ```cpp
 struct page *mem_map;
 ```
 
-
-
 然后在free_area_init_node函数的最后, 通过free_area_init_core来完成内存域zone的初始化
 
+# 5 free\_area\_init\_core初始化内存域zone
 
+初始化内存域数据结构涉及的繁重工作由free\_area\_init\_core执行，它会依次遍历结点的所有内存域, 该函数定义在[mm/page_alloc.c?v=4.7, line 5932](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5932)
 
-#5	free_area_init_core初始化内存域zone
--------
-
-初始化内存域数据结构涉及的繁重工作由free_area_init_core执行，它会依次遍历结点的所有内存域, 该函数定义在[mm/page_alloc.c?v=4.7, line 5932](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5932)
-
-
-##5.1	free_area_init_core函数代码注释
--------
+## 5.1 free\_area\_init\_core函数代码注释
 
 ```cpp
 /*
