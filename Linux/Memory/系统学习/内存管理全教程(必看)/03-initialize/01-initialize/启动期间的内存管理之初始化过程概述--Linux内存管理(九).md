@@ -449,7 +449,6 @@ void __init setup_arch(char **cmdline_p)
 {
     /* ...... */
     x86_init.oem.arch_setup();
-    /* 探测物理内存 */
     e820__memory_setup();
     parse_setup_data();
     
@@ -483,31 +482,34 @@ void __init setup_arch(char **cmdline_p)
     reserve_brk();
     
     memblock_set_current_limit(ISA_END_ADDRESS);
+    
     /* memblock建立 */
     e820__memblock_setup();
     
-    /* 初始化内存映射机制 */
+    /* 初始化低端内存和高端内存固定映射区的页表 */
     init_mem_mapping();
     
     /* 初始化内存分配器 */
     initmem_init();
     
-    /* 建立页表 */
+    /* 建立高端内存永久映射区的页表并获取固定映射区的临时映射区页表 */
     x86_init.paging.pagetable_init();
 }
 ```
 
 几乎所有的内存初始化工作都是在setup_arch()中完成的，主要的工作包括：
 
-（1）建立内存：e820\_\_memory\_setup();
+（1）建立内存：e820\_\_memory\_setup()，排序整理e820提供的内存，对应原来的**setup\_memory\_map**，可以参见教程Linux-3.14.12的《8. 系统启动阶段的memblock算法（一）》;
 
 （2）调用e820\_end\_of\_ram\_pfn()找出最大可用页帧号max\_pfn，调用find\_low\_pfn\_range()找出低端内存区的最大可用页帧号max\_low\_pfn。
 
-（2）初始化内存映射机制：init\_memory\_mapping()；
+（2）初始化低端内存和高端内存固定映射区的页表：init\_memory\_mapping()；
 
 （3）初始化内存分配器：initmem\_init()；
 
-（4）建立完整的页表：x86\_init.paging.pagetable\_init()。
+（4）建立高端内存永久映射区的页表并获取固定映射区的临时映射区页表：x86\_init.paging.pagetable\_init()。
+
+**x86的setup\_arch可以参见教程Linux-3.14.12**
 
 ## 4.3 bootmem\_init初始化内存的基础数据结构(结点pg\_data, 内存域zone, 页面page)
 

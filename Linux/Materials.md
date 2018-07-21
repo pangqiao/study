@@ -32,6 +32,8 @@ Linux工程导论：https://blog.csdn.net/column/details/linux-kernel-no-code.ht
 
 各种管理：https://blog.csdn.net/bullbat
 
+https://blog.csdn.net/younger_china/article/category/960611
+
 - 书籍资料：
 
 赵炯书籍网站：http://www.oldlinux.org/

@@ -23,3 +23,7 @@ http://www.cnblogs.com/wuchanming/category/684643.html
 http://blog.chinaunix.net/uid-21718047-id-3140037.html
 
 https://blog.csdn.net/lwhuq/article/category/7006255
+
+https://blog.csdn.net/younger_china/article/category/960611
+
+ARM 4.X：http://www.cnblogs.com/alantu2018/category/1163287.html
