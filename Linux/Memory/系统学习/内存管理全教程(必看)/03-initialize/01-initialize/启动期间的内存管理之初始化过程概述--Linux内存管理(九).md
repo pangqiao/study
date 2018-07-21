@@ -43,7 +43,7 @@ Linux把物理内存划分为三个层次来管理
 
 - 接着各个节点又被划分为内存管理区域, 一个**管理区域**通过struct zone\_struct描述, 其被定义为zone\_t,用以表示内存的某个范围,低端范围的16MB被描述为ZONE\_DMA,某些工业标准体系结构中的(ISA)设备需要用到它,然后是可直接映射到内核的普通内存域ZONE\_NORMAL,最后是超出了内核段的物理地址域ZONE\_HIGHMEM, 被称为高端内存.　是系统中预留的可用内存空间, 不能被内核直接映射.
 
-- 最后**页帧(page frame)**代表了系统内存的最小单位, 堆内存中的每个页都会创建一个struct page的一个实例. 传统上，把内存视为连续的字节，即内存为字节数组，内存单元的编号(地址)可作为字节数组的索引. 分页管理时，将若干字节视为一页，比如4K byte. 此时，内存变成了连续的页，即内存为页数组，每一页物理内存叫页帧，以页为单位对内存进行编号，该编号可作为页数组的索引，又称为页帧号.
+- 最后**页帧(page frame**)代表了系统内存的最小单位, 堆内存中的每个页都会创建一个struct page的一个实例. 传统上，把内存视为连续的字节，即内存为字节数组，内存单元的编号(地址)可作为字节数组的索引. 分页管理时，将若干字节视为一页，比如4K byte. 此时，内存变成了连续的页，即内存为页数组，每一页物理内存叫页帧，以页为单位对内存进行编号，该编号可作为页数组的索引，又称为页帧号.
 
 ## 1.2 内存结点pg\_data\_t
 
@@ -420,7 +420,12 @@ start_kernel()
 
 ## 4.2 体系结构相关的初始化工作setup_arch
 
+Linux内核启动函数start\_kernel()，这里会调用setup\_arch()完成与体系结构相关的一系列初始化工作，其中就包括各种内存的初始化工作，如内存图的建立、管理区的初始化等等。
+
+ARM64的setup\_arch
+
 ```cpp
+//arm64
 setup_arch(char **cmdline_p)
     |---->arm64_memblock_init( );
     |     初始化引导阶段的内存分配器memblock
@@ -434,6 +439,75 @@ setup_arch(char **cmdline_p)
     |		初始化内存数据结构包括内存节点和内存域
 }
 ```
+
+x86的setup\_arch
+
+```cpp
+// arch/x86/kernel/setup.c
+
+void __init setup_arch(char **cmdline_p)
+{
+    /* ...... */
+    x86_init.oem.arch_setup();
+    /* 探测物理内存 */
+    e820__memory_setup();
+    parse_setup_data();
+    
+    /* ...... */
+    
+    /* update the e820_saved too */
+    e820__reserve_setup_data();
+    
+    max_pfn = e820__end_of_ram_pfn();
+    
+#ifdef CONFIG_X86_32
+    /* max_low_pfn在这里更新 */
+    find_low_pfn_range(); /* 找出低端内存的最大页帧号 */
+#else
+    check_x2apic();
+    
+    /* How many end-of-memory variables you have, grandma! */
+    /* need this before calling reserve_initrd */
+    if (max_pfn > (1UL<<(32 - PAGE_SHIFT)))
+        max_low_pfn = e820__end_of_low_ram_pfn();
+    else
+        max_low_pfn = max_pfn;
+ 
+    high_memory = (void *)__va(max_pfn * PAGE_SIZE - 1) + 1;
+#endif
+
+    /*页表缓冲区申请*/
+    early_alloc_pgt_buf();
+    
+    /* e820__memblock_setup()之前需要 */
+    reserve_brk();
+    
+    memblock_set_current_limit(ISA_END_ADDRESS);
+    /* memblock建立 */
+    e820__memblock_setup();
+    
+    /* 初始化内存映射机制 */
+    init_mem_mapping();
+    
+    /* 初始化内存分配器 */
+    initmem_init();
+    
+    /* 建立页表 */
+    x86_init.paging.pagetable_init();
+}
+```
+
+几乎所有的内存初始化工作都是在setup_arch()中完成的，主要的工作包括：
+
+（1）建立内存：e820\_\_memory\_setup();
+
+（2）调用e820\_end\_of\_ram\_pfn()找出最大可用页帧号max\_pfn，调用find\_low\_pfn\_range()找出低端内存区的最大可用页帧号max\_low\_pfn。
+
+（2）初始化内存映射机制：init\_memory\_mapping()；
+
+（3）初始化内存分配器：initmem\_init()；
+
+（4）建立完整的页表：x86\_init.paging.pagetable\_init()。
 
 ## 4.3 bootmem\_init初始化内存的基础数据结构(结点pg\_data, 内存域zone, 页面page)
 
