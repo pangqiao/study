@@ -328,7 +328,7 @@ static void set_zonelist_order(void)
 
 - 如果系统是NUMA结构, 则设置为系统指定的方式即可
 
-1.当前的排列方式为ZONELIST\_ORDER\_DEFAULT, 即系统默认方式,则current\_zonelist\_order则由内核交给default\_zonelist\_order采用一定的算法选择一个最优的分配策略,目前的系统中如果是**32位则配置为ZONE方式**, 而如果是**64位系统**则设置为**NODE方式**
+1. 当前的排列方式为ZONELIST\_ORDER\_DEFAULT, 即系统默认方式,则current\_zonelist\_order则由内核交给default\_zonelist\_order采用一定的算法选择一个最优的分配策略,目前的系统中如果是**32位则配置为ZONE方式**, 而如果是**64位系统**则设置为**NODE方式**
 
 2. 当前的排列方式不是默认方式,则设置为user\_zonelist\_order指定的内存域排列方式
 
@@ -436,10 +436,10 @@ early_param("numa_zonelist_order", setup_numa_zonelist_order);
 
 # 4 build\_all\_zonelists\_init完成内存域zonelists的初始化
 
-build\_all\_zonelists函数在通过set\_zonelist\_order设置了zonelists中结点的组织顺序后,首先检查了sytem\_state标识.如果当前系统处于boot阶段(SYSTEM\_BOOTING),就开始通过build\_all\_zonelists\_init函数初始化zonelist
+build\_all\_zonelists函数在通过set\_zonelist\_order**设置**了zonelists中**结点的组织顺序后**,首先**检查**了**sytem\_state标识**.如果当前系统处于boot阶段(SYSTEM\_BOOTING),就开始通过build\_all\_zonelists\_init函数初始化zonelist
 
 ```cpp
-build_all_zonelists(pg_data_t *pgdat, struct zone *zone)
+void __ref build_all_zonelists(pg_data_t *pgdat, struct zone *zone)
 {
 	/*  设置zonelist中节点和内存域的组织形式
      *  current_zonelist_order变量标识了当前系统的内存组织形式
@@ -484,7 +484,7 @@ else
 
 ## 4.2 build\_all\_zonelists\_init函数
 
-build\_all\_zonelists函数在如果当前系统处于boot阶段(system\_state == SYSTEM\_BOOTING), 就开始通过build\_all\_zonelists\_init函数初始化zonelist
+build\_all\_zonelists函数在如果当前系统处于boot阶段(system\_state == SYSTEM\_BOOTING),就开始通过build\_all\_zonelists\_init函数初始化zonelist
 
 build\_all\_zonelists\_init函数定义在[mm/page_alloc.c?v=4.7, line 5013](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5013)
 
@@ -497,7 +497,7 @@ build_all_zonelists_init(void)
     cpuset_init_current_mems_allowed();
 }
 ```
-build\_all\_zonelists\_init将将所有工作都委托给\_\_build\_all\_zonelists完成了zonelists的初始化工作,后者又对系统中的各个NUMA结点分别调用build_zonelists. 
+build\_all\_zonelists\_init将将所有工作都委托给\_\_build\_all\_zonelists完成了zonelists的**初始化工作**,**后者里面**又对系统中的**各个NUMA结点**分别调用**build\_zonelists**. 
 
 函数\_\_build\_all\_zonelists定义在[mm/page_alloc.c?v=4.7, line 4959](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4959)
 
@@ -522,55 +522,60 @@ static int __build_all_zonelists(void *data)
 
 `for_each_online_node`遍历了系统中**所有的活动结点**. 
 
-由于UMA系统只有一个结点，build\_zonelists只调用了一次,就对所有的内存创建了内存域列表.
+由于**UMA系统**只有一个结点，build\_zonelists只调用了一次,就对所有的内存创建了内存域列表.
 
-NUMA系统调用该函数的次数等同于结点的数目.每次调用对一个不同结点生成内存域数据
+**NUMA系统**调用该函数的次数等同于结点的数目.**每次调用**对**一个不同结点**生成内存域数据
 
 ## 4.3 build\_zonelists初始化每个内存结点的zonelists
 
-build\_zonelists(pg\_data\_t \*pgdat)完成了节点pgdat上zonelists的初始化工作,它建立了备用层次结构zonelists. 由于UMA和NUMA架构下结点的层次结构有很大的区别,因此内核分别提供了两套不同的接口.
+build\_zonelists(pg\_data\_t \*pgdat)完成了节点pgdat上zonelists的初始化工作,它建立了备用层次结构zonelists. 由于**UMA和NUMA架构**下**结点的层次结构有很大的区别**,因此内核分别提供了**两套不同的接口**.
 
 如下所示
 
 ```cpp
 // http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7
-4571 #ifdef CONFIG_NUMA
+#ifdef CONFIG_NUMA
 
-4586 static int __parse_numa_zonelist_order(char *s)
+static int __parse_numa_zonelist_order(char *s)
 
-4601 static __init int setup_numa_zonelist_order(char *s)
+static __init int setup_numa_zonelist_order(char *s)
 
-4619 int numa_zonelist_order_handler(struct ctl_table *table, int write,
-4620                 void __user *buffer, size_t *length,
+int numa_zonelist_order_handler(struct ctl_table *table, int write,
+             void __user *buffer, size_t *length,
 
-4678 static int find_next_best_node(int node, nodemask_t *used_node_mask)
+static int find_next_best_node(int node, nodemask_t *used_node_mask)
 
-4730 static void build_zonelists_in_node_order(pg_data_t *pgdat, int node)
+static void build_zonelists_in_node_order(pg_data_t *pgdat, int node)
 
-4746 static void build_thisnode_zonelists(pg_data_t *pgdat)
+static void build_thisnode_zonelists(pg_data_t *pgdat)
 
-4765 static void build_zonelists_in_zone_order(pg_data_t *pgdat, int nr_nodes)
+static void build_zonelists_in_zone_order(pg_data_t *pgdat, int nr_nodes)
 
-4789 #if defined(CONFIG_64BIT)
+#if defined(CONFIG_64BIT)
 
-4795 static int default_zonelist_order(void)
-4799 #else
-4808 static int default_zonelist_order(void)
-4812 #endif /* CONFIG_64BIT */
+static int default_zonelist_order(void)
 
-4822 static void build_zonelists(pg_data_t *pgdat)
+#else
 
-4872 #ifdef CONFIG_HAVE_MEMORYLESS_NODES
-4879 int local_memory_node(int node)
-4888 #endif
+static int default_zonelist_order(void)
 
-4890 #else   /* CONFIG_NUMA */
+#endif /* CONFIG_64BIT */
 
-4897 static void build_zonelists(pg_data_t *pgdat)
+static void build_zonelists(pg_data_t *pgdat)
 
-4892 static void set_zonelist_order(void)
+#ifdef CONFIG_HAVE_MEMORYLESS_NODES
 
-4931 #endif  /* CONFIG_NUMA */
+int local_memory_node(int node)
+
+#endif
+
+#else   /* CONFIG_NUMA */
+
+static void build_zonelists(pg_data_t *pgdat)
+
+static void set_zonelist_order(void)
+
+#endif  /* CONFIG_NUMA */
 ```
 
 | 函数 | NUMA | UMA |
@@ -579,9 +584,9 @@ build\_zonelists(pg\_data\_t \*pgdat)完成了节点pgdat上zonelists的初始�
 
 我们以UMA结构下的build\_zonelists为例,来讲讲内核是怎么初始化备用内存域层次结构的, UMA结构下的build\_zonelists函数定义在[mm/page_alloc.c?v=4.7, line 4897](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4897), 如下所示
 
-node\_zonelists的数组元素通过指针操作寻址,这在C语言中是完全合法的惯例。实际工作则委托给build\_zonelist\_node。在调用时，它首先生成本地结点内分配内存时的备用次
+node\_zonelists的数组元素通过指针操作寻址,这在C语言中是完全合法的惯例。实际工作则委托给build\_zonelist\_node。在调用时，它首先生成**本地结点**内分配内存时的备用层次
 
-内核在build\_zonelists中按分配代价从昂贵到低廉的次序,迭代了结点中所有的内存域. 而在build\_zonelists\_node中,则按照分配代价从低廉到昂贵的次序, 迭代了分配代价不低于当前内存域的内存域.
+内核在build\_zonelists中按分配代价**从昂贵到低廉的次序**,迭代了结点中**所有的内存域**.而在build\_zonelists\_node中,则按照分配代价**从低廉到昂贵的次序**,迭代了分配代价**不低于当前内存域的内存域(！！！**）.
 
 首先我们来看看build\_zonelists\_node函数,该函数定义在[mm/page_alloc.c?v=4.7, line 4531](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4531)
 
@@ -610,17 +615,17 @@ static int build_zonelists_node(pg_data_t *pgdat, struct zonelist *zonelist, int
 }
 ```
 
-备用列表zonelists的各项是借助于zone\_type参数排序的,该参数指定了最优先选择哪个内存域, 该参数的初始值是外层循环的控制变量i.
+**备用列表zonelists**的各项是借助于**zone\_type参数排序**的,该参数指定了最优先选择哪个内存域, 该参数的初始值是外层循环的控制变量i.
 
 我们知道其值可能是ZONE\_HIGHMEM、ZONE\_NORMAL、ZONE\_DMA或ZONE\_DMA32之一.
 
-nr_zones表示从备用列表中的哪个位置开始填充新项. 由于列表中尚没有项, 因此调用者传递了0.
+nr\_zones表示从备用列表中的哪个位置开始填充新项. 由于列表中尚没有项, 因此调用者传递了0.
 
-内核在build\_zonelists中按分配代价从昂贵到低廉的次序,迭代了结点中所有的内存域. 而在build\_zonelists\_node中,则按照分配代价从低廉到昂贵的次序, 迭代了分配代价不低于当前内存域的内存域.
+内核在build\_zonelists中按分配代价从昂贵到低廉的次序,迭代了结点中所有的内存域.而在build\_zonelists\_node中,则按照分配代价从低廉到昂贵的次序,迭代了分配代价不低于当前内存域的内存域.
 
-在build\_zonelists\_node的每一步中,都对所选的内存域调用populated\_zone, 确认zone->present\_pages大于0,即**确认内存域中确实有页存在**.倘若如此, 则将指向zone实例的指针添加到zonelist->zones中的当前位置. 后备列表的当前位置保存在nr\_zones.
+在build\_zonelists\_node的每一步中,都对所选的**内存域**调用populated\_zone,确认**zone->present\_pages**大于0,即**确认内存域中确实有页存在**.倘若如此,则将指向zone实例的指针添加到zonelist->zones中的当前位置. 后备列表的当前位置保存在nr\_zones.
 
-在每一步结束时, 都将内存域类型zone\_type减1.换句话说,设置为一个更昂贵的内存域类型. 例如,如果开始的内存域是ZONE\_HIGHMEM,减1后下一个内存域类型是ZONE\_NORMAL.
+在每一步结束时, 都将**内存域类型zone\_type减1**.换句话说,设置为一个更昂贵的内存域类型. 例如,如果开始的内存域是ZONE\_HIGHMEM,减1后下一个内存域类型是ZONE\_NORMAL.
 
 考虑一个系统, 有内存域ZONE\_HIGHMEM、ZONE\_NORMAL、ZONE\_DMA。在第一次运行build\_zonelists\_node时, 实际上会执行下列赋值
 
