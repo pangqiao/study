@@ -227,9 +227,10 @@ nr\_zones存储了结点中不同内存域的数目
 ```cpp
 typedef struct pglist_data
 {
-    struct page *node_mem_map;		/*  指向page实例数组的指针，用于描述结点的所有物理内存页，它包含了结点中所有内存域的页。    */
+    /*  指向page实例数组的指针，用于描述结点的所有物理内存页，它包含了结点中所有内存域的页。    */
+    struct page *node_mem_map;
 
-	/* /*起始页面帧号，指出该节点在全局mem_map中的偏移
+	/* 起始页面帧号，指出该节点在全局mem_map中的偏移
     系统中所有的页帧是依次编号的，每个页帧的号码都是全局唯一的（不只是结点内唯一）  */
     unsigned long node_start_pfn;
     unsigned long node_present_pages; /* total number of physical pages 结点中页帧的数目 */
@@ -238,12 +239,11 @@ typedef struct pglist_data
 } pg_data_t;
 ```
 
-其中node\_mem\_map是指向页面page实例数组的指针,用于描述结点的**所有物理内存页**. 它包含了结点中所有内存域的页.
+其中node\_mem\_map是指向页面page实例数组的指针,用于描述**结点的所有物理内存页**. 它包含了结点中所有内存域的页.
 
-node\_start\_pfn是该NUMA结点的第一个页帧的逻辑编号.系统中所有的节点的页帧是一次编号的, 每个页帧的编号是全局唯一的. node\_start\_pfn在UMA系统中总是0， 因为系统中只有一个内存结点， 因此其第一个页帧编号总是0.
+node\_start\_pfn是该NUMA结点的第一个页帧的逻辑编号.系统中所有的节点的页帧是一次编号的, **每个页帧的编号是全局唯一的（整个系统中，而不是仅仅这个node中**）.node\_start\_pfn在UMA系统中总是0，因为系统中只有一个内存结点， 因此其第一个页帧编号总是0.
 
-node\_present\_pages指定了结点中页帧的数目,而node\_spanned\_pages则给出了该结点以页帧为单位计算的长度. 二者的值不一定相同, 因为结点中可能有一些空洞, 并不对应真正的页帧.
-
+node\_present\_pages指定了结点中页帧的数目,而node\_spanned\_pages则给出了该结点以页帧为单位计算的长度.二者的值不一定相同,因为结点中可能有一些空洞, 并不对应真正的页帧.
 
 ## 2.7 交换守护进程
 

@@ -384,7 +384,7 @@ char numa_zonelist_order[16] = "default";
 
 而接受和处理用户配置的工作,自然是交给我们强大的proc文件系统来完成的, 可以通过/proc/sys/vm/numa\_zonelist\_order动态改变zonelist order的分配方式。
 
-![/proc/sys/vm/numa_zonelist_order`](../images/proc-numa_zonelist_order.png)
+![/proc/sys/vm/numa_zonelist_order`](./images/proc-numa_zonelist_order.png)
 
 内核通过setup\_numa\_zonelist\_order读取并处理用户写入的配置信息
 

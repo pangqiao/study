@@ -467,7 +467,7 @@ struct zone
 ```
 
 | 字段| 描述 |
-| :------- | ----: |
+| :------- | :---- |
 | watermark | 每个 zone 在系统启动时会计算出 `3` 个水位值, 分别为 `WMAKR_MIN`, `WMARK_LOW`, `WMARK_HIGH` 水位, 这在**页面分配器**和 `kswapd` **页面回收**中会用到 |
 | lowmem\_reserve[MAX\_NR\_ZONES] | `zone` 中**预留的内存**, 为了防止一些代码**必须运行在低地址区域**，所以事先保留一些低地址区域的内存 |
 | pageset | **page管理**的数据结构对象，内部有一个page的列表(list)来管理。**每个CPU维护一个page list**，避免自旋锁的冲突。这个数组的大小和**NR\_CPUS(CPU的数量**）有关，这个值是**编译的时候确定的** |

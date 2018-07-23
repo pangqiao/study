@@ -608,7 +608,7 @@ enum pageflags {
 ```
 
 | 页面状态 | 描述 |
-|:-------:|:----:|
+|:-------:|:----|
 | PG\_locked | 指定了页**是否被锁定**,如果该比特未被置位,说明有使用者正在操作该page,则内核的其他部分不允许访问该页， 这可以防止内存管理出现竞态条件 |
 | PG\_error | 如果涉及该page的**I/O操作发生了错误**, 则该位被设置 |
 | PG\_referenced | 表示page**刚刚被访问过** |
@@ -687,7 +687,7 @@ wait_on_page_writeback的工作方式类似, 该函数会等待与页面相关�
 
 # 4 全局页面数组mem\_map
 
-`mem_map`是一个**struct page的数组**，管理着系统中**所有的物理内存页面**。在系统启动的过程中，创建和分配mem\_map的内存区域, mem\_map定义在[mm/page_alloc.c?v=4.7, line 6691](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L6691)
+`mem_map`是一个**struct page的数组**，管理着系统中**所有的物理内存页面**。在系统启动的过程中，创建和分配mem\_map的内存区域, mem\_map定义在mm/memory.c
 
 ```cpp
 #ifndef CONFIG_NEED_MULTIPLE_NODES
@@ -699,4 +699,15 @@ EXPORT_SYMBOL(max_mapnr);
 EXPORT_SYMBOL(mem_map);
 #endif
 ```
-UMA体系结构中，free\_area\_init函数在系统唯一的struct node对象contig\_page\_data中node\_mem\_map成员赋值给全局的mem\_map变量
+UMA体系结构中，free\_area\_init函数在系统唯一的struct node对象**contig\_page\_data**中**node\_mem\_map**成员赋值给全局的mem\_map变量
+
+```
+#ifndef CONFIG_NEED_MULTIPLE_NODES
+    /*
+     * With no DISCONTIG, the global mem_map is just set as node 0's
+     */
+    if (pgdat == NODE_DATA(0)) {
+        mem_map = NODE_DATA(0)->node_mem_map;
+```
+
+**NUMA系统中，全局变量mem\_map中总是保存系统的是第0个结点的node\_mem\_map**。
