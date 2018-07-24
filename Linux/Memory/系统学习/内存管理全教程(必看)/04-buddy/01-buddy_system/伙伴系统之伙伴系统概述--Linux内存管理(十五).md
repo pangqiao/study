@@ -10,8 +10,8 @@
     - 3.3 避免碎片数据结构
         - 3.3.1 迁移类型
         - 3.3.2 迁移备用列表fallbacks
-        - 3.3.3 pageblock\_order变量
-        - 3.3.4 gfpflags\_to\_migratetype函数
+        - 3.3.3 全局pageblock\_order变量
+        - 3.3.4 gfpflags\_to\_migratetype函数转换分配标识到迁移类型
         - 3.3.5 pageblock\_flags变量与其函数接口
     - 3.4 初始化基于可移动性的分组
 - 4 分配器API
@@ -160,9 +160,9 @@ Node 0, zone   Normal    166    157    202    437    122    187     77     60   
 
 内核中很多时候**要求分配连续页**. 为快速检测内存中的连续区域, 内核采用了一种古老而历经检验的技术: **伙伴系统**
 
-系统中的**空闲内存块**总是**两两分组**, 每组中的**两个内存块称作伙伴**.伙伴的分配可以是彼此独立的. 但如果**两个伙伴都是空闲的**,内核会将其**合并为一个更大的内存块**,作为**下一层次上某个内存块的伙伴**.
+系统中的**空闲内存块（！！！空闲的块**）总是**两两分组**,每组中的**两个内存块称作伙伴**.伙伴的分配可以是彼此独立的. 但如果**两个伙伴都是空闲的**,内核会将其**合并为一个更大的内存块**,作为**下一层次上某个内存块的伙伴**.
 
-下图示范了该系统, 图中给出了**一对伙伴**, **初始大小**均为**8页**.即系统中**所有的页面都是8页**的.
+下图示范了该系统, 图中给出了**一对伙伴**,**初始大小**均为**8页**.即系统中**所有的页面都是8页**的.
 
 ![伙伴系统](./images/buddy_system.png)
 
@@ -170,9 +170,9 @@ Node 0, zone   Normal    166    157    202    437    122    187     77     60   
 
 如果系统现在需要**8个页帧**,则将**16个页帧组成的块**拆分为**两个伙伴**.其中一块用于满足应用程序的请求, 而剩余的8个页帧则放置到对应8页大小内存块的列表中.
 
-如果下一个请求**只需要2个连续页帧**,则由**8页组成的块**会分裂成**2个伙伴**,每个包含**4个页帧**.其中**一块放置回伙伴列表**中，而**另一个**再次分裂成**2个伙伴**,每个包含**2页**。其中**一个回到伙伴系统**，另一个则**传递给应用程序**.
+如果下一个请求**只需要2个连续页帧**,则由**8页组成的块**会分裂成**2个伙伴**,每个包含**4个页帧**.其中**一块放置回伙伴列表**中，而**另一个**再次分裂成**2个伙伴**,每个包含**2页**。其中**一个回到伙伴系统**，另一个则**传递给应用程序（分配时候会从伙伴系统去掉！！！**）.
 
-在应用程序**释放内存**时,内核可以**直接检查地址**,来判断**是否能够创建一组伙伴**,并合并为一个更大的内存块放回到伙伴列表中,这刚好是**内存块分裂的逆过程**。这提高了较大内存块可用的可能性.
+在应用程序**释放内存**时,内核可以**直接检查地址**,来判断**是否能够创建一组伙伴**,并合并为一个更大的内存块放回到伙伴列表中,这刚好是**内存块分裂的逆过程（释放内存可能会将内存块放回伙伴列表！！！**）。这提高了较大内存块可用的可能性.
 
 在系统长期运行时，服务器运行几个星期乃至几个月是很正常的，许多桌面系统也趋向于长期开机运行，那么会发生称为**碎片的内存管理问题**。**频繁的分配和释放页帧**可能导致一种情况：系统中有**若干页帧是空闲**的，但却**散布在物理地址空间的各处**。换句话说，系统中**缺乏连续页帧组成的较大的内存块**，而从性能上考虑，却又很需要使用较大的连续内存块。通过伙伴系统可以在某种程度上减少这种效应，但无法完全消除。如果在大块的连续内存中间刚好有一个页帧分配出去，很显然这两块空闲的内存是无法合并的.
 
@@ -184,7 +184,7 @@ Node 0, zone   Normal    166    157    202    437    122    187     77     60   
 
 ## 3.1 内存碎片
 
-伙伴系统的基本原理已经在第1章中讨论过，其方案在最近几年间确实工作得非常好。但在Linux内存管理方面，有一个长期存在的问题：在系统启动并**长期运行后**，物理内存会产生很多**碎片**。该情形如下图所示
+伙伴系统的基本原理已经在第1章中讨论过，其方案在最近几年间确实工作得非常好。但在Linux内存管理方面，有一个长期存在的问题：在系统启动并**长期运行后**，**物理内存（伙伴系统中存的都是空闲内存块！！！**）会产生很多**碎片**。该情形如下图所示
 
 ![物理内存的碎片](./images/physical_memory_fragmentation.png)
 
@@ -315,6 +315,11 @@ struct free_area
         for (order = 0; order < MAX_ORDER; order++) \
                 for (type = 0; type < MIGRATE_TYPES; type++)
 ```
+这样我们的伙伴系统的内存框架就如下所示
+
+依据可移动性组织页:
+
+![config](images/migrate_buddy.png)
 
 ### 3.3.2 迁移备用列表fallbacks
 
@@ -325,7 +330,6 @@ struct free_area
 此前已经出现过一个类似的问题,即**特定的NUMA内存域无法满足分配请求**时.我们需要从其他内存域中选择一个代价最低的内存域完成内存的分配,因此内核在内存的结点**pg\_data\_t**中提供了一个**备用内存域列表zonelists**.
 
 内核在**内存迁移的过程（！！！**）中处理这种情况下的做法是类似的.提供了一个备用列表**fallbacks**,规定了在指定列表中**无法满足分配请求**时.接下来应使用**哪一种迁移类型**, 定义在[**mm/page_alloc.c**?v=4.7, line 1799](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L1799)
-
 
 ```cpp
 /*
@@ -354,12 +358,11 @@ static int fallbacks[MIGRATE_TYPES][4] = {
 
 每一行对应一个类型的备用搜索域的顺序,在内核想要**分配**不可移动页**MIGRATE\_UNMOVABLE**时,如果**对应链表为空**,则**遍历fallbacks[MIGRATE\_UNMOVABLE]**,首先后退到**可回收页链表**`MIGRATE_RECLAIMABLE`,接下来到**可移动页链表**`MIGRATE_MOVABLE`,最后到**紧急分配链表**`MIGRATE_TYPES`.
 
-### 3.3.3 pageblock\_order变量
+### 3.3.3 全局pageblock\_order变量
 
-尽管**页可移动性分组特性**的**全局变量**和**辅助函数**总是**编译到内核**中，但只有在系统中**有足够内存可以分配到多个迁移类型对应的链表（！！！**）时，才是有意义的。由于每个迁移链表都应该有适当数量的内存，内核需要定义"适当"的概念.这是通过两个全局变量pageblock\_order和pageblock\_nr\_pages提供的. 
+尽管**页可移动性分组特性**的**全局变量**和**辅助函数**总是**编译到内核**中，但只有在系统中**有足够内存可以分配到多个迁移类型对应的链表（！！！**）时，才是有意义的。由于**每个迁移链表都应该有适当数量的内存（！！！迁移链表的内存**），内核需要定义"适当"的概念.这是通过两个全局变量pageblock\_order和pageblock\_nr\_pages提供的. 
 
-第一个表示内核认为是"大"的**一个分配阶**,**pageblock\_nr\_pages**则表示**该分配阶对应的页数**。如果体系结构提供了**巨型页机制**,则**pageblock\_order**通常定义为**巨型页对应的分配阶**.定义在[include/linux/pageblock-flags.h?v=4.7, line 44](http://lxr.free-electrons.com/source/include/linux/pageblock-flags.h?v=4.7#L42)
-
+第一个表示内核认为是"大"的**一个分配阶**,**pageblock\_nr\_pages**则表示**该分配阶对应的页数（！！！**）。如果体系结构提供了**巨型页机制**,则**pageblock\_order**通常定义为**巨型页对应的分配阶**.定义在[include/linux/pageblock-flags.h?v=4.7, line 44](http://lxr.free-electrons.com/source/include/linux/pageblock-flags.h?v=4.7#L42)
 
 ```cpp
 #ifdef CONFIG_HUGETLB_PAGE
@@ -401,9 +404,9 @@ static int fallbacks[MIGRATE_TYPES][4] = {
 
 我们将在以后讲解, 有关**各个内存分配的细节**都通过**分配掩码指定**.
 
-内核提供了两个标志，分别用于表示分配的内存是可移动的(\_\_GFP\_MOVABLE)或可回收的(\_\_GFP\_RECLAIMABLE).
+内核提供了两个标志，分别用于表示分配的内存是**可移动**的(**\_\_GFP\_MOVABLE**)或**可回收**的(**\_\_GFP\_RECLAIMABLE**).
 
-### 3.3.4 gfpflags\_to\_migratetype函数
+### 3.3.4 gfpflags\_to\_migratetype函数转换分配标识到迁移类型
 
 如果这些标志**都没有设置**,则**分配的内存假定为不可移动的**.辅助函数gfpflags\_to\_migratetype可用于**转换分配标志及对应的迁移类型**, 该函数定义在[include/linux/gfp.h?v=4.7, line 266](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L266)
 
@@ -447,7 +450,6 @@ static inline int allocflags_to_migratetype(gfp_t gfp_flags)
 
 最后要注意, 每个内存域都提供了一个特殊的字段,可以**跟踪包含pageblock\_nr\_pages个页的内存区的属性**.即zone->pageblock\_flags字段,当前只有**与页可移动性相关的代码使用**,参见[include/linux/mmzone.h?v=4.7, line 367](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L367)
 
-
 ```cpp
 struct zone
 {
@@ -479,7 +481,7 @@ enum pageblock_bits {
 };
 ```
 
-内核提供`set_pageblock_migratetype`负责设置以page为首的一个内存区的迁移类型,该函数定义在[mm/page_alloc.c?v=4.7, line 458](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L458), 如下所示
+内核提供**set\_pageblock\_migratetype**负责设置**以page为首的一个内存区的迁移类型**,该函数定义在[mm/page_alloc.c?v=4.7, line 458](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L458), 如下所示
 
 ```cpp
 void set_pageblock_migratetype(struct page *page, int migratetype)
@@ -493,14 +495,14 @@ void set_pageblock_migratetype(struct page *page, int migratetype)
 }
 ```
 
-`migratetype`参数可以通过上文介绍的`gfpflags_to_migratetype`辅助函数构建. 请注意很重要的一点, 页的迁移类型是预先分配好的, 对应的比特位总是可用, 与页是否由伙伴系统管理无关. 在释放内存时，页必须返回到正确的迁移链表。这之所以可行，是因为能够从`get_pageblock_migratetype`获得所需的信息. 参见[include/linux/mmzone.h?v=4.7, line 84](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L84)
+`migratetype`参数可以通过上文介绍的`gfpflags_to_migratetype`辅助函数构建. 请注意很重要的一点, **页的迁移类型**是**预先分配**好的,对应的比特位总是可用,与**页是否由伙伴系统管理无关**.在**释放内存**时，页必须返回到**正确的迁移链表**。这之所以可行，是因为能够从**get\_pageblock\_migratetype**获得所需的信息. 参见[include/linux/mmzone.h?v=4.7, line 84](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L84)
 
 ```cpp
 #define get_pageblock_migratetype(page)                                 \
         get_pfnblock_flags_mask(page, page_to_pfn(page),                \
                         PB_migrate_end, MIGRATETYPE_MASK)
 ```
-最后请注意, 在各个迁移链表之间, 当前的页面分配状态可以从`/proc/pagetypeinfo`获得.
+最后请注意, 在各个**迁移链表**之间, **当前的页面分配状态**可以从`/proc/pagetypeinfo`获得.
 
 ![proc/pagetypeinfo](./images/pagetypeinfo.png)
 
@@ -536,9 +538,9 @@ not_early:
 
 在**分配内存**时, 如果必须"盗取"**不同于预定迁移类型的内存区**,内核在策略上**倾向于"盗取"更大的内存区**.由于所有页最初都是可移动的,那么在内核分配不可移动的内存区时,则必须"盗取".
 
-实际上, 在**启动期间**分配**可移动内存区的情况较少**,那么分配器有很高的几率分配长度最大的内存区,并将其**从可移动列表转换到不可移动列表**.由于分配的内存区长度是最大的,因此不会向可移动内存中引入碎片.
+实际上, 在**启动期间**分配**可移动内存区的情况较少**,那么分配器有很高的几率分配长度最大的内存区,并将其**从可移动列表转换到不可移动列表（回收后？？？**）.由于分配的内存区长度是最大的,因此不会向可移动内存中引入碎片.
 
-总而言之, 这种做法**避免**了**启动期间内核分配的内存**(经常在系统的**整个运行时间都不释放**)散布到物理内存各处, 从而使其他类型的内存分配免受碎片的干扰，这也是页可移动性分组框架的最重要的目标之一.
+总而言之, 这种做法**避免**了**启动期间内核分配的内存**(经常在系统的**整个运行时间都不释放**)散布到物理内存各处, 从而**使其他类型的内存分配免受碎片的干扰**，这也是页可移动性分组框架的最重要的目标之一.
 
 # 4 分配器API
 
