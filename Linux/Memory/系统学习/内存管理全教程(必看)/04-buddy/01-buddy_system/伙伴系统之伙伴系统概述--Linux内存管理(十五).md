@@ -22,6 +22,7 @@
         - 4.3.2 掩码分类
         - 4.3.3 内核中掩码的定义
         - 4.3.5 总结
+        - 4.3.6 掩码函数接口
     - 4.4 分配页
         - 4.4.1 内存分配统一到alloc\_pages接口
         - 4.4.2 alloc\_pages函数分配页
@@ -994,6 +995,8 @@ bit       result
 GFP_ZONES_SHIFT must be <= 2 on 32 bit platforms.
 ```
 
+### 4.3.6 掩码函数接口
+
 很有趣的一点是，没有\_\_GFP\_NORMAL常数，而内存分配的主要负担却落到ZONE\_NORMAL内存域
 
 内核考虑到这一点, 提供了一个函数gfp_zone来计算与给定分配标志兼容的最高内存域.那么内存分配可以从该内存域或更低的内存域进行, 该函数定义在[include/linux/gfp.h?v=4.7, line 394](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L394)
@@ -1110,7 +1113,7 @@ EXPORT_SYMBOL(__get_free_pages);
 
 在这种情况下， 使用了一个普通函数而不是宏,因为`alloc_pages`返回的`page`实例需要使用辅助
 
-函数**page\_address**转换为内存地址.在这里，只要知道该函数可根据`page`实例计算**相关页的线性内存地址**即可. **对高端内存页这是有问题的(！！！**）
+函数**page\_address**转换为内存地址.在这里，只要知道该函数可根据`page`实例计算**相关页的线性内存地址（！！！线性地址！！！**）即可. **对高端内存页这是有问题的(！！！**）
 
 这样, 就完成了所有分配内存的API函数到公共的基础函数alloc\_pages的统一
 
