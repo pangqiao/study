@@ -9,7 +9,6 @@
 - 3 备选映射方法
 - 4 释放内存
 
-
 # 1 内存中不连续的页的分配
 
 根据上文的讲述,我们知道**物理上连续的映射**对内核是最好的,但并不总能成功地使用.在分配一大块内存时,可能竭尽全力也无法找到连续的内存块.
@@ -40,16 +39,16 @@ Persistent mappings和Fixmaps地址空间都比较小, 这里我们忽略它们,
 
 # 2 用vmalloc分配内存
 
-vmalloc是一个接口函数, 内核代码使用它来分配在虚拟内存中连续但在物理内存中不一定连续的内存
+vmalloc是一个接口函数,内核代码使用它来分配在虚拟内存中连续但在物理内存中不一定连续的内存
 
 ```cpp
 //  http://lxr.free-electrons.com/source/include/linux/vmalloc.h?v=4.7#L70
 void *vmalloc(unsigned long size);
 ```
 
-该函数只需要一个参数, 用于指定所需内存区的长度,与此前讨论的函数不同,其**长度单位不是页而是字节**, 这在用户空间程序设计中是很普遍的.
+该函数只需要一个参数,用于指定所需内存区的长度,与此前讨论的函数不同,其**长度单位不是页而是字节**, 这在用户空间程序设计中是很普遍的.
 
-使用vmalloc的最著名的实例是内核对模块的实现.因为模块可能在任何时候加载,如果模块数据比较多,那么无法保证有足够的连续内存可用,特别是在系统已经运行了比较长时间的情况下.
+使用vmalloc的最著名的实例是**内核对模块的实现**.因为模块可能在任何时候加载,如果模块数据比较多,那么无法保证有足够的连续内存可用,特别是在系统已经运行了比较长时间的情况下.
 
 如果能够用小块内存拼接出足够的内存, 那么使用vmalloc可以规避该问题
 
@@ -128,15 +127,17 @@ struct vm_struct {
 
 下图给出了**该结构使用方式的一个实例**.其中依次映射了**3**个(假想的)**物理内存页**, 在物理内存中的位置分别是1023、725和7311.在**虚拟的vmalloc区域**中,内核将其看作起始于**VMALLOC\_START + 100的一个连续内存区**, 大小为**3\*PAGE_SIZE**的内核地址空间，被映射到物理页面725, 1023和7311
 
+将物理内存页映射到vmalloc区域：
+
 ![将物理内存页映射到vmalloc区域](../images/vmlloc_map.jpg)
 
 ## 2.2 创建vm\_area
 
-因为大部分体系结构都支持mmu,这里我们只考虑有mmu的情况.实际上**没有mmu**支持时,**vmalloc**就无法实现**非连续物理地址**到**连续内核地址空间**的映射,vmalloc退化为**kmalloc实现**.
+因为大部分体系结构都支持mmu,这里我们只考虑有mmu的情况.实际上**没有mmu**支持时,**vmalloc**就无法实现**非连续物理地址**到**连续内核地址空间**的映射,vmalloc退化为**kmalloc实现（！！！**）.
 
 ### 2.2.1 vmlist全局链表
 
-在**创建一个新的虚拟内存区**之前,必须找到一个适当的位置.**vm\_area实例**组成的一个链表, 管理着vmalloc区域中**已经建立的各个子区域**.定义在[`mm/vmalloc`](http://lxr.free-electrons.com/source/mm/vmalloc.c?v=4.7#L1170)的**全局变量[vmlist**]( http://lxr.free-electrons.com/source/mm/vmalloc.c?v=4.7#L1170)是**表头**. 定义在[mm/vmalloc.c?v=4.7, line 1170]( http://lxr.free-electrons.com/source/mm/vmalloc.c?v=4.7#L1170)
+在**创建一个新的虚拟内存区**之前,必须找到一个适当的位置.**vm\_area实例**组成的一个链表, 管理着vmalloc区域中**已经建立的各个子区域**.定义在[`mm/vmalloc`](http://lxr.free-electrons.com/source/mm/vmalloc.c?v=4.7#L1170)的**全局变量**[**vmlist**]( http://lxr.free-electrons.com/source/mm/vmalloc.c?v=4.7#L1170)是**表头**. 定义在[mm/vmalloc.c?v=4.7, line 1170]( http://lxr.free-electrons.com/source/mm/vmalloc.c?v=4.7#L1170)
 
 ```cpp
 // http://lxr.free-electrons.com/source/mm/vmalloc.c?v=4.7#L1170
