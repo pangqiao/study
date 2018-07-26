@@ -81,8 +81,8 @@ Unified Extensible Firmware Interface，架设在系统固件之上的软件接�
 
 1. BIOS加电自检（Power On Self Test -- POST）。
 2. 读取主引导记录（MBR）。BIOS根据CMOS中的设置依次检查启动设备：将相应启动设备的第一个扇区（也就是MBR扇区）读入内存。
-    1. 检查MBR的结束标志位是否等于55AAH，若不等于则转去尝试其他启动设备，如果没有启动设备满足要求则显示"NO ROM BASIC"然后死机。
-    2. 当检测到有启动设备满足要求后，BIOS将控制权交给相应启动设备的MBR。
+    - 检查MBR的结束标志位是否等于55AAH，若不等于则转去尝试其他启动设备，如果没有启动设备满足要求则显示"NO ROM BASIC"然后死机。
+    - 当检测到有启动设备满足要求后，BIOS将控制权交给相应启动设备的MBR。
 3. 根据MBR中的引导代码启动[引导程序](https://zh.wikipedia.org/wiki/%E5%95%9F%E5%8B%95%E7%A8%8B%E5%BC%8F)。
 
 ### 2.2 UEFI mode
@@ -121,7 +121,7 @@ MBR Partition ID（分区类型）：https://en.wikipedia.org/wiki/Partition_typ
 
 ### 4.1 ESP（EFI系统分区）
 
-EFI System Partition，FAT格式，在MBR的分区类型ID是0xEF。主要目录是EFI。EFI/boot/bootx64.efi是EFI默认的启动项。安装的操作系统会建立相应的目录EFI/xxx，并将自己的启动项复制为到EFI/boot/bootx64.efi作为缺省启动项。
+EFI System Partition，FAT格式，**在MBR的分区类型ID是0xEF**。主要目录是EFI。EFI/boot/bootx64.efi是EFI默认的启动项。安装的操作系统会建立相应的目录EFI/xxx，并将自己的启动项复制为到EFI/boot/bootx64.efi作为缺省启动项。
 
 UEFI官网上注册的EFI的子目录：http://www.uefi.org/registry
 
