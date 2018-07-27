@@ -174,7 +174,7 @@ slab缓存的精细结构：
 
 **缓存结构指向一个数组**,其中包含了
 
-- **与系统CPU数目相同的数组项**.每个元素都是一个指针，指向一个进一步的结构称之为**数组缓存(array cache**),其中包含了对应于**特定系统CPU的管理数据**(就总体来看，**不是用于缓存**).
+- **与系统CPU数目相同的数组项**.每个元素都是一个指针，指向一个进一步的结构称之为**数组缓存(array cache**),其中包含了对应于**特定系统CPU的管理数据**.
 - 管理性数据之后的内存区包含了**一个指针数组**，各个数组项指向**slab中未使用的对象**.
 
 为最好地**利用CPU高速缓存**,这些**per-CPU指针**是很重要的。在**分配和释放对象**时，采用**后进先出原理**(LIFO，last in first out).内核假定**刚释放的对象**仍然**处于CPU高速缓存**中，会尽快**再次分配它**(响应下一个分配请求).**仅当per-CPU缓存为空**时，才会用**slab中的空闲对象重新填充**它们.
@@ -281,7 +281,7 @@ slabs_empty列表中的slab是进行**回收（reaping**）的主要备选对象
 
 slab列表中的**每个slab**都是一个**连续的内存块**（一个或多个**连续页**），它们被划分成一个个**对象**。这些对象是从特定缓存中进行分配和释放的基本元素。注意**slab是slab分配器进行操作的最小分配单位**，因此如果需要对slab进行扩展，这也就是所扩展的最小值。通常来说，每个slab被分配为多个对象。
 
-由于**对象是从slab中进行分配和释放**的，因此单个slab可以在slab列表之间进行移动。例如，当一个 slab 中的所有对象都被使用完时，就从slabs\_partial列表中移动到slabs\_full列表中。当一个slab完全被分配并且有对象被释放后，就从slabs\_full列表中移动到slabs\_partial列表中。当所有对象都被释放之后，就从slabs\_partial列表移动到slabs\_empty列表中。
+由于**对象是从slab中进行分配和释放**的，因此单个slab可以在slab列表之间进行移动。例如，当一个slab中的**所有对象**都被**使用完**时，就从**slabs\_partial列表**中移动到**slabs\_full列表**中。当一个slab**完全被分配**并且有**对象被释放**后，就从slabs\_full列表中移动到slabs\_partial列表中。当所有对象都被释放之后，就从**slabs\_partial列表**移动到**slabs\_empty**列表中。
 
 **每个缓存**由**kmem\_cache**结构的一个实例表示,将slab缓存视为通过一组标准函数来高效地创建和释放特定类型对象的机制
 
@@ -411,9 +411,9 @@ struct kmem_cache {
 
 - cpu\_cache是一个指向数组的指针，每个数组项都对应于系统中的一个CPU。每个数组项都包含了另一个指针，指向下文讨论的array\_cache结构的实例。
 
-- batchcount指定了在**per\-CPU列表为空**的情况下，从缓存的slab中获取对象的数目。它还表示在缓存增长时分配的对象数目。
+- batchcount指定了在**per\-CPU列表为空**的情况下，从**缓存的slab中获取对象的数目**。它还表示在**缓存增长时分配的对象数目**。
 
-- limit指定了**per\-CPU列表**中保存的**对象的最大数目**。如果超出该值，内核会将batchcount个对象返回到slab（如果接下来内核缩减缓存，则释放的内存从slab返回到伙伴系统）
+- limit指定了**per\-CPU列表**中保存的**对象的最大数目**。如果超出该值，内核会将**batchcount个对象**返回到**slab**（如果接下来**内核缩减缓存**，则释放的内存从slab**返回到伙伴系统**）
 
 内核对每个系统处理器都提供了一个`array_cache`实例. 该结构定义如下
 
@@ -443,15 +443,15 @@ struct array_cache {
 
 - kmem\_cache的第2、第3部分包含了**管理slab所需的全部变量**，在填充或清空per\-CPU缓存时需要访问这两部分.
 
-- node[MAX\_NUMNODES];是一个数组，每个数组项对应于系统中一个可能的内存结点. 每个数组项都包含kmem\_cache\_node的一个实例,该结构中有3个slab列表（完全用尽、空闲、部分空闲）
+- **node[MAX\_NUMNODES**];是一个数组，**每个数组项**对应于系统中**一个可能的内存结点**. **每个数组项**都包含**kmem\_cache\_node的一个实例**,该结构中有3个slab列表（完全用尽、空闲、部分空闲）
 
-该成员必须置于结构的末尾,尽管它在形式上总是有MAX_NUMNODES项,但在NUMA计算机上实际可用的结点数目可能会少一些。因而该数组需要的项数也会变少，内核在运行时对该结构分配比理论上更少的内存，就可以缩减该数组的项数。如果nodelists放置在该结构中间，就无法做到这一点.
+该成员必须置于结构的末尾,尽管它在形式上总是有**MAX\_NUMNODES项**,但在NUMA计算机上实际可用的结点数目可能会少一些。因而该数组需要的项数也会变少，内核在运行时对该结构分配比理论上更少的内存，就可以缩减该数组的项数。如果nodelists放置在该结构中间，就无法做到这一点.
 
 在UMA计算机上，这称不上问题，因为只有一个可用结点.
 
-- flags是一个标志寄存器，定义缓存的全局性质。当前只有一个标志位。如果管理结构存储在slab外部，则置位CFLGS\_OFF_SLAB
+- flags是一个标志寄存器，定义缓存的全局性质。当前只有一个标志位。如果**管理结构存储在slab外部**，则置位CFLGS\_OFF_SLAB
 
-- `num`保存了可以放入slab的对象的最大数目
+- num保存了可以放入**slab的对象的最大数目**
 
 kmem\_cache\_node定义在[mm/slab.h?v=4.7, line 417](http://lxr.free-electrons.com/source/mm/slab.h?v=4.7#L417)
 
@@ -489,9 +489,9 @@ struct kmem_cache_node {
 };
 ```
 
-每个数组项都包含kmem\_cache\_node的一个实例, 该结构中有3个slab列表(完全用尽slabs\_full、空闲slabs\_free、部分空闲slabs\_partial).
+**每个数组项**都包含**kmem\_cache\_node的一个实例**,该结构中有3个slab列表(完全用尽slabs\_full、空闲slabs\_free、部分空闲slabs\_partial).
 
-kmem\_cache\_node作为早期内核中slab描述符struct slab结构的替代品,要么放在slab自身开始的地方.如果slab很小或者slab内部有足够的空间容纳slab描述符, 那么描述符就存放在slab里面.
+**kmem\_cache\_node**作为早期内核中slab描述符**struct slab结构的替代品**,要么放在slab自身开始的地方.如果slab很小或者slab内部有足够的空间容纳slab描述符, 那么描述符就存放在slab里面.
 
 slab分配器可以创建新的slab, 这是通过kmem\_getpages
 
@@ -549,19 +549,19 @@ static void __init mm_init(void)
 
 ### 3.2.2 kmem\_cache\_init函数初始化slab分配器
 
-`kmem_cache_init`函数用于初始化`slab`分配器.它在内核初始化阶段(`start_kernel`)、伙伴系统启用之后调用. 但在多处理器系统上，启动`CPU`此时正在运行, 而其他`CPU`尚未初始化.
+`kmem_cache_init`函数用于初始化`slab`分配器.它在**内核初始化阶段**(start\_kernel)、**伙伴系统启用之后**调用. 但在多处理器系统上，启动`CPU`此时正在运行, 而其他`CPU`尚未初始化.
 
 `kmem_cache_init`采用了一个多步骤过程，逐步激活slab分配器。
 
-1. `kmem_cache_init`创建系统中的**第一个slab缓存**,以便为**kmem\_cache的实例提供内存**.为此,内核使用的主要是**在编译时创建的静态数据**.实际上,一个**静态数据结构(initarray\_cache**)用作**per-CPU数组**.该**缓存的名称是cache\_cache（name属性值**）.
+1. **kmem\_cache\_init**创建系统中的**第一个slab缓存**,以便为**kmem\_cache的实例提供内存**.为此,内核使用的主要是**在编译时创建的静态数据**.实际上,一个**静态数据结构(initarray\_cache**)用作**per-CPU数组**.该**缓存的名称是cache\_cache（name属性值**）.
 
-2. `kmem_cache_init`接下来**初始化一般性的缓存**,用作**kmalloc内存的来源（！！！**）.为此,针对所需的各个缓存长度, 分别调用`kmem_cache_create`.该函数起初只需要`cache_cache`缓存已经建立.但在初始化`per-CPU`缓存时，该函数必须借助于`kmalloc`, 这尚且不可能.
+2. **kmem\_cache\_init**接下来**初始化一般性的缓存**,用作**kmalloc内存的来源（！！！**）.为此,针对所需的**各个缓存长度**, 分别调用**kmem\_cache\_create**.该函数起初只需要`cache_cache`缓存已经建立.但在**初始化per\-CPU缓存**时，该函数必须借助于**kmalloc（！！！**）, 这尚且不可能.
 
 为解决该问题, 内核使用了g\_cpucache\_up变量，可接受以下4个值（NONE、PARTIAL\_AC、PARTIAL\_L3、FULL），以反映kmalloc初始化的状态。
 
-最初内核的状态是NONE。在最小的kmalloc缓存（在4KiB内存页的计算机上提供32字节内存块，在其他页长度的情况下提供**64字节内存块**。现有各种分配长度的定义请参见3.6.5节）初始化时，再次将一个静态变量用于per-CPU的缓存数据。g\_cpucache\_up中的状态接下来设置为PARTIAL\_AC，意味着array\_cache实例可以立即分配。
+最初内核的状态是NONE。在**最小的kmalloc缓存**（在**4KiB内存页**的计算机上提供**32字节内存块**，在**其他页长度**的情况下提供**64字节内存块**。现有各种分配长度的定义请参见3.6.5节）**初始化时**，再次将一个**静态变量用于per\-CPU的缓存数据（！！！**）。g\_cpucache\_up中的状态接下来设置为PARTIAL\_AC，意味着array\_cache实例可以立即分配。
 
-不仅slab, 每个内核分配器都应该提供一个`kmem_cache_init`函数.
+不仅slab, **每个内核分配器**都应该提供一个**kmem\_cache\_init**函数.
 
 | kmem\_cache\_init | slab | slob | slub |
 |:-------------------:|:-----:|:-----:|:-----:|
@@ -653,7 +653,7 @@ void __init kmem_cache_init(void)
 }
 ```
 
-`kmem_cache_init`用来初始化`cache`, 在**初始化阶段使用了全局静态变量**`struct kmem_cache *kmem_cache`
+**kmem\_cache\_init**用来初始化`cache`, 在**初始化阶段使用了全局静态变量**`struct kmem_cache *kmem_cache`
 
 ```cpp
 //  http://lxr.free-electrons.com/source/mm/slab.c?v=4.7#L1304
@@ -678,7 +678,7 @@ kmem\_cache\_init可以分为六个阶段
 
 | 阶段 | 描述 |
 |:-----:|:-----:|
-| 第一个阶段 | 是根据kmem\_cache来设置cache\_cache的字段值 |
+| 第一个阶段 | 是根据kmem\_cache来设置**cache\_cache**的字段值 |
 | 第二个阶段 | 首先是创建arraycache\_init对应的高速缓存，同时也是在这个kmem\_cache\_create的调用过程中，创建了用于保存cache的kmem\_cache的slab，并初始化了slab中的各个对象 |
 | 第三个阶段 | 创建kmem\_list3对应的高速缓存，在这里要注意的一点是，如果sizeof(arraycache\_t)和sizeof(kmem\_list3)的大小一样大，那么就不再使用kmem\_cache\_create来为kmem_list3创建cache了，因为如果两者相等的话，两者就可以使用同一个cache |
 | 第四个阶段 | 创建并初始化所有的通用cache和dma cache |
@@ -697,7 +697,7 @@ kmem\_cache\_init可以分为六个阶段
 
 ## 3.3 创建缓存
 
-创建新的`slab`缓存必须调用`kmem_cache_create`. 该函数需要很多参数
+创建新的`slab`缓存必须调用**kmem\_cache\_create**. 该函数需要很多参数
 
 ```cpp
 mm/slab.c
@@ -732,17 +732,17 @@ flags参数是可选的配置项, 用来控制高速缓存的行为. 它可以�
 
 关于最后一个参数ctor是告诉缓存的构造函数. 只有在新的页追加到高速缓存时, 构造函数才被调用. 实际上, Linux内核的高速缓存不使用构造函数. 事实上这里曾经还有过一个析构函数参数, 但是由于内核代码不使用它, 因此已经被抛弃了. 你可以将ctor参数赋值为NULL.
 
-`kmem_cache_create`在成功时返回一个指向所构造的高速缓存的针; 否则, 返回NULL. 注意该函数可能会睡眠, 因此不能再中断上下文中调用.
+**kmem\_cache\_create**在成功时返回一个指向所构造的**高速缓存的指针**;否则,返回NULL.注意该函数可能会睡眠, 因此不能再中断上下文中调用.
 
 ## 3.4 分配对象kmem\_cache\_alloc
 
-`kmem_cache_alloc`用于从特定的缓存获取对象. 类似于所有的`malloc`函数, 其结果可能是指向分配内存区的指针, 也可能分配失败, 返回`NULL`指针.
+`kmem_cache_alloc`用于**从特定的缓存获取对象**.类似于所有的**malloc函数**,其结果可能是指向分配内存区的指针, 也可能分配失败, 返回`NULL`指针.
 
->void *kmem_cache_alloc(struct kmem_cache *cachep, gfp_t flags)
+>void *kmem\_cache\_alloc(struct kmem\_cache *cachep, gfp\_t flags)
 
-该函数从给定的高速缓存cachep中返回一个指向对象的指针.如果高速缓存中的所有slab中没有空闲的对象,那么slab层就必须通过kmem\_getpages获取新的页,flags的值传递给\_\_get\_free\_pages函数.这与我们之前所看到的标志相同. 你用到的应该是GFP\_KERNEL或GFP\_ATOMIC。
+该函数从**给定的高速缓存cachep**中返回一个**指向对象的指针**.如果高速缓存中的**所有slab**中**没有空闲的对象**,那么slab层就必须通过**kmem\_getpages获取新的页（！！！没有空闲对象要获取新页**）,**flags的值传递给\_\_get\_free\_pages函数**.这与我们之前所看到的标志相同.你用到的应该是**GFP\_KERNEL**或**GFP\_ATOMIC**。
 
-该函数需要两个参数 : 用于获取对象的缓存,以及精确描述分配特征的标志变量.之前提到的任何GFP_值都可以用于指定标志
+该函数需要两个参数 : 用于获取对象的缓存,以及精确描述**分配特征的标志变量**.之前提到的任何GFP\_值都可以用于指定标志
 
 ```cpp
 /**
@@ -770,9 +770,9 @@ EXPORT_SYMBOL(kmem_cache_alloc);
 
 ## 3.5 释放对象kmem\_cache\_free
 
-如果一个分配的对象已经不再需要, 那么必须使用`kmem_cache_free`将对象释放, 并**返回给slab分配器**. 这样就能把cachep中的对象标记为空闲.
+如果一个分配的对象已经不再需要, 那么必须使用`kmem_cache_free`将对象释放, 并**返回给slab分配器**. 这样就能把**cachep中的对象标记为空闲（！！！**）.
 
->void kmem_cache_free(struct kmem_cache *cachep, void *objp)
+>void kmem\_cache\_free(struct kmem_cache *cachep, void *objp)
 
 每一个分配器都应该实现一个`kmem_cache_free`函数
 
@@ -784,7 +784,7 @@ EXPORT_SYMBOL(kmem_cache_alloc);
 
 `kmem_cache_free`立即调用了`__cache_free`, 参数直接传递过去。其原因也是防止kfree实现中.
 
-类似于分配，根据**per\-CPU缓存的状态不同**，有两种可选的操作流程。如果per\-CPU缓存中的**对象数目**低于允许的限制，则在其中存储一个指向缓存中对象的指针.
+类似于分配，根据**per\-CPU缓存的状态不同**，有**两种可选的操作流程**。如果**per\-CPU缓存**中的**对象数目低于允许的限制**，则在其中**存储一个指向缓存中对象的指针**.
 
 ```cpp
 /**
@@ -816,19 +816,19 @@ EXPORT_SYMBOL(kmem_cache_free);
 
 ## 3.6 销毁缓存
 
-如果要销毁只包含未使用对象的一个缓存, 则必须调用`kmem_cache_destroy`函数.
+如果要销毁**只包含未使用对象**的一个缓存, 则必须调用`kmem_cache_destroy`函数.
 
 该函数主要在删除模块时调用, 此时需要将分配的内存都释放.
 
 由于该函数的实现没什么新东西, 下面我们只是概述一下删除缓存的主要步骤.
 
-- 依次扫描`slabs_free`链表上的`slab`. 首先对每个`slab`上的每个对象调用析构器函数，然后将slab的内存空间返回给伙伴系统.
+- 依次扫描**slabs\_free链表**上的**slab**.首先对**每个slab**上的**每个对象**调用析构器函数，然后将**slab的内存空间返回给伙伴系统**.
 
-- 释放用于`per-CPU`缓存的内存空间。
+- 释放用于**per\-CPU缓存**的内存空间。
 
-- 从`cache_cache`链表移除相关数据。
+- 从**cache\_cache链表**移除相关数据。
 
-与kmem\_cache\_create类似,不能在中断上下文中调用这个函数.因为它也可能睡眠.调用该函数之前必须确保一下两个条件
+与**kmem\_cache\_create类似**,不能在中断上下文中调用这个函数.因为它也**可能睡眠**.调用该函数之前必须确保以下两个条件
 
 - 告诉缓存中所有slab都必须是NULL, 其实, 不管哪个slab中, 只要还有一个对象被分配出去并正在使用, 那么就不能撤销该告诉缓存
 
