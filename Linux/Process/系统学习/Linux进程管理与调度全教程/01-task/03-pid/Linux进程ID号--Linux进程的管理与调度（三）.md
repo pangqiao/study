@@ -194,10 +194,10 @@ srtuct pid是局部ID类,对应一个
 | ------------- |:-------------|
 | count | 是指**使用该PID的task的数目**；|
 | level | 表示可以看到**该PID的命名空间的数目**，也就是包含该进程的命名空间的深度 |
-| tasks[PIDTYPE\_MAX] | 是一个**数组**，每个数组项都是一个**散列表头**,分别对应以下三种类型
-| numbers[1] | 一个**upid**的**实例数组**，每个数组项代表一个**命名空间**，用来表示**一个PID**可以属于**不同的命名空间**，该元素放在末尾，可以向数组添加附加的项。|
+| tasks[PIDTYPE\_MAX] | 是一个**数组**，每个**数组项**都是一个**散列表头**,分别对应以下三种类型
+| numbers[1] | 一个**upid**的**实例数组**，每个数组项代表一个**命名空间**，用来表示**一个PID**可以属于**不同的命名空间**，该元素放在末尾，**可以向数组添加附加的项**。|
 
-tasks是一个数组，每个数组项都是一个散列表头，对应于一个ID类型,PIDTYPE\_PID,PIDTYPE\_PGID,PIDTYPE\_SID（PIDTYPE\_MAX表示**ID类型的数目**）这样做是必要的，因为**一个ID可能用于几个进程**。所有共享同一给定ID的task\_struct实例，都**通过该列表连接起来**。这个枚举常量PIDTYPE\_MAX，正好是pid\_type类型的数目，这里linux内核使用了一个小技巧来由编译器来自动生成id类型的数目
+tasks是一个数组，**每个数组项**都是一个**散列表头**，对应于一个ID类型,PIDTYPE\_PID,PIDTYPE\_PGID,PIDTYPE\_SID（PIDTYPE\_MAX表示**ID类型的数目**）这样做是必要的，因为**一个ID可能用于几个进程(task\_struct)！！！**。所有**共享同一ID**的**task\_struct实例**，都**通过该列表连接起来(这个列表就是使用这个pid的进程<task\_struct>的列表！！！**)。这个枚举常量PIDTYPE\_MAX，正好是pid\_type类型的数目，这里linux内核使用了一个小技巧来由编译器来自动生成id类型的数目
 
 此外，还有两个结构我们需要说明，就是pidmap和pid\_link
 
@@ -255,7 +255,7 @@ struct task_struct
 | pid | 指该进程的**进程描述符**。在**fork函数**中对其进行**赋值**的 |
 | tgid | 指该进程的**线程描述符**。在linux内核中对线程并没有做特殊的处理，还是由task\_struct来管理。所以从内核的角度看， **用户态的线程本质上还是一个进程**。对于**同一个进程**（用户态角度）中不同的线程其tgid是相同的，但是pid各不相同。 **主线程即group\_leader**（主线程会创建其他所有的子线程）。如果是单线程进程（用户态角度），它的pid等于tgid。|
 | group\_leader | 除了在**多线程的模式下指向主线程**，还有一个用处，当一些**进程组成一个群组**时（**PIDTYPE\_PGID**)， 该域指向该**群组的leader** |
-| pids | 指向了和该task\_struct相关的**pid结构体** |
+| pids | pids[0]是PIDTYPE\_PID类型的,指向自己的PID结构, 其余指向了**相应群组的leader的PID结构**,也就是组长的PID结构 |
 | nsproxy | 指针指向**namespace相关的域**，通过nsproxy域可以知道**该task\_struct属于哪个pid\_namespace** |
 
 对于用户态程序来说，调用**getpid**()函数其实返回的是**tgid**，因此线程组中的进程id应该是是一致的，但是他们pid不一致，这也是内核区分他们的标识
@@ -379,6 +379,12 @@ struct pid
     int nr; //PID
     struct hlist_node pid_chain; // pid hash 散列表结点
 };
+
+struct pid_link
+{
+    struct hlist_node node;
+    struct pid *pid;
+};
 ```
 
 上面ID的类型PIDTYPE\_MAX表示**ID类型数目**。之所以**不包括线程组ID**，是因为内核中已经有指向到**线程组**的**task\_struct**指针**group\_leader**，线程组ID无非就是**group\_leader的PID**。
@@ -393,9 +399,11 @@ struct pid
 
 - 图中省去了pid\_hash以及pid\_map结构，因为第一种情况类似；
 
-- 进程B和C的**进程组组长为A(进程组组长！！！**)，那么**进程B和进程C结构task\_struct**中的pids[**PIDTYPE\_PGID(进程组)**]的pid指针指向**进程A的pid结构体**；
+- 三个进程A,B,C.所以有三个task\_struct结构体. **task\_struct A的pids[0]指向pid**,因为**pids[0]就是PID的类型0对应的是PIDTYPE\_PID,表明pids[0]指向的pid就是task\_struct A的PID,而不是进程组或者会话组的组长的pid结构！！！**所以图中的结构体pid是进程A的pid
 
-- 进程A是进程B和C的组长，**进程A的pid结构体**的**tasks[PIDTYPE\_PGID(进程组**)](tasks[1])是一个**散列表的头**，它将所有**以该pid为组长的进程链接起来**。
+- 进程B和C的**进程组组长为A(进程组组长！！！**)，那么**进程B和进程C结构task\_struct**中的pids[**PIDTYPE\_PGID(进程组)**]的pid指针指向**进程A的pid结构体**,如图；进程B和进程C的pids[PIDTYPE\_PID]会指向自己的pid结构体,图中没有体现而已
+
+- 进程A是进程B和C的组长，**进程A的pid结构体**的**tasks[PIDTYPE\_PGID(进程组**)](tasks[1])是一个**散列表的头**，它将所有**以该pid为组长的进程链接起来**,图中的结构体pid是进程A的PID,而**A是组长**,B和C是**进程组**的组员,所以将A的pid中tasks[PIDTYPE\_PGID]指向进程B的task\_struct中的pid\_link[PIDTYPE\_PGID]中的node.
 
 再次回顾本节的三个基本问题，在此结构上也很好去实现。
 
@@ -406,10 +414,33 @@ struct pid
 **一个进程**就可能有**多个PID**(**意味着一个task\_struct会对应多个upid???**)值了，因为在**每一个可见的命名空间**内都会**分配一个PID**，这样就需要改变pid的结构了，如下：
 
 ```c
+enum pid_type
+{
+    PIDTYPE_PID,
+    PIDTYPE_PGID,
+    PIDTYPE_SID,
+    PIDTYPE_MAX
+};
+
+struct task_struct
+{
+    pid_t pid; //PID
+    pid_t tgid; //thread group id
+    struct task_struct *group_leader; // threadgroup leader
+    struct pid_link pids[PIDTYPE_MAX];  
+    struct nsproxy *nsproxy;
+};
+
+struct pid_link
+{
+    struct hlist_node node;
+    struct pid *pid;
+};
+
 struct pid
 {
     unsigned int level;
-    /* lists of tasks that use this pid */
+    /* 使用该pid的进程的列表， lists of tasks that use this pid  */
     struct hlist_head tasks[PIDTYPE_MAX];
     struct upid numbers[1];
 };
@@ -424,6 +455,11 @@ struct upid
 
 在pid结构体中增加了一个表示该**进程所处的命名空间的层次level**，以及一个**可扩展的upid结构体**。对于struct upid，nr表示在**该命名空间**所分配的**进程的ID**，ns指向是该ID所属的命名空间，**pid\_chain 表示在该命名空间的散列表**。
 
+- 进程的结构体是task\_struct,**一个进程对应一个task\_struct结构体(一对一**).**一个进程**会有**PIDTYPE\_MAX个(3个)pid\_link结构体(一对多**),这**三个结构体中的pid**分别指向①该进程对应的**进程本身(PIDTYPE\_PID**)的真实的pid结构体();②该进程的**进程组(PIDTYPE\_PGID)的组长本身**的pid结构体;③该进程的**会话组(PIDTYPE\_SID)的组长**本身的pid结构体,所以**一个真实的进程只会有一个自身真实的pid结构体**
+- 这三个pid\_link结构体里面有个哈希节点node,因为进程组、会话组等的存在,这个**node用来链接同一个组的进程task\_struct**,指向的是task\_struct中的pid\_link的node
+- pid结构体(不是一个ID号)代表**一个真实的进程(某个组的组长的pid也是这个结构体,因为组长也是真实的进程,也就有相应的真实的pid结构体,而组长身份是通过task\_struct引的**),所以里面会有①**该进程真实所处命名空间的level**;②**PIDTYPE\_MAX个(3个)散列表头**,tasks[PIDTYPE\_PID]指向自身进程(因为PIDTYPE\_PID是PID类型),如果该进程是进程组组长,那么tasks[PIDTYPE\_PGID]就是这个散列表的表头,指向下一个进程的相应组变量pids[PIDTYPE\_PGID]的node,如果该进程是会话组组长,那么tasks[PIDTYPE\_SID]就是这个散列表的表头,指向下一个进程的相应组变量pids[PIDTYPE\_SID]的node;③由于一个进程可能会呈现在多个pid命名空间,所以有该进程在其他命名空间中的信息结构体upid的数组,每个数组项代表一个
+- 结构体upid的数组number[1],**数组项个数取决于该进程pid的level值**,**每个数组项代表一个命名空间**,这个就是用来一个PID可以属于不同的命名空间,nr值表示该进程在该命名空间的pid值,ns指向该信息所在的命名空间,pid\_chain属于哈希表的节点.系统有一个pid\_hash[],通过pid在某个命名空间的nr值哈希到某个表项,如果多个nr值哈希到同一个表项,将其加入链表,这个节点就是upid的pid\_chain
+
 举例来说，在**level 2**的**某个命名空间**上新建了一个进程，分配给它的**pid为45**，映射到**level 1的命名空间**，分配给它的**pid为134**；再映射到**level 0的命名空间**，分配给它的**pid为289**，对于这样的例子，如图所示为其表示：
 
 增加PID命名空间之后的结构图:
@@ -436,7 +472,7 @@ struct upid
 
 # 4 进程ID管理函数
 
-有了上面的复杂的数据结构，再加上散列表等数据结构的操作，就可以写出我们前面所提到的三个问题的函数了：
+有了上面的复杂的数据结构，再加上散列表等数据结构的操作，就可以写出我们前面所提到的三个问题的函数了
 
 ## 4.1 pid号到struct pid实体
 
