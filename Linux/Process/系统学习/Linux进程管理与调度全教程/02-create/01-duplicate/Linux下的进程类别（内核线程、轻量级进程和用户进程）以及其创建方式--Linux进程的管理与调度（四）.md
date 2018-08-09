@@ -1,41 +1,11 @@
-Linux内核线程、轻量级进程和用户进程以及其创建方式
-=======
-
-**本文声明**
-
-| 日期 | 内核版本 | 架构| 作者 | GitHub| CSDN |
-| ------------- |:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
-| 2016-05-12 | [Linux-4.5](http://lxr.free-electrons.com/source/?v=4.5) | X86 & arm | [gatieme](http://blog.csdn.net/gatieme) | [LinuxDeviceDrivers](https://github.com/gatieme/LDD-LinuxDeviceDrivers) | [Linux进程管理与调度-之-进程的创建](http://blog.csdn.net/gatieme/article/category/6225543) |
-
-
-**本章链接**
-
-|链接地址 | 上一节 | 本章目录 | 下一节 |
-| ------------- |:-------------:|:-------------:|:-------------:|
-| CSDN   | 已是第一篇  | 无 | [Linux下0号进程的前世(init_task进程)今生(idle进程)]()|
-| GitHub | 已是第一篇  | [进程的创建](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/kernel/process/create) | [Linux下0号进程的前世(init_task进程)今生(idle进程)](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/kernel/process/create/02-idel)|
-
-**章节链接**
-
-|链接地址 | 上一章 | 总目录 | 下一章 |
-| ------------- |:-------------:|:-------------:|:-------------:|
-| CSDN   | [进程的描述](http://blog.csdn.net/gatieme/article/details/51383377)  | [目录](http://blog.csdn.net/gatieme/article/details/51456569) |[进程的调度]() |
-| GitHub | [进程的描述](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/kernel/process/task)  | [目录](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/kernel/process) | [进程的调度]()|
-
-
-**本文声明**
-
-| 日期 | 内核版本 | 架构| 作者 | GitHub| CSDN |
-| ------------- |:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
-| 2016-05-12 | [Linux-4.5](http://lxr.free-electrons.com/source/?v=4.5) | X86 & arm | [gatieme](http://blog.csdn.net/gatieme) | [LinuxDeviceDrivers](https://github.com/gatieme/LDD-LinuxDeviceDrivers) | [Linux进程管理与调度-之-进程的创建](http://blog.csdn.net/gatieme/article/details/51456569) |
 
 > 本文中出现的，内核线程，轻量级进程，用户进程，用户线程等概念，如果不太熟悉, 可以参见
 > 
 > [内核线程、轻量级进程、用户线程三种线程概念解惑（线程≠轻量级进程）](http://blog.csdn.net/gatieme/article/details/51481863)
 
 
-#Linux进程类别
--------
+# 1 Linux进程类别
+
 虽然我们在区分Linux进程类别, 但是我还是想说Linux下只有一种类型的进程，那就是task_struct，当然我也想说linux其实也没有线程的概念, 只是将那些与其他进程共享资源的进程称之为线程。
 
 1.	一个进程由于其运行空间的不同, 从而有**内核线程**和**用户进程**的区分, 内核线程运行在内核空间, 之所以称之为线程是因为它没有虚拟地址空间, 只能访问内核的代码和数据, 而用户进程则运行在用户空间, 但是可以通过中断, 系统调用等方式从用户态陷入内核态。

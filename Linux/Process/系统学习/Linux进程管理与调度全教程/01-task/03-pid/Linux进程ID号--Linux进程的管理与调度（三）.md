@@ -1,7 +1,25 @@
 - 1 进程ID概述
     - 1.1 进程ID类型
-    - 
-    - 
+    - 1.2 PID命名空间
+        - 1.2.1 pid命名空间概述
+        - 1.2.2 局部ID和全局ID
+        - 1.2.3 PID命名空间数据结构pid\_namespace
+- 2 pid结构描述
+    - 2.1 pid与upid
+    - 2.2 pidmap用于分配pid的位图
+    - 2.3 pid\_link哈希表存储
+    - 2.4 task\_struct中的进程ID相关描述符信息
+- 3 内核是如何设计task\_struct中进程ID相关数据结构的
+    - 3.1 一个PID对应一个task时的task\_struct设计
+    - 3.2 如何快速地根据局部ID、命名空间、ID类型找到对应进程的task\_struct
+    - 3.3 如何快速地给新进程在可见的命名空间内分配一个唯一的PID
+    - 3.4 带进程ID类型的task\_struct设计
+    - 3.5 进一步增加进程PID命名空间的task\_struct设计
+- 4 进程ID管理函数
+    - 4.1 pid号到struct pid实体
+    - 4.2 获得局部ID
+    - 4.3 根据PID查找进程task\_struct
+    - 4.4 生成唯一的PID
 
 Linux 内核使用 task\_struct 数据结构来关联所有与进程有关的数据和结构，Linux 内核所有涉及到进程和程序的所有算法都是围绕该数据结构建立的，是内核中最重要的数据结构之一。
 
@@ -286,7 +304,7 @@ Linux 内核在设计管理ID的数据结构时，要充分考虑以下因素：
 
 如果将所有因素(主要是**进程的task\_struct,ID类型,命名空间,局部ID,唯一ID**这5个因素)考虑到一起，将会很复杂，下面将会**由简到繁设计该结构**。
 
-## 3.1 一个PID对应一个task时的task\_struct设计(一对一)
+## 3.1 一个PID对应一个task时的task\_struct设计
 
 一个PID对应一个task\_struct如果先**不考虑进程之间的关系**，**不考虑命名空间**，仅仅是**一个PID号对应一个task\_struct(一对一情况)**，那么我们可以设计这样的数据结构
 
@@ -335,7 +353,7 @@ struct pid
 
 4. 最后根据内核的container\_of机制就能找到task\_struct结构体
 
-## 3.3 如何快速地给新进程在可见的命名空间内分配一个唯一的 PID
+## 3.3 如何快速地给新进程在可见的命名空间内分配一个唯一的PID
 
 - pid\_map
 
@@ -403,7 +421,7 @@ struct pid_link
 
 - 进程B和C的**进程组组长为A(进程组组长！！！**)，那么**进程B和进程C结构task\_struct**中的pids[**PIDTYPE\_PGID(进程组)**]的pid指针指向**进程A的pid结构体**,如图；进程B和进程C的pids[PIDTYPE\_PID]会指向自己的pid结构体,图中没有体现而已
 
-- 进程A是进程B和C的组长，**进程A的pid结构体**的**tasks[PIDTYPE\_PGID(进程组**)](tasks[1])是一个**散列表的头**，它将所有**以该pid为组长的进程链接起来**,图中的结构体pid是进程A的PID,而**A是组长**,B和C是**进程组**的组员,所以将A的pid中tasks[PIDTYPE\_PGID]指向进程B的task\_struct中的pid\_link[PIDTYPE\_PGID]中的node.
+- 进程A是进程B和C的组长，**进程A的pid结构体**的**tasks[PIDTYPE\_PGID(进程组**)]（tasks[1]）是一个**散列表的头**，它将所有**以该pid为组长的进程链接起来**,图中的结构体pid是进程A的PID,而**A是组长**,B和C是**进程组**的组员,所以将A的pid中tasks[PIDTYPE\_PGID]指向进程B的task\_struct中的pid\_link[PIDTYPE\_PGID]中的node.
 
 再次回顾本节的三个基本问题，在此结构上也很好去实现。
 
