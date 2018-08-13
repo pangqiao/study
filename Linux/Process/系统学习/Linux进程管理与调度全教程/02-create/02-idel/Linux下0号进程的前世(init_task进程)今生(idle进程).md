@@ -1,81 +1,58 @@
-Linux下0号进程的前世(init_task进程)今生(idle进程)
-=======
+- 1 Linux中3个特殊的进程
+- 2 idle的创建
+    - 2.1 0号进程上下文信息--init\_task描述符
 
+# 1 Linux中3个特殊的进程
 
-| 日期 | 内核版本 | 架构| 作者 | GitHub| CSDN |
-| ------------- |:-------------:|:-------------:|:-------------:|:-------------:|:-------------:|
-| 2016-05-12 | [Linux-4.5](http://lxr.free-electrons.com/source/?v=4.5) | X86 & arm | [gatieme](http://blog.csdn.net/gatieme) | [LinuxDeviceDrivers](https://github.com/gatieme/LDD-LinuxDeviceDrivers) | [Linux进程管理与调度-之-进程的创建](http://blog.csdn.net/gatieme/article/category/6225543) |
+Linux下有**3个特殊的进程**，**idle**进程($**PID = 0**$), init进程($**PID = 1**$)和**kthreadd**($**PID = 2**$)
 
-#前言
--------
+- idle进程由**系统自动创建**, 运行在**内核态**
 
-<font color=0x009966>Linux下有3个特殊的进程，idle进程($PID = 0$), init进程($PID = 1$)和kthreadd($PID = 2$)
+idle进程其pid=0，其前身是**系统创建的第一个进程**，也是**唯一一个没有通过fork或者kernel\_thread产生的进程**。完成加载系统后，演变为**进程调度、交换**
 
-<font color=#A52A2A>
-*	idle进程由系统自动创建, 运行在内核态
-</font>
-	idle进程其pid=0，其前身是系统创建的第一个进程，也是唯一一个没有通过fork或者kernel_thread产生的进程。完成加载系统后，演变为进程调度、交换
+- **init**进程由**idle**通过**kernel\_thread创建**，在**内核空间（！！！）完成初始化后**, 加载**init程序**, 并最终**用户空间**
 
-<font color=#A52A2A>
-*	init进程由idle通过kernel_thread创建，在内核空间完成初始化后, 加载init程序, 并最终用户空间
-</font>
-	由0进程创建，完成系统的初始化. 是系统中所有其它用户进程的祖先进程
-	Linux中的所有进程都是有init进程创建并运行的。首先Linux内核启动，然后在用户空间中启动init进程，再启动其他系统进程。在系统启动完成完成后，init将变为守护进程监视系统其他进程。
+由**0进程创建**，完成**系统的初始化**.是系统中**所有其它用户进程（！！！）的祖先进程**.Linux中的**所有进程**都是有**init进程创建并运行**的。首先Linux内核启动，然后**在用户空间中启动init进程**，再**启动其他系统程**。在**系统启动完成后**，**init**将变为**守护进程监视系统其他进程**
 
+- kthreadd进程由**idle**通过**kernel\_thread**创建,并始终运行在**内核空间**,负责所有**内核线程（内核线程！！！）的调度和管理**
 
-<font color=#A52A2A>
-*	kthreadd进程由idle通过kernel_thread创建，并始终运行在内核空间, 负责所有内核线程的调度和管理
-</font>
-   它的任务就是管理和调度其他内核线程kernel_thread, 会循环执行一个kthread的函数，该函数的作用就是运行kthread_create_list全局链表中维护的kthread, 当我们调用kernel_thread创建的内核线程会被加入到此链表中，因此所有的内核线程都是直接或者间接的以kthreadd为父进程
-</font>
+它的任务就是**管理和调度其他内核线程**kernel\_thread,会**循环执行**一个**kthread的函数**，该函数的作用就是运行**kthread\_create\_list全局链表**中维护kthread, 当我们调用**kernel\_thread创建的内核线程**会被**加入到此链表中**，因此**kthreadd为父进程**
 
+我们下面就详解分析0号进程的前世(init\_task)今生(idle)
 
-我们下面就详解分析0号进程的前世(init_task)今生(idle)
+# 2 idle的创建
 
-#idle的创建
--------
+在**smp系统**中，**每个处理器单元**有**独立的一个运行队列**，而**每个运行队列**上又**有一个idle进程**，即**有多少处理器单元**，就**有多少idle进程**。
 
-在smp系统中，每个处理器单元有独立的一个运行队列，而每个运行队列上又有一个idle进程，即有多少处理器单元，就有多少idle进程。
-
->idle进程其pid=0，其前身是系统创建的第一个进程，也是唯一一个没有通过fork()产生的进程。在smp系统中，每个处理器单元有独立的一个运行队列，而每个运行队列上又有一个idle进程，即有多少处理器单元，就有多少idle进程。系统的空闲时间，其实就是指idle进程的"运行时间"。既然是idle是进程，那我们来看看idle是如何被创建，又具体做了哪些事情？
-
+idle进程其pid=0，其前身是系统创建的第一个进程，也是唯一一个没有通过fork()产生的进程。在smp系统中，每个处理器单元有独立的一个运行队列，而每个运行队列上又有一个idle进程，即有多少处理器单元，就有多少idle进程。**系统的空闲时间**，其实就是指idle进程的"运行时间"。既然是idle是进程，那我们来看看idle是如何被创建，又具体做了哪些事情？
 
 我们知道系统是从BIOS加电自检，载入MBR中的引导程序(LILO/GRUB),再加载linux内核开始运行的，一直到指定shell开始运行告一段落，这时用户开始操作Linux。
 
+## 2.1 0号进程上下文信息--init\_task描述符
 
+**init_task**是内核中所有进程、线程的task\_struct雏形，在内核初始化过程中，通过**静态定义**构造出了一个task\_struct接口，取名为**init\_task**，然后在**内核初始化的后期**，通过**rest\_init**()函数新建了**内核init线程，kthreadd内核线程**
 
-##0号进程上下文信息--init_task描述符
--------
+- **内核init线程**，最终执行**/sbin/init进程**，变为**所有用户态程序的根进程（pstree命令显示**）,即**用户空间的init进程**
 
+**开始的init**是有kthread\_thread创建的**内核线程**,他在**完成初始化工作后**,转向**用户空间**, 并且生成所有用户进程的祖先
 
-**init_task**是内核中所有进程、线程的task_struct雏形，在内核初始化过程中，通过静态定义构造出了一个task_struct接口，取名为init_task，然后在内核初始化的后期，通过rest_init（）函数新建了**内核init线程，kthreadd内核线程**
+- **内核kthreadd内核线程**，变为**所有内核态其他守护线程的父线程**。
 
-*	**内核init线程**，最终执行/sbin/init进程，变为所有用户态程序的根进程（pstree命令显示）,即用户空间的init进程
-
-    开始的init是有kthread_thread创建的内核线程, 他在完成初始化工作后, 转向用户空间, 并且生成所有用户进程的祖先
-
-*	**内核kthreadd内核线程**，变为所有内核态其他守护线程的父线程。
-
-    它的任务就是管理和调度其他内核线程kernel_thread, 会循环执行一个kthread的函数，该函数的作用就是运行kthread_create_list全局链表中维护的kthread, 当我们调用kernel_thread创建的内核线程会被加入到此链表中，因此所有的内核线程都是直接或者间接的以kthreadd为父进程
-
+它的任务就是**管理和调度其他内核线程kernel\_thread**,会循环执行一个kthread的函数，该函数的作用就是运行kthread\_create\_list全局链表中维护的kthread,当我们调用kernel\_thread创建的内核线程会被加入到此链表中，因此**所有的内核线程**都是直接或者间接的以kthreadd为父进程
 
 ![pa-aux](./images/ps-aux.jpg)
 
+所以**init\_task决定了系统所有进程、线程的基因,它完成初始化后,最终演变为0号进程idle, 并且运行在内核态**
 
-所以<font color=0x009966>**init_task决定了系统所有进程、线程的基因, 它完成初始化后, 最终演变为0号进程idle, 并且运行在内核态**</font>
-
-内核在初始化过程中，当创建完init和kthreadd内核线程后，内核会发生调度执行，此时内核将使用该init_task作为其task_struct结构体描述符，当系统无事可做时，会调度其执行， 此时该内核会变为idle进程，让出CPU，自己进入睡眠，不停的循环，查看init_task结构体，其comm字段为swapper，作为idle进程的描述符。
+内核在初始化过程中，当创建完init和kthreadd内核线程后，内核会发生**调度执行**，此时内核将使用该init\_task作为其task\_struct结构体描述符，当**系统无事可做**时，会**调度其执行**，此时**该内核会变为idle进程，让出CPU，自己进入睡眠，不停的循环**，查看**init\_task结构体**，其**comm字段为swapper**，作为idle进程的**描述符**。
 
 >idle的运行时机
 >
->idle 进程优先级为MAX_PRIO-20。早先版本中，idle是参与调度的，所以将其优先级设低点，当没有其他进程可以运行时，才会调度执行 idle。而目前的版本中idle并不在运行队列中参与调度，而是在运行队列结构中含idle指针，指向idle进程，在调度器发现运行队列为空的时候运行，调入运行
+>**idle进程优先级为MAX\_PRIO \- 20**。**早先版本**中，**idle是参与调度**的，所以**将其优先级设低点**，当**没有其他进程可以运行**时，才会调度执行idle。而**目前的版本**中idle并**不在运行队列中参与调度**，而是在**运行队列结构中含idle指针**，指向**idle进程**，在调度器发现**运行队列为空的时候运行**，调入运行
 
-简言之, **内核中init_task变量就是是进程0使用的进程描述符**，也是Linux系统中第一个进程描述符，init_task并不是系统通过kernel_thread的方式（当然更不可能是fork）创建的, 而是由内核黑客静态创建的.
+简言之, **内核中init\_task变量就是是进程0使用的进程描述符**，也是Linux系统中第一个进程描述符，**init\_task**并**不是系统通过kernel\_thread的方式**（当然**更不可能是fork**）创建的, 而是由内核黑客**静态创建**的.
 
-
-该进程的描述符在[init/init_task](http://lxr.free-electrons.com/source/init/init_task.c?v=4.5#L17
-)中定义，代码片段如下
-
+该进程的描述符在[init/init_task](http://lxr.free-electrons.com/source/init/init_task.c?v=4.5#L17)中定义，代码片段如下
 
 ```c
 /* Initial task structure */
@@ -83,19 +60,17 @@ struct task_struct init_task = INIT_TASK(init_task);
 EXPORT_SYMBOL(init_task);
 ```
 
-init_task描述符使用宏INIT_TASK对init_task的进程描述符进行初始化，宏INIT_TASK在[include/linux/init_task.h](http://lxr.free-electrons.com/source/include/linux/init_task.h?v=4.5#L186)文件中
+**init\_task描述符**使用**宏INIT\_TASK**对init\_task的**进程描述符进行初始化**，宏INIT\_TASK在[include/linux/init_task.h](http://lxr.free-electrons.com/source/include/linux/init_task.h?v=4.5#L186)文件中
 
-init_task是Linux内核中的第一个线程，它贯穿于整个Linux系统的初始化过程中，该进程也是Linux系统中唯一一个没有用kernel_thread()函数创建的内核态进程(内核线程)
+init\_task是Linux内核中的**第一个线程**，它贯穿于整个Linux系统的初始化过程中，该进程也是Linux系统中唯一一个没有用kernel\_thread()函数创建的内核态进程(内核线程)
 
-在init_task进程执行后期，它会调用kernel_thread()函数创建第一个核心进程kernel_init，同时init_task进程继续对Linux系统初始化。在完成初始化后，init_task会退化为cpu_idle进程，当Core 0的就绪队列中没有其它进程时，该进程将会获得CPU运行。新创建的1号进程kernel_init将会逐个启动次CPU,并最终创建用户进程！
+在**init\_task进程执行后期**，它会**调用kernel\_thread**()函数创建**第一个核心进程kernel\_init**，同时init\_task进程**继续对Linux系统初始化**。在**完成初始化后**，**init\_task**会**退化为cpu\_idle进程**，当**Core 0**的**就绪队列**中**没有其它进程**时，该进程将会**获得CPU运行**。**新创建的1号进程kernel\_init将会逐个启动次CPU**,并**最终创建用户进程**！
 
->备注：core0上的idle进程由init_task进程退化而来，而AP的idle进程则是BSP在后面调用fork()函数逐个创建的
+备注：**core 0**上的**idle进程**由**init\_task进程退化**而来，而**AP的idle进程**则是**BSP在后面调用fork()函数逐个创建**的
 
+### 2.1.1 进程堆栈init\_thread\_union
 
-###进程堆栈init_thread_union
--------
-
-init_task进程使用init_thread_union数据结构描述的内存区域作为该进程的堆栈空间，并且和自身的thread_info参数公用这一内存空间空间，
+init\_task进程使用**init\_thread\_union**数据结构**描述的内存区域**作为**该进程的堆栈空间**，并且**和自身的thread\_info**参数**共用这一内存空间空间**，
 
 >请参见 http://lxr.free-electrons.com/source/include/linux/init_task.h?v=4.5#L193
 >
