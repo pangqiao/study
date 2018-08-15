@@ -1,12 +1,8 @@
-- 1 用户空间创建进程/线程的三种方法
-- 2 fork, vfork, clone系统调用的实现
-    - 2.1 关于do\_fork和\_do\_frok
+[TOC]
 
 >参照
 >
 >[分析Linux内核创建一个新进程的过程](http://blog.luoyuanhang.com/2015/07/27/%E5%88%86%E6%9E%90Linux%E5%86%85%E6%A0%B8%E5%88%9B%E5%BB%BA%E4%B8%80%E4%B8%AA%E6%96%B0%E8%BF%9B%E7%A8%8B%E7%9A%84%E8%BF%87%E7%A8%8B)
->
->
 
 # 1 用户空间创建进程/线程的三种方法
 
