@@ -1,4 +1,10 @@
-[TOC]
+- 1 1号进程
+    - 1.1 kernel\_init
+    - 1.2 init进程
+    - 1.3 关于init程序
+- 2 附录
+    - 2.1 kernel\_init\_freeable流程分析
+    - 2.2 kernel\_init分析
 
 我们下面就详解分析1号进程的前世(kernel\_init)今生(init进程)
 
