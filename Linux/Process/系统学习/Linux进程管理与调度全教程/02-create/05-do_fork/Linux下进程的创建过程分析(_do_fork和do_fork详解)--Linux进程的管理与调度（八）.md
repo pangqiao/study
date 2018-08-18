@@ -1,6 +1,19 @@
 - 1 用户空间创建进程/线程的三种方法
 - 2 fork, vfork, clone系统调用的实现
     - 2.1 关于do\_fork和\_do\_frok
+- 3 sys\_fork的实现
+- 4 sys\_vfork的实现
+- 5 sys\_clone的实现
+- 6 创建子进程的流程
+    - 6.1 \_do\_fork的流程
+    - 6.2 copy\_process流程
+    - 6.3 dup\_task\_struct流程
+    - 6.4 sched\_fork流程
+    - 6.5 copy\_thread和copy\_thread\_tls流程
+- 7 总结
+    - 7.1 简化的copy\_process()流程
+    - 7.2 进程退出
+- 8 参考链接
 
 >参照
 >
@@ -13,7 +26,7 @@
 | 系统调用 | 描述 |
 |:-------------:|:-------------|
 | fork | fork创造的**子进程是父进程的完整副本**，**复制了父亲进程的资源**，包括内存的task\_struct内容 |
-| vfork | vfork创建的**子进程与父进程共享数据段**,而且由vfork()创建的**子进程将先于父进程运行** |
+| vfork | vfork创建的**子进程与父进程共享数据段(数据段！！！**),而且由vfork()创建的**子进程将先于父进程运行** |
 | clone | Linux上**创建线程**一般使用的是**pthread库**.实际上linux也给我们提供了**创建线程的系统调用，就是clone** |
 
 >关于**用户空间(！！！**)使用fork, vfork和clone, 请参见
@@ -40,11 +53,9 @@ rather than pt\_regs magic") introduced \_do\_fork() that allowed to pass
 >
 >参见 http://lists.openwall.net/linux-kernel/2015/03/13/30
 
-linux2.5.32以后, 添加了**TLS(Thread Local Storage)机制**,**clone**的标识**CLONE\_SETTLS**接受一个参数来**设置线程的本地存储区**。sys\_clone也因此增加了一个int参数来传入相应的tls\_val。**sys\_clone通过do\_fork**来调用copy\_process完成进程的复制，它调用特定的copy\_thread和copy\_thread把相应的系统调用参数从**pt\_regs寄存器列表中提取出来**，但是会导致意外的情况。
+linux2.5.32以后, 添加了**TLS(Thread Local Storage)机制**,**clone**的标识**CLONE\_SETTLS**接受一个参数来**设置线程的本地存储区**。sys\_clone也因此**增加了一个int参数**来传入相应的tls\_val。**sys\_clone通过do\_fork**来调用copy\_process完成进程的复制，它调用特定的copy\_thread和copy\_thread把相应的系统调用参数从**pt\_regs寄存器列表中提取出来**，但是会导致意外的情况。
 
->only one code path into copy\_thread can pass the CLONE_SETTLS flag, and
-that code path comes from sys\_clone with its architecture-specific
-argument-passing order.
+>only one code path into copy\_thread can pass the CLONE\_SETTLS flag, and that code path comes from sys\_clone with its architecture-specific argument-passing order.
 
 前面我们说了，在实现函数调用的时候，sys\_clone等将特定体系结构的参数从寄存器中提取出来,然后到达do\_fork这步的时候已经应该是体系结构无关了,但是我们**sys\_clone**需要设置的**CLONE\_SETTLS的tls**仍然是个依赖与体系结构的参数, 这里就会出现问题。
 
@@ -86,7 +97,7 @@ long do_fork(unsigned long clone_flags,
 
 | 参数 | 描述 |
 | ------------- |:-------------|
-| clone\_flags | 与clone()参数flags相同,用来控制进程复制过的一些属性信息,描述你需要**从父进程继承那些资源**。该**标志位的4个字节**分为**两部分**。**最低的一个字节**为**子进程结束**时**发送给父进程的信号代码**，通常为**SIGCHLD**；**剩余的三个字节**则是各种clone标志的组合（本文所涉及的标志含义详见下表），也就是若干个标志之间的或运算。通过clone标志可以有选择的对父进程的资源进行复制； |
+| clone\_flags | 与clone()参数flags相同,用来控制进程复制过的一些属性信息,描述你需要**从父进程继承哪些资源**。该**标志位的4个字节**分为**两部分**。**最低的一个字节**为**子进程结束**时**发送给父进程的信号代码**，通常为**SIGCHLD**；**剩余的三个字节**则是**各种clone标志的组合**（本文所涉及的标志含义详见下表），也就是若干个标志之间的或运算。通过clone标志可以有选择的对父进程的资源进行复制； |
 | stack\_start | 与clone()参数stack\_start相同, **子进程用户态(！！！)堆栈的地址** |
 | regs | 是一个指向了**寄存器集合的指针**,其中以原始形式,**保存了调用的参数**,该**参数使用的数据类型**是**特定体系结构的struct pt\_regs**，其中**按照系统调用执行时寄存器在内核栈上的存储顺序**,保存了**所有的寄存器**,即**指向内核态堆栈通用寄存器值的指针**，**通用寄存器的值**是在从**用户态切换到内核态时被保存到内核态堆栈中的**(指向pt\_regs结构体的指针。当系统发生**系统调用**，即**用户进程从用户态切换到内核态**时，该结构体**保存通用寄存器中的值**，并**被存放于内核态的堆栈**中) |
 | stack\_size | **用户状态下栈的大小**, 该参数通常是不必要的, **总被设置为0** |
@@ -105,9 +116,9 @@ long do_fork(unsigned long clone_flags,
 
 | 架构 | 实现 |
 | ------------- |:-------------:|
-| arm | [arch/arm/kernel/sys_arm.c, line 239](http://lxr.free-electrons.com/source/arch/arm/kernel/sys_arm.c?v=2.4.37#L239) |
+| arm | [arch/arm/kernel/sys\_arm.c, line 239](http://lxr.free-electrons.com/source/arch/arm/kernel/sys_arm.c?v=2.4.37#L239) |
 | i386 | [arch/i386/kernel/process.c, line 710](http://lxr.free-electrons.com/source/arch/i386/kernel/process.c?v=2.4.37#L710) |
-| x86_64 | [arch/x86_64/kernel/process.c, line 706](http://lxr.free-electrons.com/source/arch/x86_64/kernel/process.c?v=2.4.37#L706) |
+| x86\_64 | [arch/x86\_64/kernel/process.c, line 706](http://lxr.free-electrons.com/source/arch/x86_64/kernel/process.c?v=2.4.37#L706) |
 
 ```c
 asmlinkage long sys_fork(struct pt_regs regs)
@@ -133,11 +144,11 @@ SYSCALL_DEFINE0(fork)
 #endif
 ```
 
-我们可以看到**唯一使用的标志是SIGCHLD**。这意味着在子进程终止后将发送信号SIGCHLD信号通知父进程, 
+- 我们可以看到**唯一使用的标志是SIGCHLD**。这意味着在**子进程终止**后将**发送信号SIGCHLD**信号**通知父进程**
 
-由于写时复制(COW)技术,**最初父子进程的栈地址相同**,但是如果操作栈地址闭并写入数据,则COW机制会为每个进程分别创建一个新的栈副本
+- 由于写时复制(COW)技术,**最初父子进程的栈地址相同**,但是如果操作栈地址并写入数据,则COW机制会为每个进程分别创建一个新的栈副本
 
-如果**do\_fork成功**,则**新建进程的pid作为系统调用的结果返回**, 否则返回错误码
+- 如果**do\_fork成功**,则**新建进程的pid作为系统调用的结果返回**, 否则**返回错误码**
 
 # 4 sys\_vfork的实现
 
@@ -244,7 +255,7 @@ SYSCALL_DEFINE5(clone, unsigned long, clone_flags, unsigned long, newsp,
 
 >\_do\_fork和do\_fork在进程的复制的时候并没有太大的区别,他们就只是在**进程tls复制**的过程中实现有细微差别
 
-**所有进程复制(创建)的fork机制**最终都调用了**kernel/fork.c中的\_do\_fork**(一个体系结构无关的函数),
+**所有进程复制(创建)的fork机制**最终都调用了**kernel/fork.c中的\_do\_fork**(一个体系结构无关的函数)
 
 >其定义在 http://lxr.free-electrons.com/source/kernel/fork.c?v=4.2#L1679
 
@@ -343,11 +354,11 @@ long _do_fork(unsigned long clone_flags,
 
 1. 调用dup\_task\_struct复制当前的task\_struct
 
-2. 检查进程数是否超过限制
+2. 检查**进程数是否超过限制**,两个因素:操作系统和内存大小
 
-3. 初始化自旋锁、挂起信号、CPU定时器等
+3. 初始化**自旋锁**、**挂起信号**、**CPU定时器**等
 
-4. 调用sched\_fork初始化进程数据结构，并把进程状态设置为TASK\_RUNNING
+4. 调用**sched\_fork**初始化进程数据结构，并把进程状态设置为TASK\_RUNNING
 
 5. 复制所有进程信息，包括文件系统、信号处理函数、信号、内存管理等
 
@@ -382,7 +393,7 @@ static struct task_struct *copy_process(unsigned long clone_flags,
     retval = security_task_create(clone_flags);
     if (retval)
         goto fork_out;
-	//  复制当前的 task_struct
+    //  复制当前的 task_struct
     retval = -ENOMEM;
     p = dup_task_struct(current);
     if (!p)
@@ -616,17 +627,17 @@ int sched_fork(unsigned long clone_flags, struct task_struct *p)
 
 我们可以看到sched\_fork大致完成了两项重要工作，
 
-- 一是将子进程状态设置为TASK\_RUNNING，
+- 一是将子进程状态设置为TASK\_RUNNING
 
 - 二是**为其分配CPU**
 
 ## 6.5 copy\_thread和copy\_thread\_tls流程
 
-我们可以看到**linux-4.2**之后增加了copy\_thread\_tls函数和CONFIG\_HAVE\_COPY\_THREAD\_TLS宏
+我们可以看到**linux-4.2**之后增加了**copy\_thread\_tls函数**和CONFIG\_HAVE\_COPY\_THREAD\_TLS宏
 
 但是如果**未定义CONFIG\_HAVE\_COPY\_THREAD\_TLS宏**默认则使用copy\_thread同时将定义copy\_thread\_tls为copy\_thread
 
-**单独这个函数**是因为**这个复制操作与其他操作都不相同**,这是一个**特定于体系结构的函数**，用于**复制进程中特定于线程(thread\-special)的数据**,重要的就是填充task\_struct->thread的各个成员，这是一个thread\_struct类型的结构, 其**定义是依赖于体系结构**的。它包含了**所有寄存器(和其他信息**)，内核在进程之间**切换时需要保存和恢复的进程的信息**。
+**单独这个函数**是因为**这个复制操作与其他操作都不相同**,这是一个**特定于体系结构的函数**，用于**复制进程中特定于线程(thread\-special)的数据**,重要的就是填充**task\_struct->thread的各个成员**，这是一个thread\_struct类型的结构, 其**定义是依赖于体系结构**的。它包含了**所有寄存器(和其他信息！！！所有寄存器信息在thread里面！！！**)，内核在进程之间**切换时需要保存和恢复的进程的信息**。
 
 该函数用于**设置子进程的执行环境**，如子进程运行时**各CPU寄存器的值**、子进程的**内核栈的起始地址**（**指向内核栈的指针通常也是保存在一个特别保留的寄存器**中）
 
@@ -663,14 +674,13 @@ int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
     struct pt_regs *childregs = task_pt_regs(p);
     struct task_struct *tsk;
     int err;
-	/*  获取寄存器的信息  */
+	/* 获取寄存器的信息 */
     p->thread.sp = (unsigned long) childregs;
     p->thread.sp0 = (unsigned long) (childregs+1);
     memset(p->thread.ptrace_bps, 0, sizeof(p->thread.ptrace_bps));
 
     if (unlikely(p->flags & PF_KTHREAD)) {
-        /* kernel thread
-        	内核线程的设置  */
+        /* kernel thread 内核线程的设置  */
         memset(childregs, 0, sizeof(struct pt_regs));
         p->thread.ip = (unsigned long) ret_from_kernel_thread;
         task_user_gs(p) = __KERNEL_STACK_CANARY;
@@ -685,13 +695,13 @@ int copy_thread_tls(unsigned long clone_flags, unsigned long sp,
         p->thread.io_bitmap_ptr = NULL;
         return 0;
     }
-    /*  将当前寄存器信息复制给子进程  */
+    /* 将当前寄存器信息复制给子进程 */
     *childregs = *current_pt_regs();
-    /*  子进程 eax 置 0，因此fork 在子进程返回0  */
+    /* 子进程 eax 置 0，因此fork 在子进程返回0 */
     childregs->ax = 0;
     if (sp)
         childregs->sp = sp;
-	/*  子进程ip 设置为ret_from_fork，因此子进程从ret_from_fork开始执行  */
+	/* 子进程ip设置为ret_from_fork，因此子进程从ret_from_fork开始执行  */
     p->thread.ip = (unsigned long) ret_from_fork;
     task_user_gs(p) = get_user_gs(current_pt_regs());
 
@@ -735,7 +745,7 @@ copy\_thread 这段代码为我们解释了两个相当重要的问题！
 
 # 7 总结
 
-fork, vfork和clone的系统调用的入口地址分别是sys\_fork,sys\_vfork和sys\_clone,而他们的定义是依赖于体系结构的, 而他们最终都**调用了\_do\_fork**（**linux-4.2之前的内核中是do\_fork**），在\_do\_fork中通过copy\_process复制进程的信息，**调用wake\_up\_new\_task将子进程加入调度器**中
+fork, vfork和clone的系统调用的入口地址分别是sys\_fork,sys\_vfork和sys\_clone,而他们的定义是依赖于体系结构的,而他们最终都**调用了\_do\_fork**（**linux-4.2之前的内核中是do\_fork**），在\_do\_fork中通过copy\_process复制进程的信息，**调用wake\_up\_new\_task将子进程加入调度器**中
 
 fork系统调用对应的kernel函数是sys\_fork，此函数简单的调用kernel函数\_do\_fork。一个**简化版的\_do\_fork**执行如下：
 

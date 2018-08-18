@@ -219,6 +219,10 @@ Linux把**thread\_info**（线程描述符）和**内核态**的**线程堆栈**
 
 ![thread_info](./images/thread_info.gif)
 
+![config](images/1.png)
+
+![config](images/2.jpg)
+
 但是较新的内核代码中，**进程描述符task\_struct**结构中**没有直接指向thread\_info结构的指针**，而是用一个**void指针类型**的成员表示，然后通过**类型转换来访问thread\_info结构**。
 
 相关代码在[include/linux/sched.h](http://lxr.free-electrons.com/source/include/linux/sched.h?v=4.5#L2812)中
