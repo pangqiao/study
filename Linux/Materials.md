@@ -36,6 +36,8 @@ https://blog.csdn.net/younger_china/article/category/960611
 
 http://kernel.meizu.com/slab-allocator-and-kmalloc.html
 
+全:https://blog.csdn.net/dc_726/article/category/939232
+
 - 书籍资料：
 
 赵炯书籍网站：http://www.oldlinux.org/
