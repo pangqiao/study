@@ -49,7 +49,7 @@
 
 **exit**是**c语言的库函数**，他**最终调用\_exit**。在此**之前**，先**清洗标准输出的缓存**，调用**atexit注册的函数**等,在c语言的**main函数**中**调用return**就**等价于调用exit**。
 
-\_Exit是c语言的库函数，自c99后加入，等价于\_exit，即可以认为它直接调用\_exit。
+\_Exit是**c语言的库函数**，自c99后加入，**等价于\_exit**，即可以认为它直接调用\_exit。
 
 基本来说，\_Exit（或\_exit，**建议使用大写版本**）是为fork之后的**子进程**准备的**特殊API**。功能见[POSIX 标准：\_Exit](https://link.zhihu.com/?target=http%3A//pubs.opengroup.org/onlinepubs/9699919799/functions/_Exit.html%23)，讨论见 [c - how to exit a child process](https://link.zhihu.com/?target=http%3A//stackoverflow.com/questions/2329640/how-to-exit-a-child-process-exit-vs-exit)
 
@@ -65,9 +65,9 @@
 
 **\_exit系统调用**
 
-**进程退出**由\_exit系统调用来完成,这使得**内核**有机会将**该进程所使用的资源释放回系统**中
+**进程退出**由\_exit**系统调用**来完成,这使得**内核**有机会将**该进程所使用的资源释放回系统**中
 
-进程终止时，一般是调用**exit库函数**（无论是程序员**显式调用**还是**编译器自动地把exit库函数插入到main函数的最后一条语句之后**）来**释放进程所拥有的资源**。
+进程终止时，一般是调用**exit库函数**（无论是程序员**显式调用**还是**编译器自动地把exit库函数插入到main函数的最后一条语句之后！！！**）来**释放进程所拥有的资源**。
 
 \_exit系统调用的**入口点是sys\_exit()函数**,需要一个**错误码作为参数**,以便退出进程。
 
@@ -87,7 +87,7 @@
 
 **为什么还需要exit\_group**
 
-我们如果了解linux的**线程实现机制**的话,会知道**所有的线程是属于一个线程组**的, 同时即使不是线程,linux也允许**多个进程组成进程组,多个进程组组成一个会话**, 因此我们本质上了解到**不管是多线程**,还是**进程组**起本质都是**多个进程组成的一个集合**,那么我们的应用程序在退出的时候,自然希望**一次性的退出组内所有的进程**。
+我们如果了解linux的**线程实现机制**的话,会知道**所有的线程是属于一个线程组**的,同时即使不是线程,linux也允许**多个进程组成进程组,多个进程组组成一个会话**,因此我们本质上了解到**不管是多线程**,还是**进程组**起本质都是**多个进程组成的一个集合**,那么我们的应用程序在退出的时候,自然希望**一次性的退出组内所有的进程**。
 
 因此exit\_group就诞生了
 
@@ -161,13 +161,13 @@ do\_group\_exit()函数杀死**属于current线程组**的**所有进程**。它
 
 该函数执行下述操作
 
-1. 检查退出进程的SIGNAL\_GROUP\_EXIT标志是否不为0，如果不为0，说明内核已经开始为线性组执行退出的过程。在这种情况下，就把存放在current\->signal\->group\_exit\_code的值当作退出码，然后跳转到第4步。
+1. 检查退出进程的SIGNAL\_GROUP\_EXIT标志是否不为0，如果不为0，说明内核**已经开始为线性组执行退出的过程**。在这种情况下，就把存放在**current\->signal\->group\_exit\_code**的值当作**退出码**，然后跳转到第4步。
 
-2. 否则，设置进程的SIGNAL\_GROUP\_EXIT标志并把终止代号放到current\->signal\->group\_exit\_code字段。
+2. 否则，设置**进程的SIGNAL\_GROUP\_EXIT标志**并把**终止代号**放到current\->signal\->group\_exit\_code字段。
 
-3. 调用zap\_other\_threads()函数杀死current线程组中的其它进程。为了完成这个步骤，函数扫描与current->tgid对应的PIDTYPE\_TGID类型的散列表中的每PID链表，向表中所有不同于current的进程发送SIGKILL信号，结果，所有这样的进程都将执行do\_exit()函数，从而被杀死。
+3. 调用**zap\_other\_threads**()函数**杀死current线程组中的其它进程**。为了完成这个步骤，函数扫描与**current->tgid(这是线程组组长真实的pid结构体)对应的PIDTYPE\_TGID类型**的**散列表(因为是线程组组长,所以其真实的pid结构体中task[PIDTYPE\_TGID]是散列表的表头)中的每个PID链表**，向表中所有**不同于current的进程发送SIGKILL信号**，结果，**所有这样的进程都将执行do\_exit()函数，从而被杀死**。
 
-4. 调用do\_exit()函数，把进程的终止代码传递给它。正如我们将在下面看到的，do\_exit()杀死进程而且不再返回。
+4. 调用**do\_exit**()函数，把进程的终止代码传递给它。正如我们将在下面看到的，**do\_exit()杀死进程而且不再返回**。
 
 ```c
 /*
@@ -212,6 +212,14 @@ do_group_exit(int exit_code)
 
 该函数定义在[kernel/exit.c](http://lxr.free-electrons.com/source/kernel/exit.c#L652)中
 
+```c
+void __noreturn do_exit(long code)
+{
+    ......
+}
+EXPORT_SYMBOL_GPL(do_exit);
+```
+
 ## 4.1 触发task\_exit\_nb通知链实例的处理函数
 
 ```c
@@ -227,7 +235,7 @@ void profile_task_exit(struct task_struct *task)
 }
 ```
 
-会触发task\_exit\_notifier通知, 从而触发对应的处理函数
+会**触发task\_exit\_notifier通知**, 从而**触发对应的处理函数**
 
 其中task\_exit\_notifier被定义如下
 ```c
@@ -251,7 +259,7 @@ static BLOCKING_NOTIFIER_HEAD(task_exit_notifier);
 
 ## 4.2 检查进程的blk\_plug是否为空
 
-保证task\_struct中的plug字段是空的，或者plug字段指向的队列是空的。plug字段的意义是stack plugging
+**保证**task\_struct中的**plug字段**是空的，或者**plug字段指向的队列是空的**。**plug字段的意义是stack plugging**
 
 ```c
 //  http://lxr.free-electrons.com/source/include/linux/blkdev.h?v=4.6#L1095
@@ -272,7 +280,7 @@ static inline bool blk_needs_flush_plug(struct task_struct *tsk)
 ```
 ## 4.3 OOPS消息
 
-中断上下文不能执行do\_exit函数, 也不能终止PID为0的进程。
+**中断上下文不能执行do\_exit函数**, 也**不能终止PID为0的进程**。
 
 ```c
 if (unlikely(in_interrupt()))
@@ -325,11 +333,22 @@ static inline void set_fs(mm_segment_t fs)
 }
 ```
 
-## 4.5 检查进病设置进程程PF\_EXITING
+x86定义
 
-首先是检查PF\_EXITING标识, 此标识表示进程正在退出,　
+```c
+static inline void set_fs(mm_segment_t fs)
+{
+	current->thread.addr_limit = fs;
+	/* On user-mode return, check fs is correct */
+	set_thread_flag(TIF_FSCHECK);
+}
+```
 
-如果此标识已被设置,则进一步设置PF\_EXITPIDONE标识,　并将进程的状态设置为不可中断状态TASK\_UNINTERRUPTIBLE,　并进程一次进程调度
+## 4.5 检查进程设置进程PF\_EXITING
+
+首先是**检查PF\_EXITING标识**, 此标识表示**进程正在退出**,　
+
+如果**此标识已被设置**,则**进一步设置PF\_EXITPIDONE标识**,并将进程的状态设置为**不可中断状态TASK\_UNINTERRUPTIBLE**,　并**进程一次进程调度**
 
 ```c
     /*current->flags的PF_EXITING标志表示进程正在被删除  */
@@ -353,7 +372,7 @@ static inline void set_fs(mm_segment_t fs)
     }
 ```
 
-如果此标识未被设置, 则通过exit\_signals来设置
+如果**此标识未被设置**, 则通过exit\_signals来设置
 
 ```c
     /*
@@ -492,7 +511,7 @@ static void __acct_update_integrals(struct task_struct *tsk,
 ```c
 exit_sem(tsk);   /*  释放用户空间的“信号量”  */
 ```
-遍历current->sysvsem.undo_list链表，并清除进程所涉及的每个IPC信号量的操作痕迹
+遍历current->sysvsem.undo\_list链表，并**清除进程所涉及的每个IPC信号量的操作痕迹**
 
 **释放锁**
 
@@ -530,7 +549,7 @@ exit_task_work(tsk);
     exit_thread();      /*     */
 ```
 
-触发thread\_notify\_head链表中所有通知链实例的处理函数，用于处理struct thread\_info结构体
+触发thread\_notify\_head链表中**所有通知链实例的处理函数**，用于处理struct thread\_info结构体
 
 **Performance Event功能相关资源的释放**
 
@@ -617,10 +636,10 @@ cgroup_exit(tsk);
     tsk->state = TASK_DEAD;
     tsk->flags |= PF_NOFREEZE;      /* tell freezer to ignore us */
     /*
-        重新调度，因为该进程已经被设置成了僵死状态，因此永远都不会再把它调度回来运行了，也就实现了do_exit不会有返回的目标    */
+    重新调度，因为该进程已经被设置成了僵死状态，因此永远都不会再把它调度回来运行了，也就实现了do_exit不会有返回的目标    */
     schedule();
 ```
 
-在设置了进程状态为TASK_DEAD后,进程进入**僵死状态**,进程已经无法被再次调度, 因为对应用程序或者用户空间来说此进程已经死了,但是尽管进程已经不能再被调度，但系统还是保留了它的进程描述符，这样做是为了让系统有办法在进程终止后仍能获得它的信息。
+在设置了**进程状态为TASK\_DEAD**后,进程进入**僵死状态**,进程已经**无法被再次调度**, 因为**对应用程序或者用户空间**来说此**进程已经死了**,但是尽管进程已经不能再被调度，但系统还是**保留了它的进程描述符**，这样做是为了让系统有办法在**进程终止后**仍能**获得它的信息**。
 
-在父进程获得已终止子进程的信息后，子进程的task\_struct结构体才被释放（包括此进程的内核栈）。
+在**父进程**获得**已终止子进程的信息**后，**子进程的task\_struct结构体**才被释放（包括**此进程的内核栈**）。
