@@ -29,6 +29,7 @@
   - [14 http不用输入用户名密码](#14-http不用输入用户名密码)
   - [15 编辑配置项](#15-编辑配置项)
 - [16](#16)
+- [.gitignore的模板](#gitignore的模板)
 
 <!-- /code_chunk_output -->
 
@@ -206,3 +207,15 @@ git config --global --unset user.name
 git config --global --edit
 
 # 16 
+
+```
+git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch path-of-remove-file' --prune-empty --tag-name-filter cat -- --all
+```
+
+```
+git push origin --force --all
+```
+
+# .gitignore的模板
+
+各种模板: https://github.com/github/gitignore
