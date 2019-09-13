@@ -31,7 +31,30 @@
 查看当前系统正在使用的磁盘以及挂载点
 
 ```
+# fdisk -l
+磁盘 /dev/sda：53.7 GB, 53687091200 字节，104857600 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+磁盘标签类型：gpt
+Disk identifier: E548BE10-0098-4851-A617-C93F292271F6
 
+
+#         Start          End    Size  Type            Name
+ 1         2048       411647    200M  EFI System      EFI System Partition
+ 2       411648     21383167     10G  Microsoft basic
+ 3     21383168    104855551   39.8G  Linux LVM
+
+磁盘 /dev/mapper/centos-root：62.1 GB, 62058921984 字节，121208832 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+
+
+磁盘 /dev/mapper/centos-swap：2147 MB, 2147483648 字节，4194304 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
 ```
 
 ```
@@ -624,6 +647,49 @@ tmpfs                    182M     0  182M    0% /run/user/0
 ## CentOS虚拟机设置
 
 查看磁盘空间变化, `fdisk -l`或`lsblk`,就发现磁盘空间变大了，但**没有分区**，还不能使用。/dev/sda已经拥有了扩大的空间。如下所示
+
+```
+# fdisk -l
+磁盘 /dev/sda：53.7 GB, 53687091200 字节，104857600 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+磁盘标签类型：gpt
+Disk identifier: E548BE10-0098-4851-A617-C93F292271F6
+
+
+#         Start          End    Size  Type            Name
+ 1         2048       411647    200M  EFI System      EFI System Partition
+ 2       411648     21383167     10G  Microsoft basic
+ 3     21383168    104855551   39.8G  Linux LVM
+
+磁盘 /dev/mapper/centos-root：62.1 GB, 62058921984 字节，121208832 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+
+
+磁盘 /dev/mapper/centos-swap：2147 MB, 2147483648 字节，4194304 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+```
+
+```
+# df -h
+文件系统                 容量  已用  可用 已用% 挂载点
+/dev/mapper/centos-root   38G   34G  4.1G   90% /
+devtmpfs                 893M     0  893M    0% /dev
+tmpfs                    910M     0  910M    0% /dev/shm
+tmpfs                    910M   11M  899M    2% /run
+tmpfs                    910M     0  910M    0% /sys/fs/cgroup
+/dev/sda2                 10G  218M  9.8G    3% /boot
+/dev/sda1                200M   12M  189M    6% /boot/efi
+tmpfs                    182M  4.0K  182M    1% /run/user/42
+tmpfs                    182M   28K  182M    1% /run/user/0
+```
+
+
 
 ```
 
