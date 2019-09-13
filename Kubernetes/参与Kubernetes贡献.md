@@ -3,13 +3,154 @@
 
 <!-- code_chunk_output -->
 
+- [社区概述](#社区概述)
+- [Communicating(交流)](#communicating交流)
+  - [SIGs](#sigs)
+  - [社交媒体](#社交媒体)
+  - [Slack](#slack)
+  - [Mailing lists](#mailing-lists)
+  - [Issues](#issues)
+  - [访问社区文档](#访问社区文档)
+  - [Office Hours](#office-hours)
+  - [Weekly Meeting](#weekly-meeting)
+  - [会议](#会议)
+- [Governance(管理/治理)](#governance管理治理)
+- [Build(开发构建)](#build开发构建)
+- [Contribute(贡献)](#contribute贡献)
+- [会员](#会员)
 - [相关链接](#相关链接)
-- [SIGs](#sigs)
+- [SIGs](#sigs-1)
 - [Kubernetes Developer Guide](#kubernetes-developer-guide)
   - [开发以及贡献代码到Kuberentes project的流程](#开发以及贡献代码到kuberentes-project的流程)
   - [建立你的开发环境，coding以及debugging](#建立你的开发环境coding以及debugging)
 
 <!-- /code_chunk_output -->
+
+# 社区概述
+
+社区Github: https://github.com/kubernetes/community
+
+主要包含下面几部分内容
+
+# Communicating(交流)
+
+列出了沟通渠道: chat(聊天), issues, mail list(邮件列表), conference(会议)等.
+
+对于特定的topic, SIG.
+
+主页: https://github.com/kubernetes/community/blob/master/communication
+
+## SIGs
+
+Kubernetes包含许多项目, 组织成SIG. 一些交流已经被移入到了特定于SIG的channel, 详细信息查看SIG子目录
+
+不过, 下面会列出专门讨论Kubernetes的general channel、groups和meetings。
+
+## 社交媒体
+
+* [Twitter](https://twitter.com/kubernetesio)
+* [Blog](https://kubernetes.io/blog/)
+* [Stack Overflow](https://stackoverflow.com/questions/tagged/kubernetes)
+
+## Slack
+
+http://slack.k8s.io/
+
+## Mailing lists
+
+Kubernetes邮件列表通过谷歌组托管。要接收这些列表的电子邮件，加入相关的组即可.
+
+* [kubernets-announce](https://groups.google.com/forum/#!forum/kubernetes-announce): 广播主要的项目公告，如release和安全问题
+* [kubernetes-dev](https://groups.google.com/forum/#!forum/kubernetes-dev): 围绕开发kubernetes进行讨论
+* [Discuss Kubernetes](https://discuss.kubernetes.io/): Kubernetes用户交流讨论的地方
+* 存在额外的谷歌组，并且可以加入到与每个团体和工作组相关的讨论中。这些链接来自SIG列表。
+
+## Issues
+
+使用K8s有任何问题, 查看 [故障排查指南](https://kubernetes.io/docs/tasks/debug-application-cluster/troubleshooting/)
+
+如果上面的没有解决, 或发现一个bug, [提交一个issue](https://github.com/kubernetes/kubernetes/issues/new)
+
+## 访问社区文档
+
+Google Docs中有很多工作文档和笔记, 有必要的话会放到这个repo中
+
+获取这些文档, 必须订阅上面的_Kubernetes-dev 邮件列表_
+
+## Office Hours
+
+Office Hours每月举行一次。参照 [这个](https://github.com/kubernetes/community/blob/master/events/office-hours.md) 获取更多信息.
+
+是个定期安排的直播, 在 [YouTube频道](https://www.youtube.com/c/KubernetesCommunity/) 回答用户的实时问题, 获得有关如何使用Kubernetes的反馈.
+
+每个月的第三个星期三
+
+直播地址: https://www.youtube.com/c/KubernetesCommunity/live
+
+您可以在Slack 上的 [\#office-hours频道](https://kubernetes.slack.com/messages/office-hours) 上发布问题，或者可以将问题提交给Stack Overflow。
+
+所有会议的档案都保存在这里：
+
+* [播放列表](https://www.youtube.com/playlist?list=PL69nYSiGNLP3azFUvYJjGn45YbF6C-uIg)
+* [会议记录](http://bit.ly/k8s-office-hours-notes)
+
+## Weekly Meeting
+
+每周四美国太平洋时间上午10点举行公开会议, 并且会记录。即北京时间周三凌晨1:00
+
+查看所有K8s的会议安排: https://calendar.google.com/calendar/embed?src=cgnt364vd8s86hr2phapfjc6uk@group.calendar.google.com&ctz=America/Los_Angeles&pli=1
+
+在[calendar.google.com](https://calendar.google.com/calendar/embed?src=cgnt364vd8s86hr2phapfjc6uk%40group.calendar.google.com&ctz=America/Los_Angeles)网站上查看，或将[此iCal网址](https://calendar.google.com/calendar/ical/cgnt364vd8s86hr2phapfjc6uk%40group.calendar.google.com/public/basic.ics)粘贴到任何iCal客户端。
+
+要添加到日历项目，请加入Google [网上论坛kubernetes-community-video-chat](https://groups.google.com/forum/#!forum/kubernetes-community-video-chat)以获取进一步说明。
+
+如果您有想要讨论或想要讨论的主题，请在[Kubernetes社区会议议程](https://docs.google.com/document/d/1VQDIAB0OqiSjIHI8AWMvSdceWhnz56jNpZrLs6o7NJY/edit#)上提出具体日期。
+
+## 会议
+
+Kubernetes是KubeCon + CloudNativeCon的主要焦点，每年春季在欧洲，夏季在中国，冬季在北美举行。
+
+有关这些和其他社区活动的信息可在[CNCF 活动页面](https://www.cncf.io/events/)上找到。
+
+# Governance(管理/治理)
+
+关于项目结构和组织
+
+官方支持的的groups:
+
+* Committees(委员会), 允许私聊. 安全/行为准则等
+
+* Special Interest Groups (SIGs, 特殊兴趣小组), 持久的开放小组, 专注项目的一部分, 必须有公开透明的程序. 任何人可以参与, SIG目的是建立一组子项目(subprojects)
+
+    * Subprojects(子项目): 每个SIG可以有一组subprojects. 这些是可以独立工作的小组. 一些子项目(subproject)将成为Kubernetes主要可交付成果的一部分, 另外的一些更可推测并且在kubernetes\-sigs github中
+
+* Working Group(工作组): 临时组, 为了处理跨SIG边界问题而建立. 工作组没有任何代码和长期构件. 工作组可通过相关的SIGs来报告并采取行动.
+* User Group(用户组): 用于促进与topic相关的信息的交流和发现, 这些topic与k8s的大型用户组有长期相关性. 不具有代码权.
+
+主页: https://github.com/kubernetes/community/blob/master/governance.md
+
+SIG可以有自己贡献策略, 在这个repo(https://github.com/kubernetes/community)的SIG文件夹下的README或CONTRIBUTING文件中描述(比如 [sig-cli/CONTRIBUTING.md](https://github.com/kubernetes/community/blob/master/sig-cli/CONTRIBUTING.md) ), 以及SIG自己的邮件列表, slack channel等
+
+# Build(开发构建)
+
+技术主题: [contributors/devel/README.md](https://github.com/kubernetes/community/blob/master/contributors/devel/README.md)
+
+# Contribute(贡献)
+
+第一步是从[Kubernetes SIGs列表](https://github.com/kubernetes/community/blob/master/sig-list.md)中选择. 参加SIG会议, 加入Slack频道并且订阅邮件列表. SIGs经常会有一系列"help wanted"的问题来帮助新的贡献者参与进去
+
+[贡献者指南](https://github.com/kubernetes/community/blob/master/contributors/guide/README.md)提供了关于如何让你的想法和bug修复被看到并接受的详细说明, 包含
+
+1. 如何[提交问题](https://github.com/kubernetes/community/blob/master/contributors/guide/README.md#file-an-issue)
+2. 如何[找到一些能做的事情](https://github.com/kubernetes/community/blob/master/contributors/guide/README.md#find-something-to-work-on)
+3. 如何[open一个pull request](https://github.com/kubernetes/community/blob/master/contributors/guide/README.md#open-a-pull-request)
+
+# 会员
+
+我们鼓励所有贡献者成为会员。我们的目标是发展一个由贡献者、评审人员和代码所有者组成的活跃、健康的社区。
+
+在我们的[社区会员](https://github.com/kubernetes/community/blob/master/community-membership.md)页面了解更多关于会员的要求和职责。
+
 # 相关链接
 
 slack channel: http://slack.k8s.io/ 
@@ -150,3 +291,4 @@ Authorization Plugins　授权插件
 Admission Control Plugins 准入插件
 发布流程
 具体流程
+
