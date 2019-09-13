@@ -9,6 +9,8 @@
 - [方式一: 增加磁盘数](#方式一-增加磁盘数)
   - [VMware Fusion设置](#vmware-fusion设置)
   - [CentOS虚拟机设置](#centos虚拟机设置)
+    - [添加新的挂载点](#添加新的挂载点)
+    - [](#)
 
 <!-- /code_chunk_output -->
 # 现状
@@ -38,7 +40,7 @@ tmpfs                    182M   28K  182M    1% /run/user/0
 ```
 # lsblk
 NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
-sda               8:0    0   70G  0 disk
+sda               8:0    0   50G  0 disk
 ├─sda1            8:1    0  200M  0 part /boot/efi
 ├─sda2            8:2    0   10G  0 part /boot
 └─sda3            8:3    0 39.8G  0 part
@@ -170,6 +172,63 @@ tmpfs                    182M     0  182M    0% /run/user/0
 
 查看设备信息
 
+```
+# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   50G  0 disk
+├─sda1            8:1    0  200M  0 part /boot/efi
+├─sda2            8:2    0   10G  0 part /boot
+└─sda3            8:3    0 39.8G  0 part
+  ├─centos-root 253:0    0 37.8G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sdb               8:16   0   20G  0 disk
+sr0              11:0    1 1024M  0 rom
+```
+
+显然, sda1、sda2、sdb3、centos\-root、centos\-swap都是sda分出来的分区, 而 sdb 就是刚创建的磁盘，它有20G的空间
+
+### 添加新的挂载点
+
+
+
+### 
+
+
+
+```
+# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   70G  0 disk
+├─sda1            8:1    0  200M  0 part /boot/efi
+├─sda2            8:2    0   10G  0 part /boot
+└─sda3            8:3    0 39.8G  0 part
+  ├─centos-root 253:0    0 37.8G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sr0              11:0    1 1024M  0 rom
+```
+
+```
+# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   70G  0 disk
+├─sda1            8:1    0  200M  0 part /boot/efi
+├─sda2            8:2    0   10G  0 part /boot
+└─sda3            8:3    0 39.8G  0 part
+  ├─centos-root 253:0    0 37.8G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sr0              11:0    1 1024M  0 rom
+```
+```
+# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   70G  0 disk
+├─sda1            8:1    0  200M  0 part /boot/efi
+├─sda2            8:2    0   10G  0 part /boot
+└─sda3            8:3    0 39.8G  0 part
+  ├─centos-root 253:0    0 37.8G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sr0              11:0    1 1024M  0 rom
+```
 ```
 
 ```
