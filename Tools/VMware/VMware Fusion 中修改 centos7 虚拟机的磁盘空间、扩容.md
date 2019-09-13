@@ -16,6 +16,7 @@
       - [创建PV](#创建pv)
       - [扩展卷组](#扩展卷组)
       - [扩容空间到root下](#扩容空间到root下)
+      - [扩大未挂载文件系统](#扩大未挂载文件系统)
 
 <!-- /code_chunk_output -->
 # 现状
@@ -501,6 +502,23 @@ sdb               8:16   0   20G  0 disk
 └─sdb1            8:17   0   20G  0 part
   └─centos-root 253:0    0 57.8G  0 lvm  /
 sr0              11:0    1 1024M  0 rom
+```
+
+#### 扩大未挂载文件系统
+
+`resize2fs`命令，用于扩大或者缩小**未挂载的ext2,ext3或者是ext4文件系统**。具体命令为：`resize2fs -p /dev/mapper/centos-root 20G`。这个路径，就是前面 root 对应 lv 的路径。
+
+```
+# resize2fs -p /dev/mapper/centos-root 20G
+resize2fs 1.42.9 (28-Dec-2013)
+resize2fs: Bad magic number in super-block 当尝试打开 /dev/mapper/centos-root 时
+找不到有效的文件系统超级块.
+```
+
+报错了, 可能我们的系统是xfs 文件系统，执行命令查看/etc/fstab确认下是不是 xfs 文件系统。结果如下
+
+```
+
 ```
 
 
