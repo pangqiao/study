@@ -14,6 +14,7 @@
       - [磁盘分区](#磁盘分区)
       - [格式化新分区为ext4文件系统](#格式化新分区为ext4文件系统)
       - [创建PV](#创建pv)
+      - [扩展卷组](#扩展卷组)
 
 <!-- /code_chunk_output -->
 # 现状
@@ -347,7 +348,20 @@ Writing superblocks and filesystem accounting information: 完成
 首先用用命令`pvdisplay`查看当前的物理卷。显然并没有/dev/sdb1
 
 ```
-
+# pvs
+  PV         VG     Fmt  Attr PSize  PFree
+  /dev/sda3  centos lvm2 a--  39.80g 4.00
+# pvdisplay
+  --- Physical volume ---
+  PV Name               /dev/sda3
+  VG Name               centos
+  PV Size               39.80 GiB / not usable 2.00 MiB
+  Allocatable           yes
+  PE Size               4.00 MiB
+  Total PE              10189
+  Free PE               1
+  Allocated PE          10188
+  PV UUID               XjIX0W-DgVi-sG34-8bcM-YhIX-sIXc-hB0UW1
 ```
 
 然后用pvcreate指令用于将物理硬盘分区初始化为物理卷，以便被LVM使用。
@@ -364,6 +378,10 @@ WARNING: ext4 signature detected on /dev/sdb1 at offset 1080. Wipe it? [y/n]: y
 创建完后，我们可以再用pvdisplay查看到新创建的物理卷。
 
 ```
+# pvs
+  PV         VG     Fmt  Attr PSize   PFree
+  /dev/sda3  centos lvm2 a--   39.80g   4.00m
+  /dev/sdb1         lvm2 ---  <20.00g <20.00g
 
 # pvdisplay
   --- Physical volume ---
@@ -392,7 +410,45 @@ WARNING: ext4 signature detected on /dev/sdb1 at offset 1080. Wipe it? [y/n]: y
 
 很明显, 提示/dev/sdb1是新的物理卷
 
-可以看到老的物理卷是有VG Name 的，而新的物理卷（也就是sdb1），这里是 centos, 记住这个，后面要用到。
+可以看到老的物理卷是有VG Name 的，而新的物理卷（也就是sdb1）没有，这里的VG是 centos, 记住这个，后面要用到。
+
+#### 扩展卷组
+
+要扩展VG需要知道当前lvm组名，也就是我们上面要记下来的 VG Name可以通过命令vgdisplay查看。
+
+通过命令 `vgextend centos /dev/sdb1` 动态的扩展卷组，它通过向卷组中添加物理卷来增加卷组的容量。
+
+再次执行命令 vgdisplay再次查看，容量已经添加进去。
+
+```
+# vgextend centos /dev/sdb1
+  Volume group "centos" successfully extended
+[root@gerry ~]# vgdisplay
+  --- Volume group ---
+  VG Name               centos
+  System ID
+  Format                lvm2
+  Metadata Areas        2
+  Metadata Sequence No  4
+  VG Access             read/write
+
+▽
+  VG Status             resizable
+  MAX LV                0
+  Cur LV                2
+  Open LV               2
+  Max PV                0
+  Cur PV                2
+  Act PV                2
+  VG Size               <59.80 GiB
+  PE Size               4.00 MiB
+  Total PE              15308
+  Alloc PE / Size       10188 / <39.80 GiB
+  Free  PE / Size       5120 / 20.00 GiB
+  VG UUID               qeJ63E-4HtZ-ti1z-SHA0-wZSB-9BL9-o5yXvJ
+```
+
+
 
 
 
