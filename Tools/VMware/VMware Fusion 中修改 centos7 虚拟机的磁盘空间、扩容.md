@@ -15,6 +15,7 @@
       - [格式化新分区为ext4文件系统](#格式化新分区为ext4文件系统)
       - [创建PV](#创建pv)
       - [扩展卷组](#扩展卷组)
+      - [扩容空间到root下](#扩容空间到root下)
 
 <!-- /code_chunk_output -->
 # 现状
@@ -423,7 +424,7 @@ WARNING: ext4 signature detected on /dev/sdb1 at offset 1080. Wipe it? [y/n]: y
 ```
 # vgextend centos /dev/sdb1
   Volume group "centos" successfully extended
-[root@gerry ~]# vgdisplay
+# vgdisplay
   --- Volume group ---
   VG Name               centos
   System ID
@@ -444,10 +445,63 @@ WARNING: ext4 signature detected on /dev/sdb1 at offset 1080. Wipe it? [y/n]: y
   PE Size               4.00 MiB
   Total PE              15308
   Alloc PE / Size       10188 / <39.80 GiB
-  Free  PE / Size       5120 / 20.00 GiB
+  Free  PE / Size       5120 / 20.00 GiB    # 容量变化
   VG UUID               qeJ63E-4HtZ-ti1z-SHA0-wZSB-9BL9-o5yXvJ
+
+# vgs
+  VG     #PV #LV #SN Attr   VSize   VFree
+  centos   2   2   0 wz--n- <59.80g 20.00g
 ```
 
+#### 扩容空间到root下
+
+查看需要扩容的路径，执行命令`fdisk -l`命令或`lvdisplay`，就可以发现，原来lv(root对应lv)的路径是 /dev/mapper/centos\-root, 那么之后的扩容路径就为/dev/centos/root
+
+执行命令 `lvextend -L +20G /dev/centos/root`扩展空间到root下
+
+```
+# lvextend -L +20G /dev/centos/root
+  Size of logical volume centos/root changed from <37.80 GiB (9676 extents) to <57.80 GiB (14796 extents).
+  Logical volume centos/root successfully resized.
+
+# lvs
+  LV   VG     Attr       LSize   Pool Origin Data%  Meta%  Move Log Cpy%Sync Convert
+  root centos -wi-ao---- <57.80g
+  swap centos -wi-ao----   2.00g
+```
+
+然后通过`df -h`查看，root空间还是没变
+
+```
+# df -h
+文件系统                 容量  已用  可用 已用% 挂载点
+/dev/mapper/centos-root   38G   34G  4.1G   90% /
+devtmpfs                 893M     0  893M    0% /dev
+tmpfs                    910M     0  910M    0% /dev/shm
+tmpfs                    910M   11M  900M    2% /run
+tmpfs                    910M     0  910M    0% /sys/fs/cgroup
+/dev/sda2                 10G  218M  9.8G    3% /boot
+/dev/sda1                200M   12M  189M    6% /boot/efi
+tmpfs                    182M   12K  182M    1% /run/user/42
+tmpfs                    182M     0  182M    0% /run/user/0
+```
+
+`lsblk`查看设备信息, 已经有变化
+
+```
+# lsblk
+NAME            MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda               8:0    0   50G  0 disk
+├─sda1            8:1    0  200M  0 part /boot/efi
+├─sda2            8:2    0   10G  0 part /boot
+└─sda3            8:3    0 39.8G  0 part
+  ├─centos-root 253:0    0 57.8G  0 lvm  /
+  └─centos-swap 253:1    0    2G  0 lvm  [SWAP]
+sdb               8:16   0   20G  0 disk
+└─sdb1            8:17   0   20G  0 part
+  └─centos-root 253:0    0 57.8G  0 lvm  /
+sr0              11:0    1 1024M  0 rom
+```
 
 
 
