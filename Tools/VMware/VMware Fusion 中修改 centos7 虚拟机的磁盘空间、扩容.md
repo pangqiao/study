@@ -200,6 +200,42 @@ sr0              11:0    1 1024M  0 rom
 
 ### 添加新的挂载点
 
+初始化磁盘为linux 系统文件。注意：你的linux 文件系统是什么格式。我的是 ext4
+
+```
+mkfs -t ext4 /dev/sdb
+```
+
+初始化文件系统完成后，切换到根分支 新建文件夹 newdisk,命令如下
+
+```
+mkdir newdisk
+```
+
+将初始化的磁盘挂载到 newdisk下，命令如下。
+
+```
+mount /dev/sdb /newdisk
+```
+
+如果没有任何提示，则表明成功了。（linux 系统相信，没有消息就是好消息）
+
+执行如下命令查看系统挂载情况
+
+```
+# df -h
+文件系统                 容量  已用  可用 已用% 挂载点
+/dev/mapper/centos-root   38G   34G  4.1G   90% /
+devtmpfs                 893M     0  893M    0% /dev
+tmpfs                    910M     0  910M    0% /dev/shm
+tmpfs                    910M   11M  900M    2% /run
+tmpfs                    910M     0  910M    0% /sys/fs/cgroup
+/dev/sda2                 10G  218M  9.8G    3% /boot
+/dev/sda1                200M   12M  189M    6% /boot/efi
+/dev/sdb                  20G   37M 19.4G    1% /newdisk
+tmpfs                    182M   12K  182M    1% /run/user/42
+tmpfs                    182M     0  182M    0% /run/user/0
+```
 
 
 ### 扩大LV: 仅使用于用了LVM的根分区
