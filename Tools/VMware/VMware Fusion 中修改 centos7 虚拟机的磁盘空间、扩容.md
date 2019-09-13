@@ -10,9 +10,10 @@
   - [VMware Fusion设置](#vmware-fusion设置)
   - [CentOS虚拟机设置](#centos虚拟机设置)
     - [添加新的挂载点](#添加新的挂载点)
-    - [扩大LV: 仅使用于用了LVM的更分区](#扩大lv-仅使用于用了lvm的更分区)
+    - [扩大LV: 仅使用于用了LVM的根分区](#扩大lv-仅使用于用了lvm的根分区)
       - [磁盘分区](#磁盘分区)
-      - [格式化文件系统](#格式化文件系统)
+      - [格式化新分区为ext4文件系统](#格式化新分区为ext4文件系统)
+      - [创建PV](#创建pv)
 
 <!-- /code_chunk_output -->
 # 现状
@@ -193,7 +194,7 @@ sr0              11:0    1 1024M  0 rom
 
 
 
-### 扩大LV: 仅使用于用了LVM的更分区
+### 扩大LV: 仅使用于用了LVM的根分区
 
 因为根分区使用了LVM技术, 所以可以通过增加PV容量来扩容根分区
 
@@ -202,6 +203,8 @@ sr0              11:0    1 1024M  0 rom
 先将新磁盘分区, 这里分一个就可以
 
 使用Linux的fdisk分区工具给磁盘/dev/sdb分区，更可以根据提示输入m查看帮助信息，再输入n(表示增加分区)，回车后输入p(创建主分区)，回车后partition number输入1，回车会提示输入分区的start值，end值。都默认即可(即当前能使用的所有空间)，回车后输入w进行保存，分区划分完毕(增加了20G空间)。
+
+并更改新分区类型为 Linux LVM 类型。
 
 ```
 # fdisk /dev/sdb
@@ -289,9 +292,108 @@ Calling ioctl() to re-read partition table.
 
 重启Linux
 
-#### 格式化文件系统
+#### 格式化新分区为ext4文件系统
 
-想要使用该分区, 必须先格式为
+想要使用该分区, 必须先格式化分区为文件系统
+
+输入命令 `fdisk -l` 查看磁盘分区情况
+
+```
+# fdisk -l
+磁盘 /dev/sdb：21.5 GB, 21474836480 字节，41943040 个扇区
+Units = 扇区 of 1 * 512 = 512 bytes
+扇区大小(逻辑/物理)：512 字节 / 512 字节
+I/O 大小(最小/最佳)：512 字节 / 512 字节
+磁盘标签类型：dos
+磁盘标识符：0x84ce2f97
+
+   设备 Boot      Start         End      Blocks   Id  System
+/dev/sdb1            2048    41943039    20970496   8e  Linux LVM
+```
+
+可以看到分区类型确实是LVM.
+
+格式化为ext4文件系统.
+
+```
+# mkfs.ext4 /dev/sdb1
+mke2fs 1.42.9 (28-Dec-2013)
+文件系统标签=
+OS type: Linux
+块大小=4096 (log=2)
+分块大小=4096 (log=2)
+Stride=0 blocks, Stripe width=0 blocks
+1310720 inodes, 5242624 blocks
+262131 blocks (5.00%) reserved for the super user
+第一个数据块=0
+Maximum filesystem blocks=2153775104
+160 block groups
+32768 blocks per group, 32768 fragments per group
+8192 inodes per group
+Superblock backups stored on blocks:
+	32768, 98304, 163840, 229376, 294912, 819200, 884736, 1605632, 2654208,
+	4096000
+
+Allocating group tables: 完成
+正在写入inode表: 完成
+Creating journal (32768 blocks): 完成
+Writing superblocks and filesystem accounting information: 完成
+```
+
+#### 创建PV
+
+格式化后，创建PV，将物理硬盘分区初始化为物理卷
+
+首先用用命令`pvdisplay`查看当前的物理卷。显然并没有/dev/sdb1
+
+```
+
+```
+
+然后用pvcreate指令用于将物理硬盘分区初始化为物理卷，以便被LVM使用。
+
+要创建物理卷必须首先对硬盘进行分区，并且将硬盘分区的类型设置为“Linux LVM”后，才能使用pvcreat指令将分区初始化为物理卷。执行命令pvcreate /dev/sda4
+
+```
+# pvcreate /dev/sdb1
+WARNING: ext4 signature detected on /dev/sdb1 at offset 1080. Wipe it? [y/n]: y
+  Wiping ext4 signature on /dev/sdb1.
+  Physical volume "/dev/sdb1" successfully created.
+```
+
+创建完后，我们可以再用pvdisplay查看到新创建的物理卷。
+
+```
+
+# pvdisplay
+  --- Physical volume ---
+  PV Name               /dev/sda3
+  VG Name               centos
+  PV Size               39.80 GiB / not usable 2.00 MiB
+  Allocatable           yes
+  PE Size               4.00 MiB
+  Total PE              10189
+  Free PE               1
+  Allocated PE          10188
+  PV UUID               XjIX0W-DgVi-sG34-8bcM-YhIX-sIXc-hB0UW1
+
+  "/dev/sdb1" is a new physical volume of "<20.00 GiB"
+  --- NEW Physical volume ---
+  PV Name               /dev/sdb1
+  VG Name
+  PV Size               <20.00 GiB
+  Allocatable           NO
+  PE Size               0
+  Total PE              0
+  Free PE               0
+  Allocated PE          0
+  PV UUID               qKXaUB-65vd-nUsu-sm0L-QBl6-yVKd-OvlRw8
+```
+
+很明显, 提示/dev/sdb1是新的物理卷
+
+可以看到老的物理卷是有VG Name 的，而新的物理卷（也就是sdb1），这里是 centos, 记住这个，后面要用到。
+
 
 
 ```
