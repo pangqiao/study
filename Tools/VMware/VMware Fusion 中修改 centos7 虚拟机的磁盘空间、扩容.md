@@ -193,6 +193,11 @@ sr0              11:0    1 1024M  0 rom
 
 显然, sda1、sda2、sdb3、centos\-root、centos\-swap都是sda分出来的分区, 而 sdb 就是刚创建的磁盘，它有20G的空间
 
+同样有两种方式扩容
+
+* 增加一个新的挂载点
+* 针对使用LVM的分区, 可以扩大LV
+
 ### 添加新的挂载点
 
 
@@ -518,8 +523,38 @@ resize2fs: Bad magic number in super-block 当尝试打开 /dev/mapper/centos-ro
 报错了, 可能我们的系统是xfs 文件系统，执行命令查看/etc/fstab确认下是不是 xfs 文件系统。结果如下
 
 ```
+/dev/mapper/centos-root /                       xfs     defaults        0 0
+```
+
+xfs 文件系统应该用如下命令扩容
 
 ```
+# xfs_growfs /dev/mapper/centos-root
+meta-data=/dev/mapper/centos-root isize=512    agcount=4, agsize=2477056 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=0 spinodes=0
+data     =                       bsize=4096   blocks=9908224, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal               bsize=4096   blocks=4838, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+data blocks changed from 9908224 to 15151104
+[root@gerry ~]# df -h
+文件系统                 容量  已用  可用 已用% 挂载点
+/dev/mapper/centos-root   58G   34G   25G   59% /
+devtmpfs                 893M     0  893M    0% /dev
+tmpfs                    910M     0  910M    0% /dev/shm
+tmpfs                    910M   11M  900M    2% /run
+tmpfs                    910M     0  910M    0% /sys/fs/cgroup
+/dev/sda2                 10G  218M  9.8G    3% /boot
+/dev/sda1                200M   12M  189M    6% /boot/efi
+tmpfs                    182M   12K  182M    1% /run/user/42
+tmpfs                    182M     0  182M    0% /run/user/0
+```
+
+至此扩容完成
+
 
 
 
