@@ -3,3 +3,5 @@
 西安邮电大学 陈莉君教授主导课程
 
 来源: 学堂在线, https://next.xuetangx.com/learn/XIYOU08091001441/XIYOU08091001441/1075661/video/719712
+
+课件、源码、实验手册: https://github.com/ljrkernel/linuxmooc
