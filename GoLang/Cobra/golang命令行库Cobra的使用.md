@@ -1175,13 +1175,16 @@ Echo: WOW
 
 # 12. 自定义help和usage
 
-待续 
+待续
 
 https://o-my-chenjian.com/2017/09/20/Using-Cobra-With-Golang/
 
 # 13. 参考
 
-- https://o-my-chenjian.com/2017/09/20/Using-Cobra-With-Golang/
-- Cobra简介: http://time-track.cn/cobra-brief-introduction.html
-- golang命令行库cobra的使用: https://www.cnblogs.com/borey/p/5715641.html?hmsr=studygolang.com&utm_medium=studygolang.com&utm_source=studygolang.com
-- https://www.jianshu.com/p/7abe7cff5384
+* github主页: https://github.com/spf13/cobra
+* https://o-my-chenjian.com/2017/09/20/Using-Cobra-With-Golang/
+* Cobra简介: http://time-track.cn/cobra-brief-introduction.html
+* golang命令行库cobra的使用: https://www.cnblogs.com/borey/p/5715641.html?hmsr=studygolang.com&utm_medium=studygolang.com&utm_source=studygolang.com
+* https://www.jianshu.com/p/7abe7cff5384
+* Cobra - Golang命令行库: https://jsharkc.github.io/2017/07/17/cobra%E5%85%A5%E9%97%A8%E5%B0%8F%E6%95%99%E7%A8%8B/
+* Golang之使用Cobra: https://o-my-chenjian.com/2017/09/20/Using-Cobra-With-Golang/
