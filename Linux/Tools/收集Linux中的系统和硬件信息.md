@@ -3,22 +3,22 @@
 
 <!-- code_chunk_output -->
 
-* [1 查看系统信息 \-\-\- uname](#1-查看系统信息-uname)
-* [2 查看Linux系统硬件信息 \-\-\- lshw](#2-查看linux系统硬件信息-lshw)
-* [3 查看Linux CPU信息 \-\-\- lscpu](#3-查看linux-cpu信息-lscpu)
-* [4 收集Linux块设备信息 \-\-\- lsblk](#4-收集linux块设备信息-lsblk)
-* [5 打印USB控制器信息 \-\-\- lsusb](#5-打印usb控制器信息-lsusb)
-* [6 打印PCI设备信息 \-\-\- lspci](#6-打印pci设备信息-lspci)
-* [7 打印SCSI设备信息 \-\-\- lsscsi](#7-打印scsi设备信息-lsscsi)
-* [8 打印有关SATA设备的信息 \-\-\- hdparm](#8-打印有关sata设备的信息-hdparm)
-* [9 打印Linux文件系统信息 \-\-\- fdisk](#9-打印linux文件系统信息-fdisk)
-* [10 提取有关硬件组件的信息 \-\-\- dmidecode](#10-提取有关硬件组件的信息-dmidecode)
-* [11 概要](#11-概要)
-* [12 参考](#12-参考)
+- [1. 查看系统信息 --- uname](#1-查看系统信息-uname)
+- [2. 查看Linux系统硬件信息 --- lshw](#2-查看linux系统硬件信息-lshw)
+- [3. 查看Linux CPU信息 --- lscpu](#3-查看linux-cpu信息-lscpu)
+- [4. 收集Linux块设备信息 --- lsblk](#4-收集linux块设备信息-lsblk)
+- [5. 打印USB控制器信息 --- lsusb](#5-打印usb控制器信息-lsusb)
+- [6. 打印PCI设备信息 --- lspci](#6-打印pci设备信息-lspci)
+- [7. 打印SCSI设备信息 --- lsscsi](#7-打印scsi设备信息-lsscsi)
+- [8. 打印有关SATA设备的信息 --- hdparm](#8-打印有关sata设备的信息-hdparm)
+- [9. 打印Linux文件系统信息 --- fdisk](#9-打印linux文件系统信息-fdisk)
+- [10. 提取有关硬件组件的信息 --- dmidecode](#10-提取有关硬件组件的信息-dmidecode)
+- [11. 概要](#11-概要)
+- [12. 参考](#12-参考)
 
 <!-- /code_chunk_output -->
 
-# 1 查看系统信息 \-\-\- uname
+# 1. 查看系统信息 --- uname
 
 使用uname命令没有任何选项将打印**系统信息**或**UNAME \-s**命令将打印**系统的内核名称**。
 
@@ -64,7 +64,7 @@ x86_64
 Linux SH-IDC1-10-5-8-97 3.10.0-693.el7.x86_64 #1 SMP Tue Aug 22 21:09:27 UTC 2017 x86_64 x86_64 x86_64 GNU/Linux
 ```
 
-# 2 查看Linux系统硬件信息 \-\-\- lshw
+# 2. 查看Linux系统硬件信息 --- lshw
 
 在这里，您可以使用**lshw工具**来收集有关您的**硬件部件**，如CPU， 磁盘 ， 内存 ，USB控制器等大量信息 lshw是一个相对较小的工具，也有一些可以在提取信息，它使用几个选项。 
 
@@ -136,7 +136,7 @@ H/W path          Device          Class          Description
 
 ![](./images/2019-04-20-22-48-19.png)
 
-# 3 查看Linux CPU信息 \-\-\- lscpu
+# 3. 查看Linux CPU信息 --- lscpu
 
 要查看你的CPU信息，请使用lscpu命令，因为它显示你的CPU体系结构的信息，如从**sysfs**中和的/**proc/cpuinfo** CPU的数量，内核，CPU系列型号，CPU高速缓存，线程等。
 
@@ -170,7 +170,7 @@ NUMA 节点1 CPU：    16-31,48-63
 Flags:                 fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch epb cat_l3 cdp_l3 intel_pt tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm cqm mpx rdt_a avx512f avx512dq rdseed adx smap clflushopt clwb avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local dtherm ida arat pln pts
 ```
 
-# 4 收集Linux块设备信息 \-\-\- lsblk
+# 4. 收集Linux块设备信息 --- lsblk
 
 **块设备是存储设备**，诸如**硬盘，闪存驱动器**等lsblk命令用于报告关于**块设备的信息**如下。
 
@@ -198,7 +198,7 @@ sdb      8:16   0   1.3T  0 disk
 sdc      8:32   0 893.8G  0 disk
 ```
 
-# 5 打印USB控制器信息 \-\-\- lsusb
+# 5. 打印USB控制器信息 --- lsusb
 
 所述的**lsusb**命令用于报告关于**USB控制器**和所有**连接到他们的设备**的信息。
 
@@ -216,7 +216,7 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 [root@SH-IDC1-10-5-8-97 ~]# lsusb -v
 ```
 
-# 6 打印PCI设备信息 \-\-\- lspci
+# 6. 打印PCI设备信息 --- lspci
 
 **PCI设备**可以包括**USB接口**，**显卡**，**网卡**等lspci的工具，用于生成有关系统上的**所有PCI控制器**以及**连接到这些设备的信息**。 要打印有关PCI设备的信息，请运行以下命令。
 
@@ -281,7 +281,7 @@ Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
 ......
 ```
 
-# 7 打印SCSI设备信息 \-\-\- lsscsi
+# 7. 打印SCSI设备信息 --- lsscsi
 
 要查看所有的SCSI / SATA设备，使用如下命令使用lsscsi。 如果您没有安装使用lsscsi工具，运行以下命令来安装它。
 
@@ -309,7 +309,7 @@ $ sudo apt-get install lsscsi        [on Debian derivatives]
 [0:2:2:0]    disk    AVAGO    MR9361-8i        4.68  /dev/sdc    959GB
 ```
 
-# 8 打印有关SATA设备的信息 \-\-\- hdparm
+# 8. 打印有关SATA设备的信息 --- hdparm
 
 ```
 [root@SH-IDC1-10-5-8-97 ~]# hdparm /dev/sda1
@@ -331,7 +331,7 @@ SG_IO: bad/missing sense data, sb[]:  70 00 05 00 00 00 00 0d 00 00 00 00 20 00 
  geometry      = 65270/255/63, sectors = 2097152, start = 2048
 ```
 
-# 9 打印Linux文件系统信息 \-\-\- fdisk
+# 9. 打印Linux文件系统信息 --- fdisk
 
 要收集有关**文件系统的分区的信息**，您可以使用fdisk命令。 
 
@@ -368,17 +368,17 @@ I/O 大小(最小/最佳)：262144 字节 / 262144 字节
    设备 Boot      Start         End      Blocks   Id  System
 ```
 
-# 10 提取有关硬件组件的信息 \-\-\- dmidecode
+# 10. 提取有关硬件组件的信息 --- dmidecode
 
 还可以使用的dmidecode实用工具通过读取DMI表中的数据提取硬件信息。
 
 具体查看dmidecode
 
-# 11 概要
+# 11. 概要
 
 大多数这些命令的文件，用在/ proc目录提取系统信息。
 
-# 12 参考
+# 12. 参考
 
 - 该目录下: <获取CPU信息的命令>
 - https://www.howtoing.com/tag/linux-tricks/
