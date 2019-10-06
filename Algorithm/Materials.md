@@ -23,3 +23,5 @@
 - https://github.com/kdn251/interviews
 
 - 快速攻克算法和数据结构: https://www.zhihu.com/lives/795264798257479680
+
+* 数据结构与算法之美: 极客时间课程, 王争(前Google工程师)
