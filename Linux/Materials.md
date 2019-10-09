@@ -84,3 +84,4 @@ Linux等等信息包括调试工具等: https://biscuitos.github.io/blog/Biscuit
 
 Linux内核之旅: http://www.kerneltravel.net/
 
+Linux内核初学者仓库: git@github.com:ljrkernel/LearningLinuxKernel.git

@@ -10,6 +10,8 @@
 
 Linux虚拟化技术: http://tinylab.org/tiny-salon-phase-ii-virtualization-technology/
 
+VT源码: https://github.com/zzhouhe/VT_Learn
+
 虚拟化技术入门: https://edu.aliyun.com/course/38?spm=5176.8764728.aliyun-edu-course-tab.1.5a852addFAVPBd&previewAs=member
 
 <操作系统与虚拟化安全>: https://www.coursera.org/learn/os-virtsecurity/home/welcome
