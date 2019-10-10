@@ -1,3 +1,24 @@
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. 基本概念](#1-基本概念)
+  - [1.1. 3个步骤](#11-3个步骤)
+  - [1.2. 4个区](#12-4个区)
+- [2. 检查修改](#2-检查修改)
+  - [2.1. 已修改，未暂存](#21-已修改未暂存)
+  - [2.2. 已暂存，未提交](#22-已暂存未提交)
+  - [2.3. 已提交，未推送](#23-已提交未推送)
+- [3. 撤销修改](#3-撤销修改)
+  - [3.1. 已修改，未暂存](#31-已修改未暂存)
+  - [3.2. 已暂存，未提交](#32-已暂存未提交)
+  - [3.3. 已提交，未推送](#33-已提交未推送)
+  - [3.4. 已推送](#34-已推送)
+- [4. 总结](#4-总结)
+
+<!-- /code_chunk_output -->
+
 来源：张京  
 
 www.fengerzh.com/git-reset/
@@ -6,7 +27,7 @@ www.fengerzh.com/git-reset/
 
 ## 1. 基本概念
 
-### 3个步骤
+### 1.1. 3个步骤
 
 ![config](images/2.png)
 
@@ -22,7 +43,7 @@ git push
 - git commit把所有文件从暂存区提交进本地仓库；
 - git push把所有文件从本地仓库推送进远程仓库。
  
-#### 4个区
+### 1.2. 4个区
 
 - 工作区(Working Area)
 - 暂存区(Stage)
@@ -31,13 +52,13 @@ git push
 
 ## 2. 检查修改
 
-### 已修改，未暂存
+### 2.1. 已修改，未暂存
 
 ```
 git diff
 ```
 
-### 已暂存，未提交
+### 2.2. 已暂存，未提交
 
 ```
 git diff --cached [filename]
@@ -45,7 +66,7 @@ git diff --cached [filename]
 
 git diff这个命令只检查我们的工作区和暂存区之间的差异，如果我们想看到暂存区和本地仓库之间的差异，就需要加一个参数git diff --cached。
 
-### 已提交，未推送
+### 2.3. 已提交，未推送
 
 ```
 git diff master origin/master [filename]
@@ -55,7 +76,7 @@ git diff master origin/master [filename]
 
 ## 3. 撤销修改
 
-### 已修改，未暂存
+### 3.1. 已修改，未暂存
 
 ```
 git checkout .
@@ -69,7 +90,7 @@ git reset --hard
 
 一对反义词 git add .的反义词是git checkout .。做完修改之后，如果你想向前走一步，让修改进入暂存区，就执行git add .，如果你想向后退一步，撤销刚才的修改，就执行git checkout .。
 
-### 已暂存，未提交
+### 3.2. 已暂存，未提交
 
 ```
 git reset
@@ -84,13 +105,13 @@ git reset --hard
 
 git reset只是把修改退回到了git add .之前的状态，也就是说文件本身还处于**已修改未暂存**状态，你如果想退回未修改状态，还需要执行git checkout .。
 
-### 已提交，未推送
+### 3.3. 已提交，未推送
 
 ```
 git reset --hard origin/master
 ```
 
-### 已推送
+### 3.4. 已推送
 
 先恢复本地仓库，再强制push到远程仓库。
 
