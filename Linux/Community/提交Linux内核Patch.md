@@ -192,14 +192,23 @@ X-Mailer: git-send-email 2.13.2
 Result: 250 2.0.0 OK 1516281059 v9sm14814354pfj.88 - gsmtp
 ```
 
-提交成功后，就能在**内核邮件列表**中看到自己的邮件\[PATCH] scripts/gdb: fix get_thread_info，以及维护人员的回复Re: \[PATCH] scripts/gdb: fix get_thread_info。
+提交成功后，就能在**内核邮件列表**中看到自己的邮件[\[PATCH] scripts/gdb: fix get_thread_info](https://lkml.org/lkml/2018/1/18/291)，以及维护人员的回复[Re: \[PATCH] scripts/gdb: fix get_thread_info](https://lkml.org/lkml/2018/1/18/516)。
 
 Linux内核被划分成**不同的子系统**，如网络、内存管理等，不同的子系统有**相应的维护人员**，**一个Patch**会首先提交到**子系统分支**，再被**维护人员**提交到**主分支**。
 
-我的Patch被提交到了mm\-tree（维护人员是Andrew Morton），见mm-commits邮件列表scripts-gdb-fix-get_thread_info.patch added to -mm tree，Andrew Morton确认没问题后，会将Patch发送给Linus Torvalds，见mm-commits[patch 4/6] scripts/gdb/linux/tasks.py: fix get_thread_info，我的Patch还被发送给了stable分支，见stable邮件列表[patch 4/6] scripts/gdb/linux/tasks.py: fix get_thread_info。
+我的Patch被提交到了mm\-tree（维护人员是Andrew Morton），见mm-commits邮件列表[scripts-gdb-fix-get_thread_info.patch added to -mm tree](https://marc.info/?l=linux-mm-commits&m=151631227209235)，Andrew Morton确认没问题后，会将Patch发送给Linus Torvalds，见[mm-commits[patch 4/6] scripts/gdb/linux/tasks.py: fix get_thread_info](https://marc.info/?l=linux-mm-commits&m=151632204511765)，我的Patch还被发送给了stable分支，见stable邮件列表[[patch 4/6] scripts/gdb/linux/tasks.py: fix get_thread_info](https://www.spinics.net/lists/stable/msg210851.html)。
 
-最终由Linus Torvalds将Patch合并到主分支，scripts/gdb/linux/tasks.py: fix get_thread_info。
+最终由Linus Torvalds将Patch合并到主分支，[scripts/gdb/linux/tasks.py: fix get_thread_info](https://github.com/torvalds/linux/commit/883d50f56d263f70fd73c0d96b09eb36c34e9305)。
 
 看到自己的代码在世界的某个角落运转，推动世界向前发展，才是真正的享受。
 
-https://consen.github.io/2018/01/19/submit-linux-kernel-patch/
+# 参考
+
+文章来自: https://consen.github.io/2018/01/19/submit-linux-kernel-patch/
+
+* [Submitting patches: the essential guide to getting your code into the kernel](https://www.kernel.org/doc/html/latest/process/submitting-patches.html)
+* [The perfect patch](https://www.ozlabs.org/~akpm/stuff/tpp.txt)
+* [Linux kernel patch format](http://linux.yyz.us/patch-format.html)
+* [git config](https://git-scm.com/docs/git-config), [git format-patch](https://git-scm.com/docs/git-format-patch) and [git send-email](https://git-scm.com/docs/git-send-email)
+* GDB Python API [Values From Inferior](https://sourceware.org/gdb/onlinedocs/gdb/Values-From-Inferior.html) and [Types In Python](https://sourceware.org/gdb/onlinedocs/gdb/Types-In-Python.html)
+* [mm tre](https://en.wikipedia.org/wiki/Mm_tree)e
