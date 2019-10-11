@@ -5,7 +5,7 @@ Linux内核Patch提交还是采用邮件列表方式，不过提供了自动化�
 
 # Bug修复
 
-Bug的原因已经很明确了，先看下问题代码scripts/gdb/linux/tasks.py：
+Bug的原因已经很明确了，先看下问题代码**scripts/gdb/linux/tasks.py**：
 
 ```c
 def get_thread_info(task):
@@ -82,7 +82,124 @@ total: 0 errors, 0 warnings, 137 lines checked
 scripts/gdb/linux/tasks.py has no obvious style problems and is ready for submission.
 ```
 
+没问题就可以写提交日志了：
 
+```
+$ git add scripts/gdb/linux/tasks.py
+$ git commit -s
+```
 
+\-s自动添加签发人Signed\-off\-by: Xi Kangjie \<imxikangjie@gmail.com>，表示该Patch是你创建的，你会对该Patch负责。日志的第一行为简短描述，会成为邮件标题（Subject），之后空一行，添加详细描述，会成为邮件内容，再空一行，添加签发人。
+
+将最近一次提交生成Patch：
+
+```
+$ git format-patch HEAD~                           
+0001-scripts-gdb-fix-get_thread_info.patch
+```
+
+再次检查Patch是否符合规范：
+
+```
+$ ./scripts/checkpatch.pl 0001-scripts-gdb-fix-get_thread_info.patch
+ERROR: Please use git commit description style 'commit <12+ chars of sha1> ("<title line>")' - ie: 'commit c65eacbe290b ("sched/core: Allow putting thread_info into task_struct")'
+#10:
+- c65eacbe290b (sched/core: Allow putting thread_info into task_struct)
+
+ERROR: Please use git commit description style 'commit <12+ chars of sha1> ("<title line>")' - ie: 'commit 15f4eae70d36 ("x86: Move thread_info into task_struct")'
+#11:
+- 15f4eae70d36 (x86: Move thread_info into task_struct)
+
+total: 2 errors, 0 warnings, 8 lines checked
+
+NOTE: For some of the reported defects, checkpatch may be able to
+      mechanically convert to the typical style using --fix or --fix-inplace.
+
+0001-scripts-gdb-fix-get_thread_info.patch has style problems, please review.
+
+NOTE: If any of the errors are false positives, please report
+      them to the maintainer, see CHECKPATCH in MAINTAINERS.
+```
+
+看来格式有错误，引用的提交描述不符合规范，直接修改Patch文件，再次检查：
+
+```
+$ ./scripts/checkpatch.pl 0001-scripts-gdb-fix-get_thread_info.patch
+total: 0 errors, 0 warnings, 8 lines checked
+
+0001-scripts-gdb-fix-get_thread_info.patch has no obvious style problems and is ready for submission.
+```
+
+# Patch提交
+
+获取Patch相关维护人员：
+
+```
+$ ./scripts/get_maintainer.pl 0001-scripts-gdb-fix-get_thread_info.patch 
+Jan Kiszka <jan.kiszka@siemens.com> (supporter:GDB KERNEL DEBUGGING HELPER SCRIPTS)
+Kieran Bingham <kieran@bingham.xyz> (supporter:GDB KERNEL DEBUGGING HELPER SCRIPTS)
+Xi Kangjie <imxikangjie@gmail.com> (commit_signer:1/1=100%,authored:1/1=100%,added_lines:2/2=100%)
+linux-kernel@vger.kernel.org (open list)
+```
+
+发送Patch:
+
+```
+$ git send-email --to jan.kiszka@siemens.com --to kieran@bingham.xyz --cc linux-kernel@vger.kernel.org 0001-scripts-gdb-fix-get_thread_info.patch
+0001-scripts-gdb-fix-get_thread_info.patch
+(mbox) Adding cc: Xi Kangjie <imxikangjie@gmail.com> from line 'From: Xi Kangjie <imxikangjie@gmail.com>'
+(body) Adding cc: Xi Kangjie <imxikangjie@gmail.com> from line 'Signed-off-by: Xi Kangjie <imxikangjie@gmail.com>'
+
+From: Xi Kangjie <imxikangjie@gmail.com>
+To: jan.kiszka@siemens.com,
+        kieran@bingham.xyz
+Cc: linux-kernel@vger.kernel.org,
+        Xi Kangjie <imxikangjie@gmail.com>
+Subject: [PATCH] scripts/gdb: fix get_thread_info
+Date: Thu, 18 Jan 2018 21:01:59 +0000
+Message-Id: <20180118210159.17223-1-imxikangjie@gmail.com>
+X-Mailer: git-send-email 2.13.2
+
+    The Cc list above has been expanded by additional
+    addresses found in the patch commit message. By default
+    send-email prompts before sending whenever this occurs.
+    This behavior is controlled by the sendemail.confirm
+    configuration setting.
+
+    For additional information, run 'git send-email --help'.
+    To retain the current behavior, but squelch this message,
+    run 'git config --global sendemail.confirm auto'.
+
+Send this email? ([y]es|[n]o|[q]uit|[a]ll): y
+Password for 'smtp://imxikangjie@gmail.com@smtp.gmail.com:587':
+OK. Log says:
+Server: smtp.gmail.com
+MAIL FROM:<imxikangjie@gmail.com>
+RCPT TO:<jan.kiszka@siemens.com>
+RCPT TO:<kieran@bingham.xyz>
+RCPT TO:<linux-kernel@vger.kernel.org>
+RCPT TO:<imxikangjie@gmail.com>
+From: Xi Kangjie <imxikangjie@gmail.com>
+To: jan.kiszka@siemens.com,
+        kieran@bingham.xyz
+Cc: linux-kernel@vger.kernel.org,
+        Xi Kangjie <imxikangjie@gmail.com>
+Subject: [PATCH] scripts/gdb: fix get_thread_info
+Date: Thu, 18 Jan 2018 21:01:59 +0000
+Message-Id: <20180118210159.17223-1-imxikangjie@gmail.com>
+X-Mailer: git-send-email 2.13.2
+
+Result: 250 2.0.0 OK 1516281059 v9sm14814354pfj.88 - gsmtp
+```
+
+提交成功后，就能在**内核邮件列表**中看到自己的邮件\[PATCH] scripts/gdb: fix get_thread_info，以及维护人员的回复Re: \[PATCH] scripts/gdb: fix get_thread_info。
+
+Linux内核被划分成**不同的子系统**，如网络、内存管理等，不同的子系统有**相应的维护人员**，**一个Patch**会首先提交到**子系统分支**，再被**维护人员**提交到**主分支**。
+
+我的Patch被提交到了mm\-tree（维护人员是Andrew Morton），见mm-commits邮件列表scripts-gdb-fix-get_thread_info.patch added to -mm tree，Andrew Morton确认没问题后，会将Patch发送给Linus Torvalds，见mm-commits[patch 4/6] scripts/gdb/linux/tasks.py: fix get_thread_info，我的Patch还被发送给了stable分支，见stable邮件列表[patch 4/6] scripts/gdb/linux/tasks.py: fix get_thread_info。
+
+最终由Linus Torvalds将Patch合并到主分支，scripts/gdb/linux/tasks.py: fix get_thread_info。
+
+看到自己的代码在世界的某个角落运转，推动世界向前发展，才是真正的享受。
 
 https://consen.github.io/2018/01/19/submit-linux-kernel-patch/
