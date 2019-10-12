@@ -153,7 +153,7 @@ procs -----------memory---------- ---swap-- -----io---- -system-- ------cpu-----
 
 procs：进程活动
 
-- r这一列显示了**internal时间段内多少进程在等待cpu**，运行队列(就是说**多少个进程真的分配到CPU**)
+- **r**这一列显示了**internal时间段内多少进程在等待cpu**，运行队列(就是说**多少个进程真的分配到CPU**)
 - b列显示internal时间段内**多少进程正在不可中断的休眠**（IO wait或Paging引起）。
 
 memory：内存活动
