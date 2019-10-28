@@ -3,9 +3,10 @@
 
 <!-- code_chunk_output -->
 
-* [1 不/显示隐藏文件](#1-不显示隐藏文件)
-* [2 剪切功能实现](#2-剪切功能实现)
-* [3 重命名功能](#3-重命名功能)
+- [1 不/显示隐藏文件](#1-不显示隐藏文件)
+- [2 剪切功能实现](#2-剪切功能实现)
+- [3 重命名功能](#3-重命名功能)
+- [4 keychain](#4-keychain)
 
 <!-- /code_chunk_output -->
 
@@ -53,3 +54,12 @@ defaults write com.apple.finder AppleShowAllFiles -bool false
 选中文件, 然后回车, 重命名后回车确认.
 
 就是用鼠标点击一下文件，就是选中文件，然后隔一秒钟之后我们再用鼠标点击你刚才选中的文件的文件名就可以对这个文件进行重命名了
+
+# 4 keychain
+
+"xxx wants to access key "com.apple.xxx.xxx" in your keychain"
+
+1. Open Keychain Access.
+2. Search for XcodeDeviceMonitor.
+3. Drag the item to the System Keychain on left.
+4. Enter admin password.
