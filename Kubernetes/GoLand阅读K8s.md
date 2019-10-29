@@ -102,7 +102,9 @@ app  BUILD  kube-proxy  proxy.go
 
 # 7. IDE打开
 
-打开刚才安装好的GoLand，选择Open Project，选择$GOPATH/src/k8s.io/kubernetes目录
+打开刚才安装好的GoLand，选择Open Project，选择$**GOPATH目录**
+
+注意project路径
 
 代码入口在k8s.io/kubernetes/cmd目录下
 
