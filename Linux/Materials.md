@@ -1,14 +1,19 @@
 * LKML的主要列表：http://vger.kernel.org/vger-lists.htm
 * 下载内核的源代码和补丁、跟踪内核bug等: http://www.kernel.org/ 可以通过这个网站上。
-* http://kerneltrap.org Linux和BSD内核的技术新闻。如果没时间跟踪LKML，那么经常浏览kerneltrap是个好主意。
 * Linux新闻站点: http://lwn.net/ Linux weekly news，创建于1997年底的一个。
-* http://zh-kernel.org/mailman/listinfo/linux-kernel 这是内核开发的中文邮件列表，里面活跃着很多内核开发领域的华人，比如Herbert  Xu,、Mingming Cao、Bryan Wu等。
+
+
+* Linux博客: http://ilinuxkernel.com/?cat=3
+* Kernel网站: https://kernelnewbies.org/
+* 如何加入Linux内核开发社区: https://tonybai.com/2012/03/27/how-to-participate-linux-community-section-1/
 
 - 代码阅读
 
 Linux源码查看工具：https://elixir.bootlin.com/linux/v4.17-rc2/source
 
 - 博客：
+
+http://ilinuxkernel.com/?cat=3
 
 http://blog.csdn.net/q1007729991
 
