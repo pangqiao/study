@@ -106,7 +106,14 @@ app  BUILD  kube-proxy  proxy.go
 
 注意project路径
 
-代码入口在k8s.io/kubernetes/cmd目录下
+```
+# echo $GOPATH
+/Volumes/Main/Codes/go
+```
+
+
+
+代码入口在`k8s.io/kubernetes/cmd`目录下
 
 # 8. 开始分析
 
