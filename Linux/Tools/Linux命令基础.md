@@ -1,4 +1,16 @@
-# Linux命令基础
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. Linux命令基础](#1-linux命令基础)
+- [2. man page](#2-man-page)
+- [3. info page](#3-info-page)
+- [4. 其他文件](#4-其他文件)
+
+<!-- /code_chunk_output -->
+
+# 1. Linux命令基础
 
  - commands not found的错误原因
      - 输错命令
@@ -8,10 +20,11 @@
  - Linux在线求助：man page | info page  
  - 中文命令网站：http://man.linuxde.net/
 
-# 1 man page
+# 2. man page
 
  - man page适用于所有Unix like系统。
  - man page的数字说明：
+
 ```
 1：用户可以在shell环境中操作的命令或可执行文件
 2：系统内核可调用的函数与工具
@@ -38,11 +51,11 @@
 
 > 不用背命令，记住常用的命令即可。根据man page查找命令并查看用法。
 
-# 2 info page
+# 3. info page
 
  - Linux除了man，还提供的一套额外的在线求助方法，Linux独有的。
  - 目标数据的说明文件只有以info格式写成才能使用info的特殊功能（例如超链接）。而支持info命令的文件默认在/usr/share/info/目录下。
 
-# 3 其他文件
+# 4. 其他文件
 
  - 一般，命令或软件开发者都会将自己命令或软件的说明制作成“在线帮助文档”，会放置在/usr/share/doc这个目录下，包括bash信息等。
