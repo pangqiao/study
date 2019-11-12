@@ -152,7 +152,7 @@ make install
 
 ## 6.2 安装
 
-检查现有的vim是否有+lua和python2和python3的支持
+检查现有的vim是否有+lua和python2和python3的支持, 以及clipboard(libXt-devel包libX11-devel包)
 
 ![config](./images/5.png)
 
@@ -186,6 +186,10 @@ sudo ./configure --with-features=huge --enable-multibyte --enable-rubyinterp=yes
 sudo make -j12
 
 sudo make install
+```
+
+```
+./configure --with-features=huge             --enable-multibyte     --enable-rubyinterp=yes     --enable-pythoninterp=yes --with-python-config-dir=/usr/lib64/python2.7/config/ --enable-python3interp=yes     --with-python3-config-dir=/usr/lib64/python3.6/config-3.6m-x86_64-linux-gnu/ --enable-perlinterp=yes     --enable-luainterp=yes             --enable-gui=gtk2             --enable-cscope    --prefix=/usr/local
 ```
 
 ## 6.3 清理当前vim配置
