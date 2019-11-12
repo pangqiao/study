@@ -8,12 +8,16 @@ VIM配置参照项目：https://github.com/SpaceVim/SpaceVim
 # 安装软件
 
 ```
-apt-get install ctags cscope git wmctrl fonts-powerline
+apt-get install ctags cscope git wmctrl fonts-powerline 
 ```
 
 ```
-# yum install -y ctags cscope fontconfig
+# yum install -y ctags cscope fontconfig ttmkfdir
 ```
+
+fontconfig用来安装字体库
+
+ttmkfdir用来搜索目录中所有的字体信息，并汇总生成fonts.scale文件
 
 然后根据cscope的路径修改vimrc配置文件
 
@@ -24,6 +28,8 @@ apt-get install ctags cscope git wmctrl fonts-powerline
 ```
 
 从 https://github.com/ryanoasis/nerd-fonts/releases 下载SourceCodePro.zip
+
+
 
 
 # 安装插件管理器Vim-Plug
