@@ -19,6 +19,12 @@ apt-get install ctags cscope git wmctrl fonts-powerline
 
 # 安装字体
 
+```
+# mkdir /usr/share/fonts/SourceCodePro
+```
+
+从 https://github.com/ryanoasis/nerd-fonts/releases 下载SourceCodePro.zip
+
 
 # 安装插件管理器Vim-Plug
 
