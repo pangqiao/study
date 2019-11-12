@@ -22,7 +22,7 @@ ttmkfdir用来搜索目录中所有的字体信息，并汇总生成fonts.scale�
 参照 Linux/Tools/字体
 
 
-fileencodings=ucs-bom,utf-8,utf-16,gbk,big5,gb18030,latin1
+set fileencodings=ucs-bom,utf-8,utf-16,gbk,big5,gb18030,latin1
 
 # 安装插件管理器Vim-Plug
 
