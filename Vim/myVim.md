@@ -1,9 +1,5 @@
 
-参考：
 
-https://github.com/Gerry-Lee/vim
-
-VIM配置参照项目：https://github.com/SpaceVim/SpaceVim
 
 # 安装软件
 
@@ -12,7 +8,7 @@ apt-get install ctags cscope git wmctrl fonts-powerline
 ```
 
 ```
-# yum install -y ctags cscope fontconfig ttmkfdir
+# yum install -y ctags cscope
 ```
 
 fontconfig用来安装字体库
@@ -23,11 +19,7 @@ ttmkfdir用来搜索目录中所有的字体信息，并汇总生成fonts.scale�
 
 # 安装字体
 
-```
-# mkdir /usr/share/fonts/SourceCodePro
-```
-
-从 https://github.com/ryanoasis/nerd-fonts/releases 下载SourceCodePro.zip
+参照 Linux/Tools/字体
 
 
 
@@ -35,6 +27,12 @@ ttmkfdir用来搜索目录中所有的字体信息，并汇总生成fonts.scale�
 # 安装插件管理器Vim-Plug
 
 https://github.com/junegunn/vim-plug
+
+```sh
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+```
+
 
 
 
@@ -87,3 +85,8 @@ cscope -bq -i cscope.files
 - <C-F12> :!ctags -R --c-kinds=+l+x+p --fields=+lS -I __THROW,__nonnull --extra=+ .
 
 ### 8.
+
+
+参考：
+
+https://github.com/ma6174/vim
