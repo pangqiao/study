@@ -1,5 +1,6 @@
 
 
+参照: https://www.zhihu.com/people/tracyone/posts
 
 # 安装软件
 
