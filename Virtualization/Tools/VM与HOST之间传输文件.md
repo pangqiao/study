@@ -5,7 +5,9 @@
 
 # 共享文件
 
-# qemu-nbd
+
+
+# qemu-nbd方式
 
 查看\<qemu-nbd方式挂载镜像>
 
