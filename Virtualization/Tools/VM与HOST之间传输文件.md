@@ -5,7 +5,7 @@
 
 # 2. 共享文件
 
-方式是qemu实现的Plan 9 folder sharing over Virtio
+方式是qemu实现的**Plan 9 folder sharing over Virtio**
 
 ## 2.1. 在host上创建共享文件夹
 
@@ -14,8 +14,6 @@
 ```
 # mkdir /tmp/shared_host
 ```
-
-
 
 ## 2.2. 启动虚拟机
 
@@ -37,6 +35,16 @@
 </devices>
 ```
 
+
+```
+<devices>
+    <filesystem type='mount' accessmode='passthrough'>
+      <source dir='/data/shared'/>
+      <target dir='test_mount'/>
+    </filesystem>
+</devices>
+```
+
 ## 2.3. Guest上mount共享文件夹
 
 在Guest上mount共享文件夹：
@@ -44,6 +52,11 @@
 ```
 # mkdir /tmp/shared_guest
 # mount -t 9p -o trans=virtio test_mount /tmp/shared_guest/ -oversion=9p2000.L,posixacl,cache=loose
+```
+
+```
+mkdir /root/shared
+mount -t 9p -o trans=virtio test_mount /root/shared/ -oversion=9p2000.L,posixacl,cache=loose
 ```
 
 现在就可在Host的/tmp/shared_host和Guest的/tmp/shared_guest/之间进行文件的共享了。
