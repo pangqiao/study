@@ -142,11 +142,11 @@ sudo fc-cache -f -v
 windows直接复制字体进相应目录即可
 
 9. 在相应终端(Xshell, MobaXterm)配置Powerline字体
- 
+
 修改终端字体为xxx for Powerline
 
 10. SpaceVim配置字体
- 
+
 必要时候在SpaceVim中配置for powerline的字体
 
 11. 终端的真彩色
