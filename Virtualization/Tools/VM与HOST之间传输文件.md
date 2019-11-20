@@ -7,7 +7,21 @@
 
 方式是qemu实现的**Plan 9 folder sharing over Virtio**
 
-## 2.1. 在host上创建共享文件夹
+## 2.1. 环境配置
+
+要宿主机需要在内核中配置了9p选项，即：
+
+```conf
+CONFIG_NET_9P=y
+CONFIG_net_9P_VIRTIO=y
+CONFIG_NET_9P_DEBUG=y (可选项)
+CONFIG_9P_FS=y
+CONFIG_9P_FS_POSIX_ACL=y
+```
+
+另外，qemu在编译时需要支持ATTR/XATTR。
+
+## 2.2. 在host上创建共享文件夹
 
 在Host上建立一个共享文件夹：
 
@@ -15,7 +29,7 @@
 # mkdir /tmp/shared_host
 ```
 
-## 2.2. 启动虚拟机
+## 2.3. 启动虚拟机
 
 在Host上启动虚拟机qemu：注意最后的mount_tag
 
@@ -45,7 +59,7 @@
 </devices>
 ```
 
-## 2.3. Guest上mount共享文件夹
+## 2.4. Guest上mount共享文件夹
 
 在Guest上mount共享文件夹：
 
