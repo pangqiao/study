@@ -51,3 +51,4 @@
 - VIM和markdown结合工具: 跨平台, https://segmentfault.com/a/1190000008220381
 - chrome下载: https://tools.shuax.com/chrome/#/
 - SCI-HUB: 论文网站, https://sci-hub.tw/ , 使用方法: https://zhuanlan.zhihu.com/p/24299207
+* VPN软件: packetix vpn client
