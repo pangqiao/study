@@ -3,19 +3,19 @@
 
 <!-- code_chunk_output -->
 
-* [1 QEMU官网描述](#1-qemu官网描述)
-* [2 QEMU与KVM的关系](#2-qemu与kvm的关系)
-* [3 QEMU的代码结构](#3-qemu的代码结构)
-	* [3.1 线程事件驱动模型](#31-线程事件驱动模型)
-	* [3.2 设备模拟](#32-设备模拟)
-	* [3.3 QEMU中的虚拟机管理命令](#33-qemu中的虚拟机管理命令)
-	* [3.4 块操作](#34-块操作)
-* [4 QEMU源码编译](#4-qemu源码编译)
-* [5 参考](#5-参考)
+- [1. QEMU官网描述](#1-qemu官网描述)
+- [2. QEMU与KVM的关系](#2-qemu与kvm的关系)
+- [3. QEMU的代码结构](#3-qemu的代码结构)
+  - [3.1. 线程事件驱动模型](#31-线程事件驱动模型)
+  - [3.2. 设备模拟](#32-设备模拟)
+  - [3.3. QEMU中的虚拟机管理命令](#33-qemu中的虚拟机管理命令)
+  - [3.4. 块操作](#34-块操作)
+- [4. QEMU源码编译](#4-qemu源码编译)
+- [5. 参考](#5-参考)
 
 <!-- /code_chunk_output -->
 
-# 1 QEMU官网描述
+# 1. QEMU官网描述
 
 QEMU is a generic and open source machine emulator and virtualizer.
 
@@ -35,7 +35,7 @@ Virtualization: Run KVM and Xen virtual machines with near native performance
 
 4. 虚拟机: 必须基于Xen Hypervisor或KVM内核模块才能支持虚拟化. 在这种条件下QEMU虚拟机可以通过直接在本机CPU上运行客户机代码获得接近本机的性能。
 
-# 2 QEMU与KVM的关系
+# 2. QEMU与KVM的关系
 
 当QEMU在**模拟器模式**下，运行操作系统时，我们可以认为这是一种**软件实现的虚拟化技术**，它的效率比真机差很多，用户可以明显地感觉出来。
 
@@ -67,9 +67,9 @@ QEMU所实现的功能包括：虚拟机的配置和创建、虚拟机运行依�
 
 外设的模拟一般不会由KVM负责，只有对**性能要求较高的虚拟设备**，如**虚拟中断控制器**和**虚拟时钟**，是由KVM模拟的，这样可以大量减少处理器的**模式转换的开销**。
 
-# 3 QEMU的代码结构
+# 3. QEMU的代码结构
 
-## 3.1 线程事件驱动模型
+## 3.1. 线程事件驱动模型
 
 ![](./images/2019-06-04-09-00-41.png)
 
@@ -77,20 +77,20 @@ QEMU的体系结构正如上图展示的——**每个vCPU**都是**一个线程
 
 QEMU事件驱动的代码主要可以查看include/qemu/main\-loop.h，以及相关的实现代码。
 
-## 3.2 设备模拟
+## 3.2. 设备模拟
 
 QEMU为了实现大量设备的模拟，实现了比较完备的**面向对象模型**——**QOM（QEMU Object Model**）。QEMU对于**CPU**、**内存**、**总线**以及**主板**的模拟都是依赖于QOM的，QEMU中**设备相关的数据结构**的初始化工作都是依赖于**QOM的初始化**实现机制。对于它的实现主要可以查看include/qom/object.h。对于具体的CPU、内存等设备的模拟，可以查看include/qom/cpu.h、include/exec/memory.h、include/hw/qdev\-core.h
 
-## 3.3 QEMU中的虚拟机管理命令
+## 3.3. QEMU中的虚拟机管理命令
 
 QEMU中可以使用hmp command对虚拟机进行管理，在虚拟机环境中同时按住ctrl、Alt、2就可以进入QEMU的命令模式。通过输入命令，就可以进行虚拟机的管理。比如savevm命令可以把虚拟机的当前状态保存到虚拟机的磁盘中。这些**命令的实现函数**都有一个统一的命名方式：**hmp\_xxx**，比如**hmp\_savevm**就是savevm的实现函数的起始位置，hmp\_migrate就是migrate的实现函数的起始位置。 
 因此对于QEMU中的每一条命令都可以很快找到相关的实现函数。
 
-## 3.4 块操作
+## 3.4. 块操作
 
 QEMU实现了大量的块设备驱动，从而支持了包括qcow2、qed、raw等格式的镜像，这些格式的实现代码都在block的文件夹下以及主目录下的block.c中。QEMU设计了BlockDriver数据结构，其中包含了大量的回调函数指针，对于每一种磁盘格式，都有一个对应的BlockDriver的对象，并且实现了BlockDriver中的回调函数，然后将这个BlockDriver的对象注册，即添加到一个全局的BlockDriver的链表中。
 
-# 4 QEMU源码编译
+# 4. QEMU源码编译
 
 QEMU的编译过程并不复杂，首先进入QEMU的代码目录后，首先运行./configure \–help，查看qemu支持的特性。然后选择相关的特性进行编译。 
 
@@ -109,7 +109,7 @@ pkg\-config、zlib1g\-dev、libglib2.0\-dev、libpixman\-1\-dev、make等
 
 如果需要把QEMU安装到系统中可以使用make install命令。
 
-# 5 参考
+# 5. 参考
 
 - QEMU官网: https://www.qemu.org/
 
