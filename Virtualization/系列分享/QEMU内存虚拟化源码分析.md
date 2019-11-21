@@ -3,26 +3,27 @@
 
 <!-- code_chunk_output -->
 
-* [0 内存虚拟化](#0-内存虚拟化)
-* [1 概述](#1-概述)
-* [2 相关数据结构](#2-相关数据结构)
-	* [2.1 AddressSpace](#21-addressspace)
-	* [2.2 MemoryRegion](#22-memoryregion)
-	* [2.3 RAMBlock](#23-ramblock)
-	* [2.4 FlatView](#24-flatview)
-	* [2.5 MemoryRegionSection](#25-memoryregionsection)
-	* [2.6 MemoryListener](#26-memorylistener)
-	* [2.7 AddressSpaceDispatch](#27-addressspacedispatch)
-* [3 初始化流程](#3-初始化流程)
-	* [3.1 memory\_map\_init: 全局memory space和io space初始化](#31-memory_map_init-全局memory-space和io-space初始化)
-	* [3.2 pc\_memory\_init](#32-pc_memory_init)
-		* [3.2.1 pc.ram分配](#321-pcram分配)
-		* [3.2.2 两个mr alias: ram\_below\_4g和ram\_above\_4g](#322-两个mr-alias-ram_below_4g和ram_above_4g)
-* [4 内存的提交](#4-内存的提交)
-	* [4.1 全局的memory\_listeners](#41-全局的memory_listeners)
-	* [4.2 memory\_listener\_register注册](#42-memory_listener_register注册)
-	* [4.3 内存更新](#43-内存更新)
-		* [4.3.1 新建AddressSpace时更新](#431-新建addressspace时更新)
+- [0 内存虚拟化](#0-内存虚拟化)
+- [1 概述](#1-概述)
+- [2 相关数据结构](#2-相关数据结构)
+  - [2.1 AddressSpace](#21-addressspace)
+  - [2.2 MemoryRegion](#22-memoryregion)
+  - [2.3 RAMBlock](#23-ramblock)
+  - [2.4 FlatView](#24-flatview)
+  - [2.5 MemoryRegionSection](#25-memoryregionsection)
+  - [2.6 MemoryListener](#26-memorylistener)
+  - [2.7 AddressSpaceDispatch](#27-addressspacedispatch)
+- [3 初始化流程](#3-初始化流程)
+  - [3.1 memory\_map\_init: 全局memory space和io space初始化](#31-memory_map_init-全局memory-space和io-space初始化)
+  - [3.2 pc\_memory\_init](#32-pc_memory_init)
+    - [3.2.1 pc.ram分配](#321-pcram分配)
+    - [3.2.2 两个mr alias: ram\_below\_4g和ram\_above\_4g](#322-两个mr-alias-ram_below_4g和ram_above_4g)
+- [4 内存的提交](#4-内存的提交)
+  - [4.1 全局的memory\_listeners](#41-全局的memory_listeners)
+  - [4.2 memory\_listener\_register注册](#42-memory_listener_register注册)
+  - [4.3 内存更新](#43-内存更新)
+    - [4.3.1 新建AddressSpace时更新](#431-新建addressspace时更新)
+- [参考](#参考)
 
 <!-- /code_chunk_output -->
 
@@ -679,7 +680,7 @@ static FlatView *generate_memory_topology(MemoryRegion *mr)
 
 在生成了view之后会调用**flatview\_simplify**进行简化，主要是**合并相邻的FlatRange**。在生成了当前as的FlatView之后，我们就可以更新了，这在函数address_space_update_topology_pass中完成，这个函数就是逐一对比新旧FlatView的差别，然后进行更新。
 
-参考
+# 参考
 
 https://www.cnblogs.com/ck1020/p/6729224.html
 
