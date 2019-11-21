@@ -1,5 +1,7 @@
 关于《Linux内核分析》MOOC课程：http://mooc.study.163.com/course/USTC-1000029000
 
+github: https://github.com/linmufeng/LinuxKernel
+
 该课基于X86 & Linux
 
 第一周：计算机是如何工作的？
