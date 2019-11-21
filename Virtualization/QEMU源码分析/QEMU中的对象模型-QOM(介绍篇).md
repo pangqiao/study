@@ -188,12 +188,12 @@ type_init(my_device_register_types)
 2. 为了方便编程，对于每个新类型，都会定义由**ObjectClass**动态cast到MyDeviceClass的方法，也会定义由Object动态cast到MyDevice的方法。以下涉及的函数`OBJECT_GET_CLASS`、`OBJECT_CLASS_CHECK`、`OBJECT_CHECK`都在include/qemu/object.h中定义。
 
 ```c
-  #define MY_DEVICE_GET_CLASS(obj) \
-        OBJECT_GET_CLASS(MyDeviceClass, obj, TYPE_MY_DEVICE)
-    #define MY_DEVICE_CLASS(klass) \
-        OBJECT_CLASS_CHECK(MyDeviceClass, klass, TYPE_MY_DEVICE)
-    #define MY_DEVICE(obj) \
-        OBJECT_CHECK(MyDevice, obj, TYPE_MY_DEVICE)
+#define MY_DEVICE_GET_CLASS(obj) \
+    OBJECT_GET_CLASS(MyDeviceClass, obj, TYPE_MY_DEVICE)
+#define MY_DEVICE_CLASS(klass) \
+	OBJECT_CLASS_CHECK(MyDeviceClass, klass, TYPE_MY_DEVICE)
+#define MY_DEVICE(obj) \
+	OBJECT_CHECK(MyDevice, obj, TYPE_MY_DEVICE)
 ```
 
 3. 如果我们在定义新类型中，实现了父类的虚拟方法，那么需要定义新的class的初始化函数，并且在TypeInfo数据结构中，给TypeInfo的class\_init字段赋予该初始化函数的函数指针。
@@ -201,18 +201,18 @@ type_init(my_device_register_types)
 ```c
 #include "qdev.h"
 
-  void my_device_class_init(ObjectClass *klass, void *class_data)
-  {
-      DeviceClass *dc = DEVICE_CLASS(klass);
-      dc->reset = my_device_reset;
-  }
+void my_device_class_init(ObjectClass *klass, void *class_data)
+{
+	DeviceClass *dc = DEVICE_CLASS(klass);
+	dc->reset = my_device_reset;
+}
 
-  static const TypeInfo my_device_info = {
-      .name = TYPE_MY_DEVICE,
-      .parent = TYPE_DEVICE,
-      .instance_size = sizeof(MyDevice),
-      .class_init = my_device_class_init, /*在类初始化时就会调用这个函数，将虚拟函数赋值*/
-  };
+static const TypeInfo my_device_info = {
+	.name = TYPE_MY_DEVICE,
+	.parent = TYPE_DEVICE,
+	.instance_size = sizeof(MyDevice),
+	.class_init = my_device_class_init, /*在类初始化时就会调用这个函数，将虚拟函数赋值*/
+};
 ```
 
 4. 当我们需要从一个类创建一个派生类时，如果需要覆盖 类原有的虚拟方法，派生类中，可以增加相关的属性将类原有的虚拟函数指针保存，然后给虚拟函数赋予新的函数指针，保证父类原有的虚拟函数指针不会丢失。
