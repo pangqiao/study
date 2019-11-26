@@ -1,5 +1,17 @@
 
-# 介绍
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. 介绍](#1-介绍)
+- [2. 打开与关闭](#2-打开与关闭)
+- [3. 缓冲区跳转](#3-缓冲区跳转)
+- [4. 分屏](#4-分屏)
+- [5. 利用通配符进行缓冲区跳转](#5-利用通配符进行缓冲区跳转)
+
+<!-- /code_chunk_output -->
+
+# 1. 介绍
 
 引用Vim官方解释，缓冲区是一个文件的内容占用的那部分Vim内存：
 
@@ -16,7 +28,7 @@
 
 学习Vim就要克服那些不直观的操作！因为Vim本身就是基于CLI的，而我们相信CLI就是效率。本文便来总结一下Buffer相关的命令与操作。
 
-# 打开与关闭
+# 2. 打开与关闭
 
 不带任何参数打开多个文件便可以把它们都放入缓冲区（Buffer）：
 
@@ -30,7 +42,7 @@ vim a.txt b.txt
 
 >如果Buffer未保存:bd会失败，如果强制删除可以:bd!。
 
-# 缓冲区跳转
+# 3. 缓冲区跳转
 
 缓冲区之间跳转最常用的方式便是 Ctrl\+\^（不需要按下Shift）来切换当前缓冲区和上一个缓冲区。 
 
@@ -48,7 +60,7 @@ vim a.txt b.txt
 * :b2将会跳转到编号为2的缓冲区，如果你正在用:ls列出缓冲区，这时只需要输入编号回车即可。
 * :b exa将会跳转到最匹配exa的文件名，比如example.html，模糊匹配打开文件正是Vim缓冲区的强大之处。
 
-# 分屏
+# 4. 分屏
 
 其实分屏时还可以指定一个Buffer在新的Window中打开。
 
@@ -60,3 +72,39 @@ vim a.txt b.txt
 
 注意sfind可以打开在Vim PATH中的任何文件。这当然需要我们设置PATH，一个通用的做法是在\~/.vimrc中添加：
 
+```
+" 将当前工作路径设为Vim PATH
+set path=$PWD/**
+```
+
+# 5. 利用通配符进行缓冲区跳转
+
+这是缓冲区最强大的功能之一。我们可以使用通配符来指定要跳转到的缓冲区文件名。 在此之前，我们启动wildmenu并设置匹配后文件选择模式为full。 wildchar为选择下一个备选文件的快捷键， 而wildcharm用于宏定义中（语义同wildchar），比如后面的noremap。
+
+```
+set wildmenu wildmode=full 
+set wildchar=<Tab> wildcharm=<C-Z>
+```
+比如现在按下打开这些文件：
+
+```
+vehicle.c vehicle.h car.c car.h jet.c jet.h jetcar.c jetcar.h
+```
+
+然后按下`:b <Tab>`便可看到Vim提供的备选文件列表了， 按下`<Tab>`选择下一个，按下回车打开当前文件。
+
+```
+:b <Tab>       " 显示所有Buffer中的文件
+:b car<Tab>    " 显示 car.c car.h
+:b *car<Tab>   " 显示 car.c jetcar.c car.h jetcar.h
+:b .h<Tab>     " 显示 vehicle.h car.h jet.h jetcar.h
+:b .c<Tab>     " 显示 vehicle.c car.c jet.c jetcar.c
+:b ar.c<Tab>   " 显示 car.c jetcar.c
+:b j*c<Tab>    " 显示 jet.c jetcar.c jetcar.h
+```
+
+我们可以为`:b <Tab>`设置一个快捷键`<c-n>`，这时便用到上文中设置的wildcharm了：
+
+```
+noremap <c-n> :b <c-z>
+```
