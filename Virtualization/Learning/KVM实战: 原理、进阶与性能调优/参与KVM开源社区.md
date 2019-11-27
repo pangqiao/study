@@ -60,6 +60,16 @@ https://git.kernel.org/cgit/virt/kvm/kvm.git/
 https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/
 ```
 
+KVM内核部分的代码主要由3部分组成:KVM框架的核心代码、与硬件架构相关的代码和KVM相关的头文件。在Linux 4.14.12版本中，KVM相关的代码行数大约是17多万行。基于Linux 4.14.12版本的Linux内核为例，对KVM代码结构进行简单的介绍。
+
+### KVM框架的核心代码
+
+与具体硬件架构无关的代码，位于virt/kvm/目录中，有22 135行代码。
+
+
+
+
+
 [4] 在Xen中使用QEMU upstream的信息，请参考xen.org的官方wiki上的文章: http://wiki.xen.org/wiki/QEMU_Upstream。
 [5] IRC(Internet Relay Chat的缩写，意思是因特网中继聊天)是一种通过网络进行即时聊 天的方式。其主要用于群体聊天，但同样也可以用于个人对个人的聊天。IRC是一个分布 式的客户端/服务器结构，通过连接到一个IRC服务器，我们可以访问这个服务器及它所连 接的其他服务器上的频道。要使用IRC，必须先登录一个IRC服务器，如:一个常见的服 务器为irc.freenode.net。
 [6] Google对开源项目代码风格的指导文档见https://github.com/google/styleguide。
