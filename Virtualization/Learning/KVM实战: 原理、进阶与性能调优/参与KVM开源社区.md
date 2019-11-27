@@ -45,7 +45,20 @@ QEMU自身就是一个**独立的、完整的虚拟机模拟器**，可以独立
 
 在用普通QEMU来配合KVM使用时，在QEMU命令行启动客户机时要加上“\-enable\-kvm”参 数来使用KVM加速，而较老的qemu-kvm命令行默认开启了使用KVM加速的选项。
 
+QEMU社区的代码仓库网址是 http://git.qemu.org ，其中qemu.git就是QEMU upstream的主干代码树。可以使用GIT工具，通过两个URL( git://git.qemu.org/qemu.git 和 http://git.qemu.org/git/qemu.git )中的任意一个来下载QEMU的最新源代码。
 
+## 其他开源社区
+
+# 代码结构简介
+
+## KVM代码
+
+由于**Linux内核**过于庞大，因此**KVM开发者的代码**一般先进入**KVM社区的kvm.git代码仓库**，再由**KVM维护者**定期地将代码提**供给Linux 内核的维护者(即Linus Torvalds**)，并由其添加到**Linux内核代码仓库**中。可以分别查看如下两个网页来了解最新的KVM开发和Linux内核的代码仓库的状态。
+
+```
+https://git.kernel.org/cgit/virt/kvm/kvm.git/ 
+https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/
+```
 
 [4] 在Xen中使用QEMU upstream的信息，请参考xen.org的官方wiki上的文章: http://wiki.xen.org/wiki/QEMU_Upstream。
 [5] IRC(Internet Relay Chat的缩写，意思是因特网中继聊天)是一种通过网络进行即时聊 天的方式。其主要用于群体聊天，但同样也可以用于个人对个人的聊天。IRC是一个分布 式的客户端/服务器结构，通过连接到一个IRC服务器，我们可以访问这个服务器及它所连 接的其他服务器上的频道。要使用IRC，必须先登录一个IRC服务器，如:一个常见的服 务器为irc.freenode.net。
