@@ -42,3 +42,14 @@ KVM Forum官网: http://www.linux-kvm.org/page/KVM_Forum
 QEMU(Quick EMUlator)是一个实现**硬件虚拟化**的开源软件，它通过**动态二进制转换**实现了对中央处理单元(CPU)的模拟，并且提供了**一整套模拟的设备模型**，从而可以使未经修改的各种操作系统得以在QEMU上运行。
 
 QEMU自身就是一个**独立的、完整的虚拟机模拟器**，可以独立**模拟CPU**和其他一些**基本外设**。除此之外，QEMU还可以为KVM、Xen等流行的虚拟化技术提供设备模拟功能。
+
+在用普通QEMU来配合KVM使用时，在QEMU命令行启动客户机时要加上“\-enable\-kvm”参 数来使用KVM加速，而较老的qemu-kvm命令行默认开启了使用KVM加速的选项。
+
+
+
+[4] 在Xen中使用QEMU upstream的信息，请参考xen.org的官方wiki上的文章: http://wiki.xen.org/wiki/QEMU_Upstream。
+[5] IRC(Internet Relay Chat的缩写，意思是因特网中继聊天)是一种通过网络进行即时聊 天的方式。其主要用于群体聊天，但同样也可以用于个人对个人的聊天。IRC是一个分布 式的客户端/服务器结构，通过连接到一个IRC服务器，我们可以访问这个服务器及它所连 接的其他服务器上的频道。要使用IRC，必须先登录一个IRC服务器，如:一个常见的服 务器为irc.freenode.net。
+[6] Google对开源项目代码风格的指导文档见https://github.com/google/styleguide。
+[7] Linux内核代码风格的中英文版本分别为 https://www.kernel.org/doc/html/latest/translations/zh_CN/codinstyle.html， https://www.kernel.org/doc/html/latest/process/coding-style.html。
+[8] Brian Kernighan和Dennis Ritchie共同编写C语言中最经典的书籍《C programming language》(也称为K&R C)，Linux内核中关于大括号的使用风格就是来自于K&R C中 的规范。他们是UNIX操作系统的最主要的开发者中的两位，Brian Kernighan是AWK编程 语言的联合作者，Dennis Ritchie发明了C语言(是“C语言之父”)。
+[9] 匈牙利命名法是Microsoft公司推荐的命名方法，可以参考如下网页: http://en.wikipedia.org/wiki/Hungarian_notation。
