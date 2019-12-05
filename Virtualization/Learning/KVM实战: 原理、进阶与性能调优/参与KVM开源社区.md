@@ -226,7 +226,9 @@ api  arm  configure  COPYRIGHT  errata.txt  lib  MAINTAINERS  Makefile  powerpc 
 
 ### 2.3.3. 基本原理
 
-KVM单元测试的**基本工作原理**是:将编译好的**轻量级的测试内核镜像**(*.flat文件) 作为支持**多重启动**的QEMU的**客户机内核镜像！！！** 来启动，测试使用了一个**通过客户机BIOS来调用**的基础结构，该基础结构将主要**初始化客户机系统**(包括**CPU**等)，然后**切换到长模式**(x86\_64 CPU架构的一种运行模式)，并调**用各个具体测试用例的主函数**从而执行测试，在测试完成后QEMU进程自动退出。
+KVM单元测试的**基本工作原理**是:
+
+将编译好的**轻量级的测试内核镜像**(*.flat文件) 作为支持**多重启动**的QEMU的**客户机内核镜像！！！** 来启动，测试使用了一个**通过客户机BIOS来调用**的基础结构，该基础结构将主要**初始化客户机系统**(包括**CPU**等)，然后**切换到长模式**(x86\_64 CPU架构的一种运行模式)，并调**用各个具体测试用例的主函数**从而执行测试，在测试完成后QEMU进程自动退出。
 
 ### 2.3.4. 编译运行
 
@@ -245,7 +247,7 @@ $ make
 qemu-system-x86_64 -enable-kvm -device pc-testdev -serial stdio -device isa-debug-exit,iobase=0xf4,iosize=0x4 -kernel ./x86/msr.flat -vnc none
 ```
 
-其中，\-kernel选项后的./**x86/msr.flat**文件即为被测试的**内核镜像**。测试结果会默认打 印在当前执行测试的终端上。
+其中，\-kernel选项后的./**x86/msr.flat**文件即为被测试的**内核镜像**。测试结果会默认打印在当前执行测试的终端上。
 
 KVM单元测试代码中还提供了一些脚本，以便让单元测试的执行更容易，如x86-run 脚本可以方便地执行一个具体的测试。
 
@@ -260,7 +262,7 @@ KVM单元测试代码中还提供了一些脚本，以便让单元测试的执�
 ./x86/hypercall.flat           ./x86/kvmclock_test.flat  ./x86/rmap_chain.flat  ./x86/tsc_adjust.flat
 ./x86/hyperv_clock.flat        ./x86/memory.flat         ./x86/s3.flat          ./x86/tscdeadline_latency.flat
 ./x86/hyperv_connections.flat  ./x86/msr.flat            ./x86/setjmp.flat      ./x86/tsx-ctrl.flat
-````
+```
 
 执行msr测试的示例如下:
 
