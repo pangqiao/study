@@ -247,7 +247,22 @@ qemu-system-x86_64 -enable-kvm -device pc-testdev -serial stdio -device isa-debu
 
 其中，\-kernel选项后的./**x86/msr.flat**文件即为被测试的**内核镜像**。测试结果会默认打 印在当前执行测试的终端上。
 
-KVM单元测试代码中还提供了一些脚本，以便让单元测试的执行更容易，如x86-run 脚本可以方便地执行一个具体的测试。执行msr测试的示例如下:
+KVM单元测试代码中还提供了一些脚本，以便让单元测试的执行更容易，如x86-run 脚本可以方便地执行一个具体的测试。
+
+```
+# ls ./x86/*.flat
+./x86/access.flat              ./x86/hyperv_stimer.flat  ./x86/pcid.flat        ./x86/sieve.flat                ./x86/umip.flat
+./x86/apic.flat                ./x86/hyperv_synic.flat   ./x86/pku.flat         ./x86/smap.flat                 ./x86/vmexit.flat
+./x86/asyncpf.flat             ./x86/idt_test.flat       ./x86/pmu.flat         ./x86/smptest.flat              ./x86/vmware_backdoors.flat
+./x86/debug.flat               ./x86/init.flat           ./x86/port80.flat      ./x86/svm.flat                  ./x86/vmx.flat
+./x86/emulator.flat            ./x86/intel-iommu.flat    ./x86/rdpru.flat       ./x86/syscall.flat              ./x86/xsave.flat
+./x86/eventinj.flat            ./x86/ioapic.flat         ./x86/realmode.flat    ./x86/tsc.flat
+./x86/hypercall.flat           ./x86/kvmclock_test.flat  ./x86/rmap_chain.flat  ./x86/tsc_adjust.flat
+./x86/hyperv_clock.flat        ./x86/memory.flat         ./x86/s3.flat          ./x86/tscdeadline_latency.flat
+./x86/hyperv_connections.flat  ./x86/msr.flat            ./x86/setjmp.flat      ./x86/tsx-ctrl.flat
+````
+
+执行msr测试的示例如下:
 
 ```
 # ./x86-run ./x86/msr.flat
