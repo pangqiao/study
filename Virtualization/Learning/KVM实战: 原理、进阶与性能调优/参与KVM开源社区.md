@@ -333,8 +333,16 @@ FAIL intel_iommu
 PASS tsx-ctrl
 ```
 
-a6ed68d6468bd5a3da78a103344ded1435fed57a
+查看`x86/unittests.cfg`, 下面是其中一节. 这个用例将测试`apic.flat`在`x86_64`架构下30
 
+```conf
+[apic]
+file = apic.flat
+smp = 2
+extra_params = -cpu qemu64,+x2apic,+tsc-deadline
+arch = x86_64
+timeout = 30
+```
 
 ```
 # ./run_tests.sh
