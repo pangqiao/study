@@ -333,7 +333,7 @@ FAIL intel_iommu
 PASS tsx-ctrl
 ```
 
-查看`x86/unittests.cfg`, 下面是其中一节. 这个用例将测试`apic.flat`在`x86_64`架构下30
+查看`x86/unittests.cfg`, 下面是其中一节. 这个用例将测试`apic.flat`在`x86_64`架构下30秒以内.
 
 ```conf
 [apic]
@@ -343,6 +343,16 @@ extra_params = -cpu qemu64,+x2apic,+tsc-deadline
 arch = x86_64
 timeout = 30
 ```
+
+每个用例都是通过`scripts/runtime.sh`打印到屏幕
+
+```
+PASS() { echo -ne "\e[32mPASS\e[0m"; }
+SKIP() { echo -ne "\e[33mSKIP\e[0m"; }
+FAIL() { echo -ne "\e[31mFAIL\e[0m"; }
+```
+
+在`logs/`目录下有更多测试结果信息.
 
 ```
 # ./run_tests.sh
