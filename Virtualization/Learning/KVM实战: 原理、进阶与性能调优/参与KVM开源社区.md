@@ -203,6 +203,8 @@ http://git.qemu.org/?p=qemu.git;a=summary
 
 KVM相关的代码除了KVM和QEMU自身的代码之外，还包括本节介绍的KVM单元测 试代码和下一节将介绍的KVM Autotest代码。KVM单元测试代码用于测试一些细粒度的 系统底层的特性(如:客户机CPU中的MSR的值)，在一些重要的特性被加入KVM时， KVM维护者也会要求代码作者在KVM单元测试代码中添加对应的测试用例。
 
+https://www.linux-kvm.org/page/KVM-unit-tests
+
 KVM单元测试的代码仓库也存放在Linux内核社区的官方站点，参考如下的网页链接: 
 
 https://git.kernel.org/cgit/virt/kvm/kvm-unit-tests.git
