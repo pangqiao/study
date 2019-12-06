@@ -7,6 +7,8 @@
 * Kernel网站: https://kernelnewbies.org/
 * 如何加入Linux内核开发社区: https://tonybai.com/2012/03/27/how-to-participate-linux-community-section-1/
 
+* 博客站: http://www.kerneltravel.net/
+
 - 代码阅读
 
 Linux源码查看工具：https://elixir.bootlin.com/linux/v4.17-rc2/source
