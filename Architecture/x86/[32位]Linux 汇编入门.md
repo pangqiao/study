@@ -1,12 +1,7 @@
-[TOC]
-
-参考：
-
-https://www.ibm.com/developerworks/cn/linux/l-assembly/index.html
 
 以下内容皆为32位系统
 
-## 1. 简介
+# 简介
 
 现代情况下，汇编语言仅仅在驱动程序，嵌入式系统等对性能要求苛刻的领域才能见到它们的身影。
 
@@ -449,6 +444,10 @@ main:
 
 ![stack](images/38.png)
 
-## 8. 小结
+# 小结
 
 Linux操作系统是用C语言编写的，汇编只在必要的时候才被人们想到，但它却是减少代码尺寸和优化代码性能的一种非常重要的手段，特别是在与硬件直接交互的时候，汇编可以说是最佳的选择。Linux提供了非常优秀的工具来支持汇编程序的开发，使用GCC的内联汇编能够充分地发挥C语言和汇编语言各自的优点。
+
+# 参考
+
+https://www.ibm.com/developerworks/cn/linux/l-assembly/index.html
