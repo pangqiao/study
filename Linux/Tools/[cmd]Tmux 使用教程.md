@@ -33,6 +33,7 @@
 - [7. 其他命令](#7-其他命令)
 - [插件管理系统](#插件管理系统)
   - [下载和安装](#下载和安装)
+  - [初始化](#初始化)
 - [会话保存功能](#会话保存功能)
 - [8. 参考](#8-参考)
 
@@ -348,9 +349,47 @@ Tmux 也有一个插件管理系统，名字就叫做 `Tmux Plugin Manager`。
 
 `Tmux Plugin Manager`托管在GitHub上, 地址: https://github.com/tmux-plugins/tpm .
 
-```
+下载:
 
 ```
+git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+```
+
+在Tmux配置文件底部加上:
+
+```
+# List of plugins
+set -g @plugin 'tmux-plugins/tpm'
+set -g @plugin 'tmux-plugins/tmux-sensible'
+
+# Other examples:
+# set -g @plugin 'github_username/plugin_name'
+# set -g @plugin 'git@github.com/user/plugin'
+# set -g @plugin 'git@bitbucket.com/user/plugin'
+
+# Initialize TMUX plugin manager (keep this line at the very bottom of tmux.conf)
+run '~/.tmux/plugins/tpm/tpm'
+```
+
+注: 注意，最后的 `run '~/.tmux/plugins/tpm/tpm'` 一定要放在整个 `~/.tmux.conf` 的最后一行。
+
+
+如果你尚未启动 Tmux，那么现在就可以执行 `tmux new -s foobar` 打开一个新的窗口了。如果你已经启动了 Tmux，那么需要在 Tmux 环境里重新加载配置文件：
+
+```
+tmux source ~/.tmux.conf
+```
+
+## 初始化
+
+在默认的配置中，我们已经添加了两个插件：tpm 和 tmux-sensible。
+
+* tpm 是 Tmux Plugin Manager 本身；
+* tmux-sensible 则是插件管理器官方推荐的必装插件
+
+然而，tpm 本身是已经通过 git clone 命令下载到本地了，`tmux-sensible` 却没有。所以，我们这里需要通过 `prefix shift-i` 来安装它。prefix shift-i 中，i 是 install 的缩写。执行它会根据配置文件中的插件列表，安装所有插件。
+
+tmux默认的PERFIX前缀键是ctrl+b，不好按，可将其改为ctrl+a.
 
 # 会话保存功能
 
