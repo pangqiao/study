@@ -34,7 +34,9 @@
 - [插件管理系统](#插件管理系统)
   - [下载和安装](#下载和安装)
   - [初始化](#初始化)
-- [会话保存功能](#会话保存功能)
+  - [安装、升级和卸载插件](#安装-升级和卸载插件)
+  - [tmux-resurrect](#tmux-resurrect)
+    - [安装](#安装)
 - [8. 参考](#8-参考)
 
 <!-- /code_chunk_output -->
@@ -410,13 +412,47 @@ drwxr-xr-x 3 root root 116 Dec 10 11:52 tmux-sensible
 drwxr-xr-x 9 root root 264 Dec 10 11:25 tpm
 ```
 
-# 会话保存功能
+## 安装、升级和卸载插件
+
+在 Tmux Plugin Manager 中安装、升级和反安装插件都很简单，他们的 Tmux 快捷键分别是：
+
+```
+prefix shift-i      # install
+prefix shift-u      # update
+prefix alt-u        # uninstall plugins not on the plugin list
+```
+
+## tmux-resurrect
 
 Tmux一个缺点, Tmux 会话无法在系统重启之后比较容易地恢复。
 
-为了解决这个问题，我们需要用到 Tmux 的插件系统，并安装名为 `tmux-resurrect` 的插件。
+`tmux-resurrect` 插件也是托管在Github上, https://github.com/tmux-plugins/tmux-resurrect 。
 
+### 安装
 
+方法一: 
+
+修改`~/.tmux.conf`, 在插件列表加上:
+
+```
+set -g @plugin 'tmux-plugins/tmux-resurrect'
+```
+
+在执行 `prefix shift-i` 的时候，Tmux Plugin Manager 就会到 GitHub 上的相应位置寻找相应专案并下载安装。
+
+方法二:
+
+把代码克隆到目录(随意):
+
+```
+git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux/plugins/tmux-resurrect
+```
+
+在自己的 tmux 配置文件 ~/.tmux.conf 里，加上这一行：
+
+```
+run-shell ~/tmp/resurrect.tmux
+```
 
 # 8. 参考
 
