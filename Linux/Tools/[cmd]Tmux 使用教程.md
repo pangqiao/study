@@ -31,6 +31,9 @@
   - [6.3. 重命名窗口](#63-重命名窗口)
   - [6.4. 窗口快捷键](#64-窗口快捷键)
 - [7. 其他命令](#7-其他命令)
+- [插件管理系统](#插件管理系统)
+  - [下载和安装](#下载和安装)
+- [会话保存功能](#会话保存功能)
 - [8. 参考](#8-参考)
 
 <!-- /code_chunk_output -->
@@ -336,6 +339,25 @@ $ tmux info
 # 重新加载当前的 Tmux 配置
 $ tmux source-file ~/.tmux.conf
 ```
+
+# 插件管理系统
+
+Tmux 也有一个插件管理系统，名字就叫做 `Tmux Plugin Manager`。
+
+## 下载和安装
+
+`Tmux Plugin Manager`托管在GitHub上, 地址: https://github.com/tmux-plugins/tpm .
+
+```
+
+```
+
+# 会话保存功能
+
+Tmux一个缺点, Tmux 会话无法在系统重启之后比较容易地恢复。
+
+为了解决这个问题，我们需要用到 Tmux 的插件系统，并安装名为 `tmux-resurrect` 的插件。
+
 
 
 # 8. 参考
