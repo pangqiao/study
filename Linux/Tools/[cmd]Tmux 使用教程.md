@@ -387,9 +387,28 @@ tmux source ~/.tmux.conf
 * tpm 是 Tmux Plugin Manager 本身；
 * tmux-sensible 则是插件管理器官方推荐的必装插件
 
-然而，tpm 本身是已经通过 git clone 命令下载到本地了，`tmux-sensible` 却没有。所以，我们这里需要通过 `prefix shift-i` 来安装它。prefix shift-i 中，i 是 install 的缩写。执行它会根据配置文件中的插件列表，安装所有插件。
+然而，tpm 本身是已经通过 git clone 命令下载到本地了，`tmux-sensible` 却没有。所以，我们这里需要通过 `prefix shift-i` 来安装它。`prefix shift-i` 中，i 是 install 的缩写。执行它会根据配置文件中的插件列表，安装所有插件。
 
-tmux默认的PERFIX前缀键是ctrl+b，不好按，可将其改为ctrl+a.
+如果你的环境里命令执行正常，那么 Tmux 会提示：
+
+```
+Already installed "tpm"
+Installing "tmux-sensible"
+  "tmux-sensible" download success
+
+TMUX environment reloaded.
+
+Done, press ESCAPE to continue.
+```
+
+可以查看
+
+```
+# ll ~/.tmux/plugins/
+total 0
+drwxr-xr-x 3 root root 116 Dec 10 11:52 tmux-sensible
+drwxr-xr-x 9 root root 264 Dec 10 11:25 tpm
+```
 
 # 会话保存功能
 
