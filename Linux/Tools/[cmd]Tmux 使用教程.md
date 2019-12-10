@@ -31,13 +31,15 @@
   - [6.3. 重命名窗口](#63-重命名窗口)
   - [6.4. 窗口快捷键](#64-窗口快捷键)
 - [7. 其他命令](#7-其他命令)
-- [插件管理系统](#插件管理系统)
-  - [下载和安装](#下载和安装)
-  - [初始化](#初始化)
-  - [安装、升级和卸载插件](#安装-升级和卸载插件)
-  - [tmux-resurrect](#tmux-resurrect)
-    - [安装](#安装)
-- [8. 参考](#8-参考)
+- [8. 插件管理系统](#8-插件管理系统)
+  - [8.1. 下载和安装](#81-下载和安装)
+  - [8.2. 初始化](#82-初始化)
+  - [8.3. 安装、升级和卸载插件](#83-安装-升级和卸载插件)
+  - [8.4. tmux-resurrect](#84-tmux-resurrect)
+    - [8.4.1. 安装](#841-安装)
+    - [8.4.2. 使用](#842-使用)
+  - [8.5. Tmux Continuum](#85-tmux-continuum)
+- [9. 参考](#9-参考)
 
 <!-- /code_chunk_output -->
 
@@ -110,6 +112,8 @@ Tmux 窗口有大量的快捷键。所有快捷键都要通过前缀键唤起。
 举例来说，帮助命令的快捷键是Ctrl+b ?。它的用法是，在 Tmux 窗口中，先按下Ctrl+b，再按下?，就会显示帮助信息。
 
 然后，按下 ESC 键或q键，就可以退出帮助。
+
+注: 很多将其改为 `Ctrl+a`
 
 # 3. 会话管理
 
@@ -343,11 +347,11 @@ $ tmux info
 $ tmux source-file ~/.tmux.conf
 ```
 
-# 插件管理系统
+# 8. 插件管理系统
 
 Tmux 也有一个插件管理系统，名字就叫做 `Tmux Plugin Manager`。
 
-## 下载和安装
+## 8.1. 下载和安装
 
 `Tmux Plugin Manager`托管在GitHub上, 地址: https://github.com/tmux-plugins/tpm .
 
@@ -382,12 +386,12 @@ run '~/.tmux/plugins/tpm/tpm'
 tmux source ~/.tmux.conf
 ```
 
-## 初始化
+## 8.2. 初始化
 
 在默认的配置中，我们已经添加了两个插件：tpm 和 tmux-sensible。
 
 * tpm 是 Tmux Plugin Manager 本身；
-* tmux-sensible 则是插件管理器官方推荐的必装插件
+* tmux-sensible 在tmux的session窗口之间切换, `前缀键+g`
 
 然而，tpm 本身是已经通过 git clone 命令下载到本地了，`tmux-sensible` 却没有。所以，我们这里需要通过 `prefix shift-i` 来安装它。`prefix shift-i` 中，i 是 install 的缩写。执行它会根据配置文件中的插件列表，安装所有插件。
 
@@ -412,7 +416,7 @@ drwxr-xr-x 3 root root 116 Dec 10 11:52 tmux-sensible
 drwxr-xr-x 9 root root 264 Dec 10 11:25 tpm
 ```
 
-## 安装、升级和卸载插件
+## 8.3. 安装、升级和卸载插件
 
 在 Tmux Plugin Manager 中安装、升级和反安装插件都很简单，他们的 Tmux 快捷键分别是：
 
@@ -422,13 +426,13 @@ prefix shift-u      # update
 prefix alt-u        # uninstall plugins not on the plugin list
 ```
 
-## tmux-resurrect
+## 8.4. tmux-resurrect
 
 Tmux一个缺点, Tmux 会话无法在系统重启之后比较容易地恢复。
 
 `tmux-resurrect` 插件也是托管在Github上, https://github.com/tmux-plugins/tmux-resurrect 。
 
-### 安装
+### 8.4.1. 安装
 
 方法一: 
 
@@ -438,7 +442,7 @@ Tmux一个缺点, Tmux 会话无法在系统重启之后比较容易地恢复。
 set -g @plugin 'tmux-plugins/tmux-resurrect'
 ```
 
-在执行 `prefix shift-i` 的时候，Tmux Plugin Manager 就会到 GitHub 上的相应位置寻找相应专案并下载安装。
+在执行 `prefix shift-i` 的时候，Tmux Plugin Manager 就会到 GitHub 上的相应位置寻找相应插件并下载安装。
 
 方法二:
 
@@ -448,13 +452,52 @@ set -g @plugin 'tmux-plugins/tmux-resurrect'
 git clone https://github.com/tmux-plugins/tmux-resurrect ~/.tmux/plugins/tmux-resurrect
 ```
 
-在自己的 tmux 配置文件 ~/.tmux.conf 里，加上这一行：
+在自己的 tmux 配置文件 `~/.tmux.conf` 里，加上这一行：
 
 ```
-run-shell ~/tmp/resurrect.tmux
+run-shell ~/.tmux/plugins/tmux-resurrect/resurrect.tmux
 ```
 
-# 8. 参考
+最后载入新配置:
+
+```
+tmux source-file ~/.tmux.conf
+```
+
+### 8.4.2. 使用
+
+快捷键是：
+
+```
+prefix Ctrl-s       # save tmux session to local file
+prefix Ctrl-r       # reload tmux session from local file
+```
+
+## 8.5. Tmux Continuum
+
+Tmux Resurrect 工作很好, 只是备份和还原都是手动完成. 而 Tmux Resurrect 是将Tmux会话的保存及还原自动化, 定时备份, 在Tmux启动时还原.
+
+类似处理
+
+```
+git clone https://github.com/tmux-plugins/tmux-continuum.git ~/.tmux/plugins/tmux-continuum
+```
+
+添加配置
+
+```
+run-shell ~/.tmux/plugins/tmux-continuum/continuum.tmux
+```
+
+Tmux Continuum 默认每隔 15 分钟备份一次，如果你觉得频率过高，可以设置为 1 小时一次
+
+```
+set -g @continuum-save-interval '60'
+```
+
+需要重载 Tmux 配置 `tmux source-file ~/.tmux.conf`。
+
+# 9. 参考
 
 * 阮一峰分享: https://www.ruanyifeng.com/blog/2019/10/tmux.html
 * [A Quick and Easy Guide to tmux](https://www.hamvocke.com/blog/a-quick-and-easy-guide-to-tmux/)
