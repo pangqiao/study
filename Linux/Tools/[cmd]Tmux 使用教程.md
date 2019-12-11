@@ -351,7 +351,7 @@ $ tmux source-file ~/.tmux.conf
 
 Tmux 也有一个插件管理系统，名字就叫做 `Tmux Plugin Manager`。
 
-https://github.com/tmux-plugins/tpm
+详细使用参照: https://github.com/tmux-plugins/tpm
 
 ## 8.1. 下载和安装
 
@@ -420,7 +420,7 @@ drwxr-xr-x 9 root root 264 Dec 10 11:25 tpm
 
 ## 8.3. 安装、升级和卸载插件
 
-添加插件内容`set -g @plugin '在配置文件`~/.tmux.conf`
+添加插件内容`set -g @plugin '...'`在配置文件`~/.tmux.conf`
 
 在 Tmux Plugin Manager 中安装、升级和反安装插件都很简单，他们的 Tmux 快捷键分别是：
 
@@ -429,6 +429,8 @@ prefix shift-i      # install
 prefix shift-u      # update
 prefix alt-u        # uninstall plugins not on the plugin list
 ```
+
+安装后会在`~/.tmux/plugins/`目录下存在
 
 ## 8.4. tmux-resurrect
 
