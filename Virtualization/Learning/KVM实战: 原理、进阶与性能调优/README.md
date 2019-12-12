@@ -9,3 +9,5 @@
 书中的源码和配置文件, 从 https://github.com/smilejay/kvm-book 获取
 
 作者 任永杰 个人博客: http://smilejay.com/
+
+部分内容来自于 <虚拟化技术原理与实现>
