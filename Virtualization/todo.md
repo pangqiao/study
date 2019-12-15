@@ -8,3 +8,4 @@ Ubuntu下用libvirt安装KVM虚拟机时找不到/bin/qemu-kvm问题解决 http:
 
 RedHat6.5下安装配置KVM虚拟机 http://www.linuxidc.com/Linux/2014-10/107972.htm
 
+KVM详解: http://blog.chinaunix.net/uid-30022178-id-5749329.html
