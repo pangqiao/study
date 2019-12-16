@@ -1,4 +1,6 @@
 
+一般用在热插拔的设备驱动中
+
 `pci_device_id`，**PCI设备类型**的**标识符**。在`include/linux/mod_devicetable.h`头文件中定义。
 
 ```cpp
@@ -32,7 +34,9 @@ static struct pci_device_id e1000_pci_tbl[] = {
 MODULE_DEVICE_TABLE(pci, e1000_pci_tbl); 
 ```
 
-该宏生成一个名为`__mod_pci_device_table`的局部变量，该变量指向**第二个参数**。内核构建时，**depmod程序**会在**所有模块**中搜索符号`__mod_pci_device_table`，把数据（**设备列表**）从模块中抽出，添加到映射文件`/lib/modules/KERNEL_VERSION/modules.pcimap`中，当depmod结束之后，**所有的PCI设备**连同他们的**模块名字**都被**该文件列出**。当内核告知**热插拔系统**一个**新的PCI设备被发现**时，热插拔系统使用`modules.pcimap`文件来找寻恰当的驱动程序。
+该宏生成一个名为`__mod_pci_device_table`的局部变量，该变量指向**第二个参数**。
+
+内核构建时，**depmod程序**会在**所有模块**中搜索符号`__mod_pci_device_table`，把数据（**设备列表**）从模块中抽出，添加到映射文件`/lib/modules/KERNEL_VERSION/modules.pcimap`中，当depmod结束之后，**所有的PCI设备**连同他们的**模块名字**都被**该文件列出**。当内核告知**热插拔系统**一个**新的PCI设备被发现**时，热插拔系统使用`modules.pcimap`文件来找寻恰当的驱动程序。
 
 `MODULE_DEVICE_TABLE`的第一个参数是**设备的类型**，如果是**USB设备**，那自然是**usb**（如果是PCI设备，那将是pci，这两个子系统用同一个宏来注册所支持的设备）。后面一个参数是**设备表**，这个设备表的**最后一个元素**是**空**的，用于**标识结束**。
 
@@ -77,3 +81,5 @@ MODULE_DEVICE_TABLE(x86cpu, vmx_cpu_id);
 # 参考
 
 https://www.cnblogs.com/ancongliang/p/7838469.html
+
+http://www.ibm.com/developerworks/cn/linux/l-usb/index2.html
