@@ -17,9 +17,51 @@ PCI设备的**vendor**、**device**和**class**的值都是**预先定义**好�
 
 设备id一般用数组形式。如：
 
+```cpp
+static struct pci_device_id rtl8139_pci_tbl[] = {
+        {0x10ec, 0x8139, PCI_ANY_ID, PCI_ANY_ID, 0, 0, RTL8139 },
+        ....
+};
+MODULE_DEVICE_TABLE (pci, rtl8139_pci_tbl);
+
+static struct pci_device_id e1000_pci_tbl[] = {
+    { PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x1000) },
+    { PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x1001) },
+    {0,}
+};
+MODULE_DEVICE_TABLE (pci, e1000_pci_tbl); 
 ```
 
+该宏生成一个名为`__mod_pci_device_table`的局部变量，该变量指向**第二个参数**。内核构建时，**depmod程序**会在**所有模块**中搜索符号`__mod_pci_device_table`，把数据（**设备列表**）从模块中抽出，添加到映射文件`/lib/modules/KERNEL_VERSION/modules.pcimap`中，当depmod结束之后，所有的PCI设备连同他们的模块名字都被该文件列出。当内核告知热插拔系统一个新的PCI设备被发现时，热插拔系统使用`modules.pcimap`文件来找寻恰当的驱动程序。
+
+`MODULE_DEVICE_TABLE`的第一个参数是**设备的类型**，如果是**USB设备**，那自然是**usb**（如果是PCI设备，那将是pci，这两个子系统用同一个宏来注册所支持的设备）。后面一个参数是**设备表**，这个设备表的**最后一个元素**是**空**的，用于**标识结束**。
+
+例：假如代码定义了`USB_SKEL_VENDOR_ID`是 `0xfff0`，`USB_SKEL_PRODUCT_ID`是`0xfff0`，也就是说，当有**一个设备**接到**集线器**时，**usb子系统**就会**检查**这个设备的 `vendor ID`和`product ID`，如果他们的值是0xfff0时，那么子系统就会调用这个模块作为设备的驱动。
+
+http://www.ibm.com/developerworks/cn/linux/l-usb/index2.html
+
+当usb设备插入时，为了使`linux-hotplug`（Linux中**PCI**、**USB**等**设备热插拔**支持）系统**自动装载驱动程序**，你需要创建一个`MODULE_DEVICE_TABLE`。代码如下（这个模块仅支持某一特定设备）：
+
+```cpp
+
+/* table of devices that work with this driver */
+static struct usb_device_id skel_table [] = {
+    { USB_DEVICE(USB_SKEL_VENDOR_ID,
+      USB_SKEL_PRODUCT_ID) },
+    { }                      /* Terminating entry */
+};
+MODULE_DEVICE_TABLE (usb, skel_table);
 ```
+
+`USB_DEVICE`宏利用**厂商ID**和**产品ID**为我们提供了一个**设备的唯一标识**。当系统插入一个**ID匹配**的**USB设备**到**USB总线**时，驱动会在**USB core**中注册。驱动程序中**probe 函数**也就会被调用。`usb_device` 结构指针、接口号和接口ID都会被传递到函数中。
+
+```
+static void * skel_probe(struct usb_device *dev,
+unsigned int ifnum, const struct usb_device_id *id)
+```
+
+驱动程序需要确认插入的设备是否可以被接受，如果不接受，或者在初始化的过程中发生任何错误，probe函数返回一个NULL值。否则返回一个含有设备驱动程序状态的指针。通过这个指针，就可以访问所有结构中的回调函数。
+
 
 例如
 
@@ -34,3 +76,4 @@ MODULE_DEVICE_TABLE(x86cpu, vmx_cpu_id);
 
 # 参考
 
+https://www.cnblogs.com/ancongliang/p/7838469.html
