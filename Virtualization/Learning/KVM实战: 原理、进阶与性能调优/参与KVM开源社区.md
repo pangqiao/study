@@ -516,7 +516,7 @@ Switched to a new branch 'next'￼
 [next 86abe87] just a demo￼
     1 files changed, 2 insertions(+), 0 deletions(-)￼
 # 根据前面的修改，生成对应的patch￼
-    [root@kvm-host kvm.git]# git format-patch -1￼
+[root@kvm-host kvm.git]# git format-patch -1￼
 0001-just-a-demo.patch￼
 ￼
 # 做了另一些其他的修改之后，提交本次修改内容￼
