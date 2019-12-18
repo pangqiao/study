@@ -21,6 +21,13 @@
     - [2.3.4. 编译运行](#234-编译运行)
 - [3. 向开源社区贡献代码](#3-向开源社区贡献代码)
   - [开发者邮件列表](#开发者邮件列表)
+  - [代码风格](#代码风格)
+    - [KVM内核部分的代码风格](#kvm内核部分的代码风格)
+    - [QEMU的代码风格](#qemu的代码风格)
+  - [生成patch](#生成patch)
+    - [使用diff工具生成patch](#使用diff工具生成patch)
+    - [使用Git工具生成patch](#使用git工具生成patch)
+  - [检查patch](#检查patch)
 
 <!-- /code_chunk_output -->
 
@@ -447,6 +454,116 @@ PASS tsx-ctrl
 开源社区的沟通交流方式有很多种，如电子邮件列表、IRC\[5]、wiki、博客、论坛等。一般来说，开发者的交流使用邮件列表比较多，普通用户则使用邮件列表、论坛、 IRC等多种方式。关于KVM和QEMU开发相关的讨论主要都依赖邮件列表。
 
 邮件列表有两种基本形式:公告型(邮件列表)，通常由一个管理者向小组中的所有成员发送信息，如 电子杂志、新闻邮件等;讨论型(讨论组)，所有的成员都可以向组内的其他成员发送信 息，其操作过程简单来说就是发一个邮箱到小组的公共电子邮箱，通过系统处理后，将这 封邮件分发给组内所有成员。KVM和QEMU等开发社区使用的邮件列表是属于讨论型的邮件列表，任何人都可以向该列表中的成员发送电子邮件。
+
+## 代码风格
+
+### KVM内核部分的代码风格
+
+### QEMU的代码风格
+
+## 生成patch
+
+patch是**GNU diff工具**生成的**输出内容**，这种输出格式能够被patch工具正确读取并添加到相应的代码仓库中。
+
+当然，patch文件还可以由一些**源代码版本控制工具**来生成，如：SVN、CSV、Mercurial、Git等。
+
+在Linux内核社区中，所有的开发代码都以patch的形式发送到开发者邮件列表中，然后经过讨论、审核、测试等步骤之后才会被项目（或子项目）维护者加入代码仓库中。QEMU/KVM的功能开发和修复bug的代码也都是以patch的形式发送出去的。
+
+在目前的KVM社区中，生成KVM内核部分的patch要基于kvm.git代码仓库的next或master分支来进行开发，而QEMU部分的patch要基于qemu.git代码仓库的master分支来开发。在动手修改代码做自己的patch之前，需要先将自己的工作目录切换到对应的开发分支，并更新到最新的代码中。示例如下：
+
+```
+[root@kvm-host kvm.git]# git checkout next￼
+Branch next set up to track remote branch next from origin.￼
+Switched to a new branch 'next'￼
+[root@kvm-host kvm.git]# git branch￼
+  master￼
+* next￼
+[root@kvm-host kvm.git]# git pull￼
+￼
+[root@kvm-host qemu.git]# git branch￼
+*  master￼
+[root@kvm-host qemu.git]# git pull
+```
+
+下面以kvm.git代码仓库为例，分别介绍使用diff工具和使用Git工具生成patch的方法。生成QEMU的patch的方法和KVM内核中是完全一样的，只是修改各自代码时注意遵循各自并不完全相同的代码编写风格。
+
+### 使用diff工具生成patch
+
+最简单的生成patch的方法是准备两个代码仓库，其中一个是未经任何修改的代码仓库，另一个就是经过自己修改后的代码仓库。
+
+假设kvm-my.git是经过修改后的代码仓库，kvm.git是修改前的原生代码仓库，可以使用如下的命令来生成patch：
+
+
+### 使用Git工具生成patch
+
+由于kvm.git和qemu.git代码仓库都是使用Git进行源代码版本管理的，所以在KVM的开发中也通常使用Git工具来生成patch。
+
+在Git代码仓库中，用Git工具生成patch只需要简单的两个步骤：
+
+* 第1步是使用“git commit”命令在本地仓库中提交修改内容；
+
+* 第2步是使用“git format-patch”命令生成所需的patch文件。
+
+如下的命令演示了使用Git生成一个patch并继续修改再生成另外一个patch的过程。
+
+```
+#假设前面已经对virt/kvm/kvm_main.c进行了修改￼
+# 将修改的文件添加到git管理的索引中￼
+[root@kvm-host kvm.git]# git add virt/kvm/kvm_main.c￼
+# 提交修改到本地仓库￼
+[root@kvm-host kvm.git]# git commit -m "just a demo"￼
+[next 86abe87] just a demo￼
+    1 files changed, 2 insertions(+), 0 deletions(-)￼
+# 根据前面的修改，生成对应的patch￼
+    [root@kvm-host kvm.git]# git format-patch -1￼
+0001-just-a-demo.patch￼
+￼
+# 做了另一些其他的修改之后，提交本次修改内容￼
+[root@kvm-host kvm.git]# git commit -m "just another demo"￼
+[next 486236a] just another demo￼
+    1 files changed, 1 insertions(+), 0 deletions(-)￼
+# 分别生成两次提交的patch￼
+[root@kvm-host kvm.git]# git format-patch -2￼
+0001-just-a-demo.patch￼
+0002-just-another-demo.patch
+```
+
+其中，git commit命令中的-m参数表示添加对本次提交的描述信息；git format-patch-N命令表示从本地最新的提交开始往前根据最新的N次提交信息生成对应的patch；而git format-patch origin命令则可以生成所有的本地提交对应的patch文件（在原来的代码仓库中已存在的信息则不会生成patch）。
+生成的两个patch中的第1个为0001-just-a-demo.patch，内容如下：
+
+```
+From 86abe871f15004faa9a950f445dd710ec70f97bc Mon Sep 17 00:00:00 2001￼
+From: Jay <smile665@gmail.com>￼
+Date: Sun, 26 May 2013 17:56:49 +0800￼
+Subject: [PATCH 1/2] just a demo￼
+￼
+---￼
+    virt/kvm/kvm_main.c |    2 ++￼
+    1 files changed, 2 insertions(+), 0 deletions(-)￼
+￼
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c￼
+index 302681c..f944735 100644￼
+--- a/virt/kvm/kvm_main.c￼
++++ b/virt/kvm/kvm_main.c￼
+@@ -3105,6 +3105,8 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,￼
+        int r;￼
+        int cpu;￼
+￼
++       printk(KERN_INFO "Hey, KVM is initializing.\n");￼
++￼
+        r = kvm_arch_init(opaque);￼
+        if (r)￼
+                goto out_fail;￼
+--￼
+1.7.1
+```
+
+##　检查patch
+
+在前面代码风格中介绍了KVM内核和QEMU的代码规范，而且开源社区对代码规范的执行也比较严格，如果你发送的patch不符合代码风格，维护者是不会接受的，他们会觉得你太不专业从而鄙视你。所以，在将patch正式发送出去之前，非常有必要进行检查，至少用它们项目源代码仓库提供的自动检查脚本进行patch检查。使用脚本自动检查patch可以发现大多数的代码风格的问题，对于脚本检查发现的问题（包括错误和警告），原则上都应该全部解决（尽管偶尔也有可能遇到实际并不需要改正的警告信息）。
+
+Linux内核与QEMU分别提供了检查patch的脚本，它们的位置分别如下：
+
 
 
 
