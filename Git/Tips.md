@@ -26,9 +26,10 @@
     - [仓库提交者（邮箱）排名前5](#仓库提交者邮箱排名前5)
     - [贡献人数统计](#贡献人数统计)
     - [提交次数统计](#提交次数统计)
-  - [14 http不用输入用户名密码](#14-http不用输入用户名密码)
-  - [15 编辑配置项](#15-编辑配置项)
-- [16](#16)
+  - [http不用输入用户名密码](#http不用输入用户名密码)
+  - [编辑配置项](#编辑配置项)
+- [](#)
+- [某一行代码的所有提交历史](#某一行代码的所有提交历史)
 - [.gitignore的模板](#gitignore的模板)
 
 <!-- /code_chunk_output -->
@@ -184,13 +185,13 @@ git log --pretty='%aN' | sort -u | wc -l
 
 git log --oneline | wc -l 
 
-## 14 http不用输入用户名密码
+## http不用输入用户名密码
 
 ```
 git remote set-url origin git+ssh://git@github.com/Gerry-Lee/Study.git
 ```
 
-## 15 编辑配置项
+## 编辑配置项
 
 1.查看Git所有配置
 
@@ -206,7 +207,7 @@ git config --global --unset user.name
 
 git config --global --edit
 
-# 16 
+# 
 
 ```
 git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch path-of-remove-file' --prune-empty --tag-name-filter cat -- --all
@@ -215,6 +216,10 @@ git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch path-
 ```
 git push origin --force --all
 ```
+
+# 某一行代码的所有提交历史
+
+`git log -p filename`, 然后搜索代码，看谁提交的
 
 # .gitignore的模板
 
