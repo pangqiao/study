@@ -14,3 +14,4 @@ KVM虚拟化源码分析之KVM_TOOLS: https://blog.csdn.net/linux_for_you/articl
 
 VT技术实现: B站视频: av67271788
 
+关于VMCS: https://xmuchong.com/59611/
