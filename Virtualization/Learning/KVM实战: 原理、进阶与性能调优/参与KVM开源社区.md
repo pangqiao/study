@@ -501,9 +501,9 @@ Switched to a new branch 'next'￼
 
 在Git代码仓库中，用Git工具生成patch只需要简单的两个步骤：
 
-* 第1步是使用“git commit”命令在本地仓库中提交修改内容；
+* 第1步是使用`git commit`命令在本地仓库中提交修改内容；(可以用`git commit -s`)
 
-* 第2步是使用“git format-patch”命令生成所需的patch文件。
+* 第2步是使用`git format-patch`命令生成所需的patch文件。
 
 如下的命令演示了使用Git生成一个patch并继续修改再生成另外一个patch的过程。
 
@@ -529,10 +529,17 @@ Switched to a new branch 'next'￼
 0002-just-another-demo.patch
 ```
 
-其中，git commit命令中的-m参数表示添加对本次提交的描述信息；git format-patch-N命令表示从本地最新的提交开始往前根据最新的N次提交信息生成对应的patch；而git format-patch origin命令则可以生成所有的本地提交对应的patch文件（在原来的代码仓库中已存在的信息则不会生成patch）。
-生成的两个patch中的第1个为0001-just-a-demo.patch，内容如下：
+其中，
 
-```
+`git commit`命令中的-m参数表示添加对本次提交的描述信息；
+
+`git format-patch -N`命令表示从本地最新的提交开始往前根据最新的N次提交信息生成对应的patch；
+
+而`git format-patch origin`命令则可以生成**所有的本地提交**对应的patch文件（在原来的代码仓库中已存在的信息则不会生成patch）。
+
+生成的两个patch中的第1个为`0001-just-a-demo.patch`，内容如下：
+
+```patch
 From 86abe871f15004faa9a950f445dd710ec70f97bc Mon Sep 17 00:00:00 2001￼
 From: Jay <smile665@gmail.com>￼
 Date: Sun, 26 May 2013 17:56:49 +0800￼
@@ -561,9 +568,98 @@ index 302681c..f944735 100644￼
 
 ##　检查patch
 
-在前面代码风格中介绍了KVM内核和QEMU的代码规范，而且开源社区对代码规范的执行也比较严格，如果你发送的patch不符合代码风格，维护者是不会接受的，他们会觉得你太不专业从而鄙视你。所以，在将patch正式发送出去之前，非常有必要进行检查，至少用它们项目源代码仓库提供的自动检查脚本进行patch检查。使用脚本自动检查patch可以发现大多数的代码风格的问题，对于脚本检查发现的问题（包括错误和警告），原则上都应该全部解决（尽管偶尔也有可能遇到实际并不需要改正的警告信息）。
+在前面代码风格中介绍了KVM内核和QEMU的代码规范，而且开源社区对代码规范的执行也比较严格，如果你发送的patch不符合代码风格，维护者是不会接受的，他们会觉得你太不专业从而鄙视你。
+
+所以，在将patch正式发送出去之前，非常有必要进行检查，至少用它们项目源代码仓库提供的自动检查脚本进行patch检查。
+
+使用脚本自动检查patch可以发现大多数的代码风格的问题，对于脚本检查发现的问题（包括错误和警告），原则上都应该全部解决（尽管偶尔也有可能遇到实际并不需要改正的警告信息）。
 
 Linux内核与QEMU分别提供了检查patch的脚本，它们的位置分别如下：
+
+```
+[root@kvm-host kvm.git]# ls scripts/checkpatch.pl￼
+scripts/checkpatch.pl￼
+￼
+[root@kvm-host qemu.git]# ls scripts/checkpatch.pl￼
+scripts/checkpatch.pl
+```
+
+检查前面3.3节生成的patch，示例如下：
+
+```
+[root@kvm-host kvm.git]# scripts/checkpatch.pl 0001-just-a-demo.patch￼
+WARNING: Prefer netdev_info(netdev, ... then dev_info(dev, ... then pr_info(...  to printk(KERN_INFO ...￼
+#18: FILE: virt/kvm/kvm_main.c:3108:￼
++       printk(KERN_INFO "Hey, KVM is initializing.\n");￼
+￼
+ERROR: Missing Signed-off-by: line(s)￼
+￼
+total: 1 errors, 1 warnings, 8 lines checked￼
+￼
+0001-just-a-demo.patch has style problems, please review.￼
+￼
+If any of these errors are false positives, please report￼
+them to the maintainer, see CHECKPATCH in MAINTAINERS.
+```
+
+发现了一个错误和一个警告，错误是缺少“Signed-off-by：”这样的行，警告是printk(KERN_INFO...)这样的写法是不推荐的（最好用pr_info()函数来代替）。
+
+所以需要再编辑patch，在其中添加`Signed-off-by：Jay<smile665@gmail.com>`这样的作者信息行，当然有**多个作者**可以用多行“Signed-off-by：”。
+
+另外，有时还可以**根据需要**添加其他的**多行信息**，如下：
+
+```
+“Reviewed-by:” 当有人做过审查代码时（一般是社区中资深人士）￼
+“Acked-by:” 当有人表示响应和同意时（一般是社区中资深人士）￼
+“Reported-by:” 当某人报告了一个问题，本patch就修复那个问题时￼
+“Tested-by:” 当某人测试了本patch时
+```
+
+另外，可以在**检查脚本**中加`--no-signoff`参数来忽略对“Signed-off-by：”的检查，示例命令为：`scripts/checkpatch.pl --no-signoff my.patch`。
+
+当然，如果是用`git format-patch`命令来生成patch的，则可以在**生成patch时**就添加`-s`或`--signoff`参数，以便在**生成patch文件**时就添加上“Signed-off-by：”的信息行。
+
+对于那个警告，使用pr_info()来替换printk(KERN_INFO...)函数即可。最后，用“git format-patch-s origin”命令生成0001-just-a-demo.patch。示例如下：
+
+```
+From 2c2118137eaa86bdce3c85016819dff336ca61f7 Mon Sep 17 00:00:00 2001￼
+From: Jay <smile665@gmail.com>￼
+Date: Sun, 26 May 2013 22:19:19 +0800￼
+Subject: [PATCH] just a demo￼
+￼
+￼
+Signed-off-by: Jay <smile665@gmail.com>￼
+---￼
+    virt/kvm/kvm_main.c |    2 ++￼
+    1 files changed, 2 insertions(+), 0 deletions(-)￼
+￼
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c￼
+index 302681c..e0bbfe6 100644￼
+--- a/virt/kvm/kvm_main.c￼
++++ b/virt/kvm/kvm_main.c￼
+@@ -3105,6 +3105,8 @@ int kvm_init(void *opaque, unsigned vcpu_size, unsigned vcpu_align,￼
+        int r;￼
+        int cpu;￼
+￼
++       pr_info("Hey, KVM is initializing.\n");￼
++￼
+        r = kvm_arch_init(opaque);￼
+        if (r)￼
+                goto out_fail;￼
+--￼
+1.7.1
+```
+
+在修正错误和警告后，用checkpatch.pl脚本重新检查生成的patch，命令如下：
+
+```
+[root@kvm-host kvm.git]# scripts/checkpatch.pl 0001-just-a-demo.patch￼
+total: 0 errors, 0 warnings, 8 lines checked￼
+￼
+0001-just-a-demo.patch has no obvious style problems and is ready for submission.
+```
+
+可见，本次检查没有发现任何错误和警告，即没有明显的代码风格问题，可以向开源社区提交这个patch了。
 
 ## 提交patch
 
