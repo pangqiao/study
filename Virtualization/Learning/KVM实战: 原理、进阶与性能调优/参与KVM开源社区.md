@@ -258,7 +258,7 @@ qemu-system-x86_64 -enable-kvm -device pc-testdev -serial stdio -device isa-debu
 
 其中，\-kernel选项后的./**x86/msr.flat**文件即为被测试的**内核镜像**。测试结果会默认打印在当前执行测试的终端上。
 
-KVM单元测试代码中还提供了一些脚本，以便让单元测试的执行更容易，如x86-run 脚本可以方便地执行一个具体的测试。
+KVM单元测试代码中还提供了一些脚本，以便让单元测试的执行更容易，如`x86-run`脚本可以方便地执行一个具体的测试。
 
 ```
 # ls ./x86/*.flat
