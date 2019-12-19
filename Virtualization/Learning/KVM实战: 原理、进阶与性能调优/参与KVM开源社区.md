@@ -19,17 +19,18 @@
     - [2.3.2. 代码目录](#232-代码目录)
     - [2.3.3. 基本原理](#233-基本原理)
     - [2.3.4. 编译运行](#234-编译运行)
+    - [2.3.5. 添加测试](#235-添加测试)
 - [3. 向开源社区贡献代码](#3-向开源社区贡献代码)
-  - [开发者邮件列表](#开发者邮件列表)
-  - [代码风格](#代码风格)
-    - [KVM内核部分的代码风格](#kvm内核部分的代码风格)
-    - [QEMU的代码风格](#qemu的代码风格)
-  - [生成patch](#生成patch)
-    - [使用diff工具生成patch](#使用diff工具生成patch)
-    - [使用Git工具生成patch](#使用git工具生成patch)
-  - [检查patch](#检查patch)
-  - [提交patch](#提交patch)
-- [提交KVM相关的bug](#提交kvm相关的bug)
+  - [3.1. 开发者邮件列表](#31-开发者邮件列表)
+  - [3.2. 代码风格](#32-代码风格)
+    - [3.2.1. KVM内核部分的代码风格](#321-kvm内核部分的代码风格)
+    - [3.2.2. QEMU的代码风格](#322-qemu的代码风格)
+  - [3.3. 生成patch](#33-生成patch)
+    - [3.3.1. 使用diff工具生成patch](#331-使用diff工具生成patch)
+    - [3.3.2. 使用Git工具生成patch](#332-使用git工具生成patch)
+  - [3.4. 检查patch](#34-检查patch)
+  - [3.5. 提交patch](#35-提交patch)
+- [4. 提交KVM相关的bug](#4-提交kvm相关的bug)
 
 <!-- /code_chunk_output -->
 
@@ -385,85 +386,25 @@ FAIL() { echo -ne "\e[31mFAIL\e[0m"; }
 
 在`logs/`目录下有更多测试结果信息.
 
-```
-# ./run_tests.sh
-SKIP apic-split (qemu-kvm: -machine kernel_irqchip=split: Parameter 'kernel_irqchip' expects 'on' or 'off')
-SKIP ioapic-split (qemu-kvm: -machine kernel_irqchip=split: Parameter 'kernel_irqchip' expects 'on' or 'off')
-FAIL apic (53 tests, 1 unexpected failures)
-FAIL ioapic (timeout; duration=90s)
-PASS smptest (1 tests)
-PASS smptest3 (1 tests)
-PASS vmexit_cpuid
-PASS vmexit_vmcall
-PASS vmexit_mov_from_cr8
-PASS vmexit_mov_to_cr8
-PASS vmexit_inl_pmtimer
-PASS vmexit_ipi
-PASS vmexit_ipi_halt
-PASS vmexit_ple_round_robin
-PASS vmexit_tscdeadline
-PASS vmexit_tscdeadline_immed
-PASS access
-PASS smap (18 tests)
-SKIP pku (0 tests)
-PASS asyncpf (1 tests)
-PASS emulator (125 tests, 2 skipped)
-PASS eventinj (13 tests)
-PASS hypercall (2 tests)
-PASS idt_test (4 tests)
-PASS memory (8 tests)
-PASS msr (12 tests)
-SKIP pmu (/proc/sys/kernel/nmi_watchdog not equal to 0)
-SKIP vmware_backdoors (qemu-kvm: -machine vmport=on: Invalid parameter 'vmport')
-PASS port80
-PASS realmode
-PASS s3
-PASS sieve
-PASS syscall (2 tests)
-PASS tsc (3 tests)
-PASS tsc_adjust (5 tests)
-PASS xsave (17 tests)
-PASS rmap_chain
-PASS svm (25 tests)
-SKIP taskswitch (i386 only)
-SKIP taskswitch2 (i386 only)
-PASS kvmclock_test
-PASS pcid (3 tests)
-PASS rdpru (1 tests)
-FAIL umip (11 tests)
-SKIP vmx (0 tests)
-SKIP ept (qemu-kvm: Property '.host-phys-bits' not found)
-SKIP vmx_eoi_bitmap_ioapic_scan (0 tests)
-SKIP vmx_hlt_with_rvi_test (0 tests)
-SKIP vmx_apicv_test (0 tests)
-SKIP vmx_apic_passthrough_thread (0 tests)
-SKIP vmx_init_signal_test (0 tests)
-SKIP vmx_apic_passthrough_tpr_threshold_test (0 tests)
-SKIP vmx_vmcs_shadow_test (0 tests)
-PASS debug (11 tests)
-SKIP hyperv_synic (qemu-kvm: Property '.hv-vpindex' not found)
-SKIP hyperv_connections (qemu-kvm: Property '.hv-vpindex' not found)
-SKIP hyperv_stimer (qemu-kvm: Property '.hv-vpindex' not found)
-PASS hyperv_clock
-SKIP intel_iommu (Use -machine help to list supported machines!)
-PASS tsx-ctrl
-```
+### 2.3.5. 添加测试
+
+参照: https://www.linux-kvm.org/page/KVM-unit-tests
 
 # 3. 向开源社区贡献代码
 
-## 开发者邮件列表
+## 3.1. 开发者邮件列表
 
 开源社区的沟通交流方式有很多种，如电子邮件列表、IRC\[5]、wiki、博客、论坛等。一般来说，开发者的交流使用邮件列表比较多，普通用户则使用邮件列表、论坛、 IRC等多种方式。关于KVM和QEMU开发相关的讨论主要都依赖邮件列表。
 
 邮件列表有两种基本形式:公告型(邮件列表)，通常由一个管理者向小组中的所有成员发送信息，如 电子杂志、新闻邮件等;讨论型(讨论组)，所有的成员都可以向组内的其他成员发送信 息，其操作过程简单来说就是发一个邮箱到小组的公共电子邮箱，通过系统处理后，将这 封邮件分发给组内所有成员。KVM和QEMU等开发社区使用的邮件列表是属于讨论型的邮件列表，任何人都可以向该列表中的成员发送电子邮件。
 
-## 代码风格
+## 3.2. 代码风格
 
-### KVM内核部分的代码风格
+### 3.2.1. KVM内核部分的代码风格
 
-### QEMU的代码风格
+### 3.2.2. QEMU的代码风格
 
-## 生成patch
+## 3.3. 生成patch
 
 patch是**GNU diff工具**生成的**输出内容**，这种输出格式能够被patch工具正确读取并添加到相应的代码仓库中。
 
@@ -489,14 +430,14 @@ Switched to a new branch 'next'￼
 
 下面以kvm.git代码仓库为例，分别介绍使用diff工具和使用Git工具生成patch的方法。生成QEMU的patch的方法和KVM内核中是完全一样的，只是修改各自代码时注意遵循各自并不完全相同的代码编写风格。
 
-### 使用diff工具生成patch
+### 3.3.1. 使用diff工具生成patch
 
 最简单的生成patch的方法是准备两个代码仓库，其中一个是未经任何修改的代码仓库，另一个就是经过自己修改后的代码仓库。
 
 假设kvm-my.git是经过修改后的代码仓库，kvm.git是修改前的原生代码仓库，可以使用如下的命令来生成patch：
 
 
-### 使用Git工具生成patch
+### 3.3.2. 使用Git工具生成patch
 
 由于kvm.git和qemu.git代码仓库都是使用Git进行源代码版本管理的，所以在KVM的开发中也通常使用Git工具来生成patch。
 
@@ -567,7 +508,7 @@ index 302681c..f944735 100644￼
 1.7.1
 ```
 
-##　检查patch
+## 3.4. 检查patch
 
 在前面代码风格中介绍了KVM内核和QEMU的代码规范，而且开源社区对代码规范的执行也比较严格，如果你发送的patch不符合代码风格，维护者是不会接受的，他们会觉得你太不专业从而鄙视你。
 
@@ -662,7 +603,7 @@ total: 0 errors, 0 warnings, 8 lines checked￼
 
 可见，本次检查没有发现任何错误和警告，即没有明显的代码风格问题，可以向开源社区提交这个patch了。
 
-## 提交patch
+## 3.5. 提交patch
 
 准备好patch了后，最后要做的事情当然是提交patch了。KVM和QEMU的patch提交都是通过发送到邮件列表来实现的，KVM开发者邮件列表是kvm@vger.kernel.org，QEMU开发者邮件列表是qemu-devel@nongnu.org。QEMU代码中针对KVM相关修改的patch，需要发送到KVM邮件列表，并且抄送QEMU邮件列表。
 除了邮件列表之外，一般收件人或抄送人中还包含该项目或子模块的维护者，以便让维护者将patch添加到upstream中。那么如何才能找到patch相关的维护者呢？首先，可以根据Linux内核和QEMU项目源代码中的“MAINTAINERS”文件查看维护者的信息以及他们负责的模块，然后根据patch中的改动及其影响找到影响的维护者。其次，Linux内核和QEMU代码仓库中都提供了一个根据patch查找到维护者的脚本，其位置都在源代码的“scripts/get_maintainer.pl”中。根据patch获得维护者信息的脚本的示例如下：
@@ -680,7 +621,7 @@ total: 0 errors, 0 warnings, 8 lines checked￼
 一般来说，可以使用Outlook、Foxmail、Thunderbird等客户端，或使用在线Gmail等邮箱来发送patch和接收邮件列表的邮件。另外，如果你对Git工具比较熟悉，还可以使用git-email安装包中的“git send-email”命令行工具来发送patch。
 最后，在发送了patch之后，就耐心地等待社区中开发者的回复吧。如果收到一些批评的意见，不要感到被打击了，一方面要检查自己是否的确可以将patch做得更完美，另一方面，如果你不同意别人给的批评意见，你也可以直接与之进行技术讨论，必要时甚至可以请社区中一些“德高望重”的大牛们来评判。收到别人的回复总比没人理你要好，因为一般来说，一个patch不会在没有任何人讨论或回复的情况下就被加入upstream中。偶尔也会在发送patch后几天都没有任何回复，这时你可以检查一下是否邮件格式、patch内容、收件人等方面有问题，确认这些都没问题后可以发邮件提醒维护者或其他相关人员对你的patch给出评价。一般来说，当你收到维护者发给你的带有“applied”字样的回复时，恭喜你，你的patch就可以顺利进入upstream了。你的patch可能进入QEMU中，也可能进入KVM内核中，这样在下一个Linux内核发布版本中就很可能有你贡献的代码了。
 
-# 提交KVM相关的bug
+# 4. 提交KVM相关的bug
 
 有句话是这样说的，没有任何软件没有bug。当然，QEMU/KVM也不例外，在使用它们的过程中也可能遇到一些bug，有一些严重的bug可能会导致客户机甚至是宿主机系统崩溃，有一些比较轻微的bug可能会导致在特殊的（通常是老旧的）硬件平台上某个版本客户机的某个小功能不可用。KVM和QEMU作为开源软件，有着强大的开源社区的支持，在遇到bug时，就会提交出去让大家一起讨论。对于不会修复bug的新手，很可能遇到热心的开发者帮着一起解决bug。本节将介绍如何在开源社区中提交QEMU/KVM相关的bug和用git bisect命令来定位bug。
 B.4.1　通过邮件列表提交bug
