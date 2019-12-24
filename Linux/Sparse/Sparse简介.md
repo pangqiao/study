@@ -115,6 +115,7 @@ endif
 从上面的逻辑可以看出 sparse 执行过程。Linux Kbuild 编译系统通过上面的 设置，在源码中加入了 CHECK 宏，以提供 sparse 的检测。
 
 
+
 # 参考
 
 https://biscuitos.github.io/blog/SPARSE/
