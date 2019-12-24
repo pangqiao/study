@@ -15,6 +15,29 @@ Sparse 相关的资料可以参考下面链接：
 
 - [linus sparse](https://yarchive.net/comp/linux/sparse.html)
 
+# Sparse原理
+
+Sparse通过 gcc 的扩展属性 `__attribute__` 以及自己定义的 `__context__` 来对代码进行静态检查.
+
+这些属性如下(尽量整理的,可能还有些不全的地方):
+
+宏名称 | 宏定义 | 检查点
+---------|----------|---------
+`__bitwise` | `__attribute__((bitwise))` | 确保变量是相同的位方式(比如 `bit-endian`, `little-endiandeng`)
+`__user` | `__attribute__((noderef, address_space(1)))` | 指针地址必须在用户地址空间
+`__kernel` | `__attribute__((noderef, address_space(0)))` | 指针地址必须在内核地址空间
+`__iomem` | __attribute__((noderef, address_space(2))) | 指针地址必须在设备地址空间
+`__safe` | __attribute__((safe)) | 变量可以为空
+`__force` | __attribute__((force)) | 变量可以进行强制转换
+`__nocast` | __attribute__((nocast)) | 参数类型与实际参数类型必须一致
+`__acquires(x)` | __attribute__((context(x, 0, 1))) | 参数x 在执行前引用计数必须是0,执行后,引用计数必须为1
+`__releases(x)` | `__attribute__((context(x, 1, 0)))` | 与 `__acquires(x)` 相反
+`__acquire(x)` | `__context__(x, 1)` | 参数x 的引用计数 + 1
+`__release(x)` | `__context__(x, -1) | 与 `__acquire(x)` 相反
+`__cond_lock(x,c)` | `((c) ? ({ __acquire(x); 1; }) : 0)` | 参数c 不为0时,引用计数 
+
+
+
 # Sparse安装
 
 Sparse 是一个独立于 linux 内核源码的静态源码分析工具，开发者在使用 sparse 进行源码分析之前，确保 sparse 工具**已经安装**，如果没有安装，可以通过下面几个种 方法进行安装。
