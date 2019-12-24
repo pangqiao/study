@@ -19,6 +19,19 @@ Sparse 相关的资料可以参考下面链接：
 
 Sparse 是一个独立于 linux 内核源码的静态源码分析工具，开发者在使用 sparse 进行源码分析之前，确保 sparse 工具**已经安装**，如果没有安装，可以通过下面几个种 方法进行安装。
 
+下载源码
+
+```
+git clone git://git.kernel.org/pub/scm/devel/sparse/sparse.git
+```
+
+编译安装
+
+```
+make
+make install
+```
+
 
 
 # 参考
