@@ -82,6 +82,8 @@ QEMU自身就是一个**独立的、完整的虚拟机模拟器**，可以独立
 
 QEMU社区的代码仓库网址是 http://git.qemu.org ，其中qemu.git就是QEMU upstream的主干代码树。可以使用GIT工具，通过两个URL( git://git.qemu.org/qemu.git 和 http://git.qemu.org/git/qemu.git )中的任意一个来下载QEMU的最新源代码。
 
+从QEMU的源代码中的“MAINTAINERS”文件可知：QEMU的维护者是Peter May-dell，QEMU中与KVM相关部分代码的维护者就是KVM的维护者Paolo Bonzini，QEMU中与Xen相关部分代码的维护者是Stefano Stabellini。
+
 ## 1.4. 其他开源社区
 
 1)Libvirt，一个著名的虚拟化API项目。
