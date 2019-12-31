@@ -211,9 +211,11 @@ QEMU实现了对“PC客户机的完全模拟，它可以**独立使用**，也�
 
 QEMU中的代码比较复杂，实现的功能也非常多，本节只是简单提及一下QEMU中与KVM相关部分代码，以及KVM客户机创建过程的关键函数调用。
 
-在QEMU（本次使用的版本是2.11.0）源码中，最重要的一个文件是vl.c，其中的main()函数就是QEMU工具的主函数，它主要处理QEMU的各个命令行参数，然后启动客户机并让vCPU运行起来。在QEMU代码中，对KVM提供相关支持的函数定义在kvm-all.c文件中。”
+在QEMU（本次使用的版本是2.11.0）源码中，最重要的一个文件是`vl.c`，其中的main()函数就是QEMU工具的主函数，它主要处理QEMU的各个命令行参数，然后启动客户机并让vCPU运行起来。在QEMU代码中，对KVM提供相关支持的函数定义在kvm-all.c文件中。”
 
+“QEMU通过IOCTL函数使用/dev/kvm设备来调用KVM内核模块提供的API，从而与KVM内核模块进行交互。提供的API中包括：创建客户机（KVM_CREATE_VM）、为客户机创建vCPU（KVM_CREATE_VCPU）、运行vCPU（KVM_RUN）、获取KVM的版本信息（KVM_GET_API_VERSION）、查询KVM的特性支持（KVM_CHECK_EXTENSION）等。在QEMU中将这一系列IOCTL函数调用分为4个类别：kvm_ioctl()、kvm_vm_ioctl()、kvm_vcpu_ioctl()和kvm_device_ioctl()。这4个函数都定义在kvm-all.c文件中，分别用于表示对KVM内核模块本身、对虚拟客户机、对客户机的vCPU和对设备进行交互。
 
+QEMU配合KVM来启动一个客户机，首先打开/dev/kvm设备，通过名为KVM_CREATE_VM的IOCTL调用来创建一个虚拟机对象，然后通过KVM_CREATE_VCPU为虚拟机创建vCPU对象，最后通过KVM_RUN让vCPU运行起来。当然，这里仅提及了CPU相关的重要部分，整个初始化过程还做了很多其他的事情，比如：中断芯片的模拟、内存的模拟、寄存器的设置等。”
 
 ## 2.3. KVM单元测试代码
 
