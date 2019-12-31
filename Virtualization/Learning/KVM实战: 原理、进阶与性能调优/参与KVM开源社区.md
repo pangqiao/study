@@ -82,7 +82,7 @@ QEMU自身就是一个**独立的、完整的虚拟机模拟器**，可以独立
 
 QEMU社区的代码仓库网址是 http://git.qemu.org ，其中qemu.git就是QEMU upstream的主干代码树。可以使用GIT工具，通过两个URL( git://git.qemu.org/qemu.git 和 http://git.qemu.org/git/qemu.git )中的任意一个来下载QEMU的最新源代码。
 
-从QEMU的源代码中的“MAINTAINERS”文件可知：QEMU的维护者是Peter May-dell，QEMU中与KVM相关部分代码的维护者就是KVM的维护者Paolo Bonzini，QEMU中与Xen相关部分代码的维护者是Stefano Stabellini。
+从QEMU的源代码中的“**MAINTAINERS**”文件可知：QEMU的维护者是Peter May-dell，QEMU中与KVM相关部分代码的维护者就是KVM的维护者Paolo Bonzini，QEMU中与Xen相关部分代码的维护者是Stefano Stabellini。
 
 ## 1.4. 其他开源社区
 
@@ -207,7 +207,13 @@ QEMU代码仓库如下:
 http://git.qemu.org/?p=qemu.git;a=summary
 ```
 
-......
+QEMU实现了对“PC客户机的完全模拟，它可以**独立使用**，也可以与KVM、Xen等Hypervisor**一起使用**来实现完整的虚拟化功能。
+
+QEMU中的代码比较复杂，实现的功能也非常多，本节只是简单提及一下QEMU中与KVM相关部分代码，以及KVM客户机创建过程的关键函数调用。
+
+在QEMU（本次使用的版本是2.11.0）源码中，最重要的一个文件是vl.c，其中的main()函数就是QEMU工具的主函数，它主要处理QEMU的各个命令行参数，然后启动客户机并让vCPU运行起来。在QEMU代码中，对KVM提供相关支持的函数定义在kvm-all.c文件中。”
+
+
 
 ## 2.3. KVM单元测试代码
 
