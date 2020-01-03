@@ -1,1 +1,15 @@
-该项目记录所有学习的心得，包括网站、工具、新的领域知识等等，使用分层架构，每个目录下都有相应的readme文件，用于描述该目录的内容。
+Study blog, from network resource and self-learning.
+
+This blog is writen with vscode. 
+
+How to configure? See `Tools/Visual Studio Code/`.
+
+We can get communication by email or wechat. 
+
+Name: Haiwei Li
+Email: haiwei.lee@hotmail.com
+WeChat: LHWXJTU
+
+You can scan the QR code below to add friends by using wechat.
+
+![Haiwei Li](Tools/images/Wechat-lihaiwei.jpeg)
