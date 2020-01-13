@@ -3,35 +3,35 @@
 
 <!-- code_chunk_output -->
 
-- [前景回顾](#前景回顾)
-  - [UMA和NUMA两种模型](#uma和numa两种模型)
-    - [UMA模型](#uma模型)
-    - [NUMA模型](#numa模型)
-  - [(N)UMA模型中linux内存的机构](#numa模型中linux内存的机构)
-    - [NUMA](#numa)
-    - [UMA](#uma)
-- [内存节点node](#内存节点node)
-  - [为什么要用node来描述内存](#为什么要用node来描述内存)
-  - [内存结点的概念](#内存结点的概念)
-  - [pg\_data\_t描述内存节点](#pg_data_t描述内存节点)
-  - [结点的内存管理域](#结点的内存管理域)
-  - [结点的内存页面](#结点的内存页面)
-  - [交换守护进程](#交换守护进程)
-- [结点状态](#结点状态)
-  - [结点状态标识node\_states](#结点状态标识node_states)
-  - [3.2 结点状态设置函数](#32-结点状态设置函数)
-- [4 查找内存结点](#4-查找内存结点)
-  - [4.1 linux-2.4中的实现](#41-linux-24中的实现)
-  - [4.2 linux-3.x~4.x的实现](#42-linux-3x~4x的实现)
+- [1. 前景回顾](#1-前景回顾)
+  - [1.1. UMA和NUMA两种模型](#11-uma和numa两种模型)
+    - [1.1.1. UMA模型](#111-uma模型)
+    - [1.1.2. NUMA模型](#112-numa模型)
+  - [1.2. (N)UMA模型中linux内存的机构](#12-numa模型中linux内存的机构)
+    - [1.2.1. NUMA](#121-numa)
+    - [1.2.2. UMA](#122-uma)
+- [2. 内存节点node](#2-内存节点node)
+  - [2.1. 为什么要用node来描述内存](#21-为什么要用node来描述内存)
+  - [2.2. 内存结点的概念](#22-内存结点的概念)
+  - [2.3. pg_data_t描述内存节点](#23-pg_data_t描述内存节点)
+- [3. 结点的内存管理域](#3-结点的内存管理域)
+- [4. 结点的内存页面](#4-结点的内存页面)
+- [5. 交换守护进程](#5-交换守护进程)
+- [6. 结点状态](#6-结点状态)
+  - [6.1. 结点状态标识node_states](#61-结点状态标识node_states)
+  - [6.2. 结点状态设置函数](#62-结点状态设置函数)
+- [7. 查找内存结点](#7-查找内存结点)
+  - [7.1. linux-2.4中的实现](#71-linux-24中的实现)
+  - [7.2. linux-3.x~4.x的实现](#72-linux-3x~4x的实现)
 
 <!-- /code_chunk_output -->
 
-# 前景回顾
+# 1. 前景回顾
 
 前面我们讲到[服务器体系(SMP, NUMA, MPP)与共享存储器架构(UMA和NUMA)](http://blog.csdn.net/gatieme/article/details/52098615)
 
 
-## UMA和NUMA两种模型
+## 1.1. UMA和NUMA两种模型
 
 共享存储型多处理机有两种模型
 
@@ -39,23 +39,23 @@
 
 - 非均匀存储器存取（Nonuniform-Memory-Access，简称NUMA）模型
 
-### UMA模型
+### 1.1.1. UMA模型
 
 物理存储器被所有处理机均匀共享。所有处理机对所有存储字具有相同的存取时间，这就是为什么称它为均匀存储器存取的原因。每台处理机可以有私用高速缓存,外围设备也以一定形式共享。
 
-### NUMA模型
+### 1.1.2. NUMA模型
 
 NUMA模式下，处理器被划分成多个"节点"（node）， 每个节点被分配有的本地存储器空间。 所有节点中的处理器都可以访问全部的系统物理存储器，但是访问本节点内的存储器所需要的时间，比访问某些远程节点内的存储器所花的时间要少得多。
 
-## (N)UMA模型中linux内存的机构
+## 1.2. (N)UMA模型中linux内存的机构
 
-### NUMA
+### 1.2.1. NUMA
 
 - 处理器被划分成多个"节点"(node), 每个节点被分配有的本地存储器空间. 所有节点中的处理器都可以访问全部的系统物理存储器，但是访问本节点内的存储器所需要的时间，比访问某些远程节点内的存储器所花的时间要少得多
 
 - 内存被分割成多个区域（BANK，也叫"簇"），依据簇与处理器的"距离"不同, 访问不同簇的代码也会不同. 比如，可能把内存的一个簇指派给每个处理器，或则某个簇和设备卡很近，很适合DMA，那么就指派给该设备。因此当前的多数系统会把内存系统分割成2块区域，一块是专门给CPU去访问，一块是给外围设备板卡的DMA去访问
 
-### UMA 
+### 1.2.2. UMA
 
 内存就相当于一个只使用一个NUMA节点来管理整个系统的内存.而内存管理的其他地方则认为他们就是在处理一个(伪)NUMA系统.
 
@@ -67,9 +67,9 @@ Linux把物理内存划分为三个层次来管理
 | 管理区(Zone)   | 每个物理内存节点node被划分为多个内存管理区域, 用于表示不同范围的内存, 内核可以使用不同的映射方式映射物理内存 |
 | 页面(Page) 	   |	内存被细分为多个页面帧, 页面是最基本的页面分配的单位　｜
 
-# 内存节点node
+# 2. 内存节点node
 
-## 为什么要用node来描述内存
+## 2.1. 为什么要用node来描述内存
 
 **NUMA结构**下, 每个处理器CPU与一个本地内存直接相连,而**不同处理器**之间则通过**总线**进行进一步的**连接**,因此相对于任何一个CPU访问本地内存的速度比访问远程内存的速度要快
 
@@ -79,7 +79,7 @@ Linux适用于各种不同的体系结构,而不同体系结构在内存管理�
 
 所以**主要为了应对numa结构，三种服务器架构中MPP依赖外部I/O，UMA不涉及区分node**。
 
-## 内存结点的概念
+## 2.2. 内存结点的概念
 
 >CPU被划分为多个节点(node), 内存则被分簇, 每个CPU对应一个本地物理内存, 即一个CPU-node对应一个内存簇bank，即每个内存簇被认为是一个节点
 >
@@ -91,7 +91,7 @@ Linux适用于各种不同的体系结构,而不同体系结构在内存管理�
 
 在分配一个页面时, Linux采用节点局部分配的策略,从最靠近运行中的CPU的节点分配内存,由于进程往往是在同一个CPU上运行, 因此从当前节点得到的内存很可能被用到
 
-## pg\_data\_t描述内存节点
+## 2.3. pg_data_t描述内存节点
 
 表示node的数据结构为[`typedef struct pglist_data pg_data_t`](http://lxr.free-electrons.com/source/include/linux/mmzone.h#L630)， 这个结构定义在[include/linux/mmzone.h, line 615](http://lxr.free-electrons.com/source/include/linux/mmzone.h#L615)中,结构体的内容如下
 
@@ -204,7 +204,7 @@ typedef struct pglist_data {
 | kswapd\_max\_order | 需要释放的区域的长度，以**页阶**为单位 |
 | classzone\_idx | 这个字段暂时没弄明白，不过其中的zone\_type是对ZONE\_DMA,ZONE\_DMA32,ZONE\_NORMAL,ZONE\_HIGH,ZONE\_MOVABLE,\_\_MAX\_NR\_ZONES的枚举 |
 
-## 结点的内存管理域
+# 3. 结点的内存管理域
 
 ```cpp
 typedef struct pglist_data {
@@ -223,7 +223,7 @@ typedef struct pglist_data {
 
 **nr\_zones**存储了结点中**不同内存域的数目**
 
-## 结点的内存页面
+# 4. 结点的内存页面
 
 ```cpp
 typedef struct pglist_data
@@ -249,7 +249,7 @@ node\_start\_pfn是该NUMA结点的第一个页帧的逻辑编号.系统中所�
 
 node\_present\_pages指定了结点中页帧的数目,而node\_spanned\_pages则给出了该结点以页帧为单位计算的长度.二者的值不一定相同,因为结点中可能有一些空洞, 并不对应真正的页帧.
 
-## 交换守护进程
+# 5. 交换守护进程
 
 ```cpp
 typedef struct pglist_data
@@ -268,9 +268,9 @@ kswap\_wait是交换守护进程(swap daemon)的**等待队列**
 
 而kswapd\_max\_order用于**页交换子系统**的实现, 用来定义需要释放的区域的长度.
 
-# 结点状态
+# 6. 结点状态
 
-## 结点状态标识node\_states
+## 6.1. 结点状态标识node_states
 
 内核用enum node\_state变量标记了内存结点所有可能的状态信息, 其定义在[include/linux/nodemask.h?v=4.7, line 381](http://lxr.free-electrons.com/source/include/linux/nodemask.h?v=4.7#L381)
 
@@ -337,7 +337,7 @@ enum node_states {
 #endif
 ```
 
-## 3.2 结点状态设置函数
+## 6.2. 结点状态设置函数
 
 内核提供了辅助函数来设置或者清除特定结点的一个比特位
 
@@ -367,11 +367,11 @@ static inline int num_node_state(enum node_states state)
 #endif
 ```
 
-# 4 查找内存结点
+# 7. 查找内存结点
 
 node\_id作为**全局节点id**。系统中的NUMA结点都是**从0开始编号**的
 
-## 4.1 linux-2.4中的实现
+## 7.1. linux-2.4中的实现
 
 **pgdat_next指针域和pgdat_list内存结点链表**
 
@@ -398,7 +398,7 @@ node\_id作为**全局节点id**。系统中的NUMA结点都是**从0开始编�
         for (pgdat = pgdat_list; pgdat; pgdat = pgdat->node_next)
 ```
 
-## 4.2 linux-3.x~4.x的实现
+## 7.2. linux-3.x~4.x的实现
 
 **node_data内存节点数组**
 

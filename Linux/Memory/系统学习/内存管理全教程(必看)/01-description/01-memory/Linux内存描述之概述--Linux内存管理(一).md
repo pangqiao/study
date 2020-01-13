@@ -1,26 +1,26 @@
-1. 前景回顾
 
-    1.1 UMA和NUMA两种模型
-    
-    1.2 UMA模型
-    
-    1.3 NUMA模型
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
-2. (N)UMA模型中linux内存的机构
-    
-    2.1 (N)UMA模型中linux内存的机构
+<!-- code_chunk_output -->
 
-    2.2 Linux物理内存的组织形式
-    
-    2.3 内存节点node
-    
-    2.4 物理内存区域zone
-    
-    2.5 内存页page
-    
-    2.6 高端内存
+- [参照](#参照)
+- [前景回顾](#前景回顾)
+  - [UMA和NUMA两种模型](#uma和numa两种模型)
+  - [1.2 UMA模型](#12-uma模型)
+  - [1.3 NUMA模型](#13-numa模型)
+- [2. (N)UMA模型中linux内存的机构](#2-numa模型中linux内存的机构)
+  - [2.1 (N)UMA模型中linux内存的机构](#21-numa模型中linux内存的机构)
+    - [NUMA系统](#numa系统)
+    - [UMA系统](#uma系统)
+  - [2.2 Linux物理内存的组织形式](#22-linux物理内存的组织形式)
+  - [2.3 内存节点node](#23-内存节点node)
+  - [2.4 物理内存区域zone](#24-物理内存区域zone)
+  - [2.5 内存页page](#25-内存页page)
+  - [2.6 高端内存](#26-高端内存)
 
-## 参照
+<!-- /code_chunk_output -->
+
+# 参照
 
 |   链接   |
 |:-------:|
@@ -38,11 +38,11 @@
 | [ 内存管理（二）struct page ](http://blog.chinaunix.net/uid-30282771-id-5176971.html) |
 | [进程页表页和内核页表](http://guojing.me/linux-kernel-architecture/posts/thread-page-table-and-kernel-page-table/)
 
-# 1. 前景回顾
+# 前景回顾
 
 前面我们讲到[服务器体系(SMP, NUMA, MPP)与共享存储器架构(UMA和NUMA)](http://blog.csdn.net/gatieme/article/details/52098615)
 
-## 1.1 UMA和NUMA两种模型
+## UMA和NUMA两种模型
 
 共享存储型多处理机有两种模型
 
