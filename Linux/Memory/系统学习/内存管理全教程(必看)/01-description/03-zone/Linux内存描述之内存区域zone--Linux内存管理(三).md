@@ -1,95 +1,76 @@
-[TOC]
 
-- 1 前景回顾
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
-    - 1.1 UMA和NUMA两种模型
-    
-    - 1.2 (N)UMA模型中linux内存的架构
-    
-    - 1.3 Linux如何描述物理内存
-    
-    - 1.4 用pd\_data\_t描述内存节点node
-    
-    - 1.5 今日内容(内存管理域zone)
+<!-- code_chunk_output -->
 
-- 2 为什么要将内存node分成不同的区域zone
+- [前景回顾](#前景回顾)
+  - [UMA和NUMA两种模型](#uma和numa两种模型)
+    - [UMA模型](#uma模型)
+    - [NUMA模型](#numa模型)
+  - [(N)UMA模型中linux内存的架构](#numa模型中linux内存的架构)
+    - [NUMA](#numa)
+    - [UMA](#uma)
+  - [Linux如何描述物理内存](#linux如何描述物理内存)
+  - [1.4 用pd\_data\_t描述内存节点node](#14-用pd_data_t描述内存节点node)
+  - [1.5 今日内容(内存管理域zone)](#15-今日内容内存管理域zone)
+- [2 为什么要将内存node分成不同的区域zone](#2-为什么要将内存node分成不同的区域zone)
+- [3 内存管理区类型zone\_type](#3-内存管理区类型zone_type)
+  - [3.1 内存区域类型zone\_type](#31-内存区域类型zone_type)
+  - [3.2 不同的内存区域的作用](#32-不同的内存区域的作用)
+  - [3.3 典型架构(x86)上内存区域划分](#33-典型架构x86上内存区域划分)
+- [4 管理区结构zone\_t](#4-管理区结构zone_t)
+  - [4.1 struct zone管理域数据结构](#41-struct-zone管理域数据结构)
+  - [4.2 ZONE\_PADDING将数据保存在高速缓冲行](#42-zone_padding将数据保存在高速缓冲行)
+  - [4.3 水位watermark[NR\_WMARK]与kswapd内核线程](#43-水位watermarknr_wmark与kswapd内核线程)
+  - [4.4 内存域标志](#44-内存域标志)
+  - [4.5 内存域统计信息vm\_stat](#45-内存域统计信息vm_stat)
+  - [4.6 zone等待队列表(zone wait queue table)](#46-zone等待队列表zone-wait-queue-table)
+  - [4.7 zone的初始化](#47-zone的初始化)
+  - [4.8 冷热页与Per-CPU上的页面高速缓存](#48-冷热页与per-cpu上的页面高速缓存)
+  - [4.9 内存域的第一个页帧zone\_start\_pfn(zone大小的计算)](#49-内存域的第一个页帧zone_start_pfnzone大小的计算)
+- [5 管理区表zone\_table与管理区节点的映射](#5-管理区表zone_table与管理区节点的映射)
+- [6 zonelist内存域存储层次](#6-zonelist内存域存储层次)
+  - [6.1 内存域之间的层级结构](#61-内存域之间的层级结构)
+  - [6.2 备用节点内存域zonelist结构](#62-备用节点内存域zonelist结构)
+  - [6.3 内存域的排列方式](#63-内存域的排列方式)
+  - [6.4 build\_all\_zonelists初始化内存节点](#64-build_all_zonelists初始化内存节点)
+- [7 总结](#7-总结)
 
-- 3 内存管理区类型zone\_type    
+<!-- /code_chunk_output -->
 
-    - 3.1 内存区域类型zone\_type
-
-    - 3.2 不同的内存区域的作用
-    
-    - 3.3 典型架构(x86)上内存区域划分
-    
-- 4 管理区结构zone\_t    
-    
-    - 4.1 struct zone管理域数据结构
-    
-    - 4.2 ZONE\_PADDING将数据保存在高速缓冲行
-    
-    - 4.3 水印watermark[NR\_WMARK]与kswapd内核线程
-    
-    - 4.4 内存域标志
-    
-    - 4.5 内存域统计信息vm\_stat
-    
-    - 4.6 Zone等待队列表(zone wait queue table)
-    
-    - 4.7 zone的初始化
-    
-    - 4.8 冷热页与Per-CPU上的页面高速缓存
-    
-    - 4.9 内存域的第一个页帧zone\_start\_pfn
-    
-- 5 管理区表zone_table与管理区节点的映射
-
-- 6 zonelist内存域存储层次
-
-    - 6.1 内存域之间的层级结构
-    
-    - 6.2 zonelist结构
-    
-    - 6.3 内存域的排列方式
-    
-    - 6.4 build\_all\_zonelists初始化内存节点
-    
-- 7 总结
-    
-# 1 前景回顾
+# 前景回顾
 
 前面我们讲到[服务器体系(SMP, NUMA, MPP)与共享存储器架构(UMA和NUMA)](http://blog.csdn.net/gatieme/article/details/52098615)
 
-## 1.1	UMA和NUMA两种模型
+## UMA和NUMA两种模型
 
 共享存储型多处理机有两种模型
 
 - 均匀存储器存取（Uniform-Memory-Access，简称UMA）模型
 
-
 - 非均匀存储器存取（Nonuniform-Memory-Access，简称NUMA）模型
 
-**UMA模型**
+### UMA模型
 
 物理存储器被所有处理机均匀共享。所有处理机对所有存储字具有相同的存取时间，这就是为什么称它为均匀存储器存取的原因。每台处理机可以有私用高速缓存,外围设备也以一定形式共享。
 
-**NUMA模型**
+### NUMA模型
 
 NUMA模式下，处理器被划分成多个"节点"（node）， 每个节点被分配有的本地存储器空间。 所有节点中的处理器都可以访问全部的系统物理存储器，但是访问本节点内的存储器所需要的时间，比访问某些远程节点内的存储器所花的时间要少得多。
 
-## 1.2 (N)UMA模型中linux内存的架构
+## (N)UMA模型中linux内存的架构
 
-#### NUMA
+### NUMA
 
 - 处理器被划分成多个"节点"(node), 每个节点被分配有的本地存储器空间. 所有节点中的处理器都可以访问全部的系统物理存储器，但是访问本节点内的存储器所需要的时间，比访问某些远程节点内的存储器所花的时间要少得多
 
 - 内存被分割成多个区域（BANK，也叫"簇"），依据簇与处理器的"距离"不同, 访问不同簇的代码也会不同. 比如，可能把内存的一个簇指派给每个处理器，或则某个簇和设备卡很近，很适合DMA，那么就指派给该设备。因此当前的多数系统会把内存系统分割成2块区域，一块是专门给CPU去访问，一块是给外围设备板卡的DMA去访问
 
-#### UMA 
+### UMA 
 
 内存就相当于一个只使用一个NUMA节点来管理整个系统的内存. 而内存管理的其他地方则认为他们就是在处理一个(伪)NUMA系统.
 
-## 1.3 Linux如何描述物理内存
+## Linux如何描述物理内存
 
 Linux把物理内存划分为三个层次来管理
 
