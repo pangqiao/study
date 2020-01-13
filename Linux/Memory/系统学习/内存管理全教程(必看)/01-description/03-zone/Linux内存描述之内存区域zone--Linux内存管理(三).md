@@ -20,21 +20,21 @@
   - [典型架构(x86)上内存区域划分](#典型架构x86上内存区域划分)
 - [管理区结构zone_t](#管理区结构zone_t)
   - [struct zone管理域数据结构](#struct-zone管理域数据结构)
-  - [ZONE_PADDING将数据保存在高速缓冲行](#zone_padding将数据保存在高速缓冲行)
-  - [4.3 水位watermark[NR\_WMARK]与kswapd内核线程](#43-水位watermarknr_wmark与kswapd内核线程)
-  - [4.4 内存域标志](#44-内存域标志)
-  - [4.5 内存域统计信息vm\_stat](#45-内存域统计信息vm_stat)
-  - [4.6 zone等待队列表(zone wait queue table)](#46-zone等待队列表zone-wait-queue-table)
-  - [4.7 zone的初始化](#47-zone的初始化)
-  - [4.8 冷热页与Per-CPU上的页面高速缓存](#48-冷热页与per-cpu上的页面高速缓存)
-  - [4.9 内存域的第一个页帧zone\_start\_pfn(zone大小的计算)](#49-内存域的第一个页帧zone_start_pfnzone大小的计算)
-- [5 管理区表zone\_table与管理区节点的映射](#5-管理区表zone_table与管理区节点的映射)
-- [6 zonelist内存域存储层次](#6-zonelist内存域存储层次)
-  - [6.1 内存域之间的层级结构](#61-内存域之间的层级结构)
-  - [6.2 备用节点内存域zonelist结构](#62-备用节点内存域zonelist结构)
-  - [6.3 内存域的排列方式](#63-内存域的排列方式)
-  - [6.4 build\_all\_zonelists初始化内存节点](#64-build_all_zonelists初始化内存节点)
-- [7 总结](#7-总结)
+- [ZONE_PADDING将数据保存在高速缓冲行](#zone_padding将数据保存在高速缓冲行)
+- [水位watermark[NR_WMARK]与kswapd内核线程](#水位watermarknr_wmark与kswapd内核线程)
+- [内存域标志](#内存域标志)
+  - [内存域统计信息vm_stat](#内存域统计信息vm_stat)
+  - [zone等待队列表(zone wait queue table)](#zone等待队列表zone-wait-queue-table)
+  - [zone的初始化](#zone的初始化)
+  - [冷热页与Per-CPU上的页面高速缓存](#冷热页与per-cpu上的页面高速缓存)
+  - [内存域的第一个页帧zone_start_pfn(zone大小的计算)](#内存域的第一个页帧zone_start_pfnzone大小的计算)
+- [管理区表zone_table与管理区节点的映射](#管理区表zone_table与管理区节点的映射)
+- [zonelist内存域存储层次](#zonelist内存域存储层次)
+  - [内存域之间的层级结构](#内存域之间的层级结构)
+  - [备用节点内存域zonelist结构](#备用节点内存域zonelist结构)
+  - [内存域的排列方式](#内存域的排列方式)
+  - [build_all_zonelists初始化内存节点](#build_all_zonelists初始化内存节点)
+- [总结](#总结)
 
 <!-- /code_chunk_output -->
 
@@ -471,7 +471,7 @@ struct zone
 | lruvec | **LRU链表集合** |
 | vm_stat | **zone计数** |
 
-## ZONE_PADDING将数据保存在高速缓冲行
+# ZONE_PADDING将数据保存在高速缓冲行
 
 该结构比较特殊的地方是它由ZONE\_PADDING分隔的几个部分.这是因为对zone结构的访问非常频繁. 在**多处理器系统**中,通常会有**不同的CPU**试图**同时访问结构成员**. 因此使用锁可以防止他们彼此干扰,避免错误和不一致的问题.由于内核堆该结构的访问非常频繁, 因此会经常性地获取该结构的两个自旋锁`zone->lock`和`zone->lru_lock`
 
@@ -500,7 +500,7 @@ ZONE\_PADDING宏定义在[include/linux/mmzone.h?v4.7, line 105](http://lxr.free
  #endif
 ```
 
-内核还用了`_\_\_\_cacheline_internodealigned_in_smp`,来实现**最优的高速缓存行对齐方式**.
+内核还用了`____cacheline_internodealigned_in_smp`,来实现**最优的高速缓存行对齐方式**.
 
 该宏定义在[include/linux/cache.h](http://lxr.free-electrons.com/source/include/linux/cache.h?v=4.7#L68)
 
@@ -515,7 +515,7 @@ ZONE\_PADDING宏定义在[include/linux/mmzone.h?v4.7, line 105](http://lxr.free
 #endif
 ```
 
-## 4.3 水位watermark[NR\_WMARK]与kswapd内核线程
+# 水位watermark[NR_WMARK]与kswapd内核线程
 
 Zone的管理调度的一些参数watermarks水印,**水存量很小(MIN)增加进水量**，**水存量达到一个标准(LOW**)**减小进水量**，当**快要满(HIGH**)的时候，**可能就关闭了进水口**
 
@@ -570,7 +570,7 @@ kswapd和这3个参数的互动关系如下图：
 
 ![config](images/6.jpg)
 
-## 4.4 内存域标志
+# 内存域标志
 
 [内存管理域zone\_t结构中的flags字段](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v4.7#L475)描述了内存域的当前状态
 
@@ -609,7 +609,7 @@ enum zone_flags
 | ZONE\_WRITEBACK | 最近的**回收扫描**发现有**很多页在写回** |
 | ZONE\_FAIR\_DEPLETED | 公平区策略耗尽(没懂) |
 
-## 4.5 内存域统计信息vm\_stat
+## 内存域统计信息vm_stat
 
 内存域struct zone的vm\_stat维护了大量有关该内存域的**统计信息**.由于其中维护的大部分信息没有多大意义
 
@@ -677,7 +677,7 @@ enum zone_stat_item
 
 内核提供了很多方式来获取当前内存域的状态信息, 这些函数大多定义在[include/linux/vmstat.h?v=4.7](http://lxr.free-electrons.com/source/include/linux/vmstat.h?v=4.7)
 
-## 4.6 zone等待队列表(zone wait queue table)
+## zone等待队列表(zone wait queue table)
 
 struct zone中实现了一个**等待队列**,可用于**等待某一页的进程**,内核**将进程排成一个列队**,等待某些条件. 在条件变成真时, 内核会通知进程恢复工作.
 
@@ -716,7 +716,7 @@ struct zone
 
 page\_waitqueue()函数用GOLDEN\_RATIO\_PRIME的地址和“右移zone→wait\_table\_bits一个索引值”的一个乘积来确定等待队列在哈希表中的索引的。
 
-## 4.7 zone的初始化
+## zone的初始化
 
 在**kernel page table**(**内核页表！！！**)通过**paging\_init**()函数完全**建立起来以后**，**zone被初始化**。下面章节将描述这个。当然**不同的体系结构这个过程**肯定也是**不一样**的，但它们的**目的是相同的**：确定**什么参数**需要传递给**free\_area\_init()函数**（对于**UMA**体系结构）或者**free\_area\_init\_node**()函数（对于**NUMA**体系结构）。这里省略掉NUMA体系结构的说明。
 
@@ -726,7 +726,7 @@ unsigned long \*zones\_sizes: 系统中每个zone**所管理的page的数量的�
 
 来源： http://www.uml.org.cn/embeded/201208071.asp
 
-## 4.8 冷热页与Per-CPU上的页面高速缓存
+## 冷热页与Per-CPU上的页面高速缓存
 
 内核经常**请求和释放单个页框**.为了提升性能,**每个内存管理区**(**zone级别定义！！！**)都定义了一个每CPU(Per\-CPU)的**页面高速缓存**.所有"每CPU高速缓存"包含一些**预先分配的页框**,他们被定义满足**本地CPU发出的单一内存请求**.
 
@@ -785,7 +785,7 @@ struct per_cpu_pages {
 
 - struct per\_cpu\_pages则维护了链表中目前已有的一系列页面, 高极值和低极值决定了何时填充该集合或者释放一批页面, 变量决定了一个块中应该分配多少个页面, 并最后决定在页面前的实际链表中分配多少个页面
 
-## 4.9 内存域的第一个页帧zone\_start\_pfn(zone大小的计算)
+## 内存域的第一个页帧zone_start_pfn(zone大小的计算)
 
 setup\_memory()函数计算每个zone的大小
 
@@ -817,7 +817,7 @@ x86的系统中, **find\_max\_pfn函数**通过读取**e820表**获得**最高�
 
 min\_low\_pfn， max\_pfn和max\_low\_pfn这3个值，也要用于对**高端内存**（high memory)的**起止位置**的计算。在arch/i386/mm/init.c文件中会对类似的highstart\_pfn和highend\_pfn变量作初始化。这些变量用于对高端内存页面的分配。后面将描述。
 
-# 5 管理区表zone\_table与管理区节点的映射
+# 管理区表zone_table与管理区节点的映射
 
 系统中的**所有管理域**都存储在一个**多维的数组zone\_table**.内核在初始化内存管理区时,必须要建立管理区表zone\_table.
 
@@ -842,9 +842,9 @@ MAX\_NR\_NODES是可以存在的**节点的最大数**.
 
 该表处理起来就像一个多维数组, 在**函数free\_area\_init\_core**中, **一个节点**的**所有页面**都会被**初始化**.
 
-# 6 zonelist内存域存储层次
+# zonelist内存域存储层次
 
-## 6.1 内存域之间的层级结构
+## 内存域之间的层级结构
 
 **当前结点**与系统中**其他结点**的**内存域**之间存在一种等级次序
 
@@ -864,7 +864,7 @@ MAX\_NR\_NODES是可以存在的**节点的最大数**.
 
 **最昂贵的是DMA内存域**, 因为它用于外设和系统之间的数据传输. 因此从该内存域分配内存是最后一招.
 
-## 6.2 备用节点内存域zonelist结构
+## 备用节点内存域zonelist结构
 
 内核还针对**当前内存结点**的**备选结点**,定义了一个**等级次序**.这有助于在**当前结点所有内存域**的内存都**用尽**时, 确定一个**备选结点**
 
@@ -938,7 +938,7 @@ struct zoneref {
 };
 ```
 
-## 6.3 内存域的排列方式
+## 内存域的排列方式
 
 那么我们内核是如何组织在**zonelist**中**组织内存域**的呢?
 
@@ -992,7 +992,7 @@ static char zonelist_order_name[3][8] = {"Default", "Node", "Zone"};
 
 内核就通过通过**set\_zonelist\_order函数**设置当前系统的内存域排列方式current\_zonelist\_order, 其定义依据系统的NUMA结构还是UMA结构有很大的不同. 该函数定义在[mm/page_alloc.c?v=4.7, line 4571](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L4571)
 
-## 6.4 build\_all\_zonelists初始化内存节点
+## build_all_zonelists初始化内存节点
 
 内核通过build\_all\_zonelists初始化了内存结点的**zonelists域**
 
@@ -1000,7 +1000,7 @@ static char zonelist_order_name[3][8] = {"Default", "Node", "Zone"};
 
 - 建立备用**层次结构**的任务委托给**build\_zonelists**,该函数为**每个NUMA结点**都创建了相应的数据结构. 它需要指向相关的pg\_data\_t实例的指针作为参数
 
-# 7 总结
+# 总结
 
 在linux中，内核也不是对所有物理内存都一视同仁，内核而是把页分为不同的区,使用区来对具有相似特性的页进行分组.
 
