@@ -1,29 +1,34 @@
-[TOC]
 
-- 1 前景回顾
-    - 1.1 Linux内存管理的层次结构
-    - 1.2 start\_kernel启动过程
-    - 1.3 setup\_arch设置
-- 2 引导内存分配器bootmem概述  
-    - 2.1 初始化阶段的引导内存分配器bootmem
-    - 2.2 为什么需要bootmem
-    - 2.3 为什么在系统运行时抛弃bootmem    
-- 3 引导内存分配器数据结构
-    - 3.1 bootmem\_data描述内存引导区
-- 4 初始化引导分配器
-    - 4.1 IA-32的初始化
-- 5 bootmem分配内存接口        
-    - 5.1 UMA结构的分配函数
-        - 5.1.1 从ZONE\_NORMAL区域分配函数
-        - 5.1.2 从ZONE\_DMA区域分配函数
-        - 5.1.3 函数实现方式
-    - 5.2 NUMA结构下的分配函数
-        - 5.2.1 分配函数接口
-        - 5.2.2 函数实现方式
-    - 5.3 \_\_alloc\_memory\_core进行内存分配
-- 6 bootmem释放内存
-- 7 停用bootmem
-- 8 链接
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [前景回顾](#前景回顾)
+  - [Linux内存管理的层次结构](#linux内存管理的层次结构)
+  - [start_kernel启动过程](#start_kernel启动过程)
+  - [setup_arch设置](#setup_arch设置)
+- [引导内存分配器bootmem概述](#引导内存分配器bootmem概述)
+  - [初始化阶段的引导内存分配器bootmem](#初始化阶段的引导内存分配器bootmem)
+  - [为什么需要bootmem](#为什么需要bootmem)
+  - [为什么在系统运行时抛弃bootmem](#为什么在系统运行时抛弃bootmem)
+- [引导内存分配器数据结构](#引导内存分配器数据结构)
+  - [bootmem_data描述内存引导区](#bootmem_data描述内存引导区)
+- [4 初始化引导分配器](#4-初始化引导分配器)
+  - [4.1 IA-32的初始化](#41-ia-32的初始化)
+- [5 bootmem分配内存接口](#5-bootmem分配内存接口)
+  - [5.1 UMA结构的分配函数](#51-uma结构的分配函数)
+  - [5.1.1 从ZONE\_NORMAL区域分配函数](#511-从zone_normal区域分配函数)
+  - [5.1.2 从ZONE_DMA区域分配函数](#512-从zone_dma区域分配函数)
+  - [5.1.3 函数实现方式](#513-函数实现方式)
+  - [5.2 NUMA结构下的分配函数](#52-numa结构下的分配函数)
+  - [5.2.1 分配函数接口](#521-分配函数接口)
+  - [5.2.2 函数实现方式](#522-函数实现方式)
+  - [5.3 \_\_alloc\_memory\_core进行内存分配](#53-__alloc_memory_core进行内存分配)
+- [6 bootmem释放内存](#6-bootmem释放内存)
+- [7 停用bootmem](#7-停用bootmem)
+- [8 链接](#8-链接)
+
+<!-- /code_chunk_output -->
 
 当buddy系统和slab分配器初始化好后，在**mem\_init**()中对bootmem分配器进行释放，内存管理与分配由buddy系统，slab分配器等进行接管。
 
@@ -34,9 +39,9 @@ bootmem分配器使用一个**bitmap**来**标记物理页**是否被占用，�
 
 bootmem分配器是用于在启动阶段分配内存的，对该分配器的需求集中于简单性方面，而不是性能和通用性。
 
-# 1 前景回顾
+# 前景回顾
 
-## 1.1 Linux内存管理的层次结构
+## Linux内存管理的层次结构
 
 Linux把物理内存划分为三个层次来管理
 
@@ -52,9 +57,9 @@ Linux把物理内存划分为三个层次来管理
 
 - 接着各个节点又被划分为内存管理区域, 一个**管理区域**通过struct zone\_struct描述, 其被定义为zone\_t,用以表示内存的某个范围,低端范围的16MB被描述为ZONE\_DMA,某些工业标准体系结构中的(ISA)设备需要用到它,然后是可直接映射到内核的普通内存域ZONE\_NORMAL,最后是超出了内核段的物理地址域ZONE\_HIGHMEM, 被称为高端内存.　是系统中预留的可用内存空间, 不能被内核直接映射.
 
-- 最后**页帧(page frame)**代表了系统内存的最小单位, 堆内存中的每个页都会创建一个struct page的一个实例. 传统上，把内存视为连续的字节，即内存为字节数组，内存单元的编号(地址)可作为字节数组的索引. 分页管理时，将若干字节视为一页，比如4K byte. 此时，内存变成了连续的页，即内存为页数组，每一页物理内存叫页帧，以页为单位对内存进行编号，该编号可作为页数组的索引，又称为页帧号.
+- 最后**页帧(page frame**)代表了系统内存的最小单位, 堆内存中的每个页都会创建一个struct page的一个实例. 传统上，把内存视为连续的字节，即内存为字节数组，内存单元的编号(地址)可作为字节数组的索引. 分页管理时，将若干字节视为一页，比如4K byte. 此时，内存变成了连续的页，即内存为页数组，每一页物理内存叫页帧，以页为单位对内存进行编号，该编号可作为页数组的索引，又称为页帧号.
 
-## 1.2 start\_kernel启动过程
+## start_kernel启动过程
 
 首先我们来看看start\_kernel是如何初始化系统的, start\_kernel定义在[init/main.c?v=4.7, line 479](http://lxr.free-electrons.com/source/init/main.c?v=4.7#L479)
 
@@ -103,15 +108,15 @@ asmlinkage __visible void __init start_kernel(void)
 | [kmemleak\_init](http://lxr.free-electrons.com/source/mm/kmemleak.c?v=4.7#L1857) | Kmemleak工作于内核态，Kmemleak提供了一种**可选的内核泄漏检测**，其方法类似于**跟踪内存收集器**。当独立的对象没有被释放时，其报告记录在 [/sys/kernel/debug/kmemleak](http://lxr.free-electrons.com/source/mm/kmemleak.c?v=4.7#L1467)中, Kmemcheck能够帮助定位大多数内存错误的上下文 |
 | [setup\_per\_cpu\_pageset](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5392) | **初始化CPU高速缓存行**, 为pagesets的第一个数组元素分配内存, 换句话说, 其实就是第一个系统处理器分配<br>由于在分页情况下，**每次存储器访问都要存取多级页表**，这就大大降低了访问速度。所以，为了提高速度，在CPU中设置一个最近存取页面的**高速缓存硬件机制**，当进行存储器访问时，先检查要访问的页面是否在高速缓存中. |
 
-## 1.3 setup_arch设置
+## setup_arch设置
 
-# 2 引导内存分配器bootmem概述
+# 引导内存分配器bootmem概述
 
 由于硬件配置多种多样, 所以在编译时就静态初始化所有的内核存储结构是不现实的.
 
 bootmem分配器是系统启动初期的内存分配方式，在耳熟能详的伙伴系统建立前内存都是利用bootmem分配器来分配的，伙伴系统框架建立起来后，bootmem会过渡到伙伴系统.
 
-## 2.1 初始化阶段的引导内存分配器bootmem
+## 初始化阶段的引导内存分配器bootmem
 
 **引导内存分配器(boot memory allocator--bootmem分配器)**基于最先适配(first-first)分配器的原理(这儿是很多系统的内存分配所使用的原理), 使用**一个位图**来管理**页**,以位图代替原来的空闲链表结构来表示存储空间,**位图的比特位的数目**与系统中**物理内存页面数目相同**.若位图中某一位是1,则标识该页面已经被分配(已用页),否则表示未被占有(未用页).
 
@@ -119,9 +124,9 @@ bootmem分配器是系统启动初期的内存分配方式，在耳熟能详的�
 
 该分配机制通过记录上一次**分配的页面帧号(PFN)结束时的偏移量**来实现分配大小小于一页的空间, 连续的小的空闲空间将被合并存储在一页上.
 
-## 2.2 为什么需要bootmem
+## 为什么需要bootmem
 
-## 2.3 为什么在系统运行时抛弃bootmem
+## 为什么在系统运行时抛弃bootmem
 
 当系统运行时, 为何不继续使用bootmem分配机制呢?
 
@@ -131,7 +136,7 @@ bootmem分配器是系统启动初期的内存分配方式，在耳熟能详的�
 
 引导内存分配器bootmem分配器简单却非常低效,　因此在内核完全初始化之后,　不能将该分配器继续内存管理,而伙伴系统(连同slab, slub或者slob分配器)是一个好很多的备选方案．
 
-# 3 引导内存分配器数据结构
+# 引导内存分配器数据结构
 
 内核用**bootmem\_data**表示**引导内存区域**
 
@@ -139,7 +144,7 @@ bootmem分配器是系统启动初期的内存分配方式，在耳熟能详的�
 
 在UMA系统上该分配的实现与CPU无关,而**NUMA系统**内存结点与CPU相关联,因此采用了**特定体系结构的解决方法**.
 
-## 3.1 bootmem\_data描述内存引导区
+## bootmem_data描述内存引导区
 
 bootmem\_data的结构定义在[include/linux/bootmem.h?v=4.7, line 28](http://lxr.free-electrons.com/source/include/linux/bootmem.h?v=4.7#L28), 其定义如下所示
 
