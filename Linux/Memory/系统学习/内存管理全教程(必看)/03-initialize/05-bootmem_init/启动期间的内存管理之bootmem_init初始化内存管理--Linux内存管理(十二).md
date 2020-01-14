@@ -1,36 +1,42 @@
-[TOC]
 
-- 1 前景回顾
-    - 1.1 启动过程中的内存初始化
-    - 1.2 start\_kernel系统启动阶段的内存初始化过程
-    - 1.3 arm64下setup\_arch函数初始化内存流程
-    - 1.4 (第一阶段)启动过程中的内存分配器
-    - 1.5 第二阶段(一)初始化内存管理数据结构
-        - 1.5.1 特定于体系结构的设置
-        - 1.5.2 建立内存管理的数据结构
-        - 1.5.3 移交早期的分配器到内存管理器
-- 2 buddy系统初始化前的准备工作
-    - 2.1 回到setup\_arch函数(当前已经完成的工作)
-    - 2.2 bootmem\_init函数初始化内存结点和管理域
-    - 2.3 zone\_sizes\_init函数
-- 3 free\_area\_init\_nodes初始化NUMA管理数据结构
-    - 3.1 代码注释
-    - 3.2 设置可使用的页帧编号
-    - 3.3 构建其他内存域的页帧区间
-    - 3.4 建立结点数据结构
-- 4 free\_area\_init\_node初始化UMA内存结点
-    - 4.1 free\_area\_init\_node函数注释
-    - 4.2 流程分析
-    - 4.3 alloc\_node\_mem\_map函数
-- 5 free\_area\_init\_core初始化内存域zone
-    - 5.1 free\_area\_init\_core函数代码注释
-    - 5.2 流程讲解
-- 6 memmap\_init初始化page页面
-- 7 总结
-    - 7.1 start\_kernel启动流程
-    - 7.2 pidhash_init配置高端内存
-    - 7.3 build\_all\_zonelists初始化每个内存节点的zonelists
-- 8 链接
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1 前景回顾](#1-前景回顾)
+  - [1.1 启动过程中的内存初始化](#11-启动过程中的内存初始化)
+  - [1.2 start\_kernel系统启动阶段的内存初始化过程](#12-start_kernel系统启动阶段的内存初始化过程)
+  - [1.3 arm64下setup\_arch函数初始化内存流程](#13-arm64下setup_arch函数初始化内存流程)
+  - [1.4 (第一阶段)启动过程中的内存分配器](#14-第一阶段启动过程中的内存分配器)
+  - [1.5 第二阶段(一)初始化内存管理数据结构](#15-第二阶段一初始化内存管理数据结构)
+    - [1.5.1 特定于体系结构的设置](#151-特定于体系结构的设置)
+    - [1.5.2 建立内存管理的数据结构](#152-建立内存管理的数据结构)
+    - [1.5.3 移交早期的分配器到内存管理器](#153-移交早期的分配器到内存管理器)
+- [2 buddy系统初始化前的准备工作](#2-buddy系统初始化前的准备工作)
+  - [2.1 回到setup_arch函数(当前已经完成的工作)](#21-回到setup_arch函数当前已经完成的工作)
+  - [2.2 bootmem\_init函数初始化内存结点和管理域](#22-bootmem_init函数初始化内存结点和管理域)
+  - [2.3 zone\_sizes\_init函数](#23-zone_sizes_init函数)
+- [3 free\_area\_init\_nodes初始化NUMA管理数据结构](#3-free_area_init_nodes初始化numa管理数据结构)
+  - [3.1 代码注释](#31-代码注释)
+  - [3.2 设置可使用的页帧编号](#32-设置可使用的页帧编号)
+  - [3.3 构建其他内存域的页帧区间](#33-构建其他内存域的页帧区间)
+  - [3.4 建立结点数据结构](#34-建立结点数据结构)
+- [4 free\_area\_init\_node初始化UMA内存结点](#4-free_area_init_node初始化uma内存结点)
+  - [4.1 free\_area\_init\_node函数注释](#41-free_area_init_node函数注释)
+  - [4.2 流程分析](#42-流程分析)
+  - [4.3 alloc\_node\_mem\_map函数](#43-alloc_node_mem_map函数)
+- [5 free\_area\_init\_core初始化内存域zone](#5-free_area_init_core初始化内存域zone)
+  - [5.1 free\_area\_init\_core函数代码注释](#51-free_area_init_core函数代码注释)
+  - [5.2 流程讲解](#52-流程讲解)
+- [6 memmap\_init初始化page页面](#6-memmap_init初始化page页面)
+- [7 总结](#7-总结)
+  - [7.1 start\_kernel启动流程](#71-start_kernel启动流程)
+  - [7.2 pidhash\_init配置高端内存](#72-pidhash_init配置高端内存)
+  - [7.3 build\_all\_zonelists初始化每个内存节点的zonelists](#73-build_all_zonelists初始化每个内存节点的zonelists)
+  - [8 链接](#8-链接)
+
+<!-- /code_chunk_output -->
+
 # 1 前景回顾
 
 ## 1.1 启动过程中的内存初始化
