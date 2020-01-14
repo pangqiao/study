@@ -1,27 +1,32 @@
-[TOC]
 
-- 1 前景回顾
-    - 1.1 Linux内存管理的层次结构
-    - 1.2 内存结点pg\_data\_t
-    - 1.3 物理内存区域
-    - 1.4 物理页帧
-    - 1.5 今日内容(启动过程中的内存初始化)
-- 2 第一阶段(启动过程中的内存管理)
-    - 2.1 引导内存分配器bootmem
-    - 2.2 memblock内存分配器
-    - 2.3 两者的区别与联系
-    - 2.4 memblock的初始化(arm64架构)
-- 3 第二阶段(初始化buddy内存管理)
-    - 3.1 初始化流程
-    - 3.2 paging\_init初始化分页机制
-    - 3.3 虚拟地址空间(以x86\_32位系统为例)
-    - 3.4 bootmem\_init初始化内存的基础数据结构(结点pg_data, 内存域zone, 页面page)
-    - 3.5 build\_all\_zonelists初始化每个内存节点的zonelists
-- 4 总结
-    - 4.1 start\_kernel启动流程
-    - 4.2 体系结构相关的初始化工作setup\_arch
-    - 4.3 bootmem\_init初始化内存的基础数据结构(结点pg\_data, 内存域zone, 页面page)
-    - 4.4 build\_all\_zonelists初始化每个内存节点的zonelists
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1 前景回顾](#1-前景回顾)
+  - [1.1 Linux内存管理的层次结构](#11-linux内存管理的层次结构)
+  - [1.2 内存结点pg\_data\_t](#12-内存结点pg_data_t)
+  - [1.3 物理内存区域](#13-物理内存区域)
+  - [1.4 物理页帧](#14-物理页帧)
+  - [1.5 今日内容(启动过程中的内存初始化)](#15-今日内容启动过程中的内存初始化)
+- [2 第一阶段(启动过程中的内存管理)](#2-第一阶段启动过程中的内存管理)
+  - [2.1 引导内存分配器bootmem](#21-引导内存分配器bootmem)
+  - [2.2 memblock内存分配器](#22-memblock内存分配器)
+  - [2.3 两者的区别与联系](#23-两者的区别与联系)
+  - [2.4 memblock的初始化(arm64架构)](#24-memblock的初始化arm64架构)
+- [3	第二阶段(初始化buddy内存管理)](#3第二阶段初始化buddy内存管理)
+  - [3.1 初始化流程](#31-初始化流程)
+  - [3.2 paging\_init初始化分页机制](#32-paging_init初始化分页机制)
+  - [3.3 虚拟地址空间(以x86\_32位系统为例)](#33-虚拟地址空间以x86_32位系统为例)
+  - [3.4 bootmem\_init初始化内存的基础数据结构(结点pg\_data, 内存域zone, 页面page)](#34-bootmem_init初始化内存的基础数据结构结点pg_data-内存域zone-页面page)
+  - [3.5 build\_all\_zonelists初始化每个内存节点的zonelists](#35-build_all_zonelists初始化每个内存节点的zonelists)
+- [4 总结](#4-总结)
+  - [4.1 start\_kernel启动流程](#41-start_kernel启动流程)
+  - [4.2 体系结构相关的初始化工作setup_arch](#42-体系结构相关的初始化工作setup_arch)
+  - [4.3 bootmem\_init初始化内存的基础数据结构(结点pg\_data, 内存域zone, 页面page)](#43-bootmem_init初始化内存的基础数据结构结点pg_data-内存域zone-页面page)
+  - [4.4 build\_all\_zonelists初始化每个内存节点的zonelists](#44-build_all_zonelists初始化每个内存节点的zonelists)
+
+<!-- /code_chunk_output -->
 
 在内存管理的上下文中, 初始化(initialization)可以有多种含义.在许多CPU上,必须**显式设置**适用于Linux内核的**内存模型**.在x86\_32上需要切换到保护模式, 然后内核才能检测到可用内存和寄存器.
 
