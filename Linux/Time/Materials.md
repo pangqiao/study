@@ -9,3 +9,5 @@ Linux时间子系统: http://www.wowotech.net/timer_subsystem/time_subsystem_ind
 时间子系统: https://blog.csdn.net/flaoter/article/details/77413163
 
 hrtimer的用例: https://blog.csdn.net/fuyuande/article/details/82193600
+
+虚拟机设置定时(使用local apic timer), 写寄存器, 处理在`kvm_lapic_reg_write()`(arch/x86/kvm/lapic.c)的`case APIC_IMICT`, 可以参见APIC内容.
