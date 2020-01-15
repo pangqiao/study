@@ -19,7 +19,7 @@
 
 set -o nounset                              # Treat unset variables as an error
 
-sudo rmmod kvm_intel
+sudo rmmod kvm-intel
 sudo rmmod kvm
 rm `pwd`/arch/x86/kvm/*.o
 sudo make -j8 CONFIG_KVM=m CONFIG_KVM_INTEL=m -C `pwd` M=`pwd`/arch/x86/kvm/ modules
