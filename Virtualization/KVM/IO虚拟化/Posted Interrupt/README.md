@@ -1,6 +1,10 @@
 KVM: Posted Interrupt
-原创defeattroy 最后发布于2013-04-12 20:44:56 阅读数 3611  收藏
-展开
+
+https://zhuanlan.zhihu.com/p/51018597
+
+https://kernelgo.org/posted-interrupt.html
+
+
 Posted Interrupt 允许APIC中断直接注入到guest而不需要VM-Exit
 
 -  需要给guest传递中断的时候，如果vcpu正在运行，那么更新posted-intrrupt请求位图，并向vcpu发送通知，vcpu自动处理该中断，不需要软件干预
