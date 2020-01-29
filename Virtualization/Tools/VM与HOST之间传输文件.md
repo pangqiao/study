@@ -79,11 +79,44 @@ mount -t 9p -o trans=virtio test_mount /root/shared/ -oversion=9p2000.L,posixacl
 
 查看\<qemu-nbd方式挂载镜像>
 
-# 4. virt工具
+# 4. 
+
+使用dd创建一个文件，作为虚拟机和宿主机之间传输桥梁
+
+```
+dd if=/dev/zero of=/opt/share.img bs=1M count=200
+```
+
+格式化share.img文件
+
+```
+mkfs.ext4 /opt/share.img
+```
+
+在宿主机上创建一个文件夹，
+   
+```
+mkdir /tmp/share
+mount -o loop /opt/share.img /tmp/share
+```
+
+这样，在宿主机上把需要传输给虚拟机的文件放到/tmp/share 下即可。
+
+启动qemu-kvm虚拟机，添加上/opt/share.img文件。
+
+在虚拟机中 mount上添加的一块硬盘。即可以获得宿主机上放在/tmp/share文件夹下的文件
+
+该方法的缺点：
+     
+宿主机和虚拟机文件传输不能实时传输。如果需要传输新文件，需要重启虚拟机。
+
+
+# 5. virt工具
 
 virt-copy-in/out(libguestfs-tools包)
 
-# 5. 参考
+参考: http://libguestfs.org/virt-copy-in.1.html
+# 6. 参考
 
 https://sjt157.github.io/2018/12/12/VM%E4%B8%8EHOST%E4%B9%8B%E9%97%B4%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/
 
