@@ -24,7 +24,29 @@ $ scripts/extract-ikconfig /path/to/vmlinux
 $ scripts/extract-ikconfig /path/to/vmlinux > kconfig
 ```
 
-需要注意的是，这个前提是**配置内核**时要开启 `CONFIG_IKCONFIG` 选项。而如果要拿到 /proc/config.gz，还得打开 CONFIG_IKCONFIG_PROC。
+需要注意的是，这个前提是**配置内核**时要开启 `CONFIG_IKCONFIG` 选项。而如果要拿到 `/proc/config.gz`，还得打开 `CONFIG_IKCONFIG_PROC`。
+
+```
+-> General setup                                                     
+    -> Kernel .config support (IKCONFIG [=y])
+        -> Enable access to .config through /proc/config.gz (IKCONFIG_PROC [=y])
+```
+
+# 原理分析
+
+大概的原理我们来剖析一下。
+
+## Makefile
+
+初始化 `KCONFIG_CONFIG`：
+
+```
+KCONFIG_CONFIG ?= .config
+```
+
+## kernel/Makefile
+
+把 .config 用 gzip 压缩了一份，放到了 kernel/config_data.gz：
 
 # 参考
 
