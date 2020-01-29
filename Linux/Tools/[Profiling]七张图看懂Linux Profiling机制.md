@@ -81,10 +81,10 @@ Linux kernel 热补丁方案，”kernel livepatch“，便借用了 ftrace 的�
 
 指定位置上的指令，头部修改为软件中断指令（同时原指令存档他处）：
 
-1. 当执行到该位置时，触发软件中断，陷入内核
-2. 在内核，执行以 eBPF 字节码形式注入的 Handler
-3. 单步执行原指令
-4. 修正寄存器和栈，回到原有指令流
+1. 当执行到该位置时，触发**软件中断**，陷入内核
+2. 在内核，**执行**以 **eBPF 字节码**形式注入的 **Handler**
+3. **单步执行原指令**
+4. 修正寄存器和栈，回到**原有指令流**
 
 >Discuss：这与 gdb 中设断点有什么区别？
 
@@ -93,6 +93,14 @@ Linux kernel 热补丁方案，”kernel livepatch“，便借用了 ftrace 的�
 >Discuss：用户空间注入的 Handler 在 Kernel space 执行，安全性如何保证？
 
 >听说过 eBPF 吗？
+
+简单介绍下 extended Berkeley Packet Filter（eBPF）
+
+* 一种功能有限、沙箱化的字节码。
+* 由 User space 注入到 Kernel space 执行。
+* 基于 BPF 扩展。
+* 原始的 BPF 用于网路包过滤，下面是一个 BPF 裸用的例子：
+
 
 # 参考
 
