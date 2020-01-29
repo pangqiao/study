@@ -115,6 +115,7 @@ union {
 
 enum proc_cn_mcast_op op = PROC_CN_MCAST_LISTEN;
 struct cn_msg cn_msg = { .id.idx = CN_IDX_PROC, .id.val = CN_VAL_PROC, .len = sizeof(op) };
+
 struct iovec iov[3] = {
   [0] = { .iov_base = nlmsghdrbuf, .iov_len = NLMSG_LENGTH(0) },
   [1] = { .iov_base = &cn_msg,     .iov_len = sizeof(cn_msg) },
@@ -124,7 +125,7 @@ struct iovec iov[3] = {
 bind(sock_fd, &addr.sa, sizeof(addr.nl));
 
 /* start proc connector */
-writev (sock_fd, iov, 3);
+writev(sock_fd, iov, 3);
 
 /* 借助 BPF，从 Process Events 中，滤出「进程消亡事件」 */
 struct sock_filter filter[] = {
@@ -154,6 +155,18 @@ eBPF 形式上类似，裸用相当不方便，好在有编译器 bcc，以及�
 图 5 展示的是 User level 埋点，故而叫做 uprobe。Kernel level 对应款叫做 kprobe。
 
 uprobe 和 kprobe 的通常用法中，以函数入口地址，进行埋点。而对于函数返回，其位置可能有多处：
+
+```cpp
+int foo(..) {
+    size_t n_written = 0;
+    if (cond1) return -EINVAL;
+    if (cond2) goto fail;
+    n_written = do_io(...);
+    return n_written;
+fail:
+  free(...); return -EIO;
+}
+```
 
 # 参考
 
