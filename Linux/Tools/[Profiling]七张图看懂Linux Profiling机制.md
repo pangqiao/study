@@ -41,6 +41,32 @@
 
 ![2020-01-29-18-30-10.png](./images/2020-01-29-18-30-10.png)
 
+- User space，分为两部分
+
+    - 埋点处：通过嵌入代码中的 Trace API 调用，向 Linux kernel 的 tracing buffer 写日志。
+
+    上图中，裸示了写 tracing buffer 的过程
+
+    - atrace：读取 tracing buffer，存于磁盘文件，以免 tracing buffer 溢出丢失信息。
+
+- Kernel space，通过 scheduler 嵌入的 tracepoint，将调度事件，写入 tracing buffer。
+
+    tracing buffer 犹如一段 in-memory 的日志流，对齐了写入的各个标记和事件。
+
+# Android atrace 输出文件及图形化展示
+
+![2020-01-29-18-34-41.png](./images/2020-01-29-18-34-41.png)
+
+atrace 转储的 tracing buffer 内容，以及载入到 Chrome 浏览器，进行图形化分析。
+
+>Discuss：想象一个进程同时播放两段视频，视频解码库是多线程的，线程来自全局的 thread pool。通过 systrace，能区分这两个视频播放任务的 CPU 时间片吗？
+
+# Linux ftrace 实现原理回顾
+
+![2020-01-29-18-39-10.png](./images/2020-01-29-18-39-10.png)
+
+通过 `gcc -pg` 选项，**编译**时，**函数开头**自动插入 `_mcount` 调用。
+
 # 参考
 
 https://tinylab.org/linux-profiling-methods-overview
