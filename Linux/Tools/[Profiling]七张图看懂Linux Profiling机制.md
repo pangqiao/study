@@ -99,8 +99,50 @@ Linux kernel 热补丁方案，”kernel livepatch“，便借用了 ftrace 的�
 * 一种功能有限、沙箱化的字节码。
 * 由 User space 注入到 Kernel space 执行。
 * 基于 BPF 扩展。
-* 原始的 BPF 用于网路包过滤，下面是一个 BPF 裸用的例子：
 
+原始的 BPF 用于网路包过滤，下面是一个 BPF 裸用的例子：
+
+```cpp
+/**
+* 通过 netlink socket，获得关心进程的消亡信息
+*/
+int sock_fd = socket(PF_NETLINK, SOCK_DGRAM | SOCK_NONBLOCK | SOCK_CLOEXEC, NETLINK_CONNECTOR);
+
+union {
+  struct sockaddr sa;
+  struct sockaddr_nl nl;
+} addr = { .nl.nl_family = AF_NETLINK, .nl.nl_pid = getpid(), .nl.nl_groups = CN_IDX_PROC };
+
+enum proc_cn_mcast_op op = PROC_CN_MCAST_LISTEN;
+struct cn_msg cn_msg = { .id.idx = CN_IDX_PROC, .id.val = CN_VAL_PROC, .len = sizeof(op) };
+struct iovec iov[3] = {
+  [0] = { .iov_base = nlmsghdrbuf, .iov_len = NLMSG_LENGTH(0) },
+  [1] = { .iov_base = &cn_msg,     .iov_len = sizeof(cn_msg) },
+  [2] = { .iov_base = &op,         .iov_len = sizeof(op) }
+};
+
+bind(sock_fd, &addr.sa, sizeof(addr.nl));
+
+/* start proc connector */
+writev (sock_fd, iov, 3);
+
+/* 借助 BPF，从 Process Events 中，滤出「进程消亡事件」 */
+struct sock_filter filter[] = {
+  ...
+  /* 6-7: filter out proc connector message other than 'PROC_EVENT_EXIT' */
+  BPF_STMT(BPF_LD|BPF_W|BPF_ABS,
+           NLMSG_LENGTH(0) + offsetof(struct cn_msg, data)
+                           + offsetof(struct proc_event, what)),
+  BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K,
+           htonl(PROC_EVENT_EXIT), 0 /* true offset */, 1 /* false offset */),
+  /* 8: the @ret_cmd_idx */
+  BPF_STMT (BPF_RET|BPF_K, 0xffffffff),
+  /* 9: the @drop_cmd_idx */
+  BPF_STMT (BPF_RET|BPF_K, 0)
+};
+struct sock_fprog fprog = { .filter = filter, .len = 10 };
+setsockopt (sock_fd, SOL_SOCKET, SO_ATTACH_FILTER, &fprog, sizeof (fprog)) < 0)
+```
 
 # 参考
 
