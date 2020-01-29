@@ -116,6 +116,7 @@ mount -o loop /opt/share.img /tmp/share
 virt-copy-in/out(libguestfs-tools包)
 
 参考: http://libguestfs.org/virt-copy-in.1.html
+
 # 6. 参考
 
 https://sjt157.github.io/2018/12/12/VM%E4%B8%8EHOST%E4%B9%8B%E9%97%B4%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/
