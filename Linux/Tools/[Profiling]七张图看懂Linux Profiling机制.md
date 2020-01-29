@@ -174,9 +174,9 @@ fail:
 
 uprobe 的工作流中，需要**指定位置**方能埋点。除了上述提及的函数 **entry** & **return**，在**函数中间某处埋点**，意味着要**反汇编**，找到源代码行对应汇编地址，有些反人类。
 
-于是，可以预先在代码中埋“标记”，再通过 uprobe 找到“标记”，进行埋点 —— USDT（User Statically-Defined Tracing） 就是这样一个技术，其实现简介参见这个链接。
+于是，可以**预先在代码中埋“标记**”，再通过 uprobe 找到“标记”，进行**埋点** —— [**USDT**（User Statically-Defined Tracing）](https://lwn.net/Articles/753601/) 就是这样一个技术，其实现简介参见这个链接。
 
-节末，再提一个 uprobe 应用 “malloc() Flame Graph” ，通过埋点 malloc() / free() 来剖析目标进程的内存使用情况，分析是否存在泄漏。
+节末，再提一个 uprobe 应用 “[malloc() Flame Graph](http://www.brendangregg.com/FlameGraphs/memoryflamegraphs.html)” ，通过埋点 malloc() / free() 来剖析目标进程的内存使用情况，分析是否存在泄漏。
 
 # 参考
 
