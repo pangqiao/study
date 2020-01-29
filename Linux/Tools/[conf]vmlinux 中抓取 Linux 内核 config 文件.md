@@ -46,7 +46,88 @@ KCONFIG_CONFIG ?= .config
 
 ## kernel/Makefile
 
-把 .config 用 gzip 压缩了一份，放到了 kernel/config_data.gz：
+把 `.config` 用 **gzip** 压缩了一份，放到了 `kernel/config_data.gz`：
+
+```
+$(obj)/configs.o: $(obj)/config_data.gz
+targets += config_data.gz
+$(obj)/config_data.gz: $(KCONFIG_CONFIG) FORCE
+	$(call if_changed,gzip)
+```
+
+## kernel/configs.c
+
+把 `kernel/config_data.gz` 放到 `.rodata section`，并在**前后**加了**字符串标记**：`IKCFG_ST` 和 `IKCFG_ED`：
+
+```cpp
+/*
+* "IKCFG_ST" and "IKCFG_ED" are used to extract the config data from
+* a binary kernel image or a module. See scripts/extract-ikconfig.
+*/
+asm (
+" .pushsection .rodata, \"a\" \n"
+" .ascii \"IKCFG_ST\" \n"
+" .global kernel_config_data \n"
+"kernel_config_data: \n"
+" .incbin \"kernel/config_data.gz\" \n"
+" .global kernel_config_data_end \n"
+"kernel_config_data_end: \n"
+" .ascii \"IKCFG_ED\" \n"
+" .popsection \n"
+);
+```
+
+## scripts/extract-ikconfig
+
+通过 `grep -abo` 去找到 `kconfig data` 的位置。`-abo` 的意思是：
+
+- -a 把二进制文件当 text 处理，
+- -b 打印字节偏移，
+- -o 只打印要匹配的字符串
+
+```sh
+dump_config()
+{
+        if      pos=`tr "$cf1\n$cf2" "\n$cf2=" &lt; "$1" | grep -abo "^$cf2"`
+        then
+                pos=${pos%%:*}
+                tail -c+$(($pos+8)) "$1" | zcat &gt; $tmp1 2&gt; /dev/null
+                if      [ $? != 1 ]
+                then    # exit status must be 0 or 2 (trailing garbage warning)
+                        cat $tmp1
+                        exit 0
+                fi
+        fi
+}
+```
+
+这个脚本写得有点晦涩，大体意思是先找到 “IKCFG_ST”，算出 kconfig data 位置，再用 tail 取出来。
+
+# 换个思路
+
+先看看 vmlinux 和 kernel/config_data.gz 的布局：
+
+```
+"IKCFG_ST ..... IKCFG_ED"             --> vmlinux
+         ^ kernel/config_data.gz ^                      --> kernel/config_data.gz
+```
+
+首先，找出 IKCFG_ST 和 IKCFG_ED 的位置。然后换算出 kernel/config_data.gz 的前后位置：
+
+$ egrep -abo "IKCFG_ST|IKCFG_ED" boards/loongson/ls2k/bsp/kernel/v3.10/vmlinux 
+14508864:IKCFG_ST
+14529536:IKCFG_ED
+kernel/config_data.gz 的起始地址需要加上 “IKCFG_ST” 的长度，即 +8：$((14508864+8))，而结束地址刚好是 “IKCFG_ED” 的地址 -1：$((14529536-1))，总的 size 是：
+
+$ echo $(((14529536-1) - (14508864+8) + 1))
+20664
+这样，我们就可以用 dd 命令截取出来：
+
+$ dd if=boards/loongson/ls2k/bsp/kernel/v3.10/vmlinux bs=1 skip=$((14508864+8)) count=20664 of=kconfig.gz
+$ file kconfig.gz
+kconfig.gz: gzip compressed data, max compression, from Unix
+$ zcat kconfig.gz
+完美！逻辑上更清晰，基于这个逻辑改写了一个自己的 extract-ikconfig，见 Linux Lab 下的 tools/kernel/extract-ikconfig。
 
 # 参考
 
