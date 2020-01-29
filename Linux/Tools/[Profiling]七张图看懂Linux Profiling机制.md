@@ -65,7 +65,34 @@ atrace 转储的 tracing buffer 内容，以及载入到 Chrome 浏览器，进�
 
 ![2020-01-29-18-39-10.png](./images/2020-01-29-18-39-10.png)
 
-通过 `gcc -pg` 选项，**编译**时，**函数开头**自动插入 `_mcount` 调用。
+- 通过 `gcc -pg` 选项，**编译**时，**函数开头**自动插入 `_mcount` 调用。
+
+- `_mcount` 处：除了 hook entry ，还通过修改返回地址，来 hook return。
+
+Linux kernel 热补丁方案，”kernel livepatch“，便借用了 ftrace 的原理：替换有漏洞的函数实现，从而实现热补丁。
+
+更多关于 ftrace 使用，参考[「Advanced Features of Ftrace」](https://events.static.linuxfound.org/sites/events/files/slides/linuxconjapan-ftrace-2014.pdf)
+
+# uprobe 的实现原理
+
+![2020-01-29-18-43-37.png](./images/2020-01-29-18-43-37.png)
+
+注：上图修改自 [dev.framing.life/tracing/kernel-and-user-probes-magic](https://dev.framing.life/tracing/kernel-and-user-probes-magic/)
+
+指定位置上的指令，头部修改为软件中断指令（同时原指令存档他处）：
+
+1. 当执行到该位置时，触发软件中断，陷入内核
+2. 在内核，执行以 eBPF 字节码形式注入的 Handler
+3. 单步执行原指令
+4. 修正寄存器和栈，回到原有指令流
+
+>Discuss：这与 gdb 中设断点有什么区别？
+
+>断点的 Handler 运行于 Kernel space，无需多次的 User space ↔ Kernel space 通信
+
+>Discuss：用户空间注入的 Handler 在 Kernel space 执行，安全性如何保证？
+
+>听说过 eBPF 吗？
 
 # 参考
 
