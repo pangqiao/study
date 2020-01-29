@@ -79,7 +79,7 @@ Linux kernel 热补丁方案，”kernel livepatch“，便借用了 ftrace 的�
 
 注：上图修改自 [dev.framing.life/tracing/kernel-and-user-probes-magic](https://dev.framing.life/tracing/kernel-and-user-probes-magic/)
 
-指定位置上的指令，头部修改为软件中断指令（同时原指令存档他处）：
+指定位置上的指令，头部修改为**软件中断指令**（同时原指令存档他处）：
 
 1. 当执行到该位置时，触发**软件中断**，陷入内核
 2. 在内核，**执行**以 **eBPF 字节码**形式注入的 **Handler**
@@ -135,14 +135,25 @@ struct sock_filter filter[] = {
                            + offsetof(struct proc_event, what)),
   BPF_JUMP(BPF_JMP|BPF_JEQ|BPF_K,
            htonl(PROC_EVENT_EXIT), 0 /* true offset */, 1 /* false offset */),
+
   /* 8: the @ret_cmd_idx */
   BPF_STMT (BPF_RET|BPF_K, 0xffffffff),
   /* 9: the @drop_cmd_idx */
   BPF_STMT (BPF_RET|BPF_K, 0)
 };
+
 struct sock_fprog fprog = { .filter = filter, .len = 10 };
+
 setsockopt (sock_fd, SOL_SOCKET, SO_ATTACH_FILTER, &fprog, sizeof (fprog)) < 0)
 ```
+
+eBPF 形式上类似，裸用相当不方便，好在有编译器 bcc，以及高级语言 bpftrace。
+
+# uretprobe 工作原理
+
+图 5 展示的是 User level 埋点，故而叫做 uprobe。Kernel level 对应款叫做 kprobe。
+
+uprobe 和 kprobe 的通常用法中，以函数入口地址，进行埋点。而对于函数返回，其位置可能有多处：
 
 # 参考
 
