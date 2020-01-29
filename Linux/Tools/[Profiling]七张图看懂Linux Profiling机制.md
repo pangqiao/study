@@ -152,9 +152,9 @@ eBPF 形式上类似，裸用相当不方便，好在有编译器 bcc，以及�
 
 # uretprobe 工作原理
 
-图 5 展示的是 User level 埋点，故而叫做 uprobe。Kernel level 对应款叫做 kprobe。
+图 5 展示的是 **User level 埋点**，故而叫做 **uprobe**。**Kernel level** 对应款叫做 **kprobe**。
 
-uprobe 和 kprobe 的通常用法中，以函数入口地址，进行埋点。而对于函数返回，其位置可能有多处：
+uprobe 和 kprobe 的通常用法中，以**函数入口地址**，进行**埋点**。而对于**函数返回**，其位置可能有多处：
 
 ```cpp
 int foo(..) {
@@ -167,6 +167,16 @@ fail:
   free(...); return -EIO;
 }
 ```
+
+于是就有了 **kretprobe** 以及 **uretprobe**。下图展示了 uretprobe 工作原理，同样修改自[dev.framing.life/tracing/kernel-and-user-probes-magic](https://dev.framing.life/tracing/kernel-and-user-probes-magic/)
+
+![2020-01-29-23-02-45.png](./images/2020-01-29-23-02-45.png)
+
+uprobe 的工作流中，需要**指定位置**方能埋点。除了上述提及的函数 entry & return，在**函数中间某处埋点**，意味着要反汇编，找到源代码行对应汇编地址，有些反人类。
+
+于是，可以预先在代码中埋“标记”，再通过 uprobe 找到“标记”，进行埋点 —— USDT（User Statically-Defined Tracing） 就是这样一个技术，其实现简介参见这个链接。
+
+节末，再提一个 uprobe 应用 “malloc() Flame Graph” ，通过埋点 malloc() / free() 来剖析目标进程的内存使用情况，分析是否存在泄漏。
 
 # 参考
 
