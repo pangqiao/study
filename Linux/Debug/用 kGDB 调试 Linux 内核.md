@@ -1,11 +1,27 @@
 
-# 简介
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. 简介](#1-简介)
+- [2. 配置内核](#2-配置内核)
+  - [2.1. 基本配置](#21-基本配置)
+  - [2.2. 可选选项](#22-可选选项)
+  - [2.3. 启动参数](#23-启动参数)
+- [3. 串口驱动修改](#3-串口驱动修改)
+- [4. gdb 远程调试](#4-gdb-远程调试)
+- [5. 参考资料](#5-参考资料)
+- [6. 参考](#6-参考)
+
+<!-- /code_chunk_output -->
+
+# 1. 简介
 
 要使用 KGDB 来调试内核，首先需要修改 config 配置文件，打开相应的配置，配置内核启动参数，甚至修改串口驱动添加 poll 支持，然后才能通过**串口远程调试内核**。
 
-# 配置内核
+# 2. 配置内核
 
-## 基本配置
+## 2.1. 基本配置
 
 在内核配置文件 `.config` 中，需要打开如下选项：
 
@@ -18,7 +34,7 @@ CONFIG_DEBUG_KERNEL | 包含驱动调试信息
 CONFIG_DEBUG_INFO | 使内核包含基本调试信息
 CONFIG_DEBUG_RODATA=n | 关闭这个，能在只读区域设置断点
 
-## 可选选项
+## 2.2. 可选选项
 
 配置项 | 说明
 ------- | -------
@@ -31,7 +47,7 @@ CONFIG_KALLSYMS | 加入符号信息
 CONFIG_KDB_KEYBOARD | 如果是通过目标版的键盘与KDB通信，需要把这个打开，且键盘不能是USB接口
 CONFIG_KGDB_TESTS |  
 
-## 启动参数
+## 2.3. 启动参数
 
 打开相应的选项后，需要配置 kernel 启动参数，使 **KGDB** 和**内核**能够找到正确的**通信接口**。如果是使用串口，则需要配置如下选项：
 
@@ -45,7 +61,7 @@ console=ttySAC3,115200 kgdboc=ttySAC3,115200
 
 配置完后，就可以正常编译，然后把**内核下载到目标板**上面。
 
-# 串口驱动修改
+# 3. 串口驱动修改
 
 如果在内核启动的过程中出现如下错误提示：
 
@@ -103,7 +119,7 @@ static struct uart_ops s3c24xx_serial_ops = {
 
 加入这个 patch ，重新编译内核，之后就能正常进入 kgdb
 
-# gdb 远程调试
+# 4. gdb 远程调试
 
 如果在内核启动参数中加入了 kgdbwait ，则内核会在完成基本的初始化之后，停留在 kgdb 的调试陷阱中，等待主机的 gdb 的远程连接。
 
@@ -143,7 +159,16 @@ git clone git://git.kernel.org/pub/scm/utils/kernel/kgdb/agent-proxy.git
     - parent: fork之后继续调试父进程，子进程不受影响。 
     - child: fork之后调试子进程，父进程不受影响。
 
+# 5. 参考资料
 
-# 参考
+* [gdb user mannual](http://sourceware.org/gdb/current/onlinedocs/gdb/)
+* [gdb internal](http://www.sourceware.org/gdb/onlinedocs/gdbint.html)
+* [kgdb/kdb official website](https://kgdb.wiki.kernel.org/)
+* [kernel debug usage](http://www.kernel.org/doc/htmldocs/kgdb.html)
+* [kdb in elinux.org](http://elinux.org/KDB)
+* [multi-threads debug in gdb](http://www.ibm.com/developerworks/cn/linux/l-cn-gdbmp/)
+* [KGDB.info](http://www.kgdb.info/)
+
+# 6. 参考
 
 https://tinylab.org/kgdb-debugging-kernel/

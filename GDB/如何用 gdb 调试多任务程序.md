@@ -145,7 +145,7 @@ Id   Target Id         Frame
 #20 0x00007f72d072035d in clone () from /lib64/libc.so.6
 ```
 
-virExec() 将会 fork 出子进程，子进程将会执行 exec(qmeu-system-x86_64)
+`virExec()` 将会 fork 出子进程，子进程将会执行 `exec(qmeu-system-x86_64)`
 
 ```
 475 virExec(virCommandPtr cmd)
