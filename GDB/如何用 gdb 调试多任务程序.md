@@ -9,6 +9,7 @@
 - [4. libvirt 分析小结](#4-libvirt-分析小结)
 - [5. 抛砖引玉](#5-抛砖引玉)
 - [6. 附录](#6-附录)
+- [7. 参考](#7-参考)
 
 <!-- /code_chunk_output -->
 
@@ -35,7 +36,7 @@ while (hold);
 4. thread xx，切换到那个线程
 5. set hold=0，设置 hold 为 0，使程序继续运行。
 
-如果发生了进程间通信，数据流从 A 发送往 B 了，此时便可以采取上述方法，同时跟踪 A 和 B。每次发生了 `pipe/socket` 通信，就重复上述步骤。通过这种方式，一些很复杂的多任务程序也可以清晰调试。
+如果发生了**进程间通信**，**数据流**从 **A** 发送往 **B** 了，此时便可以采取上述方法，**同时跟踪 A 和 B**。每次发生了 `pipe/socket` 通信，就重复上述步骤。通过这种方式，一些很复杂的多任务程序也可以清晰调试。
 
 # 3. 调试案例
 
@@ -49,12 +50,12 @@ libvirt 的基本操作和大概结构是这样的：
 
 * libvirt 有一个守护进程，libvirtd，其对 virsh 的命令做出响应
     * 以 non-root 执行 virsh start 时，将以 qemu://session 的方式运行。libvirtd 将启动一个 non-root 的子进程来与 virsh 进行 socket 通信
-    * 以 root 执行 virsh start 时，将以 qemu://system 方式运行，libvirtd 直接与 virsh 进行 socket 通信
-* 无论是上述哪种方式，都会创建多个（一般16个）线程，该线程的的作用是将 socket 传递过来的各个命令和配置进行解析，最终形成一个 cmd。
+    * 以 root 执行 virsh start 时，将以 qemu://system 方式运行，**libvirtd** 直接与 **virsh** 进行 **socket 通信**
+* 无论是上述哪种方式，都会创建**多个（一般16个）线程**，该线程的的作用是将 **socket** 传递过来的各个命令和配置进行解析，最终形成一个 cmd。
 
 * 子线程会将 cmd 通过 pipe 传递给 libvirtd，libvirtd 会 fork 出一个子进程，并 exec cmd
 
-但如果我们想弄清楚 virsh 启动 qemu 的全过程的细节，即在 virsh 里敲入 start xxx_domain，到 exec qemu bin，这中间究竟发生了什么细节呢？这就必须要 gdb 调试了。可以想象，这过程中必定有大量的进程间通信（socket、pipe），这时就出现了文章开头说明的问题：当前 thread 将数据流发给了另外的 thread，而另外的 thread 却没法跟踪并停止。
+但如果我们想弄清楚 virsh 启动 qemu 的全过程的细节，即在 virsh 里敲入 start xxx_domain，到 exec qemu bin，这中间究竟发生了什么细节呢？这就必须要 gdb 调试了。可以想象，这过程中必定有大量的进程间通信（socket、pipe），这时就出现了文章开头说明的问题：**当前 thread** 将**数据流**发给了**另外的 thread**，而另外的 thread 却没法跟踪并停止。
 
 1. 我们通过 log 大概知道了 qemuProcessStart 是启动的必经之路，因此在这个函数里添加代码：
 
@@ -177,3 +178,7 @@ Id   Target Id         Frame
 >On most systems, GDB has no special support for debugging programs which create additional processes using the fork function. When a program forks, GDB will continue to debug the parent process and the child process will run unimpeded. If you have set a breakpoint in any code which the child then executes, the child will get a SIGTRAP signal which (unless it catches the signal) will cause it to terminate.
 
 >However, if you want to debug the child process there is a workaround which isn’t too painful. Put a call to sleep in the code which the child process executes after the fork. It may be useful to sleep only if a certain environment variable is set, or a certain file exists, so that the delay need not occur when you don’t want to run GDB on the child. While the child is sleeping, use the ps program to get its process ID. Then tell GDB (a new invocation of GDB if you are also debugging the parent process) to attach to the child process (see Attach). From that point on you can debug the child process just like any other process which you attached to.
+
+# 7. 参考
+
+https://tinylab.org/debug-multi-tasks-program-with-gdb/
