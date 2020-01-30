@@ -31,6 +31,16 @@ CONFIG_KALLSYMS | 加入符号信息
 CONFIG_KDB_KEYBOARD | 如果是通过目标版的键盘与KDB通信，需要把这个打开，且键盘不能是USB接口
 CONFIG_KGDB_TESTS |  
 
+## 启动参数
+
+打开相应的选项后，需要配置 kernel 启动参数，使 KGDB 和内核能够找到正确的通信接口。如果是使用串口，则需要配置如下选项：
+
+console=ttySAC3,115200 kgdboc=ttySAC3,115200
+如果需要调试内核的启动过程，则需要在 kgdboc 后面加入 kgdbwait 。
+
+在其他板子上，若使用以太网口来和 KGDB 进行通信，则要把 kgdboc 换成 kgdboe(kgdb over ethernet) ）。
+
+配置完后，就可以正常编译，然后把内核下载到目标板上面。
 
 # 参考
 
