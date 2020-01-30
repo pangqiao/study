@@ -67,6 +67,30 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 ```
 
+当你知道你需要使用哪个跟踪器后，启用它（ftrace**每次只能打开一个跟踪器**）：
+
+```
+# cat current_tracer ##查看当前在用哪个跟踪器。 
+
+# echo function > current_tracer ##选择一个特定的跟踪器。 
+
+# cat current_tracer ##检查是否是你所设置的跟踪器。
+```
+
+使用下面的命令可以开始跟踪：
+
+```
+# echo 1 > tracing_enabled ##初始化跟踪。 
+
+# cat trace > /tmp/trace.txt ##将跟踪文件保存到一个临时文件。 
+
+# echo 0 > tracing_enabled ##禁用跟踪功能 
+
+# cat /tmp/trace.txt ##查看trace文件的输出。
+```
+
+现在trace文件的输入在trace.txt文件中。通过上面操作所得到的函数跟踪的一个示例输出如图3所示。
+
 
 
 # 参考
