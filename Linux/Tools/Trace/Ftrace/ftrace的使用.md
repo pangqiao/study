@@ -48,7 +48,7 @@ Kernel Hacking -> Tracers:
 
 tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控制着跟踪的能力。根据你在内核配置时的选项的不同，这里列的文件可能稍有差异。你可以在内核源代码目录下/Documentation/trace[1]目录中找到这些文件的信息。
 
-
+![2020-01-30-23-44-38.png](./images/2020-01-30-23-44-38.png)
 
 # 参考
 
