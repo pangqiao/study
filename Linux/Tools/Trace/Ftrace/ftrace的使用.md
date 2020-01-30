@@ -46,6 +46,8 @@ Kernel Hacking -> Tracers:
 
 # 跟踪
 
+## tracing目录
+
 tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控制着跟踪的能力。根据你在内核配置时的选项的不同，这里列的文件可能稍有差异。你可以在内核源代码目录下/Documentation/trace[1]目录中找到这些文件的信息。
 
 ![2020-01-30-23-44-38.png](./images/2020-01-30-23-44-38.png)
@@ -67,6 +69,8 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 ```
 
+## 启用追踪器
+
 当你知道你需要使用**哪个跟踪器**后，**启用**它（ftrace**每次只能打开一个跟踪器**）：
 
 ```
@@ -76,6 +80,8 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 
 # cat current_tracer ##检查是否是你所设置的跟踪器。
 ```
+
+## 开始追踪
 
 使用下面的命令可以开始跟踪：
 
