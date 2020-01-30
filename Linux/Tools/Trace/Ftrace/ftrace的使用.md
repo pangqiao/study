@@ -90,6 +90,8 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 
 # cat trace > /tmp/trace.txt ##将跟踪文件保存到一个临时文件。 
 
+# 停顿一会儿
+
 # echo 0 > tracing_enabled ##禁用跟踪功能 
 
 # cat /tmp/trace.txt ##查看trace文件的输出。
@@ -98,6 +100,16 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 现在trace文件的输入在trace.txt文件中。通过上面操作所得到的函数跟踪的一个示例输出如图3所示。
 
 ![2020-01-31-00-46-03.png](./images/2020-01-31-00-46-03.png)
+
+## Trace选项
+
+让我们从tracer的选项开始。tracing的输入可以由一个叫`trace_options`的文件控制。可以通过更新`/sys/kernel/debug/tracing/trace_options`文件的选项来**启用或者禁用各种域**。
+
+trace_options的一个示例如图1所示。
+
+![2020-01-31-01-02-43.png](./images/2020-01-31-01-02-43.png)
+
+要**禁用一个跟踪选项**，只需要在相应行首加一个“no”即可。比如, `echo notrace_printk > trace_options`。（no和选项之间没有空格。）要再次启用一个跟踪选项，你可以这样：`echo trace_printk > trace_options`。
 
 
 
