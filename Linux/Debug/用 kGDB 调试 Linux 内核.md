@@ -131,16 +131,18 @@ git clone git://git.kernel.org/pub/scm/utils/kernel/kgdb/agent-proxy.git
 
 具体用法，请看该 repo 下的 README 。
 
-在用 gdb 来调试内核的时候，由于内核在初始化的时候，会创建很多子线程。而默认 gdb 会接管所有的线程，如果你从一个线程切换到另外一个线程， gdb 会马上把原先的线程暂停。但是这样很容易导致 kernel 死掉，所以需要设置一下 gdb 。一般用 gdb 进行多线程调试，需要注意两个参数： `follow-fork-mode` 和 `detach-on-fork`。
+在用 **gdb** 来调试内核的时候，由于内核在**初始化**的时候，会**创建很多子线程**。而**默认 gdb** 会**接管所有的线程**，如果你从一个线程切换到另外一个线程， gdb 会马上把原先的线程暂停。但是这样很容易导致 kernel 死掉，所以需要设置一下 gdb 。一般用 gdb 进行多线程调试，需要注意两个参数： `follow-fork-mode` 和 `detach-on-fork`。
 
-- `detach-on-fork` 参数，指示 GDB 在 fork 之后是否断开（detach）某个进程的调试，或者都交由 GDB 控制： `set detach-on-fork [on|off]`
+- `detach-on-fork` 参数，指示 GDB 在 **fork** 之后**是否断开**（detach）某个进程的调试，或者都交由 GDB 控制： `set detach-on-fork [on|off]`
 
-on: 断开调试 follow-fork-mode 指定的进程。
-off: gdb将控制父进程和子进程。
-follow-fork-mode 指定的进程将被调试，另一个进程置于暂停（suspended）状态。follow-fork-mode 的用法为：set follow-fork-mode [parent|child]
+    - on: 断开调试 `follow-fork-mode` 指定的进程。
+    - off: gdb将控制父进程和子进程。
 
-parent: fork之后继续调试父进程，子进程不受影响。 
-child: fork之后调试子进程，父进程不受影响。
+- `follow-fork-mode` 指定的进程将被调试，另一个进程置于暂停（suspended）状态。`follow-fork-mode` 的用法为：`set follow-fork-mode [parent|child]`
+
+    - parent: fork之后继续调试父进程，子进程不受影响。 
+    - child: fork之后调试子进程，父进程不受影响。
+
 
 # 参考
 
