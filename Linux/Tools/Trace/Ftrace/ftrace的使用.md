@@ -58,7 +58,16 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 - `trace`: 实际的**跟踪输出**。 
 - `set_ftrace_pid`: 设置跟踪所作用的进程的PID。 
 
-要找到**哪些跟踪器可用**，你可以对`available_tracers`文件执行cat操作。与输出空间分离的跟踪器有：nop（它不是一个跟踪器，是默认设置的一个值）、函数（函数跟踪器）、函数图（函数图跟踪器），等等，如下所示：
+要找到**哪些跟踪器可用**，你可以对`available_tracers`文件执行cat操作。
+
+与输出空间分离的跟踪器有：nop（它**不是一个跟踪器**，是**默认设置的一个值**）、函数（函数跟踪器）、函数图（函数图跟踪器），等等，如下所示：
+
+```
+# cat /sys/kernel/debug/tracing/available_tracers
+hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
+```
+
+
 
 # 参考
 
