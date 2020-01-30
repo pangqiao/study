@@ -52,10 +52,10 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 
 让我们看看里面几个重要的文件： 
 
-- `available_tracers`: 这表示哪些被编译里系统的跟踪器。 
-- `current_tracer`: 这表示当前启用的哪个跟踪器。可以通过echo向表输入一个新的跟踪器来改变相应值。 
-- `tracing_enabled`: 让你可以启用或者禁用当前跟踪功能 
-- `trace`: 实际地的跟踪输出。 
+- `available_tracers`: 这表示**哪些**被编译里系统的**跟踪器**。 
+- `current_tracer`: 这表示**当前启用**的哪个跟踪器。可以通过**echo**向表输入一个新的跟踪器来改变相应值。 
+- `tracing_enabled`: 让你可以**启用或者禁用当前跟踪功能** 
+- `trace`: 实际的**跟踪输出**。 
 - `set_ftrace_pid`: 设置跟踪所作用的进程的PID。 
 
 　　要找到哪些跟踪器可用，你可以对available_tracers文件执行cat操作。与输出空间分离的跟踪器有：nop（它不是一个跟踪器，是默认设置的一个值）、函数（函数跟踪器）、函数图（函数图跟踪器），等等，如下所示：
