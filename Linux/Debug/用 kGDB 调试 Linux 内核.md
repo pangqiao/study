@@ -121,7 +121,7 @@ static struct uart_ops s3c24xx_serial_ops = {
 
 # 4. gdb 远程调试
 
-如果在内核启动参数中加入了 kgdbwait ，则内核会在完成基本的初始化之后，停留在 kgdb 的调试陷阱中，等待主机的 gdb 的远程连接。
+如果在内核启动参数中加入了 **kgdbwait** ，则内核会在完成基本的初始化之后，停留在 kgdb 的调试陷阱中，等待主机的 gdb 的远程连接。
 
 由于大部分的板子只有一个调试串口，所以你需要把之前与串口通信的 minicom 退出来，然后在内核源码的目录下，执行以下命令：
 
@@ -133,7 +133,7 @@ $ arm-linux-gnueabi-gcc vmlinux
 (gdb) c
 ```
 
-当然，你也可以 agent-proxy 来复用一个串口，通过虚拟出两个 TCP 端口。这时候， gdb 就需要用 target remote 命令连接 kgdb ，例如：
+当然，你也可以 `agent-proxy` 来复用一个串口，通过虚拟出两个 TCP 端口。这时候， gdb 就需要用 target remote 命令连接 kgdb ，例如：
 
 ```
 (gdb) target remote localhost:5551
@@ -147,7 +147,7 @@ git clone git://git.kernel.org/pub/scm/utils/kernel/kgdb/agent-proxy.git
 
 具体用法，请看该 repo 下的 README 。
 
-在用 **gdb** 来调试内核的时候，由于内核在**初始化**的时候，会**创建很多子线程**。而**默认 gdb** 会**接管所有的线程**，如果你从一个线程切换到另外一个线程， gdb 会马上把原先的线程暂停。但是这样很容易导致 kernel 死掉，所以需要设置一下 gdb 。一般用 gdb 进行多线程调试，需要注意两个参数： `follow-fork-mode` 和 `detach-on-fork`。
+在用 **gdb** 来**调试内核**的时候，由于内核在**初始化**的时候，会**创建很多子线程**。而**默认 gdb** 会**接管所有的线程**，如果你从一个线程切换到另外一个线程， gdb 会马上把原先的线程暂停。但是这样很容易导致 kernel 死掉，所以需要设置一下 gdb 。一般用 gdb 进行多线程调试，需要注意两个参数： `follow-fork-mode` 和 `detach-on-fork`。
 
 - `detach-on-fork` 参数，指示 GDB 在 **fork** 之后**是否断开**（detach）某个进程的调试，或者都交由 GDB 控制： `set detach-on-fork [on|off]`
 
