@@ -15,9 +15,32 @@ ftrace是由Steven Rostedy和Ingo Molnar在内核2.6.27版本中引入的。它�
 
 # 设置ftrace
 
+## 配置debugfs
+
 使用ftrace要求你的机器上配置有debugfs。
 
+debugfs应该被挂载在/sys/kernel/debugfs，如果跟踪选项已启用，你应该能够在debugfs下面看到一个叫tracing的目录。
 
+如果没有挂载debugfs，请按以下操作：
+
+```
+# mount -t debugfs nodev /sys/kernel/debug
+```
+
+## 
+
+如果你看不到tracing子目录的话，你应该在内核配置上启用相关选项，然后重编译内核。
+
+请在你的内核配置中找到如图所示的选项，启用它们：
+
+Kernel Hacking -> Tracers:
+
+1. Kernel Function Tracer (FUNCTION_TRACER) 
+2. Kernel Function Graph Tracer (FUNCTION_GRAPH_TRACER) 
+3. Enable/disable ftrace dynamically (DYNAMIC_FTRACE) 
+4. Trace max stack (STACK_TRACER)
+
+![2020-01-30-23-09-35.png](./images/2020-01-30-23-09-35.png)
 
 # 参考
 
