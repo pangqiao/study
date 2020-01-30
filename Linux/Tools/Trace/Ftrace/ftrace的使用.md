@@ -27,7 +27,7 @@ debugfs应该被挂载在/sys/kernel/debugfs，如果跟踪选项已启用，你
 # mount -t debugfs nodev /sys/kernel/debug
 ```
 
-## 
+## 配置tracer选项
 
 如果你看不到tracing子目录的话，你应该在内核配置上启用相关选项，然后重编译内核。
 
@@ -49,6 +49,16 @@ Kernel Hacking -> Tracers:
 tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控制着跟踪的能力。根据你在内核配置时的选项的不同，这里列的文件可能稍有差异。你可以在内核源代码目录下/Documentation/trace[1]目录中找到这些文件的信息。
 
 ![2020-01-30-23-44-38.png](./images/2020-01-30-23-44-38.png)
+
+让我们看看里面几个重要的文件： 
+
+- `available_tracers`: 这表示哪些被编译里系统的跟踪器。 
+- `current_tracer`: 这表示当前启用的哪个跟踪器。可以通过echo向表输入一个新的跟踪器来改变相应值。 
+- `tracing_enabled`: 让你可以启用或者禁用当前跟踪功能 
+- `trace`: 实际地的跟踪输出。 
+- `set_ftrace_pid`: 设置跟踪所作用的进程的PID。 
+
+　　要找到哪些跟踪器可用，你可以对available_tracers文件执行cat操作。与输出空间分离的跟踪器有：nop（它不是一个跟踪器，是默认设置的一个值）、函数（函数跟踪器）、函数图（函数图跟踪器），等等，如下所示：
 
 # 参考
 
