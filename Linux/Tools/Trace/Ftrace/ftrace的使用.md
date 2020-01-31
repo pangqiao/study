@@ -126,7 +126,7 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 
 ## 4.2. 启用追踪器
 
-当你知道你需要使用**哪个跟踪器**后，**启用**它（ftrace**每次只能打开一个跟踪器**）：
+当你从`available_tracers`知道你需要使用**哪个跟踪器**后，**启用**它（ftrace**每次只能打开一个跟踪器**）：
 
 ```
 # cat current_tracer ##查看当前在用哪个跟踪器。 
