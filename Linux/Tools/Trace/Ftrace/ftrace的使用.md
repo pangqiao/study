@@ -84,6 +84,8 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 - `tracing_enabled`或`tracing_on`: 让你可以**启用或者禁用当前跟踪功能** 
 - `trace`: 实际的**跟踪输出**。 
 - `trace_pipe`，与trace相同，但是运行时像管道一样，可以在每次事件发生时读出追踪信息，但是读出的内容不能再次读出。
+- `set_ftrace_filter`，指定要追踪的函数名称，函数名称仅可以包含一个通配符。
+- `set_ftrace_notrace`，指定不要追踪的函数名称。
 - `set_ftrace_pid`: 设置跟踪所作用的**进程的PID**。 
 - `tracing_cpumask`，以**十六进制**的**位掩码**指定要作为**追踪对象的处理器**，例如，指定**0xb**时仅在处理器**0、1、3**上进行追踪。
 - `buffer_size_kb`，以**KB为单位**指定**各个CPU追踪缓冲区的大小**。系统追踪缓冲区的**总大小**就是这个值**乘以CPU的数量**。设置`buffer_size_kb`时，必须设置`current_tracer`为**nop追踪器！！！**。
