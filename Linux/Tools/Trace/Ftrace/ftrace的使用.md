@@ -84,6 +84,7 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 - `tracing_enabled`或`tracing_on`: 让你可以**启用或者禁用当前跟踪功能** 
 - `trace`: 实际的**跟踪输出**。 
 - `set_ftrace_pid`: 设置跟踪所作用的进程的PID。 
+- `tracing_cpumask`，以**十六进制**的**位掩码**指定要作为**追踪对象的处理器**，例如，指定**0xb**时仅在处理器**0、1、3**上进行追踪。
 
 要找到**哪些跟踪器可用**，你可以对`available_tracers`文件执行cat操作。
 
