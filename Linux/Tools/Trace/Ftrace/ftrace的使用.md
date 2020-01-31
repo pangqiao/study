@@ -143,9 +143,9 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 ```
 # echo 1 > tracing_enabled ##初始化跟踪。 或tracing_on
 
-# cat trace > /tmp/trace.txt ##将跟踪文件保存到一个临时文件。 
-
 # 停顿一会儿
+
+# cat trace > /tmp/trace.txt ##将跟踪文件保存到一个临时文件。 
 
 # echo 0 > tracing_enabled ##禁用跟踪功能
 
@@ -164,11 +164,21 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 # cat  available_tracers
 blk function_graph mmiotrace wakeup_rtwakeup function nop
 
-# echo schedule > set_ftrace_filter
+# echo schedule > set_ftrace_filter     ## 仅记录schedule
+# cat set_ftrace_filter
+schedule
 
 # echo function > current_tracer
+# cat current_tracer
+function
 
-# echo 1 > tracing
+# echo 1 > tracing_on
+
+# 停顿会儿
+
+# cat trace > /tmp/trace.txt
+# echo 0 > tracing_on
+
 ```
 
 # 5. Trace选项(启用或禁用)
@@ -219,13 +229,23 @@ ftrace允许你对一个特殊的进程进行跟踪。在`/sys/kernel/debug/trac
 
 我们会很轻易地被淹没在函数跟踪器所抛给我们的大量数据中。
 
-有一种动态的方法可以过滤出我们所需要的函数，排除那些我们不需要的：在文件`set_ftrace_filter`中指明。（首先从`available_filter_functions`文件中找到你需要的函数。）图4就是一个动态跟踪的例子。
+有一种动态的方法可以过滤出我们所需要的函数，排除那些我们不需要的：在文件`set_ftrace_filter`中指明。（首先从`available_filter_functions`文件中找到你需要的函数。）
+
+图4就是一个动态跟踪的例子。
 
 ![2020-01-31-19-49-29.png](./images/2020-01-31-19-49-29.png)
 
 如你所看到的，你甚至可以对函数的名字使用**通配符**。
 
 我需要用所有的`vmalloc_`函数，通过`echo vmalloc_* > set_ftrace_filter`进行设置。
+
+另外，在参数前面加上`:mod:`，可以仅追踪指定模块中包含的函数（注意，模块必须已经加载）。例如：
+
+```
+root@thinker:/sys/kernel/debug/tracing# echo 'write*:mod:ext3' > set_ftrace_filter
+```
+
+仅追踪**ext3模块**中包含的以**write开头**的函数。
 
 # 9. 事件跟踪
 
