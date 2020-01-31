@@ -1,4 +1,23 @@
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [基本介绍](#基本介绍)
+- [预备知识](#预备知识)
+- [设置ftrace](#设置ftrace)
+  - [配置debugfs](#配置debugfs)
+  - [配置tracer选项](#配置tracer选项)
+- [跟踪](#跟踪)
+  - [tracing目录](#tracing目录)
+  - [启用追踪器](#启用追踪器)
+  - [开始追踪](#开始追踪)
+  - [Trace选项](#trace选项)
+- [ftrace之特殊进程](#ftrace之特殊进程)
+- [参考](#参考)
+
+<!-- /code_chunk_output -->
+
 本文探索如何建立ftrace并能理解如何跟踪函数。ftrace对于内核开发者和设备驱动开发者在调试内核问题的时候应该很有用。
 
 # 基本介绍
@@ -105,13 +124,25 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 
 让我们从tracer的选项开始。tracing的输入可以由一个叫`trace_options`的文件控制。可以通过更新`/sys/kernel/debug/tracing/trace_options`文件的选项来**启用或者禁用各种域**。
 
-trace_options的一个示例如图1所示。
+`trace_options`的一个示例如图1所示。
 
 ![2020-01-31-01-02-43.png](./images/2020-01-31-01-02-43.png)
 
 要**禁用一个跟踪选项**，只需要在相应行首加一个“no”即可。比如, `echo notrace_printk > trace_options`。（no和选项之间没有空格。）要再次启用一个跟踪选项，你可以这样：`echo trace_printk > trace_options`。
 
+# ftrace之特殊进程
 
+ftrace允许你对一个特殊的进程进行跟踪。在`/sys/kernel/debug/tracing`目录下，文件`set_ftrace_pid`的值要更新为你想跟踪的进程的PID。
+
+以下traceprocess.sh示例脚本向你展示了如何抓取当前运行的进程的PID，并进行相应跟踪。
+
+```
+
+```
+
+如图中跟踪ls命令所示。
+
+![2020-01-31-18-13-24.png](./images/2020-01-31-18-13-24.png)
 
 # 参考
 
