@@ -10,16 +10,16 @@
   - [3.2. 配置tracer选项](#32-配置tracer选项)
 - [4. 跟踪](#4-跟踪)
   - [4.1. tracing目录](#41-tracing目录)
-  - [可用的追踪器](#可用的追踪器)
-  - [4.2. 启用追踪器](#42-启用追踪器)
-  - [4.3. 开始追踪并查看](#43-开始追踪并查看)
-  - [4.4. Trace选项](#44-trace选项)
-- [5. ftrace之特殊进程](#5-ftrace之特殊进程)
-- [6. 函数图跟踪器](#6-函数图跟踪器)
-- [7. 动态跟踪(过滤)](#7-动态跟踪过滤)
-- [8. 事件跟踪](#8-事件跟踪)
-- [9. trace-cmd and KernelShark](#9-trace-cmd-and-kernelshark)
-- [10. 参考](#10-参考)
+  - [4.2. 可用的追踪器](#42-可用的追踪器)
+  - [4.3. 设置追踪器](#43-设置追踪器)
+  - [4.4. 开始追踪并查看](#44-开始追踪并查看)
+- [5. Trace选项(启用或禁用)](#5-trace选项启用或禁用)
+- [6. ftrace之特殊进程](#6-ftrace之特殊进程)
+- [7. 函数图跟踪器](#7-函数图跟踪器)
+- [8. 动态跟踪(过滤只查看)](#8-动态跟踪过滤只查看)
+- [9. 事件跟踪](#9-事件跟踪)
+- [10. trace-cmd and KernelShark](#10-trace-cmd-and-kernelshark)
+- [11. 参考](#11-参考)
 
 <!-- /code_chunk_output -->
 
@@ -91,7 +91,7 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 - `tracing_cpumask`，以**十六进制**的**位掩码**指定要作为**追踪对象的处理器**，例如，指定**0xb**时仅在处理器**0、1、3**上进行追踪。
 - `tracing_enabled`或`tracing_on`: 让你可以**启用或者禁用当前跟踪功能** 
 
-## 可用的追踪器
+## 4.2. 可用的追踪器
 
 要找到**哪些跟踪器可用**，你可以对`available_tracers`文件执行cat操作。
 
@@ -124,7 +124,7 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 
 - `nop`，不执行任何操作。不使用插件追踪器时指定。
 
-## 4.2. 启用追踪器
+## 4.3. 设置追踪器
 
 当你从`available_tracers`知道你需要使用**哪个跟踪器**后，**启用**它（ftrace**每次只能打开一个跟踪器**）：
 
@@ -136,18 +136,20 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 # cat current_tracer ##检查是否是你所设置的跟踪器。
 ```
 
-## 4.3. 开始追踪并查看
+## 4.4. 开始追踪并查看
 
 使用下面的命令可以开始跟踪：
 
 ```
-# echo 1 > tracing_enabled ##初始化跟踪。 
+# echo 1 > tracing_enabled ##初始化跟踪。 或tracing_on
 
 # cat trace > /tmp/trace.txt ##将跟踪文件保存到一个临时文件。 
 
 # 停顿一会儿
 
-# echo 0 > tracing_enabled ##禁用跟踪功能 
+# echo 0 > tracing_enabled ##禁用跟踪功能
+
+# echo 0 > trace
 
 # cat /tmp/trace.txt ##查看trace文件的输出。
 ```
@@ -156,9 +158,26 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 
 ![2020-01-31-00-46-03.png](./images/2020-01-31-00-46-03.png)
 
-## 4.4. Trace选项
+一旦将函数追踪器启动，ftrace会记录所有函数的运行情况, 如果想要禁用或只查看某一些, 需要通过`trace_options`或`set_ftrace_pid`或`set_ftrace_filter`, 然后再设置`current_tracer`并开启追踪
 
-让我们从tracer的选项开始。tracing的输入可以由一个叫`trace_options`的文件控制。可以通过更新`/sys/kernel/debug/tracing/trace_options`文件的选项来**启用或者禁用各种域**。
+```
+# cat  available_tracers
+blk function_graph mmiotrace wakeup_rtwakeup function nop
+
+# echo schedule > set_ftrace_filter
+
+# echo function > current_tracer
+
+# echo 1 > tracing
+```
+
+# 5. Trace选项(启用或禁用)
+
+让我们从tracer的选项开始。
+
+tracing的输入可以由一个叫`trace_options`的文件控制。
+
+可以通过更新`/sys/kernel/debug/tracing/trace_options`文件的选项来**启用或者禁用各种域**。
 
 `trace_options`的一个示例如图1所示。
 
@@ -168,7 +187,7 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 
 比如, `echo notrace_printk > trace_options`。（no和选项之间没有空格。）要再次启用一个跟踪选项，你可以这样：`echo trace_printk > trace_options`。
 
-# 5. ftrace之特殊进程
+# 6. ftrace之特殊进程
 
 ftrace允许你对一个特殊的进程进行跟踪。在`/sys/kernel/debug/tracing`目录下，文件`set_ftrace_pid`的值要更新为你想跟踪的进程的PID。
 
@@ -188,7 +207,7 @@ ftrace允许你对一个特殊的进程进行跟踪。在`/sys/kernel/debug/trac
 > set_ftrace_pid
 ```
 
-# 6. 函数图跟踪器
+# 7. 函数图跟踪器
 
 函数图跟踪器对函数的进入与退出进行跟踪，这对于跟踪它的执行时间很有用。函数执行时间**超过10微秒**的标记一个`“+”`号，**超过1000微秒**的标记为一个`“！”`号。通过`echo function_graph > current_tracer`可以启用函数图跟踪器。示例输入如图3所示。
 
@@ -196,7 +215,7 @@ ftrace允许你对一个特殊的进程进行跟踪。在`/sys/kernel/debug/trac
 
 有很多跟踪器，所有的列表在`linux/Documentation/trace/ftrace.txt`文件中找得到。通过将跟踪器的名字echo到`current_tracer`文件中可以启用或禁用相应跟踪器。
 
-# 7. 动态跟踪(过滤)
+# 8. 动态跟踪(过滤只查看)
 
 我们会很轻易地被淹没在函数跟踪器所抛给我们的大量数据中。
 
@@ -204,11 +223,13 @@ ftrace允许你对一个特殊的进程进行跟踪。在`/sys/kernel/debug/trac
 
 ![2020-01-31-19-49-29.png](./images/2020-01-31-19-49-29.png)
 
-如你所看到的，你甚至可以对函数的名字使用**通配符**。我需要用所有的`vmalloc_`函数，通过`echo vmalloc_* > set_ftrace_filter`进行设置。
+如你所看到的，你甚至可以对函数的名字使用**通配符**。
 
-# 8. 事件跟踪
+我需要用所有的`vmalloc_`函数，通过`echo vmalloc_* > set_ftrace_filter`进行设置。
 
-也可以在系统特定事件触发的时候打开跟踪。可以在available_events文件中找到所有可用的系统事件：
+# 9. 事件跟踪
+
+也可以在系统**特定事件触发**的时候打开跟踪。可以在available_events文件中找到所有可用的系统事件：
 
 ```
 # cat available_events | head -10
@@ -232,7 +253,7 @@ sunrpc:rpc_socket_state_change
 
 有关事件跟踪的更多细节，请阅读内核目录下`Documents/Trace/events.txt`文件。
 
-# 9. trace-cmd and KernelShark
+# 10. trace-cmd and KernelShark
 
 trace-cmd是由Steven Rostedt在2009年发在LKML上的，它可以让操作跟踪器更简单。以下几步是获取最新的版本并装在你的系统上，包括它的GUI工具KernelShark。
 
@@ -270,6 +291,6 @@ trace-cmd report ## displays the report from trace.dat
 
 ![2020-01-31-20-19-47.png](./images/2020-01-31-20-19-47.png)
 
-# 10. 参考
+# 11. 参考
 
 https://www.cnblogs.com/jefree/p/4439007.html
