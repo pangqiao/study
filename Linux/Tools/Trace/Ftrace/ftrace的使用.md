@@ -16,6 +16,7 @@
 - [ftrace之特殊进程](#ftrace之特殊进程)
 - [函数图跟踪器](#函数图跟踪器)
 - [动态跟踪](#动态跟踪)
+- [事件跟踪](#事件跟踪)
 - [参考](#参考)
 
 <!-- /code_chunk_output -->
@@ -162,9 +163,31 @@ ftrace允许你对一个特殊的进程进行跟踪。在`/sys/kernel/debug/trac
 
 # 动态跟踪
 
-我们会很轻易地被淹没在函数跟踪器所抛给我们的大量数据中。有一种动态的方法可以过滤出我们所需要的函数，排除那些我们不需要的：在文件`set_ftrace_filter中指明。（首先从`available_filter_functions`文件中找到你需要的函数。）图4就是一个动态跟踪的例子。
+我们会很轻易地被淹没在函数跟踪器所抛给我们的大量数据中。有一种动态的方法可以过滤出我们所需要的函数，排除那些我们不需要的：在文件`set_ftrace_filter`中指明。（首先从`available_filter_functions`文件中找到你需要的函数。）图4就是一个动态跟踪的例子。
 
 ![2020-01-31-19-49-29.png](./images/2020-01-31-19-49-29.png)
+
+如你所看到的，你甚至可以对函数的名字使用**通配符**。我需要用所有的`vmalloc_`函数，通过`echo vmalloc_* > set_ftrace_filter`进行设置。
+
+# 事件跟踪
+
+也可以在系统特定事件触发的时候打开跟踪。可以在available_events文件中找到所有可用的系统事件：
+
+```
+# cat available_events | head -10
+devlink:devlink_hwmsg
+sunrpc:rpc_call_status
+sunrpc:rpc_bind_status
+sunrpc:rpc_connect_status
+sunrpc:rpc_task_begin
+sunrpc:rpc_task_run_action
+sunrpc:rpc_task_complete
+sunrpc:rpc_task_sleep
+sunrpc:rpc_task_wakeup
+sunrpc:rpc_socket_state_change
+```
+
+比如，为了启用某个事件，你需要：`echo sys_enter_nice >> set_event`（注意你是将事件的名字追加到文件中去，使用>>追加定向器，不是>）。要禁用某个事件，需要在名字前加上一个“!”号：echo '!sys_enter_nice' >> set_event。图5是一个事件跟踪场景示例。同样，可用的事件是列在事件目录里面的。
 
 
 
