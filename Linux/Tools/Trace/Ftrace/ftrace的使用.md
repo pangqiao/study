@@ -13,14 +13,15 @@
   - [4.2. 可用的追踪器](#42-可用的追踪器)
   - [4.3. 设置追踪器](#43-设置追踪器)
   - [4.4. 开始追踪并查看](#44-开始追踪并查看)
-  - [清空trace](#清空trace)
+  - [4.5. 清空trace](#45-清空trace)
 - [5. Trace选项(启用或禁用)](#5-trace选项启用或禁用)
 - [6. ftrace之特殊进程](#6-ftrace之特殊进程)
 - [7. 函数图跟踪器](#7-函数图跟踪器)
 - [8. 动态跟踪(过滤只查看)](#8-动态跟踪过滤只查看)
-- [9. 事件跟踪](#9-事件跟踪)
-- [10. trace-cmd and KernelShark](#10-trace-cmd-and-kernelshark)
-- [11. 参考](#11-参考)
+- [9. trace_printk](#9-trace_printk)
+- [10. 事件跟踪](#10-事件跟踪)
+- [11. trace-cmd and KernelShark](#11-trace-cmd-and-kernelshark)
+- [12. 参考](#12-参考)
 
 <!-- /code_chunk_output -->
 
@@ -177,12 +178,12 @@ function
 
 # 停顿会儿
 
-# cat trace > /tmp/trace.txt
 # echo 0 > tracing_on
-
+# cat trace > /tmp/trace.txt
+# > trace
 ```
 
-## 清空trace
+## 4.5. 清空trace
 
 ```
 # echo 0 > tracing_on   ## 禁用跟踪功能
@@ -256,7 +257,11 @@ root@thinker:/sys/kernel/debug/tracing# echo 'write*:mod:ext3' > set_ftrace_filt
 
 仅追踪**ext3模块**中包含的以**write开头**的函数。
 
-# 9. 事件跟踪
+# 9. trace_printk
+
+`trace_printk`打印调试信息后，将`current_tracer`设置为**nop**，将`tracing_on`设置为1，调用相应模块执行，即可通过trace文件看到`trace_printk`打印的信息。
+
+# 10. 事件跟踪
 
 也可以在系统**特定事件触发**的时候打开跟踪。可以在`available_events`文件中找到所有可用的系统事件：
 
@@ -282,7 +287,7 @@ sunrpc:rpc_socket_state_change
 
 有关事件跟踪的更多细节，请阅读内核目录下`Documents/Trace/events.txt`文件。
 
-# 10. trace-cmd and KernelShark
+# 11. trace-cmd and KernelShark
 
 trace-cmd是由Steven Rostedt在2009年发在LKML上的，它可以让操作跟踪器更简单。以下几步是获取最新的版本并装在你的系统上，包括它的GUI工具KernelShark。
 
@@ -320,6 +325,6 @@ trace-cmd report ## displays the report from trace.dat
 
 ![2020-01-31-20-19-47.png](./images/2020-01-31-20-19-47.png)
 
-# 11. 参考
+# 12. 参考
 
 https://www.cnblogs.com/jefree/p/4439007.html
