@@ -164,7 +164,9 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 
 ![2020-01-31-01-02-43.png](./images/2020-01-31-01-02-43.png)
 
-要**禁用一个跟踪选项**，只需要在相应行首加一个“no”即可。比如, `echo notrace_printk > trace_options`。（no和选项之间没有空格。）要再次启用一个跟踪选项，你可以这样：`echo trace_printk > trace_options`。
+要**禁用一个跟踪选项**，只需要在相应行首加一个“no”即可。
+
+比如, `echo notrace_printk > trace_options`。（no和选项之间没有空格。）要再次启用一个跟踪选项，你可以这样：`echo trace_printk > trace_options`。
 
 # 5. ftrace之特殊进程
 
