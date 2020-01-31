@@ -10,6 +10,7 @@
   - [3.2. 配置tracer选项](#32-配置tracer选项)
 - [4. 跟踪](#4-跟踪)
   - [4.1. tracing目录](#41-tracing目录)
+  - [可用的追踪器](#可用的追踪器)
   - [4.2. 启用追踪器](#42-启用追踪器)
   - [4.3. 开始追踪](#43-开始追踪)
   - [4.4. Trace选项](#44-trace选项)
@@ -90,6 +91,8 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 - `tracing_cpumask`，以**十六进制**的**位掩码**指定要作为**追踪对象的处理器**，例如，指定**0xb**时仅在处理器**0、1、3**上进行追踪。
 - `tracing_enabled`或`tracing_on`: 让你可以**启用或者禁用当前跟踪功能** 
 
+## 可用的追踪器
+
 要找到**哪些跟踪器可用**，你可以对`available_tracers`文件执行cat操作。
 
 与输出空间分离的跟踪器有：nop（它**不是一个跟踪器**，是**默认设置的一个值**）、函数（函数跟踪器）、函数图（函数图跟踪器），等等，如下所示：
@@ -98,6 +101,28 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 # cat /sys/kernel/debug/tracing/available_tracers
 hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 ```
+
+- `function`，函数调用追踪器，可以看出**哪个函数何时调用**。
+
+- `function_graph`，函数调用图表追踪器，可以看出**哪个函数被哪个函数调用**，**何时返回**。
+
+- `mmiotrace`，**MMIO**( Memory MappedI/O)追踪器，用于Nouveau驱动程序等逆向工程。
+
+- `blk`，**block I/O追踪器**。
+
+- `wakeup`，进程**调度延迟**追踪器。
+
+- `wakeup_rt`，与wakeup相同，但以**实时进程**为对象。
+
+- `irqsoff`，当中断被禁止时，系统无法响应外部事件，造成系统响应延迟，irqsoff跟踪并记录内核中**哪些函数禁止了中断**，对于其中**禁止中断时间最长**的，irqsoff将在log文件的第一行标示出来，从而可以迅速定位造成系统响应延迟的原因。
+
+- preemptoff，追踪并记录禁止内核抢占的函数，并清晰显示出禁止内核抢占时间最长的函数。
+
+- preemptirqsoff，追踪并记录禁止内核抢占和中断时间最长的函数。
+
+- sched_switch，进行上下文切换的追踪，可以得知从哪个进程切换到了哪个进程。
+
+- `nop`，不执行任何操作。不使用插件追踪器时指定。
 
 ## 4.2. 启用追踪器
 
