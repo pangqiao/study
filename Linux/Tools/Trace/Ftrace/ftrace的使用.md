@@ -13,6 +13,7 @@
   - [4.2. 可用的追踪器](#42-可用的追踪器)
   - [4.3. 设置追踪器](#43-设置追踪器)
   - [4.4. 开始追踪并查看](#44-开始追踪并查看)
+  - [清空trace](#清空trace)
 - [5. Trace选项(启用或禁用)](#5-trace选项启用或禁用)
 - [6. ftrace之特殊进程](#6-ftrace之特殊进程)
 - [7. 函数图跟踪器](#7-函数图跟踪器)
@@ -149,7 +150,7 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 
 # echo 0 > tracing_enabled ##禁用跟踪功能
 
-# echo 0 > trace
+# echo 0 > trace  ## 或者> trace
 
 # cat /tmp/trace.txt ##查看trace文件的输出。
 ```
@@ -179,6 +180,14 @@ function
 # cat trace > /tmp/trace.txt
 # echo 0 > tracing_on
 
+```
+
+## 清空trace
+
+```
+# echo 0 > tracing_on   ## 禁用跟踪功能
+
+# echo 0 > trace        ## 或者 > trace
 ```
 
 # 5. Trace选项(启用或禁用)
@@ -249,7 +258,7 @@ root@thinker:/sys/kernel/debug/tracing# echo 'write*:mod:ext3' > set_ftrace_filt
 
 # 9. 事件跟踪
 
-也可以在系统**特定事件触发**的时候打开跟踪。可以在available_events文件中找到所有可用的系统事件：
+也可以在系统**特定事件触发**的时候打开跟踪。可以在`available_events`文件中找到所有可用的系统事件：
 
 ```
 # cat available_events | head -10
