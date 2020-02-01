@@ -91,6 +91,7 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 
 让我们看看里面几个重要的文件： 
 
+- `README`文件提供了一个简短的使用说明，展示了 ftrace 的操作命令序列。可以通过 cat 命令查看该文件以了解**概要的操作流程**。
 - `available_tracers`: 这表示**哪些**被编译里系统的**跟踪器**。 
 - `buffer_size_kb`，以**KB为单位**指定**各个CPU追踪缓冲区的大小**。系统追踪缓冲区的**总大小**就是这个值**乘以CPU的数量**。设置`buffer_size_kb`时，必须设置`current_tracer`为**nop追踪器！！！**。
 - `current_tracer`: 这表示**当前启用**的哪个**跟踪器**。可以通过**echo**向表输入一个新的跟踪器来改变相应值。 
