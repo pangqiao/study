@@ -180,6 +180,24 @@ ftrace 还支持其它一些跟踪器，比如 initcall、ksym_tracer、mmiotrac
 
 # ftrace操作概述
 
+使用 ftrace 提供的跟踪器来调试或者分析内核时需要如下操作：
+
+1. **切换到目录** `/sys/kernel/debug/tracing/` 下
+2. 查看 `available_tracers` 文件，获取**当前内核支持的跟踪器**列表
+3. **关闭 ftrace 跟踪**，即将 0 写入文件 `tracing_enabled`
+4. 激活 `ftrace_enabled` ，否则 function 跟踪器的行为类似于 nop；另外，激活该选项还可以让一些跟踪器比如 irqsoff 获取更丰富的信息。建议使用 ftrace 时将其激活。要激活 `ftrace_enabled` ，可以通过 `proc` 文件系统接口来设置：
+
+```
+echo 1 > /proc/sys/kernel/ftrace_enabled
+```
+
+5. 将所选择的跟踪器的名字写入文件 `current_tracer`
+6. 将要跟踪的函数写入文件 `set_ftrace_filter` ，将不希望跟踪的函数写入文件 `set_ftrace_notrace`。通常直接操作文件 `set_ftrace_filter` 就可以了
+7. 激活 ftrace 跟踪，即将 1 写入文件 `tracing_enabled`。还要确保文件 `tracing_on` 的值也为 1，该文件可以控制跟踪的暂停
+8. 如果是对**应用程序**进行分析的话，启动应用程序的执行，ftrace 会跟踪应用程序运行期间内核的运作情况 
+9. 通过将 0 写入文件 `tracing_on` 来**暂停跟踪信息**的记录，此时跟踪器还在跟踪内核的运行，只是不再向文件 trace 中写入跟踪信息；或者将 0 写入文件 tracing_enabled 来关闭跟踪
+查看文件 trace 获取跟踪信息，对内核的运行进行分析调试
+接下来将对跟踪器的使用以及跟踪信息的格式通过实例加以讲解。
 
 
 # 参考
