@@ -159,4 +159,12 @@ ftrace 还支持其它一些跟踪器，比如 initcall、ksym_tracer、mmiotrac
 
 # 参考
 
-https://www.cnblogs.com/jefree/p/4438982.html
+本文来自 https://www.cnblogs.com/jefree/p/4438982.html
+
+* 查看内核文档 Documentation/trace/ftrace.txt了解 ftrace。
+* [LWN](http://lwn.net/Kernel/Index/)上 ftrace 相关的文章。
+* 查看内核文档 README了解如何编译内核。
+* 查看内核文档目录 Documentation/kbuild/下的文档了解 Kconfig 和 kbuild。
+* 查看内核目录 kernel/trace下的 Makefile文件和 Kconfig文件了解 ftrace 相关编译选项。
+* 在 developerWorks Linux 专区 寻找为 Linux 开发人员（包括 Linux 新手入门）准备的更多参考资料，查阅我们 最受欢迎的文章和教程。 
+* 在 developerWorks 上查阅所有 Linux 技巧 和 Linux 教程。
