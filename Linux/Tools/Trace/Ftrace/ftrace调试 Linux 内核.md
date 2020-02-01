@@ -19,7 +19,7 @@ ftrace 提供了**不同的跟踪器**，以用于**不同的场合**，比如�
 
 另外，对内核感兴趣的读者还可以通过 ftrace 来观察**内核中发生的活动**，了解内核的**工作机制**。
 
-# 让内核支持ftrace
+# ftrace内核编译选项
 
 使用 ftrace ，首先要将其**编译进内核**。
 
@@ -74,7 +74,9 @@ depends on !X86_32 || !CC_OPTIMIZE_FOR_SIZE
 
 ![2020-02-01-13-47-09.png](./images/2020-02-01-13-47-09.png)
 
+# 
 
+ftrace 通过 debugfs 向用户态提供了访问接口，所以还需要将 debugfs 编译进内核。激活对 debugfs 的支持，可以直接编辑内核配置文件 .config ，设置 CONFIG_DEBUG_FS=y ；或者在 make menuconfig 时到 Kernel hacking 菜单下选中对 debugfs 文件系统的支持，如图 6 所示。
 
 # 参考
 
