@@ -119,7 +119,15 @@ debugfs  /sys/kernel/debug  debugfs  defaults  0  0
 mount  -t  debugfs  nodev  /sys/kernel/debug
 ```
 
-激活内核对 ftrace 的支持后会在 debugfs 下创建一个 tracing 目录 /sys/kernel/debug/tracing 。该目录下包含了 ftrace 的控制和输出文件，如图 7 所示。根据编译内核时针对 ftrace 的设定不同，该目录下实际显示的文件和目录与这里也会不同。
+激活内核对 ftrace 的支持后会在 debugfs 下创建一个 **tracing 目录** /sys/kernel/debug/tracing 。该目录下包含了 ftrace 的控制和输出文件，如图 7 所示。根据编译内核时针对 ftrace 的设定不同，该目录下实际显示的文件和目录与这里也会不同。
+
+图 7. tracing 目录下的文件
+
+![2020-02-01-16-16-28.png](./images/2020-02-01-16-16-28.png)
+
+# ftrace 的数据文件
+
+/sys/kernel/debug/trace 目录下文件和目录比较多，有些是各种跟踪器共享使用的，有些是特定于某个跟踪器使用的。在操作这些数据文件时，通常使用 echo 命令来修改其值，也可以在程序中通过文件读写相关的函数来操作这些文件的值。下面只对部分文件进行描述，读者可以参考内核源码包中 Documentation/trace 目录下的文档以及 kernel/trace 下的源文件以了解其余文件的用途。 
 
 # 参考
 
