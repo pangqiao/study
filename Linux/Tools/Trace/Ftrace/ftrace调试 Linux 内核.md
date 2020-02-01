@@ -23,7 +23,7 @@ ftrace 提供了**不同的跟踪器**，以用于**不同的场合**，比如�
 
 使用 ftrace ，首先要将其**编译进内核**。内核源码目录下的 `kernel/trace/Makefile` 文件给出了 ftrace 相关的编译选项。
 
-ftrace 相关的配置选项列表:
+清单 1. ftrace 相关的配置选项列表:
 
 ```
 CONFIG_FUNCTION_TRACER 
@@ -37,6 +37,16 @@ CONFIG_SCHED_TRACER
 ftrace 相关的配置选项比较多，针对不同的跟踪器有各自对应的配置选项。不同的选项有不同的依赖关系，内核源码目录下的 `kernel/trace/Kconfig` 文件描述了这些**依赖关系**。读者可以参考 `Makefile` 文件和 `Konfig` 文件，然后选中自己所需要的跟踪器。
 
 通常在配置内核时，使用 `make menuconfig` 会更直观一些。以 2.6.33.1 版本的内核为例，要将 ftrace 编译进内核，可以选中 Kernel hacking （图 1 ）下的 Tracers 菜单项（图 2 ）。
+
+图 1. Kernel hacking:
+
+![2020-02-01-12-21-40.png](./images/2020-02-01-12-21-40.png)
+
+图 2. Tracers:
+
+![2020-02-01-12-22-24.png](./images/2020-02-01-12-22-24.png)
+
+
 
 # 参考
 
