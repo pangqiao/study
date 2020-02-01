@@ -127,7 +127,11 @@ mount  -t  debugfs  nodev  /sys/kernel/debug
 
 # ftrace 的数据文件
 
-/sys/kernel/debug/trace 目录下文件和目录比较多，有些是各种跟踪器共享使用的，有些是特定于某个跟踪器使用的。在操作这些数据文件时，通常使用 echo 命令来修改其值，也可以在程序中通过文件读写相关的函数来操作这些文件的值。下面只对部分文件进行描述，读者可以参考内核源码包中 Documentation/trace 目录下的文档以及 kernel/trace 下的源文件以了解其余文件的用途。 
+/sys/kernel/debug/trace 目录下文件和目录比较多，有些是各种跟踪器共享使用的，有些是特定于某个跟踪器使用的。
+
+在操作这些数据文件时，通常使用 echo 命令来修改其值，也可以在程序中通过文件读写相关的函数来操作这些文件的值。
+
+下面只对部分文件进行描述，读者可以参考内核源码包中 Documentation/trace 目录下的文档以及 kernel/trace 下的源文件以了解其余文件的用途。 
 
 # 参考
 
