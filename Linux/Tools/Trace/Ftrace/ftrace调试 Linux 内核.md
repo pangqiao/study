@@ -74,9 +74,36 @@ depends on !X86_32 || !CC_OPTIMIZE_FOR_SIZE
 
 ![2020-02-01-13-47-09.png](./images/2020-02-01-13-47-09.png)
 
-# debugfs编译选项
+# debugfs支持
 
-ftrace 通过 **debugfs** 向**用户态**提供了**访问接口**，所以还需要将 debugfs 编译进内核。激活对 debugfs 的支持，可以直接编辑内核配置文件 .config ，设置 CONFIG_DEBUG_FS=y ；或者在 make menuconfig 时到 Kernel hacking 菜单下选中对 debugfs 文件系统的支持，如图 6 所示。
+## 内核编译选项
+
+ftrace 通过 **debugfs** 向**用户态**提供了**访问接口**，所以还需要将 debugfs 编译进内核。
+
+激活对 debugfs 的支持，可以直接编辑内核配置文件 `.config` ，设置 `CONFIG_DEBUG_FS=y` ；或者在 `make menuconfig` 时到 `Kernel hacking` 菜单下选中对 debugfs 文件系统的支持，如图 6 所示。
+
+图 6. debugfs 编译选项
+
+![2020-02-01-14-45-08.png](./images/2020-02-01-14-45-08.png)
+
+配置完成后，**编译安装新内核**，然后**启动到新内核**。 
+
+注意，激活 ftrace 支持后，编译内核时会使用编译器的 `-pg` 选项，这是在 `kernel/trace/Makefile` 文件中定义的，如清单 2 所示。
+
+清单 2. 激活编译选项 -pg
+
+```
+ifdef CONFIG_FUNCTION_TRACER 
+ORIG_CFLAGS := $(KBUILD_CFLAGS) 
+KBUILD_CFLAGS = $(subst -pg,,$(ORIG_CFLAGS)) 
+... 
+endif 
+...
+```
+
+使用 `-pg` 选项会在编译得到的内核映像中加入大量的调试信息。一般情况下，只是在开发测试阶段激活 ftrace 支持，以调试内核，修复 bug 。最终用于发行版的内核则会关闭 `-pg` 选项，也就无法使用 ftrace。
+
+
 
 # 参考
 
