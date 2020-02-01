@@ -17,7 +17,7 @@
 - [ftrace 的数据文件](#ftrace-的数据文件)
 - [ftrace 跟踪器](#ftrace-跟踪器)
 - [ftrace操作概述](#ftrace操作概述)
-- [参考](#参考)
+- [function跟踪器](#function跟踪器)
 
 <!-- /code_chunk_output -->
 
@@ -200,6 +200,36 @@ echo 1 > /proc/sys/kernel/ftrace_enabled
 
 接下来将对跟踪器的使用以及跟踪信息的格式通过实例加以讲解。
 
+# function跟踪器
+
+function 跟踪器可以跟踪内核函数的调用情况，可用于调试或者分析 bug ，还可用于了解和观察 Linux 内核的执行过程。清单 1 给出了使用 function 跟踪器的示例。
+
+清单 1. function 跟踪器使用示例
+
+```
+[root@linux tracing]# pwd 
+/sys/kernel/debug/tracing 
+[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
+[root@linux tracing]# echo function > current_tracer 
+[root@linux tracing]# echo 1 > tracing_on 
+[root@linux tracing]# echo 1 > tracing_enabled 
+
+# 让内核运行一段时间，这样 ftrace 可以收集一些跟踪信息，之后再停止跟踪
+
+[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# cat trace | head -10 
+# tracer: function 
+# 
+#         TASK-PID    CPU#    TIMESTAMP  FUNCTION 
+#            | |       |          |         | 
+        <idle>-0     [000] 20654.426521: _raw_spin_lock <-scheduler_tick 
+        <idle>-0     [000] 20654.426522: task_tick_idle <-scheduler_tick 
+        <idle>-0     [000] 20654.426522: cpumask_weight <-scheduler_tick 
+        <idle>-0     [000] 20654.426523: cpumask_weight <-scheduler_tick 
+        <idle>-0     [000] 20654.426523: run_posix_cpu_timers <-update_process_times 
+ <idle>-0 [000] 20654.426524: hrtimer_forward <-tick_sched_timer
+trace 文件给出的信息格式很清晰。首先，字段“tracer:”给出了当前所使用的跟踪器的名字，这里为 function 跟踪器。然后是跟踪信息记录的格式，TASK 字段对应任务的名字，PID 字段则给出了任务的进程 ID，字段 CPU# 表示运行被跟踪函数的 CPU 号，这里可以看到 idle 进程运行在 0 号 CPU 上，其进程 ID 是 0 ；字段 TIMESTAMP 是时间戳，其格式为“<secs>.<usecs>”，表示执行该函数时对应的时间戳；FUNCTION 一列则给出了被跟踪的函数，函数的调用者通过符号 “<-” 标明，这样可以观察到函数的调用关系。
 
 # 参考
 
