@@ -1,4 +1,26 @@
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [简介](#简介)
+  - [ftrace](#ftrace)
+  - [本文概述](#本文概述)
+  - [主要用途](#主要用途)
+- [ftrace内核编译选项](#ftrace内核编译选项)
+  - [内核源码编译选项](#内核源码编译选项)
+  - [make menuconfig配置项](#make-menuconfig配置项)
+- [debugfs支持](#debugfs支持)
+  - [内核编译选项](#内核编译选项)
+  - [内核编译](#内核编译)
+- [通过 debugfs 访问 ftrace](#通过-debugfs-访问-ftrace)
+- [ftrace 的数据文件](#ftrace-的数据文件)
+- [ftrace 跟踪器](#ftrace-跟踪器)
+- [ftrace操作概述](#ftrace操作概述)
+- [参考](#参考)
+
+<!-- /code_chunk_output -->
+
 # 简介
 
 ## ftrace
@@ -155,6 +177,9 @@ ftrace 当前包含多个跟踪器，用于跟踪不同类型的信息，比如�
 * `irqsoff跟踪器`和 `preemptoff跟踪器`分别跟踪关闭中断的代码和禁止进程抢占的代码，并记录关闭的最大时长，preemptirqsoff跟踪器则可以看做它们的组合。 
 
 ftrace 还支持其它一些跟踪器，比如 initcall、ksym_tracer、mmiotrace、sysprof 等。ftrace 框架支持扩展添加新的跟踪器。读者可以参考内核源码包中 Documentation/trace 目录下的文档以及 kernel/trace 下的源文件，以了解其它跟踪器的用途和如何添加新的跟踪器。
+
+# ftrace操作概述
+
 
 
 # 参考
