@@ -74,9 +74,9 @@ depends on !X86_32 || !CC_OPTIMIZE_FOR_SIZE
 
 ![2020-02-01-13-47-09.png](./images/2020-02-01-13-47-09.png)
 
-# 
+# debugfs编译选项
 
-ftrace 通过 debugfs 向用户态提供了访问接口，所以还需要将 debugfs 编译进内核。激活对 debugfs 的支持，可以直接编辑内核配置文件 .config ，设置 CONFIG_DEBUG_FS=y ；或者在 make menuconfig 时到 Kernel hacking 菜单下选中对 debugfs 文件系统的支持，如图 6 所示。
+ftrace 通过 **debugfs** 向**用户态**提供了**访问接口**，所以还需要将 debugfs 编译进内核。激活对 debugfs 的支持，可以直接编辑内核配置文件 .config ，设置 CONFIG_DEBUG_FS=y ；或者在 make menuconfig 时到 Kernel hacking 菜单下选中对 debugfs 文件系统的支持，如图 6 所示。
 
 # 参考
 
