@@ -60,6 +60,17 @@ ftrace 相关的配置选项比较多，针对不同的跟踪器有各自对应�
 
 ![2020-02-01-13-11-34.png](./images/2020-02-01-13-11-34.png)
 
+这里要注意，如果是在 32 位 x86 机器上，编译时不要选中 General setup 菜单项（图 4 ）下的 Optimize for size 选项（图 5 ），否则就无法看到图 3 中的 `Kernel Function Graph Tracer` 选项。这是因为在 Konfig 文件中，针对 32 位 x86 机器，表项 `FUNCTION_GRAPH_TRACER` 有一个特殊的依赖条件：
+
+```
+depends on !X86_32 || !CC_OPTIMIZE_FOR_SIZE
+```
+
+
+
+![2020-02-01-13-18-46.png](./images/2020-02-01-13-18-46.png)
+
+
 # 参考
 
 https://www.cnblogs.com/jefree/p/4438982.html
