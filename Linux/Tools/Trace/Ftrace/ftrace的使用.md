@@ -96,8 +96,8 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 - `current_tracer`: 这表示**当前启用**的哪个**跟踪器**。可以通过**echo**向表输入一个新的跟踪器来改变相应值。 
 - `trace`: 实际的**跟踪输出**。 
 - `trace_pipe`，与trace相同，但是运行时像管道一样，可以在每次事件发生时读出追踪信息，但是读出的内容不能再次读出。
-- `set_ftrace_filter`，指定要追踪的函数名称，函数名称仅可以包含一个通配符。
-- `set_ftrace_notrace`，指定不要追踪的函数名称。
+- `set_ftrace_filter`，指定**要追踪的函数名称**，函数名称仅可以包含一个通配符。
+- `set_ftrace_notrace`，指定**不要追踪的函数名称**。
 - `set_ftrace_pid`: 设置跟踪所作用的**进程的PID**。 
 - `tracing_cpumask`，以**十六进制**的**位掩码**指定要作为**追踪对象的处理器**，例如，指定**0xb**时仅在处理器**0、1、3**上进行追踪。
 - `tracing_enabled`或`tracing_on`: 让你可以**启用或者禁用当前跟踪功能** 
@@ -250,6 +250,8 @@ ftrace允许你对一个特殊的进程进行跟踪。在`/sys/kernel/debug/trac
 
 有一种动态的方法可以过滤出我们所需要的函数，排除那些我们不需要的：在文件`set_ftrace_filter`中指明。（首先从`available_filter_functions`文件中找到你需要的函数。）
 
+注: 在编译内核时配置了动态 ftrace （选中 CONFIG_DYNAMIC_FTRACE 选项）后使用.
+
 图4就是一个动态跟踪的例子。
 
 ![2020-01-31-19-49-29.png](./images/2020-01-31-19-49-29.png)
@@ -265,6 +267,9 @@ root@thinker:/sys/kernel/debug/tracing# echo 'write*:mod:ext3' > set_ftrace_filt
 ```
 
 仅追踪**ext3模块**中包含的以**write开头**的函数。
+
+
+`set_ftrace_notrace`用于指定不跟踪的函数。如果一个函数名同时出现在这两个文件中，则这个函数的执行状况不会被跟踪。
 
 # 9. trace_printk
 
