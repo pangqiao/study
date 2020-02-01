@@ -107,7 +107,19 @@ endif
 
 # 通过 debugfs 访问 ftrace
 
+ftrace 通过 debugfs 向用户态提供访问接口。配置内核时激活 debugfs 后会创建目录 `/sys/kernel/debug` ，debugfs 文件系统就是挂载到该目录。要挂载该目录，需要将如下内容添加到 `/etc/fstab` 文件：
 
+```
+debugfs  /sys/kernel/debug  debugfs  defaults  0  0
+```
+
+或者可以在运行时挂载：
+
+```
+mount  -t  debugfs  nodev  /sys/kernel/debug
+```
+
+激活内核对 ftrace 的支持后会在 debugfs 下创建一个 tracing 目录 /sys/kernel/debug/tracing 。该目录下包含了 ftrace 的控制和输出文件，如图 7 所示。根据编译内核时针对 ftrace 的设定不同，该目录下实际显示的文件和目录与这里也会不同。
 
 # 参考
 
