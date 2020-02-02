@@ -4,9 +4,7 @@
 <!-- code_chunk_output -->
 
 - [5. Trace选项(启用或禁用)](#5-trace选项启用或禁用)
-- [6. ftrace之特殊进程](#6-ftrace之特殊进程)
-- [7. 函数图跟踪器](#7-函数图跟踪器)
-- [8. 动态跟踪(过滤只查看)](#8-动态跟踪过滤只查看)
+- [8.](#8)
 - [9. trace_printk](#9-trace_printk)
 - [10. 事件跟踪](#10-事件跟踪)
 - [11. trace-cmd and KernelShark](#11-trace-cmd-and-kernelshark)
@@ -29,46 +27,7 @@ tracing的输入可以由一个叫`trace_options`的文件控制。
 要**禁用一个跟踪选项**，只需要在相应行首加一个“no”即可。
 
 比如, `echo notrace_printk > trace_options`。（no和选项之间没有空格。）要再次启用一个跟踪选项，你可以这样：`echo trace_printk > trace_options`。
-
-# 6. ftrace之特殊进程
-
-
-
-# 7. 函数图跟踪器
-
-函数图跟踪器对函数的进入与退出进行跟踪，这对于跟踪它的执行时间很有用。函数执行时间**超过10微秒**的标记一个`“+”`号，**超过1000微秒**的标记为一个`“！”`号。通过`echo function_graph > current_tracer`可以启用函数图跟踪器。示例输入如图3所示。
-
-![2020-01-31-18-47-04.png](./images/2020-01-31-18-47-04.png)
-
-有很多跟踪器，所有的列表在`linux/Documentation/trace/ftrace.txt`文件中找得到。通过将跟踪器的名字echo到`current_tracer`文件中可以启用或禁用相应跟踪器。
-
-# 8. 动态跟踪(过滤只查看)
-
-我们会很轻易地被淹没在函数跟踪器所抛给我们的大量数据中。
-
-有一种动态的方法可以过滤出我们所需要的函数，排除那些我们不需要的：在文件`set_ftrace_filter`中指明。（首先从`available_filter_functions`文件中找到你需要的函数。）
-
-注: 在编译内核时配置了动态 ftrace （选中 CONFIG_DYNAMIC_FTRACE 选项）后使用.
-
-图4就是一个动态跟踪的例子。
-
-![2020-01-31-19-49-29.png](./images/2020-01-31-19-49-29.png)
-
-如你所看到的，你甚至可以对函数的名字使用**通配符**。
-
-我需要用所有的`vmalloc_`函数，通过`echo vmalloc_* > set_ftrace_filter`进行设置。
-
-另外，在参数前面加上`:mod:`，可以仅追踪指定模块中包含的函数（注意，模块必须已经加载）。例如：
-
-```
-root@thinker:/sys/kernel/debug/tracing# echo 'write*:mod:ext3' > set_ftrace_filter
-```
-
-仅追踪**ext3模块**中包含的以**write开头**的函数。
-
-
-`set_ftrace_notrace`用于指定不跟踪的函数。如果一个函数名同时出现在这两个文件中，则这个函数的执行状况不会被跟踪。
-
+# 8. 
 # 9. trace_printk
 
 `trace_printk`打印调试信息后，将`current_tracer`设置为**nop**，将`tracing_on`设置为1，调用相应模块执行，即可通过trace文件看到`trace_printk`打印的信息。

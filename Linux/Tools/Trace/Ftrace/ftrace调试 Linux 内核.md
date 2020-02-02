@@ -23,7 +23,7 @@
 - [11. irqsoff 跟踪器](#11-irqsoff-跟踪器)
 - [preemptoff跟踪器](#preemptoff跟踪器)
 - [preemptirqsoff跟踪器](#preemptirqsoff跟踪器)
-- [12. 跟踪指定模块中的函数set_ftrace_filter](#12-跟踪指定模块中的函数set_ftrace_filter)
+- [12. 动态跟踪](#12-动态跟踪)
 - [13. 相关代码以及使用](#13-相关代码以及使用)
   - [13.1. 使用 trace_printk 打印跟踪信息](#131-使用-trace_printk-打印跟踪信息)
 - [14. 使用 tracing_on/tracing_off 控制跟踪信息的记录](#14-使用-tracing_ontracing_off-控制跟踪信息的记录)
@@ -420,7 +420,7 @@ no pid
 # cat trace
 ```
 
-以下traceprocess.sh示例脚本向你展示了如何抓取当前运行的进程的PID，并进行相应跟踪。
+以下traceprocess.sh示例脚本向你展示了如何抓取**当前运行的进程的PID**，并进行相应跟踪。
 
 ```bash
 #!/bin/bash
@@ -448,6 +448,7 @@ echo $PID > $DPATH/set_ftrace_pid
 echo 1 > $DPATH/tracing_on
 
 # execute the process
+# $* all parameter list
 exec $*
 
 # stop the tracing
@@ -469,6 +470,12 @@ echo 0 > tracing_on
 在 function 跟踪器给出的信息中，可以通过 FUNCTION 列中的符号 `“<-”` 来**查看函数调用关系**，但是由于中间会混合不同函数的调用，导致看起来非常混乱，十分不方便。
 
 `function_graph` 跟踪器则可以提供类似 C 代码的函数**调用关系信息**。通过写文件 `set_graph_function` 可以显示**指定**要生成**调用关系的函数**，缺省会对所有可跟踪的内核函数生成函数调用关系图。
+
+**函数图跟踪器**对**函数的进入**与**退出**进行跟踪，这对于跟踪它的执行时间很有用。函数执行时间**超过10微秒**的标记一个`“+”`号，**超过1000微秒**的标记为一个`“！”`号。通过`echo function_graph > current_tracer`可以启用函数图跟踪器。示例输入如图3所示。
+
+![2020-01-31-18-47-04.png](./images/2020-01-31-18-47-04.png)
+
+有很多跟踪器，所有的列表在`linux/Documentation/trace/ftrace.txt`文件中找得到。通过将跟踪器的名字echo到`current_tracer`文件中可以启用或禁用相应跟踪器。
 
 清单 2 给出了使用 `function_grapch` 跟踪器的示例，示例中将**内核函数** `__do_fault` 作为观察对象，该函数在内核运作过程中会被频繁调用。
 
@@ -786,7 +793,63 @@ preemptirqsoff跟踪器抓取的信息如下。
  => ret_from_intr 
 ```
 
-# 12. 跟踪指定模块中的函数set_ftrace_filter
+# 12. 动态跟踪
+
+在配置内核时打开了`CONFIG_DYNAMIC_FTRACE`选项，就可以**支持动态ftrace功能**。`set_ftrace_filter`和`set_ftrace_notrace`这两个文件可以配对使用，其中，前者设置**要跟踪的函数**，后者指定**不要跟踪的函数**。如果一个函数名**同时出现**在这两个文件中，则这个函数的执行状况**不会被跟踪**。
+
+在实际调试过程中，我们通常会被ftrace提供的**大量信息**淹没，因此**动态过滤**的方法非常有用。
+
+`available_filter_functions`文件可以列出**当前系统支持的所有函数**，例如现在我只想关注 `sys_nanosleep()` 和`hrtimer_interrupt()`这两个函数。
+
+```
+# cd /sys/kernel/debug/tracing/
+# echo sys_nanosleep hrtimer_interrupt > set_ftrace_filter
+# echo function > current_tracer
+# echo 1 > tracing_on
+# usleep 1
+# echo 0 > tracing_on
+# cat trace
+```
+
+抓取的数据如下.
+
+```
+# tracer: function
+#
+# entries-in-buffer/entries-written: 5/5   #P:4
+#
+#                              _-----=> irqs-off
+#                             / _----=> need-resched
+#                            | / _---=> hardirq/softirq
+#                            || / _--=> preempt-depth
+#                            ||| /     delay
+#            TASK-PID   CPU#     ||||    TIMESTAMP  FUNCTION
+#              | |      |  ||||       |         |
+          usleep-2665  [001] ....  4186.475355: sys_nanosleep < -system_call_fastpath
+          < idle>-0     [001] d.h1  4186.475409: hrtimer_interrupt < -smp_apic_timer_interrupt
+          usleep-2665  [001] d.h1  4186.475426: hrtimer_interrupt < -smp_apic_timer_interrupt
+          < idle>-0     [003] d.h1  4186.475426: hrtimer_interrupt < -smp_apic_timer_interrupt
+          < idle>-0     [002] d.h1  4186.475427: hrtimer_interrupt < -smp_apic_timer_interrupt
+```
+
+图4就是一个动态跟踪的例子。
+
+![2020-01-31-19-49-29.png](./images/2020-01-31-19-49-29.png)
+
+如你所看到的，你甚至可以对函数的名字使用**通配符**。
+
+我需要用所有的`vmalloc_`函数，通过`echo vmalloc_* > set_ftrace_filter`进行设置。
+
+另外，在参数前面加上`:mod:`，可以仅追踪指定模块中包含的函数（注意，模块必须已经加载）。例如：
+
+```
+root@thinker:/sys/kernel/debug/tracing# echo 'write*:mod:ext3' > set_ftrace_filter
+```
+
+仅追踪**ext3模块**中包含的以**write开头**的函数。
+
+
+`set_ftrace_notrace`用于指定不跟踪的函数。
 
 前面提过，通过文件 `set_ftrace_filter` 可以**指定要跟踪的函数**，缺省目标为所有可跟踪的内核函数；可以将感兴趣的函数通过 echo 写入该文件。为了方便使用，`set_ftrace_filter` 文件还支持简单格式的通配符。
 

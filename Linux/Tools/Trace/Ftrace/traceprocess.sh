@@ -23,6 +23,7 @@ echo $PID > $DPATH/set_ftrace_pid
 echo 1 > $DPATH/tracing_on
 
 # execute the process
+# $* all parameter list
 exec $*
 
 # stop the tracing
