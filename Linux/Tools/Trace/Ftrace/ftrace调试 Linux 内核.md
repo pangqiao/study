@@ -22,6 +22,7 @@
 - [sched_switch 跟踪器](#sched_switch-跟踪器)
 - [irqsoff 跟踪器](#irqsoff-跟踪器)
 - [跟踪指定模块中的函数](#跟踪指定模块中的函数)
+- [相关代码以及使用](#相关代码以及使用)
 - [参考](#参考)
 
 <!-- /code_chunk_output -->
@@ -413,19 +414,26 @@ events/0-9     [000] 26208.817088:      9:120:S ==> [000]  1377:120:R gnome-term
 echo ':mod:[module_name]' > set_ftrace_filter
 ```
 
-下面给出了一个指定跟踪模块 ipv6 中的函数的例子。可以看到，指定跟踪模块 ipv6 中的函数会将文件 set_ftrace_filter 的内容设置为只包含该模块中的函数。
+下面给出了一个指定跟踪模块 ipv6 中的函数的例子。可以看到，指定跟踪模块 ipv6 中的函数会将文件 `set_ftrace_filter` 的内容设置为只包含该模块中的函数。
 
 清单 5. 指定跟踪 ipv6 模块中的函数
- [root@linux tracing]# pwd 
- /sys/kernel/debug/tracing 
- [root@linux tracing]# echo ':mod:ipv6' > set_ftrace_filter 
- [root@linux tracing]# cat set_ftrace_filter | head -5 
- ipv6_opt_accepted 
- inet6_net_exit 
- ipv6_gro_complete 
- inet6_create 
- ipv6_addr_copy
- 
+
+```
+[root@linux tracing]# pwd 
+/sys/kernel/debug/tracing 
+[root@linux tracing]# echo ':mod:ipv6' > set_ftrace_filter 
+[root@linux tracing]# cat set_ftrace_filter | head -5 
+ipv6_opt_accepted 
+inet6_net_exit 
+ipv6_gro_complete 
+inet6_create 
+ipv6_addr_copy
+```
+
+# 相关代码以及使用
+
+内核头文件 `include/linux/kernel.h` 中描述了 `ftrace` 提供的工具函数的原型，这些函数包括 `trace_printk`、`tracing_on/tracing_off` 等。本文通过示例模块程序向读者展示如何在代码中使用这些工具函数。
+
 
 
 # 参考
