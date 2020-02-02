@@ -20,7 +20,9 @@
 - [9. function_graph 跟踪器](#9-function_graph-跟踪器)
 - [10. sched_switch 跟踪器](#10-sched_switch-跟踪器)
 - [11. irqsoff 跟踪器](#11-irqsoff-跟踪器)
-- [12. 跟踪指定模块中的函数](#12-跟踪指定模块中的函数)
+- [preemptoff跟踪器](#preemptoff跟踪器)
+- [preemptirqsoff跟踪器](#preemptirqsoff跟踪器)
+- [12. 跟踪指定模块中的函数set_ftrace_filter](#12-跟踪指定模块中的函数set_ftrace_filter)
 - [13. 相关代码以及使用](#13-相关代码以及使用)
   - [13.1. 使用 trace_printk 打印跟踪信息](#131-使用-trace_printk-打印跟踪信息)
 - [14. 使用 tracing_on/tracing_off 控制跟踪信息的记录](#14-使用-tracing_ontracing_off-控制跟踪信息的记录)
@@ -563,7 +565,133 @@ irqsoff 跟踪器可以对中断被关闭的状况进行跟踪，有助于发现
 
 另外，还有用于跟踪禁止进程抢占的跟踪器 preemptoff 和跟踪中断 / 抢占禁止的跟踪器 preemptirqsoff，它们的使用方式与输出信息格式与 irqsoff 跟踪器类似，这里不再赘述。
 
-# 12. 跟踪指定模块中的函数
+```
+# tracer: irqsoff
+#
+# irqsoff latency trace v1.1.5 on 4.0.0
+# --------------------------------------------------------------------
+# latency: 259 us, #4/4, CPU#2 | (M:preempt VP:0, KP:0, SP:0 HP:0 #P:4)
+#    -----------------
+#    | task: ps-6143 (uid:0 nice:0 policy:0 rt_prio:0)
+#    -----------------
+#  => started at: __lock_task_sighand
+#  => ended at:   _raw_spin_unlock_irqrestore
+#
+#
+#                  _------=> CPU#            
+#                 / _-----=> irqs-off        
+#                | / _----=> need-resched    
+#                || / _---=> hardirq/softirq 
+#                ||| / _--=> preempt-depth   
+#                |||| /     delay             
+#  cmd     pid    ||||| time  |   caller      
+#    \   /      |||||  \    |   /           
+     ps-6143    2d...    0us!: trace_hardirqs_off < -__lock_task_sighand
+     ps-6143    2d..1  259us+: trace_hardirqs_on < -_raw_spin_unlock_irqrestore
+     ps-6143    2d..1  263us+: time_hardirqs_on < -_raw_spin_unlock_irqrestore
+     ps-6143    2d..1  306us : < stack trace>
+ => trace_hardirqs_on_caller
+ => trace_hardirqs_on
+ => _raw_spin_unlock_irqrestore
+ => do_task_stat
+ => proc_tgid_stat
+ => proc_single_show
+ => seq_read
+ => vfs_read
+ => sys_read
+ => system_call_fastpath
+```
+
+文件的开头显示了当前跟踪器为irqsoff，并且显示当前跟踪器的版本信息为v1.1.5，运行的内核版本为4.0。显示当前最大的中断延迟是259微秒，跟踪条目和总共跟踪条目为4条（`#4/4`），另外VP、KP、SP、HP值暂时没用，`#P:4`表示当前系统可用的CPU一共有4个。task: ps-6143表示当前发生中断延迟的进程是PID为6143的进程，名称为ps。
+
+started at和ended at显示发生中断的开始函数和结束函数分别为__lock_task_sighand和_raw_spin_unlock_irqrestore。接下来ftrace信息表示的内容分别如下。
+
+* cmd：进程名字为“ps”。
+* pid：进程的PID号。
+* CPU#：该进程运行在哪个CPU上。
+* irqs-off：“d”表示中断已经关闭。
+* need_resched：“N”表示进程设置了`TIF_NEED_RESCHED`和`PREEMPT_NEED_RESCHED`标志位；“n”表示进程仅设置了`TIF_NEED_RESCHED`标志位；“p”表示进程仅设置了`PREEMPT_NEED_RESCHED`标志位。
+* hardirq/softirq：“H”表示在一次软中断中发生了一个硬件中断；“h”表示硬件中断发生；“s”表示软中断；“.”表示没有中断发生。
+* preempt-depth：表示抢占关闭的嵌套层级。
+* time：表示时间戳。如果打开了latency-format选项，表示时间从开始跟踪算起，这是一个相对时间，方便开发者观察，否则使用系统绝对时间。
+* delay：用一些特殊符号来延迟的时间，方便开发者观察。“$”表示大于1秒，“#”表示大于1000微秒，“!”表示大于100微秒，“+”表示大于10微秒。
+
+最后要说明的是，文件最开始显示中断延迟是259微秒，但是在`<stack trace>`里显示306微秒，这是因为在记录最大延迟信息时需要花费一些时间。 
+
+# preemptoff跟踪器
+
+当抢占关闭时，虽然可以响应中断，但是高优先级进程在中断处理完成之后不能抢占低优先级进程直至打开抢占，这样也会导致抢占延迟。和irqsoff跟踪器一样，preemptoff跟踪器用于跟踪和记录关闭抢占的最大延迟。
+
+```
+# cd /sys/kernel/debug/tracing/
+# echo 0 > options/function-trace
+# echo preemptoff > current_tracer
+# echo 1 > tracing_on
+ [...]
+# echo 0 > tracing_on
+# cat trace
+```
+
+下面是一个preemptoff的例子。
+
+```
+# tracer: preemptoff
+#
+# preemptoff latency trace v1.1.5 on 3.8.0-test+
+# --------------------------------------------------------------------
+# latency: 46 us, #4/4, CPU#1 | (M:preempt VP:0, KP:0, SP:0 HP:0 #P:4)
+#    -----------------
+#    | task: sshd-1991 (uid:0 nice:0 policy:0 rt_prio:0)
+#    -----------------
+#  => started at: do_IRQ
+#  => ended at:   do_IRQ
+#
+#
+#                  _------=> CPU#            
+#                 / _-----=> irqs-off        
+#                | / _----=> need-resched    
+#                || / _---=> hardirq/softirq 
+#                ||| / _--=> preempt-depth   
+#                |||| /     delay             
+#  cmd     pid    ||||| time  |   caller      
+#    \   /      |||||  \    |   /           
+    sshd-1991    1d.h.      0us+: irq_enter < -do_IRQ
+    sshd-1991    1d..1      46us : irq_exit < -do_IRQ
+    sshd-1991    1d..1      47us+: trace_preempt_on < -do_IRQ
+    sshd-1991    1d..1      52us : < stack trace>
+ => sub_preempt_count
+ => irq_exit
+ => do_IRQ
+ => ret_from_intr
+```
+
+# preemptirqsoff跟踪器
+
+在优化系统延迟时，如果能快速定位何处关中断或者关抢占，对开发者来说会很有帮助，思考如下代码片段。
+
+```
+local_irq_disable();
+    call_function_with_irqs_off();  //函数A
+    preempt_disable();
+    call_function_with_irqs_and_preemption_off();  //函数B
+    local_irq_enable();
+    call_function_with_preemption_off();  //函数C
+    preempt_enable(); 
+```
+
+如果使用irqsoff跟踪器，那么只能记录函数A和函数B的时间。如果使用preemptoff跟踪器，那么只能记录函数B和函数C的时间。可是函数A+B+C中都不能被调度，因此preemptirqsoff用于记录这段时间的最大延迟。
+
+```
+ # cd /sys/kernel/debug/tracing/
+# echo 0 > options/function-trace
+# echo preemptirqsoff > current_tracer
+# echo 1 > tracing_on
+ [...]
+# echo 0 > tracing_on
+# cat trace 
+```
+
+# 12. 跟踪指定模块中的函数set_ftrace_filter
 
 前面提过，通过文件 `set_ftrace_filter` 可以**指定要跟踪的函数**，缺省目标为所有可跟踪的内核函数；可以将感兴趣的函数通过 echo 写入该文件。为了方便使用，`set_ftrace_filter` 文件还支持简单格式的通配符。
 
