@@ -19,6 +19,7 @@
 - [ftrace操作概述](#ftrace操作概述)
 - [function跟踪器](#function跟踪器)
 - [function_graph 跟踪器](#function_graph-跟踪器)
+- [sched_switch 跟踪器](#sched_switch-跟踪器)
 - [参考](#参考)
 
 <!-- /code_chunk_output -->
@@ -289,10 +290,48 @@ trace 文件给出的信息格式很清晰。
 `DURATION` 字段给出了**函数执行的时间长度**，以 `us` 为单位。
 
 `FUNCTION CALLS` 则给出了**调用的函数**，并显示了**调用流程**。注意，
+
 - 对于**不调用其它函数的函数**，其对应行以`“;”`结尾，而且对应的 `DURATION` 字段给出其运行时长；
-- 对于调用其它函数的函数，则在其“}”对应行给出了运行时长，该时间是一个累加值，包括了其内部调用的函数的执行时长。DURATION 字段给出的时长并不是精确的，它还包含了执行 ftrace 自身的代码所耗费的时间，所以示例中将内部函数时长累加得到的结果会与对应的外围调用函数的执行时长并不一致；不过通过该字段还是可以大致了解函数在时间上的运行开销的。清单 2 中最后通过 echo 命令重置了文件 set_graph_function 。
+- 对于**调用其它函数的函数**，则在其`“}”`对应行给出了**运行时长**，该时间是一个**累加值**，包括了其内部调用的函数的执行时长。`DURATION` 字段给出的时长并**不是精确的**，它还包含了执行 `ftrace` **自身的代码所耗费的时间**，所以示例中将内部函数时长累加得到的结果会与对应的外围调用函数的执行时长并不一致；不过通过该字段还是可以大致了解函数在时间上的运行开销的。
 
+清单 2 中最后通过 echo 命令重置了文件 `set_graph_function` 。
 
+# sched_switch 跟踪器
+
+`sched_switch` 跟踪器可以对**进程的调度切换**以及**之间的唤醒操作**进行跟踪，如清单 3 所示。
+
+清单 3. sched_switch 跟踪器使用示例
+
+```
+[root@linux tracing]# pwd 
+/sys/kernel/debug/tracing 
+[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
+[root@linux tracing]# echo sched_switch > current_tracer 
+[root@linux tracing]# echo 1 > tracing_on 
+[root@linux tracing]# echo 1 > tracing_enabled 
+
+# 让内核运行一段时间，这样 ftrace 可以收集一些跟踪信息，之后再停止跟踪
+
+[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# cat trace | head -10 
+# tracer: sched_switch 
+# 
+#  TASK-PID    CPU#    TIMESTAMP  FUNCTION 
+#     | |       |          |         | 
+    bash-1408  [000] 26208.816058:   1408:120:S   + [000]  1408:120:S bash 
+    bash-1408  [000] 26208.816070:   1408:120:S   + [000]  1408:120:S bash 
+    bash-1408  [000] 26208.816921:   1408:120:R   + [000]     9:120:R events/0 
+    bash-1408  [000] 26208.816939:   1408:120:R ==> [000]     9:120:R events/0 
+events/0-9     [000] 26208.817081:      9:120:R   + [000]  1377:120:R gnome-terminal
+events/0-9     [000] 26208.817088:      9:120:S ==> [000]  1377:120:R gnome-terminal
+```
+
+在 `sched_swich` 跟踪器获取的跟踪信息中记录了进程间的唤醒操作和调度切换信息，可以通过符号‘ + ’和‘ ==> ’区分；唤醒操作记录给出了当前进程唤醒运行的进程，进程调度切换记录中显示了接替当前进程运行的后续进程。
+
+描述进程状态的格式为“Task-PID:Priority:Task-State”。以示例跟踪信息中的第一条跟踪记录为例，可以看到进程 bash 的 PID 为 1408 ，其对应的内核态优先级为 120 ，当前状态为 S（可中断睡眠状态），当前 bash 并没有唤醒其它进程；从第 3 条记录可以看到，进程 bash 将进程 events/0 唤醒，而在第 4 条记录中发生了进程调度，进程 bash 切换到进程 events/0 执行。
+
+在 Linux 内核中，进程的状态在内核头文件 include/linux/sched.h 中定义，包括可运行状态 TASK_RUNNING（对应跟踪信息中的符号‘ R ’）、可中断阻塞状态 TASK_INTERRUPTIBLE（对应跟踪信息中的符号‘ S ’）等。同时该头文件也定义了用户态进程所使用的优先级的范围，最小值为 MAX_USER_RT_PRIO（值为 100 ），最大值为 MAX_PRIO - 1（对应值为 139 ），缺省为 DEFAULT_PRIO（值为 120 ）；在本例中，进程优先级都是缺省值 120 。
 
 
 
