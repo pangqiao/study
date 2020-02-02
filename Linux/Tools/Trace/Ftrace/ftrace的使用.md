@@ -3,9 +3,6 @@
 
 <!-- code_chunk_output -->
 
-  - [4.3. 设置追踪器](#43-设置追踪器)
-  - [4.4. 开始追踪并查看](#44-开始追踪并查看)
-  - [4.5. 清空trace](#45-清空trace)
 - [5. Trace选项(启用或禁用)](#5-trace选项启用或禁用)
 - [6. ftrace之特殊进程](#6-ftrace之特殊进程)
 - [7. 函数图跟踪器](#7-函数图跟踪器)
@@ -16,54 +13,6 @@
 - [12. 参考](#12-参考)
 
 <!-- /code_chunk_output -->
-## 4.3. 设置追踪器
-
-
-## 4.4. 开始追踪并查看
-
-使用下面的命令可以开始跟踪：
-
-```
-
-
-
-
-```
-
-现在trace文件的输入在trace.txt文件中。通过上面操作所得到的函数跟踪的一个示例输出如图3所示。
-
-![2020-01-31-00-46-03.png](./images/2020-01-31-00-46-03.png)
-
-一旦将函数追踪器启动，ftrace会记录所有函数的运行情况, 如果想要禁用或只查看某一些, 需要通过`trace_options`或`set_ftrace_pid`或`set_ftrace_filter`, 然后再设置`current_tracer`并开启追踪
-
-```
-# cat  available_tracers
-blk function_graph mmiotrace wakeup_rtwakeup function nop
-
-# echo schedule > set_ftrace_filter     ## 仅记录schedule
-# cat set_ftrace_filter
-schedule
-
-# echo function > current_tracer
-# cat current_tracer
-function
-
-# echo 1 > tracing_on
-
-# 停顿会儿
-
-# echo 0 > tracing_on
-# cat trace > /tmp/trace.txt
-# > trace
-```
-
-## 4.5. 清空trace
-
-```
-# echo 0 > tracing_on   ## 禁用跟踪功能
-
-# echo 0 > trace        ## 或者 > trace
-```
 
 # 5. Trace选项(启用或禁用)
 

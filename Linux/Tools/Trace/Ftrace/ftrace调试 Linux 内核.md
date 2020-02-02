@@ -15,7 +15,7 @@
 - [4. 通过 debugfs 访问 ftrace](#4-通过-debugfs-访问-ftrace)
 - [5. ftrace 的数据文件](#5-ftrace-的数据文件)
 - [6. ftrace 跟踪器](#6-ftrace-跟踪器)
-- [7. ftrace操作概述](#7-ftrace操作概述)
+- [7. ftrace 操作流程](#7-ftrace-操作流程)
 - [8. function跟踪器](#8-function跟踪器)
 - [9. function_graph 跟踪器](#9-function_graph-跟踪器)
 - [10. sched_switch 跟踪器](#10-sched_switch-跟踪器)
@@ -282,7 +282,7 @@ ftrace 还支持其它一些跟踪器，比如 initcall、ksym_tracer、mmiotrac
 
 ftrace 框架支持**扩展添加新的跟踪器**。读者可以参考内核源码包中 `Documentation/trace` 目录下的文档以及 `kernel/trace` 下的源文件，以了解其它跟踪器的用途和如何添加新的跟踪器。
 
-# 7. ftrace操作概述
+# 7. ftrace 操作流程
 
 使用 ftrace 提供的跟踪器来调试或者分析内核时需要如下操作：
 
@@ -322,9 +322,14 @@ ftrace每次只能打开一个追踪器
 
 6. 将**要跟踪的函数**写入文件 `set_ftrace_filter` ，将**不希望跟踪**的函数写入文件 `set_ftrace_notrace`。
 
+一旦将函数追踪器启动，ftrace会记录所有函数的运行情况, 如果想要禁用或只查看某一些, 需要通过`trace_options`或`set_ftrace_pid`或`set_ftrace_filter`, 然后再设置`current_tracer`并开启追踪
+
 通常直接操作文件 `set_ftrace_filter` 就可以了
 
 ```
+# echo schedule > set_ftrace_filter     ## 仅记录schedule
+# cat set_ftrace_filter
+schedule
 ```
 
 7. **激活 ftrace 跟踪**，即将 1 写入文件 `tracing_on`。
@@ -352,6 +357,13 @@ ftrace每次只能打开一个追踪器
 # cat /tmp/trace.txt ##查看trace文件的输出。
 ```
 
+11. 禁用trace功能, 清空trace文件
+
+```
+# echo 0 > tracing_on   ## 禁用跟踪功能
+# echo 0 > trace        ## 或者> trace
+```
+
 # 8. function跟踪器
 
 function 跟踪器可以跟踪内核函数的调用情况，可用于调试或者分析 bug ，还可用于了解和观察 Linux 内核的执行过程。清单 1 给出了使用 function 跟踪器的示例。
@@ -361,15 +373,14 @@ function 跟踪器可以跟踪内核函数的调用情况，可用于调试或�
 ```
 [root@linux tracing]# pwd 
 /sys/kernel/debug/tracing 
-[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 0 > tracing_on
 [root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
 [root@linux tracing]# echo function > current_tracer 
-[root@linux tracing]# echo 1 > tracing_on 
-[root@linux tracing]# echo 1 > tracing_enabled 
+[root@linux tracing]# echo 1 > tracing_on
 
 # 让内核运行一段时间，这样 ftrace 可以收集一些跟踪信息，之后再停止跟踪
 
-[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 0 > tracing_on 
 [root@linux tracing]# cat trace | head -10 
 # tracer: function 
 # 
