@@ -407,36 +407,7 @@ trace 文件给出的信息格式很清晰。
 
 ftrace允许你对一个特定的进程进行跟踪。在`/sys/kernel/debug/tracing`目录下，文件`set_ftrace_pid`的值要更新为你想跟踪的进程的PID。
 
-以下traceprocess.sh示例脚本向你展示了如何抓取当前运行的进程的PID，并进行相应跟踪。
-
-```
-#!/bin/bash 
- 
-DPATH="/sys/kernel/debug/tracing"
-PID=$$ 
-## Quick basic checks 
-[ `id -u` -ne 0 ] && { echo "needs to be root" ; exit 1; } # check for root permissions 
-[ -z $1 ] && { echo "needs process name as argument" ; exit 1; } # check for args to this function 
-mount | grep -i debugfs &> /dev/null 
-[ $? -ne 0 ] && { echo "debugfs not mounted, mount it first"; exit 1; } #checks for debugfs mount 
- 
-# flush existing trace data 
-echo nop > $DPATH/current_tracer 
- 
-# set function tracer 
-echo function > $DPATH/current_tracer 
- 
-# enable the current tracer 
-echo 1 > $DPATH/tracing_enabled 
- 
-# write current process id to set_ftrace_pid file 
-echo $PID > $DPATH/set_ftrace_pid 
- 
-# start the tracing 
-echo 1 > $DPATH/tracing_on 
-# execute the process 
-exec $*
-```
+手动操作: 
 
 ```
 # cd /sys/kernel/debug/tracing/
@@ -447,6 +418,40 @@ no pid
 3111
 # echo function > current_tracer
 # cat trace
+```
+
+以下traceprocess.sh示例脚本向你展示了如何抓取当前运行的进程的PID，并进行相应跟踪。
+
+```bash
+#!/bin/bash
+
+DPATH="/sys/kernel/debug/tracing"
+
+## shell pid
+PID=$$
+## Quick basic checks
+[ `id -u` -ne 0 ] && { echo "needs to be root" ; exit 1; } # check for root permissions
+[ -z $1 ] && { echo "needs process name as argument" ; exit 1; } # check for args to this function
+mount | grep -i debugfs &> /dev/null
+[ $? -ne 0 ] && { echo "debugfs not mounted, mount it first"; exit 1; } #checks for debugfs mount
+
+# flush existing trace data
+echo nop > $DPATH/current_tracer
+
+# set function tracer
+echo function > $DPATH/current_tracer
+
+# write current process id to set_ftrace_pid file
+echo $PID > $DPATH/set_ftrace_pid
+
+# start the tracing
+echo 1 > $DPATH/tracing_on
+
+# execute the process
+exec $*
+
+# stop the tracing
+echo 0 > tracing_on
 ```
 
 如图中跟踪ls命令所示。
