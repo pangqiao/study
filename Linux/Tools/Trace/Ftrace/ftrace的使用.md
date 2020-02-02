@@ -3,11 +3,6 @@
 
 <!-- code_chunk_output -->
 
-- [1. 基本介绍](#1-基本介绍)
-  - [1.1. 主要用途](#11-主要用途)
-- [2. 预备知识](#2-预备知识)
-- [3. 设置ftrace](#3-设置ftrace)
-  - [3.1. 配置debugfs](#31-配置debugfs)
   - [3.2. 配置tracer选项](#32-配置tracer选项)
 - [4. 跟踪](#4-跟踪)
   - [4.1. tracing目录](#41-tracing目录)
@@ -26,82 +21,17 @@
 
 <!-- /code_chunk_output -->
 
-本文探索如何建立ftrace并能理解如何跟踪函数。ftrace对于内核开发者和设备驱动开发者在调试内核问题的时候应该很有用。
 
-# 1. 基本介绍
 
-ftrace（函数跟踪）是内核跟踪的“瑞士军刀”。它是**内建**在**Linux内核**中的一种**跟踪机制**。它能深入内核去发现里面究竟发生了什么，并调试它。
-
-ftrace**不只是一个函数跟踪工具**，它的跟踪能力之强大，还能调试和分析诸如延迟、意外代码路径、性能问题等一大堆问题。它也是一种很好的学习工具。
-
-ftrace是由Steven Rostedy和Ingo Molnar在内核2.6.27版本中引入的。它有自己**存储跟踪数据**的**环形缓冲区**，并使用**GCC配置机制**。
-
-ftrace官方文档在`Documentation/trace/ftrace.txt`文件中。
-
-## 1.1. 主要用途
-
-ftrace 提供了**不同的跟踪器**，以用于**不同的场合**，比如跟踪**内核函数调用**、对**上下文切换**进行跟踪、查看**中断被关闭的时长**、跟踪**内核态中的延迟**以及**性能问题**等。
-
-系统开发人员可以使用 ftrace 对内核进行**跟踪调试**，以找到内核中出现的问题的根源，方便对其进行修复。
-
-另外，对内核感兴趣的读者还可以通过 ftrace 来观察**内核中发生的活动**，了解内核的**工作机制**。
-
-# 2. 预备知识
-
-你需要一台有内核开发环境的32位或者64位Linux机器，内核版本越新越好（内核越新，跟踪选项就越多）。
-
-# 3. 设置ftrace
-
-## 3.1. 配置debugfs
-
-使用ftrace要求你的机器上配置有debugfs。
-
-debugfs应该被挂载在/sys/kernel/debugfs，如果跟踪选项已启用，你应该能够在debugfs下面看到一个叫tracing的目录。
-
-如果没有挂载debugfs，请按以下操作：
-
-```
-# mount -t debugfs nodev /sys/kernel/debug
-```
 
 ## 3.2. 配置tracer选项
 
-如果你看不到tracing子目录的话，你应该在内核配置上启用相关选项，然后重编译内核。
 
-请在你的内核配置中找到如图所示的选项，启用它们：
-
-Kernel Hacking -> Tracers:
-
-1. Kernel Function Tracer (FUNCTION_TRACER) 
-2. Kernel Function Graph Tracer (FUNCTION_GRAPH_TRACER) 
-3. Enable/disable ftrace dynamically (DYNAMIC_FTRACE) 
-4. Trace max stack (STACK_TRACER)
-
-![2020-01-30-23-09-35.png](./images/2020-01-30-23-09-35.png)
-
-根据你的架构，在选择上面的选项时，一些其他的选项根据依赖关系可能也会自动被启用。上面所列的选项主要是用于跟踪所用。内核编译完成之后，你只需要重启机器，tracing功能就可以用了。
 
 # 4. 跟踪
 
 ## 4.1. tracing目录
 
-tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控制着跟踪的能力。根据你在内核配置时的选项的不同，这里列的文件可能稍有差异。你可以在内核源代码目录下/Documentation/trace[1]目录中找到这些文件的信息。
-
-![2020-01-30-23-44-38.png](./images/2020-01-30-23-44-38.png)
-
-让我们看看里面几个重要的文件： 
-
-- `README`文件提供了一个简短的使用说明，展示了 ftrace 的操作命令序列。可以通过 cat 命令查看该文件以了解**概要的操作流程**。
-- `available_tracers`: 这表示**哪些**被编译里系统的**跟踪器**。 
-- `buffer_size_kb`，以**KB为单位**指定**各个CPU追踪缓冲区的大小**。系统追踪缓冲区的**总大小**就是这个值**乘以CPU的数量**。设置`buffer_size_kb`时，必须设置`current_tracer`为**nop追踪器！！！**。
-- `current_tracer`: 这表示**当前启用**的哪个**跟踪器**。可以通过**echo**向表输入一个新的跟踪器来改变相应值。 
-- `trace`: 实际的**跟踪输出**。 
-- `trace_pipe`，与trace相同，但是运行时像管道一样，可以在每次事件发生时读出追踪信息，但是读出的内容不能再次读出。
-- `set_ftrace_filter`，指定**要追踪的函数名称**，函数名称仅可以包含一个通配符。
-- `set_ftrace_notrace`，指定**不要追踪的函数名称**。
-- `set_ftrace_pid`: 设置跟踪所作用的**进程的PID**。 
-- `tracing_cpumask`，以**十六进制**的**位掩码**指定要作为**追踪对象的处理器**，例如，指定**0xb**时仅在处理器**0、1、3**上进行追踪。
-- `tracing_enabled`或`tracing_on`: 让你可以**启用或者禁用当前跟踪功能** 
 
 ## 4.2. 可用的追踪器
 
