@@ -23,6 +23,7 @@
 - [irqsoff 跟踪器](#irqsoff-跟踪器)
 - [跟踪指定模块中的函数](#跟踪指定模块中的函数)
 - [相关代码以及使用](#相关代码以及使用)
+  - [使用 trace_printk 打印跟踪信息](#使用-trace_printk-打印跟踪信息)
 - [参考](#参考)
 
 <!-- /code_chunk_output -->
@@ -434,7 +435,43 @@ ipv6_addr_copy
 
 内核头文件 `include/linux/kernel.h` 中描述了 `ftrace` 提供的工具函数的原型，这些函数包括 `trace_printk`、`tracing_on/tracing_off` 等。本文通过示例模块程序向读者展示如何在代码中使用这些工具函数。
 
+## 使用 trace_printk 打印跟踪信息
 
+ftrace 提供了一个用于向 ftrace 跟踪缓冲区输出跟踪信息的工具函数，叫做 `trace_printk()`，它的使用方式与 printk() 类似。可以通过 `trace` 文件**读取该函数的输出**。从头文件 `include/linux/kernel.h` 中可以看到，在激活配置 `CONFIG_TRACING` 后，`trace_printk()` 定义为宏：
+
+```cpp
+#define trace_printk(fmt, args...)   		 \ 
+    ...
+```
+
+下面通过一个示例模块 `ftrace_demo` 来演示如何使用 `trace_printk()` 向跟踪**缓冲区输出信息**，以及**如何查看这些信息**。这里的示例模块程序中仅提供了初始化和退出函数，这样读者不会因为需要为模块创建必要的访问接口比如设备文件而分散注意力。注意，编译模块时要加入 `-pg` 选项。
+
+清单 1. 示例模块 ftrace_demo
+
+```cpp
+/*                                                     
+ * ftrace_demo.c 
+ */                                                    
+#include <linux/init.h> 
+#include <linux/module.h> 
+#include <linux/kernel.h> 
+
+MODULE_LICENSE("GPL"); 
+
+static int ftrace_demo_init(void) 
+{ 
+    trace_printk("Can not see this in trace unless loaded for the second time\n"); 
+    return 0; 
+} 
+
+static void ftrace_demo_exit(void) 
+{ 
+    trace_printk("Module unloading\n"); 
+} 
+
+module_init(ftrace_demo_init); 
+module_exit(ftrace_demo_exit);
+```
 
 # 参考
 
