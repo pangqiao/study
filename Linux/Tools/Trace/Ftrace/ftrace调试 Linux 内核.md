@@ -16,7 +16,8 @@
 - [5. ftrace 的数据文件](#5-ftrace-的数据文件)
 - [6. ftrace 跟踪器](#6-ftrace-跟踪器)
 - [7. ftrace 操作流程](#7-ftrace-操作流程)
-- [8. function跟踪器](#8-function跟踪器)
+- [8. function 跟踪器](#8-function-跟踪器)
+  - [特定进程](#特定进程)
 - [9. function_graph 跟踪器](#9-function_graph-跟踪器)
 - [10. sched_switch 跟踪器](#10-sched_switch-跟踪器)
 - [11. irqsoff 跟踪器](#11-irqsoff-跟踪器)
@@ -366,7 +367,7 @@ schedule
 # echo 0 > trace        ## 或者> trace
 ```
 
-# 8. function跟踪器
+# 8. function 跟踪器
 
 function 跟踪器可以跟踪内核函数的调用情况，可用于调试或者分析 bug ，还可用于了解和观察 Linux 内核的执行过程。清单 1 给出了使用 function 跟踪器的示例。
 
@@ -401,6 +402,62 @@ trace 文件给出的信息格式很清晰。
 首先，字段`“tracer:”`给出了**当前所使用的跟踪器的名字**，这里为 function 跟踪器。
 
 然后是**跟踪信息记录的格式**，`TASK` 字段对应**任务的名字**，`PID` 字段则给出了任务的**进程 ID**，字段 `CPU#` 表示运行被跟踪函数的 **CPU 号**，这里可以看到 idle 进程运行在 0 号 CPU 上，其进程 ID 是 0 ；字段 `TIMESTAMP` 是时间戳，其格式为`“<secs>.<usecs>”`，表示执行该函数时对应的**时间戳**；`FUNCTION` 一列则给出了**被跟踪的函数**，**函数的调用者**通过符号 `“<-”` 标明，这样可以观察到函数的调用关系。
+
+## 特定进程
+
+ftrace允许你对一个特定的进程进行跟踪。在`/sys/kernel/debug/tracing`目录下，文件`set_ftrace_pid`的值要更新为你想跟踪的进程的PID。
+
+以下traceprocess.sh示例脚本向你展示了如何抓取当前运行的进程的PID，并进行相应跟踪。
+
+```
+#!/bin/bash 
+ 
+DPATH="/sys/kernel/debug/tracing"
+PID=$$ 
+## Quick basic checks 
+[ `id -u` -ne 0 ] && { echo "needs to be root" ; exit 1; } # check for root permissions 
+[ -z $1 ] && { echo "needs process name as argument" ; exit 1; } # check for args to this function 
+mount | grep -i debugfs &> /dev/null 
+[ $? -ne 0 ] && { echo "debugfs not mounted, mount it first"; exit 1; } #checks for debugfs mount 
+ 
+# flush existing trace data 
+echo nop > $DPATH/current_tracer 
+ 
+# set function tracer 
+echo function > $DPATH/current_tracer 
+ 
+# enable the current tracer 
+echo 1 > $DPATH/tracing_enabled 
+ 
+# write current process id to set_ftrace_pid file 
+echo $PID > $DPATH/set_ftrace_pid 
+ 
+# start the tracing 
+echo 1 > $DPATH/tracing_on 
+# execute the process 
+exec $*
+```
+
+```
+# cd /sys/kernel/debug/tracing/
+# cat set_ftrace_pid
+no pid
+# echo 3111 > set_ftrace_pid  //跟踪PID为3111的进程
+# cat set_ftrace_pid
+3111
+# echo function > current_tracer
+# cat trace
+```
+
+如图中跟踪ls命令所示。
+
+![2020-01-31-18-13-24.png](./images/2020-01-31-18-13-24.png)
+
+当跟踪完成后，你需要清除`set_ftrace_pid`文件，请用如下命令：
+
+```
+> set_ftrace_pid
+```
 
 # 9. function_graph 跟踪器
 
@@ -689,6 +746,39 @@ local_irq_disable();
  [...]
 # echo 0 > tracing_on
 # cat trace 
+```
+
+preemptirqsoff跟踪器抓取的信息如下。
+
+```
+# tracer: preemptoff
+#
+# preemptoff latency trace v1.1.5 on 3.8.0-test+
+# --------------------------------------------------------------------
+# latency: 46 us, #4/4, CPU#1 | (M:preempt VP:0, KP:0, SP:0 HP:0 #P:4)
+#    -----------------
+#    | task: sshd-1991 (uid:0 nice:0 policy:0 rt_prio:0)
+#    -----------------
+#  => started at: do_IRQ
+#  => ended at:   do_IRQ
+#
+#
+#                  _------=> CPU#            
+#                 / _-----=> irqs-off        
+#                | / _----=> need-resched    
+#                || / _---=> hardirq/softirq 
+#                ||| / _--=> preempt-depth   
+#                |||| /    delay             
+#  cmd     pid    ||||| time  |   caller      
+#    \   /       |||||  \    |   /           
+    sshd-1991     1d.h.     0us+: irq_enter < -do_IRQ
+    sshd-1991     1d..1    46us : irq_exit < -do_IRQ
+    sshd-1991     1d..1    47us+: trace_preempt_on < -do_IRQ
+    sshd-1991     1d..1    52us : < stack trace>
+ => sub_preempt_count
+ => irq_exit
+ => do_IRQ
+ => ret_from_intr 
 ```
 
 # 12. 跟踪指定模块中的函数set_ftrace_filter

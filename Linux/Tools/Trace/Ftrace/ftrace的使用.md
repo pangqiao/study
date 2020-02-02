@@ -32,23 +32,7 @@ tracing的输入可以由一个叫`trace_options`的文件控制。
 
 # 6. ftrace之特殊进程
 
-ftrace允许你对一个特殊的进程进行跟踪。在`/sys/kernel/debug/tracing`目录下，文件`set_ftrace_pid`的值要更新为你想跟踪的进程的PID。
 
-以下traceprocess.sh示例脚本向你展示了如何抓取当前运行的进程的PID，并进行相应跟踪。
-
-```
-
-```
-
-如图中跟踪ls命令所示。
-
-![2020-01-31-18-13-24.png](./images/2020-01-31-18-13-24.png)
-
-当跟踪完成后，你需要清除`set_ftrace_pid`文件，请用如下命令：
-
-```
-> set_ftrace_pid
-```
 
 # 7. 函数图跟踪器
 
