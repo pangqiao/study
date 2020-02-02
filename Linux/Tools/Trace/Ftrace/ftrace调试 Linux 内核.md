@@ -24,6 +24,7 @@
 - [跟踪指定模块中的函数](#跟踪指定模块中的函数)
 - [相关代码以及使用](#相关代码以及使用)
   - [使用 trace_printk 打印跟踪信息](#使用-trace_printk-打印跟踪信息)
+- [使用 tracing_on/tracing_off 控制跟踪信息的记录](#使用-tracing_ontracing_off-控制跟踪信息的记录)
 - [参考](#参考)
 
 <!-- /code_chunk_output -->
@@ -508,11 +509,93 @@ ftrace_demo_exit
 0)               |  /* Module unloading */
 ```
 
-在这个例子中，使用 mod 指令显式指定跟踪模块 `ftrace_demo` 中的函数，这需要提前加载该模块，否则在写文件 `set_ftrace_filter` 时会因为找不到该模块报错。这样在第一次加载模块时，其初始化函数 `ftrace_demo_init` 中调用 trace_printk 打印的语句就跟踪不到了。因此这里会将其卸载，然后激活跟踪，再重新进行模块 ftrace_demo 的加载与卸载操作。最终可以从文件 trace 中看到模块在初始化和退出时调用 trace_printk() 输出的信息。
+在这个例子中，使用 mod 指令显式指定跟踪模块 `ftrace_demo` 中的函数，这需要提前加载该模块，否则在写文件 `set_ftrace_filter` 时会因为找不到该模块报错。这样在第一次加载模块时，其初始化函数 `ftrace_demo_init` 中调用 `trace_printk` 打印的语句就跟踪不到了。因此这里会将其卸载，然后激活跟踪，再重新进行模块 `ftrace_demo` 的加载与卸载操作。最终可以从文件 trace 中看到模块在初始化和退出时调用 trace_printk() 输出的信息。
 
 这里仅仅是为了以简单的模块进行演示，故只定义了模块的 init/exit 函数，重复加载模块也只是为了获取初始化函数输出的跟踪信息。实践中，可以在模块的功能函数中加入对 trace_printk 的调用，这样可以记录模块的运作情况，然后对其特定功能进行调试优化。还可以将对 trace_printk() 的调用通过宏来控制编译，这样可以在调试时将其开启，在最终发布时将其关闭。
 
- 
+# 使用 tracing_on/tracing_off 控制跟踪信息的记录
+
+在跟踪过程中，有时候在检测到某些事件发生时，想要停止跟踪信息的记录，这样，跟踪缓冲区中较新的数据是与该事件有关的。在用户态，可以通过向文件 `tracing_on` 写入 0 来停止记录跟踪信息，写入 1 会继续记录跟踪信息。而在内核代码中，可以通过函数 `tracing_on()` 和 `tracing_off()` 来做到这一点，它们的行为类似于对 `/sys/kernel/debug/tracing` 下的文件 tracing_on 分别执行写 1 和 写 0 的操作。使用这两个函数，会对跟踪信息的记录控制地更准确一些，这是因为在用户态写文件 tracing_on 到实际暂停跟踪，中间由于上下文切换、系统调度控制等可能已经经过较长的时间，这样会积累大量的跟踪信息，而感兴趣的那部分可能会被覆盖掉了。
+
+现在对清单 1 中的代码进行修改，使用 tracing_off() 来控制跟踪信息记录的暂停。
+
+清单 3. 使用 tracing_off 的模块 ftrace_demo
+
+```cpp
+/*                                                     
+* ftrace_demo.c 
+*     modified to demostrate the usage of tracing_off 
+*/                                                    
+#include <linux/init.h> 
+#include <linux/module.h> 
+#include <linux/kernel.h> 
+
+MODULE_LICENSE("GPL"); 
+
+static int ftrace_demo_init(void) 
+{ 		
+    trace_printk("ftrace_demo_init called\n"); 
+    tracing_off(); 
+    return 0; 
+} 
+
+static void ftrace_demo_exit(void) 
+{ 
+    trace_printk("ftrace_demo_exit called\n"); 
+    tracing_off(); 
+} 
+
+module_init(ftrace_demo_init); 
+module_exit(ftrace_demo_exit);
+```
+
+下面对其进行跟踪，如清单 4 所示。
+
+清单 4. 跟踪
+
+```
+[root@linux tracing]# pwd 
+/sys/kernel/debug/tracing 
+[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
+[root@linux tracing]# echo 1 > tracing_on 
+[root@linux tracing]# echo function > current_tracer 
+[root@linux tracing]# echo 1 > tracing_enabled 
+
+# 加载模块 ftrace_demo，模块初始化函数 ftrace_demo_init 被调用
+
+[root@linux tracing]# cat tracing_on 
+0 
+[root@linux tracing]# cat trace | wc -l 
+120210 
+[root@linux tracing]# cat trace | grep -n ftrace_demo_init 
+120187:      insmod-2897  [000]  2610.504611: ftrace_demo_init <-do_one_initcall 
+120193:      insmod-2897  [000]  2610.504667: ftrace_demo_init: ftrace_demo_init called 
+
+[root@linux tracing]# echo 1 > tracing_on   # 继续跟踪信息的记录
+
+# 卸载模块 ftrace_demo，模块函数 ftrace_demo_exit 被调用
+
+[root@linux tracing]# cat tracing_on 
+0 
+[root@linux tracing]# wc -l trace 
+120106 trace 
+[root@linux tracing]# grep -n ftrace_demo_exit trace 
+120106:           rmmod-2992  [001]  3016.884449: : ftrace_demo_exit called
+```
+
+在这个例子中，跟踪开始之前需要确保 `tracing_on` 的值为 1。跟踪开始后，加载模块 `ftrace_demo`，其初始化方法 `ftrace_demo_init` 被调用，该方法会调用 `tracing_off()` 函数来暂停跟踪信息的记录，这时文件 `tracing_on` 的值被代码设置为 0。查看文件 trace，可以看到 `ftrace_demo_init` 相关的记录位于跟踪信息的末端，这是因为从调用 `trace_off()` 到其生效需要一段时间，这段时间中的内核活动会被记录下来；相比从用户态读写 `tracing_on` 文件，这段时间开销要小了许多。卸载模块时的情况与此类似。从这里可以看到，在代码中使用 `tracing_off()` 可以控制将感兴趣的信息保存在跟踪缓冲区的末端位置，不会很快被新的信息所覆盖，便于及时查看。
+
+实际代码中，可以通过特定条件（比如检测到某种异常状况，等等）来控制跟踪信息的记录，函数的使用方式类似如下的形式：
+
+```cpp
+if (condition) 
+	tracing_on() or tracing_off()
+```
+
+跟踪模块运行状况时，使用 ftrace 命令操作序列在用户态进行必要的设置，而在代码中则可以通过 traceing_on() 控制在进入特定代码区域时开启跟踪信息，并在遇到某些条件时通过 tracing_off() 暂停；读者可以在查看完感兴趣的信息后，将 1 写入 tracing_on 文件以继续记录跟踪信息。实践中，可以通过宏来控制是否将对这些函数的调用编译进内核模块，这样可以在调试时将其开启，在最终发布时将其关闭。
+
+用户态的应用程序可以通过直接读写文件 tracing_on 来控制记录跟踪信息的暂停状态，以便了解应用程序运行期间内核中发生的活动。
 
 # 参考
 
