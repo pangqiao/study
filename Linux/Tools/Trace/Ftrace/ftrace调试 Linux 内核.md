@@ -247,6 +247,49 @@ trace 文件给出的信息格式很清晰。
 
 清单 2 给出了使用 `function_grapch` 跟踪器的示例，示例中将内核函数 `__do_fault` 作为观察对象，该函数在内核运作过程中会被频繁调用。
 
+清单 2. `function_graph` 跟踪器使用示例
+
+```
+[root@linux tracing]# pwd 
+/sys/kernel/debug/tracing 
+[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
+[root@linux tracing]# echo function_graph > current_tracer 
+[root@linux tracing]# echo __do_fault > set_graph_function 
+[root@linux tracing]# echo 1 > tracing_on 
+[root@linux tracing]# echo 1 > tracing_enabled 
+
+# 让内核运行一段时间，这样 ftrace 可以收集一些跟踪信息，之后再停止跟踪
+
+[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# cat trace | head -20 
+# tracer: function_graph 
+# 
+# CPU  DURATION                  FUNCTION CALLS 
+# |     |   |                     |   |   |   | 
+1)   9.936 us    |    } 
+1)   0.714 us    |    put_prev_task_fair(); 
+1)               |    pick_next_task_fair() { 
+1)               |      set_next_entity() { 
+1)   0.647 us    |        update_stats_wait_end(); 
+1)   0.699 us    |        __dequeue_entity(); 
+1)   3.322 us    |      } 
+1)   0.865 us    |      hrtick_start_fair(); 
+1)   6.313 us    |    } 
+1)               |    __switch_to_xtra() { 
+1)   1.601 us    |      memcpy(); 
+1)   3.938 us    |    } 
+[root@linux tracing]# echo > set_graph_function
+```
+
+在文件 trace 的输出信息中，首先给出的也是当前跟踪器的名字，这里是 `function_graph` 。接下来是详细的跟踪信息，可以看到，函数的调用关系以类似 C 代码的形式组织。
+
+`CPU` 字段给出了**执行函数的 CPU 号**，本例中都为 1 号 CPU。`DURATION` 字段给出了**函数执行的时间长度**，以 us 为单位。FUNCTION CALLS 则给出了调用的函数，并显示了调用流程。注意，对于不调用其它函数的函数，其对应行以“;”结尾，而且对应的 DURATION 字段给出其运行时长；对于调用其它函数的函数，则在其“}”对应行给出了运行时长，该时间是一个累加值，包括了其内部调用的函数的执行时长。DURATION 字段给出的时长并不是精确的，它还包含了执行 ftrace 自身的代码所耗费的时间，所以示例中将内部函数时长累加得到的结果会与对应的外围调用函数的执行时长并不一致；不过通过该字段还是可以大致了解函数在时间上的运行开销的。清单 2 中最后通过 echo 命令重置了文件 set_graph_function 。
+
+
+
+
+
 
 # 参考
 
