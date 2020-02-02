@@ -20,6 +20,8 @@
 - [function跟踪器](#function跟踪器)
 - [function_graph 跟踪器](#function_graph-跟踪器)
 - [sched_switch 跟踪器](#sched_switch-跟踪器)
+- [irqsoff 跟踪器](#irqsoff-跟踪器)
+- [跟踪指定模块中的函数](#跟踪指定模块中的函数)
 - [参考](#参考)
 
 <!-- /code_chunk_output -->
@@ -334,11 +336,96 @@ events/0-9     [000] 26208.817088:      9:120:S ==> [000]  1377:120:R gnome-term
 
 描述进程状态的格式为“`Task-PID:Priority:Task-State`”。
 
-以示例跟踪信息中的**第一条跟踪记录**为例，可以看到`进程 bash` 的 `PID` 为 `1408` ，其对应的**内核态优先级**为 `120` ，当前状态为 **S（可中断睡眠状态**），当前 bash 并没有唤醒其它进程；从**第 3 条记录**可以看到，进程 bash 将进程 **events/0 唤醒**，而在第 4 条记录中发生了进程调度，进程 bash 切换到进程 events/0 执行。
+以示例跟踪信息中的**第一条跟踪记录**为例，可以看到`进程 bash` 的 `PID` 为 `1408` ，其对应的**内核态优先级**为 `120` ，当前状态为 **S（可中断睡眠状态**），当前 bash 并没有唤醒其它进程；从**第 3 条记录**可以看到，**进程 bash** 将进程 **events/0 唤醒**，而在**第 4 条记录**中发生了**进程调度**，进程 bash **切换**到**进程 events/0** 执行。
 
-在 Linux 内核中，进程的状态在内核头文件 include/linux/sched.h 中定义，包括可运行状态 TASK_RUNNING（对应跟踪信息中的符号‘ R ’）、可中断阻塞状态 TASK_INTERRUPTIBLE（对应跟踪信息中的符号‘ S ’）等。同时该头文件也定义了用户态进程所使用的优先级的范围，最小值为 MAX_USER_RT_PRIO（值为 100 ），最大值为 MAX_PRIO - 1（对应值为 139 ），缺省为 DEFAULT_PRIO（值为 120 ）；在本例中，进程优先级都是缺省值 120 。
+在 Linux 内核中，**进程的状态**在内核头文件 `include/linux/sched.h` 中定义，包括**可运行状态** `TASK_RUNNING`（对应跟踪信息中的符号`‘ R ’`）、**可中断阻塞状态** `TASK_INTERRUPTIBLE`（对应跟踪信息中的符号`‘ S ’`）等。同时该头文件也定义了**用户态进程**所使用的**优先级的范围**，**最小值**为 `MAX_USER_RT_PRIO`（值为 100 ），**最大值**为 `MAX_PRIO - 1`（对应值为 139 ），缺省为 `DEFAULT_PRIO`（值为 120 ）；在本例中，进程优先级都是缺省值 120 。
 
+# irqsoff 跟踪器
 
+当**关闭中断**时，CPU 会延迟对设备的状态变化做出反应，有时候这样做会对系统性能造成比较大的影响。irqsoff 跟踪器可以对中断被关闭的状况进行跟踪，有助于发现导致较大延迟的代码；当出现最大延迟时，跟踪器会记录导致延迟的跟踪信息，文件 tracing_max_latency 则记录中断被关闭的最大延时。
+
+清单 4. irqsoff 跟踪器使用示例
+
+```
+[root@linux tracing]# pwd 
+/sys/kernel/debug/tracing 
+[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
+[root@linux tracing]# echo irqsoff > current_tracer 
+[root@linux tracing]# echo 1 > tracing_on 
+[root@linux tracing]# echo 1 > tracing_enabled 
+
+# 让内核运行一段时间，这样 ftrace 可以收集一些跟踪信息，之后再停止跟踪
+
+[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# cat trace | head -35 
+# tracer: irqsoff 
+# 
+# irqsoff latency trace v1.1.5 on 2.6.33.1 
+# -------------------------------------------------------------------- 
+# latency: 34380 us, #6/6, CPU#1 | (M:desktop VP:0, KP:0, SP:0 HP:0 #P:2) 
+#    ----------------- 
+#    | task: -0 (uid:0 nice:0 policy:0 rt_prio:0) 
+#    ----------------- 
+#  => started at: reschedule_interrupt 
+#  => ended at:   restore_all_notrace 
+# 
+# 
+#                  _------=> CPU#            
+#                 / _-----=> irqs-off        
+#                | / _----=> need-resched    
+#                || / _---=> hardirq/softirq 
+#                ||| / _--=> preempt-depth   
+#                |||| /_--=> lock-depth       
+#                |||||/     delay             
+#  cmd    pid    |||||| time  |   caller      
+#    \   /       ||||||   \   |   /           
+<idle>-0       1dN... 4285us!: trace_hardirqs_off_thunk <-reschedule_interrupt 
+<idle>-0       1dN... 34373us+: smp_reschedule_interrupt <-reschedule_interrupt 
+<idle>-0       1dN... 34375us+: native_apic_mem_write <-smp_reschedule_interrupt 
+<idle>-0       1dN... 34380us+: trace_hardirqs_on_thunk <-restore_all_notrace 
+<idle>-0       1dN... 34384us : trace_hardirqs_on_caller <-restore_all_notrace 
+<idle>-0       1dN... 34384us : <stack trace> 
+=> trace_hardirqs_on_thunk 
+[root@linux tracing]# cat tracing_max_latency 
+34380
+```
+
+从清单 4 中的输出信息中，可以看到当前 irqsoff 延迟跟踪器的版本信息。接下来是最大延迟时间，以 us 为单位，本例中为 34380 us ，查看文件 tracing_max_latency 也可以获取该值。从“task:”字段可以知道延迟发生时正在运行的进程为 idle（其 pid 为 0 ）。中断的关闭操作是在函数 reschedule_interrupt 中进行的，由“=> started at:”标识，函数 restore_all_ontrace 重新激活了中断，由“=> ended at:”标识；中断关闭的最大延迟发生在函数 trace_hardirqs_on_thunk 中，这个可以从最大延迟时间所在的记录项看到，也可以从延迟记录信息中最后的“=>”标识所对应的记录行知道这一点。
+
+在输出信息中，irqs-off、need_resched 等字段对应于进程结构 struct task_struct 的字段或者状态标志，可以从头文件 arch/<platform>/include/asm/thread_info.h 中查看进程支持的状态标志，include/linux/sched.h 则给出了结构 struct task_struct 的定义。其中，irqs-off 字段显示是否中断被禁止，为‘ d ’表示中断被禁止；need_resched 字段显示为‘ N ’表示设置了进程状态标志 TIF_NEED_RESCHED。hardirq/softirq 字段表示当前是否发生硬件中断 / 软中断；preempt-depth 表示是否禁止进程抢占，例如在持有自旋锁的情况下进程是不能被抢占的，本例中进程 idle 是可以被其它进程抢占的。结构 struct task_struct 中的 lock_depth 字段是与大内核锁相关的，而最近的内核开发工作中有一部分是与移除大内核锁相关的，这里对该字段不再加以描述。
+
+另外，还有用于跟踪禁止进程抢占的跟踪器 preemptoff 和跟踪中断 / 抢占禁止的跟踪器 preemptirqsoff，它们的使用方式与输出信息格式与 irqsoff 跟踪器类似，这里不再赘述。
+
+# 跟踪指定模块中的函数
+
+前面提过，通过文件 `set_ftrace_filter` 可以指定要跟踪的函数，缺省目标为所有可跟踪的内核函数；可以将感兴趣的函数通过 echo 写入该文件。为了方便使用，set_ftrace_filter 文件还支持简单格式的通配符。
+
+- `begin*`选择所有名字以 begin 字串开头的函数
+- `*middle*`选择所有名字中包含 middle 字串的函数
+- `*end`选择所有名字以 end 字串结尾的函数
+
+需要注意的是，这三种形式不能组合使用，比如`“begin*middle*end”`实际的效果与“begin”相同。另外，使用通配符表达式时，需要用单引号将其括起来，如果使用双引号，shell 可能会对字符‘ * ’进行扩展，这样最终跟踪的对象可能与目标函数不一样。
+
+通过该文件还可以指定属于特定模块的函数，这要用到 mod 指令。指定模块的格式为：
+
+```
+echo ':mod:[module_name]' > set_ftrace_filter
+```
+
+下面给出了一个指定跟踪模块 ipv6 中的函数的例子。可以看到，指定跟踪模块 ipv6 中的函数会将文件 set_ftrace_filter 的内容设置为只包含该模块中的函数。
+
+清单 5. 指定跟踪 ipv6 模块中的函数
+ [root@linux tracing]# pwd 
+ /sys/kernel/debug/tracing 
+ [root@linux tracing]# echo ':mod:ipv6' > set_ftrace_filter 
+ [root@linux tracing]# cat set_ftrace_filter | head -5 
+ ipv6_opt_accepted 
+ inet6_net_exit 
+ ipv6_gro_complete 
+ inet6_create 
+ ipv6_addr_copy
+ 
 
 
 # 参考
