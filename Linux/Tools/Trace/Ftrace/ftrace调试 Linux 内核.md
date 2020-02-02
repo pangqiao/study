@@ -5,7 +5,7 @@
 
 - [1. 简介](#1-简介)
   - [1.1. ftrace](#11-ftrace)
-  - [1.3. 主要用途](#13-主要用途)
+  - [1.2. 主要用途](#12-主要用途)
 - [2. ftrace内核编译选项](#2-ftrace内核编译选项)
   - [2.1. 内核源码编译选项](#21-内核源码编译选项)
   - [2.2. make menuconfig配置项](#22-make-menuconfig配置项)
@@ -17,17 +17,20 @@
 - [6. ftrace 跟踪器](#6-ftrace-跟踪器)
 - [7. ftrace 操作流程](#7-ftrace-操作流程)
 - [8. function 跟踪器](#8-function-跟踪器)
-  - [特定进程](#特定进程)
+  - [8.1. 特定进程](#81-特定进程)
 - [9. function_graph 跟踪器](#9-function_graph-跟踪器)
 - [10. sched_switch 跟踪器](#10-sched_switch-跟踪器)
 - [11. irqsoff 跟踪器](#11-irqsoff-跟踪器)
-- [preemptoff跟踪器](#preemptoff跟踪器)
-- [preemptirqsoff跟踪器](#preemptirqsoff跟踪器)
-- [12. 动态跟踪](#12-动态跟踪)
-- [13. 相关代码以及使用](#13-相关代码以及使用)
-  - [13.1. 使用 trace_printk 打印跟踪信息](#131-使用-trace_printk-打印跟踪信息)
-- [14. 使用 tracing_on/tracing_off 控制跟踪信息的记录](#14-使用-tracing_ontracing_off-控制跟踪信息的记录)
-- [15. 参考](#15-参考)
+- [12. preemptoff跟踪器](#12-preemptoff跟踪器)
+- [13. preemptirqsoff跟踪器](#13-preemptirqsoff跟踪器)
+- [14. 动态跟踪](#14-动态跟踪)
+  - [14.1. 指定模块](#141-指定模块)
+- [15. 事件追踪](#15-事件追踪)
+- [16. trace-cmd and KernelShark](#16-trace-cmd-and-kernelshark)
+- [17. 相关代码以及使用](#17-相关代码以及使用)
+  - [17.1. 使用 trace_printk 打印跟踪信息](#171-使用-trace_printk-打印跟踪信息)
+  - [17.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录](#172-使用-tracing_ontracing_off-控制跟踪信息的记录)
+- [18. 参考](#18-参考)
 
 <!-- /code_chunk_output -->
 
@@ -45,7 +48,7 @@ ftrace是由Steven Rostedy和Ingo Molnar在内核2.6.27版本中引入的。它�
 
 ftrace官方文档在`Documentation/trace/ftrace.txt`文件中。
 
-## 1.3. 主要用途
+## 1.2. 主要用途
 
 ftrace 是内建于 Linux 内核的跟踪工具，从 2.6.27 开始加入主流内核。使用 ftrace 可以调试或者分析内核中发生的事情。
 
@@ -403,7 +406,7 @@ trace 文件给出的信息格式很清晰。
 
 然后是**跟踪信息记录的格式**，`TASK` 字段对应**任务的名字**，`PID` 字段则给出了任务的**进程 ID**，字段 `CPU#` 表示运行被跟踪函数的 **CPU 号**，这里可以看到 idle 进程运行在 0 号 CPU 上，其进程 ID 是 0 ；字段 `TIMESTAMP` 是时间戳，其格式为`“<secs>.<usecs>”`，表示执行该函数时对应的**时间戳**；`FUNCTION` 一列则给出了**被跟踪的函数**，**函数的调用者**通过符号 `“<-”` 标明，这样可以观察到函数的调用关系。
 
-## 特定进程
+## 8.1. 特定进程
 
 ftrace允许你对一个特定的进程进行跟踪。在`/sys/kernel/debug/tracing`目录下，文件`set_ftrace_pid`的值要更新为你想跟踪的进程的PID。
 
@@ -687,7 +690,7 @@ started at和ended at显示发生中断的开始函数和结束函数分别为__
 
 最后要说明的是，文件最开始显示中断延迟是259微秒，但是在`<stack trace>`里显示306微秒，这是因为在记录最大延迟信息时需要花费一些时间。 
 
-# preemptoff跟踪器
+# 12. preemptoff跟踪器
 
 当抢占关闭时，虽然可以响应中断，但是高优先级进程在中断处理完成之后不能抢占低优先级进程直至打开抢占，这样也会导致抢占延迟。和irqsoff跟踪器一样，preemptoff跟踪器用于跟踪和记录关闭抢占的最大延迟。
 
@@ -734,7 +737,7 @@ started at和ended at显示发生中断的开始函数和结束函数分别为__
  => ret_from_intr
 ```
 
-# preemptirqsoff跟踪器
+# 13. preemptirqsoff跟踪器
 
 在优化系统延迟时，如果能快速定位何处关中断或者关抢占，对开发者来说会很有帮助，思考如下代码片段。
 
@@ -793,7 +796,7 @@ preemptirqsoff跟踪器抓取的信息如下。
  => ret_from_intr 
 ```
 
-# 12. 动态跟踪
+# 14. 动态跟踪
 
 在配置内核时打开了`CONFIG_DYNAMIC_FTRACE`选项，就可以**支持动态ftrace功能**。`set_ftrace_filter`和`set_ftrace_notrace`这两个文件可以配对使用，其中，前者设置**要跟踪的函数**，后者指定**不要跟踪的函数**。如果一个函数名**同时出现**在这两个文件中，则这个函数的执行状况**不会被跟踪**。
 
@@ -832,32 +835,60 @@ preemptirqsoff跟踪器抓取的信息如下。
           < idle>-0     [002] d.h1  4186.475427: hrtimer_interrupt < -smp_apic_timer_interrupt
 ```
 
+此外，过滤器还支持如下通配符。
+
+- `<match>*`：匹配所有**match开头**的函数。
+- `*<match>`：匹配所有**match结尾**的函数。
+- `*<match>*`：匹配所有**包含match**的函数。 
+
+需要注意的是，这三种形式不能组合使用，比如`“begin*middle*end”`实际的效果与“begin”相同。另外，使用通配符表达式时，需要用单引号将其括起来，如果使用双引号，shell 可能会对字符‘ * ’进行扩展，这样最终跟踪的对象可能与目标函数不一样。
+
+如果要跟踪所有“`hrtimer`”**开头**的函数，可以`“echo 'hrtimer_*' > set_ftrace_filter”`。还有**两个非常有用的操作符**，`“>”`表示会**覆盖**过滤器里的内容；`>>`表示新加的函数会**增加**到过滤器中，但不会覆盖。
+
+```
+# echo sys_nanosleep > set_ftrace_filter //往过滤器里写入sys_nanosleep
+# cat set_ftrace_filter   //查看过滤器里的内容
+sys_nanosleep
+
+# echo 'hrtimer_*' >> set_ftrace_filter  //再向过滤器中增加”hrtimer_”开头的函数
+# cat set_ftrace_filter
+hrtimer_run_queues
+hrtimer_run_pending
+hrtimer_init
+hrtimer_cancel
+hrtimer_try_to_cancel
+hrtimer_forward
+hrtimer_start
+hrtimer_reprogram
+hrtimer_force_reprogram
+hrtimer_get_next_event
+hrtimer_interrupt
+sys_nanosleep
+hrtimer_nanosleep
+hrtimer_wakeup
+hrtimer_get_remaining
+hrtimer_get_res
+hrtimer_init_sleeper
+
+# echo '*preempt*' '*lock*' > set_ftrace_notrace //表示不跟踪包含”preempt”和”lock”的函数
+
+# echo > set_ftrace_filter  //向过滤器中输入空字符表示清空过滤器
+# cat set_ftrace_filter 
+```
+
 图4就是一个动态跟踪的例子。
 
 ![2020-01-31-19-49-29.png](./images/2020-01-31-19-49-29.png)
 
-如你所看到的，你甚至可以对函数的名字使用**通配符**。
+## 14.1. 指定模块
 
-我需要用所有的`vmalloc_`函数，通过`echo vmalloc_* > set_ftrace_filter`进行设置。
-
-另外，在参数前面加上`:mod:`，可以仅追踪指定模块中包含的函数（注意，模块必须已经加载）。例如：
+另外，在参数前面加上`:mod:`，可以仅追踪指定模块中包含的函数（注意，**模块必须已经加载**）。例如：
 
 ```
 root@thinker:/sys/kernel/debug/tracing# echo 'write*:mod:ext3' > set_ftrace_filter
 ```
 
 仅追踪**ext3模块**中包含的以**write开头**的函数。
-
-
-`set_ftrace_notrace`用于指定不跟踪的函数。
-
-前面提过，通过文件 `set_ftrace_filter` 可以**指定要跟踪的函数**，缺省目标为所有可跟踪的内核函数；可以将感兴趣的函数通过 echo 写入该文件。为了方便使用，`set_ftrace_filter` 文件还支持简单格式的通配符。
-
-- `begin*`选择所有名字以 begin 字串开头的函数
-- `*middle*`选择所有名字中包含 middle 字串的函数
-- `*end`选择所有名字以 end 字串结尾的函数
-
-需要注意的是，这三种形式不能组合使用，比如`“begin*middle*end”`实际的效果与“begin”相同。另外，使用通配符表达式时，需要用单引号将其括起来，如果使用双引号，shell 可能会对字符‘ * ’进行扩展，这样最终跟踪的对象可能与目标函数不一样。
 
 通过该文件还可以指定属于特定模块的函数，这要用到 mod 指令。指定模块的格式为：
 
@@ -881,11 +912,78 @@ inet6_create
 ipv6_addr_copy
 ```
 
-# 13. 相关代码以及使用
+# 15. 事件追踪
+
+ftrace里的跟踪机制主要有两种，分别是函数和tracepoint。前者属于“傻瓜式”操作，后者tracepoint可以理解为一个Linux内核中的占位符函数，内核子系统的开发者通常喜欢利用它来调试。tracepoint可以输出开发者想要的参数、局部变量等信息。tracepoint的位置比较固定，一般都是内核开发者添加上去的，可以把它理解为传统C语言程序中#if DEBUG部分。如果在运行时没有开启DEBUG，那么是不占用任何系统开销的。
+
+也可以在系统**特定事件触发**的时候打开跟踪。可以在`available_events`文件中找到所有可用的系统事件：
+
+```
+# cat available_events | head -10
+devlink:devlink_hwmsg
+sunrpc:rpc_call_status
+sunrpc:rpc_bind_status
+sunrpc:rpc_connect_status
+sunrpc:rpc_task_begin
+sunrpc:rpc_task_run_action
+sunrpc:rpc_task_complete
+sunrpc:rpc_task_sleep
+sunrpc:rpc_task_wakeup
+sunrpc:rpc_socket_state_change
+```
+
+比如，为了启用某个事件，你需要：`echo sys_enter_nice >> set_event`（注意你是将事件的名字追加到文件中去，使用`>>`追加定向器，不是`>`）。要禁用某个事件，需要在名字前加上一个“!”号：`echo '!sys_enter_nice' >> set_event`。
+
+图5是一个事件跟踪场景示例。同样，可用的事件是列在事件目录里面的。
+
+![2020-01-31-20-15-57.png](./images/2020-01-31-20-15-57.png)
+
+有关事件跟踪的更多细节，请阅读内核目录下`Documents/Trace/events.txt`文件。
+
+# 16. trace-cmd and KernelShark
+
+trace-cmd是由Steven Rostedt在2009年发在LKML上的，它可以让操作跟踪器更简单。以下几步是获取最新的版本并装在你的系统上，包括它的GUI工具KernelShark。
+
+```
+wget http://ftp.be.debian.org/pub/linux/analysis/trace-cmd/trace-cmd-1.0.5.tar.gz
+
+tar -zxvf trace-cmd-1.0.5.tar.gz
+
+cd trace-cmd*
+
+make
+
+make gui # compiles GUI tools (KernelShark)[3]
+
+make install
+
+make install_gui # installs GUI tools
+```
+
+有了trace-cmd，跟踪将变得小菜一碟（见图6的示例用法）：
+
+```
+trace-cmd list ##to see available events 
+
+trace-cmd record -e syscalls ls ##Initiate tracing on the syscall 'ls' 
+
+##(A file called trace.dat gets created in the current directory.) 
+
+trace-cmd report ## displays the report from trace.dat
+```
+
+![2020-01-31-20-19-28.png](./images/2020-01-31-20-19-28.png)
+
+通过上面的make install_gui命令安装的KernelShark可以用于分析trace.dat文件中的跟踪数据，如图7所示。
+
+![2020-01-31-20-19-47.png](./images/2020-01-31-20-19-47.png)
+
+# 
+# 17. 相关代码以及使用
 
 内核头文件 `include/linux/kernel.h` 中描述了 `ftrace` 提供的工具函数的原型，这些函数包括 `trace_printk`、`tracing_on/tracing_off` 等。本文通过示例模块程序向读者展示如何在代码中使用这些工具函数。
 
-## 13.1. 使用 trace_printk 打印跟踪信息
+## 17.1. 使用 trace_printk 打印跟踪信息
 
 ftrace 提供了一个用于向 ftrace 跟踪缓冲区输出跟踪信息的工具函数，叫做 `trace_printk()`，它的使用方式与 printk() 类似。可以通过 `trace` 文件**读取该函数的输出**。从头文件 `include/linux/kernel.h` 中可以看到，在激活配置 `CONFIG_TRACING` 后，`trace_printk()` 定义为宏：
 
@@ -962,7 +1060,7 @@ ftrace_demo_exit
 
 这里仅仅是为了以简单的模块进行演示，故只定义了模块的 init/exit 函数，重复加载模块也只是为了获取初始化函数输出的跟踪信息。实践中，可以在模块的功能函数中加入对 trace_printk 的调用，这样可以记录模块的运作情况，然后对其特定功能进行调试优化。还可以将对 trace_printk() 的调用通过宏来控制编译，这样可以在调试时将其开启，在最终发布时将其关闭。
 
-# 14. 使用 tracing_on/tracing_off 控制跟踪信息的记录
+## 17.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录
 
 在跟踪过程中，有时候在检测到某些事件发生时，想要停止跟踪信息的记录，这样，跟踪缓冲区中较新的数据是与该事件有关的。在用户态，可以通过向文件 `tracing_on` 写入 0 来停止记录跟踪信息，写入 1 会继续记录跟踪信息。而在内核代码中，可以通过函数 `tracing_on()` 和 `tracing_off()` 来做到这一点，它们的行为类似于对 `/sys/kernel/debug/tracing` 下的文件 tracing_on 分别执行写 1 和 写 0 的操作。使用这两个函数，会对跟踪信息的记录控制地更准确一些，这是因为在用户态写文件 tracing_on 到实际暂停跟踪，中间由于上下文切换、系统调度控制等可能已经经过较长的时间，这样会积累大量的跟踪信息，而感兴趣的那部分可能会被覆盖掉了。
 
@@ -1046,9 +1144,11 @@ if (condition)
 
 用户态的应用程序可以通过直接读写文件 tracing_on 来控制记录跟踪信息的暂停状态，以便了解应用程序运行期间内核中发生的活动。
 
-# 15. 参考
+# 18. 参考
 
 本文来自 https://www.cnblogs.com/jefree/p/4438982.html
+
+https://www.cnblogs.com/jefree/p/4439007.html
 
 * 查看内核文档 Documentation/trace/ftrace.txt了解 ftrace。
 * [LWN](http://lwn.net/Kernel/Index/)上 ftrace 相关的文章。
