@@ -444,7 +444,9 @@ ftrace 提供了一个用于向 ftrace 跟踪缓冲区输出跟踪信息的工�
     ...
 ```
 
-下面通过一个示例模块 `ftrace_demo` 来演示如何使用 `trace_printk()` 向跟踪**缓冲区输出信息**，以及**如何查看这些信息**。这里的示例模块程序中仅提供了初始化和退出函数，这样读者不会因为需要为模块创建必要的访问接口比如设备文件而分散注意力。注意，编译模块时要加入 `-pg` 选项。
+下面通过一个示例模块 `ftrace_demo` 来演示如何使用 `trace_printk()` 向跟踪**缓冲区输出信息**，以及**如何查看这些信息**。这里的示例模块程序中仅提供了`初始化`和`退出函数`，这样读者不会因为需要为模块创建必要的访问接口比如设备文件而分散注意力。
+
+注意，编译模块时要加入 `-pg` 选项。
 
 清单 1. 示例模块 ftrace_demo
 
@@ -472,6 +474,45 @@ static void ftrace_demo_exit(void)
 module_init(ftrace_demo_init); 
 module_exit(ftrace_demo_exit);
 ```
+
+示例模块非常简单，仅仅是在模块初始化函数和退出函数中输出信息。接下来要对模块的运行进行跟踪，如清单 2 所示。
+
+清单 2. 对模块 ftrace_demo 进行跟踪
+
+```
+[root@linux tracing]# pwd 
+/sys/kernel/debug/tracing 
+[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
+[root@linux tracing]# echo function_graph > current_tracer 
+
+# 事先加载模块 ftrace_demo 
+
+[root@linux tracing]# echo ':mod:ftrace_demo' > set_ftrace_filter 
+[root@linux tracing]# cat set_ftrace_filter 
+ftrace_demo_init 
+ftrace_demo_exit 
+
+# 将模块 ftrace_demo 卸载
+
+[root@linux tracing]# echo 1 > tracing_enabled 
+
+# 重新进行模块 ftrace_demo 的加载与卸载操作
+
+[root@linux tracing]# cat trace 
+# tracer: function_graph 
+# 
+# CPU  DURATION                  FUNCTION CALLS 
+# |     |   |                     |   |   |   | 
+1)               |  /* Can not see this in trace unless loaded for the second time */ 
+0)               |  /* Module unloading */
+```
+
+在这个例子中，使用 mod 指令显式指定跟踪模块 ftrace_demo 中的函数，这需要提前加载该模块，否则在写文件 set_ftrace_filter 时会因为找不到该模块报错。这样在第一次加载模块时，其初始化函数 ftrace_demo_init 中调用 trace_printk 打印的语句就跟踪不到了。因此这里会将其卸载，然后激活跟踪，再重新进行模块 ftrace_demo 的加载与卸载操作。最终可以从文件 trace 中看到模块在初始化和退出时调用 trace_printk() 输出的信息。
+
+这里仅仅是为了以简单的模块进行演示，故只定义了模块的 init/exit 函数，重复加载模块也只是为了获取初始化函数输出的跟踪信息。实践中，可以在模块的功能函数中加入对 trace_printk 的调用，这样可以记录模块的运作情况，然后对其特定功能进行调试优化。还可以将对 trace_printk() 的调用通过宏来控制编译，这样可以在调试时将其开启，在最终发布时将其关闭。
+
+ 
 
 # 参考
 
