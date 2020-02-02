@@ -502,22 +502,28 @@ events/0-9     [000] 26208.817088:      9:120:S ==> [000]  1377:120:R gnome-term
 
 # 11. irqsoff 跟踪器
 
-当**关闭中断**时，CPU 会延迟对设备的状态变化做出反应，有时候这样做会对系统性能造成比较大的影响。irqsoff 跟踪器可以对中断被关闭的状况进行跟踪，有助于发现导致较大延迟的代码；当出现最大延迟时，跟踪器会记录导致延迟的跟踪信息，文件 tracing_max_latency 则记录中断被关闭的最大延时。
+当**关闭中断**时，CPU就不能响应其他的事件，如果这时有一个鼠标中断，要在下一次开中断时才能响应这个鼠标中断，这段延迟称为**中断延迟**, 有时候这样做会对系统性能造成比较大的影响。
+
+irqsoff 跟踪器可以对中断被关闭的状况进行跟踪，有助于发现导致较大延迟的代码；当出现最大延迟时，跟踪器会记录导致延迟的跟踪信息，文件 `tracing_max_latency` 则记录中断被关闭的**最大延时**。
 
 清单 4. irqsoff 跟踪器使用示例
 
 ```
-[root@linux tracing]# pwd 
-/sys/kernel/debug/tracing 
-[root@linux tracing]# echo 0 > tracing_enabled 
-[root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
-[root@linux tracing]# echo irqsoff > current_tracer 
-[root@linux tracing]# echo 1 > tracing_on 
-[root@linux tracing]# echo 1 > tracing_enabled 
+# pwd 
+/sys/kernel/debug/tracing
+# echo 0 > tracing_on
+# echo 0 > options/function-trace //关闭function-trace可以减少一些延迟
+
+# echo 1 > /proc/sys/kernel/ftrace_enabled
+
+# echo irqsoff > current_tracer 
+
+# echo 1 > tracing_on
+# echo 1 > tracing_enabled 
 
 # 让内核运行一段时间，这样 ftrace 可以收集一些跟踪信息，之后再停止跟踪
 
-[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 0 > tracing_on 
 [root@linux tracing]# cat trace | head -35 
 # tracer: irqsoff 
 # 
