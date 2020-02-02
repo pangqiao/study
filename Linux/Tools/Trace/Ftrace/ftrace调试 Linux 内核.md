@@ -3,43 +3,43 @@
 
 <!-- code_chunk_output -->
 
-- [简介](#简介)
-  - [ftrace](#ftrace)
-  - [本文概述](#本文概述)
-  - [主要用途](#主要用途)
-- [ftrace内核编译选项](#ftrace内核编译选项)
-  - [内核源码编译选项](#内核源码编译选项)
-  - [make menuconfig配置项](#make-menuconfig配置项)
-- [debugfs支持](#debugfs支持)
-  - [内核编译选项](#内核编译选项)
-  - [内核编译](#内核编译)
-- [通过 debugfs 访问 ftrace](#通过-debugfs-访问-ftrace)
-- [ftrace 的数据文件](#ftrace-的数据文件)
-- [ftrace 跟踪器](#ftrace-跟踪器)
-- [ftrace操作概述](#ftrace操作概述)
-- [function跟踪器](#function跟踪器)
-- [function_graph 跟踪器](#function_graph-跟踪器)
-- [sched_switch 跟踪器](#sched_switch-跟踪器)
-- [irqsoff 跟踪器](#irqsoff-跟踪器)
-- [跟踪指定模块中的函数](#跟踪指定模块中的函数)
-- [相关代码以及使用](#相关代码以及使用)
-  - [使用 trace_printk 打印跟踪信息](#使用-trace_printk-打印跟踪信息)
-- [使用 tracing_on/tracing_off 控制跟踪信息的记录](#使用-tracing_ontracing_off-控制跟踪信息的记录)
-- [参考](#参考)
+- [1. 简介](#1-简介)
+  - [1.1. ftrace](#11-ftrace)
+  - [1.2. 本文概述](#12-本文概述)
+  - [1.3. 主要用途](#13-主要用途)
+- [2. ftrace内核编译选项](#2-ftrace内核编译选项)
+  - [2.1. 内核源码编译选项](#21-内核源码编译选项)
+  - [2.2. make menuconfig配置项](#22-make-menuconfig配置项)
+- [3. debugfs支持](#3-debugfs支持)
+  - [3.1. 内核编译选项](#31-内核编译选项)
+  - [3.2. 内核编译](#32-内核编译)
+- [4. 通过 debugfs 访问 ftrace](#4-通过-debugfs-访问-ftrace)
+- [5. ftrace 的数据文件](#5-ftrace-的数据文件)
+- [6. ftrace 跟踪器](#6-ftrace-跟踪器)
+- [7. ftrace操作概述](#7-ftrace操作概述)
+- [8. function跟踪器](#8-function跟踪器)
+- [9. function_graph 跟踪器](#9-function_graph-跟踪器)
+- [10. sched_switch 跟踪器](#10-sched_switch-跟踪器)
+- [11. irqsoff 跟踪器](#11-irqsoff-跟踪器)
+- [12. 跟踪指定模块中的函数](#12-跟踪指定模块中的函数)
+- [13. 相关代码以及使用](#13-相关代码以及使用)
+  - [13.1. 使用 trace_printk 打印跟踪信息](#131-使用-trace_printk-打印跟踪信息)
+- [14. 使用 tracing_on/tracing_off 控制跟踪信息的记录](#14-使用-tracing_ontracing_off-控制跟踪信息的记录)
+- [15. 参考](#15-参考)
 
 <!-- /code_chunk_output -->
 
-# 简介
+# 1. 简介
 
-## ftrace
+## 1.1. ftrace
 
 ftrace 是 Linux 内核中提供的一种调试工具。使用 ftrace 可以对内核中发生的事情进行跟踪，这在调试 bug 或者分析内核时非常有用。
 
-## 本文概述
+## 1.2. 本文概述
 
 本系列文章对 ftrace 进行了介绍，分为三部分。本文是第一部分，介绍了内核相关的编译选项、用户态访问 ftrace 的接口、ftrace 的数据文件，并对 ftrace 提供的跟踪器的用途进行了介绍，以使读者更好的了解和使用该工具。
 
-## 主要用途
+## 1.3. 主要用途
 
 ftrace 是内建于 Linux 内核的跟踪工具，从 2.6.27 开始加入主流内核。使用 ftrace 可以调试或者分析内核中发生的事情。
 
@@ -49,11 +49,11 @@ ftrace 提供了**不同的跟踪器**，以用于**不同的场合**，比如�
 
 另外，对内核感兴趣的读者还可以通过 ftrace 来观察**内核中发生的活动**，了解内核的**工作机制**。
 
-# ftrace内核编译选项
+# 2. ftrace内核编译选项
 
 使用 ftrace ，首先要将其**编译进内核**。
 
-## 内核源码编译选项
+## 2.1. 内核源码编译选项
 
 内核源码目录下的 `kernel/trace/Makefile` 文件给出了 ftrace 相关的**编译选项**。
 
@@ -70,7 +70,7 @@ CONFIG_SCHED_TRACER
 
 ftrace 相关的配置选项比较多，针对不同的跟踪器有各自对应的配置选项。不同的选项有不同的依赖关系，内核源码目录下的 `kernel/trace/Kconfig` 文件描述了这些**依赖关系**。读者可以参考 `Makefile` 文件和 `Konfig` 文件，然后选中自己所需要的跟踪器。
 
-## make menuconfig配置项
+## 2.2. make menuconfig配置项
 
 通常在配置内核时，使用 `make menuconfig` 会更直观一些。
 
@@ -104,9 +104,9 @@ depends on !X86_32 || !CC_OPTIMIZE_FOR_SIZE
 
 ![2020-02-01-13-47-09.png](./images/2020-02-01-13-47-09.png)
 
-# debugfs支持
+# 3. debugfs支持
 
-## 内核编译选项
+## 3.1. 内核编译选项
 
 ftrace 通过 **debugfs** 向**用户态**提供了**访问接口**，所以还需要将 debugfs 编译进内核。
 
@@ -118,7 +118,7 @@ ftrace 通过 **debugfs** 向**用户态**提供了**访问接口**，所以还�
 
 配置完成后，**编译安装新内核**，然后**启动到新内核**。 
 
-## 内核编译
+## 3.2. 内核编译
 
 注意，激活 ftrace 支持后，编译内核时会使用编译器的 `-pg` 选项，这是在 `kernel/trace/Makefile` 文件中定义的，如清单 2 所示。
 
@@ -135,7 +135,7 @@ endif
 
 使用 `-pg` 选项会在编译得到的内核映像中加入大量的调试信息。一般情况下，只是在开发测试阶段激活 ftrace 支持，以调试内核，修复 bug 。最终用于发行版的内核则会关闭 `-pg` 选项，也就无法使用 ftrace。
 
-# 通过 debugfs 访问 ftrace
+# 4. 通过 debugfs 访问 ftrace
 
 ftrace 通过 debugfs 向用户态提供访问接口。配置内核时激活 debugfs 后会创建目录 `/sys/kernel/debug` ，debugfs 文件系统就是挂载到该目录。要挂载该目录，需要将如下内容添加到 `/etc/fstab` 文件：
 
@@ -155,7 +155,7 @@ mount  -t  debugfs  nodev  /sys/kernel/debug
 
 ![2020-02-01-16-16-28.png](./images/2020-02-01-16-16-28.png)
 
-# ftrace 的数据文件
+# 5. ftrace 的数据文件
 
 /sys/kernel/debug/trace 目录下文件和目录比较多，有些是各种跟踪器共享使用的，有些是特定于某个跟踪器使用的。
 
@@ -174,7 +174,7 @@ mount  -t  debugfs  nodev  /sys/kernel/debug
 - available_filter_functions记录了当前可以跟踪的内核函数。对于不在该文件中列出的函数，无法跟踪其活动。 
 - set_ftrace_filter和 set_ftrace_notrace在编译内核时配置了动态 ftrace （选中 CONFIG_DYNAMIC_FTRACE 选项）后使用。前者用于显示指定要跟踪的函数，后者则作用相反，用于指定不跟踪的函数。如果一个函数名同时出现在这两个文件中，则这个函数的执行状况不会被跟踪。这些文件还支持简单形式的含有通配符的表达式，这样可以用一个表达式一次指定多个目标函数；具体使用在后续文章中会有描述。注意，要写入这两个文件的函数名必须可以在文件 available_filter_functions 中看到。缺省为可以跟踪所有内核函数，文件 set_ftrace_notrace 的值则为空。
 
-# ftrace 跟踪器
+# 6. ftrace 跟踪器
 
 ftrace 当前包含多个跟踪器，用于跟踪不同类型的信息，比如进程调度、中断关闭等。可以查看文件 available_tracers 获取内核当前支持的跟踪器列表。在编译内核时，也可以看到内核支持的跟踪器对应的选项，如之前图 3 所示。
 
@@ -186,7 +186,7 @@ ftrace 当前包含多个跟踪器，用于跟踪不同类型的信息，比如�
 
 ftrace 还支持其它一些跟踪器，比如 initcall、ksym_tracer、mmiotrace、sysprof 等。ftrace 框架支持扩展添加新的跟踪器。读者可以参考内核源码包中 Documentation/trace 目录下的文档以及 kernel/trace 下的源文件，以了解其它跟踪器的用途和如何添加新的跟踪器。
 
-# ftrace操作概述
+# 7. ftrace操作概述
 
 使用 ftrace 提供的跟踪器来调试或者分析内核时需要如下操作：
 
@@ -208,7 +208,7 @@ echo 1 > /proc/sys/kernel/ftrace_enabled
 
 接下来将对跟踪器的使用以及跟踪信息的格式通过实例加以讲解。
 
-# function跟踪器
+# 8. function跟踪器
 
 function 跟踪器可以跟踪内核函数的调用情况，可用于调试或者分析 bug ，还可用于了解和观察 Linux 内核的执行过程。清单 1 给出了使用 function 跟踪器的示例。
 
@@ -245,7 +245,7 @@ trace 文件给出的信息格式很清晰。
 
 然后是**跟踪信息记录的格式**，`TASK` 字段对应**任务的名字**，`PID` 字段则给出了任务的**进程 ID**，字段 `CPU#` 表示运行被跟踪函数的 **CPU 号**，这里可以看到 idle 进程运行在 0 号 CPU 上，其进程 ID 是 0 ；字段 `TIMESTAMP` 是时间戳，其格式为`“<secs>.<usecs>”`，表示执行该函数时对应的**时间戳**；`FUNCTION` 一列则给出了**被跟踪的函数**，**函数的调用者**通过符号 `“<-”` 标明，这样可以观察到函数的调用关系。
 
-# function_graph 跟踪器
+# 9. function_graph 跟踪器
 
 在 function 跟踪器给出的信息中，可以通过 FUNCTION 列中的符号 `“<-”` 来**查看函数调用关系**，但是由于中间会混合不同函数的调用，导致看起来非常混乱，十分不方便。
 
@@ -301,7 +301,7 @@ trace 文件给出的信息格式很清晰。
 
 清单 2 中最后通过 echo 命令重置了文件 `set_graph_function` 。
 
-# sched_switch 跟踪器
+# 10. sched_switch 跟踪器
 
 `sched_switch` 跟踪器可以对**进程的调度切换**以及**之间的唤醒操作**进行跟踪，如清单 3 所示。
 
@@ -343,7 +343,7 @@ events/0-9     [000] 26208.817088:      9:120:S ==> [000]  1377:120:R gnome-term
 
 在 Linux 内核中，**进程的状态**在内核头文件 `include/linux/sched.h` 中定义，包括**可运行状态** `TASK_RUNNING`（对应跟踪信息中的符号`‘ R ’`）、**可中断阻塞状态** `TASK_INTERRUPTIBLE`（对应跟踪信息中的符号`‘ S ’`）等。同时该头文件也定义了**用户态进程**所使用的**优先级的范围**，**最小值**为 `MAX_USER_RT_PRIO`（值为 100 ），**最大值**为 `MAX_PRIO - 1`（对应值为 139 ），缺省为 `DEFAULT_PRIO`（值为 120 ）；在本例中，进程优先级都是缺省值 120 。
 
-# irqsoff 跟踪器
+# 11. irqsoff 跟踪器
 
 当**关闭中断**时，CPU 会延迟对设备的状态变化做出反应，有时候这样做会对系统性能造成比较大的影响。irqsoff 跟踪器可以对中断被关闭的状况进行跟踪，有助于发现导致较大延迟的代码；当出现最大延迟时，跟踪器会记录导致延迟的跟踪信息，文件 tracing_max_latency 则记录中断被关闭的最大延时。
 
@@ -400,7 +400,7 @@ events/0-9     [000] 26208.817088:      9:120:S ==> [000]  1377:120:R gnome-term
 
 另外，还有用于跟踪禁止进程抢占的跟踪器 preemptoff 和跟踪中断 / 抢占禁止的跟踪器 preemptirqsoff，它们的使用方式与输出信息格式与 irqsoff 跟踪器类似，这里不再赘述。
 
-# 跟踪指定模块中的函数
+# 12. 跟踪指定模块中的函数
 
 前面提过，通过文件 `set_ftrace_filter` 可以指定要跟踪的函数，缺省目标为所有可跟踪的内核函数；可以将感兴趣的函数通过 echo 写入该文件。为了方便使用，set_ftrace_filter 文件还支持简单格式的通配符。
 
@@ -432,11 +432,11 @@ inet6_create
 ipv6_addr_copy
 ```
 
-# 相关代码以及使用
+# 13. 相关代码以及使用
 
 内核头文件 `include/linux/kernel.h` 中描述了 `ftrace` 提供的工具函数的原型，这些函数包括 `trace_printk`、`tracing_on/tracing_off` 等。本文通过示例模块程序向读者展示如何在代码中使用这些工具函数。
 
-## 使用 trace_printk 打印跟踪信息
+## 13.1. 使用 trace_printk 打印跟踪信息
 
 ftrace 提供了一个用于向 ftrace 跟踪缓冲区输出跟踪信息的工具函数，叫做 `trace_printk()`，它的使用方式与 printk() 类似。可以通过 `trace` 文件**读取该函数的输出**。从头文件 `include/linux/kernel.h` 中可以看到，在激活配置 `CONFIG_TRACING` 后，`trace_printk()` 定义为宏：
 
@@ -513,7 +513,7 @@ ftrace_demo_exit
 
 这里仅仅是为了以简单的模块进行演示，故只定义了模块的 init/exit 函数，重复加载模块也只是为了获取初始化函数输出的跟踪信息。实践中，可以在模块的功能函数中加入对 trace_printk 的调用，这样可以记录模块的运作情况，然后对其特定功能进行调试优化。还可以将对 trace_printk() 的调用通过宏来控制编译，这样可以在调试时将其开启，在最终发布时将其关闭。
 
-# 使用 tracing_on/tracing_off 控制跟踪信息的记录
+# 14. 使用 tracing_on/tracing_off 控制跟踪信息的记录
 
 在跟踪过程中，有时候在检测到某些事件发生时，想要停止跟踪信息的记录，这样，跟踪缓冲区中较新的数据是与该事件有关的。在用户态，可以通过向文件 `tracing_on` 写入 0 来停止记录跟踪信息，写入 1 会继续记录跟踪信息。而在内核代码中，可以通过函数 `tracing_on()` 和 `tracing_off()` 来做到这一点，它们的行为类似于对 `/sys/kernel/debug/tracing` 下的文件 tracing_on 分别执行写 1 和 写 0 的操作。使用这两个函数，会对跟踪信息的记录控制地更准确一些，这是因为在用户态写文件 tracing_on 到实际暂停跟踪，中间由于上下文切换、系统调度控制等可能已经经过较长的时间，这样会积累大量的跟踪信息，而感兴趣的那部分可能会被覆盖掉了。
 
@@ -593,11 +593,11 @@ if (condition)
 	tracing_on() or tracing_off()
 ```
 
-跟踪模块运行状况时，使用 ftrace 命令操作序列在用户态进行必要的设置，而在代码中则可以通过 traceing_on() 控制在进入特定代码区域时开启跟踪信息，并在遇到某些条件时通过 tracing_off() 暂停；读者可以在查看完感兴趣的信息后，将 1 写入 tracing_on 文件以继续记录跟踪信息。实践中，可以通过宏来控制是否将对这些函数的调用编译进内核模块，这样可以在调试时将其开启，在最终发布时将其关闭。
+跟踪模块运行状况时，使用 ftrace 命令操作序列在用户态进行必要的设置，而在代码中则可以通过 `traceing_on()` 控制在进入特定代码区域时开启跟踪信息，并在遇到某些条件时通过 `tracing_off()` 暂停；读者可以在查看完感兴趣的信息后，将 1 写入 `tracing_on` 文件以继续记录跟踪信息。实践中，可以通过宏来控制是否将对这些函数的调用编译进内核模块，这样可以在调试时将其开启，在最终发布时将其关闭。
 
 用户态的应用程序可以通过直接读写文件 tracing_on 来控制记录跟踪信息的暂停状态，以便了解应用程序运行期间内核中发生的活动。
 
-# 参考
+# 15. 参考
 
 本文来自 https://www.cnblogs.com/jefree/p/4438982.html
 
