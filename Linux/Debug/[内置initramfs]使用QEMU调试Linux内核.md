@@ -275,7 +275,14 @@ drwxrwxrwt    2 0        0               40 May 30 08:21 tmp
 
 # GDB调试内核与模块
 
+本节介绍如何调试 KVM 虚拟机内核和模块。并说明在调试过程中如何加载模块并链接符号表。
 
+在 `load_module` 添加断点并继续执行。
+
+```
+(gdb) b load_module
+(gdb) c
+```
 
 # 5. 参考
 
