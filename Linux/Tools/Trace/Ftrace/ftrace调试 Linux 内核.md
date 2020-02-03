@@ -1130,7 +1130,7 @@ module_exit(ftrace_demo_exit);
 /sys/kernel/debug/tracing 
 [root@linux tracing]# echo 0 > tracing_on
 [root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
-[root@linux tracing]# echo function_graph > current_tracer 
+[root@linux tracing]# echo function_sgraph > current_tracer 
 
 # 事先加载模块 ftrace_demo 
 
