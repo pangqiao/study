@@ -72,7 +72,7 @@ $ mkdir -p etc/init.d/
 #!/bin/sh
 export PATH=/sbin:/usr/sbin:/bin:/usr/bin
 
-mkdir -p /proc
+mkdir -p /proc/sys/kernel
 mkdir -p /tmp
 mkdir -p /sys
 mkdir -p /mnt
