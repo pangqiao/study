@@ -25,12 +25,14 @@
 - [13. preemptirqsoff跟踪器](#13-preemptirqsoff跟踪器)
 - [14. 动态跟踪](#14-动态跟踪)
   - [14.1. 指定模块](#141-指定模块)
-- [15. 事件追踪](#15-事件追踪)
-- [16. trace-cmd and KernelShark](#16-trace-cmd-and-kernelshark)
-- [17. 相关代码以及使用](#17-相关代码以及使用)
-  - [17.1. 使用 trace_printk 打印跟踪信息](#171-使用-trace_printk-打印跟踪信息)
-  - [17.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录](#172-使用-tracing_ontracing_off-控制跟踪信息的记录)
-- [18. 参考](#18-参考)
+- [15. trace选项(启用或禁用)](#15-trace选项启用或禁用)
+- [16. 事件追踪](#16-事件追踪)
+- [17. trace-cmd and KernelShark](#17-trace-cmd-and-kernelshark)
+- [18. trace marker](#18-trace-marker)
+- [19. 相关代码以及使用](#19-相关代码以及使用)
+  - [19.1. trace_printk](#191-trace_printk)
+  - [19.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录](#192-使用-tracing_ontracing_off-控制跟踪信息的记录)
+- [20. 参考](#20-参考)
 
 <!-- /code_chunk_output -->
 
@@ -912,7 +914,23 @@ inet6_create
 ipv6_addr_copy
 ```
 
-# 15. 事件追踪
+# 15. trace选项(启用或禁用)
+
+让我们从tracer的选项开始。
+
+tracing的输入可以由一个叫`trace_options`的文件控制。
+
+可以通过更新`/sys/kernel/debug/tracing/trace_options`文件的选项来**启用或者禁用各种域**。
+
+`trace_options`的一个示例如图1所示。
+
+![2020-01-31-01-02-43.png](./images/2020-01-31-01-02-43.png)
+
+要**禁用一个跟踪选项**，只需要在相应行首加一个“no”即可。
+
+比如, `echo notrace_printk > trace_options`。（no和选项之间没有空格。）要再次启用一个跟踪选项，你可以这样：`echo trace_printk > trace_options`。
+
+# 16. 事件追踪
 
 ftrace里的跟踪机制主要有两种，分别是函数和tracepoint。前者属于“傻瓜式”操作，后者tracepoint可以理解为一个Linux内核中的占位符函数，内核子系统的开发者通常喜欢利用它来调试。tracepoint可以输出开发者想要的参数、局部变量等信息。tracepoint的位置比较固定，一般都是内核开发者添加上去的，可以把它理解为传统C语言程序中#if DEBUG部分。如果在运行时没有开启DEBUG，那么是不占用任何系统开销的。
 
@@ -940,7 +958,7 @@ sunrpc:rpc_socket_state_change
 
 有关事件跟踪的更多细节，请阅读内核目录下`Documents/Trace/events.txt`文件。
 
-# 16. trace-cmd and KernelShark
+# 17. trace-cmd and KernelShark
 
 trace-cmd是由Steven Rostedt在2009年发在LKML上的，它可以让操作跟踪器更简单。以下几步是获取最新的版本并装在你的系统上，包括它的GUI工具KernelShark。
 
@@ -978,14 +996,23 @@ trace-cmd report ## displays the report from trace.dat
 
 ![2020-01-31-20-19-47.png](./images/2020-01-31-20-19-47.png)
 
-# 
-# 17. 相关代码以及使用
+# 18. trace marker
+
+有时需要跟踪用户程序和内核空间的运行情况，trace marker可以很方便地跟踪用户程序。trace_marker是一个文件节点，允许用户程序写入字符串，ftrace会记录该写入动作时的时间戳。
+
+# 19. 相关代码以及使用
 
 内核头文件 `include/linux/kernel.h` 中描述了 `ftrace` 提供的工具函数的原型，这些函数包括 `trace_printk`、`tracing_on/tracing_off` 等。本文通过示例模块程序向读者展示如何在代码中使用这些工具函数。
 
-## 17.1. 使用 trace_printk 打印跟踪信息
+## 19.1. trace_printk
 
-ftrace 提供了一个用于向 ftrace 跟踪缓冲区输出跟踪信息的工具函数，叫做 `trace_printk()`，它的使用方式与 printk() 类似。可以通过 `trace` 文件**读取该函数的输出**。从头文件 `include/linux/kernel.h` 中可以看到，在激活配置 `CONFIG_TRACING` 后，`trace_printk()` 定义为宏：
+ftrace 提供了一个用于向 ftrace 跟踪缓冲区输出跟踪信息的工具函数，叫做 `trace_printk()`，它的使用方式与 printk() 类似。
+
+可以通过 `trace` 文件**读取该函数的输出**。
+
+`trace_printk`打印调试信息后，将`current_tracer`设置为**nop**，将`tracing_on`设置为1，调用相应模块执行，即可通过trace文件看到`trace_printk`打印的信息。
+
+从头文件 `include/linux/kernel.h` 中可以看到，在激活配置 `CONFIG_TRACING` 后，`trace_printk()` 定义为宏：
 
 ```cpp
 #define trace_printk(fmt, args...)   		 \ 
@@ -994,7 +1021,7 @@ ftrace 提供了一个用于向 ftrace 跟踪缓冲区输出跟踪信息的工�
 
 下面通过一个示例模块 `ftrace_demo` 来演示如何使用 `trace_printk()` 向跟踪**缓冲区输出信息**，以及**如何查看这些信息**。这里的示例模块程序中仅提供了`初始化`和`退出函数`，这样读者不会因为需要为模块创建必要的访问接口比如设备文件而分散注意力。
 
-注意，编译模块时要加入 `-pg` 选项。
+注意，**编译模块**时要加入 `-pg` 选项。
 
 清单 1. 示例模块 ftrace_demo
 
@@ -1060,7 +1087,7 @@ ftrace_demo_exit
 
 这里仅仅是为了以简单的模块进行演示，故只定义了模块的 init/exit 函数，重复加载模块也只是为了获取初始化函数输出的跟踪信息。实践中，可以在模块的功能函数中加入对 trace_printk 的调用，这样可以记录模块的运作情况，然后对其特定功能进行调试优化。还可以将对 trace_printk() 的调用通过宏来控制编译，这样可以在调试时将其开启，在最终发布时将其关闭。
 
-## 17.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录
+## 19.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录
 
 在跟踪过程中，有时候在检测到某些事件发生时，想要停止跟踪信息的记录，这样，跟踪缓冲区中较新的数据是与该事件有关的。在用户态，可以通过向文件 `tracing_on` 写入 0 来停止记录跟踪信息，写入 1 会继续记录跟踪信息。而在内核代码中，可以通过函数 `tracing_on()` 和 `tracing_off()` 来做到这一点，它们的行为类似于对 `/sys/kernel/debug/tracing` 下的文件 tracing_on 分别执行写 1 和 写 0 的操作。使用这两个函数，会对跟踪信息的记录控制地更准确一些，这是因为在用户态写文件 tracing_on 到实际暂停跟踪，中间由于上下文切换、系统调度控制等可能已经经过较长的时间，这样会积累大量的跟踪信息，而感兴趣的那部分可能会被覆盖掉了。
 
@@ -1144,11 +1171,13 @@ if (condition)
 
 用户态的应用程序可以通过直接读写文件 tracing_on 来控制记录跟踪信息的暂停状态，以便了解应用程序运行期间内核中发生的活动。
 
-# 18. 参考
+# 20. 参考
 
-本文来自 https://www.cnblogs.com/jefree/p/4438982.html
+本文来自 
 
-https://www.cnblogs.com/jefree/p/4439007.html
+- https://www.cnblogs.com/jefree/p/4438982.html
+- https://www.cnblogs.com/jefree/p/4439007.html
+- 奔跑吧Linux内核
 
 * 查看内核文档 Documentation/trace/ftrace.txt了解 ftrace。
 * [LWN](http://lwn.net/Kernel/Index/)上 ftrace 相关的文章。
