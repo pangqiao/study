@@ -27,6 +27,7 @@
 - [14. 动态跟踪](#14-动态跟踪)
   - [14.1. 指定模块](#141-指定模块)
 - [15. trace选项(启用或禁用)](#15-trace选项启用或禁用)
+- [Max Stack Tracer 的使用](#max-stack-tracer-的使用)
 - [16. 事件追踪](#16-事件追踪)
 - [17. trace-cmd and KernelShark](#17-trace-cmd-and-kernelshark)
 - [18. trace marker](#18-trace-marker)
@@ -965,6 +966,40 @@ tracing的输入可以由一个叫`trace_options`的文件控制。
 要**禁用一个跟踪选项**，只需要在相应行首加一个“no”即可。
 
 比如, `echo notrace_printk > trace_options`。（no和选项之间没有空格。）要再次启用一个跟踪选项，你可以这样：`echo trace_printk > trace_options`。
+
+# Max Stack Tracer 的使用
+
+这个 tracer 记录内核函数的堆栈使用情况，用户可以使用如下命令打开该 tracer：
+
+```
+echo 1 > /proc/sys/kernel/stack_tracer_enabled
+```
+
+从此，ftrace 便留心记录内核函数的堆栈使用。 Max Stack Tracer 的输出在 stack_trace 文件中：
+
+```
+# cat /debug/tracing/stack_trace 
+
+ Depth Size Location (44 entries) 
+
+ ----- ---- -------- 
+
+ 0) 3088 64 update_curr+0x64/0x136 
+
+ 1) 3024 64 enqueue_task_fair+0x59/0x2a1 
+
+ 2) 2960 32 enqueue_task+0x60/0x6b 
+
+ 3) 2928 32 activate_task+0x27/0x30 
+
+ 4) 2896 80 try_to_wake_up+0x186/0x27f 
+
+…
+
+ 42)  80 80 sysenter_do_call+0x12/0x32
+```
+
+从上例中可以看到内核堆栈最满的情况如下，有 43 层函数调用，堆栈使用大小为 3088 字节。此外还可以在 Location 这列中看到整个的 calling stack 情况。这在某些情况下，可以提供额外的 debug 信息，帮助开发人员定位问题。
 
 # 16. 事件追踪
 
