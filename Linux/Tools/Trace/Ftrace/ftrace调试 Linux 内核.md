@@ -650,7 +650,28 @@ irqsoff 跟踪器可以对中断被关闭的状况进行跟踪，有助于发现
 
 从清单 4 中的输出信息中，可以看到当前 irqsoff 延迟跟踪器的版本信息。接下来是最大延迟时间，以 us 为单位，本例中为 34380 us ，查看文件 tracing_max_latency 也可以获取该值。从“task:”字段可以知道延迟发生时正在运行的进程为 idle（其 pid 为 0 ）。中断的关闭操作是在函数 reschedule_interrupt 中进行的，由“=> started at:”标识，函数 restore_all_ontrace 重新激活了中断，由“=> ended at:”标识；中断关闭的最大延迟发生在函数 trace_hardirqs_on_thunk 中，这个可以从最大延迟时间所在的记录项看到，也可以从延迟记录信息中最后的“=>”标识所对应的记录行知道这一点。
 
-在输出信息中，irqs-off、need_resched 等字段对应于进程结构 struct task_struct 的字段或者状态标志，可以从头文件 arch/<platform>/include/asm/thread_info.h 中查看进程支持的状态标志，include/linux/sched.h 则给出了结构 struct task_struct 的定义。其中，irqs-off 字段显示是否中断被禁止，为‘ d ’表示中断被禁止；need_resched 字段显示为‘ N ’表示设置了进程状态标志 TIF_NEED_RESCHED。hardirq/softirq 字段表示当前是否发生硬件中断 / 软中断；preempt-depth 表示是否禁止进程抢占，例如在持有自旋锁的情况下进程是不能被抢占的，本例中进程 idle 是可以被其它进程抢占的。结构 struct task_struct 中的 lock_depth 字段是与大内核锁相关的，而最近的内核开发工作中有一部分是与移除大内核锁相关的，这里对该字段不再加以描述。
+在输出信息中，irqs-off、need_resched 等字段对应于进程结构 struct task_struct 的字段或者状态标志，可以从头文件 `arch/<platform>/include/asm/thread_info.h` 中查看进程支持的状态标志，include/linux/sched.h 则给出了结构 struct task_struct 的定义。其中，irqs-off 字段显示是否中断被禁止，为‘ d ’表示中断被禁止；need_resched 字段显示为‘ N ’表示设置了进程状态标志 TIF_NEED_RESCHED。hardirq/softirq 字段表示当前是否发生硬件中断 / 软中断；preempt-depth 表示是否禁止进程抢占，例如在持有自旋锁的情况下进程是不能被抢占的，本例中进程 idle 是可以被其它进程抢占的。结构 struct task_struct 中的 lock_depth 字段是与大内核锁相关的，而最近的内核开发工作中有一部分是与移除大内核锁相关的，这里对该字段不再加以描述。
+
+
+
+在文件的头部，irqsoff tracer 记录了中断禁止时间最长的函数。在本例中，函数 trace_hardirqs_on 将中断禁止了 12us 。
+
+文件中的每一行代表一次函数调用。 Cmd 代表进程名，pid 是进程 ID 。中间有 5 个字符，分别代表了 CPU#，irqs-off 等信息，具体含义如下：
+
+CPU# 表示 CPU ID ；
+
+irqs-off 这个字符的含义如下：’ d ’表示中断被 disabled 。’ . ’表示中断没有关闭；
+
+need-resched 字符的含义：’ N ’表示 need_resched 被设置，’ . ’表示 need-reched 没有被设置，中断返回不会进行进程切换；
+
+hardirq/softirq 字符的含义 : 'H' 在 softirq 中发生了硬件中断， 'h' – 硬件中断，’ s ’表示 softirq，’ . ’不在中断上下文中，普通状态。
+
+preempt-depth: 当抢占中断使能后，该域代表 preempt_disabled 的级别。
+
+在每一行的中间，还有两个域：time 和 delay 。 time: 表示从 trace 开始到当前的相对时间。 Delay 突出显示那些有高延迟的地方以便引起用户注意。当其显示为 ! 时，表示需要引起注意。
+
+
+
 
 另外，还有用于跟踪禁止进程抢占的跟踪器 preemptoff 和跟踪中断 / 抢占禁止的跟踪器 preemptirqsoff，它们的使用方式与输出信息格式与 irqsoff 跟踪器类似，这里不再赘述。
 
