@@ -5,8 +5,8 @@
 
 - [1. 简介](#1-简介)
   - [1.1. ftrace](#11-ftrace)
-  - [ftrace 与其他 trace 工具的关系和比较](#ftrace-与其他-trace-工具的关系和比较)
-  - [1.2. 主要用途](#12-主要用途)
+  - [1.2. ftrace 与其他 trace 工具的关系和比较](#12-ftrace-与其他-trace-工具的关系和比较)
+  - [1.3. 主要用途](#13-主要用途)
 - [2. ftrace内核编译选项](#2-ftrace内核编译选项)
   - [2.1. 内核源码编译选项](#21-内核源码编译选项)
   - [2.2. make menuconfig配置项](#22-make-menuconfig配置项)
@@ -27,14 +27,14 @@
 - [14. 动态跟踪](#14-动态跟踪)
   - [14.1. 指定模块](#141-指定模块)
 - [15. trace选项(启用或禁用)](#15-trace选项启用或禁用)
-- [Max Stack Tracer 的使用](#max-stack-tracer-的使用)
-- [16. 事件追踪](#16-事件追踪)
-- [17. trace-cmd and KernelShark](#17-trace-cmd-and-kernelshark)
-- [18. trace marker](#18-trace-marker)
-- [19. 相关代码以及使用](#19-相关代码以及使用)
-  - [19.1. trace_printk](#191-trace_printk)
-  - [19.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录](#192-使用-tracing_ontracing_off-控制跟踪信息的记录)
-- [20. 参考](#20-参考)
+- [16. Max Stack Tracer 的使用](#16-max-stack-tracer-的使用)
+- [17. 事件追踪](#17-事件追踪)
+- [18. trace-cmd and KernelShark](#18-trace-cmd-and-kernelshark)
+- [19. trace marker](#19-trace-marker)
+- [20. 相关代码以及使用](#20-相关代码以及使用)
+  - [20.1. trace_printk](#201-trace_printk)
+  - [20.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录](#202-使用-tracing_ontracing_off-控制跟踪信息的记录)
+- [21. 参考](#21-参考)
 
 <!-- /code_chunk_output -->
 
@@ -52,7 +52,7 @@ ftrace是由Steven Rostedy和Ingo Molnar在内核2.6.27版本中引入的。它�
 
 ftrace官方文档在`Documentation/trace/ftrace.txt`文件中。
 
-## ftrace 与其他 trace 工具的关系和比较
+## 1.2. ftrace 与其他 trace 工具的关系和比较
 
 Ftrace 最初是在 2.6.27 中出现的，那个时候，systemTap 已经开始崭露头角，其他的 trace 工具包括 LTTng 等也已经发展多年。那为什么人们还要再开发一个 trace 工具呢？
 
@@ -66,7 +66,7 @@ Ftrace的设计目标简单，本质上是一种静态代码插装技术，不�
 
 Ftrace 的实现依赖于其他很多内核特性，比如 `tracepoint[3]`，`debugfs[2]`，`kprobe[4]`，`IRQ-Flags[5]` 等。限于篇幅，关于这些技术的介绍请读者自行查阅相关的参考资料。
 
-## 1.2. 主要用途
+## 1.3. 主要用途
 
 ftrace 是内建于 Linux 内核的跟踪工具，从 2.6.27 开始加入主流内核。使用 ftrace 可以调试或者分析内核中发生的事情。
 
@@ -967,7 +967,7 @@ tracing的输入可以由一个叫`trace_options`的文件控制。
 
 比如, `echo notrace_printk > trace_options`。（no和选项之间没有空格。）要再次启用一个跟踪选项，你可以这样：`echo trace_printk > trace_options`。
 
-# Max Stack Tracer 的使用
+# 16. Max Stack Tracer 的使用
 
 这个 tracer 记录内核函数的堆栈使用情况，用户可以使用如下命令打开该 tracer：
 
@@ -1001,7 +1001,7 @@ echo 1 > /proc/sys/kernel/stack_tracer_enabled
 
 从上例中可以看到内核堆栈最满的情况如下，有 43 层函数调用，堆栈使用大小为 3088 字节。此外还可以在 Location 这列中看到整个的 calling stack 情况。这在某些情况下，可以提供额外的 debug 信息，帮助开发人员定位问题。
 
-# 16. 事件追踪
+# 17. 事件追踪
 
 ftrace里的跟踪机制主要有两种，分别是函数和tracepoint。前者属于“傻瓜式”操作，后者tracepoint可以理解为一个Linux内核中的占位符函数，内核子系统的开发者通常喜欢利用它来调试。tracepoint可以输出开发者想要的参数、局部变量等信息。tracepoint的位置比较固定，一般都是内核开发者添加上去的，可以把它理解为传统C语言程序中#if DEBUG部分。如果在运行时没有开启DEBUG，那么是不占用任何系统开销的。
 
@@ -1029,7 +1029,7 @@ sunrpc:rpc_socket_state_change
 
 有关事件跟踪的更多细节，请阅读内核目录下`Documents/Trace/events.txt`文件。
 
-# 17. trace-cmd and KernelShark
+# 18. trace-cmd and KernelShark
 
 trace-cmd是由Steven Rostedt在2009年发在LKML上的，它可以让操作跟踪器更简单。以下几步是获取最新的版本并装在你的系统上，包括它的GUI工具KernelShark。
 
@@ -1067,15 +1067,15 @@ trace-cmd report ## displays the report from trace.dat
 
 ![2020-01-31-20-19-47.png](./images/2020-01-31-20-19-47.png)
 
-# 18. trace marker
+# 19. trace marker
 
 有时需要跟踪用户程序和内核空间的运行情况，trace marker可以很方便地跟踪用户程序。trace_marker是一个文件节点，允许用户程序写入字符串，ftrace会记录该写入动作时的时间戳。
 
-# 19. 相关代码以及使用
+# 20. 相关代码以及使用
 
 内核头文件 `include/linux/kernel.h` 中描述了 `ftrace` 提供的工具函数的原型，这些函数包括 `trace_printk`、`tracing_on/tracing_off` 等。本文通过示例模块程序向读者展示如何在代码中使用这些工具函数。
 
-## 19.1. trace_printk
+## 20.1. trace_printk
 
 ftrace 提供了一个用于向 ftrace 跟踪缓冲区输出跟踪信息的工具函数，叫做 `trace_printk()`，它的使用方式与 printk() 类似。
 
@@ -1158,7 +1158,7 @@ ftrace_demo_exit
 
 这里仅仅是为了以简单的模块进行演示，故只定义了模块的 init/exit 函数，重复加载模块也只是为了获取初始化函数输出的跟踪信息。实践中，可以在模块的功能函数中加入对 trace_printk 的调用，这样可以记录模块的运作情况，然后对其特定功能进行调试优化。还可以将对 trace_printk() 的调用通过宏来控制编译，这样可以在调试时将其开启，在最终发布时将其关闭。
 
-## 19.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录
+## 20.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录
 
 在跟踪过程中，有时候在检测到某些事件发生时，想要停止跟踪信息的记录，这样，跟踪缓冲区中较新的数据是与该事件有关的。在用户态，可以通过向文件 `tracing_on` 写入 0 来停止记录跟踪信息，写入 1 会继续记录跟踪信息。而在内核代码中，可以通过函数 `tracing_on()` 和 `tracing_off()` 来做到这一点，它们的行为类似于对 `/sys/kernel/debug/tracing` 下的文件 tracing_on 分别执行写 1 和 写 0 的操作。使用这两个函数，会对跟踪信息的记录控制地更准确一些，这是因为在用户态写文件 tracing_on 到实际暂停跟踪，中间由于上下文切换、系统调度控制等可能已经经过较长的时间，这样会积累大量的跟踪信息，而感兴趣的那部分可能会被覆盖掉了。
 
@@ -1242,7 +1242,7 @@ if (condition)
 
 用户态的应用程序可以通过直接读写文件 tracing_on 来控制记录跟踪信息的暂停状态，以便了解应用程序运行期间内核中发生的活动。
 
-# 20. 参考
+# 21. 参考
 
 本文来自 
 
