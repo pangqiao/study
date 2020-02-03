@@ -8,6 +8,7 @@
 - [3 调试](#3-调试)
 - [4 问题和解决方案](#4-问题和解决方案)
 - [GDB调试内核与模块](#gdb调试内核与模块)
+- [相关脚本](#相关脚本)
 - [5. 参考](#5-参考)
 
 <!-- /code_chunk_output -->
@@ -157,7 +158,13 @@ General setup --->
 
 Boot options -->
     ()Default kernel command string
+
+Device Drivers -->
+   Generic Driver Options  -> 
+        [*] Support for uevent helper
 ```
+
+最后这个是为了支持hotplug
 
 ```
 $ make -j 20
@@ -175,8 +182,11 @@ start\_kernel脚本：
 
 ```
 #!/usr/bin/bash
-qemu-system-x86_64 -smp 2 -m 1024 -kernel arch/x86/boot/bzImage -nographic -append "rdinit=/linuxrc loglevel=8 console=ttyS0" -S -s
+qemu-system-x86_64 -cpu host -smp 2 -m 1024 -kernel arch/x86/boot/bzImage -nographic -append "rdinit=/linuxrc loglevel=8 console=ttyS0" -S -s
 ```
+
+- `-S`：表示QEMU虚拟机会冻结CPU，直到远程的GDB输入相应控制命令。
+- `-s`：表示在1234端口接受GDB的调试连接。
 
 启动gdb脚本或参照下面命令
 
@@ -234,9 +244,59 @@ target remote :1234
 
 连接上后就可以看到 gdb 正常的输出 start\_kernel 处的代码，然后按照 gdb 的调试指令进行内核调试即可。
 
-直到最后完全启动, 到达根目录
+虚拟机直到最后完全启动, 到达根目录
 
 ```
+[    1.561268] Fusion MPT FC Host driver 3.04.20
+[    1.561881] Fusion MPT SAS Host driver 3.04.20
+[    1.562501] Fusion MPT misc device (ioctl) driver 3.04.20
+[    1.563254] mptctl: Registered with Fusion MPT base driver
+[    1.563992] mptctl: /dev/mptctl @ (major,minor=10,220)
+[    1.564682] ehci_hcd: USB 2.0 'Enhanced' Host Controller (EHCI) Driver
+[    1.565566] ehci-pci: EHCI PCI platform driver
+[    1.566188] ohci_hcd: USB 1.1 'Open' Host Controller (OHCI) Driver
+[    1.567017] ohci-pci: OHCI PCI platform driver
+[    1.567635] uhci_hcd: USB Universal Host Controller Interface driver
+[    1.568549] i8042: PNP: PS/2 Controller [PNP0303:KBD,PNP0f13:MOU] at 0x60,0x64 irq 1,12
+[    1.570399] serio: i8042 KBD port at 0x60,0x64 irq 1
+[    1.571073] serio: i8042 AUX port at 0x60,0x64 irq 12
+[    1.571866] mousedev: PS/2 mouse device common for all mice
+[    1.572886] input: AT Translated Set 2 keyboard as /devices/platform/i8042/serio0/input/input1
+[    1.573764] rtc_cmos 00:00: RTC can wake from S4
+[    1.575328] rtc_cmos 00:00: registered as rtc0
+[    1.576083] rtc_cmos 00:00: alarms up to one day, y3k, 114 bytes nvram, hpet irqs
+[    1.577406] device-mapper: uevent: version 1.0.3
+[    1.578246] device-mapper: ioctl: 4.40.0-ioctl (2019-01-18) initialised: dm-devel@redhat.com
+[    1.579680] intel_pstate: CPU model not supported
+[    1.580595] usbcore: registered new interface driver usbhid
+[    1.581496] usbhid: USB HID core driver
+[    1.582149] drop_monitor: Initializing network drop monitor service
+[    1.583255] Initializing XFRM netlink socket
+[    1.584090] NET: Registered protocol family 10
+[    1.585132] Segment Routing with IPv6
+[    1.585766] NET: Registered protocol family 17
+[    1.586519] Bridge firewalling registered
+[    1.587202] 8021q: 802.1Q VLAN Support v1.8
+[    1.587900] Key type dns_resolver registered
+[    1.588791] sched_clock: Marking stable (1480684632, 108044146)->(1630540641, -41811863)
+[    1.590265] registered taskstats version 1
+[    1.590897] Loading compiled-in X.509 certificates
+[    1.592824] Key type encrypted registered
+[    1.593763] rtc_cmos 00:00: setting system clock to 2020-02-03T16:35:17 UTC (1580747717)
+[    1.718143] ata2.01: NODEV after polling detection
+[    1.719080] ata2.00: ATAPI: QEMU DVD-ROM, 2.5+, max UDMA/100
+[    1.720875] scsi 1:0:0:0: CD-ROM            QEMU     QEMU DVD-ROM     2.5+ PQ: 0 ANSI: 5
+[    1.722507] scsi 1:0:0:0: Attached scsi generic sg0 type 5
+[    1.725175] Freeing unused kernel image memory: 3680K
+[    1.737619] Write protecting the kernel read-only data: 22528k
+[    1.739733] Freeing unused kernel image memory: 2008K
+[    1.741688] Freeing unused kernel image memory: 1784K
+[    1.742414] Run /linuxrc as init process
+
+Please press Enter to activate this console. [    2.489634] tsc: Refined TSC clocksource calibration: 2394.457 MHz
+[    2.490481] clocksource: tsc: mask: 0xffffffffffffffff max_cycles: 0x2283c360c9e, max_idle_ns: 440795302742 ns
+[    2.491826] clocksource: Switched to clocksource tsc
+
 / # ls -l
 total 0
 drwxr-xr-x    2 0        0             5320 May 30 07:46 bin
@@ -301,6 +361,12 @@ CONFIG_NET=y
 (gdb) b load_module
 (gdb) c
 ```
+
+# 相关脚本
+
+当前目录下
+
+- gdb.sh: gdb启动脚本
 
 # 5. 参考
 
