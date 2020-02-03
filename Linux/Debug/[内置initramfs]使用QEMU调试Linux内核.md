@@ -366,7 +366,9 @@ CONFIG_NET=y
 
 当前目录下
 
+- start_kernel.sh: 虚拟机启动脚本
 - gdb.sh: gdb启动脚本
+- .config: 虚拟机的内核编译.config
 
 # 5. 参考
 
