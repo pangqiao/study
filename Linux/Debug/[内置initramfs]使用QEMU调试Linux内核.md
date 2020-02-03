@@ -284,11 +284,11 @@ CONFIG_PROC_FS=y
 
 CONFIG_PROC_SYSCTL=y
 
-CONFIG_HOTPLUG=y
+CONFIG_UEVENT_HELPER=y
 
 CONFIG_NET=y
 ```
-如果CONFIG_HOTPLUG和CONFIG_NET不选或没全选上的话，/proc/sys/kernel下将不会创建hotplug文件
+如果`CONFIG_UEVENT_HELPER`和CONFIG_NET不选或没全选上的话，/proc/sys/kernel下将不会创建hotplug文件
 
 
 # GDB调试内核与模块
