@@ -7,6 +7,7 @@
 - [2 编译调试版内核](#2-编译调试版内核)
 - [3 调试](#3-调试)
 - [4 问题和解决方案](#4-问题和解决方案)
+- [GDB调试内核与模块](#gdb调试内核与模块)
 - [5. 参考](#5-参考)
 
 <!-- /code_chunk_output -->
@@ -271,6 +272,10 @@ drwxrwxrwt    2 0        0               40 May 30 08:21 tmp
 4. 为什么最后内核执行出现了 Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0) 
 
 因为 qemu 没有加载 rootfs，所以内核最后挂 VFS 的时候会出错。可以用 busybox 构建一个文件系统镜像，然后 qemu 增加 -initrd 选项指向该文件系统镜像即可。
+
+# GDB调试内核与模块
+
+
 
 # 5. 参考
 
