@@ -1057,7 +1057,7 @@ module_exit(ftrace_demo_exit);
 ```
 [root@linux tracing]# pwd 
 /sys/kernel/debug/tracing 
-[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 0 > tracing_on
 [root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
 [root@linux tracing]# echo function_graph > current_tracer 
 
@@ -1070,7 +1070,7 @@ ftrace_demo_exit
 
 # 将模块 ftrace_demo 卸载
 
-[root@linux tracing]# echo 1 > tracing_enabled 
+[root@linux tracing]# echo 1 > tracing_on 
 
 # 重新进行模块 ftrace_demo 的加载与卸载操作
 
