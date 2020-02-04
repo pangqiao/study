@@ -30,8 +30,23 @@ git clone https://github.com/brendangregg/FlameGraph
 
 # 火焰图案例
 
+直接从最简单的例子开始说起, 代码如下:
 
+```cpp
+c(){
+    for(int i=0;i<1000;i++);
+}
 
+b(){
+    for(int i=0;i<1000;i++);
+    c();
+}
+
+a(){
+    for(int i=0;i<1000;i++);
+    b();
+}
+```
 # 参考
 
 https://mp.weixin.qq.com/s/Kz4tii8O4Nk-S4SV4kFYPA
