@@ -28,6 +28,10 @@ CPU火焰图中的**每一个方框**是**一个函数**，**方框的长度**�
 git clone https://github.com/brendangregg/FlameGraph
 ```
 
+# 火焰图案例
+
+
+
 # 参考
 
 https://mp.weixin.qq.com/s/Kz4tii8O4Nk-S4SV4kFYPA
