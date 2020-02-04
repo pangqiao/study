@@ -168,7 +168,11 @@ perf top提示出来了fun_a()、fun_b()、fun_c(), fun_d()，thread_func()这�
 
 关于火焰图的更多细节和更多种火焰图各自的功能，可以访问：
 
-http://www.brendangregg.com/flamegraphs.html
+官网: http://www.brendangregg.com/flamegraphs.html
+
+on-cpu资料: http://www.brendangregg.com/FlameGraphs/cpuflamegraphs.html
+
+off-cpu资源: http://www.brendangregg.com/FlameGraphs/offcpuflamegraphs.html
 
 # 参考
 
