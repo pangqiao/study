@@ -334,6 +334,12 @@ echo 0 > tracing_on
 echo 1 > /proc/sys/kernel/ftrace_enabled
 ```
 
+或者
+
+```
+sysctl kernel.ftrace_enabled=1
+```
+
 5. **启用追踪器**. 将所选择的**跟踪器的名字写入**文件 `current_tracer`
 
 ftrace每次只能打开一个追踪器
