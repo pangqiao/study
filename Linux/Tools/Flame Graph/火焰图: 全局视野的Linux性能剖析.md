@@ -50,7 +50,75 @@ a(){
 
 则这三个函数，在火焰图中呈现的样子为：
 
+![2020-02-04-23-11-42.png](./images/2020-02-04-23-11-42.png)
 
+`a()`的`2/3`的时间花在`b()`上面，而`b()`的`1/3`的时间花在`c()`上面。很多个这样的`a->b->c`的火苗堆在一起，就构成了火焰图。
+
+![2020-02-04-23-12-28.png](./images/2020-02-04-23-12-28.png)
+
+进一步理解火焰图的最好方法仍然是通过一个实际的案例，下面的程序创建2个线程，两个线程的handler都是`thread_fun()`，之后`thread_fun()`调用`fun_a()`、`fun_b()`、`fun_c()`，而`fun_a()`又会调用`fun_d()`：
+
+```cpp
+#include <pthread.h>
+
+func_d(){
+    int i;
+    for(i=0;i<50000;i++);
+}
+
+func_a(){
+    int i;
+    for(i=0;i<100000;i++);
+    func_d();
+}
+
+func_b(){
+    int i;
+    for(i=0;i<200000;i++);
+}
+
+func_c()
+{
+    int i;
+    for(i=0;i<300000;i++);
+}
+
+void* thread_fun(void* param)
+{
+    while(1) {
+        int i;
+        for(i=0;i<100000;i++);
+        
+        func_a();
+        func_b();
+        func_c();
+    }
+}
+
+int main(void)
+{
+    pthread_t tid1,tid2;
+    int ret;
+    
+    ret=pthread_create(&tid1,NULL,thread_fun,NULL);
+    if(ret==-1){
+        ...
+    }
+    
+    ret=pthread_create(&tid2,NULL,thread_fun,NULL);
+    ...
+    
+    if(pthread_join(tid1,NULL)!=0){
+        ...
+    }
+    
+    if(pthread_join(tid2,NULL)!=0){
+        ...
+    }
+    
+    return 0;
+}
+```
 
 # 参考
 
