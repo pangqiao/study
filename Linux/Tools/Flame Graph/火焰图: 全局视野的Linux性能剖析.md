@@ -5,6 +5,8 @@
 
 其他的呈现方法，一般只能列出单一的调用栈或者非层次化的时间分布。
 
+根据系统性能的指标可以将火焰图分为多种，常见的有on-cpu和off-cpu两种火焰图
+
 ## 火焰图示例
 
 以典型的分析CPU时间花费到哪个函数的`on-cpu`火焰图为例来展开。
@@ -133,8 +135,40 @@ perf top的显示结果如下：
 
 perf top提示出来了fun_a()、fun_b()、fun_c(), fun_d()，thread_func()这些函数内部的代码是CPU消耗大户，但是它缺乏一个全局的视野，我们无法看出全局的调用栈，也弄不清楚这些函数之间的关系。火焰图则不然，我们用下面的命令可以生成火焰图（以root权限运行）：
 
+```
+# 采集信息
+# perf record -F 99 -a -g -- sleep 60
 
+# 查看采集到的信息
+# perf script | ./stackcollapse-perf.pl > out.perf-folded
 
+# 生成火焰图
+./flamegraph.pl out.perf-folded > perf-kernel.svg
+```
+
+`-F 99`表示每秒99次，`-p 13204`是进程号，即对哪个进程进行分析，`-g`表示**记录调用栈**，`-a`表示所有进程, `sleep 60`则是持续60秒。
+
+上述程序捕获系统的行为60秒钟，最后调用flamegraph.pl生成一个火焰图`perf-kernel.svg`，用看图片的工具就可以打开这个svg。
+
+![2020-02-04-23-59-22.png](./images/2020-02-04-23-59-22.png)
+
+上述火焰图显示出了a.out中，thread_func()、func_a()、func_b()、fun_c()和func_d()的时间分布。
+
+从上述火焰图可以看出，虽然thread_func()被两个线程调用，但是由于thread_func()之前的调用栈是一样的，所以2个线程的thread_func()调用是合并为同一个方框的。
+
+# 更深阅读
+
+除了on-cpu的火焰图以外，off-cpu的火焰图，对于分析系统堵在IO、SWAP、取得锁方面的帮助很大，有利于分析系统在运行的时候究竟在等待什么，系统资源之间的彼此伊伴。
+
+比如，下面的火焰图显示，nginx的吞吐能力上不来的很多程度原因在于sem_wait()等待信号量。
+
+![2020-02-05-00-00-09.png](./images/2020-02-05-00-00-09.png)
+
+上图摘自Yichun Zhang (agentzh)的《Introduction to offCPU Time Flame Graphs》。
+
+关于火焰图的更多细节和更多种火焰图各自的功能，可以访问：
+
+http://www.brendangregg.com/flamegraphs.html
 
 # 参考
 
