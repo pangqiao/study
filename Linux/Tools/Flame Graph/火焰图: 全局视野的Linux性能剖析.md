@@ -47,6 +47,11 @@ a(){
     b();
 }
 ```
+
+则这三个函数，在火焰图中呈现的样子为：
+
+
+
 # 参考
 
 https://mp.weixin.qq.com/s/Kz4tii8O4Nk-S4SV4kFYPA
