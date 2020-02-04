@@ -56,7 +56,7 @@ a(){
 
 ![2020-02-04-23-12-28.png](./images/2020-02-04-23-12-28.png)
 
-进一步理解火焰图的最好方法仍然是通过一个实际的案例，下面的程序创建2个线程，两个线程的handler都是`thread_fun()`，之后`thread_fun()`调用`fun_a()`、`fun_b()`、`fun_c()`，而`fun_a()`又会调用`fun_d()`：
+进一步理解火焰图的最好方法仍然是通过一个实际的案例，下面的程序**创建2个线程**，两个线程的handler都是`thread_fun()`，之后`thread_fun()`调用`fun_a()`、`fun_b()`、`fun_c()`，而`fun_a()`又会调用`fun_d()`：
 
 ```cpp
 #include <pthread.h>
@@ -77,14 +77,12 @@ func_b(){
     for(i=0;i<200000;i++);
 }
 
-func_c()
-{
+func_c(){
     int i;
     for(i=0;i<300000;i++);
 }
 
-void* thread_fun(void* param)
-{
+void* thread_fun(void* param){
     while(1) {
         int i;
         for(i=0;i<100000;i++);
@@ -95,8 +93,7 @@ void* thread_fun(void* param)
     }
 }
 
-int main(void)
-{
+int main(void){
     pthread_t tid1,tid2;
     int ret;
     
@@ -119,6 +116,19 @@ int main(void)
     return 0;
 }
 ```
+
+先看看不用火焰图的缺点在哪里。
+
+如果不用火焰图，我们也可以用类似perf top这样的工具分析出来CPU时间主要花费在哪里了：
+
+```
+$gcc exam.c -pthread
+$./a.out&
+$sudo perf top
+```
+
+
+
 
 # 参考
 
