@@ -1,4 +1,6 @@
 
+
+
 # 事件相关
 
 这部分说明了怎么统计和追踪KVM模块性能事件.
@@ -26,7 +28,7 @@
 # echo 0 >/sys/kernel/debug/tracing/events/kvm/enable
 ```
 
-## 统计事件
+## 统计KVM事件
 
 通常是执行benchmark统计性能事件
 
@@ -62,8 +64,8 @@ $ sudo ./perf stat -e 'kvm:*' -a sleep 1h
 
 ## 记录事件
 
-
+将事件记录下来, 然后报告和分析. 详细可以参照 `Linux/Tools/Perf/KVM`
 
 # 参考
 
-http://www.linux-kvm.org/page/Perf_events
+事件: http://www.linux-kvm.org/page/Perf_events
