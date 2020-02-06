@@ -1,4 +1,7 @@
-Makefile是Linux下程序开发的自动化编译工具，用以识别编译目标、源文件及其依赖关系，并且有着高效的编译效率。每次执行 make 时，就能够**自动寻找 Makefile（makefile）文件**，执行编译工作。Makefile拥有很多复杂的功能，为了简化问题的复杂性，本文仅和大家讨论针对单目录下的C/C++项目开发，如何写一个通用的 Makefile。
+
+Makefile是Linux下程序开发的**自动化编译工具**，用以识别**编译目标**、**源文件**及**其依赖关系**，并且有着高效的编译效率。
+
+每次执行 `make` 时，就能够**自动寻找 Makefile（makefile）文件**，执行编译工作。Makefile拥有很多复杂的功能，为了简化问题的复杂性，本文仅和大家讨论针对单目录下的C/C++项目开发，如何写一个通用的 Makefile。
 
 我们一般在 Linux 中经常看到项目用有 Makefile，而在 Windows 中很少看到，原因是因为 Windows 上的IDE工具已经自动生成了Makefile 文件，编译工程的时候自动调用 Makefile 进行编译，所以在 Windows 上我们经常是在不知情的情况下和Makefile打交道。
 
@@ -206,3 +209,7 @@ clean:
 ```
 
 其中 patsubst 是 Makefile 的一个函数，实现替换通配符，它包含 3 个参数：需要匹配的式样，用什么来替换它，需要被处理的由空格分隔的字符串。如：patsubst %,$(ODIR)/%,$(\_OBJ) 实现把$ (\_OBJ) 中的所有变量前面都加上$(ODIR)/。
+
+# 参考
+
+https://www.veryarm.com/1226.html
