@@ -9,7 +9,7 @@ Makefile拥有很多复杂的功能，为了简化问题的复杂性，本文仅
 
 我们一般在 Linux 中经常看到项目用有 Makefile，而在 Windows 中很少看到，原因是因为 Windows 上的IDE工具已经自动生成了Makefile 文件，编译工程的时候自动调用 Makefile 进行编译，所以在 Windows 上我们经常是在不知情的情况下和Makefile打交道。
 
-# Makefile的构成
+## Makefile的构成
 
 一个Makefile中通常包含下面内容：
 
@@ -25,15 +25,16 @@ Makefile拥有很多复杂的功能，为了简化问题的复杂性，本文仅
 
 注意：如果“command”不和目标文件所在一行时，在command前要加 Tab 键。
 
-1. 开始
+# 开始
 
-下面以一个简单的程序为例，包括主程序（hello.c）、函数代码（function.c）、头文件（function.h），内容如下。
+下面以一个简单的程序为例，包括`主程序（hello.c）`、`函数代码（function.c）`、`头文件（function.h）`，内容如下。
 
 主函数hello.c：
 
-```
+```cpp
 #include <stdio.h> 
 #include "function.h"
+
 int main()
 {
     fun1();
@@ -45,7 +46,7 @@ int main()
 
 函数function.c：
 
-```
+```cpp
 #include<stdio.h>
 int fun1() 
 { 
@@ -68,14 +69,14 @@ int fun3()
 
 头文件function.h：
 
-```
+```cpp
 #ifndef _FUN_H
 #define _FUN_H
 
 int fun1(void);
 int fun2(void);
 int fun3(void);
- 
+
 #endif
 ```
 
