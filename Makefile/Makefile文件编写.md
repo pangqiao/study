@@ -188,6 +188,22 @@ $(TARGET): hello.o function.o
 
 - `$<`：**第一个依赖文件**。
 
+```
+# make
+gcc -c -o hello.o hello.c -I.
+gcc -c -o function.o function.c -I.
+gcc -o hello hello.o function.o -I.
+```
+
+如果是`$(TARGET): hello.c function.c`
+
+```
+# make
+gcc -o hello hello.c function.c -I.
+```
+
+注意参数是不同的, 而且也不执行生成obj文件
+
 # OBJ和伪命令
 
 在这个版本中，我们把所有 object 文件作为 OBJ 的一部分：
@@ -215,9 +231,21 @@ clean:
 
 有的目标可能**没有依赖**，只有动作（指定的命令）。比如上面的“clean”伪目标，没有依赖，只有命令。它所指定的命令用来删除 make 过程产生的中间文件，我们使用”make clean“就可以实现清理工作。
 
-6. 目录结构
+```
+# make
+gcc -c -o hello.o hello.c -I.
+gcc -c -o function.o function.c -I.
+gcc -o hello hello.o function.o -I.
 
-如果我们想把 .h 文件放在 include 目录下，.c 文件放在 src 目录下，以及一些本地的库放在 lib 目录下，同时我们想把 .o 文件整理一下，避免整个目录的凌乱。在这个版本中，我们同时还包含任何要包含的库（比如说math库-lm）。这份 Makefile 将放在 src 目录下。目录结构如下：
+# make clean
+rm -f hello *.o
+```
+
+# 目录结构
+
+如果我们想把 `.h` 文件放在 `include` 目录下，`.c` 文件放在 `src` 目录下，以及一些`本地的库`放在 lib 目录下，同时我们想把 `.o` 文件整理一下，避免整个目录的凌乱。
+
+在这个版本中，我们同时还包含任何要包含的库（比如说math库-lm）。这份 Makefile 将放在 src 目录下。目录结构如下：
 
 ![工作目录](images/2.png)
 
