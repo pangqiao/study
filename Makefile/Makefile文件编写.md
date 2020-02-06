@@ -172,9 +172,11 @@ $(TARGET): hello.c function.c
     $(CC) -o $@ $^ $(CFLAGS)
 ```
 
-首先定义 `DEPS`，声明 `.c` 文件**所依赖**的 `.h` 文件。
+首先定义 **DEPS**，声明 `.c` 文件**所依赖**的 `.h` 文件。
 
-然后我们`定义一条规则`，为**所有**的 `.c` 文件生成一个 `.o` 文件。最后再定义生成目标文件。
+然后我们**定义一条规则**，为**所有**的 `.c` 文件**生成**一个 `.o` 文件。
+
+最后再定义生成**目标文件**。
 
 其中，
 
@@ -248,4 +250,8 @@ clean:
 
 # 参考
 
-https://www.veryarm.com/1226.html
+* 本文来自 https://www.veryarm.com/1226.html
+* 一个简单的通用Makefile实现：http://www.cnblogs.com/fanzhidongyzby/p/3141041.html
+* makefile的简单使用：http://blog.csdn.net/bdss58/article/details/40667907
+* 手动建立makefile简单实例解析：http://wenku.baidu.com/view/0911e4abd1f34693dbef3e05.html
+* 跟我一起写 Makefile：http://www.chinaunix.net/old_jh/23/408225.html
