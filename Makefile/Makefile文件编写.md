@@ -125,7 +125,7 @@ $(TARGET): hello.c function.c
     gcc -o $(TARGET) hello.c function.c $(CFLAGS)
 ```
 
-这里我们新定义了三个变量 TARGET、CC 和 CFLAGS 。TARGET是目标文件名，CC是编译器，CFLAGS是编译用的参数。make 会先分别编译 .c 文件，然后生成可执行文件 hello。
+这里我们新定义了**三个变量** `TARGET`、`CC` 和 `CFLAGS` 。TARGET是目标文件名，CC是编译器，CFLAGS是编译用的参数。make 会先分别编译 .c 文件，然后生成可执行文件 hello。
 
 这种形式的makefile在小项目中非常有效，但是有一个遗憾：include 头文件的变动。如果我们修改了 function.h 文件，make是不会重新编译 .c 文件的，事实上我们需要重新编译。为了解决这一问题，我们必须告诉 make 所有的 .c 文件依赖于 .h 文件。
 
