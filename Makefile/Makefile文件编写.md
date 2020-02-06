@@ -168,7 +168,7 @@ DEPS = function.h
 %.o: %.c $(DEPS)
     $(CC) -c -o $@ $< $(CFLAGS)
 
-$(TARGET): hello.c function.c
+$(TARGET): hello.o function.o
     $(CC) -o $@ $^ $(CFLAGS)
 ```
 
@@ -189,10 +189,10 @@ $(TARGET): hello.c function.c
 - `$<`：**第一个依赖文件**。
 
 # OBJ和伪命令
- 
+
 在这个版本中，我们把所有 object 文件作为 OBJ 的一部分：
 
-```
+```makefile
 TARGET = hello
 CC = gcc
 CFLAGS = -I.
@@ -206,14 +206,14 @@ $(TARGET): $(OBJ)
     $(CC) -o $@ $^ $(CFLAGS)
 ```
 
-这一步中会生成两个 .o 文件和目标文件，有时候我们需要清除它们，就要加入一个伪目标：clean，在最后加上这样的两行：
+这一步中会**生成**两个 `.o` 文件和**目标文件**，有时候我们需要**清除它们**，就要加入一个伪目标：`clean`，在最后加上这样的两行：
 
 ```
 clean:
     rm -f $(TARGET) *.o
 ```
 
-有的目标可能没有依赖，只有动作（指定的命令）。比如上面的“clean”伪目标，没有依赖，只有命令。它所指定的命令用来删除 make 过程产生的中间文件，我们使用”make clean“就可以实现清理工作。
+有的目标可能**没有依赖**，只有动作（指定的命令）。比如上面的“clean”伪目标，没有依赖，只有命令。它所指定的命令用来删除 make 过程产生的中间文件，我们使用”make clean“就可以实现清理工作。
 
 6. 目录结构
 
