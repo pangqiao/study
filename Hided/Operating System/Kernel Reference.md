@@ -14,6 +14,8 @@ http://wiki.osdev.org/Main_Page
 
 《自己动手写操作系统》
 
+AndrewS.Tanenbaum和AlbertS.Woodhull的《操作系统：设计与实现》
+
 ## 2. Project
 
 ### 2.1. hurlex
