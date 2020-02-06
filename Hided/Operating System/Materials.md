@@ -16,6 +16,8 @@ http://wiki.osdev.org/Main_Page
 
 AndrewS.Tanenbaum和AlbertS.Woodhull的《操作系统：设计与实现》
 
+于渊github: https://github.com/yyu
+
 ## 2. Project
 
 ### 2.1. hurlex
