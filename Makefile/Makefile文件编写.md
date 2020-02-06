@@ -276,6 +276,17 @@ clean:
 
 其中 `patsubst` 是 Makefile 的一个**函数**，实现**替换通配符**，它包含 **3 个参数**：需要**匹配的式样**，用**什么来替换**它，需要被处理的**由空格分隔的字符串**。如：`patsubst %,$(ODIR)/%,$(_OBJ)` 实现把`$(_OBJ)` 中的所有变量前面都加上`$(ODIR)/`。
 
+```
+# make
+gcc -c -o obj/hello.o hello.c -I../include
+gcc -c -o obj/function.o function.c -I../include
+gcc -o hello obj/hello.o obj/function.o -I../include -lm
+
+# make clean
+rm -f hello obj/*.o *~ ../include/*~
+```
+
+
 # 参考
 
 * 本文来自 https://www.veryarm.com/1226.html
