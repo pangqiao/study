@@ -4,13 +4,13 @@
 
 《JamesM's kernel development tutorials》：http://www.jamesmolloy.co.uk/tutorial_html/
 
-中文：http://wiki.0xffffff.org/
+中文：http://wiki.0xffffff.org/ , 使用qemu模拟
 
 http://wiki.osdev.org/Main_Page
 
-《Orange'S:一个操作系统的实现》
+《Orange'S:一个操作系统的实现》, 使用bochs
 
-《30天自制操作系统》
+《30天自制操作系统》, 使用qemu
 
 《自己动手写操作系统》
 
