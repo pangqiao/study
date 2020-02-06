@@ -29,10 +29,10 @@ Makefile拥有很多复杂的功能，为了简化问题的复杂性，本文仅
 
 下面以一个简单的程序为例，包括`主程序（hello.c）`、`函数代码（function.c）`、`头文件（function.h）`，内容如下。
 
-主函数hello.c：
+主函数`hello.c`：
 
 ```cpp
-#include <stdio.h> 
+#include <stdio.h>
 #include "function.h"
 
 int main()
@@ -40,34 +40,35 @@ int main()
     fun1();
     fun2();
     fun3();
-    return 0; 
+    return 0;
 }
 ```
 
-函数function.c：
+函数`function.c`：
 
 ```cpp
 #include<stdio.h>
-int fun1() 
-{ 
-    printf("This is first function!\n"); 
-    return 0; 
-} 
- 
-int fun2() 
-{ 
-    printf("This is second function!\n"); 
-    return 0; 
-} 
- 
-int fun3() 
-{ 
-    printf("This is third function!\n"); 
-    return 0; 
+
+int fun1()
+{
+    printf("This is first function!\n");
+    return 0;
+}
+
+int fun2()
+{
+    printf("This is second function!\n");
+    return 0;
+}
+
+int fun3()
+{
+    printf("This is third function!\n");
+    return 0;
 }
 ```
 
-头文件function.h：
+头文件`function.h`：
 
 ```cpp
 #ifndef _FUN_H
@@ -86,7 +87,7 @@ int fun3(void);
 gcc -o hello hello.c function.c -I.
 ```
 
-来编译。“-I.”是指gcc在当前目录下（.）下去寻找头文件。如果不用makefile，在“测试-修改-调试”过程中，我们必须不停地在终端中按上下键来寻找最后的那条编译指令。这种编译方法有两个缺陷：
+来编译。“`-I.`”是指gcc在当前目录下（.）下去寻找头文件。如果不用makefile，在“测试-修改-调试”过程中，我们必须不停地在终端中按上下键来寻找最后的那条编译指令。这种编译方法有两个缺陷：
 
 a. 当你把编译指令丢失或者换电脑的时候，这样效率会很低；
 
