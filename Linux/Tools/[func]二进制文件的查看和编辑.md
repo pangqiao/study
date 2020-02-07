@@ -7,6 +7,27 @@ od
 
 hexdump
 
+以十六进制格式输出：
+
+```
+od [选项] 文件
+od -d 文件  十进制输出
+   -o 文件  八进制输出
+   -x 文件  十六进制输出
+xxd 文件    输出十六进制
+```
+
+在vi命令状态下：
+
+```
+:%!xxd :%!od 将当前文本转化为16进制格式
+:%!xxd -c 12 每行显示12个字节
+:%!xxd -r    将当前文本转化回文本格式
+```
+
+## xxd
+
+
 ## hexdump
 
 ### 介绍
@@ -187,3 +208,5 @@ http://man.linuxde.net/hexdump
 http://blog.csdn.net/zybasjj/article/details/7874720
 
 http://blog.chinaunix.net/uid-20528014-id-4087756.html
+
+https://blog.csdn.net/hansel/article/details/5097262
