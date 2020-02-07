@@ -2,3 +2,4 @@
 - Operating System/文章
 - Storage/磁盘和文件系统/磁盘和分区
 - 计算机启动过程：Assembly/x86/x86汇编_从实模式到保护模式/计算机启动过程
+- 计算机启动过程详细介绍: http://www.360doc.com/content/06/0810/13/561_177979.shtml
