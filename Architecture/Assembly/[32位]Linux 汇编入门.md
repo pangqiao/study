@@ -289,6 +289,8 @@ gcc -o example example.S
 
 其中，**扩展名必须为大写的 S！！！**，这是因为，大写的 S 可以使 **gcc 自动识别汇编程序中的 C 预处理命令**，像#include、#define、#ifdef、 #endif 等，也就是说，使用 **gcc 进行编译**，你可以在 汇编程序中使用 **C 的预处理命令**。
 
+注: 也可单独一次一次调用, 参照`GCC/编译和链接那点事`
+
 ## 4.3. 调试器
 
 Linux下调试汇编代码既可以用**GDB**、**DDD**这类通用的调试器，也可以使用专门用来**调试汇编代码**的**ALD**（Assembly Language Debugger）。
