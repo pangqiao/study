@@ -1,6 +1,6 @@
 ;*************************************************
 ;* service.asm                                   *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -12,8 +12,8 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÊµÏÖ´òÓ¡Òì³£ĞÅÏ¢
+; æè¿°ï¼š
+;       1) å®ç°æ‰“å°å¼‚å¸¸ä¿¡æ¯
 ;-----------------------------------------------------
 %macro DO_EXCEPTION_REPORT 0
         mov esi, Services.ProcessorIdMsg
@@ -30,7 +30,7 @@
         call puts
         mov esi, Services.CsIpMsg
         call puts
-        mov esi, [ebp + 8 * 4 + 4]                      ; CS Öµ
+        mov esi, [ebp + 8 * 4 + 4]                      ; CS å€¼
         call print_word_value
         mov esi, ':'
         call putc
@@ -47,7 +47,7 @@
         call puts
         
         ;;
-        ;; ´òÓ¡¼Ä´æÆ÷Öµ
+        ;; æ‰“å°å¯„å­˜å™¨å€¼
         ;;
         mov esi, Services.EflagsMsg
         call puts
@@ -55,7 +55,7 @@
         call print_dword_value
         
         ;;
-        ;; ÊÇ·ñÊôÓÚ #PF Òì³£
+        ;; æ˜¯å¦å±äº #PF å¼‚å¸¸
         ;;
         cmp ecx, PF_VECTOR
         jne %%0
@@ -98,13 +98,13 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÊµÏÖ 64/32 ÏÂµÄÉèÖÃ exception bitmap
-;       2) Õâ¸öºêÔÚ bits 32 ÏÂ±àÒë
+; æè¿°ï¼š
+;       1) å®ç° 64/32 ä¸‹çš„è®¾ç½® exception bitmap
+;       2) è¿™ä¸ªå®åœ¨ bits 32 ä¸‹ç¼–è¯‘
 ;-----------------------------------------------------
 %macro MASK_EXCEPTION_BITMAP    1
         ;;
-        ;; ÊµÏÖÖ¸Áî or DWORD [gs: PCB.ExceptionBitMask], X
+        ;; å®ç°æŒ‡ä»¤ or DWORD [gs: PCB.ExceptionBitMask], X
         ;;
         ;;
 %if %1 > 0FFh
@@ -146,7 +146,7 @@
 
 
 ;;
-;; ¶¨Òå 64/32 Î»ÏÂµÄÒì³£´¦ÀíÀı³Ì
+;; å®šä¹‰ 64/32 ä½ä¸‹çš„å¼‚å¸¸å¤„ç†ä¾‹ç¨‹
 ;;
 
 ExceptionHandlerTable:
@@ -181,8 +181,8 @@ ExceptionHandlerTable:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 0 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 0 å¤„ç†ä¾‹ç¨‹
 ;-----------------------------------------------------
 exception00:
         MASK_EXCEPTION_BITMAP   (1 << 0)
@@ -197,8 +197,8 @@ exception00:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 1 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 1 å¤„ç†ä¾‹ç¨‹
 ;-----------------------------------------------------        
 exception01:
         MASK_EXCEPTION_BITMAP   (1 << 1)
@@ -211,8 +211,8 @@ exception01:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 2 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 2 å¤„ç†ä¾‹ç¨‹
 ;-----------------------------------------------------        
 exception02:
         MASK_EXCEPTION_BITMAP   (1 << 2)
@@ -227,30 +227,30 @@ exception02:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÓÉÓ²¼ş»òIPIµ÷ÓÃ
+; æè¿°ï¼š
+;       1) ç”±ç¡¬ä»¶æˆ–IPIè°ƒç”¨
 ;-----------------------------------------------------
 nmi_handler32:
         pusha        
         
         ;;
-        ;; ¶ÁÈ¡´¦ÀíÆ÷index£¬ÅĞ¶ÏNMI handler´¦Àí·½Ê½
-        ;; 1) µ±´¦ÀíÆ÷index ÏàÓ¦µÄ RequestMask Î»Îª 1Ê±£¬Ö´ĞĞ IPI routine
-        ;; 2) RequestMask Îª 0Ê±£¬Ö´ĞĞÈ±Ê¡µÄÒì³£´¦ÀíÀı³Ì
+        ;; è¯»å–å¤„ç†å™¨indexï¼Œåˆ¤æ–­NMI handlerå¤„ç†æ–¹å¼
+        ;; 1) å½“å¤„ç†å™¨index ç›¸åº”çš„ RequestMask ä½ä¸º 1æ—¶ï¼Œæ‰§è¡Œ IPI routine
+        ;; 2) RequestMask ä¸º 0æ—¶ï¼Œæ‰§è¡Œç¼ºçœçš„å¼‚å¸¸å¤„ç†ä¾‹ç¨‹
         ;;        
         mov ecx, [gs: PCB.ProcessorIndex]
         lock btr DWORD [fs: SDA.NmiIpiRequestMask], ecx
-        jnc exception02                                 ; ×ªÈëÈ±Ê¡Òì³£´¦ÀíÀı³Ì
+        jnc exception02                                 ; è½¬å…¥ç¼ºçœå¼‚å¸¸å¤„ç†ä¾‹ç¨‹
 
 
         ;;
-        ;; ÏÂÃæµ÷ÓÃ IPI routine
+        ;; ä¸‹é¢è°ƒç”¨ IPI routine
         ;;
         mov eax, [fs: SDA.NmiIpiRoutine]
         call eax
 
         ;;
-        ;; ÖÃÄÚ²¿ĞÅºÅÓĞĞ§
+        ;; ç½®å†…éƒ¨ä¿¡å·æœ‰æ•ˆ
         ;;        
         SET_INTERNAL_SIGNAL        
         
@@ -267,8 +267,8 @@ nmi_handler32:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 3 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 3 å¤„ç†ä¾‹ç¨‹
 ;-----------------------------------------------------         
 exception03:
         MASK_EXCEPTION_BITMAP   (1 << 3)
@@ -282,8 +282,8 @@ exception03:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 4 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 4 å¤„ç†ä¾‹ç¨‹
 ;-----------------------------------------------------         
 exception04:
         MASK_EXCEPTION_BITMAP   (1 << 4)
@@ -297,8 +297,8 @@ exception04:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 5 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 5 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception05:
         MASK_EXCEPTION_BITMAP   (1 << 5)
@@ -312,8 +312,8 @@ exception05:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 6 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 6 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception06:
         DEBUG_RECORD         "[exception]: enter #UD handler !"
@@ -329,8 +329,8 @@ exception06:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 7 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 7 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception07:
         MASK_EXCEPTION_BITMAP   (1 << 7)
@@ -345,8 +345,8 @@ exception07:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 8 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 8 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception08:
         MASK_EXCEPTION_BITMAP   (1 << 8)
@@ -361,8 +361,8 @@ exception08:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 9 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 9 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception09:
         MASK_EXCEPTION_BITMAP   (1 << 9)
@@ -376,8 +376,8 @@ exception09:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 10 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 10 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception10:
         MASK_EXCEPTION_BITMAP   (1 << 10)
@@ -390,8 +390,8 @@ exception10:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 11 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 11 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception11:
         MASK_EXCEPTION_BITMAP   (1 << 11)
@@ -405,8 +405,8 @@ exception11:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 12 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 12 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception12:
         MASK_EXCEPTION_BITMAP   (1 << 12)
@@ -420,8 +420,8 @@ exception12:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 13 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 13 å¤„ç†ä¾‹ç¨‹
 ;-----------------------------------------------------         
 exception13:
         DEBUG_RECORD         "[exception]: enter #GP handler !"
@@ -437,8 +437,8 @@ exception13:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 14 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 14 å¤„ç†ä¾‹ç¨‹
 ;-----------------------------------------------------         
 exception14:
         DEBUG_RECORD         "[exception]: enter #PF handler !"
@@ -454,8 +454,8 @@ exception14:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 15 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 15 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception15:
         MASK_EXCEPTION_BITMAP   (1 << 15)
@@ -469,8 +469,8 @@ exception15:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 16 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 16 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception16:
         MASK_EXCEPTION_BITMAP   (1 << 16)
@@ -484,8 +484,8 @@ exception16:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 17 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 17 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception17:
         MASK_EXCEPTION_BITMAP   (1 << 17)
@@ -500,8 +500,8 @@ exception17:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 18 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 18 å¤„ç†ä¾‹ç¨‹
 ;-----------------------------------------------------                         
 exception18:
         MASK_EXCEPTION_BITMAP   (1 << 18)
@@ -515,8 +515,8 @@ exception18:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) vector 19 ´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) vector 19 å¤„ç†ä¾‹ç¨‹
 ;----------------------------------------------------- 
 exception19:
         MASK_EXCEPTION_BITMAP   (1 << 19)
@@ -530,12 +530,12 @@ exception19:
 
 ;-----------------------------------------------------
 ; error_code_default_handler()
-; ÃèÊö£º
-;       1) ĞèÒªÑ¹Èë´íÎóÂëµÄÈ±Ê¡ handler
+; æè¿°ï¼š
+;       1) éœ€è¦å‹å…¥é”™è¯¯ç çš„ç¼ºçœ handler
 ;-----------------------------------------------------
 error_code_default_handler32:
         ;;
-        ;; pop ³ö´íÎóÂë
+        ;; pop å‡ºé”™è¯¯ç 
         ;;
         pop DWORD [gs: PCB.ErrorCode]
 
@@ -546,22 +546,22 @@ error_code_default_handler32:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1)È±Ê¡µÄÒì³£·şÎñÀı³Ì
-;       2)ËùÓĞÈ±Ê¡µÄÒì³£´¦Àí·ÅÔÚÏÂ°ë²¿·Ö
-;       3)ÔÚÏÂ°ë²¿·ÖÖĞ£¬ÔÊĞí±»ÖĞ¶Ï
+; æè¿°ï¼š
+;       1)ç¼ºçœçš„å¼‚å¸¸æœåŠ¡ä¾‹ç¨‹
+;       2)æ‰€æœ‰ç¼ºçœçš„å¼‚å¸¸å¤„ç†æ”¾åœ¨ä¸‹åŠéƒ¨åˆ†
+;       3)åœ¨ä¸‹åŠéƒ¨åˆ†ä¸­ï¼Œå…è®¸è¢«ä¸­æ–­
 ;-----------------------------------------------------
 exception_default_handler32:
         pusha
         mov ebp, esp
 exception_default_handler32.@0:
         ;;
-        ;; ´òÓ¡Òì³£ context ĞÅÏ¢£¬ebp Ö¸Ïòµ±Ç°Õ»¶¥
+        ;; æ‰“å°å¼‚å¸¸ context ä¿¡æ¯ï¼Œebp æŒ‡å‘å½“å‰æ ˆé¡¶
         ;;
         DO_EXCEPTION_REPORT
         
         ;;
-        ;; µÈ´ı <ESC> ¼üÖØÆô
+        ;; ç­‰å¾… <ESC> é”®é‡å¯
         ;;
         call wait_esc_for_reset
         
@@ -579,8 +579,8 @@ exception_default_handler32.@0:
 ; input:
 ;       esi - vector
 ;       edi - handler
-; ÃèÊö:
-;       ÔÚ IDT ÀïÉèÖÃÃèÊö·û£¬ÒÔ¹© kernel È¨ÏŞÊ¹ÓÃ
+; æè¿°:
+;       åœ¨ IDT é‡Œè®¾ç½®æè¿°ç¬¦ï¼Œä»¥ä¾› kernel æƒé™ä½¿ç”¨
 ;-----------------------------------------------------------------------
 install_kernel_interrupt_handler32:
         push ebx
@@ -592,7 +592,7 @@ install_kernel_interrupt_handler32:
         or eax, edi
         and edx, 0FFFF0000h
         or edx, 8E00h                                   ; 32-bit Interrupt-gate
-        call set_idt_descriptor                         ; Ğ´Èë IDT ±í
+        call set_idt_descriptor                         ; å†™å…¥ IDT è¡¨
         pop edx
         pop ebx
         ret
@@ -605,8 +605,8 @@ install_kernel_interrupt_handler32:
 ; input:
 ;       esi - vector
 ;       edi - handler
-; ÃèÊö:
-;       ÔÚ IDT ÀïÉèÖÃÃèÊö·û£¬ÒÔ¹© user ´úÂëµ÷ÓÃ
+; æè¿°:
+;       åœ¨ IDT é‡Œè®¾ç½®æè¿°ç¬¦ï¼Œä»¥ä¾› user ä»£ç è°ƒç”¨
 ;-----------------------------------------------------------------------
 install_user_interrupt_handler32:     
         push ebx
@@ -618,7 +618,7 @@ install_user_interrupt_handler32:
         or eax, edi
         and edx, 0FFFF0000h
         or edx, 0EE00h                                  ; 32-bit Interrupt-gate, DPL=3
-        call set_idt_descriptor                         ; Ğ´Èë IDT ±í
+        call set_idt_descriptor                         ; å†™å…¥ IDT è¡¨
         pop edx
         pop ebx   
         ret
@@ -632,8 +632,8 @@ install_user_interrupt_handler32:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       ÉèÖÃ sysenter Ö¸ÁîÊ¹ÓÃ»·¾³
+; æè¿°ï¼š
+;       è®¾ç½® sysenter æŒ‡ä»¤ä½¿ç”¨ç¯å¢ƒ
 ;-----------------------------------------------------
 setup_sysenter32:
         push edx
@@ -648,10 +648,10 @@ setup_sysenter32:
         jnz setup_sysenter.next
         
         ;;
-        ;; ·ÖÅäÒ»¸ö kernel stack ÒÔ¹© SYSENTER Ê¹ÓÃ
+        ;; åˆ†é…ä¸€ä¸ª kernel stack ä»¥ä¾› SYSENTER ä½¿ç”¨
         ;;        
         call get_kernel_stack_pointer               
-        mov [gs: PCB.FastSystemServiceStack], eax               ; ±£´æ¿ìËÙÏµÍ³·şÎñÀı³Ì stack        
+        mov [gs: PCB.FastSystemServiceStack], eax               ; ä¿å­˜å¿«é€Ÿç³»ç»ŸæœåŠ¡ä¾‹ç¨‹ stack        
         
 setup_sysenter.next:        
         mov ecx, IA32_SYSENTER_ESP
@@ -670,16 +670,16 @@ setup_sysenter.next:
 ;-----------------------------------------------------
 ; sys_service_enter()
 ; input:
-;       eax - ÏµÍ³·şÎñÀı³ÌºÅ
-; ÃèÊö:
-;       Ö´ĞĞ SYSENTER Ö¸Áî¿ìËÙÇĞÈëÏµÍ³·şÎñÀı³Ì
+;       eax - ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å·
+; æè¿°:
+;       æ‰§è¡Œ SYSENTER æŒ‡ä»¤å¿«é€Ÿåˆ‡å…¥ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹
 ;-----------------------------------------------------
 sys_service_enter:
         push ecx
         push edx
         REX.Wrxb
-        mov ecx, esp                    ; ecx ±£´æ stack
-        mov edx, return_address         ; edx ±£´æ·µ»ØµØÖ·
+        mov ecx, esp                    ; ecx ä¿å­˜ stack
+        mov edx, return_address         ; edx ä¿å­˜è¿”å›åœ°å€
         sysenter
 return_address:
         pop edx
@@ -690,9 +690,9 @@ return_address:
 ;------------------------------------------------------------------
 ; fast_sys_service_routine()
 ; input:
-;       eax - ÏµÍ³·şÎñÀı³ÌºÅ
-; ÃèÊö£º
-;       Ê¹ÓÃÓÚ sysenter/sysexit °æ±¾µÄÏµÍ³·şÎñÀı³Ì
+;       eax - ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å·
+; æè¿°ï¼š
+;       ä½¿ç”¨äº sysenter/sysexit ç‰ˆæœ¬çš„ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹
 ;-------------------------------------------------------------------
 fast_sys_service_routine:
         push ecx
@@ -709,9 +709,9 @@ fast_sys_service_routine:
 ;------------------------------------------------------------------
 ; sys_service_routine()
 ; input:
-;       eax - ÏµÍ³·şÎñÀı³ÌºÅ
-; ÃèÊö£º
-;       Ê¹ÓÃÓÚÖĞ¶Ïµ÷ÓÃ ±¾µÄÏµÍ³·şÎñÀı³Ì
+;       eax - ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å·
+; æè¿°ï¼š
+;       ä½¿ç”¨äºä¸­æ–­è°ƒç”¨ æœ¬çš„ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹
 ;-------------------------------------------------------------------
 sys_service_routine:
         push ebp
@@ -789,8 +789,8 @@ install_system_service_routine:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ³õÊ¼»¯ÏµÍ³µ÷ÓÃ±í
+; æè¿°ï¼š
+;       1) åˆå§‹åŒ–ç³»ç»Ÿè°ƒç”¨è¡¨
 ;------------------------------------------------------------------
 init_sys_service_call:
         mov esi, READ_SDA_DATA
@@ -822,8 +822,8 @@ init_sys_service_call:
 ;       esi - offset of SDA
 ; output:
 ;       eax - data
-; ÃèÊö£º
-;       1) ¶ÁÈ¡ SDA Êı¾İ
+; æè¿°ï¼š
+;       1) è¯»å– SDA æ•°æ®
 ;------------------------------------------------------------------
 read_sda_data:
         push ebp
@@ -840,8 +840,8 @@ read_sda_data:
 ;       esi - offset of PCB
 ; output:
 ;       eax - data
-; ÃèÊö£º
-;       1) ¶ÁÈ¡ PCB Êı¾İ
+; æè¿°ï¼š
+;       1) è¯»å– PCB æ•°æ®
 ;------------------------------------------------------------------
 read_pcb_data:
         push ebp       
@@ -860,8 +860,8 @@ read_pcb_data:
 ;       edi - data
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Ğ´ SDA Êı¾İ
+; æè¿°ï¼š
+;       1) å†™ SDA æ•°æ®
 ;------------------------------------------------------------------
 write_sda_data:
         push ebp
@@ -880,8 +880,8 @@ write_sda_data:
 ;       edi - data
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Ğ´ PCB Êı¾İ
+; æè¿°ï¼š
+;       1) å†™ PCB æ•°æ®
 ;------------------------------------------------------------------
 write_pcb_data:
         push ebp
@@ -981,8 +981,8 @@ read_write_data.done:
 ;       esi - address
 ; output:
 ;       eax - data
-; ÃèÊö£º
-;       1) ¶ÁÈ¡ÏµÍ³ÇøÓòÊı¾İ
+; æè¿°ï¼š
+;       1) è¯»å–ç³»ç»ŸåŒºåŸŸæ•°æ®
 ;------------------------------------------------------------------
 read_sys_data:
         REX.Wrxb
@@ -996,8 +996,8 @@ read_sys_data:
 ;       edi - data
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Ğ´ÏµÍ³ÇøÓòÊı¾İ
+; æè¿°ï¼š
+;       1) å†™ç³»ç»ŸåŒºåŸŸæ•°æ®
 ;------------------------------------------------------------------
 write_sys_data:
         REX.Wrxb

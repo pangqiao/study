@@ -1,6 +1,6 @@
 ;*************************************************
 ;* VmxVMM.asm                                    *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -16,12 +16,12 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÕâÀï VMM ¼à¿ØÀı³Ì
+; æè¿°ï¼š
+;       1) è¿™é‡Œ VMM ç›‘æ§ä¾‹ç¨‹
 ;-----------------------------------------------------------------------  
 VmmEntry:
         ;;
-        ;; »Øµ½ host »·¾³£¬Çå CPU_STATUS_GUEST Î»
+        ;; å›åˆ° host ç¯å¢ƒï¼Œæ¸… CPU_STATUS_GUEST ä½
         ;;
 %ifdef __X64
         DB 65h                          ; GS
@@ -38,7 +38,7 @@ VmmEntry:
 %endif
 
         ;;
-        ;; VM-exit ºó£¬±ØĞë±£´æ guest context ĞÅÏ¢
+        ;; VM-exit åï¼Œå¿…é¡»ä¿å­˜ guest context ä¿¡æ¯
         ;;
         call store_guest_context
 
@@ -51,56 +51,56 @@ VmmEntry:
 %endif
         
         
-        DEBUG_RECORD         "[VM-exit]: return back to VMM !"          ; ²åÈë debug ¼ÇÂ¼µã
+        DEBUG_RECORD         "[VM-exit]: return back to VMM !"          ; æ’å…¥ debug è®°å½•ç‚¹
         
-        call update_guest_context                                       ; ¸üĞÂ debug ¼ÇÂ¼ÖĞµÄ guest context
+        call update_guest_context                                       ; æ›´æ–° debug è®°å½•ä¸­çš„ guest context
 
         
         
         ;;
-        ;; ¶ÁÈ¡ VM-exit information ×Ö¶Î
+        ;; è¯»å– VM-exit information å­—æ®µ
         ;;
         call store_exit_info
         
         ;;
-        ;; ´«¸ø DoProcess º¯ÊıµÄ²ÎÊı
+        ;; ä¼ ç»™ DoProcess å‡½æ•°çš„å‚æ•°
         ;;
         REX.Wrxb
         mov eax, [ebp + PCB.CurrentVmbPointer]
         mov esi, [eax + VMB.DoProcessParam]
 
         ;;
-        ;; ¶ÁÈ¡ VM-exit Ô­ÒòÂë£¬×ªÈëÖ´ĞĞÏàÓ¦µÄ´¦ÀíÀı³Ì
+        ;; è¯»å– VM-exit åŸå› ç ï¼Œè½¬å…¥æ‰§è¡Œç›¸åº”çš„å¤„ç†ä¾‹ç¨‹
         ;;
         movzx eax, WORD [ebp + PCB.ExitInfoBuf + EXIT_INFO.ExitReason]
         mov eax, [DoVmExitRoutineTable + eax * 4]
         call eax
         
         ;;
-        ;; ÊÇ·ñºöÂÔ
+        ;; æ˜¯å¦å¿½ç•¥
         ;;
         cmp eax, VMM_PROCESS_IGNORE
         je VmmEntry.done
         
         ;;
-        ;; ÊÇ·ñ RESUME£¬»Øµ½ guest Ö´ĞĞ
+        ;; æ˜¯å¦ RESUMEï¼Œå›åˆ° guest æ‰§è¡Œ
         ;;
         cmp eax, VMM_PROCESS_RESUME
         je VmmEntry.resume
         
         ;;
-        ;; ÊÇ·ñÊ×´Î launch ²Ù×÷
+        ;; æ˜¯å¦é¦–æ¬¡ launch æ“ä½œ
         ;;
         cmp eax, VMM_PROCESS_LAUNCH
         jne VmmEntry.Failure
         
         
         ;;
-        ;; ½øĞĞ launch ²Ù×÷
+        ;; è¿›è¡Œ launch æ“ä½œ
         ;;
         DEBUG_RECORD    "[VMM]: launch to guest !"
         
-        call reset_guest_context                        ; Çå guest context »·¾³
+        call reset_guest_context                        ; æ¸… guest context ç¯å¢ƒ
         
 %ifdef __X64
         DB 65h                                          ; GS
@@ -119,9 +119,9 @@ VmmEntry.resume:
         DEBUG_RECORD    "[VMM]: resume to guest !"
 
         ;;
-        ;; resume Ç°£¬±ØĞë»Ö¸´ guest context ĞÅÏ¢
+        ;; resume å‰ï¼Œå¿…é¡»æ¢å¤ guest context ä¿¡æ¯
         ;;
-        call restore_guest_context                      ; »Ö¸´ guest context
+        call restore_guest_context                      ; æ¢å¤ guest context
         
 %ifdef __X64
         DB 65h                                          ; GS
@@ -163,8 +163,8 @@ VmmEntry.done:
 ;       none
 ; output:
 ;       eax - process code
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ exception »òÕß NMI Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± exception æˆ–è€… NMI å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 DoExceptionNMI: 
         push ebp
@@ -175,7 +175,7 @@ DoExceptionNMI:
         mov ebp, [gs: PCB.Base]
 %endif
         ;;
-        ;; ¸ù¾İÏòÁ¿ºÅµ÷ÓÃÄ¿±ê´¦ÀíÀı³Ì
+        ;; æ ¹æ®å‘é‡å·è°ƒç”¨ç›®æ ‡å¤„ç†ä¾‹ç¨‹
         ;;
         movzx eax, BYTE [ebp + PCB.ExitInfoBuf + EXIT_INFO.InterruptionInfo]
         mov eax, [DoExceptionTable + eax * 4]
@@ -195,8 +195,8 @@ DoExceptionNMI.Done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉÍâ²¿ÖĞ¶ÏÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”±å¤–éƒ¨ä¸­æ–­å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------        
 DoExternalInterrupt: 
         push ebp
@@ -211,7 +211,7 @@ DoExternalInterrupt:
         DEBUG_RECORD    "[DoExternalInterrupt]: inject an external-interrupt !"
         
         ;;
-        ;; Ö±½Ó·´ÉäÍâ²¿ÖĞ¶Ï¸ø guest ´¦Àí
+        ;; ç›´æ¥åå°„å¤–éƒ¨ä¸­æ–­ç»™ guest å¤„ç†
         ;;
         mov eax, [ebp + PCB.ExitInfoBuf + EXIT_INFO.InterruptionInfo]
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, eax
@@ -229,8 +229,8 @@ DoExternalInterrupt:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ triple fault Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± triple fault å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoTripleFault: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -243,8 +243,8 @@ DoTripleFault:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ INIT ĞÅºÅÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± INIT ä¿¡å·å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoINIT:
         push ebp
@@ -274,8 +274,8 @@ DoINIT.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ SIPI ĞÅºÅÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± SIPI ä¿¡å·å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoSIPI: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -289,8 +289,8 @@ DoSIPI:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ I/O SMI Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± I/O SMI å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoIoSMI: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -305,8 +305,8 @@ DoIoSMI:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ Other SMI Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± Other SMI å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoOtherSMI:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -321,8 +321,8 @@ DoOtherSMI:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ interrupt-window Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± interrupt-window å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoInterruptWindow: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -338,8 +338,8 @@ DoInterruptWindow:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ NMI window Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± NMI window å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoNMIWindow: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -353,8 +353,8 @@ DoNMIWindow:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ task switch Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± task switch å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoTaskSwitch: 
         push ebp
@@ -371,23 +371,23 @@ DoTaskSwitch:
         DEBUG_RECORD    "[DoTaskSwitch]: the VMM to complete the task switching"
         
         ;;
-        ;; ÊÕ¼¯ÈÎÎñÇĞ»» VM-exit µÄÏà¹ØĞÅÏ¢
+        ;; æ”¶é›†ä»»åŠ¡åˆ‡æ¢ VM-exit çš„ç›¸å…³ä¿¡æ¯
         ;;
         call GetTaskSwitchInfo        
         
         ;;
-        ;; ### VMM ĞèÒªÄ£Äâ´¦ÀíÆ÷µÄÈÎÎñÇĞ»»¶¯×÷ ###
-        ;; ×¢Òâ£º
-        ;;  1) ²»ÄÜÊ¹ÓÃÊÂ¼ş×¢ÈëÖØÆôÈÎÎñÇĞ»»£¡        
-        ;;  2) ÕâÀïµÄ¡°µ±Ç°¡±Ö¸¡°¾ÉÈÎÎñ¡±
+        ;; ### VMM éœ€è¦æ¨¡æ‹Ÿå¤„ç†å™¨çš„ä»»åŠ¡åˆ‡æ¢åŠ¨ä½œ ###
+        ;; æ³¨æ„ï¼š
+        ;;  1) ä¸èƒ½ä½¿ç”¨äº‹ä»¶æ³¨å…¥é‡å¯ä»»åŠ¡åˆ‡æ¢ï¼        
+        ;;  2) è¿™é‡Œçš„â€œå½“å‰â€æŒ‡â€œæ—§ä»»åŠ¡â€
         ;;
 
-        mov ecx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.Source]            ;; ¶Á·¢ÆğÔ´
+        mov ecx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.Source]            ;; è¯»å‘èµ·æº
 
         ;;
-        ;; step 1: ´¦Àíµ±Ç°µÄ TSS ÃèÊö·û
-        ;; a) JMP£¬ IRET Ö¸Áî·¢Æğ£ºÔòÇå busy Î»¡£
-        ;; b) CALL, ÖĞ¶Ï»òÒì³£·¢Æğ£ºÔò busy Î»±£³Ö²»±ä£¨Ô­ busy Îª 1£©
+        ;; step 1: å¤„ç†å½“å‰çš„ TSS æè¿°ç¬¦
+        ;; a) JMPï¼Œ IRET æŒ‡ä»¤å‘èµ·ï¼šåˆ™æ¸… busy ä½ã€‚
+        ;; b) CALL, ä¸­æ–­æˆ–å¼‚å¸¸å‘èµ·ï¼šåˆ™ busy ä½ä¿æŒä¸å˜ï¼ˆåŸ busy ä¸º 1ï¼‰
         ;;        
 DoTaskSwitch.Step1:
         cmp ecx, TASK_SWITCH_JMP
@@ -397,7 +397,7 @@ DoTaskSwitch.Step1:
           
 DoTaskSwitch.Step1.ClearBusy:
         ;;
-        ;; Çåµ±Ç° TSS ÃèÊö·û busy Î»
+        ;; æ¸…å½“å‰ TSS æè¿°ç¬¦ busy ä½
         ;;
         REX.Wrxb
         mov ebx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.CurrentTssDesc]
@@ -405,88 +405,88 @@ DoTaskSwitch.Step1.ClearBusy:
         
         
         ;;
-        ;; step 2: ÔÚµ±Ç° TSS Àï±£´æ context ĞÅÏ¢
+        ;; step 2: åœ¨å½“å‰ TSS é‡Œä¿å­˜ context ä¿¡æ¯
         ;;
 DoTaskSwitch.Step2:        
         REX.Wrxb
-        mov ebx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.CurrentTss]  ;; µ±Ç° TSS ¿é
+        mov ebx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.CurrentTss]  ;; å½“å‰ TSS å—
         REX.Wrxb
         mov edx, [ebp + PCB.CurrentVmbPointer]
         REX.Wrxb
-        mov edx, [edx + VMB.VsbBase]                                      ;; µ±Ç° VM store block
+        mov edx, [edx + VMB.VsbBase]                                      ;; å½“å‰ VM store block
         
         ;;
-        ;; ½« VSB ±£´æµÄ guest context ¸´ÖÆµ½µ±Ç° TSS ¿é
+        ;; å°† VSB ä¿å­˜çš„ guest context å¤åˆ¶åˆ°å½“å‰ TSS å—
         ;;
         mov eax, [edx + VSB.Rax]
-        mov [ebx + TSS32.Eax], eax                                       ;; ±£´æ eax
+        mov [ebx + TSS32.Eax], eax                                       ;; ä¿å­˜ eax
         mov eax, [edx + VSB.Rcx]
-        mov [ebx + TSS32.Ecx], eax                                       ;; ±£´æ ecx
+        mov [ebx + TSS32.Ecx], eax                                       ;; ä¿å­˜ ecx
         mov eax, [edx + VSB.Rdx]
-        mov [ebx + TSS32.Edx], eax                                       ;; ±£´æ edx
+        mov [ebx + TSS32.Edx], eax                                       ;; ä¿å­˜ edx
         mov eax, [edx + VSB.Rbx]
-        mov [ebx + TSS32.Ebx], eax                                       ;; ±£´æ ebx
+        mov [ebx + TSS32.Ebx], eax                                       ;; ä¿å­˜ ebx
         mov eax, [edx + VSB.Rsp]
-        mov [ebx + TSS32.Esp], eax                                       ;; ±£´æ esp
+        mov [ebx + TSS32.Esp], eax                                       ;; ä¿å­˜ esp
         mov eax, [edx + VSB.Rbp]
-        mov [ebx + TSS32.Ebp], eax                                       ;; ±£´æ ebp
+        mov [ebx + TSS32.Ebp], eax                                       ;; ä¿å­˜ ebp
         mov eax, [edx + VSB.Rsi]
-        mov [ebx + TSS32.Esi], eax                                       ;; ±£´æ esi
+        mov [ebx + TSS32.Esi], eax                                       ;; ä¿å­˜ esi
         mov eax, [edx + VSB.Rdi]
-        mov [ebx + TSS32.Edi], eax                                       ;; ±£´æ edi
+        mov [ebx + TSS32.Edi], eax                                       ;; ä¿å­˜ edi
         mov eax, [edx + VSB.Rflags]
-        mov [ebx + TSS32.Eflags], eax                                    ;; ±£´æ eflags
+        mov [ebx + TSS32.Eflags], eax                                    ;; ä¿å­˜ eflags
         
         ;;
-        ;; ×¢Òâ£º±£´æ EIP Ê±ĞèÒª¼ÓÉÏÖ¸Áî³¤¶È
+        ;; æ³¨æ„ï¼šä¿å­˜ EIP æ—¶éœ€è¦åŠ ä¸ŠæŒ‡ä»¤é•¿åº¦
         ;;
         mov eax, [edx + VSB.Rip]
         add eax, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.InstructionLength]
-        mov [ebx + TSS32.Eip], eax                                       ;; ±£´æ eip
+        mov [ebx + TSS32.Eip], eax                                       ;; ä¿å­˜ eip
                 
         ;;
-        ;; ¶ÁÈ¡ guest selector Óë CR3 ±£´æÔÚµ±Ç° TSS Àï
+        ;; è¯»å– guest selector ä¸ CR3 ä¿å­˜åœ¨å½“å‰ TSS é‡Œ
         ;;
         GetVmcsField    GUEST_CS_SELECTOR
-        mov [ebx + TSS32.Cs], ax                                         ;; ±£´æ cs selector
+        mov [ebx + TSS32.Cs], ax                                         ;; ä¿å­˜ cs selector
         GetVmcsField    GUEST_ES_SELECTOR
-        mov [ebx + TSS32.Es], ax                                         ;; ±£´æ es selector
+        mov [ebx + TSS32.Es], ax                                         ;; ä¿å­˜ es selector
         GetVmcsField    GUEST_DS_SELECTOR
-        mov [ebx + TSS32.Ds], ax                                         ;; ±£´æ ds selector
+        mov [ebx + TSS32.Ds], ax                                         ;; ä¿å­˜ ds selector
         GetVmcsField    GUEST_SS_SELECTOR
-        mov [ebx + TSS32.Ss], ax                                         ;; ±£´æ ss selector
+        mov [ebx + TSS32.Ss], ax                                         ;; ä¿å­˜ ss selector
         GetVmcsField    GUEST_FS_SELECTOR
-        mov [ebx + TSS32.Fs], ax                                         ;; ±£´æ fs selector
+        mov [ebx + TSS32.Fs], ax                                         ;; ä¿å­˜ fs selector
         GetVmcsField    GUEST_GS_SELECTOR
-        mov [ebx + TSS32.Gs], ax                                         ;; ±£´æ gs selector
+        mov [ebx + TSS32.Gs], ax                                         ;; ä¿å­˜ gs selector
         GetVmcsField    GUEST_LDTR_SELECTOR
-        mov [ebx + TSS32.LdtrSelector], ax                               ;; ±£´æ ldt selector
+        mov [ebx + TSS32.LdtrSelector], ax                               ;; ä¿å­˜ ldt selector
         GetVmcsField    GUEST_CR3
-        mov [ebx + TSS32.Cr3], eax                                       ;; ±£´æ cr3
+        mov [ebx + TSS32.Cr3], eax                                       ;; ä¿å­˜ cr3
 
         
         ;;
-        ;; step 3: ´¦Àíµ±Ç° TSS ÄÚµÄ eflags.NT ±êÖ¾Î»
-        ;; a) IRET Ö¸Áî·¢Æğ£ºÔòÇå TSS ÄÚ eflags.NT Î»
-        ;; b) CALL, JMP, ÖĞ¶Ï»òÒì³£·¢Æğ£ºTSS ÄÚ eflags.NT Î»±£³Ö²»±ä
+        ;; step 3: å¤„ç†å½“å‰ TSS å†…çš„ eflags.NT æ ‡å¿—ä½
+        ;; a) IRET æŒ‡ä»¤å‘èµ·ï¼šåˆ™æ¸… TSS å†… eflags.NT ä½
+        ;; b) CALL, JMP, ä¸­æ–­æˆ–å¼‚å¸¸å‘èµ·ï¼šTSS å†… eflags.NT ä½ä¿æŒä¸å˜
         ;;        
 DoTaskSwitch.Step3:
         cmp ecx, TASK_SWITCH_IRET
         jne DoTaskSwitch.Step4
         ;;
-        ;; Çåµ±Ç° TSS ÄÚµÄ eflags.NT Î»
+        ;; æ¸…å½“å‰ TSS å†…çš„ eflags.NT ä½
         ;;
         btr DWORD [ebx + TSS32.Eflags], 14
         
         
         ;;
-        ;; step 4: ´¦ÀíÄ¿±ê TSS µÄ eflags.NT Î»
-        ;; a) CALL, ÖĞ¶Ï»òÒì³£·¢Æğ£ºÖÃ TSS ÄÚµÄ eflags.NT Î»
-        ;; b) IRET£¬JMP ·¢Æğ£º±£³Ö TSS ÄÚµÄ eflags.NT Î»²»±ä
+        ;; step 4: å¤„ç†ç›®æ ‡ TSS çš„ eflags.NT ä½
+        ;; a) CALL, ä¸­æ–­æˆ–å¼‚å¸¸å‘èµ·ï¼šç½® TSS å†…çš„ eflags.NT ä½
+        ;; b) IRETï¼ŒJMP å‘èµ·ï¼šä¿æŒ TSS å†…çš„ eflags.NT ä½ä¸å˜
         ;;
 DoTaskSwitch.Step4:
         REX.Wrxb
-        mov ebx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.NewTaskTss]          ;; Ä¿±ê TSS ¿é
+        mov ebx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.NewTaskTss]          ;; ç›®æ ‡ TSS å—
         
         cmp ecx, TASK_SWITCH_CALL
         je DoTaskSwitch.Step4.SetNT
@@ -495,86 +495,86 @@ DoTaskSwitch.Step4:
 
 DoTaskSwitch.Step4.SetNT:
         ;;
-        ;; ÖÃÄ¿±ê TSS µÄ eflags.NT Î»
+        ;; ç½®ç›®æ ‡ TSS çš„ eflags.NT ä½
         ;;
         bts DWORD [ebx + TSS32.Eflags], 14
 
         ;;
-        ;; step 5: ´¦ÀíÄ¿±ê TSS ÃèÊö·û
-        ;; a) CALL, JMP, ÖĞ¶Ï»òÒì³£·¢Æğ£ºÖÃ busy Î»
-        ;; b) IRET ·¢Æğ: busy Î»±£³Ö²»±ä
+        ;; step 5: å¤„ç†ç›®æ ‡ TSS æè¿°ç¬¦
+        ;; a) CALL, JMP, ä¸­æ–­æˆ–å¼‚å¸¸å‘èµ·ï¼šç½® busy ä½
+        ;; b) IRET å‘èµ·: busy ä½ä¿æŒä¸å˜
         ;;
 DoTaskSwitch.Step5:        
         cmp ecx, TASK_SWITCH_IRET
         je DoTaskSwitch.Step6
         ;;
-        ;; ÖÃÄ¿±ê TSS ÃèÊö·û busy Î»
+        ;; ç½®ç›®æ ‡ TSS æè¿°ç¬¦ busy ä½
         ;;
         REX.Wrxb
         mov ebx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.NewTaskTssDesc]
         bts DWORD [ebx + 4], 9
         
         ;;
-        ;; step 6: ¼ÓÔØÄ¿±ê TR ¼Ä´æÆ÷
+        ;; step 6: åŠ è½½ç›®æ ‡ TR å¯„å­˜å™¨
         ;;
 DoTaskSwitch.Step6:        
         REX.Wrxb
-        mov edx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.NewTaskTssDesc]    ;; Ä¿±ê TSS ÃèÊö·û
-        mov eax, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.NewTrSelector]     ;; Ä¿±ê TSS selector
+        mov edx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.NewTaskTssDesc]    ;; ç›®æ ‡ TSS æè¿°ç¬¦
+        mov eax, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.NewTrSelector]     ;; ç›®æ ‡ TSS selector
         
         SetVmcsField    GUEST_TR_SELECTOR, eax
-        movzx eax, WORD [edx]                                   ;; ¶ÁÈ¡ limit
-        SetVmcsField    GUEST_TR_LIMIT, eax                     ;; ÉèÖÃ TR.limit
-        movzx eax, WORD [edx + 5]                               ;; ¶ÁÈ¡ access rights
+        movzx eax, WORD [edx]                                   ;; è¯»å– limit
+        SetVmcsField    GUEST_TR_LIMIT, eax                     ;; è®¾ç½® TR.limit
+        movzx eax, WORD [edx + 5]                               ;; è¯»å– access rights
         and eax, 0F0FFh
-        SetVmcsField    GUEST_TR_ACCESS_RIGHTS, eax             ;; ÉèÖÃ TR access rights
+        SetVmcsField    GUEST_TR_ACCESS_RIGHTS, eax             ;; è®¾ç½® TR access rights
         mov eax, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.NewTaskTssBase]
-        SetVmcsField    GUEST_TR_BASE, eax                      ;; ÉèÖÃ TR base
+        SetVmcsField    GUEST_TR_BASE, eax                      ;; è®¾ç½® TR base
         
         
         ;;
-        ;; step 7: ¼ÓÔØÄ¿±êÈÎÎñ context
+        ;; step 7: åŠ è½½ç›®æ ‡ä»»åŠ¡ context
         ;;
 DoTaskSwitch.Step7:
         REX.Wrxb
-        mov ebx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.NewTaskTss]        ;; Ä¿±ê TSS ¿é
+        mov ebx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.NewTaskTss]        ;; ç›®æ ‡ TSS å—
         REX.Wrxb
         mov edx, [ebp + PCB.CurrentVmbPointer]
         REX.Wrxb
-        mov edx, [edx + VMB.VsbBase]                    ;; µ±Ç° VM store block        
+        mov edx, [edx + VMB.VsbBase]                    ;; å½“å‰ VM store block        
         
         ;;
-        ;; ½«Ä¿±ê TSS ÄÚµÄÖµ¸´ÖÆµ½µ±Ç° VSB ÄÚ
+        ;; å°†ç›®æ ‡ TSS å†…çš„å€¼å¤åˆ¶åˆ°å½“å‰ VSB å†…
         ;;
         mov eax, [ebx + TSS32.Eax]
-        mov [edx + VSB.Rax], eax                        ;; ¼ÓÔØ eax     
+        mov [edx + VSB.Rax], eax                        ;; åŠ è½½ eax     
         mov eax, [ebx + TSS32.Ecx]
-        mov [edx + VSB.Rcx], eax                        ;; ¼ÓÔØ ecx
+        mov [edx + VSB.Rcx], eax                        ;; åŠ è½½ ecx
         mov eax, [ebx + TSS32.Edx]
-        mov [edx + VSB.Rdx], eax                        ;; ¼ÓÔØ edx
+        mov [edx + VSB.Rdx], eax                        ;; åŠ è½½ edx
         mov eax, [ebx + TSS32.Ebx]
-        mov [edx + VSB.Rbx], eax                        ;; ¼ÓÔØ ebx
+        mov [edx + VSB.Rbx], eax                        ;; åŠ è½½ ebx
         mov eax, [ebx + TSS32.Ebp]
-        mov [edx + VSB.Rbp], eax                        ;; ¼ÓÔØ ebp
+        mov [edx + VSB.Rbp], eax                        ;; åŠ è½½ ebp
         mov eax, [ebx + TSS32.Esi]
-        mov [edx + VSB.Rsi], eax                        ;; ¼ÓÔØ esi
+        mov [edx + VSB.Rsi], eax                        ;; åŠ è½½ esi
         mov eax, [ebx + TSS32.Edi]
-        mov [edx + VSB.Rdi], eax                        ;; ¼ÓÔØ edi 
+        mov [edx + VSB.Rdi], eax                        ;; åŠ è½½ edi 
         
         ;;
-        ;; ÉèÖÃ guest ESP, EIP, EFLAGS, CR3
+        ;; è®¾ç½® guest ESP, EIP, EFLAGS, CR3
         ;;
         mov eax, [ebx + TSS32.Esp]
-        SetVmcsField    GUEST_RSP, eax                  ;; ¼ÓÔØ esp 
+        SetVmcsField    GUEST_RSP, eax                  ;; åŠ è½½ esp 
         mov eax, [ebx + TSS32.Cr3]
-        SetVmcsField    GUEST_CR3, eax                  ;; ¼ÓÔØ cr3
+        SetVmcsField    GUEST_CR3, eax                  ;; åŠ è½½ cr3
         mov eax, [ebx + TSS32.Eip]
-        SetVmcsField    GUEST_RIP, eax                  ;; ¼ÓÔØ eip
+        SetVmcsField    GUEST_RIP, eax                  ;; åŠ è½½ eip
         mov eax, [ebx + TSS32.Eflags] 
-        SetVmcsField    GUEST_RFLAGS, eax               ;; ¼ÓÔØ eflags
+        SetVmcsField    GUEST_RFLAGS, eax               ;; åŠ è½½ eflags
         
         ;;
-        ;; ¼ÓÔØ SS
+        ;; åŠ è½½ SS
         ;;
         mov esi, [ebx + TSS32.Ss]
         call load_guest_ss_register
@@ -582,7 +582,7 @@ DoTaskSwitch.Step7:
         jne DoTaskSwitch.Done
         
         ;;
-        ;; ¼ÓÔØ CS
+        ;; åŠ è½½ CS
         ;;
         mov esi, [ebx + TSS32.Cs]
         call load_guest_cs_register
@@ -590,7 +590,7 @@ DoTaskSwitch.Step7:
         jne DoTaskSwitch.Done
         
         ;;
-        ;; ¼ÓÔØ ES
+        ;; åŠ è½½ ES
         ;;
         mov esi, [ebx + TSS32.Es]
         call load_guest_es_register
@@ -598,7 +598,7 @@ DoTaskSwitch.Step7:
         jne DoTaskSwitch.Done
         
         ;;
-        ;; ¼ÓÔØ DS
+        ;; åŠ è½½ DS
         ;;
         mov esi, [ebx + TSS32.Ds]
         call load_guest_ds_register
@@ -606,7 +606,7 @@ DoTaskSwitch.Step7:
         jne DoTaskSwitch.Done
         
         ;;
-        ;; ¼ÓÔØ FS
+        ;; åŠ è½½ FS
         ;;        
         mov esi, [ebx + TSS32.Fs]
         call load_guest_fs_register
@@ -614,7 +614,7 @@ DoTaskSwitch.Step7:
         jne DoTaskSwitch.Done
                 
         ;;
-        ;; ¼ÓÔØ GS
+        ;; åŠ è½½ GS
         ;;
         mov esi, [ebx + TSS32.Gs]
         call load_guest_gs_register        
@@ -622,7 +622,7 @@ DoTaskSwitch.Step7:
         jne DoTaskSwitch.Done
         
         ;;
-        ;; ¼ÓÔØ LDTR
+        ;; åŠ è½½ LDTR
         ;;        
         mov esi, [ebx + TSS32.LdtrSelector]
         call load_guest_ldtr_register
@@ -630,14 +630,14 @@ DoTaskSwitch.Step7:
         jne DoTaskSwitch.Done
                                 
         ;;
-        ;; step 8: ÔÚÄ¿±ê TSS ÄÚ±£´æµ±Ç° TR selector
+        ;; step 8: åœ¨ç›®æ ‡ TSS å†…ä¿å­˜å½“å‰ TR selector
         ;;
 DoTaskSwitch.Step8:
         mov eax, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.CurrentTrSelector]
-        mov [ebx + TSS32.TaskLink], ax                                  ;; ±£´æ task link
+        mov [ebx + TSS32.TaskLink], ax                                  ;; ä¿å­˜ task link
 
         ;;
-        ;; step 9: ÉèÖÃ CR0.TS Î»
+        ;; step 9: è®¾ç½® CR0.TS ä½
         ;;
 DoTaskSwitch.Step9:
         GetVmcsField    GUEST_CR0
@@ -662,8 +662,8 @@ DoTaskSwitch.Done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ CPUID Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ CPUID æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoCPUID: 
         push ebp
@@ -685,14 +685,14 @@ DoCPUID:
         mov ebp, [ebp + VMB.VsbBase]
         
         ;;
-        ;; ÓÉ VMM ·´ÉäÒ»¸ö CPUID ĞéÄâ»¯½á¹û¸ø guest
+        ;; ç”± VMM åå°„ä¸€ä¸ª CPUID è™šæ‹ŸåŒ–ç»“æœç»™ guest
         ;;
-        mov eax, [ebp + VSB.Rax]                                        ; ¶ÁÈ¡ CPUID ¹¦ÄÜºÅ
-        cpuid                                                           ; Ö´ĞĞ CPUID Ö¸Áî
-        mov eax, 633h                                                   ; ĞŞ¸Ä guest CPU µÄĞÍºÅ
+        mov eax, [ebp + VSB.Rax]                                        ; è¯»å– CPUID åŠŸèƒ½å·
+        cpuid                                                           ; æ‰§è¡Œ CPUID æŒ‡ä»¤
+        mov eax, 633h                                                   ; ä¿®æ”¹ guest CPU çš„å‹å·
 
         ;;
-        ;; ½« CPUID ½á¹û·´Éä¸ø guest
+        ;; å°† CPUID ç»“æœåå°„ç»™ guest
         ;;        
         REX.Wrxb
         mov [ebp + VSB.Rax], eax
@@ -704,11 +704,11 @@ DoCPUID:
         mov [ebp + VSB.Rdx], edx                        
         
         ;;
-        ;; µ÷Õû guest-RIP
+        ;; è°ƒæ•´ guest-RIP
         ;;
         call update_guest_rip
         
-        mov eax, VMM_PROCESS_RESUME                                     ; Í¨Öª VMM ½øĞĞ RESUME ²Ù×÷
+        mov eax, VMM_PROCESS_RESUME                                     ; é€šçŸ¥ VMM è¿›è¡Œ RESUME æ“ä½œ
     
         pop edx
         pop ecx
@@ -725,8 +725,8 @@ DoCPUID:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ GETSEC Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ GETSEC æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoGETSEC: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -739,14 +739,14 @@ DoGETSEC:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ HLT Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ HLT æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoHLT:
         DEBUG_RECORD    "[DoHLT]: enter HLT state"
         
         ;;
-        ;; ½« guest ÉèÖÃÎª HLT ×´Ì¬
+        ;; å°† guest è®¾ç½®ä¸º HLT çŠ¶æ€
         ;;
         SetVmcsField    GUEST_ACTIVITY_STATE, GUEST_STATE_HLT
         
@@ -762,12 +762,12 @@ DoHLT:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ INVD Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ INVD æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoINVD:
         ;;
-        ;; VMM Ö±½ÓÖ´ĞĞ INVD Ö¸Áî
+        ;; VMM ç›´æ¥æ‰§è¡Œ INVD æŒ‡ä»¤
         ;;
         invd
         call update_guest_rip
@@ -786,8 +786,8 @@ DoINVD:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ INVLPG Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ INVLPG æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoINVLPG: 
         push ebp
@@ -803,12 +803,12 @@ DoINVLPG:
         DEBUG_RECORD    "[DoINVLPG]: invalidate the cache !"
         
         ;;
-        ;; ¶ÁÈ¡µ±Ç° VPID Öµ
+        ;; è¯»å–å½“å‰ VPID å€¼
         ;;
         GetVmcsField    CONTROL_VPID
         
         ;;
-        ;; INVVPID ÃèÊö·û
+        ;; INVVPID æè¿°ç¬¦
         ;;
         mov [ebp + PCB.InvDesc + INV_DESC.Vpid], eax
         mov DWORD [ebp + PCB.InvDesc + INV_DESC.Dword1], 0
@@ -819,7 +819,7 @@ DoINVLPG:
         mov [ebp + PCB.InvDesc + INV_DESC.LinearAddress], eax
         
         ;;
-        ;; Ê¹ÓÃË¢ĞÂÀàĞÍ individual-address invalidation
+        ;; ä½¿ç”¨åˆ·æ–°ç±»å‹ individual-address invalidation
         ;;
         mov eax, INDIVIDUAL_ADDRESS_INVALIDATION
         invvpid eax, [ebp + PCB.InvDesc]
@@ -838,8 +838,8 @@ DoINVLPG:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ RDPMC Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ RDPMC æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoRDPMC: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -853,8 +853,8 @@ DoRDPMC:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ RDTSC Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ RDTSC æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoRDTSC: 
         DEBUG_RECORD    "[DoRDTSC]: processing RDTSC"
@@ -870,8 +870,8 @@ DoRDTSC:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ RSM Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ RSM æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoRSM: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -885,8 +885,8 @@ DoRSM:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ VMCALL Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ VMCALL æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVMCALL:
         push ebp
@@ -924,8 +924,8 @@ DoVMCALL:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ VMCLEAR Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ VMCLEAR æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVMCLEAR: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -939,8 +939,8 @@ DoVMCLEAR:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ VMLAUNCH Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ VMLAUNCH æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVMLAUNCH: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -954,8 +954,8 @@ DoVMLAUNCH:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ VMPTRLD Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ VMPTRLD æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVMPTRLD: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -969,8 +969,8 @@ DoVMPTRLD:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ VMPTRST Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ VMPTRST æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVMPTRST: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -985,8 +985,8 @@ DoVMPTRST:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ VMREAD Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ VMREAD æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVMREAD: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1000,8 +1000,8 @@ DoVMREAD:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ VMRESUME Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ VMRESUME æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVMRESUME:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1016,8 +1016,8 @@ DoVMRESUME:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ VMWRITE Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ VMWRITE æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVMWRITE: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1031,8 +1031,8 @@ DoVMWRITE:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ VMXOFF Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ VMXOFF æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVMXOFF:
         call update_guest_rip
@@ -1048,8 +1048,8 @@ DoVMXOFF:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ VMXON Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ VMXON æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVMXON: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1065,8 +1065,8 @@ DoVMXON:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔ·ÃÎÊ control ¼Ä´æÆ÷Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•è®¿é—® control å¯„å­˜å™¨å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoControlRegisterAccess: 
         push ebp
@@ -1081,41 +1081,41 @@ DoControlRegisterAccess:
 %endif        
                
         ;;
-        ;; ÊÕ¼¯ÓÉ MOV-CR VM-exit µÄÏà¹ØĞÅÏ¢
+        ;; æ”¶é›†ç”± MOV-CR VM-exit çš„ç›¸å…³ä¿¡æ¯
         ;;
         call GetMovCrInfo
         
         
         
         ;;
-        ;; ### ·ÖÎö MOV-CR Ö¸ÁîĞÅÏ¢£¬ÓĞ 4 ÀàÖ¸Áî ###
-        ;; 1) MOV to CRn Ö¸Áî
-        ;; 2) MOV from CRn Ö¸Áî
-        ;; 3) CLTS Ö¸Áî
-        ;; 4) LMSW Ö¸Áî
+        ;; ### åˆ†æ MOV-CR æŒ‡ä»¤ä¿¡æ¯ï¼Œæœ‰ 4 ç±»æŒ‡ä»¤ ###
+        ;; 1) MOV to CRn æŒ‡ä»¤
+        ;; 2) MOV from CRn æŒ‡ä»¤
+        ;; 3) CLTS æŒ‡ä»¤
+        ;; 4) LMSW æŒ‡ä»¤
         ;;          
         mov ecx, [ebp + PCB.GuestExitInfo + MOV_CR_INFO.Type]        
 
         cmp ecx, CAT_MOV_FROM_CR
-        je DoControlRegisterAccess.MovFromCr            ; ´¦Àí MOV from CR Ö¸Áî
+        je DoControlRegisterAccess.MovFromCr            ; å¤„ç† MOV from CR æŒ‡ä»¤
         cmp ecx, CAT_CLTS
-        je DoControlRegisterAccess.Clts                 ; ´¦Àí CLTS Ö¸Áî        
+        je DoControlRegisterAccess.Clts                 ; å¤„ç† CLTS æŒ‡ä»¤        
         cmp ecx, CAT_LMSW
-        je DoControlRegisterAccess.Lmsw                 ; ´¦Àí LMSW Ö¸Áî
+        je DoControlRegisterAccess.Lmsw                 ; å¤„ç† LMSW æŒ‡ä»¤
         
         ;;
-        ;; ´¦Àí MOV-to-CR Ö¸Áî
+        ;; å¤„ç† MOV-to-CR æŒ‡ä»¤
         ;;        
 DoControlRegisterAccess.MovToCr:        
         ;;
-        ;; ¶ÁÈ¡Ä¿±ê¿ØÖÆ¼Ä´æÆ÷ID ÓëÔ´¼Ä´æÆ÷Öµ
+        ;; è¯»å–ç›®æ ‡æ§åˆ¶å¯„å­˜å™¨ID ä¸æºå¯„å­˜å™¨å€¼
         ;;
         mov ebx, [ebp + PCB.GuestExitInfo + MOV_CR_INFO.ControlRegisterID]      ; ebx = CRn
         REX.Wrxb
         mov edx, [ebp + PCB.GuestExitInfo + MOV_CR_INFO.Register]               ; edx = register
 
         ;;
-        ;; ·ÖÎöÄ¿±ê¿ØÖÆ¼Ä´æÆ÷£¬²¢¶ÁÈ¡Ô´¼Ä´æÆ÷Öµ
+        ;; åˆ†æç›®æ ‡æ§åˆ¶å¯„å­˜å™¨ï¼Œå¹¶è¯»å–æºå¯„å­˜å™¨å€¼
         ;;                
         cmp ebx, 0
         je DoControlRegisterAccess.MovToCr.@0
@@ -1123,20 +1123,20 @@ DoControlRegisterAccess.MovToCr:
         je DoControlRegisterAccess.MovToCr.@4
 
         ;;
-        ;; ### ´¦Àí MOV-to-CR3 Ö¸Áî ###
+        ;; ### å¤„ç† MOV-to-CR3 æŒ‡ä»¤ ###
         ;;
         DEBUG_RECORD    "[DoControlRegisterAccess]: processing MOV to CR3"
         
         mov eax, GUEST_CR3
         
         ;;
-        ;; Ê¹ÓÃ single-context invalidateion, retaining-global ·½Ê½Ë¢ĞÂ cache
+        ;; ä½¿ç”¨ single-context invalidateion, retaining-global æ–¹å¼åˆ·æ–° cache
         ;;
         mov ebx, SINGLE_CONTEXT_EXCLUDE_GLOBAL_INVALIDATION
         
 DoControlRegisterAccess.MovToCr.SetCr:
         ;;
-        ;; Ğ´ÈëÄ¿±ê¿ØÖÆ¼Ä´æÆ÷Öµ
+        ;; å†™å…¥ç›®æ ‡æ§åˆ¶å¯„å­˜å™¨å€¼
         ;;
         DoVmWrite       eax, [ebp + PCB.GuestExitInfo + MOV_CR_INFO.Register]
         jmp DoControlRegisterAccess.Next
@@ -1144,21 +1144,21 @@ DoControlRegisterAccess.MovToCr.SetCr:
 
 DoControlRegisterAccess.MovToCr.@0:
         ;;
-        ;; ´¦Àí MOV-to-CR0 Ö¸Áî
+        ;; å¤„ç† MOV-to-CR0 æŒ‡ä»¤
         ;;
         DEBUG_RECORD    "[DoControlRegisterAccess]: processing MOV to CR0"        
         
         ;;
-        ;; ¶ÁÈ¡ CR0 guest/host mask Óë read shadow
+        ;; è¯»å– CR0 guest/host mask ä¸ read shadow
         ;;
         DoVmRead        CONTROL_CR0_GUEST_HOST_MASK, [ebp + PCB.ExecutionControlBuf + EXECUTION_CONTROL.Cr0GuestHostMask]
         DoVmRead        CONTROL_CR0_READ_SHADOW, [ebp + PCB.ExecutionControlBuf + EXECUTION_CONTROL.Cr0ReadShadow]
         
         ;;
-        ;; ¼ì²éÓÉÄÄ¸öÎ»²úÉú VM-exit
+        ;; æ£€æŸ¥ç”±å“ªä¸ªä½äº§ç”Ÿ VM-exit
         ;; 1) X = source ^ ReadShadow
         ;; 2) Y = X & GuestHostMask
-        ;; 3) ¼ì²é Y Öµ
+        ;; 3) æ£€æŸ¥ Y å€¼
         ;;
         mov eax, edx
         mov esi, [ebp + PCB.ExecutionControlBuf + EXECUTION_CONTROL.Cr0ReadShadow]
@@ -1183,8 +1183,8 @@ DoControlRegisterAccess.MovToCr.@0.NE:
                 
 DoControlRegisterAccess.MovToCr.@0.CD_NW:
         ;;
-        ;; ¼ì²é CR0.CD Óë CR0.NW µÄÉèÖÃ
-        ;; 1) Èç¹ûÊôÓÚ CR0.CD = 0£¬CR0.NW = 1 Ê±£¬Ö±½Ó×¢Èë #GP(0) Òì³£¸ø guest OS
+        ;; æ£€æŸ¥ CR0.CD ä¸ CR0.NW çš„è®¾ç½®
+        ;; 1) å¦‚æœå±äº CR0.CD = 0ï¼ŒCR0.NW = 1 æ—¶ï¼Œç›´æ¥æ³¨å…¥ #GP(0) å¼‚å¸¸ç»™ guest OS
         ;;
         mov eax, edx
         and eax, (CR0_CD | CR0_NW)
@@ -1192,7 +1192,7 @@ DoControlRegisterAccess.MovToCr.@0.CD_NW:
         jne DoControlRegisterAccess.MovToCr.@0.CD_NW.@1
         
         ;;
-        ;; ×¢Èë #GP(0) Òì³£
+        ;; æ³¨å…¥ #GP(0) å¼‚å¸¸
         ;;
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_GP
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, 0
@@ -1202,7 +1202,7 @@ DoControlRegisterAccess.MovToCr.@0.CD_NW:
         
 DoControlRegisterAccess.MovToCr.@0.CD_NW.@1:
         ;;
-        ;; ¸üĞÂ CR0 ¼Ä´æÆ÷Öµ
+        ;; æ›´æ–° CR0 å¯„å­˜å™¨å€¼
         ;;
         and edx, (CR0_CD | CR0_NW)
         mov eax, cr0
@@ -1210,7 +1210,7 @@ DoControlRegisterAccess.MovToCr.@0.CD_NW.@1:
         mov cr0, eax
                 
         ;;
-        ;; ÉèÖÃĞÂµÄ CR0.CD/CR0.NW Î» read shadow Öµ
+        ;; è®¾ç½®æ–°çš„ CR0.CD/CR0.NW ä½ read shadow å€¼
         ;;
         and esi, ~(CR0_CD | CR0_NW)
         or edx, esi
@@ -1224,7 +1224,7 @@ DoControlRegisterAccess.MovToCr.@0.CD_NW.@1:
 
 DoControlRegisterAccess.MovToCr.@4:
         ;;
-        ;; Ê¹ÓÃ single-context invalidateion ·½Ê½Ë¢ĞÂ cache
+        ;; ä½¿ç”¨ single-context invalidateion æ–¹å¼åˆ·æ–° cache
         ;;
         mov ebx, SINGLE_CONTEXT_INVALIDATION
         
@@ -1236,15 +1236,15 @@ DoControlRegisterAccess.MovToCr.@4:
         
 DoControlRegisterAccess.MovFromCr:
         ;;
-        ;; ´¦Àí MOV from CR Ö¸Áî
+        ;; å¤„ç† MOV from CR æŒ‡ä»¤
         ;;
-        ;; ×¢Òâ£º
-        ;; 1) ÕâÀïºöÂÔ MOV-from-CR8 Ö¸Áî !
-        ;; 2) Ö»ÓĞ MOV-from-CR3 Ö¸ÁîĞèÒª´¦Àí !
+        ;; æ³¨æ„ï¼š
+        ;; 1) è¿™é‡Œå¿½ç•¥ MOV-from-CR8 æŒ‡ä»¤ !
+        ;; 2) åªæœ‰ MOV-from-CR3 æŒ‡ä»¤éœ€è¦å¤„ç† !
         ;;        
         
         ;;
-        ;; ½«Ô´¿ØÖÆ¼Ä´æÆ÷ÖµĞ´ÈëÄ¿±ê¼Ä´æÆ÷Àï
+        ;; å°†æºæ§åˆ¶å¯„å­˜å™¨å€¼å†™å…¥ç›®æ ‡å¯„å­˜å™¨é‡Œ
         ;;
         REX.Wrxb
         mov esi, [ebp + PCB.GuestExitInfo + MOV_CR_INFO.ControlRegister]
@@ -1261,13 +1261,13 @@ DoControlRegisterAccess.MovFromCr:
 
 DoControlRegisterAccess.Clts:
         ;;
-        ;; ´¦ÀíÓÉ CLTS Ö¸ÁîÒı·¢µÄ VM-exit
+        ;; å¤„ç†ç”± CLTS æŒ‡ä»¤å¼•å‘çš„ VM-exit
         ;;
         jmp DoControlRegisterAccess.Next
 
 DoControlRegisterAccess.Lmsw:  
         ;;
-        ;; ´¦Àí LMSW Ö¸Áî
+        ;; å¤„ç† LMSW æŒ‡ä»¤
         ;;
         jmp DoControlRegisterAccess.Next
 
@@ -1276,7 +1276,7 @@ DoControlRegisterAccess.Lmsw:
 
 DoControlRegisterAccess.Next:        
         ;;
-        ;; Ë¢ĞÂ cache
+        ;; åˆ·æ–° cache
         ;;
         GetVmcsField    CONTROL_VPID
         mov [ebp + PCB.InvDesc + INV_DESC.Vpid], eax
@@ -1290,7 +1290,7 @@ DoControlRegisterAccess.Next:
 
 DoControlRegisterAccess.Resume:        
         ;;
-        ;; Ìø¹ı MOV-CR Ö¸Áî
+        ;; è·³è¿‡ MOV-CR æŒ‡ä»¤
         ;;
         call update_guest_rip
         
@@ -1312,8 +1312,8 @@ DoControlRegisterAccess.Done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ MOV-DR Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ MOV-DR æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoMovDr: 
         call update_guest_rip
@@ -1329,8 +1329,8 @@ DoMovDr:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ I/O Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± I/O æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoIoInstruction:
         push ebp
@@ -1344,17 +1344,17 @@ DoIoInstruction:
 
         ;DEBUG_RECORD    "[DoIoInstruction]: ignore execution of I/O instruction !"
         
-        call get_io_instruction_info                    ;; ÊÕ¼¯ IO Ö¸ÁîĞÅÏ¢
+        call get_io_instruction_info                    ;; æ”¶é›† IO æŒ‡ä»¤ä¿¡æ¯
 
         
         ;;
-        ;; Ö´ĞĞ IO ´¦Àí
+        ;; æ‰§è¡Œ IO å¤„ç†
         ;;
         call do_guest_io_process
         
         
         ;;
-        ;; Ìø¹ı I/O Ö¸Áî
+        ;; è·³è¿‡ I/O æŒ‡ä»¤
         ;;
         call update_guest_rip
         
@@ -1372,8 +1372,8 @@ DoIoInstruction:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ RDMSR Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± RDMSR æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoRDMSR: 
         push ebp
@@ -1391,14 +1391,14 @@ DoRDMSR:
         mov ebx, [ebx + VMB.VsbBase]
         
         ;;
-        ;; ¶ÁÈ¡ MSR index
+        ;; è¯»å– MSR index
         ;;
         mov ecx, [ebx + VSB.Rcx]
         cmp ecx, IA32_APIC_BASE
         jne DoRDMSR.@1
         
         ;;
-        ;; ´¦ÀíÆ÷¶Á IA32_APIC_BASE
+        ;; å¤„ç†å™¨è¯» IA32_APIC_BASE
         ;;
         call DoReadMsrForApicBase
 
@@ -1420,8 +1420,8 @@ DoRDMSR.Done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ WRMSR Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± WRMSR æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoWRMSR:
         push ebp
@@ -1439,14 +1439,14 @@ DoWRMSR:
         mov ebx, [ebx + VMB.VsbBase]
         
         ;;
-        ;; ¶ÁÈ¡ MSR index
+        ;; è¯»å– MSR index
         ;;
         mov ecx, [ebx + VSB.Rcx]
         cmp ecx, IA32_APIC_BASE
         jne DoWRMSR.@1
         
         ;;
-        ;; ´¦ÀíĞ´ IA32_APIC_BASE ¼Ä´æÆ÷
+        ;; å¤„ç†å†™ IA32_APIC_BASE å¯„å­˜å™¨
         ;;
         call DoWriteMsrForApicBase
 
@@ -1468,8 +1468,8 @@ DoWRMSR.Done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉÓÚÎŞĞ§ guest-state ×Ö¶Îµ¼ÖÂ VM-entry Ê§°ÜÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”±äºæ— æ•ˆ guest-state å­—æ®µå¯¼è‡´ VM-entry å¤±è´¥å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoInvalidGuestState: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1484,8 +1484,8 @@ DoInvalidGuestState:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÔÚ¼ÓÔØ guest MSR ³ö´íµ¼ÖÂVM-entryÊ§°ÜÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†åœ¨åŠ è½½ guest MSR å‡ºé”™å¯¼è‡´VM-entryå¤±è´¥å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoMSRLoading: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1499,8 +1499,8 @@ DoMSRLoading:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ MWAIT Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± MWAIT æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoMWAIT:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1511,11 +1511,11 @@ DoMWAIT:
 ;-----------------------------------------------------------------------
 ; DoMTF()
 ; input:
-;       esi - DO process ¿ØÖÆ
+;       esi - DO process æ§åˆ¶
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ pending MTF VM-exit Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± pending MTF VM-exit å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoMTF:
         push ebp
@@ -1532,14 +1532,14 @@ DoMTF:
 
         
         ;;
-        ;; Èç¹û²»ĞèÒªdecode£¬ÔòÌø¹ı
+        ;; å¦‚æœä¸éœ€è¦decodeï¼Œåˆ™è·³è¿‡
         ;;
         cmp esi, DO_PROCESS_DECODE
         jne DoMTF.done
         
         
         ;;
-        ;; ·ÖÎö guest »·¾³
+        ;; åˆ†æ guest ç¯å¢ƒ
         ;;        
         mov eax, [ebp + PCB.EntryControlBuf + ENTRY_CONTROL.VmEntryControl]
         mov edx, [ebp + PCB.GuestStateBuf + GUEST_STATE.CsAccessRight]        
@@ -1566,7 +1566,7 @@ DoMTF.@2:
         mov [ebx + DMB.TargetCpuMode], eax
 
         ;;
-        ;; ¶Ô GuestRip ´¦½øĞĞ decode
+        ;; å¯¹ GuestRip å¤„è¿›è¡Œ decode
         ;;        
         mov esi, [ebx + DMB.DecodeEntry]
         test esi, esi
@@ -1581,7 +1581,7 @@ DoMTF.@2:
         mov edx, edi
         
         ;;
-        ;; ¸üĞÂ debug record ĞÅÏ¢
+        ;; æ›´æ–° debug record ä¿¡æ¯
         ;;
         mov eax, [ebx + DMB.DecodeEntry]
         xor edi, edi
@@ -1593,7 +1593,7 @@ DoMTF.@2:
         mov [ebx + DMB.DecodeBufferPtr], edx
         
         ;;
-        ;; Ö¸Ïò guest ÏÂÒ»ÌõÖ¸Áî
+        ;; æŒ‡å‘ guest ä¸‹ä¸€æ¡æŒ‡ä»¤
         ;;
         GetVmcsField    GUEST_RIP
         mov [ebx + DMB.DecodeEntry], eax
@@ -1617,8 +1617,8 @@ DoMTF.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ MONITOR Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± MONITOR æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoMONITOR: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1632,8 +1632,8 @@ DoMONITOR:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ PAUSE Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± PAUSE æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoPAUSE: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1648,8 +1648,8 @@ DoPAUSE:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ machine check event Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± machine check event å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoMachineCheck:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1664,8 +1664,8 @@ DoMachineCheck:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ VPTR µÍÓÚ TPR threshold Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± VPTR ä½äº TPR threshold å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoTPRThreshold: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1679,8 +1679,8 @@ DoTPRThreshold:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ·ÃÎÊ APIC-access page Ò³ÃæÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”±è®¿é—® APIC-access page é¡µé¢å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoAPICAccessPage: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1695,8 +1695,8 @@ DoAPICAccessPage:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ EOI exit bitmap Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± EOI exit bitmap å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoEOIBitmap: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -1711,8 +1711,8 @@ DoEOIBitmap:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔ·ÃÎÊ GDTR/IDTR Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•è®¿é—® GDTR/IDTR å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoGDTR_IDTR: 
         push ebp
@@ -1731,7 +1731,7 @@ DoGDTR_IDTR:
         lea edx, [ebp + PCB.GuestExitInfo]
         
         ;;
-        ;; ÊÕ¼¯ĞÅÏ¢
+        ;; æ”¶é›†ä¿¡æ¯
         ;;
         call GetDescTableRegisterInfo
 
@@ -1740,13 +1740,13 @@ DoGDTR_IDTR:
 DoGDTR_IDTR.GetLinearAddress:        
 
         ;;
-        ;; ¼ÆËãÏßĞÔµØÖ·Öµ£¬·ÖÎöÄÚ´æ²Ù×÷ÊıµÄ base, index ¼° scale
+        ;; è®¡ç®—çº¿æ€§åœ°å€å€¼ï¼Œåˆ†æå†…å­˜æ“ä½œæ•°çš„ base, index åŠ scale
         ;;
         test DWORD [edx + INSTRUCTION_INFO.Flags], INSTRUCTION_FLAGS_BASE
         jnz DoGDTR_IDTR.GetLinearAddress.@1        
         
         ;;
-        ;; ¶ÁÈ¡ base ¼Ä´æÆ÷Öµ
+        ;; è¯»å– base å¯„å­˜å™¨å€¼
         ;;
         mov esi, [edx + INSTRUCTION_INFO.Base]
         call get_guest_register_value
@@ -1758,13 +1758,13 @@ DoGDTR_IDTR.GetLinearAddress.@1:
         jnz DoGDTR_IDTR.GetLinearAddress.@2
         
         ;;
-        ;; ¶ÁÈ¡ index ¼Ä´æÆ÷Öµ
+        ;; è¯»å– index å¯„å­˜å™¨å€¼
         ;;
         mov esi, [edx + INSTRUCTION_INFO.Index]
         call get_guest_register_value
         
         ;;
-        ;; ¼ì²é scale Öµ
+        ;; æ£€æŸ¥ scale å€¼
         ;;
         cmp DWORD [edx + INSTRUCTION_INFO.Scale], SCALE_0
         jne DoGDTR_IDTR.GetLinearAddress.Check2
@@ -1801,24 +1801,24 @@ DoGDTR_IDTR.GetLinearAddress.@2:
         lea ebx, [ebx + eax]
 
         ;;
-        ;; ·ÖÎö address size£¬µÃµ½×îÖÕµÄÏßĞÔµØÖ·Öµ
+        ;; åˆ†æ address sizeï¼Œå¾—åˆ°æœ€ç»ˆçš„çº¿æ€§åœ°å€å€¼
         ;;
         mov eax, [edx + INSTRUCTION_INFO.AddressSize]
         cmp eax, INSTRUCTION_ADRS_WORD
         jne DoGDTR_IDTR.GetLinearAddress.CheckAddr32
         
-        movzx ebx, bx                                   ;; 16 Î»µØÖ·
+        movzx ebx, bx                                   ;; 16 ä½åœ°å€
         jmp DoGDTR_IDTR.GetLinearAddress.GetHostVa
 
 DoGDTR_IDTR.GetLinearAddress.CheckAddr32:
         cmp eax, INSTRUCTION_ADRS_DWORD
         jne DoGDTR_IDTR.GetLinearAddress.GetHostVa
         
-        or ebx, ebx                                    ;; 32 Î»µØÖ·Öµ
+        or ebx, ebx                                    ;; 32 ä½åœ°å€å€¼
 
 DoGDTR_IDTR.GetLinearAddress.GetHostVa:
         ;;
-        ;; µÃµ½ host ¶ËĞéÄâµØÖ·
+        ;; å¾—åˆ° host ç«¯è™šæ‹Ÿåœ°å€
         ;;
         REX.Wrxb
         mov esi, ebx
@@ -1830,7 +1830,7 @@ DoGDTR_IDTR.GetLinearAddress.GetHostVa:
         jnz DoGDTR_IDTR.CheckType
         
         ;;
-        ;; µØÖ·ÎŞĞ§£¬×¢Èë #PF Òì³£
+        ;; åœ°å€æ— æ•ˆï¼Œæ³¨å…¥ #PF å¼‚å¸¸
         ;;
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_PF
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, 0
@@ -1843,11 +1843,11 @@ DoGDTR_IDTR.CheckType:
         mov ecx, [ebp + PCB.CurrentVmbPointer]
         
         ;;
-        ;; ·ÖÎöÖ¸Áî£º
-        ;; 1) SGDT£º±£´æ gdt pointer 
-        ;; 2) SIDT£º±£´æ idt pointer
-        ;; 3) LGDT: ¼ÓÔØ gdt pointer
-        ;; 4) LIDT: ¼ÓÔØ idt pointer
+        ;; åˆ†ææŒ‡ä»¤ï¼š
+        ;; 1) SGDTï¼šä¿å­˜ gdt pointer 
+        ;; 2) SIDTï¼šä¿å­˜ idt pointer
+        ;; 3) LGDT: åŠ è½½ gdt pointer
+        ;; 4) LIDT: åŠ è½½ idt pointer
         ;;        
         mov eax, [edx + INSTRUCTION_INFO.Type]
         cmp eax, INSTRUCTION_TYPE_SGDT
@@ -1866,7 +1866,7 @@ DoGDTR_IDTR.CheckType:
 
 DoGDTR_IDTR.SgdtSidt:
         ;;
-        ;; ´¦Àí SGDT Óë SIDT Ö¸Áî£º±£´æ GDT/IDT pointer
+        ;; å¤„ç† SGDT ä¸ SIDT æŒ‡ä»¤ï¼šä¿å­˜ GDT/IDT pointer
         ;;
         mov ax, [esi]
         mov [ebx], ax
@@ -1874,7 +1874,7 @@ DoGDTR_IDTR.SgdtSidt:
         mov [ebx + 2], eax
 
         ;;
-        ;; ¼ì²é operand size£¬Èç¹ûÊÇ 64 Î»ÔòĞ´Èë 10 bytes
+        ;; æ£€æŸ¥ operand sizeï¼Œå¦‚æœæ˜¯ 64 ä½åˆ™å†™å…¥ 10 bytes
         ;;
         cmp DWORD [edx + INSTRUCTION_INFO.OperandSize], INSTRUCTION_OPS_QWORD
         jne DoGDTR_IDTR.Done
@@ -1887,13 +1887,13 @@ DoGDTR_IDTR.Lgdt:
         DEBUG_RECORD    "[DoGDTR_IDTR]: load GDTR"
         
         ;;
-        ;; ´¦Àí LGDT Ö¸Áî£ºĞ´Èë GGMB.GdtPointer ÒÔ¼°¼ÓÔØ guest GDTR
+        ;; å¤„ç† LGDT æŒ‡ä»¤ï¼šå†™å…¥ GGMB.GdtPointer ä»¥åŠåŠ è½½ guest GDTR
         ;;
         REX.Wrxb
         lea ecx, [ecx + VMB.GuestGmb + GGMB.GdtPointer]
         movzx eax, WORD [ebx]        
-        mov [ecx], ax                                           ; ±£´æ GDTR.limit
-        SetVmcsField    GUEST_GDTR_LIMIT, eax                   ; ¼ÓÔØ guest GDTR.limit
+        mov [ecx], ax                                           ; ä¿å­˜ GDTR.limit
+        SetVmcsField    GUEST_GDTR_LIMIT, eax                   ; åŠ è½½ guest GDTR.limit
         mov eax, [ebx + 2]
         and eax, 00FFFFFFh
         cmp DWORD [edx + INSTRUCTION_INFO.OperandSize], INSTRUCTION_OPS_WORD
@@ -1902,23 +1902,23 @@ DoGDTR_IDTR.Lgdt:
         REX.Wrxb
         cmove eax, [ebx + 2]
         REX.Wrxb
-        mov [ecx + 2], eax                                      ; ±£´æ GDTR.base
-        SetVmcsField    GUEST_GDTR_BASE, eax                    ; ¼ÓÔØ guest GDTR.base
+        mov [ecx + 2], eax                                      ; ä¿å­˜ GDTR.base
+        SetVmcsField    GUEST_GDTR_BASE, eax                    ; åŠ è½½ guest GDTR.base
         jmp DoGDTR_IDTR.Done
 
 DoGDTR_IDTR.Lidt:        
         DEBUG_RECORD    "[DoGDTR_IDTR]: load IDTR"
         
         ;;
-        ;; ´¦Àí LIDT Ö¸Áî£ºĞ´Èë GIMB.IdtPointer ÒÔ¼°¼ÓÔØ guest IDTR
+        ;; å¤„ç† LIDT æŒ‡ä»¤ï¼šå†™å…¥ GIMB.IdtPointer ä»¥åŠåŠ è½½ guest IDTR
         ;;
         REX.Wrxb
         lea ecx, [ecx + VMB.GuestImb + GIMB.IdtPointer]
         movzx eax, WORD [ebx]        
-        mov [ecx + GIMB.IdtLimit], ax                           ; ±£´æ guest Ô­ IDTR.limit
+        mov [ecx + GIMB.IdtLimit], ax                           ; ä¿å­˜ guest åŸ IDTR.limit
 
         ;;
-        ;; ÔÚ IA-32e Ä£Ê½ÏÂÊÇ 1FFh£¬·ñÔòÎª 0FFh
+        ;; åœ¨ IA-32e æ¨¡å¼ä¸‹æ˜¯ 1FFhï¼Œå¦åˆ™ä¸º 0FFh
         ;;
         GetVmcsField    GUEST_IA32_EFER_FULL
         mov esi, (31 * 8 + 7)
@@ -1927,10 +1927,10 @@ DoGDTR_IDTR.Lidt:
         cmovz eax, esi
         
         ;;
-        ;; ÉèÖÃ guest IDTR.limit
+        ;; è®¾ç½® guest IDTR.limit
         ;;        
-        SetVmcsField    GUEST_IDTR_LIMIT, eax                  ; ¼ÓÔØ guest IDTR.limit
-        mov WORD [ecx + GIMB.HookIdtLimit], ax                 ; ±£´æ VMM ÉèÖÃµÄ IDTR.limit
+        SetVmcsField    GUEST_IDTR_LIMIT, eax                  ; åŠ è½½ guest IDTR.limit
+        mov WORD [ecx + GIMB.HookIdtLimit], ax                 ; ä¿å­˜ VMM è®¾ç½®çš„ IDTR.limit
         mov eax, [ebx + 2]
         and eax, 00FFFFFFh
         cmp DWORD [edx + INSTRUCTION_INFO.OperandSize], INSTRUCTION_OPS_WORD
@@ -1939,8 +1939,8 @@ DoGDTR_IDTR.Lidt:
         REX.Wrxb
         cmove eax, [ebx + 2]
         REX.Wrxb
-        mov [ecx + GIMB.IdtBase], eax                           ; ±£´æ guest Ô­ IDTR.base
-        SetVmcsField    GUEST_IDTR_BASE, eax                    ; ¼ÓÔØ guest IDTR.base
+        mov [ecx + GIMB.IdtBase], eax                           ; ä¿å­˜ guest åŸ IDTR.base
+        SetVmcsField    GUEST_IDTR_BASE, eax                    ; åŠ è½½ guest IDTR.base
         
 DoGDTR_IDTR.Done:
         call update_guest_rip        
@@ -1960,8 +1960,8 @@ DoGDTR_IDTR.Done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔ·ÃÎÊ LDTR/TR Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•è®¿é—® LDTR/TR å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoLDTR_TR: 
         push ebp
@@ -1981,9 +1981,9 @@ DoLDTR_TR:
         lea edx, [ebp + PCB.GuestExitInfo]
    
         ;;
-        ;; ¼ì²é²Ù×÷ÊıÀàĞÍ£º
-        ;; 1) ÄÚ´æ²Ù×÷Êı£¬Ôò»ñµ½ÏßĞÔµØÖ·Öµ
-        ;; 2) ¼Ä´æÆ÷²Ù×÷Êı£¬Ôò¶ÁÈ¡¼Ä´æÆ÷Öµ
+        ;; æ£€æŸ¥æ“ä½œæ•°ç±»å‹ï¼š
+        ;; 1) å†…å­˜æ“ä½œæ•°ï¼Œåˆ™è·åˆ°çº¿æ€§åœ°å€å€¼
+        ;; 2) å¯„å­˜å™¨æ“ä½œæ•°ï¼Œåˆ™è¯»å–å¯„å­˜å™¨å€¼
         ;;
         test DWORD [edx + INSTRUCTION_INFO.Flags], INSTRUCTION_FLAGS_REG
         jnz DoLDTR_TR.GetRegister
@@ -1991,13 +1991,13 @@ DoLDTR_TR:
         xor ebx, ebx
 
         ;;
-        ;; ¼ÆËãÏßĞÔµØÖ·Öµ£¬·ÖÎöÄÚ´æ²Ù×÷ÊıµÄ base, index ¼° scale
+        ;; è®¡ç®—çº¿æ€§åœ°å€å€¼ï¼Œåˆ†æå†…å­˜æ“ä½œæ•°çš„ base, index åŠ scale
         ;;
         test DWORD [edx + INSTRUCTION_INFO.Flags], INSTRUCTION_FLAGS_BASE
         jnz DoLDTR_TR.GetLinearAddress.@1        
         
         ;;
-        ;; ¶ÁÈ¡ base ¼Ä´æÆ÷Öµ
+        ;; è¯»å– base å¯„å­˜å™¨å€¼
         ;;
         mov esi, [edx + INSTRUCTION_INFO.Base]
         call get_guest_register_value
@@ -2009,13 +2009,13 @@ DoLDTR_TR.GetLinearAddress.@1:
         jnz DoLDTR_TR.GetLinearAddress.@2
         
         ;;
-        ;; ¶ÁÈ¡ index ¼Ä´æÆ÷Öµ
+        ;; è¯»å– index å¯„å­˜å™¨å€¼
         ;;
         mov esi, [edx + INSTRUCTION_INFO.Index]
         call get_guest_register_value
         
         ;;
-        ;; ¼ì²é scale Öµ
+        ;; æ£€æŸ¥ scale å€¼
         ;;
         cmp DWORD [edx + INSTRUCTION_INFO.Scale], SCALE_0
         jne DoLDTR_TR.GetLinearAddress.Check2
@@ -2051,24 +2051,24 @@ DoLDTR_TR.GetLinearAddress.@2:
         REX.Wrxb
         lea ebx, [ebx + eax]
         ;;
-        ;; ·ÖÎö address size£¬µÃµ½×îÖÕµÄÏßĞÔµØÖ·Öµ
+        ;; åˆ†æ address sizeï¼Œå¾—åˆ°æœ€ç»ˆçš„çº¿æ€§åœ°å€å€¼
         ;;
         mov eax, [edx + INSTRUCTION_INFO.AddressSize]
         cmp eax, INSTRUCTION_ADRS_WORD
         jne DoLDTR_TR.GetLinearAddress.CheckAddr32
         
-        movzx ebx, bx                                   ;; 16 Î»µØÖ·
+        movzx ebx, bx                                   ;; 16 ä½åœ°å€
         jmp DoLDTR_TR.GetLinearAddress.GetHostVa
 
 DoLDTR_TR.GetLinearAddress.CheckAddr32:
         cmp eax, INSTRUCTION_ADRS_DWORD
         jne DoLDTR_TR.GetLinearAddress.GetHostVa
         
-        or ebx, ebx                                    ;; 32 Î»µØÖ·Öµ
+        or ebx, ebx                                    ;; 32 ä½åœ°å€å€¼
 
 DoLDTR_TR.GetLinearAddress.GetHostVa:
         ;;
-        ;; ¶ÁÈ¡ selector
+        ;; è¯»å– selector
         ;;
         REX.Wrxb
         mov esi, ebx
@@ -2080,7 +2080,7 @@ DoLDTR_TR.GetLinearAddress.GetHostVa:
         jnz DoLDTR_TR.CheckType
 
         ;;
-        ;; µØÖ·ÎŞĞ§£¬×¢Èë #PF Òì³£
+        ;; åœ°å€æ— æ•ˆï¼Œæ³¨å…¥ #PF å¼‚å¸¸
         ;;
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_PF
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, 0
@@ -2089,7 +2089,7 @@ DoLDTR_TR.GetLinearAddress.GetHostVa:
         
 DoLDTR_TR.GetRegister:        
         ;;
-        ;; ¶ÁÈ¡¼Ä´æÆ÷Öµ
+        ;; è¯»å–å¯„å­˜å™¨å€¼
         ;;
         mov esi, [edx + INSTRUCTION_INFO.Register]
         call get_guest_register_value
@@ -2098,7 +2098,7 @@ DoLDTR_TR.GetRegister:
 
 DoLDTR_TR.CheckType:
         ;;
-        ;; ¼ì²éÖ¸ÁîÀàĞÍ
+        ;; æ£€æŸ¥æŒ‡ä»¤ç±»å‹
         ;;
         mov eax, [edx + INSTRUCTION_INFO.Type]        
         cmp eax, INSTRUCTION_TYPE_SLDT
@@ -2115,7 +2115,7 @@ DoLDTR_TR.CheckType:
 
 DoLDTR_TR.Sldt:
         ;;
-        ;; ´¦Àí SLDT Ö¸Áî
+        ;; å¤„ç† SLDT æŒ‡ä»¤
         ;;
         DEBUG_RECORD    "[DoLDTR_TR]: store LDTR"
         
@@ -2133,7 +2133,7 @@ DoLDTR_TR.Sldt.@1:
         
 DoLDTR_TR.Str:
         ;;
-        ;; ´¦Àí STR Ö¸Áî
+        ;; å¤„ç† STR æŒ‡ä»¤
         ;;
         DEBUG_RECORD    "[DoLDTR_TR]: store TR"
         
@@ -2152,7 +2152,7 @@ DoLDTR_TR.Str.@1:
         
 DoLDTR_TR.LldtLtr:        
         ;;
-        ;; ´¦Àí LLDT Óë LTR Ö¸Áî
+        ;; å¤„ç† LLDT ä¸ LTR æŒ‡ä»¤
         ;;
         DEBUG_RECORD    "[DoLDTR_TR]: load LDTR or TR"
 
@@ -2185,8 +2185,8 @@ DoLDTR_TR.Done:
 ;       esi - do process code
 ; output:
 ;       eax - VMM process code
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ EPT violation Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± EPT violation å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoEptViolaton:
         push ebp
@@ -2202,13 +2202,13 @@ DoEptViolaton:
 
         
         ;;
-        ;; ¶ÁÈ¡·¢Éú EPT violation µÄ guest-physical address Öµ
+        ;; è¯»å–å‘ç”Ÿ EPT violation çš„ guest-physical address å€¼
         ;;
         REX.Wrxb
         mov ebx, [ebp + PCB.ExitInfoBuf + EXIT_INFO.GuestPhysicalAddress]
         
         ;;
-        ;; ¼ì²é GPA ÊÇ·ñĞèÒª½øĞĞ¶îÍâ´¦Àí
+        ;; æ£€æŸ¥ GPA æ˜¯å¦éœ€è¦è¿›è¡Œé¢å¤–å¤„ç†
         ;;
         REX.Wrxb
         mov esi, ebx
@@ -2223,18 +2223,18 @@ DoEptViolaton:
         call eax
         
         ;;
-        ;; ´¦ÀíÍê±Ïºó£¬ÊÇ·ñĞèÒªĞŞ¸´ EPT violation ¹ÊÕÏ
-        ;; a£©ĞèÒªÔòÖ´ĞĞÏÂÃæµÄĞŞ¸´¹¤×÷
-        ;; b£©·ñÔòÖ±½Ó·µ»Ø
+        ;; å¤„ç†å®Œæ¯•åï¼Œæ˜¯å¦éœ€è¦ä¿®å¤ EPT violation æ•…éšœ
+        ;; aï¼‰éœ€è¦åˆ™æ‰§è¡Œä¸‹é¢çš„ä¿®å¤å·¥ä½œ
+        ;; bï¼‰å¦åˆ™ç›´æ¥è¿”å›
         ;;
         cmp eax, EPT_VIOLATION_FIXING
         jne DoEptViolation.resume
         
 DoEptViolaton.next:        
         ;;
-        ;; ¼ì²éÒ³ÃæÊÇ·ñÊôÓÚ not-present
-        ;; 1) Èç¹ûÊôÓÚ not-present£¬Ôò·ÖÅäÎïÀíÒ³Ãæ£¬½øĞĞÖØĞÂÓ³Éä
-        ;; 2) Èç¹ûÊôÓÚÎŞ·ÃÎÊÈ¨ÏŞÊ±£¬ĞŞ¸´Ó³Éä
+        ;; æ£€æŸ¥é¡µé¢æ˜¯å¦å±äº not-present
+        ;; 1) å¦‚æœå±äº not-presentï¼Œåˆ™åˆ†é…ç‰©ç†é¡µé¢ï¼Œè¿›è¡Œé‡æ–°æ˜ å°„
+        ;; 2) å¦‚æœå±äºæ— è®¿é—®æƒé™æ—¶ï¼Œä¿®å¤æ˜ å°„
         ;;
         mov eax, [ebp + PCB.ExitInfoBuf + EXIT_INFO.ExitQualification]
         test eax, (EPT_READ | EPT_WRITE | EPT_EXECUTE) << 3                     ; ExitQualification[5:3]
@@ -2243,13 +2243,13 @@ DoEptViolaton.next:
         DEBUG_RECORD            "[DoEptViolation]: fixing access !"  
         
         ;;
-        ;; ÏÂÃæĞŞ¸´ÓÉÓÚ·ÃÎÊÈ¨ÏŞÒıÆğµÄ EPT violation ÎÊÌâ
+        ;; ä¸‹é¢ä¿®å¤ç”±äºè®¿é—®æƒé™å¼•èµ·çš„ EPT violation é—®é¢˜
         ;;
 %ifdef __X64        
         REX.Wrxb
         mov esi, ebx                                                            ; guest-physical address
-        and eax, 07h                                                            ; ·ÃÎÊÀàĞÍ
-        or eax, FIX_ACCESS                                                      ; ½øĞĞ FIX_ACCESS ²Ù×÷
+        and eax, 07h                                                            ; è®¿é—®ç±»å‹
+        or eax, FIX_ACCESS                                                      ; è¿›è¡Œ FIX_ACCESS æ“ä½œ
 %else
         xor edi, edi
         mov esi, ebx
@@ -2262,7 +2262,7 @@ DoEptViolaton.next:
 
 DoEptViolaton.@0:
         ;;
-        ;; ´Ó´¦ÀíÆ÷ domain Àï·ÖÅäÒ»¸ö 4K ÎïÀíÒ³Ãæ
+        ;; ä»å¤„ç†å™¨ domain é‡Œåˆ†é…ä¸€ä¸ª 4K ç‰©ç†é¡µé¢
         ;;
         mov esi, 1
         call vm_alloc_pool_physical_page
@@ -2277,9 +2277,9 @@ DoEptViolaton.remaping:
         DEBUG_RECORD            "[DoEptViolation]: remaping! (eax = HPA, ebx = GPA)"
         
         ;;
-        ;; ÏÂÃæ½øĞĞ guest-physical address Ó³Éä
-        ;; ×¢Òâ£ºÕâÀïÌí¼ÓËùÓĞ·ÃÎÊÈ¨ÏŞ£¬read/write/execute
-        ;; 1) ÒòÎª£¬guest-physical address ·ÃÎÊ£¬¿ÉÄÜ»á½øĞĞ¶àÖÖ·ÃÎÊ£¬ĞèÒª¶àÖÖÈ¨ÏŞ
+        ;; ä¸‹é¢è¿›è¡Œ guest-physical address æ˜ å°„
+        ;; æ³¨æ„ï¼šè¿™é‡Œæ·»åŠ æ‰€æœ‰è®¿é—®æƒé™ï¼Œread/write/execute
+        ;; 1) å› ä¸ºï¼Œguest-physical address è®¿é—®ï¼Œå¯èƒ½ä¼šè¿›è¡Œå¤šç§è®¿é—®ï¼Œéœ€è¦å¤šç§æƒé™
         ;;
 %ifdef __X64
         ;;
@@ -2309,17 +2309,17 @@ DoEptViolaton.remaping:
 
 DoEptViolation.DoMapping:
         ;;
-        ;; Ö´ĞĞ guest-physical address Ó³Éä¹¤×÷
+        ;; æ‰§è¡Œ guest-physical address æ˜ å°„å·¥ä½œ
         ;;
         call do_guest_physical_address_mapping
         
         
         ;;
-        ;; ### Ë¢ĞÂ cache ###
+        ;; ### åˆ·æ–° cache ###
         ;;
               
         ;;
-        ;; INVEPT ÃèÊö·û
+        ;; INVEPT æè¿°ç¬¦
         ;;
         mov DWORD [ebp + PCB.InvDesc + INV_DESC.Dword1], 0
         mov DWORD [ebp + PCB.InvDesc + INV_DESC.Dword2], 0
@@ -2339,7 +2339,7 @@ DoEptViolation.DoMapping:
 %endif    
     
         ;;
-        ;; Ê¹ÓÃ single-context invalidation Ë¢ĞÂ·½Ê½
+        ;; ä½¿ç”¨ single-context invalidation åˆ·æ–°æ–¹å¼
         ;;
         mov eax, SINGLE_CONTEXT_INVALIDATION
         invept eax, [ebp + PCB.InvDesc]
@@ -2365,8 +2365,8 @@ DoEptViolation.done:
 ;       none
 ; output:
 ;       eax - VMM process code
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ EPT misconfiguration Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± EPT misconfiguration å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoEptMisconfiguration: 
         push ebp
@@ -2374,7 +2374,7 @@ DoEptMisconfiguration:
         push edx
         
         ;;
-        ;; ·¢Éú EPT misconfiguration Ê±£¬½øĞĞĞŞ¸´¹¤×÷
+        ;; å‘ç”Ÿ EPT misconfiguration æ—¶ï¼Œè¿›è¡Œä¿®å¤å·¥ä½œ
         ;;
 
         REX.Wrxb
@@ -2384,7 +2384,7 @@ DoEptMisconfiguration:
         DEBUG_RECORD            "[DoEptMisconfiguration]: fixing !"
         
         ;;
-        ;; ÏÂÃæ½øĞĞĞŞ¸´
+        ;; ä¸‹é¢è¿›è¡Œä¿®å¤
         ;;
 %ifdef __X64
         ;;
@@ -2427,8 +2427,8 @@ DoEptMisconfiguration.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ INVEPT Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± INVEPT æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoINVEPT: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -2442,8 +2442,8 @@ DoINVEPT:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ RDTSCP Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± RDTSCP æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoRDTSCP: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -2458,8 +2458,8 @@ DoRDTSCP:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉVMX-preemption timer ³¬Ê±Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”±VMX-preemption timer è¶…æ—¶å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVmxPreemptionTimer: 
         push ebp
@@ -2484,8 +2484,8 @@ DoVmxPreemptionTimer:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ INVVPID Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± INVVPID æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoINVVPID: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -2500,8 +2500,8 @@ DoINVVPID:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ WBINVD Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± WBINVD æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoWBINVD:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -2516,8 +2516,8 @@ DoWBINVD:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí³¢ÊÔÖ´ĞĞ XSETBV Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†å°è¯•æ‰§è¡Œ XSETBV æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoXSETBV: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -2531,8 +2531,8 @@ DoXSETBV:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ APIC-write Òı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± APIC-write å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoAPICWrite: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -2546,8 +2546,8 @@ DoAPICWrite:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ RDRAND Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± RDRAND æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoRDRAND: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -2561,8 +2561,8 @@ DoRDRAND:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1)  ´¦ÀíÓÉ INVPCID Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1)  å¤„ç†ç”± INVPCID æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoINVPCID: 
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -2576,8 +2576,8 @@ DoINVPCID:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ VMFUNC Ö¸ÁîÒı·¢µÄ VM-exit
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± VMFUNC æŒ‡ä»¤å¼•å‘çš„ VM-exit
 ;----------------------------------------------------------------------- 
 DoVMFUNC:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -2589,7 +2589,7 @@ DoVMFUNC:
 
 
 ;**********************************
-; ÍË³ö´¦ÀíÀı³Ì±í                   *
+; é€€å‡ºå¤„ç†ä¾‹ç¨‹è¡¨                   *
 ;**********************************
 
 DoVmExitRoutineTable:
