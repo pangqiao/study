@@ -336,7 +336,7 @@ menu "General setup"
 
 这样，就会生成一个目录，特征就是右侧会出现一个箭头，如图1中第一行。当点击确认键时，会进入这个菜单项。make menuconfig 进入的第一个界面 基本所有选项都称为menu.
 
-（2）menuconfig
+(2) menuconfig
 
 menuconfig有点类似menu，但区别就在于menu后面多了一个config，这个menu是可以配置的，如图2中的第二行，前面比 menu类型多了一个方框，通过空格可以修改这个配置项的选中状态。而且从格式上来看，也是有区别的。如下图所示椭圆的都是menu 长方形的就是menuconfig了。
 
@@ -373,29 +373,41 @@ config的类型有5种，分别是bool(y/n)，tristate(y/m/n)，string(字符串
 
 其他语法如下：
 
-1) prompt：提示，显示在make menuconfig中的名称，一般省略。下面两种写法相同。
+>1) prompt：提示，显示在make menuconfig中的名称，一般省略。下面两种写法相同。
+>
+>a. bool “Networking Support”
+>
+>b. bool prompt “Networking Support”
+>
+>2) default：默认值
+>
+>一个配置项可以有多个默认值，但是只有第一个被定义的值是有效的。
+> 
+>3) depends on/requires：依赖关系
+>
+>如果依赖的配置项没有选中，那么就当前项也无法选中。
+>
+>4) select：反向依赖
+>
+>如果当前项选中，那么也选中select后的选项。
+> 
+>5) range：范围，用于hex和integer
+>
+>range A B表示当前值不小于A，不大于B
+>
+>6) comment：注释
 
-a. bool “Networking Support”
+(4) choice
 
-b. bool prompt “Networking Support”
+choice的作用，多选一，有点像MFC中的Radio控件。
 
-2) default：默认值
+可见，choice有点类似于menu，是在子窗口里选择，但是不同的是子窗口中只能选择一项。在prompt后会显示当前选择项的名称。
 
-一个配置项可以有多个默认值，但是只有第一个被定义的值是有效的。
- 
-3) depends on/requires：依赖关系
+5) source
 
-如果依赖的配置项没有选中，那么就当前项也无法选中。
+source只是将另外一个Kconfig文件直接复制到当前位置而已。但它的作用也是明显的，可以将这个系统贯穿在一起。从开始位置arch/arm/Kconfig，来将整个系统都作为配置型。
 
-4) select：反向依赖
-
-如果当前项选中，那么也选中select后的选项。
- 
-5) range：范围，用于hex和integer
-range A B表示当前值不小于A，不大于B
-
-6) comment：注释
-
+由此我们可以知道，之前那个选项没有出现，是由于depends on 依赖条件不符合。
 
 # 参考
 
