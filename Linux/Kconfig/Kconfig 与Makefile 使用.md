@@ -372,9 +372,30 @@ config ARM  
 config的类型有5种，分别是bool(y/n)，tristate(y/m/n)，string(字符串)，hex(十六进 制)，integer(整数)。其中，需要特别介绍一下bool和tristate，bool只能表示选中和不选，而tristate还可以配置成模块 (m)，特别对于驱动程序的开发非常有用。
 
 其他语法如下：
-————————————————
-版权声明：本文为CSDN博主「颇锐克」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/prike/article/details/79334609
+
+1) prompt：提示，显示在make menuconfig中的名称，一般省略。下面两种写法相同。
+
+a. bool “Networking Support”
+
+b. bool prompt “Networking Support”
+
+2) default：默认值
+
+一个配置项可以有多个默认值，但是只有第一个被定义的值是有效的。
+ 
+3) depends on/requires：依赖关系
+
+如果依赖的配置项没有选中，那么就当前项也无法选中。
+
+4) select：反向依赖
+
+如果当前项选中，那么也选中select后的选项。
+ 
+5) range：范围，用于hex和integer
+range A B表示当前值不小于A，不大于B
+
+6) comment：注释
+
 
 # 参考
 
