@@ -48,13 +48,62 @@ help：帮助信息，解释这个配置项的含义，以及如何去配置他�
 
 # Kconfig和.config文件和Makefile三者的关联
 
-配置项被配置成Y、N、M会影响“.config”文件中的CONFIG_XXX变量的配置值。“.config”中的配置值（=y、=m、没有）会影响最终的编译链接过程。如果=y则会被编入（built-in），如果=m会被单独连接成一个”.ko”模块，如果没有则对应的代码不会被编译。那么这是怎么实现的？都是通过makefile实现的。
+配置项被配置成Y、N、M会影响“`.config`”文件中的`CONFIG_XXX`变量的配置值。“.config”中的配置值（=y、=m、没有）会影响最终的编译链接过程。如果=y则会被编入（`built-in`），如果=m会被单独连接成一个”.ko”模块，如果没有则对应的代码不会被编译。那么这是怎么实现的？都是通过makefile实现的。
 
 如makefile中：`obj-$(CONFIG_DM9000) += dm9000.o`， 
 
 如果`CONFIG_DM9000`变量值为y，则obj += dm9000.o，因此dm9000.c会被编译；如果CONFIG_DM9000变量未定义，则dm9000.c不会被编译。如果CONFIG_DM9000变量的值为m则会被连接成“.ko”模块。
 
+## 何为Kconfig? 它的作用是什么?
 
+内核源码编译过程
+
+![2020-02-12-12-38-19.png](./images/2020-02-12-12-38-19.png)
+
+1. 遍历每个源码目录（或配置指定的源码目录）Makefile
+2. 每个目录的Makefile 会根据Kconfig来定制要编译对象
+3. 回到顶层目录的Makeifle执行编译
+
+那么我们就得出各个文件的作用：
+
+* Kconfig ---> （每个源码目录下）提供选项
+* .config ---> （源码顶层目录下）保存选择结果
+* Makefile---> （每个源码目录下）根据.config中的内容来告知编译系统如何编译
+
+说到底，Kconfig就是配置哪些文件编译，那些文件不用编译。后期linux内核都做出了如下的图形界面，但由于要进行Linux内核驱动开发，需要向将驱动的代码添加到Makefile中一起编译，所以Kconfig的一些语法也该了解，于是有了这篇文章。
+
+![2020-02-12-12-40-37.png](./images/2020-02-12-12-40-37.png)
+
+### 基本使用方法
+
+我们以简单的单选项为案例来演示
+
+假比，我们做好了一个驱动，需要将选项加入到内核的编译选项中，可以按以下步骤操作：
+
+#### 第一步 配置Kconfig
+
+在driver目录下新建一个目录
+
+```
+mkdir driver/test 
+```
+
+进入test目录，创建Kconfig文件
+
+```
+config TEST
+    bool "Test driver"
+    help
+    this is for test!!
+```
+
+这里定义了一个TEST的句柄，Kconfig可以通过这个句柄来控制Makefile中是否编译，"Test driver"是显示在终端的名称。 
+
+具体的语法在Kconfig语法简介中介绍。
+
+#### 第二步 配置Makefile
+
+在同样的目录中，新建一个Makefile 
 
 # 参考
 
