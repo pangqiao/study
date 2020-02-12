@@ -169,8 +169,91 @@ config DM9000
     tristate "DM9000 support"
 ```
 
+tristate —> 选中并编译进内核、不选编译成模块
 
+>运行结果: <M>test
 
+## 选项为数字
+
+```
+config ARM_DMA_IOMMU_ALIGNMENT
+    int "Maximum PAGE_SIZE order of alignment for DMA IOMMU buffers" ---->该选项是一个整型值
+    range 4 9 ---->该选项的范围值
+    default 8 ---->该选项的默认值
+    help
+      DMA mapping framework by default aligns all buffers to the smallest
+      ...
+```
+
+`4-8`为这个数字的范围，运行结果
+
+![2020-02-12-15-31-37.png](./images/2020-02-12-15-31-37.png)
+
+这里的defult其实也可以用在bool中
+
+```
+config STACKTRACE_SUPPORT
+    bool    --->该选项可以选中或不选，且不会出现在选择列表中
+    default y ---->表示缺省情况是选中
+```
+
+## if..endif
+
+```
+if ARCH_S5PC100 --->如果ARCH_S5PC100选项选中了，则在endif范围内的选项才会被选
+
+config CPU_S5PC100
+    bool "选项名"
+    select S5P_EXT_INT
+    select SAMSUNG_DMADEV
+    help
+      Enable S5PC100 CPU support
+
+endif
+```
+
+举个例子，如果CPU没有选择使用多核CPU，则不会出现CPU个数的选项。
+
+## choice多个选项
+
+```
+choice      --->表示选择列表
+    prompt "Default I/O scheduler"         //主目录名字
+    default DEFAULT_CFQ                    //默认CFQ
+    help
+      Select the I/O scheduler which will be used by default for all
+      block devices.
+ 
+    config DEFAULT_DEADLINE
+        bool "Deadline" if IOSCHED_DEADLINE=y 
+ 
+    config DEFAULT_CFQ
+        bool "CFQ" if IOSCHED_CFQ=y
+ 
+    config DEFAULT_NOOP
+        bool "No-op"
+ 
+endchoice
+```
+
+# menu与menuconfig
+
+## menu的用法
+
+```
+menu "Boot options"  ----> menu表示该选项是不可选的菜单，其后是在选择列表的菜单名
+ 
+    config USE_OF
+        bool "Flattened Device Tree support"
+        select IRQ_DOMAIN
+        select OF
+        select OF_EARLY_FLATTREE
+        help
+        Include support for flattened device tree machine descriptions.
+....
+ 
+endmenu     ----> menu菜单结束
+```
 
 # 参考
 
