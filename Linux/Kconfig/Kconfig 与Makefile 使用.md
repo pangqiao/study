@@ -157,6 +157,19 @@ config CPU_S5PC100
       Enable S5PC100 CPU support
 ```
 
+* config —> 选项 
+* CPU_S5PC100 —>句柄，可用于控制Makefile 选择编译方式 
+* bool —>选择可能：TRUE选中、FALSE不选 选中则编译，不选中则不编译。 如果后面没有字符串名称，则表示其不会出现在选择软件列表中 
+* select —> 当前选项选中后则select后指定的选项自动被选择
+
+depend on 依赖，后面的四个选择其中至少一个被选择，这个选项才能被选
+
+```
+config DM9000
+    tristate "DM9000 support"
+```
+
+
 
 
 # 参考
