@@ -318,7 +318,63 @@ Makefile 
 
 ![2020-02-12-15-48-41.png](./images/2020-02-12-15-48-41.png)
 
+## Kconfig 语法
 
+由于没有找到这个配置选项，我们只能从Kconfig的语法开始分析了。
+
+### 基本构成
+
+基本构成包括五种，menu/endmenu，menuconfig，config，choice/endchoice，source。下面就对每种详细介绍：
+
+(1) menu/endmenu
+
+    menu的作用，可以理解成一个目录，menu可以把其中一部分配置项包含到一个menu中，这样有利于配置的分类显示。menu与endmenu是一组指令，必须同时出现。menu和endmenu中包含的部分就是子目录中的配置项。
+
+比如，在init/Kconfig中24行(可能不同)显示为：
+
+menu "General setup"
+
+这样，就会生成一个目录，特征就是右侧会出现一个箭头，如图1中第一行。当点击确认键时，会进入这个菜单项。make menuconfig 进入的第一个界面 基本所有选项都称为menu.
+
+（2）menuconfig
+
+menuconfig有点类似menu，但区别就在于menu后面多了一个config，这个menu是可以配置的，如图2中的第二行，前面比 menu类型多了一个方框，通过空格可以修改这个配置项的选中状态。而且从格式上来看，也是有区别的。如下图所示椭圆的都是menu 长方形的就是menuconfig了。
+
+![2020-02-12-15-56-56.png](./images/2020-02-12-15-56-56.png)
+
+```
+menuconfig MODULES
+bool "Enable loadable module support"config
+if MODULES
+xx
+endif
+```
+
+也就是说，配置项是位于if和endif中。其中的部分就是MODULES子目录显示的内容。如果选中了MODULE，那么if和endif中的内容可以显示。如果没有定义，就只能进入一个空目录。
+
+(3) config
+
+config是构成Kconfig的最基本单元，其中定义了配置项的详细信息。定义的格式参考arch/arm/Kconfig中的第8行。
+
+```
+config ARM  
+         bool  
+         default y  
+         select xxxxxxxxxx  
+         help  
+           ???????????  
+```
+
+详细可以参阅 http://blog.csdn.net/xy010902100449/article/details/45131973
+
+可知，config需要定义名称，与menuconfig相同。这个名称不但用于裁剪内核中，还用于配置项之间的相互依赖关系中。
+
+config的类型有5种，分别是bool(y/n)，tristate(y/m/n)，string(字符串)，hex(十六进 制)，integer(整数)。其中，需要特别介绍一下bool和tristate，bool只能表示选中和不选，而tristate还可以配置成模块 (m)，特别对于驱动程序的开发非常有用。
+
+其他语法如下：
+————————————————
+版权声明：本文为CSDN博主「颇锐克」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/prike/article/details/79334609
 
 # 参考
 
