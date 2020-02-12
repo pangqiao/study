@@ -236,13 +236,13 @@ choice      --->表示选择列表
 endchoice
 ```
 
-# menu与menuconfig
+choice是单项选择题
 
 ## menu的用法
 
 ```
 menu "Boot options"  ----> menu表示该选项是不可选的菜单，其后是在选择列表的菜单名
- 
+
     config USE_OF
         bool "Flattened Device Tree support"
         select IRQ_DOMAIN
@@ -251,9 +251,74 @@ menu "Boot options"  ----> menu表示该选项是不可选的菜单，其后是�
         help
         Include support for flattened device tree machine descriptions.
 ....
- 
+
 endmenu     ----> menu菜单结束
 ```
+
+menu指的是不可编辑的menu，而menuconfig则是带选项的menu 
+
+### menu和choice的区别 
+
+menu 可以多选, choice 是单项选择题
+
+# menuconfig的用法
+
+```
+menuconfig MODULES ---> menuconfig表示MODULE是一个可选菜单，其选中后是CONFIG_MODULES
+    bool "菜单名"
+    if MODULES
+    ...
+    endif # MODULES
+```
+
+说到底，menconfig 就是一个带选项的菜单，在下面需要用bool判断一下，选择成立后，进入 `if …endif` 中间得空间。
+
+## 概述
+
+在linux编写驱动的过程中，有两个文件是我们必须要了解和知晓的。这其中，一个是Kconfig文件，另外一个是Makefile文件。如果大家比较熟悉的话，那么肯定对内核编译需要的.config文件不陌生，在.config文件中，我们发现有的模块被编译进了内核，有的只是生成了一个module。
+
+
+首先我们来学习什么Makefile，什么是Kconfig ，什么是.config 
+
+Ｍakefile：一个文本形式的文件，其中包含一些规则告诉make编译哪些文件以及怎样编译这些文件。
+
+Kconfig：一个文本形式的文件，其中主要作用是在内核配置时候，作为配置选项。
+
+.config：文件是在进行内核配置的时候，经过配置后生成的内核编译参考文件。
+
+Makefile 
+
+2.6内核的Makefile分为5个组成部分： 
+
+1. 最顶层的Makefile 
+2. 内核的.config配置文件 
+3. 在arch/$(ARCH) 目录下的体系结构相关的Makefile 
+4. 在s目录下的 Makefile.* 文件，是一些Makefile的通用规则 
+5. 各级目录下的大概约500个kbuild Makefile文件
+
+顶层的Makefile文件读取 .config文件的内容，并总体上负责build内核和模块。Arch Makefile则提供补充体系结构相关的信息。 s目录下的Makefile文件包含了所有用来根据kbuild Makefile 构建内核所需的定义和规则。
+
+这中间，我们如何让内核发现我们编写的模块呢，这就需要在Kconfig中进行说明。至于如何生成模块，那么就需要利用Makefile告诉编译器，怎么编译生成这个模块。模仿其实就是最好的老师，我们可以以内核中经常使用到的网卡e1000模块为例，说明内核中是如何设置和编译的。
+
+首先，我们可以看一下，在2.6.32.60中关于e1000在Kconfig中是怎么描述的，
+
+![2020-02-12-15-47-27.png](./images/2020-02-12-15-47-27.png)
+
+上面的内容是从drivers/net/Kconfig中摘录出来的。内容看上去不复杂，最重要的就是说明了模块的名称、用途、依赖的模块名、说明等等。只要有了这个说明，我们在shell下输入make menuconfig的时候，理论上我们就应该可以看到Intel（R）PR0/1000 Gigabit Ethernet support 这个选项了，输入y表示编译内核；输入n表示不编译；输入m表示模块编写，这是大家都知道的。
+
+那么，有了这个模块之后，需要编译哪些文件中，我们在drivers/net/Makefile看到了这样的内容，
+
+![2020-02-12-15-48-08.png](./images/2020-02-12-15-48-08.png)
+
+显然，这段代码只是告诉我们，要想编译e1000，必须要包含e1000这个目录，所以e1000目录下必然还有一个Makefile，果不其然，我们在e1000目录下果然找到了这个Makefile，内容如下，
+
+![2020-02-12-15-48-21.png](./images/2020-02-12-15-48-21.png)
+
+看了这个文件，其实大家心理就应该有底了。原来这个e1000模块最终生成的文件就是e1000.ko，依赖的文件就是e1000_main.c、e1000_hw.c、e1000_ethtool.c、e1000_param.c这四个文件。只要CONFIG_E1000被设置了，那么这个模块就会被正常编译。我们要做的就是打开这个开关就可以了，剩下kernel会帮我们搞定一切。当然，如果大家想把这个模块拿出来，自己用一个独立的module编译也是可以的。但是我们在menuconfig中没有找到这个配置选项？这是怎么回事呢？
+
+![2020-02-12-15-48-41.png](./images/2020-02-12-15-48-41.png)
+
+
 
 # 参考
 
