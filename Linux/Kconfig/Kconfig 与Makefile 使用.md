@@ -103,7 +103,61 @@ config TEST
 
 #### 第二步 配置Makefile
 
-在同样的目录中，新建一个Makefile 
+在同样的目录中，新建一个Makefile
+
+```makefile
+obj-$(CONFIG_TEST) += test.o
+```
+
+```
+Obj-$(CONFIG_选项名) += xxx.o
+/*当CONFIG_选项名=y时，表示对应目录下的xxx.c将被编译进内核
+当CONFIG_选项名=m时对应目录下的xxx.c将被编译成模块*/
+```
+
+#### 第三步 配置上层目录的Makefile与Kconfig
+
+##### 在上一层目录的Kconfig中
+
+```
+menu "Device Drivers"
+
+source "drivers/test/Kconfig
+```
+
+![2020-02-12-12-54-00.png](./images/2020-02-12-12-54-00.png)
+
+表示将test文件夹中的Kconfig加入搜寻目录
+
+##### 在上一层目录的Makefile中
+
+```makefile
+obj-y           += test/
+```
+
+![2020-02-12-12-54-05.png](./images/2020-02-12-12-54-05.png)
+
+结果，运行根目录的`.config`查看结果 
+
+![2020-02-12-12-54-53.png](./images/2020-02-12-12-54-53.png)
+
+# Kconfig语法简介
+
+## 单一选项
+
+总体原则：每一个config就是一个选项，最上面跟着控制句柄，下面则是对这个选项的配置，如选项名是什么，依赖什么，选中这个后同时会选择什么。
+
+```config
+
+config CPU_S5PC100
+    bool "选项名"
+    select S5P_EXT_INT
+    select SAMSUNG_DMADEV
+    help
+      Enable S5PC100 CPU support
+```
+
+
 
 # 参考
 
