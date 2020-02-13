@@ -3,6 +3,7 @@
 * Linux新闻站点: http://lwn.net/ Linux weekly news，创建于1997年底的一个。
 
 
+- 重要！！！很多内核的用户态实现等: https://github.com/BiscuitOS/HardStack
 * Linux博客: http://ilinuxkernel.com/?cat=3
 * Kernel网站: https://kernelnewbies.org/
 * 如何加入Linux内核开发社区: https://tonybai.com/2012/03/27/how-to-participate-linux-community-section-1/
