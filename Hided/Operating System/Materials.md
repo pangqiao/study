@@ -42,6 +42,12 @@ https://github.com/hurley25/Hurlex-II
 
 https://github.com/Gerry-Lee/lmosem
 
+### firekylin
+
+https://github.com/haiwei-li/firekylin
+
+一个从头开始设计并实现的类Unix操作系统
+
 ### 2.3. MyOS
 
 使用X86汇编和C写的小型操作系统
