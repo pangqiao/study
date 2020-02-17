@@ -1,6 +1,6 @@
 ;*************************************************
 ;* VmxDump.asm                                   *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -15,8 +15,8 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ guest-state ¶Î¼Ä´æÆ÷
+; æè¿°ï¼š
+;       1) æ‰“å° guest-state æ®µå¯„å­˜å™¨
 ;-------------------------------------------------
 %macro  DUMP_GUEST_STATE_SEGMENT 1
         mov esi, GuestState.%1Msg
@@ -56,12 +56,12 @@
 ;       none
 ; output:
 ;       1 - support, 0 - unsupport
-; ÃèÊö£º
-;       1) ¼ì²éÊÇ·ñÖ§³Ö Intel VT-x ¼¼Êõ
+; æè¿°ï¼š
+;       1) æ£€æŸ¥æ˜¯å¦æ”¯æŒ Intel VT-x æŠ€æœ¯
 ;------------------------------------------------
 support_intel_vmx:
         ;;
-        ;; ¼ì²é CPUID.01H:ECX[5].VMX Î»
+        ;; æ£€æŸ¥ CPUID.01H:ECX[5].VMX ä½
         ;;
         bt DWORD [gs: PCB.FeatureEcx], 5
         setc al
@@ -81,7 +81,7 @@ dump_support_intel_vmx:
         mov esi, vmx.intel.support
         call puts
         ;;
-        ;; ¼ì²é CPUID.01H:ECX[5].VMX Î»
+        ;; æ£€æŸ¥ CPUID.01H:ECX[5].VMX ä½
         ;;
         bt DWORD [gs: PCB.FeatureEcx], 5
         mov eax, 1
@@ -115,7 +115,7 @@ dump_vmx_capabilities:
         call dump_vmx_vmcs_enum
         
         ;;
-        ;; ´òÓ¡ vmx misc
+        ;; æ‰“å° vmx misc
         ;;
         mov esi, vmx.miscellaneous_data
         call puts
@@ -128,7 +128,7 @@ dump_vmx_capabilities:
         call println
         
         ;;
-        ;; ´òÓ¡ vpid ept Öµ
+        ;; æ‰“å° vpid ept å€¼
         ;;
         mov esi, vmx.vpid_ept_value
         call puts
@@ -375,8 +375,8 @@ dump_vmx_entry:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ CR0 Fixed ĞÅÏ¢
+; æè¿°ï¼š
+;       1) æ‰“å° CR0 Fixed ä¿¡æ¯
 ;---------------------------------------        
 dump_vmx_fixed_cr0:
         push ebp
@@ -408,8 +408,8 @@ dump_vmx_fixed_cr0:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ CR4 Fixed ĞÅÏ¢
+; æè¿°ï¼š
+;       1) æ‰“å° CR4 Fixed ä¿¡æ¯
 ;---------------------------------------           
 dump_vmx_fixed_cr4:
         push ebp
@@ -440,8 +440,8 @@ dump_vmx_fixed_cr4:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ VMCS enum ĞÅÏ¢
+; æè¿°ï¼š
+;       1) æ‰“å° VMCS enum ä¿¡æ¯
 ;--------------------------------------- 
 dump_vmx_vmcs_enum:
         push ebp
@@ -468,8 +468,8 @@ dump_vmx_vmcs_enum:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ VMX ÔÓÏîĞÅÏ¢
+; æè¿°ï¼š
+;       1) æ‰“å° VMX æ‚é¡¹ä¿¡æ¯
 ;---------------------------------------  
 dump_vmx_misc:
         push ebx
@@ -687,8 +687,8 @@ dump_vpid_ept:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1)´òÓ¡ VMCS ËùÓĞ×Ö¶ÎĞÅÏ¢
+; æè¿°:
+;       1)æ‰“å° VMCS æ‰€æœ‰å­—æ®µä¿¡æ¯
 ;--------------------------------------------------------------
 dump_vmcs:
         push ebp
@@ -702,7 +702,7 @@ dump_vmcs:
 %endif
 
         ;;
-        ;; Çå VMCS buffer£¬ÔÙ¶Á VMCS 
+        ;; æ¸… VMCS bufferï¼Œå†è¯» VMCS 
         ;;
         mov esi, EXIT_INFO_SIZE
         REX.Wrxb
@@ -738,7 +738,7 @@ dump_vmcs:
 
 
         ;;
-        ;; ´òÓ¡×´Ì¬À¸
+        ;; æ‰“å°çŠ¶æ€æ 
         ;;
         mov esi, 24
         mov edi, 0
@@ -751,7 +751,7 @@ dump_vmcs:
 
 dump_vmcs.@0:
         ;;
-        ;; ´Ó (2, 0) Î»ÖÃ£¬¿ªÊ¼Çå screen
+        ;; ä» (2, 0) ä½ç½®ï¼Œå¼€å§‹æ¸… screen
         ;;
         mov esi, 2
         mov edi, 0
@@ -759,7 +759,7 @@ dump_vmcs.@0:
 
         
         ;;
-        ;; ¶¨Î»ÔÚ (2,0) Î»ÖÃ
+        ;; å®šä½åœ¨ (2,0) ä½ç½®
         ;;
         mov esi, 2
         mov edi, 0
@@ -775,13 +775,13 @@ dump_vmcs.@0:
         call eax
 
         ;;
-        ;; ¿ØÖÆ¼üÅÌ
+        ;; æ§åˆ¶é”®ç›˜
         ;;
 dump_vmcs.@1:        
         call wait_a_key        
-        cmp al, SC_ESC                          ; ÊÇ·ñÎª <Esc>
+        cmp al, SC_ESC                          ; æ˜¯å¦ä¸º <Esc>
         je dump_vmcs.@3
-        cmp al, SC_PGUP                         ; ÊÇ·ñÎª <PageUp>
+        cmp al, SC_PGUP                         ; æ˜¯å¦ä¸º <PageUp>
         jne dump_vmcs.@2    
         xor esi, esi
         DECv ecx
@@ -790,7 +790,7 @@ dump_vmcs.@1:
         
         
 dump_vmcs.@2:
-        cmp al, SC_PGDN                         ; ÊÇ·ñÎª <PageDown>
+        cmp al, SC_PGDN                         ; æ˜¯å¦ä¸º <PageDown>
         jne dump_vmcs.@0
         mov esi, 5
         INCv ecx
@@ -800,7 +800,7 @@ dump_vmcs.@2:
 
 dump_vmcs.@3:
         ;;
-        ;; Ö´ĞĞ CPU hard reset ²Ù×÷
+        ;; æ‰§è¡Œ CPU hard reset æ“ä½œ
         ;;
         RESET_CPU  
                 
@@ -821,8 +821,8 @@ dump_vmcs.@3:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º¡¡
-;       1) ´òÓ¡ VM-exit information ÓòĞÅÏ¢        
+; æè¿°ï¼šã€€
+;       1) æ‰“å° VM-exit information åŸŸä¿¡æ¯        
 ;--------------------------------------------------------------
 dump_exit_info:
         push ebp
@@ -845,7 +845,7 @@ dump_exit_info:
         
         
         ;;
-        ;;¡¡¼ÙÈç·¢ÉúÖ¸ÁîÖ´ĞĞ´íÎó£¬Ôò´òÓ¡ ExitReason Öµ
+        ;;ã€€å‡å¦‚å‘ç”ŸæŒ‡ä»¤æ‰§è¡Œé”™è¯¯ï¼Œåˆ™æ‰“å° ExitReason å€¼
         ;;       
         movzx esi, WORD [ebp + EXIT_INFO.ExitReason]
         cmp DWORD [ebp + EXIT_INFO.InstructionError], 0
@@ -927,7 +927,7 @@ dump_exit_info:
         call println   
         
         ;;
-        ;; ´òÓ¡ detail ĞÅÏ¢
+        ;; æ‰“å° detail ä¿¡æ¯
         ;;
   
         cmp DWORD [ebp + EXIT_INFO.InstructionError], 0
@@ -955,8 +955,8 @@ dump_exit_info.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º¡¡
-;       1) ´òÓ¡ VM Ö¸Áî´íÎóĞÅÏ¢
+; æè¿°ï¼šã€€
+;       1) æ‰“å° VM æŒ‡ä»¤é”™è¯¯ä¿¡æ¯
 ;--------------------------------------------------------------
 dump_instruction_error_detail:
         push ebp
@@ -983,8 +983,8 @@ dump_instruction_error_detail:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ guest state ĞÅÏ¢
+; æè¿°ï¼š
+;       1) æ‰“å° guest state ä¿¡æ¯
 ;--------------------------------------------------------------
 dump_guest_state:
         push ebp
@@ -999,13 +999,13 @@ dump_guest_state:
 
         
         ;;
-        ;; ´òÓ¡ĞÅÏ¢
+        ;; æ‰“å°ä¿¡æ¯
         ;;
         mov esi, Vmcs.GuestStateMsg
         call puts
                         
         ;;
-        ;; ´òÓ¡¿ØÖÆ¼Ä´æÆ÷
+        ;; æ‰“å°æ§åˆ¶å¯„å­˜å™¨
         ;;
         mov esi, GuestState.CrMsg
         call puts
@@ -1069,7 +1069,7 @@ dump_guest_state.@2:
         
                 
         ;;
-        ;; ´òÓ¡¶Î¼Ä´æÆ÷
+        ;; æ‰“å°æ®µå¯„å­˜å™¨
         ;;
         DUMP_GUEST_STATE_SEGMENT        Es
         DUMP_GUEST_STATE_SEGMENT        Cs
@@ -1081,7 +1081,7 @@ dump_guest_state.@2:
         DUMP_GUEST_STATE_SEGMENT        Tr
         
         ;;
-        ;; ´òÓ¡ GDTR/IDTR
+        ;; æ‰“å° GDTR/IDTR
         ;;
         mov esi, GuestState.GdtrMsg
         call puts
@@ -1116,7 +1116,7 @@ dump_guest_state.@2:
 
         
         ;;
-        ;; ´òÓ¡ IA32_SYSENTER ×é
+        ;; æ‰“å° IA32_SYSENTER ç»„
         ;;
         mov esi, GuestState.SysenterMsg
         call puts
@@ -1146,7 +1146,7 @@ dump_guest_state.@2:
         
         
         ;;
-        ;; ´òÓ¡ debug ctl ×é
+        ;; æ‰“å° debug ctl ç»„
         ;;
         mov esi, GuestState.MsrCtlMsg
         call puts
@@ -1161,7 +1161,7 @@ dump_guest_state.@2:
         call println
         
         ;;
-        ;; ´òÓ¡ Msr
+        ;; æ‰“å° Msr
         ;;
         mov esi, GuestState.MsrMsg
         call puts
@@ -1239,8 +1239,8 @@ dump_guest_state.@2:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ host state ĞÅÏ¢
+; æè¿°ï¼š
+;       1) æ‰“å° host state ä¿¡æ¯
 ;--------------------------------------------------------------
 dump_host_state:
         push ebp
@@ -1255,13 +1255,13 @@ dump_host_state:
 
         
         ;;
-        ;; ´òÓ¡ĞÅÏ¢
+        ;; æ‰“å°ä¿¡æ¯
         ;;
         mov esi, Vmcs.HostStateMsg
         call puts
                         
         ;;
-        ;; ´òÓ¡¿ØÖÆ¼Ä´æÆ÷
+        ;; æ‰“å°æ§åˆ¶å¯„å­˜å™¨
         ;;
         mov esi, HostState.CrMsg
         call puts
@@ -1294,7 +1294,7 @@ dump_host_state.@2:
 
 
         ;;
-        ;; ´òÓ¡ rsp/rip
+        ;; æ‰“å° rsp/rip
         ;;        
         mov esi, HostState.RspMsg
         call puts
@@ -1322,7 +1322,7 @@ dump_host_state.@2:
         
         
         ;;
-        ;; ´òÓ¡ selector
+        ;; æ‰“å° selector
         ;;       
         mov esi, HostState.SelectorMsg
         call puts        
@@ -1355,7 +1355,7 @@ dump_host_state.@2:
         call println
         
         ;;
-        ;; ´òÓ¡ base
+        ;; æ‰“å° base
         ;;
         mov esi, HostState.BaseMsg
         call puts
@@ -1402,7 +1402,7 @@ dump_host_state.@2:
         call println
         
         ;;
-        ;; ´òÓ¡ IA32_SYSENTER ×é
+        ;; æ‰“å° IA32_SYSENTER ç»„
         ;;
         mov esi, HostState.SysenterMsg
         call puts
@@ -1432,7 +1432,7 @@ dump_host_state.@2:
         
         
         ;;
-        ;; ´òÓ¡ MSR ×é
+        ;; æ‰“å° MSR ç»„
         ;;
         mov esi, HostState.MsrMsg
         call puts
@@ -1462,8 +1462,8 @@ dump_host_state.@2:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ VM-execution control ĞÅÏ¢
+; æè¿°ï¼š
+;       1) æ‰“å° VM-execution control ä¿¡æ¯
 ;--------------------------------------------------------------
 dump_execution_control:
         push ebp
@@ -1565,7 +1565,7 @@ dump_execution_control:
     
 
         ;;
-        ;; ´òÓ¡ CR3-target count Óë value
+        ;; æ‰“å° CR3-target count ä¸ value
         ;;
         mov esi, ExeCtl.CtcMsg
         call puts   
@@ -1607,7 +1607,7 @@ dump_execution_control:
         call print_dword_value           
         call println
         ;;
-        ;; APIC-access page Óë Virtual-APIC address
+        ;; APIC-access page ä¸ Virtual-APIC address
         ;;
         mov esi, ExeCtl.ApicAddrMsg 
         call puts
@@ -1720,8 +1720,8 @@ dump_execution_control:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ VM-exit control ĞÅÏ¢
+; æè¿°ï¼š
+;       1) æ‰“å° VM-exit control ä¿¡æ¯
 ;--------------------------------------------------------------
 dump_exit_control:
         push ebp
@@ -1776,8 +1776,8 @@ dump_exit_control:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ VM-entry control ĞÅÏ¢
+; æè¿°ï¼š
+;       1) æ‰“å° VM-entry control ä¿¡æ¯
 ;--------------------------------------------------------------
 dump_entry_control:
         push ebp
@@ -1834,8 +1834,8 @@ dump_entry_control:
 ;       esi - guest physical address
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÔÚ VMM Àï´òÓ¡ GPA µÄÒ³±í½á¹¹
+; æè¿°ï¼š
+;       1) åœ¨ VMM é‡Œæ‰“å° GPA çš„é¡µè¡¨ç»“æ„
 ;--------------------------------------------------------------
 dump_ept_paging:
         push ebp
@@ -1850,7 +1850,7 @@ dump_ept_paging:
         
 dump_ept_paging.@1:
         ;;
-        ;; ### walk step 1: ¶ÁÈ¡ PXE Öµ ###
+        ;; ### walk step 1: è¯»å– PXE å€¼ ###
         ;;
 
         pop ebx        
@@ -1928,8 +1928,8 @@ dump_detail_of_mtf:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ÓÉ access GDTR »ò IDTR Òı·¢µÄ VM-exit ĞÅÏ¢
+; æè¿°ï¼š
+;       1) æ‰“å°ç”± access GDTR æˆ– IDTR å¼•å‘çš„ VM-exit ä¿¡æ¯
 ;--------------------------------------------------------------
 dump_detail_of_gdtr:
         push ebp
@@ -2073,7 +2073,7 @@ Detail.Gdtr.lidt.Msg                    db 'lidt', 0
 
 
 ;;
-;; VM Ö¸Áî´íÎóÂëĞÅÏ¢
+;; VM æŒ‡ä»¤é”™è¯¯ç ä¿¡æ¯
 ;;
 ErrorNumber1    db      'VMCALL executed in VMX root operation', 0
 ErrorNumber2    db      'VMCLEAR with invalid physical address', 0
@@ -2103,7 +2103,7 @@ ErrorNumber28   db      'Invalid operand to INVEPT/INVVPID', 0
 
 
 ;;
-;; VM-exit Ô­ÒòĞÅÏ¢
+;; VM-exit åŸå› ä¿¡æ¯
 ;;
 ExitReson00     db      'exception or NMI', 0
 ExitReson01     db      'external-interrupt exiting', 0

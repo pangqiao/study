@@ -1,6 +1,6 @@
 ;*************************************************
 ;* VmxVmcs.asm                                   *
-;* Copyright (c) 2009-2013 é‚“å¿—                  *
+;* Copyright (c) 2009-2013 µËÖ¾                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -13,9 +13,9 @@
 ; input:
 ;       none
 ; output;
-;       eax - è¿”å› vmcs base ç‰©ç†åœ°å€å€¼
-; æè¿°ï¼š
-;       1) åœ¨ kernel pool é‡Œåˆ†é… 4k å—ä½œä¸º vmcs region 
+;       eax - ·µ»Ø vmcs base ÎïÀíµØÖ·Öµ
+; ÃèÊö£º
+;       1) ÔÚ kernel pool Àï·ÖÅä 4k ¿é×÷Îª vmcs region 
 ;----------------------------------------------------------
 alloc_vmcs_region_4k_physical_base:      
         jmp alloc_kernel_pool_4k_physical_base
@@ -28,9 +28,9 @@ alloc_vmcs_region_4k_physical_base:
 ; input:
 ;       none
 ; output;
-;       eax - è¿”å› vmcs region è™šæ‹Ÿåœ°å€å€¼
-; æè¿°ï¼š
-;       1) åœ¨ kernel pool é‡Œåˆ†é… 4k å—ä½œä¸º vmcs region 
+;       eax - ·µ»Ø vmcs region ĞéÄâµØÖ·Öµ
+; ÃèÊö£º
+;       1) ÔÚ kernel pool Àï·ÖÅä 4k ¿é×÷Îª vmcs region 
 ;----------------------------------------------------------
 alloc_vmcs_region_4k_base:
         jmp alloc_kernel_pool_4k_base
@@ -44,25 +44,25 @@ alloc_vmcs_region_4k_base:
 ; input:
 ;       none
 ; output:
-;       eax - page attributeï¼ˆPCD ä¸ PWT æ ‡å¿—ä½ï¼‰
-; æè¿°ï¼š
-;       1) è¿”å› VMCS ä»¥åŠ access page ä¸­çš„å…³äº PCD ä¸ PWT æ ‡å¿—ä½
+;       eax - page attribute£¨PCD Óë PWT ±êÖ¾Î»£©
+; ÃèÊö£º
+;       1) ·µ»Ø VMCS ÒÔ¼° access page ÖĞµÄ¹ØÓÚ PCD Óë PWT ±êÖ¾Î»
 ;----------------------------------------------------------
 get_vmcs_page_memory_type:
         ;;
-        ;; æ£€æŸ¥ VMX access æ”¯æŒçš„å†…å­˜ç±»å‹
+        ;; ¼ì²é VMX access Ö§³ÖµÄÄÚ´æÀàĞÍ
         ;;
         mov eax, PCB.VmcsMemoryType
         mov eax, [gs: eax]
         
         ;;
-        ;; æ˜¯å¦æ”¯æŒ WirteBack(06h)
-        ;; 1) æ˜¯ï¼Œè¿”å› PCD = 0, PWT = 0
-        ;; 2) å¦ï¼Œè¿”å› PCD = 1, PWT = 1
+        ;; ÊÇ·ñÖ§³Ö WirteBack(06h)
+        ;; 1) ÊÇ£¬·µ»Ø PCD = 0, PWT = 0
+        ;; 2) ·ñ£¬·µ»Ø PCD = 1, PWT = 1
         ;;
-        mov esi, PCD | PWT                              ; å¯¹åº” UC ç±»å‹
+        mov esi, PCD | PWT                              ; ¶ÔÓ¦ UC ÀàĞÍ
         cmp eax, MEM_TYPE_WB
-        mov eax, 0                                      ; å¯¹åº” WB ç±»å‹
+        mov eax, 0                                      ; ¶ÔÓ¦ WB ÀàĞÍ
         cmovne eax, esi
         ret  
         
@@ -74,12 +74,12 @@ get_vmcs_page_memory_type:
 ; input:
 ;       none
 ; output:
-;       eax - vmcs pointerï¼ˆè™šæ‹Ÿåœ°å€ï¼‰
-;       edx - vmcs pointerï¼ˆç‰©ç†åœ°å€ï¼‰
-; æè¿°ï¼š 
-;       1) è·å¾— vmcs pointer/vmcs access page pointer
-;       2) eax è¿”å›è™šæ‹Ÿåœ°å€ï¼Œedx è¿”å›ç‰©ç†åœ°å€
-;       3) 64-bit ä¸‹ï¼Œrax 64 ä½è¿”å›è™šæ‹Ÿåœ°å€ï¼Œ rdx 64 ä½è¿”å›ç‰©ç†åœ°å€
+;       eax - vmcs pointer£¨ĞéÄâµØÖ·£©
+;       edx - vmcs pointer£¨ÎïÀíµØÖ·£©
+; ÃèÊö£º 
+;       1) »ñµÃ vmcs pointer/vmcs access page pointer
+;       2) eax ·µ»ØĞéÄâµØÖ·£¬edx ·µ»ØÎïÀíµØÖ·
+;       3) 64-bit ÏÂ£¬rax 64 Î»·µ»ØĞéÄâµØÖ·£¬ rdx 64 Î»·µ»ØÎïÀíµØÖ·
 ;----------------------------------------------------------
 get_vmcs_access_pointer:
 get_vmcs_pointer:
@@ -92,12 +92,12 @@ get_vmcs_pointer:
 ; input:
 ;       esi - memory type
 ; output:
-;       eax - vmcs pointerï¼ˆè™šæ‹Ÿåœ°å€ï¼‰
-;       edx - vmcs pointerï¼ˆç‰©ç†åœ°å€ï¼‰
-; æè¿°ï¼š 
-;       1) è·å¾— vmcs pointer
-;       2) eax è¿”å›è™šæ‹Ÿåœ°å€ï¼Œedx è¿”å›ç‰©ç†åœ°å€
-;       3) 64-bit ä¸‹ï¼Œrax 64 ä½è¿”å›è™šæ‹Ÿåœ°å€ï¼Œ rdx 64 ä½è¿”å›ç‰©ç†åœ°å€
+;       eax - vmcs pointer£¨ĞéÄâµØÖ·£©
+;       edx - vmcs pointer£¨ÎïÀíµØÖ·£©
+; ÃèÊö£º 
+;       1) »ñµÃ vmcs pointer
+;       2) eax ·µ»ØĞéÄâµØÖ·£¬edx ·µ»ØÎïÀíµØÖ·
+;       3) 64-bit ÏÂ£¬rax 64 Î»·µ»ØĞéÄâµØÖ·£¬ rdx 64 Î»·µ»ØÎïÀíµØÖ·
 ;----------------------------------------------------------
 get_vmcs_region_pointer:
         push ebx
@@ -106,21 +106,21 @@ get_vmcs_region_pointer:
         mov ecx, esi                                    ; memory type
         
         ;;
-        ;; åˆ†é…è™šæ‹Ÿåœ°å€
+        ;; ·ÖÅäĞéÄâµØÖ·
         ;;
         call alloc_vmcs_region_4k_base
         REX.Wrxb
         mov ebx, eax                                    ; ebx - virtual address
 
         ;;
-        ;; åˆ†é…ç‰©ç†åœ°å€
+        ;; ·ÖÅäÎïÀíµØÖ·
         ;;
         call alloc_vmcs_region_4k_physical_base
         REX.Wrxb
         mov edx, eax                                    ; edx - physical address
         
         ;;
-        ;; åœ°å€æ˜ å°„
+        ;; µØÖ·Ó³Éä
         ;;
         REX.Wrxb
         mov esi, ebx                                    ; esi - virtual address
@@ -141,7 +141,7 @@ get_vmcs_region_pointer:
         
 
         ;;
-        ;; æ¸… vmcs region 
+        ;; Çå vmcs region 
         ;;
         REX.Wrxb
         mov esi, ebx
@@ -167,8 +167,8 @@ get_vmcs_region_pointer:
 ;       none
 ; output:
 ;       none
-; æè¿°ï¼š
-;       1) å°† VMCS buffer ä¸­çš„ Guest State ä¿¡æ¯åˆ·æ–°åˆ°å½“å‰ Vmcs ä¸­
+; ÃèÊö£º
+;       1) ½« VMCS buffer ÖĞµÄ Guest State ĞÅÏ¢Ë¢ĞÂµ½µ±Ç° Vmcs ÖĞ
 ;----------------------------------------------------------        
 flush_guest_state:
         push ebp
@@ -277,7 +277,7 @@ flush_guest_state:
         ;; 4) vmcs link pointer
         ;; 5) VMX preemption timer value
         ;; 6) PDPTEs
-        ;; 7) guest interrupt statusï¼ˆRVI/SVIï¼‰
+        ;; 7) guest interrupt status£¨RVI/SVI£©
         ;;
         DoVmWrite GUEST_ACTIVITY_STATE, [ebp + GUEST_STATE.ActivityState]
         DoVmWrite GUEST_INTERRUPTIBILITY_STATE, [ebp + GUEST_STATE.InterruptibilityState]
@@ -287,24 +287,24 @@ flush_guest_state:
         DoVmWrite GUEST_VMCS_LINK_POINTER_HIGH, [ebp + GUEST_STATE.VmcsLinkPointer + 4]
 %endif  
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ VM-execution control çš„ "activate VMX-preemption timer" è®¾ç½®ä¸º 1 
+        ;; ¼ì²éÊÇ·ñÖ§³Ö VM-execution control µÄ "activate VMX-preemption timer" ÉèÖÃÎª 1 
         ;;  
         test DWORD [ebx + PCB.PinBasedCtls + 4], ACTIVATE_VMX_PREEMPTION_TIMER
         jz flush_guest_state.@1
         ;;
-        ;; å†™å…¥ preemption timer value
+        ;; Ğ´Èë preemption timer value
         ;;
         DoVmWrite GUEST_VMX_PREEMPTION_TIMER_VALUE, [ebp + GUEST_STATE.VmxPreemptionTimerValue]
 
 flush_guest_state.@1:      
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ EPT
+        ;; ¼ì²éÊÇ·ñÖ§³Ö EPT
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls2 + 4], ENABLE_EPT
         jz flush_guest_state.@2
         
         ;;
-        ;; æ”¯æŒæ—¶å†™å…¥ PDPTEs
+        ;; Ö§³ÖÊ±Ğ´Èë PDPTEs
         ;;
         DoVmWrite GUEST_PDPTE0_FULL, [ebp + GUEST_STATE.Pdpte0]
         DoVmWrite GUEST_PDPTE1_FULL, [ebp + GUEST_STATE.Pdpte1]
@@ -320,12 +320,12 @@ flush_guest_state.@1:
         
 flush_guest_state.@2:                
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ virtual-interrupt delivery
+        ;; ¼ì²éÊÇ·ñÖ§³Ö virtual-interrupt delivery
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls2 + 4], VIRTUAL_INTERRUPT_DELIVERY
         jz flush_guest_state.done
         ;;
-        ;; æ”¯æŒæ—¶å†™å…¥ guest interrupt status
+        ;; Ö§³ÖÊ±Ğ´Èë guest interrupt status
         ;;
         DoVmWrite GUEST_INTERRUPT_STATUS, [ebp + GUEST_STATE.GuestInterruptStatus]
         
@@ -341,8 +341,8 @@ flush_guest_state.done:
 ;       none
 ; output:
 ;       none
-; æè¿°ï¼š
-;       1) å°†å½“å‰ VMCS ä¸­çš„ Guest State ä¿¡æ¯ä¿å­˜åœ¨ guest state buffer ä¸­
+; ÃèÊö£º
+;       1) ½«µ±Ç° VMCS ÖĞµÄ Guest State ĞÅÏ¢±£´æÔÚ guest state buffer ÖĞ
 ;----------------------------------------------------------        
 store_guest_state:
         push ebp
@@ -450,7 +450,7 @@ store_guest_state:
         ;; 4) vmcs link pointer
         ;; 5) VMX preemption timer value
         ;; 6) PDPTEs
-        ;; 7) guest interrupt statusï¼ˆRVI/SVIï¼‰
+        ;; 7) guest interrupt status£¨RVI/SVI£©
         ;;
         DoVmRead GUEST_ACTIVITY_STATE, [ebp + GUEST_STATE.ActivityState]
         DoVmRead GUEST_INTERRUPTIBILITY_STATE, [ebp + GUEST_STATE.InterruptibilityState]
@@ -460,24 +460,24 @@ store_guest_state:
         DoVmRead GUEST_VMCS_LINK_POINTER_HIGH, [ebp + GUEST_STATE.VmcsLinkPointer + 4]
 %endif  
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ VM-execution control çš„ "activate VMX-preemption timer" è®¾ç½®ä¸º 1 
+        ;; ¼ì²éÊÇ·ñÖ§³Ö VM-execution control µÄ "activate VMX-preemption timer" ÉèÖÃÎª 1 
         ;;  
         test DWORD [ebx + PCB.PinBasedCtls + 4], ACTIVATE_VMX_PREEMPTION_TIMER
         jz store_guest_state.@1        
         ;;
-        ;; è¯»å– preemption timer value
+        ;; ¶ÁÈ¡ preemption timer value
         ;;
         DoVmRead GUEST_VMX_PREEMPTION_TIMER_VALUE, [ebp + GUEST_STATE.VmxPreemptionTimerValue]
 
 store_guest_state.@1:      
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ EPT
+        ;; ¼ì²éÊÇ·ñÖ§³Ö EPT
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls2 + 4], ENABLE_EPT
         jz store_guest_state.@2
         
         ;;
-        ;; æ”¯æŒæ—¶è¯»å– PDPTEs
+        ;; Ö§³ÖÊ±¶ÁÈ¡ PDPTEs
         ;;
         DoVmRead GUEST_PDPTE0_FULL, [ebp + GUEST_STATE.Pdpte0]
         DoVmRead GUEST_PDPTE1_FULL, [ebp + GUEST_STATE.Pdpte1]
@@ -493,12 +493,12 @@ store_guest_state.@1:
         
 store_guest_state.@2:                
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ virtual-interrupt delivery
+        ;; ¼ì²éÊÇ·ñÖ§³Ö virtual-interrupt delivery
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls2 + 4], VIRTUAL_INTERRUPT_DELIVERY
         jz store_guest_state.done
         ;;
-        ;; æ”¯æŒæ—¶è¯»å– guest interrupt status
+        ;; Ö§³ÖÊ±¶ÁÈ¡ guest interrupt status
         ;;
         DoVmRead GUEST_INTERRUPT_STATUS, [ebp + GUEST_STATE.GuestInterruptStatus]
         
@@ -514,8 +514,8 @@ store_guest_state.done:
 ;       none
 ; output:
 ;       none
-; æè¿°ï¼š
-;       1) å°† VMCS buffer ä¸­çš„ Host State ä¿¡æ¯åˆ·æ–°åˆ°å½“å‰ Vmcs ä¸­
+; ÃèÊö£º
+;       1) ½« VMCS buffer ÖĞµÄ Host State ĞÅÏ¢Ë¢ĞÂµ½µ±Ç° Vmcs ÖĞ
 ;----------------------------------------------------------  
 flush_host_state:
         push ebp
@@ -581,8 +581,8 @@ flush_host_state:
 ;       none
 ; output:
 ;       none
-; æè¿°ï¼š
-;       1) å°† VMCS ä¸­çš„ Host State ä¿¡æ¯ä¿å­˜åˆ° host state buffer ä¸­
+; ÃèÊö£º
+;       1) ½« VMCS ÖĞµÄ Host State ĞÅÏ¢±£´æµ½ host state buffer ÖĞ
 ;----------------------------------------------------------  
 store_host_state:
         push ebp
@@ -648,8 +648,8 @@ store_host_state:
 ;       none
 ; output:
 ;       none
-; æè¿°ï¼š
-;       1) å°† execution control buffer åˆ·æ–°åˆ° VMCS ä¸­
+; ÃèÊö£º
+;       1) ½« execution control buffer Ë¢ĞÂµ½ VMCS ÖĞ
 ;----------------------------------------------------------              
 flush_execution_control:
         push ebp
@@ -664,7 +664,7 @@ flush_execution_control:
         
         
         ;;
-        ;; å†™å…¥åŸºæœ¬çš„ execution control åŸŸï¼ˆæ¯ä¸ªåŸŸå›ºå®šä¸º 32 ä½ï¼‰
+        ;; Ğ´Èë»ù±¾µÄ execution control Óò£¨Ã¿¸öÓò¹Ì¶¨Îª 32 Î»£©
         ;;
         DoVmWrite CONTROL_PINBASED, [ebp + EXECUTION_CONTROL.PinControl]
         DoVmWrite CONTROL_PROCBASED_PRIMARY, [ebp + EXECUTION_CONTROL.ProcessorControl1]
@@ -672,7 +672,7 @@ flush_execution_control:
         
         
         ;;
-        ;; å†™å…¥ exception bitmap ä¸ #PF å¼‚å¸¸çš„ mask/match å€¼ï¼ˆå›ºå®šä¸º 32 ä½ï¼‰
+        ;; Ğ´Èë exception bitmap Óë #PF Òì³£µÄ mask/match Öµ£¨¹Ì¶¨Îª 32 Î»£©
         ;;
         DoVmWrite CONTROL_EXCEPTION_BITMAP, [ebp + EXECUTION_CONTROL.ExceptionBitmap]
         DoVmWrite CONTROL_PAGE_FAULT_ERROR_CODE_MASK, [ebp + EXECUTION_CONTROL.PfErrorCodeMask]
@@ -680,14 +680,14 @@ flush_execution_control:
         
         
         ;;
-        ;; å†™å…¥ IoBitmap A & B åœ°å€å€¼ï¼ˆç‰©ç†åœ°å€ï¼‰
-        ;; 1) åœ¨å¼€å¯ "Use I/O bitmap" æ—¶å†™å…¥ï¼Œå¦åˆ™å¿½ç•¥ï¼
+        ;; Ğ´Èë IoBitmap A & B µØÖ·Öµ£¨ÎïÀíµØÖ·£©
+        ;; 1) ÔÚ¿ªÆô "Use I/O bitmap" Ê±Ğ´Èë£¬·ñÔòºöÂÔ£¡
         ;; 
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl1], USE_IO_BITMAP
         jz flush_execution_control.@1
         
         ;;
-        ;; åœ°å€å€¼å›ºå®šä¸º 64 ä½ï¼Œåœ¨ x86 ä¸‹åˆ†ä¸¤æ¬¡å†™å…¥
+        ;; µØÖ·Öµ¹Ì¶¨Îª 64 Î»£¬ÔÚ x86 ÏÂ·ÖÁ½´ÎĞ´Èë
         ;;
         DoVmWrite CONTROL_IOBITMAPA_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.IoBitmapAddressA]
         DoVmWrite CONTROL_IOBITMAPB_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.IoBitmapAddressB]
@@ -701,14 +701,14 @@ flush_execution_control:
 
 flush_execution_control.@1:        
         ;;
-        ;; å†™å…¥ time-stamp counter offset å€¼
-        ;; 1) åœ¨ "Use TSC offsetting" = 1 æ—¶å†™å…¥ï¼Œå¦åˆ™å¿½ç•¥
+        ;; Ğ´Èë time-stamp counter offset Öµ
+        ;; 1) ÔÚ "Use TSC offsetting" = 1 Ê±Ğ´Èë£¬·ñÔòºöÂÔ
         ;;
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl1], USE_TSC_OFFSETTING
         jz flush_execution_control.@2
         
         ;;
-        ;; TSC offset å€¼ä¸º 64 ä½ï¼Œåœ¨ x86 ä¸‹åˆ†ä¸¤æ¬¡å†™å…¥
+        ;; TSC offset ÖµÎª 64 Î»£¬ÔÚ x86 ÏÂ·ÖÁ½´ÎĞ´Èë
         ;;
         DoVmWrite CONTROL_TSC_OFFSET_FULL, [ebp + EXECUTION_CONTROL.TscOffset]        
 %ifndef __X64
@@ -718,7 +718,7 @@ flush_execution_control.@1:
 
 flush_execution_control.@2:
         ;;
-        ;; å†™å…¥ CR0/CR4 guest/host mask ä¸ shadow å€¼
+        ;; Ğ´Èë CR0/CR4 guest/host mask Óë shadow Öµ
         ;;
         DoVmWrite CONTROL_CR0_GUEST_HOST_MASK, [ebp + EXECUTION_CONTROL.Cr0GuestHostMask]
         DoVmWrite CONTROL_CR0_READ_SHADOW, [ebp + EXECUTION_CONTROL.Cr0ReadShadow]
@@ -726,7 +726,7 @@ flush_execution_control.@2:
         DoVmWrite CONTROL_CR4_READ_SHADOW, [ebp + EXECUTION_CONTROL.Cr4ReadShadow]
         
         ;;
-        ;; å†™å…¥ CR3 target count/value
+        ;; Ğ´Èë CR3 target count/value
         ;;                
         DoVmWrite CONTROL_CR3_TARGET_COUNT, [ebp + EXECUTION_CONTROL.Cr3TargetCount]
         DoVmWrite CONTROL_CR3_TARGET_VALUE0, [ebp + EXECUTION_CONTROL.Cr3Target0]
@@ -735,20 +735,20 @@ flush_execution_control.@2:
         DoVmWrite CONTROL_CR3_TARGET_VALUE3, [ebp + EXECUTION_CONTROL.Cr3Target3]
            
         ;;
-        ;; è®¾ç½® APIC virutalization ç›¸å…³å€¼
-        ;; 1) APIC-access address åœ¨å¼€å¯ "virtualize APIC access" æ—¶å†™å…¥
-        ;; 2) virutal-APIC address åœ¨å¼€å¯ "use TPR shadow" 1-setting æ—¶å†™å…¥
-        ;; 3) TPR threshold åœ¨å¼€å¯ "use TPR shadow" æ—¶å†™å…¥
-        ;; 4) EOI-exit bitmap åœ¨å¼€å¯ "virutal-interrupt delivery" æ—¶å†™å…¥
-        ;; 5) posted-interrupt notification vector åœ¨å¼€å¯ "process posted interrupt" æ—¶å†™å…¥
-        ;; 6) posted-interrupt descriptor address åœ¨å¼€å¯ "process posted interrupt" æ—¶å†™å…¥
+        ;; ÉèÖÃ APIC virutalization Ïà¹ØÖµ
+        ;; 1) APIC-access address ÔÚ¿ªÆô "virtualize APIC access" Ê±Ğ´Èë
+        ;; 2) virutal-APIC address ÔÚ¿ªÆô "use TPR shadow" 1-setting Ê±Ğ´Èë
+        ;; 3) TPR threshold ÔÚ¿ªÆô "use TPR shadow" Ê±Ğ´Èë
+        ;; 4) EOI-exit bitmap ÔÚ¿ªÆô "virutal-interrupt delivery" Ê±Ğ´Èë
+        ;; 5) posted-interrupt notification vector ÔÚ¿ªÆô "process posted interrupt" Ê±Ğ´Èë
+        ;; 6) posted-interrupt descriptor address ÔÚ¿ªÆô "process posted interrupt" Ê±Ğ´Èë
         ;;           
         
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl2], VIRTUALIZE_APIC_ACCESS
         jz flush_execution_control.@3
         
         ;;
-        ;; APIC-access address å€¼ä¸º 64 ä½ï¼Œåœ¨ x86 ä¸‹åˆ†ä¸¤æ¬¡å†™å…¥
+        ;; APIC-access address ÖµÎª 64 Î»£¬ÔÚ x86 ÏÂ·ÖÁ½´ÎĞ´Èë
         ;;
         DoVmWrite CONTROL_APIC_ACCESS_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.ApicAccessAddress]
 %ifndef __X64
@@ -758,13 +758,13 @@ flush_execution_control.@2:
         
 flush_execution_control.@3:
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦å¼€å¯ "Use TPR shadow"
+        ;; ¼ì²éÊÇ·ñ¿ªÆô "Use TPR shadow"
         ;; 
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl1], USE_TPR_SHADOW
         jz flush_execution_control.@4
         
         ;;
-        ;; Virtual-APIC address ä¸º 64 ä½ï¼Œåœ¨ x86 ä¸‹åˆ†ä¸¤æ¬¡å†™å…¥
+        ;; Virtual-APIC address Îª 64 Î»£¬ÔÚ x86 ÏÂ·ÖÁ½´ÎĞ´Èë
         ;;
         DoVmWrite CONTROL_VIRTUAL_APIC_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.VirtualApicAddress]
 %ifndef __X64
@@ -776,17 +776,17 @@ flush_execution_control.@3:
                 
 flush_execution_control.@4:        
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦å¼€å¯ "virtual-interrupt delivery" åŠŸèƒ½
+        ;; ¼ì²éÊÇ·ñ¿ªÆô "virtual-interrupt delivery" ¹¦ÄÜ
         ;;
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl2], VIRTUAL_INTERRUPT_DELIVERY
         jz flush_execution_control@5
 
         ;;
-        ;; EOI bitmap ä¸º 64 ä½ï¼Œåœ¨ x86 ä¸‹åˆ†ä¸¤æ¬¡å†™å…¥
-        ;; 1) EOI bitmap 0 å¯¹åº” 0 - 63 å· vector
-        ;; 2) EOI bitmap 1 å¯¹åº” 64 - 127 å· vector
-        ;; 3) EOI bitmap 2 å¯¹åº” 128 - 191 å· vector
-        ;; 4) EOI bitmap 3 å¯¹åº” 192 - 255 å· vector
+        ;; EOI bitmap Îª 64 Î»£¬ÔÚ x86 ÏÂ·ÖÁ½´ÎĞ´Èë
+        ;; 1) EOI bitmap 0 ¶ÔÓ¦ 0 - 63 ºÅ vector
+        ;; 2) EOI bitmap 1 ¶ÔÓ¦ 64 - 127 ºÅ vector
+        ;; 3) EOI bitmap 2 ¶ÔÓ¦ 128 - 191 ºÅ vector
+        ;; 4) EOI bitmap 3 ¶ÔÓ¦ 192 - 255 ºÅ vector
         ;;
         DoVmWrite CONTROL_EOIEXIT_BITMAP0_FULL, [ebp + EXECUTION_CONTROL.EoiBitmap0]
         DoVmWrite CONTROL_EOIEXIT_BITMAP1_FULL, [ebp + EXECUTION_CONTROL.EoiBitmap1]
@@ -803,13 +803,13 @@ flush_execution_control.@4:
 
 flush_execution_control@5:
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦å¼€å¯ "process posted interrupt" åŠŸèƒ½
+        ;; ¼ì²éÊÇ·ñ¿ªÆô "process posted interrupt" ¹¦ÄÜ
         ;;
         test DWORD [ebp + EXECUTION_CONTROL.PinControl], PROCESS_POSTED_INTERRUPT
         jz flush_execution_control.@6
         
         ;;
-        ;; vector å€¼ä¸º 16 ä½ï¼Œdescriptor address å€¼ä¸º 64 ä½
+        ;; vector ÖµÎª 16 Î»£¬descriptor address ÖµÎª 64 Î»
         ;;
         DoVmWrite CONTROL_POSTED_INTERRUPT_NOTIFICATION_VECTOR, [ebp + EXECUTION_CONTROL.PostedInterruptVector]
         DoVmWrite CONTROL_POSTED_INTERRUPT_DESCRIPTOR_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.PostedInterruptDescriptorAddr]
@@ -819,13 +819,13 @@ flush_execution_control@5:
         
 flush_execution_control.@6:               
         ;;
-        ;; MSR bitmap address åœ¨å¼€å¯ "use MSR bitmap" æ—¶å†™å…¥
+        ;; MSR bitmap address ÔÚ¿ªÆô "use MSR bitmap" Ê±Ğ´Èë
         ;;
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl1], USE_MSR_BITMAP
         jz flush_execution_control.@7
         
         ;;
-        ;; MSR bitmap ä¸º 64 ä½å€¼
+        ;; MSR bitmap Îª 64 Î»Öµ
         ;;
         DoVmWrite CONTROL_MSR_BITMAP_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.MsrBitmapAddress]        
 %ifndef __X64
@@ -835,7 +835,7 @@ flush_execution_control.@6:
                 
 flush_execution_control.@7:
         ;;
-        ;; å†™å…¥ executive-VMCS pointer å€¼ (64 ä½ï¼‰
+        ;; Ğ´Èë executive-VMCS pointer Öµ (64 Î»£©
         ;;
         DoVmWrite CONTROL_EXECUTIVE_VMCS_POINTER_FULL, [ebp + EXECUTION_CONTROL.ExecutiveVmcsPointer]
 %ifndef __X64
@@ -843,14 +843,14 @@ flush_execution_control.@7:
 %endif         
 
         ;;
-        ;; å†™å…¥ extended-page table pointer å€¼
-        ;; 1) åœ¨å¼€å¯ "enable EPT" æ—¶å†™å…¥
+        ;; Ğ´Èë extended-page table pointer Öµ
+        ;; 1) ÔÚ¿ªÆô "enable EPT" Ê±Ğ´Èë
         ;;
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl2], ENABLE_EPT
         jz flush_execution_control.@8
         
         ;;
-        ;; EPTP å€¼ä¸º 64 ä½
+        ;; EPTP ÖµÎª 64 Î»
         ;;
         DoVmWrite CONTROL_EPT_POINTER_FULL, [ebp + EXECUTION_CONTROL.EptPointer]
 %ifndef __X64
@@ -860,8 +860,8 @@ flush_execution_control.@7:
 
 flush_execution_control.@8:
         ;;
-        ;; å†™å…¥ virtual-processor indentifiler å€¼
-        ;; 1) å¼€å¯ "enable VPID" æ—¶å†™å…¥
+        ;; Ğ´Èë virtual-processor indentifiler Öµ
+        ;; 1) ¿ªÆô "enable VPID" Ê±Ğ´Èë
         ;;
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl2], ENABLE_VPID
         jz flush_execution_control.@9
@@ -871,7 +871,7 @@ flush_execution_control.@8:
         
 flush_execution_control.@9:        
         ;;
-        ;; PLE_CAP ä¸ PLE_WINDOW åœ¨å¼€å¯ "PAUSE-loop exitting" æ—¶å†™å…¥
+        ;; PLE_CAP Óë PLE_WINDOW ÔÚ¿ªÆô "PAUSE-loop exitting" Ê±Ğ´Èë
         ;;
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl2], PAUSE_LOOP_EXITING
         jz flush_execution_control.@10
@@ -882,13 +882,13 @@ flush_execution_control.@9:
                 
 flush_execution_control.@10:
         ;;
-        ;; VM-function åœ¨å¼€å¯ "enable VM functions" æ—¶å†™å…¥
+        ;; VM-function ÔÚ¿ªÆô "enable VM functions" Ê±Ğ´Èë
         ;;
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl2], ENABLE_VM_FUNCTION
         jz flush_execution_control.done
         
         ;;
-        ;; å†™å…¥ 64 ä½çš„ VM-function æ§åˆ¶åŸŸ
+        ;; Ğ´Èë 64 Î»µÄ VM-function ¿ØÖÆÓò
         ;;
         DoVmWrite CONTROL_VM_FUNCTION_FULL, [ebp + EXECUTION_CONTROL.VmFunctionControl]
 %ifndef __X64
@@ -896,13 +896,13 @@ flush_execution_control.@10:
 %endif        
         
         ;;
-        ;; EPTP list åœ¨å¼€å¯ "EPTP switching" æ—¶å†™å…¥
+        ;; EPTP list ÔÚ¿ªÆô "EPTP switching" Ê±Ğ´Èë
         ;;
         test DWORD [ebp + EXECUTION_CONTROL.VmFunctionControl], EPTP_SWITCHING
         jz flush_execution_control.done
         
         ;;
-        ;; 64 ä½çš„ EPT list åœ°å€å€¼
+        ;; 64 Î»µÄ EPT list µØÖ·Öµ
         ;;
         DoVmWrite CONTROL_EPTP_LIST_FULL, [ebp + EXECUTION_CONTROL.EptpListAddress]
 %ifndef __X64
@@ -921,8 +921,8 @@ flush_execution_control.done:
 ;       none
 ; output:
 ;       none
-; æè¿°ï¼š
-;       1) å°† VMCS ä¸­çš„ VM-execution control ä¿å­˜åœ¨ execution control buffer ä¸­
+; ÃèÊö£º
+;       1) ½« VMCS ÖĞµÄ VM-execution control ±£´æÔÚ execution control buffer ÖĞ
 ;---------------------------------------------------------------------------              
 store_execution_control:
         push ebp
@@ -941,7 +941,7 @@ store_execution_control:
         
         
         ;;
-        ;; ä¿å­˜åŸºæœ¬çš„æ§åˆ¶åŸŸ
+        ;; ±£´æ»ù±¾µÄ¿ØÖÆÓò
         ;;
         DoVmRead CONTROL_PINBASED, [ebp + EXECUTION_CONTROL.PinControl]
         DoVmRead CONTROL_PROCBASED_PRIMARY, [ebp + EXECUTION_CONTROL.ProcessorControl1]
@@ -956,7 +956,7 @@ store_execution_control:
         
         ;;
         ;; IoBitmap address A & B
-        ;; 1) åœ¨æ”¯æŒ "Use I/O bitmap" 1-setting æ—¶è¯»å–
+        ;; 1) ÔÚÖ§³Ö "Use I/O bitmap" 1-setting Ê±¶ÁÈ¡
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls + 4], USE_IO_BITMAP
         jz store_execution_control.@1
@@ -973,7 +973,7 @@ store_execution_control:
 store_execution_control.@1:
         ;;
         ;; time-stamp counter offset
-        ;; 1) åœ¨æ”¯æŒ "Use TSC offsetting" 1-setting æ—¶è¯»å–
+        ;; 1) ÔÚÖ§³Ö "Use TSC offsetting" 1-setting Ê±¶ÁÈ¡
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls + 4], USE_TSC_OFFSETTING
         jz store_execution_control.@2
@@ -1004,12 +1004,12 @@ store_execution_control.@2:
            
         ;;
         ;; APIC virutalization
-        ;; 1) APIC-access address ä»…åœ¨æ”¯æŒ "virtualize APIC access" 1-setting æ—¶æœ‰æ•ˆ
-        ;; 2) virutal-APIC address ä»…åœ¨æ”¯æŒ "use TPR shadow" 1-setting æ—¶æœ‰æ•ˆ
-        ;; 3) TPR threshold ä»…åœ¨æ”¯æŒ "use TPR shadow" 1-setting æ—¶æœ‰æ•ˆ
-        ;; 4) EOI-exit bitmap ä»…åœ¨æ”¯æŒ "virutal-interrupt delivery" 1-setting æ—¶æœ‰æ•ˆ
-        ;; 5) posted-interrupt notification vector ä»…åœ¨æ”¯æŒ "process posted interrupt" 1-setting æ—¶æœ‰æ•ˆ
-        ;; 6) posted-interrupt descriptor address ä»…åœ¨æ”¯æŒ "process posted interrupt" 1-setting æ—¶æœ‰æ•ˆ
+        ;; 1) APIC-access address ½öÔÚÖ§³Ö "virtualize APIC access" 1-setting Ê±ÓĞĞ§
+        ;; 2) virutal-APIC address ½öÔÚÖ§³Ö "use TPR shadow" 1-setting Ê±ÓĞĞ§
+        ;; 3) TPR threshold ½öÔÚÖ§³Ö "use TPR shadow" 1-setting Ê±ÓĞĞ§
+        ;; 4) EOI-exit bitmap ½öÔÚÖ§³Ö "virutal-interrupt delivery" 1-setting Ê±ÓĞĞ§
+        ;; 5) posted-interrupt notification vector ½öÔÚÖ§³Ö "process posted interrupt" 1-setting Ê±ÓĞĞ§
+        ;; 6) posted-interrupt descriptor address ½öÔÚÖ§³Ö "process posted interrupt" 1-setting Ê±ÓĞĞ§
         ;;           
         test DWORD [ebx + PCB.ProcessorBasedCtls2 + 4], VIRTUALIZE_APIC_ACCESS
         jz store_execution_control.@3
@@ -1021,13 +1021,13 @@ store_execution_control.@2:
         
 store_execution_control.@3:
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ "use TPR shadow" 1-setting
+        ;; ¼ì²éÊÇ·ñÖ§³Ö "use TPR shadow" 1-setting
         ;; 
         test DWORD [ebx + PCB.ProcessorBasedCtls + 4], USE_TPR_SHADOW
         jz store_execution_control.@4
         
         ;;
-        ;; è¯»å– virtual-APIC address å’Œ TPR threshold å€¼
+        ;; ¶ÁÈ¡ virtual-APIC address ºÍ TPR threshold Öµ
         ;;
         DoVmRead CONTROL_VIRTUAL_APIC_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.VirtualApicAddress]
 %ifndef __X64
@@ -1038,7 +1038,7 @@ store_execution_control.@3:
                 
 store_execution_control.@4:        
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ "virtual-interrupt delivery" 1-setting
+        ;; ¼ì²éÊÇ·ñÖ§³Ö "virtual-interrupt delivery" 1-setting
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls2 + 4], VIRTUAL_INTERRUPT_DELIVERY
         jz store_execution_control@5
@@ -1057,13 +1057,13 @@ store_execution_control.@4:
 
 store_execution_control@5:
         ;;
-        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ "process posted interrupt" 1-setting
+        ;; ¼ì²éÊÇ·ñÖ§³Ö "process posted interrupt" 1-setting
         ;;
         test DWORD [ebx + PCB.PinBasedCtls + 4], PROCESS_POSTED_INTERRUPT
         jz store_execution_control.@6
         
         ;;
-        ;; è¯»å– vector ä¸ descriptor address
+        ;; ¶ÁÈ¡ vector Óë descriptor address
         ;;
         DoVmRead CONTROL_POSTED_INTERRUPT_NOTIFICATION_VECTOR, [ebp + EXECUTION_CONTROL.PostedInterruptVector]
         DoVmRead CONTROL_POSTED_INTERRUPT_DESCRIPTOR_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.PostedInterruptDescriptorAddr]
@@ -1074,7 +1074,7 @@ store_execution_control@5:
         
 store_execution_control.@6:   
         ;;
-        ;; MSR bitmap address ä»…åœ¨æ”¯æŒ "use MSR bitmap" 1-setting æ—¶æœ‰æ•ˆ
+        ;; MSR bitmap address ½öÔÚÖ§³Ö "use MSR bitmap" 1-setting Ê±ÓĞĞ§
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls + 4], USE_MSR_BITMAP
         jz store_execution_control.@7
@@ -1094,7 +1094,7 @@ store_execution_control.@7:
 %endif         
 
         ;;
-        ;; extended-page table pointer ä»…åœ¨æ”¯æŒ "enable EPT" 1-setting æ—¶æœ‰æ•ˆ
+        ;; extended-page table pointer ½öÔÚÖ§³Ö "enable EPT" 1-setting Ê±ÓĞĞ§
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls2 + 4], ENABLE_EPT
         jz store_execution_control.@8
@@ -1107,7 +1107,7 @@ store_execution_control.@7:
 
 store_execution_control.@8:        
         ;;
-        ;; virtual-processor indentifiler ä»…åœ¨æ”¯æŒ "enable VPID" 1-setting æ—¶æœ‰æ•ˆ
+        ;; virtual-processor indentifiler ½öÔÚÖ§³Ö "enable VPID" 1-setting Ê±ÓĞĞ§
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls2 + 4], ENABLE_VPID
         jz store_execution_control.@9
@@ -1116,7 +1116,7 @@ store_execution_control.@8:
         
 store_execution_control.@9:        
         ;;
-        ;; PLE_CAP ä¸ PLE_WINDOW ä»…åœ¨æ”¯æŒ "PAUSE-loop exitting" 1-setting æ—¶æœ‰æ•ˆ
+        ;; PLE_CAP Óë PLE_WINDOW ½öÔÚÖ§³Ö "PAUSE-loop exitting" 1-setting Ê±ÓĞĞ§
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls2 + 4], PAUSE_LOOP_EXITING
         jz store_execution_control.@10
@@ -1126,7 +1126,7 @@ store_execution_control.@9:
                 
 store_execution_control.@10:
         ;;
-        ;; VM-function ä»…åœ¨æ”¯æŒ "enable VM functions" 1-setting æ—¶æœ‰æ•ˆ
+        ;; VM-function ½öÔÚÖ§³Ö "enable VM functions" 1-setting Ê±ÓĞĞ§
         ;;
         test DWORD [ebx + PCB.ProcessorBasedCtls2 + 4], ENABLE_VM_FUNCTION
         jz store_execution_control.done
@@ -1137,7 +1137,7 @@ store_execution_control.@10:
 %endif        
         
         ;;
-        ;; EPTP list ä»…åœ¨æ”¯æŒ "EPTP switching" 1-setting æ—¶æœ‰æ•ˆ
+        ;; EPTP list ½öÔÚÖ§³Ö "EPTP switching" 1-setting Ê±ÓĞĞ§
         ;;
         test DWORD [ebx + PCB.VmFunction], EPTP_SWITCHING
         jz store_execution_control.done
@@ -1160,8 +1160,8 @@ store_execution_control.done:
 ;       none
 ; output:
 ;       none
-; æè¿°ï¼š
-;       1) å°† exit control buffer åˆ·æ–°åˆ° VMCS ä¸­
+; ÃèÊö£º
+;       1) ½« exit control buffer Ë¢ĞÂµ½ VMCS ÖĞ
 ;----------------------------------------------------------        
 flush_exit_control:
         push ebp
@@ -1175,7 +1175,7 @@ flush_exit_control:
         add ebp, PCB.ExitControlBuf
 
         ;;
-        ;; å†™å…¥ VM exit control åŸŸ
+        ;; Ğ´Èë VM exit control Óò
         ;;
         DoVmWrite VMEXIT_CONTROL, [ebp + EXIT_CONTROL.VmExitControl]
         
@@ -1209,8 +1209,8 @@ flush_exit_control:
 ;       none
 ; output:
 ;       none
-; æè¿°ï¼š
-;       1) å°† VMCS ä¸­çš„ VM-exit control ä¿å­˜åœ¨ buffer ä¸­
+; ÃèÊö£º
+;       1) ½« VMCS ÖĞµÄ VM-exit control ±£´æÔÚ buffer ÖĞ
 ;----------------------------------------------------------        
 store_exit_control:
         push ebp
@@ -1224,7 +1224,7 @@ store_exit_control:
         add ebp, PCB.ExitControlBuf
 
         ;;
-        ;; è¯»å– VM exit control field
+        ;; ¶ÁÈ¡ VM exit control field
         ;;
         DoVmRead VMEXIT_CONTROL, [ebp + EXIT_CONTROL.VmExitControl]
         
@@ -1257,8 +1257,8 @@ store_exit_control:
 ;       none
 ; output:
 ;       none
-; æè¿°ï¼š
-;       1) å°† buffer ä¸­çš„ VM-entry control åˆ·æ–°åˆ° VMCS ä¸­
+; ÃèÊö£º
+;       1) ½« buffer ÖĞµÄ VM-entry control Ë¢ĞÂµ½ VMCS ÖĞ
 ;----------------------------------------------------------
 flush_entry_control:
         push ebp
@@ -1272,7 +1272,7 @@ flush_entry_control:
         add ebp, PCB.EntryControlBuf
         
         ;;
-        ;; å†™å…¥ VM-entry control field
+        ;; Ğ´Èë VM-entry control field
         ;;
         DoVmWrite VMENTRY_CONTROL, [ebp + ENTRY_CONTROL.VmEntryControl]
         
@@ -1304,8 +1304,8 @@ flush_entry_control:
 ;       none
 ; output:
 ;       none
-; æè¿°ï¼š
-;       1) å°† VMCS ä¸­çš„ VM-entry control ä¿å­˜åœ¨ buffer ä¸­
+; ÃèÊö£º
+;       1) ½« VMCS ÖĞµÄ VM-entry control ±£´æÔÚ buffer ÖĞ
 ;----------------------------------------------------------
 store_entry_control:
         push ebp
@@ -1353,8 +1353,8 @@ store_entry_control:
 ;       none
 ; output:
 ;       none
-; æè¿°:
-;       1) å°† VMCS ä¸­çš„ VM-exit information ä¿å­˜åœ¨ buffer
+; ÃèÊö:
+;       1) ½« VMCS ÖĞµÄ VM-exit information ±£´æÔÚ buffer
 ;----------------------------------------------------------        
 store_exit_info:
         push ebp

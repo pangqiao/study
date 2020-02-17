@@ -1,6 +1,6 @@
 ;*************************************************
 ;* VmxInit.asm                                   *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
         
@@ -16,9 +16,9 @@
 ;       esi - VMXON region pointer
 ; output:
 ;       0 - successful
-;       otherwise - ´íÎóÂë
-; ÃèÊö£º
-;       1) Ê¹´¦ÀíÆ÷½øÈë VMX root operation »·¾³
+;       otherwise - é”™è¯¯ç 
+; æè¿°ï¼š
+;       1) ä½¿å¤„ç†å™¨è¿›å…¥ VMX root operation ç¯å¢ƒ
 ;----------------------------------------------------------
 vmx_operation_enter:
         push ecx
@@ -36,20 +36,20 @@ vmx_operation_enter:
         mov eax, STATUS_SUCCESS
         
         ;;
-        ;; ¼ì²éÊÇ·ñÒÑ¾­½øÈëÁË VMX root operation Ä£Ê½
+        ;; æ£€æŸ¥æ˜¯å¦å·²ç»è¿›å…¥äº† VMX root operation æ¨¡å¼
         ;;
         test DWORD [ebp + PCB.ProcessorStatus], CPU_STATUS_VMXON
         jnz vmx_operation_enter.done
 
         ;;
-        ;; ¼ì²âÊÇ·ñÖ§³Ö VMX 
+        ;; æ£€æµ‹æ˜¯å¦æ”¯æŒ VMX 
         ;;
         bt DWORD [ebp + PCB.FeatureEcx], 5
         mov eax, STATUS_UNSUCCESS
         jnc vmx_operation_enter.done        
         
         ;;
-        ;; ¿ªÆô VMX operation ÔÊĞí
+        ;; å¼€å¯ VMX operation å…è®¸
         ;;
         REX.Wrxb
         mov eax, cr4
@@ -59,34 +59,34 @@ vmx_operation_enter:
         mov cr4, eax
         
         ;;
-        ;; ¸üĞÂÖ¸Áî×´Ì¬£¬ÔÊĞíÖ´ĞĞ VMX Ö¸Áî
+        ;; æ›´æ–°æŒ‡ä»¤çŠ¶æ€ï¼Œå…è®¸æ‰§è¡Œ VMX æŒ‡ä»¤
         ;;
         or DWORD [ebp + PCB.InstructionStatus], INST_STATUS_VMX
         
         ;;
-        ;; ³õÊ¼»¯ VMXON ÇøÓò
+        ;; åˆå§‹åŒ– VMXON åŒºåŸŸ
         ;;
         call initialize_vmxon_region
         cmp eax, STATUS_SUCCESS
         jne vmx_operation_enter.done
 
         ;;
-        ;; ½øÈë VMX root operation Ä£Ê½
-        ;; 1) operand ÊÇÎïÀíµØÖ· pointer
+        ;; è¿›å…¥ VMX root operation æ¨¡å¼
+        ;; 1) operand æ˜¯ç‰©ç†åœ°å€ pointer
         ;;
         vmxon [ebp + PCB.VmxonPhysicalPointer]
 
         ;;
-        ;; ¼ì²é VMXON Ö¸ÁîÊÇ·ñÖ´ĞĞ³É¹¦
-        ;; 1) µ± CF = 0 Ê±£¬WMXON Ö´ĞĞ³É¹¦
-        ;; 1) µ± CF = 1 Ê±£¬·µ»ØÊ§°Ü
+        ;; æ£€æŸ¥ VMXON æŒ‡ä»¤æ˜¯å¦æ‰§è¡ŒæˆåŠŸ
+        ;; 1) å½“ CF = 0 æ—¶ï¼ŒWMXON æ‰§è¡ŒæˆåŠŸ
+        ;; 1) å½“ CF = 1 æ—¶ï¼Œè¿”å›å¤±è´¥
         ;;
         mov eax, STATUS_UNSUCCESS
         jc vmx_operation_enter.done
         jz vmx_operation_enter.done
 
         ;;
-        ;; Ê¹ÓÃ "all-context invalidation" ÀàĞÍË¢ĞÂ cache
+        ;; ä½¿ç”¨ "all-context invalidation" ç±»å‹åˆ·æ–° cache
         ;;
         mov eax, ALL_CONTEXT_INVALIDATION
         invvpid eax, [ebp + PCB.InvDesc]
@@ -94,20 +94,20 @@ vmx_operation_enter:
         
         
         ;;
-        ;; ¸ù¾İ´¦ÀíÆ÷ index Öµ£¬Éú³É VPID Í·
+        ;; æ ¹æ®å¤„ç†å™¨ index å€¼ï¼Œç”Ÿæˆ VPID å¤´
         ;;
         mov ecx, [ebp + PCB.ProcessorIndex]
         shl ecx, 8
         
         ;;
-        ;; ·ÖÅä VMM stack
+        ;; åˆ†é… VMM stack
         ;;
         call get_kernel_stack_pointer
         REX.Wrxb
         mov [ebp + PCB.VmmStack], eax
         
         ;;
-        ;; ·ÖÅä VMM Msr-load ÇøÓò
+        ;; åˆ†é… VMM Msr-load åŒºåŸŸ
         ;;
         call get_vmcs_access_pointer
         REX.Wrxb
@@ -117,49 +117,49 @@ vmx_operation_enter:
         
         
         ;;
-        ;; ·ÖÅä VMCS A ÇøÓò£¬²¢×÷ÎªÈ±Ê¡µÄ VMCS ÇøÓò
+        ;; åˆ†é… VMCS A åŒºåŸŸï¼Œå¹¶ä½œä¸ºç¼ºçœçš„ VMCS åŒºåŸŸ
         ;;
         call get_vmcs_pointer
         REX.Wrxb
-        mov [ebp + PCB.GuestA + 8], eax                                 ; VMCS A ĞéÄâµØÖ·
+        mov [ebp + PCB.GuestA + 8], eax                                 ; VMCS A è™šæ‹Ÿåœ°å€
         REX.Wrxb
-        mov [ebp + PCB.GuestA], edx                                     ; VMCS A ÎïÀíµØÖ·
+        mov [ebp + PCB.GuestA], edx                                     ; VMCS A ç‰©ç†åœ°å€
         mov ax, cx
         or ax, 1
-        mov [ebp + PCB.GuestA + VMB.Vpid], ax                           ; VMCS A µÄ VPID
+        mov [ebp + PCB.GuestA + VMB.Vpid], ax                           ; VMCS A çš„ VPID
         
         ;;
-        ;; ·ÖÅä VMCS B ÇøÓò
+        ;; åˆ†é… VMCS B åŒºåŸŸ
         ;;        
         call get_vmcs_pointer
         REX.Wrxb
-        mov [ebp + PCB.GuestB + 8], eax                                 ; VMCS B ĞéÄâµØÖ·
+        mov [ebp + PCB.GuestB + 8], eax                                 ; VMCS B è™šæ‹Ÿåœ°å€
         REX.Wrxb
-        mov [ebp + PCB.GuestB], edx                                     ; VMCS B ÎïÀíµØÖ·        
+        mov [ebp + PCB.GuestB], edx                                     ; VMCS B ç‰©ç†åœ°å€        
         mov ax, cx
         or ax, 2
-        mov [ebp + PCB.GuestB + VMB.Vpid], ax                           ; VMCS B µÄ VPID
+        mov [ebp + PCB.GuestB + VMB.Vpid], ax                           ; VMCS B çš„ VPID
         
         ;;
-        ;; ·ÖÅä VMCS C ÇøÓò
+        ;; åˆ†é… VMCS C åŒºåŸŸ
         ;;        
         call get_vmcs_pointer
         REX.Wrxb
-        mov [ebp + PCB.GuestC + 8], eax                                 ; VMCS C ĞéÄâµØÖ·
+        mov [ebp + PCB.GuestC + 8], eax                                 ; VMCS C è™šæ‹Ÿåœ°å€
         REX.Wrxb
-        mov [ebp + PCB.GuestC], edx                                     ; VMCS C ÎïÀíµØÖ·
+        mov [ebp + PCB.GuestC], edx                                     ; VMCS C ç‰©ç†åœ°å€
         mov ax, cx
         or ax, 3
         mov [ebp + PCB.GuestC + VMB.Vpid], ax
         
         ;;
-        ;; ·ÖÅä VMCS D ÇøÓò
+        ;; åˆ†é… VMCS D åŒºåŸŸ
         ;;          
         call get_vmcs_pointer
         REX.Wrxb
-        mov [ebp + PCB.GuestD + 8], eax                                 ; VMCS D ĞéÄâµØÖ·
+        mov [ebp + PCB.GuestD + 8], eax                                 ; VMCS D è™šæ‹Ÿåœ°å€
         REX.Wrxb
-        mov [ebp + PCB.GuestD], edx                                     ; VMCS D ÎïÀíµØÖ·
+        mov [ebp + PCB.GuestD], edx                                     ; VMCS D ç‰©ç†åœ°å€
         mov ax, cx
         or ax, 4
         mov [ebp + PCB.GuestC + VMB.Vpid], ax
@@ -168,7 +168,7 @@ vmx_operation_enter:
 %if 0        
                 
         ;;
-        ;; ³õÊ¼»¯ EPT ½á¹¹
+        ;; åˆå§‹åŒ– EPT ç»“æ„
         ;;
         cmp BYTE [ebp + PCB.IsBsp], 1
         jne vmx_operation_enter.@0
@@ -179,7 +179,7 @@ vmx_operation_enter:
 vmx_operation_enter.@0:        
                 
         ;;
-        ;; ¸üĞÂ´¦ÀíÆ÷×´Ì¬
+        ;; æ›´æ–°å¤„ç†å™¨çŠ¶æ€
         ;;
         or DWORD [ebp + PCB.ProcessorStatus], CPU_STATUS_VMXON
         
@@ -200,9 +200,9 @@ vmx_operation_enter.done:
 ;       none
 ; output:
 ;       0 - successful
-;       otherwise - ´íÎóÂë
-; ÃèÊö£º
-;       1) ³õÊ¼»¯ VMM£¨host£©µÄ vmxon region
+;       otherwise - é”™è¯¯ç 
+; æè¿°ï¼š
+;       1) åˆå§‹åŒ– VMMï¼ˆhostï¼‰çš„ vmxon region
 ;----------------------------------------------
 initialize_vmxon_region:
         push ebx
@@ -216,42 +216,42 @@ initialize_vmxon_region:
 %endif        
 
         ;;
-        ;; ¶Á CR0 µ±Ç°Öµ
+        ;; è¯» CR0 å½“å‰å€¼
         ;;
         REX.Wrxb
         mov ecx, cr0
         mov ebx, ecx
         
         ;;
-        ;; ¼ì²é CR0.PE Óë CR0.PG ÊÇ·ñ·ûºÏ fixed Î»£¬ÕâÀïÖ»¼ì²éµÍ 32 Î»Öµ
-        ;; 1) ¶Ô±È Cr0FixedMask Öµ£¨¹Ì¶¨Îª1Öµ£©£¬²»ÏàÍ¬Ôò·µ»Ø´íÎóÂë
+        ;; æ£€æŸ¥ CR0.PE ä¸ CR0.PG æ˜¯å¦ç¬¦åˆ fixed ä½ï¼Œè¿™é‡Œåªæ£€æŸ¥ä½ 32 ä½å€¼
+        ;; 1) å¯¹æ¯” Cr0FixedMask å€¼ï¼ˆå›ºå®šä¸º1å€¼ï¼‰ï¼Œä¸ç›¸åŒåˆ™è¿”å›é”™è¯¯ç 
         ;;
-        mov eax, STATUS_VMX_UNEXPECT                    ; ´íÎóÂë£¨³¬³öÆÚÍûÖµ£©
-        xor ecx, [ebp + PCB.Cr0FixedMask]               ; Óë Cr0FixedMask ÖµÒì»ò£¬¼ì²éÊÇ·ñÏàÍ¬
-        js initialize_vmxon_region.done                 ; ¼ì²é CR0.PG Î»ÊÇ·ñÏàµÈ
+        mov eax, STATUS_VMX_UNEXPECT                    ; é”™è¯¯ç ï¼ˆè¶…å‡ºæœŸæœ›å€¼ï¼‰
+        xor ecx, [ebp + PCB.Cr0FixedMask]               ; ä¸ Cr0FixedMask å€¼å¼‚æˆ–ï¼Œæ£€æŸ¥æ˜¯å¦ç›¸åŒ
+        js initialize_vmxon_region.done                 ; æ£€æŸ¥ CR0.PG ä½æ˜¯å¦ç›¸ç­‰
         test ecx, 1
-        jnz initialize_vmxon_region.done                ; ¼ì²é CR0.PE Î»ÊÇ·ñÏàµÈ
+        jnz initialize_vmxon_region.done                ; æ£€æŸ¥ CR0.PE ä½æ˜¯å¦ç›¸ç­‰
         
         ;;
-        ;; Èç¹û CR0.PE Óë CR0.PG Î»Ïà·û£¬ÉèÖÃ CR0 ÆäËüÎ»
+        ;; å¦‚æœ CR0.PE ä¸ CR0.PG ä½ç›¸ç¬¦ï¼Œè®¾ç½® CR0 å…¶å®ƒä½
         ;;
-        or ebx, [ebp + PCB.Cr0Fixed0]                   ; ÉèÖÃ Fixed 1 Î»
-        and ebx, [ebp + PCB.Cr0Fixed1]                  ; ÉèÖÃ Fixed 0 Î»
+        or ebx, [ebp + PCB.Cr0Fixed0]                   ; è®¾ç½® Fixed 1 ä½
+        and ebx, [ebp + PCB.Cr0Fixed1]                  ; è®¾ç½® Fixed 0 ä½
         REX.Wrxb
-        mov cr0, ebx                                    ; Ğ´»Ø CR0
+        mov cr0, ebx                                    ; å†™å› CR0
         
         ;;
-        ;; Ö±½ÓÉèÖÃ CR4 fixed 1 Î»
+        ;; ç›´æ¥è®¾ç½® CR4 fixed 1 ä½
         ;;
         REX.W
         mov ecx, cr4
-        or ecx, [ebp + PCB.Cr4FixedMask]                ; ÉèÖÃ Fixed 1 Î»
-        and ecx, [ebp + PCB.Cr4Fixed1]                  ; ÉèÖÃ Fixed 0 Î»
+        or ecx, [ebp + PCB.Cr4FixedMask]                ; è®¾ç½® Fixed 1 ä½
+        and ecx, [ebp + PCB.Cr4Fixed1]                  ; è®¾ç½® Fixed 0 ä½
         REX.W
         mov cr4, ecx
         
         ;;
-        ;; ·ÖÅä VMXON region
+        ;; åˆ†é… VMXON region
         ;;
         call get_vmcs_access_pointer                    ; edx:eax = pa:va
         REX.Wrxb
@@ -260,12 +260,12 @@ initialize_vmxon_region:
         mov [ebp + PCB.VmxonPhysicalPointer], edx
         
         ;;
-        ;; ÉèÖÃ VMCS region ĞÅÏ¢
+        ;; è®¾ç½® VMCS region ä¿¡æ¯
         ;;
         REX.Wrxb      
         mov ebx, [ebp + PCB.VmxonPointer]
-        mov eax, [ebp + PCB.VmxBasic]                   ; ¶ÁÈ¡ VMCS revision identifier Öµ 
-        mov [ebx], eax                                  ; Ğ´Èë VMCS ID
+        mov eax, [ebp + PCB.VmxBasic]                   ; è¯»å– VMCS revision identifier å€¼ 
+        mov [ebx], eax                                  ; å†™å…¥ VMCS ID
 
         mov eax, STATUS_SUCCESS
                 
@@ -285,9 +285,9 @@ initialize_vmxon_region.done:
 ;       none
 ; output:
 ;       0 - successful
-;       otherwise - ´íÎóÂë
-; ÃèÊö: 
-;       1) Ê¹´¦ÀíÆ÷ÍË³ö VMX root operation »·¾³
+;       otherwise - é”™è¯¯ç 
+; æè¿°: 
+;       1) ä½¿å¤„ç†å™¨é€€å‡º VMX root operation ç¯å¢ƒ
 ;----------------------------------------------------------
 vmx_operation_exit:
         push ebp
@@ -298,13 +298,13 @@ vmx_operation_exit:
         mov ebp, [gs: PCB.Base]
 %endif        
         ;;
-        ;; ¼ì²éÊÇ·ñ¿ªÆô VMX Ä£Ê½
+        ;; æ£€æŸ¥æ˜¯å¦å¼€å¯ VMX æ¨¡å¼
         ;;
         test DWORD [ebp + PCB.ProcessorStatus], CPU_STATUS_VMXON
         jz vmx_operation_exit.done
         
         ;;
-        ;; Ê¹ÓÃ "all-context invalidation" ÀàĞÍË¢ĞÂ cache
+        ;; ä½¿ç”¨ "all-context invalidation" ç±»å‹åˆ·æ–° cache
         ;;
         mov eax, ALL_CONTEXT_INVALIDATION
         invvpid eax, [ebp + PCB.InvDesc]
@@ -312,8 +312,8 @@ vmx_operation_exit:
         
         vmxoff
         ;;
-        ;; ¼ì²éÊÇ·ñ³É¹¦
-        ;; 1) µ± CF = 0 ÇÒ ZF = 0 Ê±£¬VMXOFF Ö´ĞĞ³É¹¦
+        ;; æ£€æŸ¥æ˜¯å¦æˆåŠŸ
+        ;; 1) å½“ CF = 0 ä¸” ZF = 0 æ—¶ï¼ŒVMXOFF æ‰§è¡ŒæˆåŠŸ
         ;;
         mov eax, STATUS_VMXOFF_UNSUCCESS
         jc vmx_operation_exit.done
@@ -321,7 +321,7 @@ vmx_operation_exit:
 
                 
         ;;
-        ;; ÏÂÃæ¹Ø±Õ CR4.VMXE ±êÖ¾Î»
+        ;; ä¸‹é¢å…³é—­ CR4.VMXE æ ‡å¿—ä½
         ;;
         REX.Wrxb
         mov eax, cr4
@@ -330,11 +330,11 @@ vmx_operation_exit:
         mov cr4, eax
                 
         ;;
-        ;; ¸üĞÂÖ¸Áî×´Ì¬
+        ;; æ›´æ–°æŒ‡ä»¤çŠ¶æ€
         ;;
         and DWORD [ebp + PCB.InstructionStatus], ~INST_STATUS_VMX
         ;;
-        ;; ¸üĞÂ´¦ÀíÆ÷×´Ì¬
+        ;; æ›´æ–°å¤„ç†å™¨çŠ¶æ€
         ;;
         and DWORD [ebp + PCB.ProcessorStatus], ~CPU_STATUS_VMXON
         
@@ -354,9 +354,9 @@ vmx_operation_exit.done:
 ;       esi - VM_MANAGE_BLOCK pointer
 ; output:
 ;       0 - successful
-;       otherwise - ´íÎóÂë
-; ÃèÊö£º
-;       1) ³õÊ¼»¯Ìá¹©µÄ vmcs buffer£¨ÓÉ VM ¹ÜÀí¿éÖ¸ÕëÌá¹©£©
+;       otherwise - é”™è¯¯ç 
+; æè¿°ï¼š
+;       1) åˆå§‹åŒ–æä¾›çš„ vmcs bufferï¼ˆç”± VM ç®¡ç†å—æŒ‡é’ˆæä¾›ï¼‰
 ;-----------------------------------------------------------
 initialize_vmcs_buffer:
         push ebp
@@ -365,7 +365,7 @@ initialize_vmcs_buffer:
         push edx        
         
         ;;
-        ;; PCB »ùÖ·
+        ;; PCB åŸºå€
         ;;
 %ifdef __X64
         LoadGsBaseToRbp              
@@ -373,21 +373,21 @@ initialize_vmcs_buffer:
         mov ebp, [gs: PCB.Base]
 %endif      
 
-        push esi                                                ; ±£´æ VMCS ¹ÜÀí¿éÖ¸Õë
+        push esi                                                ; ä¿å­˜ VMCS ç®¡ç†å—æŒ‡é’ˆ
         
         REX.Wrxb
         mov ebx, esi
 
         ;;
-        ;; Ğ´Èë VMCS region µÄ Identifier Öµ
+        ;; å†™å…¥ VMCS region çš„ Identifier å€¼
         ;;
         mov eax, [ebp + PCB.VmxBasic]
         REX.Wrxb
-        mov edi, [ebx + VMB.Base]                               ; VMCS region ĞéÄâµØÖ·
+        mov edi, [ebx + VMB.Base]                               ; VMCS region è™šæ‹Ÿåœ°å€
         mov [edi], eax
         
         ;;
-        ;; Ğ´Èë VMM ¹ÜÀí¼ÇÂ¼
+        ;; å†™å…¥ VMM ç®¡ç†è®°å½•
         ;;
         REX.Wrxb
         mov eax, [ebp + PCB.VmmStack]
@@ -404,14 +404,14 @@ initialize_vmcs_buffer:
         
         
         ;;
-        ;; ³õÊ¼»¯ VM µÄ VSB ÇøÓò
+        ;; åˆå§‹åŒ– VM çš„ VSB åŒºåŸŸ
         ;;
         REX.Wrxb
         mov esi, ebx
         call init_vm_storage_block
         
         ;;
-        ;; ³õÊ¼»¯ VM domain
+        ;; åˆå§‹åŒ– VM domain
         ;;
         call vm_alloc_domain
         REX.Wrxb
@@ -423,7 +423,7 @@ initialize_vmcs_buffer:
         mov [ebx + VMB.DomainPhysicalTop], edx
 
         ;;
-        ;; ³õÊ¼»¯ EP4TA
+        ;; åˆå§‹åŒ– EP4TA
         ;;
         call get_vmcs_access_pointer
         REX.Wrxb
@@ -432,7 +432,7 @@ initialize_vmcs_buffer:
         mov [ebx + VMB.Ep4taPhysicalBase], edx
         
         ;;
-        ;; ÏÂÃæÎª VMCS region ·ÖÅäÏà¹ØµÄ access page£¬°üÀ¨£º
+        ;; ä¸‹é¢ä¸º VMCS region åˆ†é…ç›¸å…³çš„ access pageï¼ŒåŒ…æ‹¬ï¼š
         ;; 1) IoBitmap A page
         ;; 2) IoBitmap B page
         ;; 3) Virtual-access page
@@ -444,36 +444,36 @@ initialize_vmcs_buffer:
         ;; 9) GpaHteBuffer page
         ;;
 
-        mov ecx, 9                                              ; ¹² 9 ¸ö access page
+        mov ecx, 9                                              ; å…± 9 ä¸ª access page
         REX.Wrxb
-        lea ebx, [ebx + VMB.IoBitmapAddressA]                   ; VMB.IoBitmapAddressA µØÖ·
+        lea ebx, [ebx + VMB.IoBitmapAddressA]                   ; VMB.IoBitmapAddressA åœ°å€
 
         
         ;;
-        ;; Ê¹ÓÃ get_vmcs_access_pointer() ·ÖÅäÒ»¸ö access page
-        ;; 1) edx:eax ·µ»Ø¶ÔÓ¦µÄ physical address Óë virtual address
-        ;; 2) ÔÚ X64 ÏÂ·µ»Ø¶ÔÓ¦µÄ 64 Î»µØÖ·
-        ;; 3) ×¢Òâ£ºÕâÀï²»¼ì²é get_vmcs_access_pointer() µÄ·µ»ØÖµ£¬
-        ;;          ×÷ÎªÑİÊ¾£¬²¢Ã»Éè¼Æµ±³¬³öÄÚ´æ×ÊÔ´µÄÇéĞÎ£¡
+        ;; ä½¿ç”¨ get_vmcs_access_pointer() åˆ†é…ä¸€ä¸ª access page
+        ;; 1) edx:eax è¿”å›å¯¹åº”çš„ physical address ä¸ virtual address
+        ;; 2) åœ¨ X64 ä¸‹è¿”å›å¯¹åº”çš„ 64 ä½åœ°å€
+        ;; 3) æ³¨æ„ï¼šè¿™é‡Œä¸æ£€æŸ¥ get_vmcs_access_pointer() çš„è¿”å›å€¼ï¼Œ
+        ;;          ä½œä¸ºæ¼”ç¤ºï¼Œå¹¶æ²¡è®¾è®¡å½“è¶…å‡ºå†…å­˜èµ„æºçš„æƒ…å½¢ï¼
         ;;
         
 initialize_vmcs_buffer.loop:
         call get_vmcs_access_pointer
         REX.Wrxb
-        mov [ebx], eax                                          ; Ğ´Èë access page ĞéÄâµØÖ·
+        mov [ebx], eax                                          ; å†™å…¥ access page è™šæ‹Ÿåœ°å€
         REX.Wrxb
-        mov [ebx + 8], edx                                      ; Ğ´Èë access page ÎïÀíµØÖ·
+        mov [ebx + 8], edx                                      ; å†™å…¥ access page ç‰©ç†åœ°å€
         REX.Wrxb
-        add ebx, 16                                             ; Ö¸ÏòÏÂÒ»Ìõ¼ÇÂ¼        
+        add ebx, 16                                             ; æŒ‡å‘ä¸‹ä¸€æ¡è®°å½•        
         DECv ecx
         jnz initialize_vmcs_buffer.loop
         
 
-        pop ebx                                                ; ebx - VMCS ¹ÜÀí¿éÖ¸Õë        
+        pop ebx                                                ; ebx - VMCS ç®¡ç†å—æŒ‡é’ˆ        
         xor eax, eax
         
         ;;
-        ;; ³õÊ¼»¯ IO & MSR table entry ¼ÆÊıÖµ
+        ;; åˆå§‹åŒ– IO & MSR table entry è®¡æ•°å€¼
         ;;
         mov [ebx + VMB.IoVteCount], eax
         mov [ebx + VMB.MsrVteCount], eax
@@ -481,13 +481,13 @@ initialize_vmcs_buffer.loop:
 
 
         ;;
-        ;; ³õÊ¼»¯ MSR-store/MSR-load ÁĞ±í¼ÆÊıÖµ
+        ;; åˆå§‹åŒ– MSR-store/MSR-load åˆ—è¡¨è®¡æ•°å€¼
         ;;
         mov [ebx + VMB.VmExitMsrStoreCount], eax
         mov [ebx + VMB.VmExitMsrLoadCount], eax
         
         ;;
-        ;; ³õÊ¼»¯ IO VTE, MSR VTE, GPA HTE, EXTINT ITE Ö¸Õë
+        ;; åˆå§‹åŒ– IO VTE, MSR VTE, GPA HTE, EXTINT ITE æŒ‡é’ˆ
         ;;
         REX.Wrxb
         mov eax, [ebx + VMB.IoVteBuffer]
@@ -503,12 +503,12 @@ initialize_vmcs_buffer.loop:
         mov [ebx + VMB.GpaHteIndex], eax
 
         ;;
-        ;; IO ²Ù×÷±êÖ¾Î»
+        ;; IO æ“ä½œæ ‡å¿—ä½
         ;;
         mov DWORD [ebx + VMB.IoOperationFlags], 0
         
         ;;
-        ;; ³õÊ¼»¯ guest-status
+        ;; åˆå§‹åŒ– guest-status
         ;;
         mov DWORD [ebx + VMB.GuestSmb + GSMB.ProcessorStatus], 0
         mov DWORD [ebx + VMB.GuestSmb + GSMB.InstructionStatus], 0
@@ -516,7 +516,7 @@ initialize_vmcs_buffer.loop:
                 
         
         ;;
-        ;; Çå¿Õ VMCS buffer
+        ;; æ¸…ç©º VMCS buffer
         ;;
         mov esi, EXECUTION_CONTROL_SIZE
         REX.Wrxb
@@ -541,7 +541,7 @@ initialize_vmcs_buffer.loop:
 
         
         ;;
-        ;; ÏÂÃæ·Ö±ğ³õÊ¼»¯¸÷¸ö VMCS Óò£¬°üÀ¨£º
+        ;; ä¸‹é¢åˆ†åˆ«åˆå§‹åŒ–å„ä¸ª VMCS åŸŸï¼ŒåŒ…æ‹¬ï¼š
         ;; 1) VM execution control fields
         ;; 2) VM-exit control fields
         ;; 3) VM-entry control fields
@@ -565,7 +565,7 @@ initialize_vmcs_buffer.loop:
         mov esi, ebx
 
         ;;
-        ;; Èç¹ûguestÎªÊµÄ£Ê½£¬Ôòµ÷ÓÃ init_realmode_guest_sate
+        ;; å¦‚æœguestä¸ºå®æ¨¡å¼ï¼Œåˆ™è°ƒç”¨ init_realmode_guest_sate
         ;;
         mov eax, init_guest_state_area
         mov ebx, init_realmode_guest_state
@@ -587,8 +587,8 @@ initialize_vmcs_buffer.loop:
 ;       esi - VMB pointer
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ³õÊ¼»¯ VM Ë½µÄ´æ´¢ÇøÓò
+; æè¿°ï¼š
+;       1) åˆå§‹åŒ– VM ç§çš„å­˜å‚¨åŒºåŸŸ
 ;-----------------------------------------------------------
 init_vm_storage_block:
         push ebx
@@ -599,7 +599,7 @@ init_vm_storage_block:
         mov ebx, esi
         
         ;;
-        ;; ·ÖÅä VSB£¨VM storage block£©ÇøÓò
+        ;; åˆ†é… VSBï¼ˆVM storage blockï¼‰åŒºåŸŸ
         ;;
         mov esi, ((VSB_SIZE + 0FFFh) / 1000h)
         call alloc_kernel_pool_n
@@ -609,7 +609,7 @@ init_vm_storage_block:
         mov [ebx + VMB.VsbPhysicalBase], edx  
 
         ;;
-        ;; ³õÊ¼»¯ VSB ¹ÜÀí¼ÇÂ¼
+        ;; åˆå§‹åŒ– VSB ç®¡ç†è®°å½•
         ;;
         REX.Wrxb
         mov [eax + VSB.Base], eax
@@ -617,7 +617,7 @@ init_vm_storage_block:
         mov [eax + VSB.PhysicalBase], edx
         
         ;;
-        ;; ³õÊ¼»¯ VM video buffer ¹ÜÀí¼ÇÂ¼
+        ;; åˆå§‹åŒ– VM video buffer ç®¡ç†è®°å½•
         ;;        
         REX.Wrxb
         lea esi, [eax + VSB.VmVideoBuffer]
@@ -627,7 +627,7 @@ init_vm_storage_block:
         mov [eax + VSB.VmVideoBufferPtr], esi
 
         ;;
-        ;; ³õÊ¼»¯ VM keryboard buffer ¹ÜÀí¼ÇÂ¼
+        ;; åˆå§‹åŒ– VM keryboard buffer ç®¡ç†è®°å½•
         ;;
         REX.Wrxb
         lea esi, [eax + VSB.VmKeyBuffer]
@@ -638,7 +638,7 @@ init_vm_storage_block:
         mov DWORD [eax + VSB.VmKeyBufferSize], 256
         
         ;;
-        ;; ¸üĞÂ´¦ÀíÆ÷×´Ì¬£¬±íÃ÷´æÔÚ guest »·¾³
+        ;; æ›´æ–°å¤„ç†å™¨çŠ¶æ€ï¼Œè¡¨æ˜å­˜åœ¨ guest ç¯å¢ƒ
         ;;
         mov eax, PCB.ProcessorStatus
         or DWORD [gs: eax], CPU_STATUS_GUEST_EXIST
@@ -659,7 +659,7 @@ init_vm_storage_block:
 ;-----------------------------------------------------------
 setup_vmcs_region:
         ;;
-        ;; ÏÂÃæ½« VMCS buffer Êı¾İË¢ĞÂµ½ VMCS ÖĞ
+        ;; ä¸‹é¢å°† VMCS buffer æ•°æ®åˆ·æ–°åˆ° VMCS ä¸­
         ;;
         call flush_execution_control
         call flush_exit_control
@@ -680,9 +680,9 @@ setup_vmcs_region:
 ;       esi - VMB pointer
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÉèÖÃ VMCS µÄ HOST STAGE ÇøÓò
-;       2) ÕâÊÇ±£»¤Ä£Ê½»òÕßIA-32eÄ£Ê½µÄ guestÇøÓòÉèÖÃ
+; æè¿°ï¼š
+;       1) è®¾ç½® VMCS çš„ HOST STAGE åŒºåŸŸ
+;       2) è¿™æ˜¯ä¿æŠ¤æ¨¡å¼æˆ–è€…IA-32eæ¨¡å¼çš„ gueståŒºåŸŸè®¾ç½®
 ;----------------------------------------------------------   
 init_guest_state_area:
         push ebp
@@ -707,21 +707,21 @@ init_guest_state_area:
         
         
         ;;
-        ;; ÔÚ±£»¤Ä£Ê½ºÍ IA-32e Ä£Ê½ÏÂ, guest µÄÉèÖÃ
+        ;; åœ¨ä¿æŠ¤æ¨¡å¼å’Œ IA-32e æ¨¡å¼ä¸‹, guest çš„è®¾ç½®
         ;; 1) CR0 = Cr0FixedMask
         ;; 2) CR4 = Cr4FixedMask | PAE | OSFXSR
-        ;; 3) CR3 = µ±Ç°Öµ
+        ;; 3) CR3 = å½“å‰å€¼
         ;;
-        mov eax, [ebp + PCB.Cr0FixedMask]               ; CR0 ¹Ì¶¨Öµ
+        mov eax, [ebp + PCB.Cr0FixedMask]               ; CR0 å›ºå®šå€¼
         REX.Wrxb
         mov esi, [ebp + PCB.Cr4FixedMask]
-        or esi, CR4_PAE | CR4_OSFXSR                    ; Ê¹ÓÃ PAE ·ÖÒ³Ä£Ê½
+        or esi, CR4_PAE | CR4_OSFXSR                    ; ä½¿ç”¨ PAE åˆ†é¡µæ¨¡å¼
         
         REX.Wrxb
-        mov edi, cr3                                    ; CR3 µ±Ç°Öµ
+        mov edi, cr3                                    ; CR3 å½“å‰å€¼
         
         ;;
-        ;; Èç¹û GUEST_PG Îª 0£¬ÔòÇå CR0.PG Î»
+        ;; å¦‚æœ GUEST_PG ä¸º 0ï¼Œåˆ™æ¸… CR0.PG ä½
         ;;
         test DWORD [edx + VMB.GuestFlags], GUEST_FLAG_PG
         jnz init_guest_state_area.@0
@@ -729,7 +729,7 @@ init_guest_state_area:
         
 init_guest_state_area.@0:        
         ;;
-        ;; Ğ´Èë CR0, CR4 ÒÔ¼° CR3
+        ;; å†™å…¥ CR0, CR4 ä»¥åŠ CR3
         ;;
         REX.Wrxb
         mov [GuestStateBufBase  + GUEST_STATE.Cr0], eax
@@ -768,26 +768,26 @@ init_guest_state_area.@0:
 
                 
         ;;
-        ;; ÏÂÃæÉèÖÃ segment register Ïà¹ØÖµ
-        ;; 1) 16 Î» selector
-        ;; 2) 32 Î» base
-        ;; 3) 32 Î» limit
-        ;; 4) 32 Î» access right
+        ;; ä¸‹é¢è®¾ç½® segment register ç›¸å…³å€¼
+        ;; 1) 16 ä½ selector
+        ;; 2) 32 ä½ base
+        ;; 3) 32 ä½ limit
+        ;; 4) 32 ä½ access right
         ;;  
         
         ;;
-        ;; ¼ì²é guest ÊÇ·ñÎª IA-32e Ä£Ê½
+        ;; æ£€æŸ¥ guest æ˜¯å¦ä¸º IA-32e æ¨¡å¼
         ;;
         test DWORD [edx + VMB.GuestFlags], GUEST_FLAG_IA32E
         jz init_guest_state_area.@1
         
         ;;
-        ;; ÔÚ IA-32e Ä£Ê½ÏÂµÄ selector:
+        ;; åœ¨ IA-32e æ¨¡å¼ä¸‹çš„ selector:
         ;; 1) CS = KerelCsSelector64
         ;; 2) ES/SS/DS = KernelSsSelector64
-        ;; 3) FS = FsSelector, GS = µ±Ç°Öµ
+        ;; 3) FS = FsSelector, GS = å½“å‰å€¼
         ;; 4) LDTR = 0
-        ;; 5) TR = µ±Ç°Öµ
+        ;; 5) TR = å½“å‰å€¼
         ;;
         mov WORD [GuestStateBufBase + GUEST_STATE.FsSelector], FsSelector
         mov ax, [ebp + PCB.GsSelector]        
@@ -797,7 +797,7 @@ init_guest_state_area.@0:
         mov [GuestStateBufBase + GUEST_STATE.TrSelector], ax
 
         ;;
-        ;; Èç¹û guest Ê¹ÓÃ 3 ¼¶£¨USER£©È¨ÏŞ
+        ;; å¦‚æœ guest ä½¿ç”¨ 3 çº§ï¼ˆUSERï¼‰æƒé™
         ;;
         test DWORD [edx + VMB.GuestFlags], GUEST_FLAG_USER
         jz init_guest_state_area.@01
@@ -820,7 +820,7 @@ init_guest_state_area.@01:
 init_guest_state_area.@02:
                         
         ;;
-        ;; ÔÚ IA-32e Ä£Ê½ÏÂµÄ limit£¬ÎªÁËÓë host ´ï³ÉÒ»ÖÂ£¬ÕâÀï limit ÉèÖÃÎª
+        ;; åœ¨ IA-32e æ¨¡å¼ä¸‹çš„ limitï¼Œä¸ºäº†ä¸ host è¾¾æˆä¸€è‡´ï¼Œè¿™é‡Œ limit è®¾ç½®ä¸º
         ;; 1) ES/CS/SS/DS = 0FFFFFFFFh
         ;; 2) FS/GS = 0FFFFFh
         ;; 3) LDTR = 0
@@ -837,11 +837,11 @@ init_guest_state_area.@02:
         mov DWORD [GuestStateBufBase + GUEST_STATE.TrLimit], 2FFFh
 
         ;;
-        ;; ÔÚ IA-32e Ä£Ê½ÏÂµÄ base
+        ;; åœ¨ IA-32e æ¨¡å¼ä¸‹çš„ base
         ;; 1) ES/CS/SS/DS = 0
-        ;; 2) FS/GS = µ±Ç°Öµ
+        ;; 2) FS/GS = å½“å‰å€¼
         ;; 3) LDTR = 0
-        ;; 4) TR = µ±Ç°Öµ
+        ;; 4) TR = å½“å‰å€¼
         ;;
         xor eax, eax
         REX.Wrxb
@@ -864,15 +864,15 @@ init_guest_state_area.@02:
         mov [GuestStateBufBase + GUEST_STATE.TrBase], eax
         
         ;;
-        ;; 64-bit Kernel CS/SS ÃèÊö·ûÉèÖÃËµÃ÷£º
-        ;; 1£©ÔÚ x64 ÌåÏµÏÂÃèÊö·û¿ÉÒÔÉèÖÃÎª£º
+        ;; 64-bit Kernel CS/SS æè¿°ç¬¦è®¾ç½®è¯´æ˜ï¼š
+        ;; 1ï¼‰åœ¨ x64 ä½“ç³»ä¸‹æè¿°ç¬¦å¯ä»¥è®¾ç½®ä¸ºï¼š
         ;;      * CS = 00209800_00000000h (L=P=1, G=D=0, C=R=A=0)
         ;;      * SS = 00009200_00000000h (L=1, G=B=0, W=1, E=A=0)
-        ;; 2) ÔÚ VMX ¼Ü¹¹ÏÂ, ÔÚVM-exit ·µ»Ø host ºó»á½«ÃèÊö·ûÉèÖÃÎª£º
+        ;; 2) åœ¨ VMX æ¶æ„ä¸‹, åœ¨VM-exit è¿”å› host åä¼šå°†æè¿°ç¬¦è®¾ç½®ä¸ºï¼š
         ;;      * CS = 00AF9B00_0000FFFFh (G=L=P=1, D=0, C=0, R=A=1)
         ;;      * SS = 00CF9300_0000FFFFh (G=P=1, B=1, E=0, W=A=1)
         ;;
-        ;; 3) Òò´Ë£¬ÎªÁËÓë host µÄÃèÊö·û´ï³ÉÒ»ÖÂ£¬ÕâÀï½«ÃèÊö·ûÉèÎª£º
+        ;; 3) å› æ­¤ï¼Œä¸ºäº†ä¸ host çš„æè¿°ç¬¦è¾¾æˆä¸€è‡´ï¼Œè¿™é‡Œå°†æè¿°ç¬¦è®¾ä¸ºï¼š
         ;;      * CS = 00AF9A00_0000FFFFh (G=L=P=1, D=0, C=A=0, R=1)
         ;;      * SS = 00CF9200_0000FFFFh (G=P=1, B=1, E=A=0, W=1)  
         ;;        
@@ -882,13 +882,13 @@ init_guest_state_area.@02:
         mov DWORD [GuestStateBufBase + GUEST_STATE.TrAccessRight], TYPE_SYS | TYPE_BUSY_TSS64 | SEG_ugdlP | DPL_0
         
         ;;
-        ;; Èç¹û guest Ê¹ÓÃ 3 ¼¶£¨USER£©È¨ÏŞ
+        ;; å¦‚æœ guest ä½¿ç”¨ 3 çº§ï¼ˆUSERï¼‰æƒé™
         ;;
         test DWORD [edx + VMB.GuestFlags], GUEST_FLAG_USER
         jz init_guest_state_area.@03
         
         ;;
-        ;; CS, SS, ES, DS ÉèÎª 3 ¼¶
+        ;; CS, SS, ES, DS è®¾ä¸º 3 çº§
         ;;
         mov DWORD [GuestStateBufBase + GUEST_STATE.CsAccessRight], TYPE_NON_SYS | TYPE_CcRA | SEG_uGdLP | DPL_3
         mov DWORD [GuestStateBufBase + GUEST_STATE.SsAccessRight], TYPE_NON_SYS | TYPE_ceWA | SEG_uGDlP | DPL_3
@@ -900,7 +900,7 @@ init_guest_state_area.@02:
         
 init_guest_state_area.@03:
         ;;
-        ;; CS, SS, ES, DS ÉèÎª 0 ¼¶
+        ;; CS, SS, ES, DS è®¾ä¸º 0 çº§
         ;;
         mov DWORD [GuestStateBufBase + GUEST_STATE.CsAccessRight], TYPE_NON_SYS | TYPE_CcRA | SEG_uGdLP | DPL_0
         mov DWORD [GuestStateBufBase + GUEST_STATE.SsAccessRight], TYPE_NON_SYS | TYPE_ceWA | SEG_uGDlP | DPL_0
@@ -912,15 +912,15 @@ init_guest_state_area.@03:
         
 init_guest_state_area.@1:
         ;;
-        ;; ±£»¤Ä£Ê½ÏÂ selector
+        ;; ä¿æŠ¤æ¨¡å¼ä¸‹ selector
         ;; 1) CS = KernelCsSelector32
         ;; 2) ES/SS/DS = KernelSsSelector32
-        ;; 3) FS/GS/TR = µ±Ç°Öµ
+        ;; 3) FS/GS/TR = å½“å‰å€¼
         ;; 
         test DWORD [edx + VMB.GuestFlags], GUEST_FLAG_USER
         jz init_guest_state_area.@11
         ;;
-        ;; ÉèÎª 3 ¼¶
+        ;; è®¾ä¸º 3 çº§
         ;;           
         mov WORD [GuestStateBufBase + GUEST_STATE.CsSelector], KernelCsSelector32 | 3
         mov WORD [GuestStateBufBase + GUEST_STATE.SsSelector], KernelSsSelector32 | 3
@@ -931,7 +931,7 @@ init_guest_state_area.@1:
         
 init_guest_state_area.@11:
         ;;
-        ;; ÉèÎª 0 ¼¶
+        ;; è®¾ä¸º 0 çº§
         ;;
         mov WORD [GuestStateBufBase + GUEST_STATE.CsSelector], KernelCsSelector32
         mov WORD [GuestStateBufBase + GUEST_STATE.SsSelector], KernelSsSelector32
@@ -950,7 +950,7 @@ init_guest_state_area.@12:
         mov WORD [GuestStateBufBase + GUEST_STATE.TrSelector], TssSelector32
 
         ;;
-        ;; ±£»¤Ä£Ê½ÏÂ limit
+        ;; ä¿æŠ¤æ¨¡å¼ä¸‹ limit
         ;; 1) ES/CS/SS/DS = 0FFFFFFFFh
         ;; 2) FS/GS = 0FFFFFh
         ;; 3) LDTR = 0
@@ -966,9 +966,9 @@ init_guest_state_area.@12:
         mov DWORD [GuestStateBufBase + GUEST_STATE.TrLimit], 2FFFh
         
         ;;
-        ;; ±£»¤Ä£Ê½ÏÂ base
+        ;; ä¿æŠ¤æ¨¡å¼ä¸‹ base
         ;; 1) ES/CS/SS/DS = 0
-        ;; 2) FS/GS/TR = µ±Ç°Öµ
+        ;; 2) FS/GS/TR = å½“å‰å€¼
         ;; 3) LDTR = 0
         ;;
         xor eax, eax
@@ -993,7 +993,7 @@ init_guest_state_area.@12:
         
                 
         ;;
-        ;; ±£»¤Ä£Ê½ÏÂ access rights
+        ;; ä¿æŠ¤æ¨¡å¼ä¸‹ access rights
         ;; 1) CS = 0000C09Bh
         ;; 2) ES/SS/DS = 0000C093h
         ;; 3) FS/GS = 00004093h
@@ -1008,7 +1008,7 @@ init_guest_state_area.@12:
         test DWORD [edx + VMB.GuestFlags], GUEST_FLAG_USER
         jz init_guest_state_area.@13
         ;;
-        ;; ÉèÎª 3 ¼¶
+        ;; è®¾ä¸º 3 çº§
         ;;    
         mov DWORD [GuestStateBufBase + GUEST_STATE.CsAccessRight], TYPE_NON_SYS | TYPE_CcRA | SEG_uGDlP | DPL_3
         mov DWORD [GuestStateBufBase + GUEST_STATE.SsAccessRight], TYPE_NON_SYS | TYPE_ceWA | SEG_uGDlP | DPL_3
@@ -1019,7 +1019,7 @@ init_guest_state_area.@12:
         
 init_guest_state_area.@13:
         ;;
-        ;; ÉèÎª 0 ¼¶
+        ;; è®¾ä¸º 0 çº§
         ;;        
         mov DWORD [GuestStateBufBase + GUEST_STATE.CsAccessRight], TYPE_NON_SYS | TYPE_CcRA | SEG_uGDlP | DPL_0
         mov DWORD [GuestStateBufBase + GUEST_STATE.SsAccessRight], TYPE_NON_SYS | TYPE_ceWA | SEG_uGDlP | DPL_0
@@ -1031,9 +1031,9 @@ init_guest_state_area.@13:
         
 init_guest_state_area.@2:
         ;;
-        ;; Ğ´Èë GDTR Óë IDTR Öµ
-        ;; 1) 32 Î» base(x64ÏÂ 64 Î»£©
-        ;; 2) 32 Î» limit
+        ;; å†™å…¥ GDTR ä¸ IDTR å€¼
+        ;; 1) 32 ä½ base(x64ä¸‹ 64 ä½ï¼‰
+        ;; 2) 32 ä½ limit
         ;;
         REX.Wrxb
         mov esi, [ebp + PCB.GdtPointer]
@@ -1055,9 +1055,9 @@ init_guest_state_area.@2:
         mov esi, edx
      
         ;;
-        ;; ÒÔµ±Ç°ÖµĞ´Èë MSRs
+        ;; ä»¥å½“å‰å€¼å†™å…¥ MSRs
         ;; 1) IA32_DEBUGCTL
-        ;; 2) IA32_SYSENTER_CS£¨32Î»£©
+        ;; 2) IA32_SYSENTER_CSï¼ˆ32ä½ï¼‰
         ;; 3) IA32_SYSENTER_ESP
         ;; 4) IA32_SYSENTER_EIP
         ;; 5) IA32_PERF_GLOBAL_CTRL
@@ -1093,7 +1093,7 @@ init_guest_state_area.@2:
         jnz init_guest_state_area.@3
         
         ;;
-        ;; µ± ¡°IA-32e mode guest¡±Îª 0 Ê±£¬Çåµô LME£¬LMA ÒÔ¼° SCE Î»
+        ;; å½“ â€œIA-32e mode guestâ€ä¸º 0 æ—¶ï¼Œæ¸…æ‰ LMEï¼ŒLMA ä»¥åŠ SCE ä½
         ;;        
         and eax, ~(EFER_LME | EFER_LMA | EFER_SCE)
 
@@ -1110,7 +1110,7 @@ init_guest_state_area.@3:
         
         
         ;;
-        ;;==== ÉèÖÃ guest non-register state ĞÅÏ¢ ====
+        ;;==== è®¾ç½® guest non-register state ä¿¡æ¯ ====
         ;;
         ;;
         ;; 1. Activity state = Active
@@ -1119,10 +1119,10 @@ init_guest_state_area.@3:
         mov DWORD [GuestStateBufBase + GUEST_STATE.ActivityState], GUEST_STATE_ACTIVE
         
         ;; 2. Interruptibility state:
-        ;; ËµÃ÷£º
-        ;;    1) È«²¿ÉèÖÃÎª 0
-        ;;    2) ³ıÁËµ± guest processor ´¦ÓÚ SMM Ä£Ê½Ê±£¬Block by SMI ±ØĞëÉèÎª 1 Öµ
-        ;; Òò´Ë£º
+        ;; è¯´æ˜ï¼š
+        ;;    1) å…¨éƒ¨è®¾ç½®ä¸º 0
+        ;;    2) é™¤äº†å½“ guest processor å¤„äº SMM æ¨¡å¼æ—¶ï¼ŒBlock by SMI å¿…é¡»è®¾ä¸º 1 å€¼
+        ;; å› æ­¤ï¼š
         ;;    [0]: Blocking by STI: No
         ;;    [1]: Blocking by MOV SS: No
         ;;    [2]: Blocking by SMI: No
@@ -1145,22 +1145,22 @@ init_guest_state_area.@3:
         
         ;;
         ;; 5. VMX-preemption timer value
-        ;; ËµÃ÷£º
-        ;;    1) guest Ã¿ 500ms Ö´ĞĞ VM-exit
-        ;;    2) PCB.ProcessorFrequency * us Êı
+        ;; è¯´æ˜ï¼š
+        ;;    1) guest æ¯ 500ms æ‰§è¡Œ VM-exit
+        ;;    2) PCB.ProcessorFrequency * us æ•°
         ;;
 %if 0        
         mov esi, [ebp + PCB.ProcessorFrequency]
         mov eax, 500000                                                 ; 500ms
         mul esi
 %endif
-        mov eax, [esi + VMB.VmxTimerValue]                                      ; ´Ó VMB Àï¶ÁÈ¡ timer value        
+        mov eax, [esi + VMB.VmxTimerValue]                                      ; ä» VMB é‡Œè¯»å– timer value        
         mov [GuestStateBufBase + GUEST_STATE.VmxPreemptionTimerValue], eax
         
         ;;
         ;; 6. PDPTEs(Page-Directory-Pointer Table Enties)
-        ;; ËµÃ÷£º
-        ;;      1) ´Ó PCB.Ppt ±íÀï¶ÁÈ¡ 4 ¸ö PDPTEs Öµ
+        ;; è¯´æ˜ï¼š
+        ;;      1) ä» PCB.Ppt è¡¨é‡Œè¯»å– 4 ä¸ª PDPTEs å€¼
         ;;
         mov eax, [ebp + PCB.Ppt]
         mov edx, [ebp + PCB.Ppt + 4]
@@ -1206,8 +1206,8 @@ init_guest_state_area.@3:
 ;       esi - VMB pointer
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÉèÖÃÊµÄ£Ê½ÏÂ VMCS µÄ GUEST STAGE ÇøÓò
+; æè¿°ï¼š
+;       1) è®¾ç½®å®æ¨¡å¼ä¸‹ VMCS çš„ GUEST STAGE åŒºåŸŸ
 ;----------------------------------------------------------     
 init_realmode_guest_state:
         push ebp
@@ -1227,19 +1227,19 @@ init_realmode_guest_state:
 
         
         ;;
-        ;; ÊµÄ£Ê½ÏÂ guest µÄÉèÖÃ
-        ;; 1) CR0 = ¹Ì¶¨Öµ
-        ;; 2) CR4 = ¹Ì¶¨Öµ
+        ;; å®æ¨¡å¼ä¸‹ guest çš„è®¾ç½®
+        ;; 1) CR0 = å›ºå®šå€¼
+        ;; 2) CR4 = å›ºå®šå€¼
         ;; 3) CR3 =  0
         ;;
-        mov eax, [ebp + PCB.Cr0FixedMask]               ; CR0 ¹Ì¶¨Öµ
+        mov eax, [ebp + PCB.Cr0FixedMask]               ; CR0 å›ºå®šå€¼
         and eax, ~(CR0_PG | CR0_PE)        
-        mov edx, [ebp + PCB.Cr4FixedMask]               ; CR4 µÄ¹Ì¶¨Öµ
-        xor ecx, ecx                                    ; Çå CR3
+        mov edx, [ebp + PCB.Cr4FixedMask]               ; CR4 çš„å›ºå®šå€¼
+        xor ecx, ecx                                    ; æ¸… CR3
 
       
         ;;
-        ;; Ğ´Èë CR0, CR4 ÒÔ¼° CR3
+        ;; å†™å…¥ CR0, CR4 ä»¥åŠ CR3
         ;;
         REX.Wrxb
         mov [GuestStateBufBase  + GUEST_STATE.Cr0], eax
@@ -1277,11 +1277,11 @@ init_realmode_guest_state:
           
                 
         ;;
-        ;; ÏÂÃæÉèÖÃ segment register Ïà¹ØÖµ
-        ;; 1) 16 Î» selector
-        ;; 2) 32 Î» base
-        ;; 3) 32 Î» limit
-        ;; 4) 32 Î» access right
+        ;; ä¸‹é¢è®¾ç½® segment register ç›¸å…³å€¼
+        ;; 1) 16 ä½ selector
+        ;; 2) 32 ä½ base
+        ;; 3) 32 ä½ limit
+        ;; 4) 32 ä½ access right
         ;;  
 
         ;;
@@ -1297,7 +1297,7 @@ init_realmode_guest_state:
         mov WORD [GuestStateBufBase + GUEST_STATE.TrSelector], 0        
         
         ;;
-        ;; ËùÓĞ limit Îª 0FFFFh
+        ;; æ‰€æœ‰ limit ä¸º 0FFFFh
         ;;
         mov DWORD [GuestStateBufBase + GUEST_STATE.CsLimit], 0FFFFh
         mov DWORD [GuestStateBufBase + GUEST_STATE.SsLimit], 0FFFFh
@@ -1348,7 +1348,7 @@ init_realmode_guest_state:
         
 
         ;;
-        ;; GDTR Óë IDTR
+        ;; GDTR ä¸ IDTR
         ;; 1) base = 0
         ;; 2) limit = 0FFFFh
         ;;
@@ -1363,13 +1363,13 @@ init_realmode_guest_state:
 
 
         ;;
-        ;; MSRs ÉèÖÃ£º
+        ;; MSRs è®¾ç½®ï¼š
         ;; 1) IA32_DEBUGCTL = 0
         ;; 2) IA32_SYSENTER_CS = 0
         ;; 3) IA32_SYSENTER_ESP = 0
         ;; 4) IA32_SYSENTER_EIP = 0
         ;; 5) IA32_PERF_GLOBAL_CTRL = 0
-        ;; 6) IA32_PAT = µ±Ç°Öµ
+        ;; 6) IA32_PAT = å½“å‰å€¼
         ;; 7) IA32_EFER = 0
         ;;            
         xor eax, eax
@@ -1396,7 +1396,7 @@ init_realmode_guest_state:
         
         
         ;;
-        ;;==== ÉèÖÃ guest non-register state ĞÅÏ¢ ====
+        ;;==== è®¾ç½® guest non-register state ä¿¡æ¯ ====
         ;;
         ;;
         ;; 1. Activity state = Active
@@ -1405,10 +1405,10 @@ init_realmode_guest_state:
         mov DWORD [GuestStateBufBase + GUEST_STATE.ActivityState], GUEST_STATE_ACTIVE
         
         ;; 2. Interruptibility state:
-        ;; ËµÃ÷£º
-        ;;    1) È«²¿ÉèÖÃÎª 0
-        ;;    2) ³ıÁËµ± guest processor ´¦ÓÚ SMM Ä£Ê½Ê±£¬Block by SMI ±ØĞëÉèÎª 1 Öµ
-        ;; Òò´Ë£º
+        ;; è¯´æ˜ï¼š
+        ;;    1) å…¨éƒ¨è®¾ç½®ä¸º 0
+        ;;    2) é™¤äº†å½“ guest processor å¤„äº SMM æ¨¡å¼æ—¶ï¼ŒBlock by SMI å¿…é¡»è®¾ä¸º 1 å€¼
+        ;; å› æ­¤ï¼š
         ;;    [0]: Blocking by STI: No
         ;;    [1]: Blocking by MOV SS: No
         ;;    [2]: Blocking by SMI: No
@@ -1432,13 +1432,13 @@ init_realmode_guest_state:
         ;;
         ;; 5. VMX-preemption timer value = 0
         ;;
-        mov eax, [esi + VMB.VmxTimerValue]                                      ; ´Ó VMB Àï¶ÁÈ¡ timer value        
+        mov eax, [esi + VMB.VmxTimerValue]                                      ; ä» VMB é‡Œè¯»å– timer value        
         mov [GuestStateBufBase + GUEST_STATE.VmxPreemptionTimerValue], eax        
         
         ;;
         ;; 6. PDPTEs(Page-Directory-Pointer Table Enties)
-        ;; ËµÃ÷£º
-        ;;      1) ËùÓĞ PDPTEs Îª 0
+        ;; è¯´æ˜ï¼š
+        ;;      1) æ‰€æœ‰ PDPTEs ä¸º 0
         ;;
         xor eax, eax
         xor edx, edx
@@ -1473,8 +1473,8 @@ init_realmode_guest_state:
 ;       esi - VMB pointer
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÉèÖÃ VMCS µÄ HOST STAGE ÇøÓò
+; æè¿°ï¼š
+;       1) è®¾ç½® VMCS çš„ HOST STAGE åŒºåŸŸ
 ;----------------------------------------------------------   
 init_host_state_area:
         push ebp
@@ -1494,7 +1494,7 @@ init_host_state_area:
 
 
         ;;
-        ;; ÒÔµ±Ç°Öµ·Ö±ğĞ´Èë CR0, CR3, CR4
+        ;; ä»¥å½“å‰å€¼åˆ†åˆ«å†™å…¥ CR0, CR3, CR4
         ;;
         REX.Wrxb
         mov eax, cr0
@@ -1511,7 +1511,7 @@ init_host_state_area:
 
 
         ;;
-        ;; Ğ´Èë rsp Óë rip
+        ;; å†™å…¥ rsp ä¸ rip
         ;;
         REX.Wrxb
         mov eax, [esi + VMB.HostStack]    
@@ -1524,7 +1524,7 @@ init_host_state_area:
         
 
         ;;
-        ;; ÒÔµ±Ç°ÖµĞ´Èë selector Öµ
+        ;; ä»¥å½“å‰å€¼å†™å…¥ selector å€¼
         ;;
         mov ax, cs
         mov [HostStateBufBase + HOST_STATE.CsSelector], ax
@@ -1542,7 +1542,7 @@ init_host_state_area:
         mov [HostStateBufBase + HOST_STATE.TrSelector], ax
 
         ;;
-        ;; Ğ´Èë segment base Öµ
+        ;; å†™å…¥ segment base å€¼
         ;;
         REX.Wrxb
         mov [HostStateBufBase + HOST_STATE.GsBase], ebp
@@ -1565,8 +1565,8 @@ init_host_state_area:
 
                
         ;;
-        ;; ÒÔµ±Ç°ÖµĞ´Èë MSR
-        ;; 1) IA32_SYSENTER_CS(32Î»)
+        ;; ä»¥å½“å‰å€¼å†™å…¥ MSR
+        ;; 1) IA32_SYSENTER_CS(32ä½)
         ;; 2) IA32_SYSENTER_ESP
         ;; 3) IA32_SYSENTER_EIP
         ;; 4) IA32_PERF_GLOBAL_CTRL
@@ -1610,11 +1610,11 @@ init_host_state_area:
 ;----------------------------------------------------------
 ; init_vm_execution_control_fields()
 ; input:
-;       esi - VMCS ¹ÜÀí¿éÖ¸Õë£¨VMCS_MANAGE_BLOCK£©
+;       esi - VMCS ç®¡ç†å—æŒ‡é’ˆï¼ˆVMCS_MANAGE_BLOCKï¼‰
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÉèÖÃ VMCS µÄ VM-execution ¿ØÖÆÓò
+; æè¿°ï¼š
+;       1) è®¾ç½® VMCS çš„ VM-execution æ§åˆ¶åŸŸ
 ;----------------------------------------------------------   
 init_vm_execution_control_fields:
         push ebx
@@ -1632,15 +1632,15 @@ init_vm_execution_control_fields:
 
         
         ;;
-        ;; ÉèÖÃ Pin-based ¿ØÖÆÓò:
+        ;; è®¾ç½® Pin-based æ§åˆ¶åŸŸ:
         ;; 1) [0]  - external-interrupt exiting: Yes
         ;; 2) [3]  - NMI exiting: Yes
         ;; 3) [5]  - Virtual NMIs: No
         ;; 4) [6]  - Activate VMX preemption timer: Yes
         ;; 5) [7]  - process posted interrupts: No
         ;;
-        ;; ×¢Òâ£º
-        ;; 1) Èç¹û VMB.VmxTimerValue = 0 Ê±£¬²»Ê¹ÓÃ VMX-preemption timer
+        ;; æ³¨æ„ï¼š
+        ;; 1) å¦‚æœ VMB.VmxTimerValue = 0 æ—¶ï¼Œä¸ä½¿ç”¨ VMX-preemption timer
         ;;
         
         mov ebx, EXTERNAL_INTERRUPT_EXITING | NMI_EXITING
@@ -1650,40 +1650,40 @@ init_vm_execution_control_fields:
         cmove eax, ebx
         
         ;;
-        ;; ×¢Òâ£¬PCB.PinBasedCtls µÄÖµÔÚ stage1 ½×¶ÎÊ±ÒÑ¸üĞÂ£¬ËüµÄÖµÎª£º
-        ;; 1) µ± IA32_VMX_BASIC[55] = 1 Ê±£¬µÈÓÚ IA32_VMX_TRUE_PINBASED_CTLS ¼Ä´æÆ÷
-        ;; 2) µ± IA32_VMX_BASIC[55] = 0 Ê±£¬µÈÓÚ IA32_VMX_PINBASED_CTLS ¼Ä´æÆ÷
+        ;; æ³¨æ„ï¼ŒPCB.PinBasedCtls çš„å€¼åœ¨ stage1 é˜¶æ®µæ—¶å·²æ›´æ–°ï¼Œå®ƒçš„å€¼ä¸ºï¼š
+        ;; 1) å½“ IA32_VMX_BASIC[55] = 1 æ—¶ï¼Œç­‰äº IA32_VMX_TRUE_PINBASED_CTLS å¯„å­˜å™¨
+        ;; 2) å½“ IA32_VMX_BASIC[55] = 0 æ—¶ï¼Œç­‰äº IA32_VMX_PINBASED_CTLS å¯„å­˜å™¨
         ;; 
         
         ;;######################################################################################
-        ;; PCB.PinBasedCtls ÖµËµÃ÷£º
-        ;; 1) [31:0]  - allowed 0-setting Î»
-        ;;              µ± bit Îª 1 Ê±£¬Pin-based VM-execution control Î»Îª 0£¬Ôò³ö´í!
-        ;;              µ± bit Îª 0 Ê±£¬Pin-based VM-execution control Î»¿ÉÎª 0 Öµ¡£
-        ;;     Òò´Ë:    µ± bit Îª 1 Ê±£¬Pin-based VM-execution control ±ØĞëÎª 1 Öµ!!!    
+        ;; PCB.PinBasedCtls å€¼è¯´æ˜ï¼š
+        ;; 1) [31:0]  - allowed 0-setting ä½
+        ;;              å½“ bit ä¸º 1 æ—¶ï¼ŒPin-based VM-execution control ä½ä¸º 0ï¼Œåˆ™å‡ºé”™!
+        ;;              å½“ bit ä¸º 0 æ—¶ï¼ŒPin-based VM-execution control ä½å¯ä¸º 0 å€¼ã€‚
+        ;;     å› æ­¤:    å½“ bit ä¸º 1 æ—¶ï¼ŒPin-based VM-execution control å¿…é¡»ä¸º 1 å€¼!!!    
         ;;              
-        ;; 2) [63:32] - allowed 1-setting Î»
-        ;;              µ± bit Îª 0 Ê±£¬Pin-based VM-execution control Î»Îª 1£¬Ôò³ö´í£¡
-        ;;              µ± bit Îª 1 Ê±£¬Pin-based VM-execution control Î»¿ÉÎª 1 Öµ¡£
-        ;;     Òò´Ë:    µ± bit Îª 0 Ê±£¬Pin-based VM-execution control ±ØĞëÎª 0 Öµ!!!
+        ;; 2) [63:32] - allowed 1-setting ä½
+        ;;              å½“ bit ä¸º 0 æ—¶ï¼ŒPin-based VM-execution control ä½ä¸º 1ï¼Œåˆ™å‡ºé”™ï¼
+        ;;              å½“ bit ä¸º 1 æ—¶ï¼ŒPin-based VM-execution control ä½å¯ä¸º 1 å€¼ã€‚
+        ;;     å› æ­¤:    å½“ bit ä¸º 0 æ—¶ï¼ŒPin-based VM-execution control å¿…é¡»ä¸º 0 å€¼!!!
         ;;
-        ;; 3) µ± [31:0] µÄÎ»Îª 0£¬¶ø [63:32] µÄÏàÓ¦Î»Í¬Ê±Îª 1 Ê±£¬
-        ;;    ËµÃ÷ Pin-based VM-execution control Î»ÔÊĞíÉèÖÃÎª 0 »ò 1 Öµ
+        ;; 3) å½“ [31:0] çš„ä½ä¸º 0ï¼Œè€Œ [63:32] çš„ç›¸åº”ä½åŒæ—¶ä¸º 1 æ—¶ï¼Œ
+        ;;    è¯´æ˜ Pin-based VM-execution control ä½å…è®¸è®¾ç½®ä¸º 0 æˆ– 1 å€¼
         ;;
-        ;; Éú³É×îÖÕµÄ Pin-based VM-execution control ÖµËµÃ÷£º
-        ;; 1) µ± eax ÊäÈëÓÃ»§ÉèÖÃµÄÖµºó£¬ÏÂÃæËã·¨Éú³É×îÖÕµÄÖµ
-        ;; Ëã·¨Ò»£º
-        ;; 1) mask1 = (allowed 0-setting) AND (allowed 1-setting)£ºµÃ³ö±ØĞëÎª 1 µÄ mask Öµ
-        ;; 2) eax = (eax) OR (mask1)£ºÖÃ 1 Öµ
-        ;; 3) mask0 = (allowed 0-setting) OR (allowed 1-setting)£ºµÃ³ö±ØĞëÎª 0 µÄ mask Öµ
-        ;; 4) eax = (eax) AND (mask0)£ºÇå 0 Öµ
+        ;; ç”Ÿæˆæœ€ç»ˆçš„ Pin-based VM-execution control å€¼è¯´æ˜ï¼š
+        ;; 1) å½“ eax è¾“å…¥ç”¨æˆ·è®¾ç½®çš„å€¼åï¼Œä¸‹é¢ç®—æ³•ç”Ÿæˆæœ€ç»ˆçš„å€¼
+        ;; ç®—æ³•ä¸€ï¼š
+        ;; 1) mask1 = (allowed 0-setting) AND (allowed 1-setting)ï¼šå¾—å‡ºå¿…é¡»ä¸º 1 çš„ mask å€¼
+        ;; 2) eax = (eax) OR (mask1)ï¼šç½® 1 å€¼
+        ;; 3) mask0 = (allowed 0-setting) OR (allowed 1-setting)ï¼šå¾—å‡ºå¿…é¡»ä¸º 0 çš„ mask å€¼
+        ;; 4) eax = (eax) AND (mask0)ï¼šæ¸… 0 å€¼
         ;; 
-        ;; Ëã·¨¶ş£º
+        ;; ç®—æ³•äºŒï¼š
         ;; 1) eax = (eax) OR (allowed 0-setting)
         ;; 2) eax = (eax) AND (allowed 1-setting)
         ;;
-        ;; Ëã·¨¶şÊÇËã·¨Ò»µÄ¼ò±ãÊµÏÖ£¬ËüÃÇµÄ½á¹ûÊÇÒ»ÑùµÄ£¡
-        ;; ÕâÊÇÒòÎªµ±Ç°:
+        ;; ç®—æ³•äºŒæ˜¯ç®—æ³•ä¸€çš„ç®€ä¾¿å®ç°ï¼Œå®ƒä»¬çš„ç»“æœæ˜¯ä¸€æ ·çš„ï¼
+        ;; è¿™æ˜¯å› ä¸ºå½“å‰:
         ;;      1) allowed 0-setting = (allowed 0-setting) AND (allowed 1-setting)
         ;;      2) allowed 1-setting = (allowed 0-setting) OR (allowed 1-setting)
         ;;
@@ -1691,19 +1691,19 @@ init_vm_execution_control_fields:
         
                        
         ;;
-        ;; Ê¹ÓÃËã·¨¶ş£¬Éú³É×îÖÕµÄ Pin-based VM-execution control Öµ
+        ;; ä½¿ç”¨ç®—æ³•äºŒï¼Œç”Ÿæˆæœ€ç»ˆçš„ Pin-based VM-execution control å€¼
         ;;
         or eax, [ebp + PCB.PinBasedCtls]                                ; OR  allowed 0-setting
         and eax, [ebp + PCB.PinBasedCtls + 4]                           ; AND allowed 1-setting
 
         ;;
-        ;; Ğ´Èë Pin-based VM-execution control Öµ
+        ;; å†™å…¥ Pin-based VM-execution control å€¼
         ;;        
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.PinControl], eax
 
         
         ;;
-        ;; ÉèÖÃ Processor-based VM-execution control Óò
+        ;; è®¾ç½® Processor-based VM-execution control åŸŸ
         ;; [2]  - Interrupt-window exiting: No
         ;; [3]  - Use TSC offsetting: No
         ;; [7]  - HLT exiting: Yes
@@ -1729,20 +1729,20 @@ init_vm_execution_control_fields:
         mov eax, 0B3218680h
         
         ;;
-        ;; ÉèÖÃ Primary Processor-based VM-execution control Öµ
-        ;; 1) Ô­ÀíºÍ¡¡Pin-based VM-execution control ÖµÏàÍ¬!
+        ;; è®¾ç½® Primary Processor-based VM-execution control å€¼
+        ;; 1) åŸç†å’Œã€€Pin-based VM-execution control å€¼ç›¸åŒ!
         ;;   
         or eax, [ebp + PCB.ProcessorBasedCtls]                          ; OR  allowed 0-setting
         and eax, [ebp + PCB.ProcessorBasedCtls + 4]                     ; AND allowed 1-setting
         
         ;;
-        ;; Ğ´Èë Primary Processor-based VM-execution control Öµ
+        ;; å†™å…¥ Primary Processor-based VM-execution control å€¼
         ;;
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.ProcessorControl1], eax
         
         
         ;;
-        ;; ÉèÖÃ¡¡Secondary Processor-based VM-execution control Öµ
+        ;; è®¾ç½®ã€€Secondary Processor-based VM-execution control å€¼
         ;; 1) [0]  - Virtualize APIC access: Yes
         ;; 2) [1]  - Enable EPT: No
         ;; 3) [2]  - Descriptor-table exiting: Yes
@@ -1750,7 +1750,7 @@ init_vm_execution_control_fields:
         ;; 5) [4]  - Virtualize x2APIC mode: No
         ;; 6) [5]  - Enable VPID: Yes
         ;; 7) [6]  - WBINVD exiting: Yes
-        ;; 8) [7]  - unrestricted guest: ÓÉ VMB.GuestFlags ¾ö¶¨
+        ;; 8) [7]  - unrestricted guest: ç”± VMB.GuestFlags å†³å®š
         ;; 9) [8]  - APIC-register virtualization: Yes
         ;; 10) [9] - virutal-interrupt delivery: Yes
         ;; 11) [10] - PAUSE-loop exiting: No
@@ -1761,12 +1761,12 @@ init_vm_execution_control_fields:
         mov edx, 136Dh
         
         ;;
-        ;; ÏÂÃæÇé¿öÏÂÖ®Ò»£¬Ê¹ÓÃ unrestricted guest ÉèÖÃ
+        ;; ä¸‹é¢æƒ…å†µä¸‹ä¹‹ä¸€ï¼Œä½¿ç”¨ unrestricted guest è®¾ç½®
         ;; 1) GUEST_FLAG_PE = 0
         ;; 2) GUEST_FLAG_PG = 0
         ;; 3) GUEST_FLAG_UNRESTRICTED = 1
         ;;
-        ;; "unrestricted guest" = 1 Ê±£¬"Enable EPT"±ØĞëÎª 1
+        ;; "unrestricted guest" = 1 æ—¶ï¼Œ"Enable EPT"å¿…é¡»ä¸º 1
         ;;
         mov edi, [esi + VMB.GuestFlags]
         
@@ -1789,7 +1789,7 @@ init_vm_execution_control_fields.@0:
 init_vm_execution_control_fields.@01:
 
         ;;
-        ;; Èç¹û "Use TPR shadow" Îª 0£¬ÏÂÃæÎ»±ØĞëÎª 0
+        ;; å¦‚æœ "Use TPR shadow" ä¸º 0ï¼Œä¸‹é¢ä½å¿…é¡»ä¸º 0
         ;; 1) "virtualize x2APIC mode"
         ;; 2) "APIC-registers virtualization"
         ;; 3) "virutal-interrupt delivery"
@@ -1802,20 +1802,20 @@ init_vm_execution_control_fields.@01:
 init_vm_execution_control_fields.@02:        
                        
         ;;
-        ;; ÉèÖÃ Secondary Processor-Based VM-excution control ×îÖÕÖµ
-        ;; 1) Ëã·¨Óë Pin-Based VM-excution control ÖµÒ»ÖÂ
+        ;; è®¾ç½® Secondary Processor-Based VM-excution control æœ€ç»ˆå€¼
+        ;; 1) ç®—æ³•ä¸ Pin-Based VM-excution control å€¼ä¸€è‡´
         ;;
         or edx, [ebp + PCB.ProcessorBasedCtls2]                         ; OR  allowed 0-setting
         and edx, [ebp + PCB.ProcessorBasedCtls2 + 4]                    ; AND allowed 1-setting
         
         ;;
-        ;; Ğ´Èë Secondary Processor-based VM-execution control Öµ
+        ;; å†™å…¥ Secondary Processor-based VM-execution control å€¼
         ;;
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.ProcessorControl2], edx
         
                 
         ;;
-        ;; ÉèÖÃ Exception Bitmap
+        ;; è®¾ç½® Exception Bitmap
         ;; 1) #BP exiting - Yes
         ;; 2) #DE exiting - Yes
         ;; 3) #UD exiting - Yes
@@ -1831,30 +1831,30 @@ init_vm_execution_control_fields.@02:
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.ExceptionBitmap], eax
         
         ;;
-        ;; ÉèÖÃ #PF Òì³£µÄ PFEC_MASK Óë PFEC_MATCH Öµ
-        ;; PFEC Óë PFEC_MASK£¬PFEC_MATCH ËµÃ÷£º
-        ;; µ± PFEC & PFEC_MASK = PFEC_MATCH Ê±£¬#PF µ¼ÖÂ VM exit ·¢Éú
-        ;;      1) µ± PFEC_MASK = PFEC_MATCH = 0 Ê±£¬ËùÓĞµÄ #PF ¶¼µ¼ÖÂ VM exit
-        ;;      2) µ± PFEC_MASK = 0£¬¶ø PFEC_MATCH = FFFFFFFFh Ê±£¬ÈÎºÎ #PF ¶¼²»»áµ¼ÖÂ VM exit
+        ;; è®¾ç½® #PF å¼‚å¸¸çš„ PFEC_MASK ä¸ PFEC_MATCH å€¼
+        ;; PFEC ä¸ PFEC_MASKï¼ŒPFEC_MATCH è¯´æ˜ï¼š
+        ;; å½“ PFEC & PFEC_MASK = PFEC_MATCH æ—¶ï¼Œ#PF å¯¼è‡´ VM exit å‘ç”Ÿ
+        ;;      1) å½“ PFEC_MASK = PFEC_MATCH = 0 æ—¶ï¼Œæ‰€æœ‰çš„ #PF éƒ½å¯¼è‡´ VM exit
+        ;;      2) å½“ PFEC_MASK = 0ï¼Œè€Œ PFEC_MATCH = FFFFFFFFh æ—¶ï¼Œä»»ä½• #PF éƒ½ä¸ä¼šå¯¼è‡´ VM exit
         ;;
-        ;; PFEC ËµÃ÷:
-        ;; 1) [0] - P Î»£º  Îª 0 Ê±£¬#PF ÓÉ not present ²úÉú
-        ;;                  Îª 1 Ê±£¬#PF ÓÉÆäËü voilation ²úÉú
-        ;; 2) [1] - R/W Î»£ºÎª 0 Ê±£¬#PF ÓÉ read access ²úÉú
-        ;;                  Îª 1 Ê±£¬#PF ÓÉ write access ²úÉú
-        ;; 3) [2] - U/S Î»£ºÎª 0 Ê±£¬·¢Éú #PF Ê±£¬´¦ÀíÆ÷ÔÚ supervisor È¨ÏŞÏÂ
-        ;;                  Îª 1 Ê±£¬·¢Éú #PF Ê±£¬´¦ÀíÆ÷ÔÚ user È¨ÏŞÏÂ
-        ;; 4) [3] - RSVD Î»£ºÎª 0 Ê±£¬Ö¸Ê¾±£ÁôÎ»Îª 0
-        ;;                   Îª 1 Ê±£¬Ö¸Ê¾±£ÁôÎ»Îª 1
-        ;; 5) [4] - I/D Î»£º Îª 0 Ê±£¬Ö´ĞĞÒ³Õı³£
-        ;;                   Îª 1 Ê±£¬Ö´ĞĞÒ³²úÉú #PF
-        ;; 6) [31:5] - ±£ÁôÎ»
+        ;; PFEC è¯´æ˜:
+        ;; 1) [0] - P ä½ï¼š  ä¸º 0 æ—¶ï¼Œ#PF ç”± not present äº§ç”Ÿ
+        ;;                  ä¸º 1 æ—¶ï¼Œ#PF ç”±å…¶å®ƒ voilation äº§ç”Ÿ
+        ;; 2) [1] - R/W ä½ï¼šä¸º 0 æ—¶ï¼Œ#PF ç”± read access äº§ç”Ÿ
+        ;;                  ä¸º 1 æ—¶ï¼Œ#PF ç”± write access äº§ç”Ÿ
+        ;; 3) [2] - U/S ä½ï¼šä¸º 0 æ—¶ï¼Œå‘ç”Ÿ #PF æ—¶ï¼Œå¤„ç†å™¨åœ¨ supervisor æƒé™ä¸‹
+        ;;                  ä¸º 1 æ—¶ï¼Œå‘ç”Ÿ #PF æ—¶ï¼Œå¤„ç†å™¨åœ¨ user æƒé™ä¸‹
+        ;; 4) [3] - RSVD ä½ï¼šä¸º 0 æ—¶ï¼ŒæŒ‡ç¤ºä¿ç•™ä½ä¸º 0
+        ;;                   ä¸º 1 æ—¶ï¼ŒæŒ‡ç¤ºä¿ç•™ä½ä¸º 1
+        ;; 5) [4] - I/D ä½ï¼š ä¸º 0 æ—¶ï¼Œæ‰§è¡Œé¡µæ­£å¸¸
+        ;;                   ä¸º 1 æ—¶ï¼Œæ‰§è¡Œé¡µäº§ç”Ÿ #PF
+        ;; 6) [31:5] - ä¿ç•™ä½
         ;;
         
         
        
         ;;
-        ;; ÏÂÃæÉèÖÃËùÓĞµÄ #PF ¶¼Òı·¢ VM exit
+        ;; ä¸‹é¢è®¾ç½®æ‰€æœ‰çš„ #PF éƒ½å¼•å‘ VM exit
         ;; 1) PFEC_MASK  = 0
         ;; 2) PFEC_MATCH = 0
         ;;        
@@ -1864,7 +1864,7 @@ init_vm_execution_control_fields.@02:
         
         
         ;;
-        ;; ÉèÖÃ IO bitmap address£¨ÎïÀíµØÖ·£©
+        ;; è®¾ç½® IO bitmap addressï¼ˆç‰©ç†åœ°å€ï¼‰
         ;;                
         mov eax, [esi + VMB.IoBitmapPhyAddressA]
         mov edx, [esi + VMB.IoBitmapPhyAddressA + 4]
@@ -1876,30 +1876,30 @@ init_vm_execution_control_fields.@02:
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.IoBitmapAddressB + 4], edx
                 
         ;;
-        ;; ÉèÖÃ TSC-offset
+        ;; è®¾ç½® TSC-offset
         ;;
         mov DWORD [ExecutionControlBufBase + EXECUTION_CONTROL.TscOffset], 0
         mov DWORD [ExecutionControlBufBase + EXECUTION_CONTROL.TscOffset + 4], 0
         
         
         ;;
-        ;; ÉèÖÃ CR0/CR4 µÄ guest/host mask ¼° read shadows Öµ
-        ;; ËµÃ÷£º
-        ;; 1) µ± mask ÏàÓ¦Î»Îª 1 Ê±£¬±íÃ÷´ËÎ»ÊôÓÚ Host ÉèÖÃ£¬guest ÎŞÈ¨ÉèÖÃ
-        ;; 2) µ± mask ÏàÓ¦Î»Îª 0 Ê±£¬±íÊ±´ËÎ» guest ¿ÉÒÔÉèÖÃ
+        ;; è®¾ç½® CR0/CR4 çš„ guest/host mask åŠ read shadows å€¼
+        ;; è¯´æ˜ï¼š
+        ;; 1) å½“ mask ç›¸åº”ä½ä¸º 1 æ—¶ï¼Œè¡¨æ˜æ­¤ä½å±äº Host è®¾ç½®ï¼Œguest æ— æƒè®¾ç½®
+        ;; 2) å½“ mask ç›¸åº”ä½ä¸º 0 æ—¶ï¼Œè¡¨æ—¶æ­¤ä½ guest å¯ä»¥è®¾ç½®
         ;;
         
         ;;
-        ;; CR0 guest/host mask ÉèÖÃ£¬¸ù¾İÌá¹©µÄ guest flags À´½øĞĞÉèÖÃ
-        ;; 1) CR0.NE Êô host È¨ÏŞ
-        ;; 2) µ± GUEST_FLAG_PE = 1£¬CR0.PE ÊôÓÚ host È¨ÏŞ£¬·ñÔòÎª guest È¨ÏŞ
-        ;; 3) µ± GUEST_FLAG_PG = 1£¬CR0.PG ÊôÓÚ host È¨ÏŞ£¬·ñÔòÎª guest È¨ÏŞ
-        ;; 5) CR0.CD ÊôÓÚ host È¨ÏŞ
-        ;; 6) CR0.NW ÊôÓÚ host È¨ÏŞ
+        ;; CR0 guest/host mask è®¾ç½®ï¼Œæ ¹æ®æä¾›çš„ guest flags æ¥è¿›è¡Œè®¾ç½®
+        ;; 1) CR0.NE å± host æƒé™
+        ;; 2) å½“ GUEST_FLAG_PE = 1ï¼ŒCR0.PE å±äº host æƒé™ï¼Œå¦åˆ™ä¸º guest æƒé™
+        ;; 3) å½“ GUEST_FLAG_PG = 1ï¼ŒCR0.PG å±äº host æƒé™ï¼Œå¦åˆ™ä¸º guest æƒé™
+        ;; 5) CR0.CD å±äº host æƒé™
+        ;; 6) CR0.NW å±äº host æƒé™
         ;;
-        ;; CR0 read shadow ÉèÖÃ:
-        ;; 1) CR0.PE µÈÓÚ CR0 guest/host mask µÄ CR0.PE
-        ;; 2) CR0.PG µÈÓÚ CR0 guest/host mask µÄ CR0.PG
+        ;; CR0 read shadow è®¾ç½®:
+        ;; 1) CR0.PE ç­‰äº CR0 guest/host mask çš„ CR0.PE
+        ;; 2) CR0.PG ç­‰äº CR0 guest/host mask çš„ CR0.PG
         ;; 3) CR0.NE = 1
         ;; 4) CR0.CD = 0
         ;; 5) CR0.NW = 0
@@ -1915,9 +1915,9 @@ init_vm_execution_control_fields.@02:
         mov DWORD [ExecutionControlBufBase + EXECUTION_CONTROL.Cr0ReadShadow + 4], 0
         
         ;;
-        ;; CR4 guest/host mask Óë read shadow ÉèÖÃ
-        ;; 1)  CR4.VMXE ¼° CR4.VME ÊôÓÚ host È¨ÏŞ
-        ;; 2) µ± GUEST_FLAG_PG = 1 Ê±, CR4.PAE ÊôÓÚ host È¨ÏŞ£¬·ñÔò guest È¨ÏŞ
+        ;; CR4 guest/host mask ä¸ read shadow è®¾ç½®
+        ;; 1)  CR4.VMXE åŠ CR4.VME å±äº host æƒé™
+        ;; 2) å½“ GUEST_FLAG_PG = 1 æ—¶, CR4.PAE å±äº host æƒé™ï¼Œå¦åˆ™ guest æƒé™
         ;;
         mov eax, 00002021h
         mov edi, 00002020h        
@@ -1935,7 +1935,7 @@ init_vm_execution_control_fields.Cr4:
         
         
         ;;
-        ;; CR3 target control ÉèÖÃ
+        ;; CR3 target control è®¾ç½®
         ;; 1) CR3-target count = 0
         ;; 2) CR3-target value = 0
         ;;
@@ -1951,9 +1951,9 @@ init_vm_execution_control_fields.Cr4:
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.Cr3Target3 + 4], eax
                 
         ;;
-        ;; APIC virtualization ÉèÖÃ
-        ;; 1) APIC-access address  = 0FEE00000H£¨Ä¬ÈÏ£©
-        ;; 2) Virtual-APIC address = ·ÖÅä»ñµÃ£¨ÎïÀíµØÖ·£©
+        ;; APIC virtualization è®¾ç½®
+        ;; 1) APIC-access address  = 0FEE00000Hï¼ˆé»˜è®¤ï¼‰
+        ;; 2) Virtual-APIC address = åˆ†é…è·å¾—ï¼ˆç‰©ç†åœ°å€ï¼‰
         ;; 3) TPR thresold = 10h
         ;; 4) EOI-exit bitmap = 0
         ;; 5) posted-interrupt notification vector = 0
@@ -1971,24 +1971,24 @@ init_vm_execution_control_fields.Cr4:
         mov edx, esi
         
         ;;
-        ;; ³õÊ¼»¯ virtual-APIC page
+        ;; åˆå§‹åŒ– virtual-APIC page
         ;;
         REX.Wrxb
         mov esi, [edx + VMB.VirtualApicAddress]
         call init_virtual_local_apic
                              
         ;;
-        ;;  ### ÉèÖÃ TPR shadow ###
+        ;;  ### è®¾ç½® TPR shadow ###
         ;;
-        ;; 1) µ± "Use TPR shadow" = 0 Ê±£¬TPR threshold = 0
-        ;; 2) µ± "Use TPR shadow" = 1 ²¢ÇÒ "Virtual-interrupt delivery" = 0 Ê±, TPR threshold = VPTR[7:4]
-        ;; 3) ·ñÔò TPR threshold = 20h
+        ;; 1) å½“ "Use TPR shadow" = 0 æ—¶ï¼ŒTPR threshold = 0
+        ;; 2) å½“ "Use TPR shadow" = 1 å¹¶ä¸” "Virtual-interrupt delivery" = 0 æ—¶, TPR threshold = VPTR[7:4]
+        ;; 3) å¦åˆ™ TPR threshold = 20h
         ;;       
         xor eax, eax                
         test DWORD [ExecutionControlBufBase + EXECUTION_CONTROL.ProcessorControl1], USE_TPR_SHADOW
         jz init_vm_execution_control_fields.@1
         ;;
-        ;; ¶ÁÈ¡ VPTR
+        ;; è¯»å– VPTR
         ;;
         REX.Wrxb
         mov eax, [edx + VMB.VirtualApicAddress]
@@ -2020,7 +2020,7 @@ init_vm_execution_control_fields.@1:
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.PostedInterruptDescriptorAddr + 4], eax  
         
         ;;
-        ;; MSR-bitmap address ÉèÖÃ£¨ÎïÀíµØÖ·£©
+        ;; MSR-bitmap address è®¾ç½®ï¼ˆç‰©ç†åœ°å€ï¼‰
         ;;
         mov esi, [edx + VMB.MsrBitmapPhyAddress]
         mov edi, [edx + VMB.MsrBitmapPhyAddress + 4]
@@ -2035,13 +2035,13 @@ init_vm_execution_control_fields.@1:
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.ExecutiveVmcsPointer + 4], eax          
         
         ;;
-        ;; Èç¹û "Enable EPT" = 1, ±ØĞëÉèÖÃ EPT
+        ;; å¦‚æœ "Enable EPT" = 1, å¿…é¡»è®¾ç½® EPT
         ;;
         mov BYTE [ebp + PCB.EptEnableFlag], 0
         test DWORD [ExecutionControlBufBase + EXECUTION_CONTROL.ProcessorControl2], ENABLE_EPT
         jz init_vm_execution_control_fields.@2
                 
-        mov BYTE [ebp + PCB.EptEnableFlag], 1                           ; ¸üĞÂ EptEnableFlag Öµ
+        mov BYTE [ebp + PCB.EptEnableFlag], 1                           ; æ›´æ–° EptEnableFlag å€¼
         
         REX.Wrxb
         mov esi, [edx + VMB.Ep4taPhysicalBase]
@@ -2050,26 +2050,26 @@ init_vm_execution_control_fields.@1:
         mov edi, [edx + VMB.Ep4taPhysicalBase + 4]
 %endif
         ;;
-        ;; ³õÊ¼»¯ EPTP ×Ö¶Î
+        ;; åˆå§‹åŒ– EPTP å­—æ®µ
         ;;
         call init_eptp_field
                 
 init_vm_execution_control_fields.@2:
         xor eax, eax
         ;;
-        ;; Èç¹ûÖ§³Ö "enable VPID"²¢¿ªÆô£¬ÔòÉèÖÃ VPID
+        ;; å¦‚æœæ”¯æŒ "enable VPID"å¹¶å¼€å¯ï¼Œåˆ™è®¾ç½® VPID
         ;;
         test DWORD [ExecutionControlBufBase + EXECUTION_CONTROL.ProcessorControl2], ENABLE_VPID
         jz init_vm_execution_control_fields.@3
         
-        mov ax, [edx + VMB.Vpid]                                        ; VMCS ¶ÔÓ¦µÄ VPID Öµ
+        mov ax, [edx + VMB.Vpid]                                        ; VMCS å¯¹åº”çš„ VPID å€¼
         
 init_vm_execution_control_fields.@3:        
 
-        mov [ExecutionControlBufBase + EXECUTION_CONTROL.Vpid], ax      ; Ğ´Èë VPID Öµ        
+        mov [ExecutionControlBufBase + EXECUTION_CONTROL.Vpid], ax      ; å†™å…¥ VPID å€¼        
 
         ;;
-        ;; PAUSE-loop exiting ÉèÖÃ
+        ;; PAUSE-loop exiting è®¾ç½®
         ;;
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.PleGap], eax
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.PleWindow], eax  
@@ -2083,7 +2083,7 @@ init_vm_execution_control_fields.@3:
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.EptpListAddress + 4], eax          
         
         ;;
-        ;; ÎªÁË·½±ã£¬»Ö¸´ esi Öµ
+        ;; ä¸ºäº†æ–¹ä¾¿ï¼Œæ¢å¤ esi å€¼
         ;;
         REX.Wrxb
         mov esi, edx
@@ -2100,8 +2100,8 @@ init_vm_execution_control_fields.@3:
 ; init_vm_exit_control_fields()
 ; input:
 ;     esi - VMB pointer
-; ÃèÊö£º
-;       1) ÉèÖÃ VM-Entry ¿ØÖÆÓò  
+; æè¿°ï¼š
+;       1) è®¾ç½® VM-Entry æ§åˆ¶åŸŸ  
 ;---------------------------------------------------------- 
 init_vm_exit_control_fields:
         push ebp
@@ -2116,7 +2116,7 @@ init_vm_exit_control_fields:
 %define ExitControlBufBase              (ebp + PCB.ExitControlBuf)
 
         ;;
-        ;; VM-exit control ÉèÖÃ
+        ;; VM-exit control è®¾ç½®
         ;; 1) [2]  - Save debug controls: Yes
         ;; 2) [9]  - Host address size: No(x86), Yes(x64)
         ;; 3) [12] - load IA32_PREF_GLOBAL_CTRL: Yes
@@ -2125,13 +2125,13 @@ init_vm_exit_control_fields:
         ;; 6) [19] - load IA32_PAT: Yes
         ;; 7) [20] - save IA32_EFER: Yes
         ;; 8) [21] - load IA32_EFER: Yes
-        ;; 9) [22] - save VMX-preemption timer value: È¡¾öÓÚ¡°activity VMX-preemption timer¡±Î»
+        ;; 9) [22] - save VMX-preemption timer value: å–å†³äºâ€œactivity VMX-preemption timerâ€ä½
         ;;
         
         ;;
-        ;; Host address size ÖµÈ¡¾öÓÚ host µÄÄ£Ê½
-        ;; 1) ÔÚ x86 ÏÂ£¬Host address size = 0
-        ;; 2) ÔÚ 64-bit Ä£Ê½ÏÂ£¬VM-exit ·µ»ØµÄ host ±ØĞëÊÇ 64-bit Ä£Ê½£¬Host address size = 1
+        ;; Host address size å€¼å–å†³äº host çš„æ¨¡å¼
+        ;; 1) åœ¨ x86 ä¸‹ï¼ŒHost address size = 0
+        ;; 2) åœ¨ 64-bit æ¨¡å¼ä¸‹ï¼ŒVM-exit è¿”å›çš„ host å¿…é¡»æ˜¯ 64-bit æ¨¡å¼ï¼ŒHost address size = 1
         ;;
 %ifdef __X64
         mov eax, 3C9004h | HOST_ADDRESS_SPACE_SIZE
@@ -2141,7 +2141,7 @@ init_vm_exit_control_fields:
 
 
         ;;
-        ;; Èç¹û¡°activity VMX-preemption timer¡±=1Ê±£¬¡°save VMX-preemption timer value¡±=1
+        ;; å¦‚æœâ€œactivity VMX-preemption timerâ€=1æ—¶ï¼Œâ€œsave VMX-preemption timer valueâ€=1
         ;;
         test DWORD [ebp + PCB.ExecutionControlBuf + EXECUTION_CONTROL.PinControl], ACTIVATE_VMX_PREEMPTION_TIMER
         jz init_vm_exit_control_fields.@0
@@ -2153,17 +2153,17 @@ init_vm_exit_control_fields.@0:
 
         
         ;;
-        ;;¡¡ÉèÖÃ×îÖÕµÄ VM-exit control Öµ
+        ;;ã€€è®¾ç½®æœ€ç»ˆçš„ VM-exit control å€¼
         ;;
         or eax, [ebp + PCB.ExitCtls]                                    ; OR allowed 0-setting
         and eax, [ebp + PCB.ExitCtls + 4]                               ; AND allowed 1-setting
-        mov [ExitControlBufBase + EXIT_CONTROL.VmExitControl], eax      ; Ğ´Èë Vm-exit control buffer
+        mov [ExitControlBufBase + EXIT_CONTROL.VmExitControl], eax      ; å†™å…¥ Vm-exit control buffer
         
         
         ;;
-        ;; VM-exit MSR-store ÉèÖÃ£ºÕâÀïÔİÊ±²»ÉèÖÃ MSR-store 
+        ;; VM-exit MSR-store è®¾ç½®ï¼šè¿™é‡Œæš‚æ—¶ä¸è®¾ç½® MSR-store 
         ;; 1) MsrStoreCount = 0
-        ;; 2) MsrStoreAddress =  ·ÖÅä»ñµÃ
+        ;; 2) MsrStoreAddress =  åˆ†é…è·å¾—
         ;;
         mov DWORD [ExitControlBufBase + EXIT_CONTROL.MsrStoreCount], 0
         mov eax, [esi + VMB.VmExitMsrStorePhyAddress]
@@ -2173,9 +2173,9 @@ init_vm_exit_control_fields.@0:
 
 
         ;;
-        ;; Vm-exit Msr-load ÉèÖÃ£ºÕâÀïÔİ²»ÉèÖÃ Msr-store
+        ;; Vm-exit Msr-load è®¾ç½®ï¼šè¿™é‡Œæš‚ä¸è®¾ç½® Msr-store
         ;; 1) MsrLoadCount = 0
-        ;; 2) MsrLoadAddress = ·ÖÅä»ñµÃ
+        ;; 2) MsrLoadAddress = åˆ†é…è·å¾—
         ;;
         mov DWORD [ExitControlBufBase + EXIT_CONTROL.MsrLoadCount], 0
         mov eax, [esi + VMB.VmExitMsrLoadPhyAddress]
@@ -2197,8 +2197,8 @@ init_vm_exit_control_fields.@0:
 ; init_vm_entry_control_fields()
 ; input:
 ;       esi - VMB pointer
-; ÃèÊö£º
-;       1) ÉèÖÃ VM-Entry ¿ØÖÆÓò  
+; æè¿°ï¼š
+;       1) è®¾ç½® VM-Entry æ§åˆ¶åŸŸ  
 ;---------------------------------------------------------- 
 init_vm_entry_control_fields:
         push edx
@@ -2214,9 +2214,9 @@ init_vm_entry_control_fields:
 
 
         ;;
-        ;; ÔÚ legacy Ä£Ê½ÏÂÉèÖÃ VM-Entry control
+        ;; åœ¨ legacy æ¨¡å¼ä¸‹è®¾ç½® VM-Entry control
         ;; 1) [2]  - load debug controls : Yes
-        ;; 2) [9]  - IA-32e mode guest   : No(x86)£¬Yes(x64)
+        ;; 2) [9]  - IA-32e mode guest   : No(x86)ï¼ŒYes(x64)
         ;; 3) [10] - Entry to SMM        : No
         ;; 4) [11] - deactiveate dual-monitor treatment : No
         ;; 5) [13] - load IA32_PERF_GLOBAL_CTRL : Yes
@@ -2225,7 +2225,7 @@ init_vm_entry_control_fields:
         ;;
         
         ;;
-        ;; ¼ì²éÊÇ·ñ½øÈë IA-32e guest
+        ;; æ£€æŸ¥æ˜¯å¦è¿›å…¥ IA-32e guest
         ;;
         mov edx, 0E004h
         mov eax, 0E004h | IA32E_MODE_GUEST        
@@ -2233,15 +2233,15 @@ init_vm_entry_control_fields:
         cmovz eax, edx
                 
         ;;
-        ;; Éú³É×îÖÕµÄ VM-entry control Öµ
+        ;; ç”Ÿæˆæœ€ç»ˆçš„ VM-entry control å€¼
         ;;
         or eax, [ebp + PCB.EntryCtls]                                   ; OR allowed 0-setting
         and eax, [ebp + PCB.EntryCtls + 4]                              ; AND allowed 1-setting
-        mov [EntryControlBufBase + ENTRY_CONTROL.VmEntryControl], eax   ; Ğ´Èë Vm-entry control buffer
+        mov [EntryControlBufBase + ENTRY_CONTROL.VmEntryControl], eax   ; å†™å…¥ Vm-entry control buffer
         
 
         ;;
-        ;; VM-entry MSR-load ÉèÖÃ£ºÕâÀïÔİÊ±²»ÉèÖÃ
+        ;; VM-entry MSR-load è®¾ç½®ï¼šè¿™é‡Œæš‚æ—¶ä¸è®¾ç½®
         ;; 1) MsrLoadCount = 0
         ;; 2) VM-entry MsrLoadAddress =  VM-entry MsrStoreAddress
         ;;
@@ -2253,7 +2253,7 @@ init_vm_entry_control_fields:
         
         
         ;;
-        ;; Ğ´Èë event injection£º´ËÊ±Ã»ÓĞ event injection
+        ;; å†™å…¥ event injectionï¼šæ­¤æ—¶æ²¡æœ‰ event injection
         ;; 1) VM-entry interruption-inoformation = 0
         ;; 2) VM-entry exception error code = 0
         ;; 3) VM-entry instruction length = 0
@@ -2276,8 +2276,8 @@ init_vm_entry_control_fields:
 ;       esi - virtual apic address
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ³õÊ¼»¯ virtual local apic
+; æè¿°ï¼š
+;       1) åˆå§‹åŒ– virtual local apic
 ;----------------------------------------------------------
 init_virtual_local_apic:
         push ebp
@@ -2308,7 +2308,7 @@ init_virtual_local_apic:
         mov [esi + LAPIC_SVR], eax
         
         ;;
-        ;; ËùÓĞ LVTE Îª masked
+        ;; æ‰€æœ‰ LVTE ä¸º masked
         ;;
         mov eax, LVT_MASKED
         mov [esi + LAPIC_LVT_CMCI], eax
@@ -2336,8 +2336,8 @@ init_virtual_local_apic:
 ;       esi - VMB pointer
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ³õÊ¼»¯ guest »·¾³µÄÒ³±í½á¹¹
+; æè¿°ï¼š
+;       1) åˆå§‹åŒ– guest ç¯å¢ƒçš„é¡µè¡¨ç»“æ„
 ;----------------------------------------------------------
 init_guest_page_table:
         ret

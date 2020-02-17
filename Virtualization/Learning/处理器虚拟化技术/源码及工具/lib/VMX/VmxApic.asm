@@ -1,6 +1,6 @@
 ;*************************************************
 ;* VmxApic.asm                                   *
-;* Copyright (c) 2009-2013 é‚“å¿—                  *
+;* Copyright (c) 2009-2013 µËÖ¾                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -16,9 +16,9 @@ EPT_VIOLATION_FIXING                    EQU     1
 ; input:
 ;       none
 ; output:
-;       eax - å¤„ç†ç 
-; æè¿°ï¼š
-;       1) å¤„ç†ç”±äº guest APIC-page è€Œå¼•èµ·çš„ EPT violation
+;       eax - ´¦ÀíÂë
+; ÃèÊö£º
+;       1) ´¦ÀíÓÉÓÚ guest APIC-page ¶øÒıÆğµÄ EPT violation
 ;-----------------------------------------------------------------------
 EptHandlerForGuestApicPage:
         push ebp
@@ -37,19 +37,19 @@ EptHandlerForGuestApicPage:
         mov ebx, [ebp + PCB.CurrentVmbPointer]
         
         ;;
-        ;; EPT violation æ˜ç»†ä¿¡æ¯
+        ;; EPT violation Ã÷Ï¸ĞÅÏ¢
         ;;
         mov eax, [ebp + PCB.ExitInfoBuf + EXIT_INFO.ExitQualification]
         
         ;;
-        ;; guest è®¿é—® APIC-page çš„åç§»é‡
+        ;; guest ·ÃÎÊ APIC-page µÄÆ«ÒÆÁ¿
         ;;
         REX.Wrxb
         mov edx, [ebp + PCB.ExitInfoBuf + EXIT_INFO.GuestPhysicalAddress]    
         and edx, 0FFFh
         
         ;;
-        ;; æ£€æŸ¥ guest è®¿é—®ç±»å‹
+        ;; ¼ì²é guest ·ÃÎÊÀàĞÍ
         ;;
         test eax, EPT_READ
         jnz EptHandlerForGuestApicPage.Read
@@ -57,7 +57,7 @@ EptHandlerForGuestApicPage:
         jz EptHandlerForGuestApicPage.Write
         
         ;;
-        ;; å¤„ç† guest å°è¯•æ‰§è¡Œ APIC-page é¡µé¢ï¼Œæ³¨å…¥ä¸€ä¸ª #PF(0x11) å¼‚å¸¸
+        ;; ´¦Àí guest ³¢ÊÔÖ´ĞĞ APIC-page Ò³Ãæ£¬×¢ÈëÒ»¸ö #PF(0x11) Òì³£
         ;;
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_PF
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, 0011h
@@ -69,7 +69,7 @@ EptHandlerForGuestApicPage:
         
 EptHandlerForGuestApicPage.Write:
         ;;
-        ;; è¯»å–æºæ“ä½œæ•°å€¼
+        ;; ¶ÁÈ¡Ô´²Ù×÷ÊıÖµ
         ;;
         GetVmcsField    GUEST_RIP
         REX.Wrxb
@@ -84,32 +84,32 @@ EptHandlerForGuestApicPage.Write:
         je EptHandlerForGuestApicPage.Write.OpcodeC7
         
         ;;
-        ;; ### æ³¨æ„ï¼Œä½œä¸ºç¤ºä¾‹ï¼Œè¿™é‡Œä¸å¤„ç†å…¶å®ƒæŒ‡ä»¤æƒ…å†µï¼ŒåŒ…æ‹¬ï¼š
-        ;; 1) ä½¿ç”¨å…¶å®ƒ opcode çš„æŒ‡ä»¤
-        ;; 1) å«æœ‰ REX prefixï¼ˆ4xH) æŒ‡ä»¤
+        ;; ### ×¢Òâ£¬×÷ÎªÊ¾Àı£¬ÕâÀï²»´¦ÀíÆäËüÖ¸ÁîÇé¿ö£¬°üÀ¨£º
+        ;; 1) Ê¹ÓÃÆäËü opcode µÄÖ¸Áî
+        ;; 1) º¬ÓĞ REX prefix£¨4xH) Ö¸Áî
         ;;
         jmp EptHandlerForGuestApicPage.Done
         
 EptHandlerForGuestApicPage.Write.OpcodeC7:
         ;;
-        ;; åˆ†æ ModRM å­—èŠ‚
+        ;; ·ÖÎö ModRM ×Ö½Ú
         ;;
         mov al, [esi + 1]
         mov cl, al
         and ecx, 7        
         cmp cl, 4
-        sete cl                                 ; å¦‚æœ ModRM.r/m = 4ï¼Œåˆ™ cl = 1ï¼Œå¦åˆ™ cl = 0
+        sete cl                                 ; Èç¹û ModRM.r/m = 4£¬Ôò cl = 1£¬·ñÔò cl = 0
         shr al, 6
-        jz EptHandlerForGuestApicPage.Write.@2  ; ModRM.Mod = 0ï¼Œåˆ™ ecx += 0
-        cmp al, 1                               ; ModRM.Mod = 1ï¼Œåˆ™ ecx += 2
+        jz EptHandlerForGuestApicPage.Write.@2  ; ModRM.Mod = 0£¬Ôò ecx += 0
+        cmp al, 1                               ; ModRM.Mod = 1£¬Ôò ecx += 2
         je EptHandlerForGuestApicPage.Write.OpcodeC7.@1
         add ecx, 2        
 EptHandlerForGuestApicPage.Write.OpcodeC7.@1:
-        add ecx, 2                              ; ModRM.Mod = 2, åˆ™ ecx += 4
-                                                ; ModRM.Mod = 3ï¼Œå±äºé”™è¯¯ encode
+        add ecx, 2                              ; ModRM.Mod = 2, Ôò ecx += 4
+                                                ; ModRM.Mod = 3£¬ÊôÓÚ´íÎó encode
 EptHandlerForGuestApicPage.Write.@2:
         ;;
-        ;; è¯»å–å†™å…¥ç«‹å³æ•°
+        ;; ¶ÁÈ¡Ğ´ÈëÁ¢¼´Êı
         ;;
         mov eax, [esi + ecx + 2]
 
@@ -117,7 +117,7 @@ EptHandlerForGuestApicPage.Write.@2:
         
 EptHandlerForGuestApicPage.Write.Opcode89:
         ;;
-        ;; è¯»å–æºæ“ä½œæ•°
+        ;; ¶ÁÈ¡Ô´²Ù×÷Êı
         ;;
         mov esi, [esi + 1]
         shr esi, 3
@@ -126,13 +126,13 @@ EptHandlerForGuestApicPage.Write.Opcode89:
 
 EptHandlerForGuestApicPage.Write.Next:
         ;;
-        ;; virtual APIC-page é¡µé¢
+        ;; virtual APIC-page Ò³Ãæ
         ;;
         REX.Wrxb
         mov esi, [ebx + VMB.VirtualApicAddress]   
         
         ;;
-        ;; APIC-page å¯å†™çš„ offset ä¸ºï¼Œå†™å…¶å®ƒåŒºåŸŸå¿½ç•¥
+        ;; APIC-page ¿ÉĞ´µÄ offset Îª£¬Ğ´ÆäËüÇøÓòºöÂÔ
         ;; 1) 80h:      TPR
         ;; 2) B0h:      EOI
         ;; 3) D0h:      LDR
@@ -148,7 +148,7 @@ EptHandlerForGuestApicPage.Write.Next:
         DEBUG_RECORD    "[EptHandlerForGuestApicPage]: wirte to APIC-page"
         
         ;;
-        ;; å†™å…¥ TPR
+        ;; Ğ´Èë TPR
         ;;
         mov [esi + 80h], eax
         jmp EptHandlerForGuestApicPage.Done
@@ -161,7 +161,7 @@ EptHandlerForGuestApicPage.Write.@1:
 
 EptHandlerForGuestApicPage.Read:        
         ;;
-        ;; åˆ†ææŒ‡ä»¤
+        ;; ·ÖÎöÖ¸Áî
         ;;
         GetVmcsField    GUEST_RIP
         REX.Wrxb
@@ -174,22 +174,22 @@ EptHandlerForGuestApicPage.Read:
         je EptHandlerForGuestApicPage.Read.Opcode8B
         
         ;;
-        ;; ### æ³¨æ„ï¼Œä½œä¸ºç¤ºä¾‹ï¼Œè¿™é‡Œä¸å¤„ç†å…¶å®ƒæŒ‡ä»¤æƒ…å†µï¼ŒåŒ…æ‹¬ï¼š
-        ;; 1) ä½¿ç”¨å…¶å®ƒ opcode çš„æŒ‡ä»¤
-        ;; 1) å«æœ‰ REX prefixï¼ˆ4xH) æŒ‡ä»¤
+        ;; ### ×¢Òâ£¬×÷ÎªÊ¾Àı£¬ÕâÀï²»´¦ÀíÆäËüÖ¸ÁîÇé¿ö£¬°üÀ¨£º
+        ;; 1) Ê¹ÓÃÆäËü opcode µÄÖ¸Áî
+        ;; 1) º¬ÓĞ REX prefix£¨4xH) Ö¸Áî
         ;;
         jmp EptHandlerForGuestApicPage.Done
         
 EptHandlerForGuestApicPage.Read.Opcode8B:
         ;;
-        ;; è¯»å–ç›®æ ‡æ“ä½œæ•° ID
+        ;; ¶ÁÈ¡Ä¿±ê²Ù×÷Êı ID
         ;;
         mov esi, [esi + 1]
         shr esi, 3
         and esi, 7
           
         ;;
-        ;; APIC-page å†…ä¸‹é¢çš„ offset ä¸ºå¯è¯»åŒºåŸŸ
+        ;; APIC-page ÄÚÏÂÃæµÄ offset Îª¿É¶ÁÇøÓò
         ;; 1) 20h:      APIC ID
         ;; 2) 30h:      VER
         ;; 3) 80h:      TPR
@@ -215,7 +215,7 @@ EptHandlerForGuestApicPage.Read.Opcode8B:
         DEBUG_RECORD    "[EptHandlerForGuestApicPage]: read from APIC-page"  
         
         ;;
-        ;; å†™å…¥ç›®æ ‡å¯„å­˜å™¨
+        ;; Ğ´ÈëÄ¿±ê¼Ä´æÆ÷
         ;;
         
         REX.Wrxb
