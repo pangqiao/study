@@ -1,5 +1,33 @@
 
-# 内核调试以及工具总结
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. 内核调试以及工具总结](#1-内核调试以及工具总结)
+- [2. 用户空间与内核空间数据交换的文件系统](#2-用户空间与内核空间数据交换的文件系统)
+  - [2.1. procfs文件系统](#21-procfs文件系统)
+  - [2.2. sysfs文件系统](#22-sysfs文件系统)
+  - [2.3. debugfs文件系统](#23-debugfs文件系统)
+  - [2.4. relayfs文件系统](#24-relayfs文件系统)
+  - [2.5. seq_file](#25-seq_file)
+- [3. printk](#3-printk)
+- [4. ftrace && trace-cmd](#4-ftrace-trace-cmd)
+  - [4.1. trace && ftrace](#41-trace-ftrace)
+  - [4.2. ftrace前端工具trace-cmd](#42-ftrace前端工具trace-cmd)
+- [5. Kprobe && systemtap](#5-kprobe-systemtap)
+  - [5.1. 内核kprobe机制](#51-内核kprobe机制)
+  - [5.2. 前端工具systemtap](#52-前端工具systemtap)
+- [6. kgdb && kgtp](#6-kgdb-kgtp)
+  - [6.1. kgdb](#61-kgdb)
+  - [6.2. KGTP](#62-kgtp)
+- [7. perf](#7-perf)
+- [8. LTTng](#8-lttng)
+- [9. 参考资料](#9-参考资料)
+- [10. 参考](#10-参考)
+
+<!-- /code_chunk_output -->
+
+# 1. 内核调试以及工具总结
 
 内核总是那么捉摸不透, 内核也会犯错, 但是调试却不能像用户空间程序那样, 为此内核开发者为我们提供了一系列的工具和系统来支持内核的调试.
 
@@ -20,7 +48,7 @@
 | OL DTrace | `Oracle Linux DTracer` |
 | sysdig |
 
-# 用户空间与内核空间数据交换的文件系统
+# 2. 用户空间与内核空间数据交换的文件系统
 
 内核中有三个常用的伪文件系统: procfs, debugfs和sysfs.
 
@@ -48,7 +76,7 @@
 [Linux 文件系统：procfs, sysfs, debugfs 用法简介
 ](http://www.tinylab.org/show-the-usage-of-procfs-sysfs-debugfs/)
 
-## procfs文件系统
+## 2.1. procfs文件系统
 
 *	`ProcFs` 介绍`
 
@@ -58,7 +86,7 @@
 
 [用户空间与内核空间数据交换的方式(2)------procfs](http://www.cnblogs.com/hoys/archive/2011/04/10/2011141.html)
 
-## sysfs文件系统
+## 2.2. sysfs文件系统
 
 内核子系统或设备驱动可以直接编译到内核, 也可以编译成模块, 编译到内核, 使用前一节介绍的方法通过内核启动参数来向它们传递参数, 如果编译成模块, 则可以通过命令行在插入模块时传递参数, 或者在运行时, 通过 `sysfs` 来设置或读取模块数据.
 
@@ -73,7 +101,7 @@ mount -t sysfs sysfs /sysfs
 
 [用户空间与内核空间数据交换的方式(6)------模块参数与sysfs](http://www.cnblogs.com/hoys/archive/2011/04/10/2011470.html)
 
-## debugfs文件系统
+## 2.3. debugfs文件系统
 
 内核开发者经常需要向用户空间应用输出一些调试信息, 在稳定的系统中可能根本不需要这些调试信息, 但是在开发过程中, 为了搞清楚内核的行为, 调试信息非常必要, printk可能是用的最多的, 但它并不是最好的, 调试信息只是在开发中用于调试, 而 `printk` 将一直输出, 因此开发完毕后需要清除不必要的 `printk` 语句, 另外如果开发者希望用户空间应用能够改变内核行为时, `printk` 就无法实现.
 
@@ -111,7 +139,7 @@ mount -t sysfs sysfs /sysfs
 
 [Linux 运用debugfs调试方法](http://www.xuebuyuan.com/1023006.html)
 
-## relayfs文件系统
+## 2.4. relayfs文件系统
 
 `relayfs` 是一个快速的转发(`relay`)数据的文件系统, 它以其功能而得名. 它为那些需要从内核空间转发大量数据到用户空间的工具和应用提供了快速有效的转发机制.
 
@@ -135,7 +163,7 @@ mount -t sysfs sysfs /sysfs
 
 [Relay：一种内核到用户空间的高效数据传输技术](https://www.ibm.com/developerworks/cn/linux/l-cn-relay/)
 
-## seq_file
+## 2.5. seq_file
 
 一般地, 内核通过在 `procfs` 文件系统下建立文件来向用户空间提供输出信息, 用户空间可以通过任何文本阅读应用查看该文件信息, 但是 `procfs` 有一个缺陷, 如果输出内容大于1个内存页, 需要多次读, 因此处理起来很难, 另外, 如果输出太大, 速度比较慢, 有时会出现一些意想不到的情况, `Alexander Viro` 实现了一套新的功能, 使得内核输出大文件信息更容易, 该功能出现在 `2.4.15`(包括 `2.4.15`)以后的所有 `2.4` 内核以及 `2.6` 内核中, 尤其是在 `2.6` 内核中，已经大量地使用了该功能
 
@@ -151,7 +179,7 @@ mount -t sysfs sysfs /sysfs
 
 [seq_file机制](http://blog.csdn.net/a8039974/article/details/24052619)
 
-# printk
+# 3. printk
 在内核调试技术之中, 最简单的就是 `printk` 的使用了, 它的用法和C语言应用程序中的 `printf` 使用类似, 在应用程序中依靠的是 `stdio.h` 中的库, 而在 `linux` 内核中没有这个库, 所以在 `linux` 内核中, 实现了自己的一套库函数, `printk` 就是标准的输出函数
 
 [linux内核调试技术之printk](http://www.cnblogs.com/veryStrong/p/6218383.html)
@@ -160,9 +188,9 @@ mount -t sysfs sysfs /sysfs
 
 [linux设备驱动学习笔记--内核调试方法之printk](http://blog.csdn.net/itsenlin/article/details/43205983)
 
-# ftrace && trace-cmd
+# 4. ftrace && trace-cmd
 
-## trace && ftrace
+## 4.1. trace && ftrace
 
 `Linux`当前版本中, 功能最强大的调试、跟踪手段. 其最基本的功能是提供了动态和静态探测点, 用于探测内核中指定位置上的相关信息.
 
@@ -210,7 +238,7 @@ mount -t sysfs sysfs /sysfs
 
 [Linux trace使用入门](http://blog.csdn.net/jscese/article/details/46415531)
 
-## ftrace前端工具trace-cmd
+## 4.2. ftrace前端工具trace-cmd
 
 *	trace-cmd 介绍
 
@@ -232,9 +260,9 @@ sudo trace-cmd reord subsystem:tracing
 
 其本质就是对`/sys/kernel/debug/tracing/events` 下各个模块进行操作, 收集数据并解析
 
-# Kprobe && systemtap
+# 5. Kprobe && systemtap
 
-## 内核kprobe机制
+## 5.1. 内核kprobe机制
 
 `kprobe` 是 `linux` 内核的一个重要特性, 是一个轻量级的内核调试工具, 同时它又是其他一些更高级的内核调试工具(比如 `perf` 和 `systemtap`)的 "基础设施", 4.0版本的内核中, 强大的 `eBPF` 特性也寄生于 `kprobe` 之上, 所以 `kprobe` 在内核中的地位就可见一斑了.
 
@@ -254,12 +282,7 @@ sudo trace-cmd reord subsystem:tracing
 
 [kprobe原理解析（一）](http://www.cnblogs.com/honpey/p/4575928.html)
 
-
-
-##5.2   前端工具systemtap
--------
-
-
+## 5.2. 前端工具systemtap
 `SystemTap` 是监控和跟踪运行中的 `Linux` 内核的操作的动态方法. 这句话的关键词是动态, 因为 `SystemTap` 没有使用工具构建一个特殊的内核, 而是允许您在运行时动态地安装该工具. 它通过一个 `Kprobes` 的应用编程接口 (`API`) 来实现该目的.
 
 `SystemTap` 与一种名为 `DTrace` 的老技术相似，该技术源于 `Sun Solaris` 操作系统. 在 `DTrace` 中, 开发人员可以用 `D` 编程语言(`C` 语言的子集, 但修改为支持跟踪行为)编写脚本. `DTrace` 脚本包含许多探针和相关联的操作, 这些操作在探针 "触发" 时发生. 例如, 探针可以表示简单的系统调用，也可以表示更加复杂的交互，比如执行特定的代码行
@@ -273,7 +296,6 @@ sudo trace-cmd reord subsystem:tracing
 这些解决方案在功能上都是类似的, 在触发探针时使用探针和相关联的操作脚本.
 
 [SystemTap 学习笔记 - 安装篇](https://segmentfault.com/a/1190000000671438)
-
 
 [Linux 自检和 SystemTap 用于动态内核分析的接口和语言](https://www.ibm.com/developerworks/cn/linux/l-systemtap/)
 
@@ -291,14 +313,9 @@ sudo trace-cmd reord subsystem:tracing
 
 [Linux 下的一个全新的性能测量和调式诊断工具 Systemtap, 第 3 部分: Systemtap](https://www.ibm.com/developerworks/cn/linux/l-cn-systemtap3/)
 
+# 6. kgdb && kgtp
 
-
-#6	kgdb && kgtp
--------
-
-
-##6.1	kgdb
--------
+## 6.1. kgdb
 
 *	KDB 和 KGDB 合并, 并进入内核
 
@@ -314,7 +331,6 @@ sudo trace-cmd reord subsystem:tracing
 
 就可以运行 `kdb` 的 `ps` 命令了.
 
-
 分析一下 `kdb` 补丁和合入主线的 `kdb` 有啥不同
 
 `kdb`跟 `kgdb` 合并之后, 也可以使用 `kgdb` 的`IO` 驱动(比如键盘), 但是同时也 `kdb`也丧失了一些功能. 合并之后的`kdb`不在支持汇编级的源码调试. 因此它现在也是平台独立的.
@@ -329,9 +345,7 @@ sudo trace-cmd reord subsystem:tracing
 
 总结一下 : `kdb` 和 `kgdb` 合并之后，系统中对这两种调试方式几乎没有了明显的界限，比如通过串口进行远程访问的时候，可以使用 `kgdb` 命令, 也可以使用 `kdb` 命令（使用gdb monitor实现）
 
-##6.2	KGTP
--------
-
+## 6.2. KGTP
 
 `KGTP` 是一个 实时 轻量级 `Linux` 调试器 和 跟踪器. 使用 `KGTP`
 
@@ -340,7 +354,6 @@ sudo trace-cmd reord subsystem:tracing
 其让 `Linux` 内核提供一个远程 `GDB` 调试接口, 于是在本地或者远程的主机上的GDB可以在不需要停止内核的情况下用 `GDB tracepoint` 和其他一些功能 调试 和 跟踪 `Linux`.
 
 即使板子上没有 `GDB` 而且其没有可用的远程接口, `KGTP` 也可以用离线调试的功能调试内核（见http://code.google.com/p/kgtp/wiki/HOWTOCN#/sys/kernel/debug/gtpframe和离线调试）。
-
 
 KGTP支持 X86-32 ， X86-64 ， MIPS 和 ARM 。
 KGTP在Linux内核 2.6.18到upstream 上都被测试过。
@@ -352,9 +365,7 @@ KGTP在Linux内核 2.6.18到upstream 上都被测试过。
 
 [ KGTP中增加对GDB命令“set trace-buffer-size”的支持 - Week 5](http://blog.csdn.net/calmdownba/article/details/38659317)
 
-
-#7	perf
--------
+# 7. perf
 
 `Perf` 是用来进行软件性能分析的工具。
 通过它, 应用程序可以利用 `PMU`, `tracepoint` 和内核中的特殊计数器来进行性能统计. 它不但可以分析指定应用程序的性能问题 (`per thread`). 也可以用来分析内核的性能问题, 当然也可以同时分析应用代码和内核，从而全面理解应用程序中的性能瓶颈.
@@ -369,7 +380,6 @@ KGTP在Linux内核 2.6.18到upstream 上都被测试过。
 人们或许会称它为进行性能分析的"瑞士军刀", 但我不喜欢这个比喻, 我觉得 `perf` 应该是一把世间少有的倚天剑.
 金庸笔下的很多人都有对宝刀的癖好, 即便本领低微不配拥有, 但是喜欢, 便无可奈何. 我恐怕正如这些人一样, 因此进了酒馆客栈, 见到相熟或者不相熟的人, 就要兴冲冲地要讲讲那倚天剑的故事.
 
-
 [Perf -- Linux下的系统性能调优工具，第 1 部分](https://www.ibm.com/developerworks/cn/linux/l-cn-perf1/index.html)
 
 [perf Examples](http://www.brendangregg.com/perf.html)
@@ -377,17 +387,13 @@ KGTP在Linux内核 2.6.18到upstream 上都被测试过。
 改进版的perf, [Performance analysis tools based on Linux perf_events (aka perf) and ftrace
 ](https://github.com/brendangregg/perf-tools)
 
-
 [Perf使用教程](http://blog.chinaunix.net/uid-10540984-id-3854969.html)
 
 [linux下的内核测试工具——perf使用简介](http://blog.csdn.net/trochiluses/article/details/10261339)
 
-
 [perf 移植](http://www.cnblogs.com/helloworldtoyou/p/5585152.html)
 
-
-#8	LTTng
--------
+# 8. LTTng
 
 `LTTng` 是一个 `Linux` 平台开源的跟踪工具, 是一套软件组件, 可允许跟踪 `Linux` 内核和用户程序, 并控制跟踪会话(开始/停止跟踪、启动/停止事件 等等). 这些组件被绑定如下三个包 :
 
@@ -397,41 +403,39 @@ KGTP在Linux内核 2.6.18到upstream 上都被测试过。
 | LTTng-modules | 允许用 `LTTng` 跟踪 `Linux` 的 `Linux` 内核模块 |
 | LTTng-UST | 用户空间跟踪库 |
 
-
 [Linux 平台开源的跟踪工具：LTTng](http://www.open-open.com/lib/view/open1413946397247.html)
 
 [用 lttng 跟踪内核](http://blog.csdn.net/xsckernel/article/details/17794551)
 
-
 [LTTng and LTTng project](http://blog.csdn.net/ganggexiongqi/article/details/6664331)
 
-#9	参考资料
--------
+# 9. 参考资料
 
 [Linux内核调试方法](http://www.cnblogs.com/shineshqw/articles/2359114.html)
 
 [choose-a-linux-traccer](http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-traccer.html), [中英文对照](http://www.oschina.net/translate/choossing-a-linux-tracer?cmp)
 
 http://blog.csdn.net/bob_fly1984/article/details/51405856
+
 http://www.verydemo.com/demo_c167_i62250.html
+
 http://www.oschina.net/translate/dynamic-debug-howto?print
+
 https://my.oschina.net/fgq611/blog/113249
+
 http://www.fx114.net/qa-171-140555.aspx
+
 http://www.fx114.net/qa-40-147583.aspx
+
 http://www.fx114.net/qa-48-128913.aspx
+
 https://my.oschina.net/fgq611/blog/113249
+
 http://www.fx114.net/qa-120-128312.aspx
+
 http://www.fx114.net/qa-259-116990.aspx
 
-
-
-<br>
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
-本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可, 转载请注明出处, 谢谢合作
-因本人技术水平和知识面有限, 内容如有纰漏或者需要修正的地方, 欢迎大家指正, 也欢迎大家提供一些其他好的调试工具以供收录, 鄙人在此谢谢啦
-<br>
-
-# 参考
+# 10. 参考
 
 | CSDN | GitHub |
 |:----:|:------:|
