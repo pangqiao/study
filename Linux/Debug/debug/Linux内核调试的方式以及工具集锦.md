@@ -23,7 +23,6 @@
 - [7. perf](#7-perf)
 - [8. LTTng](#8-lttng)
 - [9. 参考资料](#9-参考资料)
-- [10. 参考](#10-参考)
 
 <!-- /code_chunk_output -->
 
@@ -411,6 +410,10 @@ KGTP在Linux内核 2.6.18到upstream 上都被测试过。
 
 # 9. 参考资料
 
+| CSDN | GitHub |
+|:----:|:------:|
+| [Linux内核调试的方式以及工具集锦](http://blog.csdn.net/gatieme/article/details/68948080) | [`LDD-LinuxDeviceDrivers/study/debug`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug) |
+
 [Linux内核调试方法](http://www.cnblogs.com/shineshqw/articles/2359114.html)
 
 [choose-a-linux-traccer](http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-traccer.html), [中英文对照](http://www.oschina.net/translate/choossing-a-linux-tracer?cmp)
@@ -434,9 +437,3 @@ https://my.oschina.net/fgq611/blog/113249
 http://www.fx114.net/qa-120-128312.aspx
 
 http://www.fx114.net/qa-259-116990.aspx
-
-# 10. 参考
-
-| CSDN | GitHub |
-|:----:|:------:|
-| [Linux内核调试的方式以及工具集锦](http://blog.csdn.net/gatieme/article/details/68948080) | [`LDD-LinuxDeviceDrivers/study/debug`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug) |
