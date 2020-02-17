@@ -1,44 +1,13 @@
-Linux Kernel PANIC(三)--Soft Panic/Oops调试及实例分析
-=======
 
-
-本文信息
-
-| CSDN | GitHub |
-|:----:|:------:|
-| [Linux Kernel PANIC(三)--Soft Panic/Oops调试及实例分析](http://blog.csdn.net/gatieme/article/details/73715860) | [`LDD-LinuxDeviceDrivers/study/debug/modules/panic/03-soft_panic`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/modules/panic/03-soft_panic) |
-
-
-同类博文信息
-
-| CSDN | GitHub |
-|:----:|:------:|
-| [Linux Kernel PANIC(一)--概述(Hard Panic/Aieee和Soft Panic/Oops)](http://blog.csdn.net/gatieme/article/details/73711897) | [`LDD-LinuxDeviceDrivers/study/debug/modules/panic/01-kernel_panic`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/modules/panic/01-kernel_panic) |
-| [Linux Kernel PANIC(二)--Hard Panic/Aieee实例分析](http://blog.csdn.net/gatieme/article/details/73712595) | [`LDD-LinuxDeviceDrivers/study/debug/modules/panic/02-hard_panic`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/modules/panic/02-hard_panic) |
-| [Linux Kernel PANIC(三)--Soft Panic/Oops调试及实例分析](http://blog.csdn.net/gatieme/article/details/73715860) | [`LDD-LinuxDeviceDrivers/study/debug/modules/panic/03-soft_panic`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/modules/panic/03-soft_panic) |
-
-<br>
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
-本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可, 转载请注明出处
-<br>
-
+# soft panic
 
 凡是非中断处理引发的模块崩溃都将导致 `soft panic`
 
 在这种情况下, 驱动本身会崩溃, 但是还不至于让系统出现致命性失败, 因为它没有锁定中断处理例程. 导致 `hard panic`的原因同样对`soft panic`也有用(比如在运行时访问一个空指针).
 
-其他参照
-[]()
+# 驱动OOPS实例分析
 
-[]()
-
-
-#1	驱动OOPS实例分析
--------
-
-##1.1	导致 `OOPS` 的代码
--------
-
+## 导致 `OOPS` 的代码
 
 模块代码, 有一处 `NULL` 指针异常
 

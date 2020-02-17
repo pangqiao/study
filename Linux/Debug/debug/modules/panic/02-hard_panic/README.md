@@ -1,21 +1,31 @@
-Linux Kernel PANIC(二)--Hard Panic/Aieee实例分析
-=======
 
-本文信息
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
-| CSDN | GitHub |
-|:----:|:------:|
-| [Linux Kernel PANIC(二)--Hard Panic/Aieee实例分析](http://blog.csdn.net/gatieme/article/details/73712595) | [`LDD-LinuxDeviceDrivers/study/debug/modules/panic/02-hard_panic`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/modules/panic/02-hard_panic) |
+<!-- code_chunk_output -->
+
+- [1. hard panic](#1-hard-panic)
+- [2. 实例1--Kernel panic-not syncing fatal exception](#2-实例1-kernel-panic-not-syncing-fatal-exception)
+  - [2.1. 问题描述](#21-问题描述)
+  - [2.2. 解决方法](#22-解决方法)
+- [3. 示例2--Kernel panic-not syncing fatal exception in interrupt](#3-示例2-kernel-panic-not-syncing-fatal-exception-in-interrupt)
+  - [3.1. 问题描述](#31-问题描述)
+  - [3.2. 解决方法](#32-解决方法)
+- [4. 示例3--Kernel panic-not syncing fatal exception](#4-示例3-kernel-panic-not-syncing-fatal-exception)
+  - [4.1. 问题描述](#41-问题描述)
+  - [4.2. 解决方法](#42-解决方法)
+- [5. 参考资料](#5-参考资料)
+
+<!-- /code_chunk_output -->
+
+# 1. hard panic
 
 对于 `hard panic` 而言, 最大的可能性是驱动模块的中断处理(`interrupt handler`)导致的, 一般是因为驱动模块在中断处理程序中访问一个空指针(`null pointer`).
 
 一旦发生这种情况，驱动模块就无法处理新的中断请求，最终导致系统崩溃.
 
+# 2. 实例1--Kernel panic-not syncing fatal exception
 
-
-# 实例1--Kernel panic-not syncing fatal exception
-
-## 问题描述
+## 2.1. 问题描述
 
 今天就遇到一个客户机器内核报错 : "Kernel panic-not syncing fatal exception"
 
@@ -33,7 +43,7 @@ Linux Kernel PANIC(二)--Hard Panic/Aieee实例分析
 
 panic.c源文件有个方法，当panic挂起后，指定超时时间，可以重新启动机器
 
-## 解决方法
+## 2.2. 解决方法
 
 >`vi /etc/sysctl.conf`  添加
 
@@ -42,7 +52,7 @@ kernel.panic = 20 #panic error中自动重启，等待timeout为20秒
 kernel.sysrq=1 #激活Magic SysRq  否则，键盘鼠标没有响应
 ```
 
-按住 `[ALT]+[SysRq]+[COMMAND]`, 这里 SysRq` 是 `Print SCR` 键, 而 `COMMAND` 按以下来解释！
+按住 `[ALT]+[SysRq]+[COMMAND]`, 这里 `SysRq` 是 `Print SCR` 键, 而 `COMMAND` 按以下来解释！
 
 | 命令 | 描述 |
 |:---:|:---:|
@@ -52,17 +62,13 @@ kernel.sysrq=1 #激活Magic SysRq  否则，键盘鼠标没有响应
 | s | sync同步所有的文件系统 |
 | u | 试图重新挂载文件系统 |
 
-#2	示例2--Kernel panic-not syncing fatal exception in interrupt
--------
+# 3. 示例2--Kernel panic-not syncing fatal exception in interrupt
 
-##2.1 问题描述
--------
+## 3.1. 问题描述
 
 很多网友安装 `Linux` 出现 `Kernel panic-not syncing fatal exception in interrupt` 是由于网卡驱动原因。
 
-##2.2 解决方法
--------
-
+## 3.2. 解决方法
 
 将 `BIOS`选项 `"Onboard Lan"` 的选项 `"Disabled"`, 重启从光驱启动即可.
 
@@ -92,22 +98,15 @@ init() r8168 …
 
 另有网友在 `Kernel panic` 出错信息中看到 `"alc880"`, 这是个声卡类型. 尝试着将声卡关闭, 重启系统, 搞定.
 
+# 4. 示例3--Kernel panic-not syncing fatal exception
 
-#3	示例3--Kernel panic-not syncing fatal exception
--------
-
-##3.1	问题描述
--------
-
+## 4.1. 问题描述
 
 安装 `linux` 系统遇到安装完成之后， 无法启动系统出现 `Kernel panic-not syncing fatal exception`.
 
-##3.2 解决方法
--------
-
+## 4.2. 解决方法
 
 很多情况是由于板载声卡、网卡、或是cpu 超线程功能 (`Hyper-Threading`) 引起的.
-
 
 这类问题的解决办法就是先查看错误代码中的信息, 找到错误所指向的硬件, 将其禁用. 系统启动后, 安装好相应的驱动, 再启用该硬件即可.
 
@@ -115,40 +114,26 @@ init() r8168 …
 >
 >有时把内存互相换下位置或重新插拔下可以解决问题。
 
-
-
-#4	参考资料
--------
+# 5. 参考资料
 
 [根据内核Oops 定位代码工具使用— addr2line 、gdb、objdump](http://blog.csdn.net/u012719256/article/details/53365155)
 
 [转载_Linux内核OOPS调试](http://blog.csdn.net/tommy_wxie/article/details/12521535)
 
-
 [kernel panic/kernel oops分析](http://blog.chinaunix.net/uid-20651662-id-1906954.html)
-
 
 [DebuggingKernelOops](https://wiki.ubuntu.com/DebuggingKernelOops)
 
-
 [kerneloops package in Ubuntu](https://launchpad.net/ubuntu/+source/kerneloops)
-
 
 [Understanding a Kernel Oops!](http://opensourceforu.com/2011/01/understanding-a-kernel-oops/)
 
-
 [Kernel oops错误](http://blog.163.com/prodigal_s/blog/static/204537164201411611432884/)
 
-
 [Kernel Oops Howto](http://madwifi-project.org/wiki/DevDocs/KernelOops)
-
 
 [Kernel Panics](https://wiki.archlinux.org/index.php/Kernel_Panics)
 
 [WiKipedia](https://en.wikipedia.org/wiki/Linux_kernel_oops)
 
 [Oops中的error code解释](http://blog.csdn.net/mozun1/article/details/53306714)
-
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
-<br>
-本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可
