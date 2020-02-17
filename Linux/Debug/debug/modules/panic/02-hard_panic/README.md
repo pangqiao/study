@@ -7,48 +7,33 @@ Linux Kernel PANIC(二)--Hard Panic/Aieee实例分析
 |:----:|:------:|
 | [Linux Kernel PANIC(二)--Hard Panic/Aieee实例分析](http://blog.csdn.net/gatieme/article/details/73712595) | [`LDD-LinuxDeviceDrivers/study/debug/modules/panic/02-hard_panic`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/modules/panic/02-hard_panic) |
 
-
-同类博文信息
-
-| CSDN | GitHub |
-|:----:|:------:|
-| [Linux Kernel PANIC(一)--概述(Hard Panic/Aieee和Soft Panic/Oops)](http://blog.csdn.net/gatieme/article/details/73711897) | [`LDD-LinuxDeviceDrivers/study/debug/modules/panic/01-kernel_panic`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/modules/panic/01-kernel_panic) |
-| [Linux Kernel PANIC(二)--Hard Panic/Aieee实例分析](http://blog.csdn.net/gatieme/article/details/73712595) | [`LDD-LinuxDeviceDrivers/study/debug/modules/panic/02-hard_panic`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/modules/panic/02-hard_panic) |
-
-<br>
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
-本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可, 转载请注明出处
-<br>
-
-
 对于 `hard panic` 而言, 最大的可能性是驱动模块的中断处理(`interrupt handler`)导致的, 一般是因为驱动模块在中断处理程序中访问一个空指针(`null pointer`).
 
 一旦发生这种情况，驱动模块就无法处理新的中断请求，最终导致系统崩溃.
 
-关于 Hard Panic 的详细信息, 请参见[Kernel PANIC概述(Hard Panic/Aieee和Soft Panic/Oops)]()
 
 
+# 实例1--Kernel panic-not syncing fatal exception
 
-#1 实例1--Kernel panic-not syncing fatal exception
--------
-
-##1.1 问题描述
--------
+## 问题描述
 
 今天就遇到一个客户机器内核报错 : "Kernel panic-not syncing fatal exception"
 
 重启后正常, 几个小时后出现同样报错，系统down了，有时重启后可恢复有时重启后仍然报同样的错误。
 
 我先来解释一下什么是fatal exception?
-“致命异常（fatal exception）表示一种例外情况，这种情况要求导致其发生的程序关闭。通常，异常（exception）可能是任何意想不到的情况（它不仅仅包括程序错误）。致命异常简单地说就是异常不能被妥善处理以至于程序不能继续运行。
+
+“**致命异常**（fatal exception）表示一种例外情况，这种情况要求导致其发生的程序关闭。通常，异常（exception）可能是任何意想不到的情况（它不仅仅包括程序错误）。致命异常简单地说就是异常不能被妥善处理以至于程序不能继续运行。
+
 软件应用程序通过几个不同的代码层与操作系统及其他应用程序相联系。当异常（exception）在某个代码层发生时，为了查找所有异常处理的代码，各个代码层都会将这个异常发送给下一层，这样就能够处理这种异常。如果在所有层都没有这种异常处理的代码，致命异常（fatal exception）错误信息就会由操作系统显示出来。这个信息可能还包含一些关于该致命异常错误发生位置的秘密信息（比如在程序存储范围中的十六进制的位置）。这些额外的信息对用户而言没有什么价值，但是可以帮助技术支持人员或开发人员调试程序。
+
 当致命异常（fatal exception）发生时，操作系统没有其他的求助方式只能关闭应用程序，并且在有些情况下是关闭操作系统本身。当使用一种特殊的应用程序时，如果反复出现致命异常错误的话，应将这个问题报告给软件供应商。 ”
+
 而且此时键盘无任何反应，必然使用reset键硬重启。
+
 panic.c源文件有个方法，当panic挂起后，指定超时时间，可以重新启动机器
 
-##1.2 解决方法
--------
-
+## 解决方法
 
 >`vi /etc/sysctl.conf`  添加
 
