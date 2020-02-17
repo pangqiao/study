@@ -198,7 +198,6 @@ mount -t sysfs sysfs /sysfs
 
 [ftrace和它的前端工具trace-cmd(深入了解Linux系统的利器)](http://blog.yufeng.info/archives/1012)
 
-
 [ftrace 简介](https://www.ibm.com/developerworks/cn/linux/l-cn-ftrace/)
 
 [内核性能调试–ftrace](http://blog.chinaunix.net/uid-20589411-id-3501525.html)
@@ -211,11 +210,7 @@ mount -t sysfs sysfs /sysfs
 
 [Linux trace使用入门](http://blog.csdn.net/jscese/article/details/46415531)
 
-
-
-
-##4.2   ftrace前端工具trace-cmd
--------
+## ftrace前端工具trace-cmd
 
 *	trace-cmd 介绍
 
@@ -225,7 +220,7 @@ mount -t sysfs sysfs /sysfs
 
 *	使用
 
-```cpp
+```
 #  收集信息
 sudo trace-cmd reord subsystem:tracing 
 
@@ -235,25 +230,15 @@ sudo trace-cmd reord subsystem:tracing
 
 [trace-cmd: A front-end for Ftrace](https://lwn.net/Articles/410200/)
 
-
 其本质就是对`/sys/kernel/debug/tracing/events` 下各个模块进行操作, 收集数据并解析
 
+# Kprobe && systemtap
 
-
-#5	Kprobe && systemtap
--------
-
-##5.1   内核kprobe机制
--------
-
+## 内核kprobe机制
 
 `kprobe` 是 `linux` 内核的一个重要特性, 是一个轻量级的内核调试工具, 同时它又是其他一些更高级的内核调试工具(比如 `perf` 和 `systemtap`)的 "基础设施", 4.0版本的内核中, 强大的 `eBPF` 特性也寄生于 `kprobe` 之上, 所以 `kprobe` 在内核中的地位就可见一斑了.
 
-
-
 `Kprobes` 提供了一个强行进入任何内核例程并从中断处理器无干扰地收集信息的接口. 使用 `Kprobes` 可以收集处理器寄存器和全局数据结构等调试信息。开发者甚至可以使用 `Kprobes` 来修改 寄存器值和全局数据结构的值.
-
-
 
 如何高效地调试内核?
 
