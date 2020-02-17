@@ -1,32 +1,9 @@
-Linux内核调试的方式以及工具集锦
-=======
 
-| CSDN | GitHub |
-|:----:|:------:|
-| [Linux内核调试的方式以及工具集锦](http://blog.csdn.net/gatieme/article/details/68948080) | [`LDD-LinuxDeviceDrivers/study/debug`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug) |
-
-<br>
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
-本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可, 转载请注明出处, 谢谢合作
-因本人技术水平和知识面有限, 内容如有纰漏或者需要修正的地方, 欢迎大家指正, 也欢迎大家提供一些其他好的调试工具以供收录, 鄙人在此谢谢啦
-<br>
-
-
-
-
-
-```cpp
-"调试难度本来就是写代码的两倍. 因此, 如果你写代码的时候聪明用尽, 根据定义, 你就没有能耐去调试它了."
-		--Brian Kernighan
-```
-
-#1	内核调试以及工具总结
--------
-
+# 内核调试以及工具总结
 
 内核总是那么捉摸不透, 内核也会犯错, 但是调试却不能像用户空间程序那样, 为此内核开发者为我们提供了一系列的工具和系统来支持内核的调试.
 
-内核的调试, 其本质是内核空间与用户空间的数据交换, 内核开发者们提供了多样的形式来完成这一功能.
+**内核的调试**, 其本质是**内核空间**与**用户空间**的**数据交换**, 内核开发者们提供了多样的形式来完成这一功能.
 
 | 工具 | 描述 |
 |:---:|:----:|
@@ -43,8 +20,7 @@ Linux内核调试的方式以及工具集锦
 | OL DTrace | `Oracle Linux DTracer` |
 | sysdig |
 
-#2  用户空间与内核空间数据交换的文件系统
--------
+# 用户空间与内核空间数据交换的文件系统
 
 内核中有三个常用的伪文件系统: procfs, debugfs和sysfs.
 
@@ -72,7 +48,7 @@ Linux内核调试的方式以及工具集锦
 [Linux 文件系统：procfs, sysfs, debugfs 用法简介
 ](http://www.tinylab.org/show-the-usage-of-procfs-sysfs-debugfs/)
 
-##2.1   procfs文件系统
+## procfs文件系统
 -------
 
 *	`ProcFs` 介绍`
@@ -504,3 +480,9 @@ http://www.fx114.net/qa-259-116990.aspx
 本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可, 转载请注明出处, 谢谢合作
 因本人技术水平和知识面有限, 内容如有纰漏或者需要修正的地方, 欢迎大家指正, 也欢迎大家提供一些其他好的调试工具以供收录, 鄙人在此谢谢啦
 <br>
+
+# 参考
+
+| CSDN | GitHub |
+|:----:|:------:|
+| [Linux内核调试的方式以及工具集锦](http://blog.csdn.net/gatieme/article/details/68948080) | [`LDD-LinuxDeviceDrivers/study/debug`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug) |
