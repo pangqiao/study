@@ -41,7 +41,7 @@ MODULE_LICENSE("GPL");
 
 makefile
 
-```cpp
+```makefile
 # -------------------------------------------------
 #
 # Makefile for the LDD-LinuxDeviceDrivers.
@@ -107,21 +107,16 @@ clean:
 endif
 ```
 
-
-##1.2	重现 `OOPS`
--------
+## 重现 `OOPS`
 
 make后加载模块, 提示加载失败, 此时内核倒是了OOPS, 由于故障不严重, 系统并未死机
 
 ![加载模块导致OOPS](insmod_oops.png)
 
 
-##1.3	`OOPS` 信息
--------
+## `OOPS` 信息
 
 查看 `Kernel` 的日志, 或者 `dmesg` 打印日志可以查看 `OOPS` 信息
-
-
 
 ```cpp
 [ 5235.513513] BUG: unable to handle kernel NULL pointer dereference at           (null)
@@ -164,12 +159,7 @@ make后加载模块, 提示加载失败, 此时内核倒是了OOPS, 由于故障
 [ 5235.528875] ---[ end trace 69ea8d586c904d41 ]---
 ```
 
-
-
-
-
-##1.4 OOOPS信息分析
--------
+## OOOPS信息分析
 
 ```cpp
 Oops: 0002 [#1] SMP
@@ -183,9 +173,9 @@ Oops: 0002 [#1] SMP
 | bit 1 | 0 means read, 1 means write |
 | bit 2 | 0 means kernel, 1 means user-mode |
 
-[#1] — this value is the number of times the Oops occurred. Multiple Oops can be triggered as a cascading effect of the first one.
-这个值是 `Oops` 发生的次数, 多个 `Oops` 可以级联效应触发
+\[#1]\ — this value is the number of times the Oops occurred. Multiple Oops can be triggered as a cascading effect of the first one.
 
+这个值是 `Oops` 发生的次数, 多个 `Oops` 可以级联效应触发
 
 ```cpp
 [ 5235.514835] CPU: 1 PID: 9087 Comm: insmod Tainted: G           OE   4.4.0-72-generic #93~14.04.1-Ubuntu
