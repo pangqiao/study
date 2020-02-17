@@ -59,7 +59,7 @@ Ftrace 最初是在 **2.6.27** 中出现的，那个时候，systemTap 已经开
 
 **SystemTap**项目是 Linux 社区对 SUN Dtrace 的反应，目标是达到甚至超越 Dtrace 。因此 SystemTap 设计比较复杂，Dtrace 作为 SUN 公司的一个项目开发了多年才最终稳定发布，况且得到了 Solaris 内核中每个子系统开发人员的大力支持。 SystemTap 想要赶超 Dtrace，困难不仅是一样，而且更大，因此她始终处在不断完善自身的状态下，在真正的产品环境，人们依然无法放心的使用她。不当的使用和 SystemTap 自身的不完善都有可能导致系统崩溃。
 
-Ftrace的设计目标简单，本质上是一种**静态代码插装技术**，不需要支持某种编程接口让用户自定义 trace 行为。静态代码插装技术更加可靠，不会因为用户的不当使用而导致内核崩溃。 ftrace 代码量很小，稳定可靠。实际上，即使是 Dtrace，大多数用户也只使用其静态 trace 功能。因此 ftrace 的设计非常务实。
+Ftrace的设计目标简单，本质上是一种**静态代码插装技术**，**不需要**支持某种编程接口让用户自定义 trace 行为。静态代码插装技术更加可靠，不会因为用户的**不当使用**而导致**内核崩溃**。 ftrace 代码量很小，稳定可靠。实际上，即使是 Dtrace，大多数用户也只使用其静态 trace 功能。因此 ftrace 的设计非常务实。
 
 从 2.6.30 开始，ftrace 支持 event tracer，其实现和功能与 LTTng 非常类似，或许将来 ftrace 会同 LTTng 进一步融合，各自取长补短。 ftrace 有定义良好的 ASCII 接口，可以直接阅读，这对于内核开发人员非常具有吸引力，因为只需内核代码加上cat 命令就可以工作了，相当方便； LTTng 则采用 binary 接口，更利于专门工具分析使用。此外他们内部 ring buffer 的实现不相同，ftrace 对所有 tracer 都采用同一个 ring buffer，而 LTTng 则使用各自不同的 ring buffer 。
 
