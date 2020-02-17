@@ -225,7 +225,7 @@ tracing目录（`/sys/kernel/debug/tracing`）中的文件（如图2所示）控
 
 可以通过 cat 命令查看该文件以了解概要的操作流程。
 
-- available_events：列出当前系统支持的event事件。
+- `available_events`：列出当前系统支持的event事件。
 
 - `available_tracers`记录了当前**编译进内核**的**跟踪器的列表**
 
@@ -289,7 +289,7 @@ hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 
 - `mmiotrace`，**MMIO**( Memory MappedI/O)追踪器，用于Nouveau驱动程序等逆向工程。
 
-- `wakeup`，进程**调度延迟**追踪器。
+- `wakeup`，跟踪进**程唤醒信息**, 进程**调度延迟**追踪器。
 
 - `wakeup_rt`，与wakeup相同，但以**实时进程**为对象。
 
