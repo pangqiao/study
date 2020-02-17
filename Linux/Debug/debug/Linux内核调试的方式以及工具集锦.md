@@ -181,6 +181,7 @@ mount -t sysfs sysfs /sysfs
 [seq_file机制](http://blog.csdn.net/a8039974/article/details/24052619)
 
 # 3. printk
+
 在内核调试技术之中, 最简单的就是 `printk` 的使用了, 它的用法和C语言应用程序中的 `printf` 使用类似, 在应用程序中依靠的是 `stdio.h` 中的库, 而在 `linux` 内核中没有这个库, 所以在 `linux` 内核中, 实现了自己的一套库函数, `printk` 就是标准的输出函数
 
 [linux内核调试技术之printk](http://www.cnblogs.com/veryStrong/p/6218383.html)
