@@ -49,25 +49,16 @@
 ](http://www.tinylab.org/show-the-usage-of-procfs-sysfs-debugfs/)
 
 ## procfs文件系统
--------
 
 *	`ProcFs` 介绍`
 
 `procfs` 是比较老的一种用户态与内核态的数据交换方式, 内核的很多数据都是通过这种方式出口给用户的, 内核的很多参数也是通过这种方式来让用户方便设置的. 除了 `sysctl` 出口到 `/proc` 下的参数, `procfs` 提供的大部分内核参数是只读的. 实际上, 很多应用严重地依赖于procfs, 因此它几乎是必不可少的组件. 前面部分的几个例子实际上已经使用它来出口内核数据, 但是并没有讲解如何使用, 本节将讲解如何使用`procfs`.
 
-
 *	参考资料
-
 
 [用户空间与内核空间数据交换的方式(2)------procfs](http://www.cnblogs.com/hoys/archive/2011/04/10/2011141.html)
 
-
-
-
-##2.2   sysfs文件系统
--------
-
-
+## sysfs文件系统
 
 内核子系统或设备驱动可以直接编译到内核, 也可以编译成模块, 编译到内核, 使用前一节介绍的方法通过内核启动参数来向它们传递参数, 如果编译成模块, 则可以通过命令行在插入模块时传递参数, 或者在运行时, 通过 `sysfs` 来设置或读取模块数据.
 
@@ -80,21 +71,15 @@ mount -t sysfs sysfs /sysfs
 
 注意, 不要把 `sysfs` 和 `sysctl` 混淆, `sysctl` 是内核的一些控制参数, 其目的是方便用户对内核的行为进行控制, 而 `sysfs` 仅仅是把内核的 `kobject` 对象的层次关系与属性开放给用户查看, 因此 `sysfs` 的绝大部分是只读的, 模块作为一个 `kobject` 也被出口到 `sysfs`, 模块参数则是作为模块属性出口的, 内核实现者为模块的使用提供了更灵活的方式, 允许用户设置模块参数在 `sysfs` 的可见性并允许用户在编写模块时设置这些参数在 `sysfs` 下的访问权限, 然后用户就可以通过 `sysfs` 来查看和设置模块参数, 从而使得用户能在模块运行时控制模块行为.
 
-
-
 [用户空间与内核空间数据交换的方式(6)------模块参数与sysfs](http://www.cnblogs.com/hoys/archive/2011/04/10/2011470.html)
 
-
-##2.3   debugfs文件系统
--------
-
+## debugfs文件系统
 
 内核开发者经常需要向用户空间应用输出一些调试信息, 在稳定的系统中可能根本不需要这些调试信息, 但是在开发过程中, 为了搞清楚内核的行为, 调试信息非常必要, printk可能是用的最多的, 但它并不是最好的, 调试信息只是在开发中用于调试, 而 `printk` 将一直输出, 因此开发完毕后需要清除不必要的 `printk` 语句, 另外如果开发者希望用户空间应用能够改变内核行为时, `printk` 就无法实现.
 
 因此, 需要一种新的机制, 那只有在需要的时候使用, 它在需要时通过在一个虚拟文件系统中创建一个或多个文件来向用户空间应用提供调试信息.
 
 有几种方式可以实现上述要求：
-
 
 *	使用 `procfs`, 在 `/proc` 创建文件输出调试信息, 但是 `procfs` 对于大于一个内存页(对于 `x86` 是 `4K`)的输出比较麻烦, 而且速度慢, 有时回出现一些意想不到的问题.
 
@@ -124,12 +109,9 @@ mount -t sysfs sysfs /sysfs
 
 [用户空间与内核空间数据交换的方式(1)------debugfs](http://www.cnblogs.com/hoys/archive/2011/04/10/2011124.html)
 
-
 [Linux 运用debugfs调试方法](http://www.xuebuyuan.com/1023006.html)
 
-
-##2.4   relayfs文件系统
--------
+## relayfs文件系统
 
 `relayfs` 是一个快速的转发(`relay`)数据的文件系统, 它以其功能而得名. 它为那些需要从内核空间转发大量数据到用户空间的工具和应用提供了快速有效的转发机制.
 
@@ -139,7 +121,6 @@ mount -t sysfs sysfs /sysfs
 
 `relayfs` 实现了四个标准的文件 `I/O` 函数, `open、mmap、poll和close`
 
-
 | 函数 | 描述 |
 |:---:|:----:|
 | `open` | 打开一个 `channel` 在某一个 `CPU` 上的缓存对应的文件. |
@@ -148,17 +129,13 @@ mount -t sysfs sysfs /sysfs
 | poll | 用于通知用户空间应用转发数据跨越了子缓存的边界, 支持的轮询标志有 `POLLIN`、`POLLRDNORM` 和 `POLLERR` |
 | `close` | 关闭 `open` 函数返回的文件描述符, 如果没有进程或内核模块打开该 `channel` 缓存, `close` 函数将释放该`channel` 缓存 |
 
-
 >注意 : 用户态应用在使用上述 `API` 时必须保证已经挂载了 `relayfs` 文件系统, 但内核在创建和使用 `channel`时不需要`relayfs` 已经挂载. 下面命令将把 `relayfs` 文件系统挂载到 `/mnt/relay`.
-
 
 [用户空间与内核空间数据交换的方式(4)------relayfs](http://www.cnblogs.com/hoys/archive/2011/04/10/2011270.html)
 
 [Relay：一种内核到用户空间的高效数据传输技术](https://www.ibm.com/developerworks/cn/linux/l-cn-relay/)
 
-
-##2.5	seq_file
--------
+## seq_file
 
 一般地, 内核通过在 `procfs` 文件系统下建立文件来向用户空间提供输出信息, 用户空间可以通过任何文本阅读应用查看该文件信息, 但是 `procfs` 有一个缺陷, 如果输出内容大于1个内存页, 需要多次读, 因此处理起来很难, 另外, 如果输出太大, 速度比较慢, 有时会出现一些意想不到的情况, `Alexander Viro` 实现了一套新的功能, 使得内核输出大文件信息更容易, 该功能出现在 `2.4.15`(包括 `2.4.15`)以后的所有 `2.4` 内核以及 `2.6` 内核中, 尤其是在 `2.6` 内核中，已经大量地使用了该功能
 
@@ -174,30 +151,18 @@ mount -t sysfs sysfs /sysfs
 
 [seq_file机制](http://blog.csdn.net/a8039974/article/details/24052619)
 
-
-#3  printk
--------
-
+# printk
 在内核调试技术之中, 最简单的就是 `printk` 的使用了, 它的用法和C语言应用程序中的 `printf` 使用类似, 在应用程序中依靠的是 `stdio.h` 中的库, 而在 `linux` 内核中没有这个库, 所以在 `linux` 内核中, 实现了自己的一套库函数, `printk` 就是标准的输出函数
-
 
 [linux内核调试技术之printk](http://www.cnblogs.com/veryStrong/p/6218383.html)
 
-
 [调整内核printk的打印级别](http://blog.csdn.net/tonywgx/article/details/17504001)
-
 
 [linux设备驱动学习笔记--内核调试方法之printk](http://blog.csdn.net/itsenlin/article/details/43205983)
 
+# ftrace && trace-cmd
 
-
-#4	ftrace && trace-cmd
--------
-
-
-##4.1   trace && ftrace
--------
-
+## trace && ftrace
 
 `Linux`当前版本中, 功能最强大的调试、跟踪手段. 其最基本的功能是提供了动态和静态探测点, 用于探测内核中指定位置上的相关信息.
 
