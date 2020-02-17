@@ -1,28 +1,5 @@
-Linux Kernel PANIC(一)--概述(Hard Panic/Aieee和Soft Panic/Oops)
-=======
 
-
-本文信息
-
-| CSDN | GitHub |
-|:----:|:------:|
-| [Linux Kernel PANIC(一)--概述(Hard Panic/Aieee和Soft Panic/Oops)](http://blog.csdn.net/gatieme/article/details/73711897) | [`LDD-LinuxDeviceDrivers/study/debug/modules/panic/01-kernel_panic`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/modules/panic/01-kernel_panic) |
-
-
-同类博文信息
-
-| CSDN | GitHub |
-|:----:|:------:|
-| [Linux Kernel PANIC(一)--概述(Hard Panic/Aieee和Soft Panic/Oops)](http://blog.csdn.net/gatieme/article/details/73711897) | [`LDD-LinuxDeviceDrivers/study/debug/modules/panic/01-kernel_panic`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/modules/panic/01-kernel_panic) |
-
-<br>
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
-本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可, 转载请注明出处
-<br>
-
-#1	Kernel PANIC/OOPS
--------
-
+# Kernel PANIC/OOPS
 
 >wiki:A kernel panic is an action taken by an operating system upon detecting an internal fatal error from which it cannot safely recover. The term is largely specific to Unix and Unix-like systems; for Microsoft Windowsoperating systems the equivalent term is “Bug check” (or, colloquially, “Blue Screen of Death“).
 The kernel routines that handle panics (in AT&T-derived and BSD Unix source code, a routine known as panic()) are generally designed to output an error message to the console, dump an image of kernel memory to disk for post-mortemdebugging and then either wait for the system to be manually rebooted, or initiate an automatic reboot. The information provided is of highly technical nature and aims to assist a system administrator or software developer in diagnosing the problem.
@@ -31,8 +8,7 @@ Attempts by the operating system to read an invalid or non-permitted memory addr
 I remarked to Dennis that easily half the code I was writing in Multics was error recovery code. He said, “We left all that stuff out. If there’s an error, we have this routine called panic, and when it is called, the machine crashes, and you holler down the hall, ‘Hey, reboot it.’”[1]
 The original panic() function was essentially unchanged from Fifth Edition UNIX to the VAX-based UNIX 32V and output only an error message with no other information, then dropped the system into an endless idle loop. As the Unixcodebase was enhanced, the panic() function was also enhanced to dump various forms of debugging information to the console.
 
-##1.1 什么是 `Kernel PANIC`
--------
+## 什么是 `Kernel PANIC`
 
 `panic` 是英文中是**惊慌**的意思, `Linux Kernel panic` 正如其名, `Linux Kernel` 不知道如何走了, 它会尽可能把它此时能获取的全部信息都打印出来, 为开发人员调试提供帮助.
 
@@ -42,10 +18,11 @@ The original panic() function was essentially unchanged from Fifth Edition UNIX 
 
 *	Soft Panic(也就是Oops信息输出)
 
-##1.2	什么会导致Linux Kernel Panic
--------
+## 什么会导致Linux Kernel Panic
 
-只有加载到内核空间的驱动模块才能直接导致 `kernel panic`, 你可以在系统正常的情况下, 使用 `lsmod` 查看当前系统加载了哪些模块. 除此之外, 内建在内核里的组件(比如 `memory map`等)也能导致panic.
+只有加载到**内核空间**的**驱动模块**才能直接导致 `kernel panic`, 你可以在系统正常的情况下, 使用 `lsmod` 查看当前系统加载了哪些模块. 
+
+除此之外, 内建在**内核里的组件**(比如 `memory map`等)也能导致panic.
 
 常见Linux Kernel Panic报错内容
 
@@ -56,29 +33,21 @@ kernel panic – not syncing: killing interrupt handler!
 Kernel Panic – not syncing：Attempted to kill init !
 ```
 
-
-
-
-
 一般出现下面的情况，就认为是发生了 `kernel panic` :
 
-*	机器彻底被锁定，不能使用
+* 机器彻底被锁定，不能使用
 
-*	数字键(Num Lock)，大写锁定键(Caps Lock)，滚动锁定键(Scroll Lock)不停闪烁。
+* 数字键(Num Lock)，大写锁定键(Caps Lock)，滚动锁定键(Scroll Lock)不停闪烁。
 
-*	如果在终端下，应该可以看到内核dump出来的信息（包括一段"Aieee"信息或者"Oops"信息）
+* 如果在终端下，应该可以看到内核dump出来的信息（包括一段"Aieee"信息或者"Oops"信息）
 
-*	和Windows蓝屏相似
-
-
-
+* 和Windows蓝屏相似
 
 >因为 `hard panic` 和 `soft panic` 本质上不同，因此我们分别讨论.
 
-#2	hard panic
--------
+# hard panic
 
-对于 `hard panic` 而言, 最大的可能性是驱动模块的中断处理(`interrupt handler`)导致的, 一般是因为驱动模块在中断处理程序中访问一个空指针(`null pointer`).
+对于 `hard panic` 而言, 最大的可能性是**驱动模块的中断处理**(`interrupt handler`)导致的, 一般是因为驱动模块在中断处理程序中访问**一个空指针**(`null pointer`).
 
 一旦发生这种情况，驱动模块就无法处理新的中断请求，最终导致系统崩溃.
 
@@ -174,37 +143,29 @@ KDB编译到内核里，panic发生时，他将内核引导到一个shell环境�
 
 
 #4	参考资料
--------
+
+| CSDN | GitHub |
+|:----:|:------:|
+| [Linux Kernel PANIC(一)--概述(Hard Panic/Aieee和Soft Panic/Oops)](http://blog.csdn.net/gatieme/article/details/73711897) | [`LDD-LinuxDeviceDrivers/study/debug/modules/panic/01-kernel_panic`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/modules/panic/01-kernel_panic) |
 
 [根据内核Oops 定位代码工具使用— addr2line 、gdb、objdump](http://blog.csdn.net/u012719256/article/details/53365155)
 
 [转载_Linux内核OOPS调试](http://blog.csdn.net/tommy_wxie/article/details/12521535)
 
-
 [kernel panic/kernel oops分析](http://blog.chinaunix.net/uid-20651662-id-1906954.html)
-
 
 [DebuggingKernelOops](https://wiki.ubuntu.com/DebuggingKernelOops)
 
-
 [kerneloops package in Ubuntu](https://launchpad.net/ubuntu/+source/kerneloops)
-
 
 [Understanding a Kernel Oops!](http://opensourceforu.com/2011/01/understanding-a-kernel-oops/)
 
-
 [Kernel oops错误](http://blog.163.com/prodigal_s/blog/static/204537164201411611432884/)
 
-
 [Kernel Oops Howto](http://madwifi-project.org/wiki/DevDocs/KernelOops)
-
 
 [Kernel Panics](https://wiki.archlinux.org/index.php/Kernel_Panics)
 
 [WiKipedia](https://en.wikipedia.org/wiki/Linux_kernel_oops)
 
 [Oops中的error code解释](http://blog.csdn.net/mozun1/article/details/53306714)
-
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
-<br>
-本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可
