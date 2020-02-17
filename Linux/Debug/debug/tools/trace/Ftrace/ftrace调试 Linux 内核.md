@@ -656,7 +656,9 @@ irqsoff 跟踪器可以对中断被关闭的状况进行跟踪，有助于发现
 34380
 ```
 
-从清单 4 中的输出信息中，可以看到当前 irqsoff 延迟跟踪器的版本信息。接下来是最大延迟时间，以 us 为单位，本例中为 34380 us ，查看文件 tracing_max_latency 也可以获取该值。从“task:”字段可以知道延迟发生时正在运行的进程为 idle（其 pid 为 0 ）。中断的关闭操作是在函数 reschedule_interrupt 中进行的，由“=> started at:”标识，函数 restore_all_ontrace 重新激活了中断，由“=> ended at:”标识；中断关闭的最大延迟发生在函数 trace_hardirqs_on_thunk 中，这个可以从最大延迟时间所在的记录项看到，也可以从延迟记录信息中最后的“=>”标识所对应的记录行知道这一点。
+从清单 4 中的输出信息中，可以看到当前 irqsoff 延迟跟踪器的**版本信息**。显示**当前跟踪器的版本信息**为`vl.1.5`, 运行的**内核版本**为`2.6.33.1`。
+
+接下来是**最大延迟时间**，以 us 为单位，本例中为 34380 us ，查看文件 `tracing_max_latency` 也可以获取该值。从“task:”字段可以知道延迟发生时正在运行的进程为 idle（其 pid 为 0 ）。中断的关闭操作是在函数 reschedule_interrupt 中进行的，由“=> started at:”标识，函数 restore_all_ontrace 重新激活了中断，由“=> ended at:”标识；中断关闭的最大延迟发生在函数 trace_hardirqs_on_thunk 中，这个可以从最大延迟时间所在的记录项看到，也可以从延迟记录信息中最后的“=>”标识所对应的记录行知道这一点。
 
 在输出信息中，irqs-off、need_resched 等字段对应于进程结构 struct task_struct 的字段或者状态标志，可以从头文件 `arch/<platform>/include/asm/thread_info.h` 中查看进程支持的状态标志，include/linux/sched.h 则给出了结构 struct task_struct 的定义。其中，irqs-off 字段显示是否中断被禁止，为‘ d ’表示中断被禁止；need_resched 字段显示为‘ N ’表示设置了进程状态标志 TIF_NEED_RESCHED。hardirq/softirq 字段表示当前是否发生硬件中断 / 软中断；preempt-depth 表示是否禁止进程抢占，例如在持有自旋锁的情况下进程是不能被抢占的，本例中进程 idle 是可以被其它进程抢占的。结构 struct task_struct 中的 lock_depth 字段是与大内核锁相关的，而最近的内核开发工作中有一部分是与移除大内核锁相关的，这里对该字段不再加以描述。
 
