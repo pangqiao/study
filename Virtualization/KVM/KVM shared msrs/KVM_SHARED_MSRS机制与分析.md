@@ -7,8 +7,29 @@ guest在发生`VM-exit`时会切换**保存guest的寄存器值**，**加载host
 
 来回的`save/load`就是成本，而**某些msr的值**在某种情况是**不会使用**的，那边就无需进行save/load，这些msr如下：
 
-```
+```cpp
+/* x86-64 specific MSRs */
+#define MSR_EFER                0xc0000080 /* extended feature register */
+#define MSR_STAR                0xc0000081 /* legacy mode SYSCALL target */
+#define MSR_LSTAR               0xc0000082 /* long mode SYSCALL target */
+#define MSR_CSTAR               0xc0000083 /* compat mode SYSCALL target */
+#define MSR_SYSCALL_MASK        0xc0000084 /* EFLAGS mask for syscall */
+#define MSR_TSC_AUX             0xc0000103 /* Auxiliary TSC */
 
+/*
+ * Though SYSCALL is only supported in 64-bit mode on Intel CPUs, kvm
+ * will emulate SYSCALL in legacy mode if the vendor string in guest
+ * CPUID.0:{EBX,ECX,EDX} is "AuthenticAMD" or "AMDisbetter!" To
+ * support this emulation, IA32_STAR must always be included in
+ * vmx_msr_index[], even in i386 builds.
+ */
+const u32 vmx_msr_index[] = {
+#ifdef CONFIG_X86_64
+        MSR_SYSCALL_MASK, MSR_LSTAR, MSR_CSTAR,
+#endif
+        MSR_EFER, MSR_TSC_AUX, MSR_STAR,
+        MSR_IA32_TSX_CTRL,
+};
 ```
 
 这些msr只在userspace才会被linux OS使用，kernel模式下并不会被读取，具体msr作用见如上注释。那么当VM发生VM-exit时，此时无需load host msr值，只需要在VM退出到QEMU时再load host msr，因为很多VM-exit是hypervisor直接处理的，无需退出到QEMU，那么此处就有了一些优化。
