@@ -1,13 +1,32 @@
 
-# soft panic
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. soft panic](#1-soft-panic)
+- [2. 驱动OOPS实例分析](#2-驱动oops实例分析)
+  - [2.1. 导致 `OOPS` 的代码](#21-导致-oops-的代码)
+  - [2.2. 重现 `OOPS`](#22-重现-oops)
+  - [2.3. `OOPS` 信息](#23-oops-信息)
+  - [2.4. OOOPS信息分析](#24-ooops信息分析)
+  - [2.5. 发现问题所在](#25-发现问题所在)
+    - [2.5.1. 通过gdb调试列出地址所对应的位置](#251-通过gdb调试列出地址所对应的位置)
+    - [2.5.2. addr2line将地址转换为对应的源代码](#252-addr2line将地址转换为对应的源代码)
+    - [2.5.3. 将gdb反汇编代码得到地址直接转换为对应的源代码](#253-将gdb反汇编代码得到地址直接转换为对应的源代码)
+    - [2.5.4. 使用objdump反汇编代码得到地址](#254-使用objdump反汇编代码得到地址)
+- [3. 参考资料](#3-参考资料)
+
+<!-- /code_chunk_output -->
+
+# 1. soft panic
 
 凡是非中断处理引发的模块崩溃都将导致 `soft panic`
 
 在这种情况下, 驱动本身会崩溃, 但是还不至于让系统出现致命性失败, 因为它没有锁定中断处理例程. 导致 `hard panic`的原因同样对`soft panic`也有用(比如在运行时访问一个空指针).
 
-# 驱动OOPS实例分析
+# 2. 驱动OOPS实例分析
 
-## 导致 `OOPS` 的代码
+## 2.1. 导致 `OOPS` 的代码
 
 模块代码, 有一处 `NULL` 指针异常
 
@@ -107,14 +126,14 @@ clean:
 endif
 ```
 
-## 重现 `OOPS`
+## 2.2. 重现 `OOPS`
 
 make后加载模块, 提示加载失败, 此时内核倒是了OOPS, 由于故障不严重, 系统并未死机
 
 ![加载模块导致OOPS](insmod_oops.png)
 
 
-## `OOPS` 信息
+## 2.3. `OOPS` 信息
 
 查看 `Kernel` 的日志, 或者 `dmesg` 打印日志可以查看 `OOPS` 信息
 
@@ -159,7 +178,7 @@ make后加载模块, 提示加载失败, 此时内核倒是了OOPS, 由于故障
 [ 5235.528875] ---[ end trace 69ea8d586c904d41 ]---
 ```
 
-## OOOPS信息分析
+## 2.4. OOOPS信息分析
 
 ```cpp
 Oops: 0002 [#1] SMP
@@ -255,7 +274,7 @@ Oops: 0002 [#1] SMP
 cpp[ 5235.516883] Code: <c7> 04 25 00 00 00 00 01 00 00 00 48 89 e5 5d c3 00 00 00 00 00 00 
 ```
 
-## 发现问题所在
+## 2.5. 发现问题所在
 
 其中最关键的信息, 就是PC/IP等寄存器的信息, 直接显示了正在执行的代码
 
@@ -283,7 +302,7 @@ cpp[ 5235.516883] Code: <c7> 04 25 00 00 00 00 01 00 00 00 48 89 e5 5d c3 00 00 
 >
 >0x1000表示hello_init函数的大小
 
-### 通过gdb调试列出地址所对应的位置
+### 2.5.1. 通过gdb调试列出地址所对应的位置
 
 由于我们的是驱动出现的问题, 那么我们就用gdb直接调试驱动的 `KO` 文件, 如果是源内核出现的 `OOPS`, 那么只能用 `gdb` 对 `vmlinux` 文件进行调试
 
@@ -311,7 +330,7 @@ b *(hello_init+0x3)
 
 此方法对于内核OOPS同样适用, 调试时将驱动 `KO` 文件替换为内核 `vmlinux` 文件
 
-### addr2line将地址转换为对应的源代码
+### 2.5.2. addr2line将地址转换为对应的源代码
 
 ```cpp
 addr2line -e kerneloops.o hello_init+0x3
@@ -319,7 +338,7 @@ addr2line -e kerneloops.o hello_init+0x3
 
 此方法对于内核OOPS同样适用, 调试时将驱动 `KO` 文件或者 `OBJ` 文件替换为内核 `vmlinux` 文件
 
-### 将gdb反汇编代码得到地址直接转换为对应的源代码
+### 2.5.3. 将gdb反汇编代码得到地址直接转换为对应的源代码
 
 对于驱动来说, 可以从`/sys/module/对应驱动名称/sections/.init.text` 查找到对应的地址信息
 
@@ -344,8 +363,6 @@ l *(address+offset)
 
 *	第二个参数是模块的文本部分的地址, 从/sys/module/XXX/sections/.init.text(其中 XXX 是模块名称)获取此地址
 
-
-
 首先获取到地址信息
 
 ```cpp
@@ -359,7 +376,6 @@ nm kerneloops.o | grep hello_init
 ![获取地址](cat_hello_init_address.png)
 
 地址信息是0x0000000000000000
-
 
 gdb调试驱动kerneloops.ko， 并添加调试信息
 
@@ -397,8 +413,7 @@ l *(0x0000000000000027)
 
 此方法对于内核OOPS同样适用, 调试时将驱动 `KO` 文件或者 `OBJ` 文件替换为内核 `vmlinux` 文件， 通过 `nm vmlinux`和 `cat /proc/kallsyms` 获取到对应的地址信息
 
-###1.5.4	使用objdump反汇编代码得到地址
--------
+### 2.5.4. 使用objdump反汇编代码得到地址
 
 ```cpp
 objdump -D *.o得到反汇编代码
@@ -429,38 +444,26 @@ objdump -S kerneloops.o
 
 此方法对于内核OOPS同样适用, 调试时将驱动 `KO` 文件或者 `OBJ` 文件替换为内核 `vmlinux` 文件
 
-#2	参考资料
--------
+# 3. 参考资料
 
 [根据内核Oops 定位代码工具使用— addr2line 、gdb、objdump](http://blog.csdn.net/u012719256/article/details/53365155)
 
 [转载_Linux内核OOPS调试](http://blog.csdn.net/tommy_wxie/article/details/12521535)
 
-
 [kernel panic/kernel oops分析](http://blog.chinaunix.net/uid-20651662-id-1906954.html)
-
 
 [DebuggingKernelOops](https://wiki.ubuntu.com/DebuggingKernelOops)
 
-
 [kerneloops package in Ubuntu](https://launchpad.net/ubuntu/+source/kerneloops)
-
 
 [Understanding a Kernel Oops!](http://opensourceforu.com/2011/01/understanding-a-kernel-oops/)
 
-
 [Kernel oops错误](http://blog.163.com/prodigal_s/blog/static/204537164201411611432884/)
 
-
 [Kernel Oops Howto](http://madwifi-project.org/wiki/DevDocs/KernelOops)
-
 
 [Kernel Panics](https://wiki.archlinux.org/index.php/Kernel_Panics)
 
 [WiKipedia](https://en.wikipedia.org/wiki/Linux_kernel_oops)
 
 [Oops中的error code解释](http://blog.csdn.net/mozun1/article/details/53306714)
-
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
-<br>
-本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可
