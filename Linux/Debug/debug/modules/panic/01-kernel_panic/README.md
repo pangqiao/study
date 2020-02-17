@@ -55,9 +55,9 @@ Kernel Panic – not syncing：Attempted to kill init !
 
 ## 信息收集
 
-根据 `panic` 的状态不同, 内核将记录所有在系统锁定之前的信息. 因为 `kenrel panic` 是一种很严重的错误, 不能确定系统能记录多少信息, 下面是一些需要收集的关键信息, 他们非常重要，因此尽可能收集全，当然如果系统启动的时候就kernel panic，那就无法只知道能收集到多少有用的信息了。
+根据 `panic` 的**状态不同**, 内核将记录所有在系统锁定之前的信息. 因为 `kenrel panic` 是一种很严重的错误, 不能确定系统能记录多少信息, 下面是一些需要收集的关键信息, 他们非常重要，因此尽可能收集全，当然如果系统启动的时候就kernel panic，那就无法只知道能收集到多少有用的信息了。
 
-1.	`/var/log/messages`, 幸运的时候, 整个 `kernel panic` 栈跟踪信息都能记录在这里. 要确认是否有一个足够的栈跟踪信息，你只要查找包含"EIP"的一行, 它显示了是什么函数和模块调用时导致`panic`.
+1.	`/var/log/messages`, 幸运的时候, **整个** `kernel panic` 栈跟踪信息都能记录在这里. 要确认是否有一个足够的栈跟踪信息，你只要查找包含"`EIP`"的一行, 它显示了是什么函数和模块调用时导致`panic`.
 
 2.	应用程序/库 日志: 可能可以从这些日志信息里能看到发生 `panic` 之前发生了什么。
 
@@ -71,27 +71,24 @@ Kernel Panic – not syncing：Attempted to kill init !
 
 2.	确保屏幕不黑屏，可以使用下面的几个方法：
 
-    ```cpp
-    setterm -blank 0
-    setterm -powerdown 0
-    setvesablank off
-    ```
+```cpp
+setterm -blank 0
+setterm -powerdown 0
+setvesablank off
+```
+
 3.	从终端，拷贝屏幕信息
 
 ## 排查方法
 
-栈跟踪信息(`stack trace`)是排查 `kernel panic` 最重要的信息, 该信息如果在/var/log/messages日志里当然最好，因为可以看到全部的信息，如果仅仅只是在屏幕上，那么最上面的信息可能因为滚屏消失了，只剩下栈跟踪信息的一部分。如果你有一个完整栈跟踪信息的话，那么就可能根据这些充分的信息来定位panic的根本原因。要确认是否有一个足够的栈跟踪信息，你只要查找包含”EIP”的一行，它显示了是什么函数和模块调用时导致panic
+**栈跟踪信息**(`stack trace`)是排查 `kernel panic` 最重要的信息, 该信息如果在/var/log/messages日志里当然最好，因为可以看到全部的信息，如果仅仅只是在屏幕上，那么最上面的信息可能因为滚屏消失了，只剩下栈跟踪信息的一部分。如果你有一个完整栈跟踪信息的话，那么就可能根据这些充分的信息来定位panic的根本原因。要确认是否有一个足够的栈跟踪信息，你只要查找包含”EIP”的一行，它显示了是什么函数和模块调用时导致panic
 
 使用内核调试工具(`kenrel debugger ,aka KDB`)
 如果跟踪信息只有一部分且不足以用来定位问题的根本原因时, `kernel debugger(KDB)`就需要请出来了。
 
 KDB编译到内核里，panic发生时，他将内核引导到一个shell环境而不是锁定。这样，我们就可以收集一些与panic相关的信息了，这对我们定位问题的根本原因有很大的帮助。
 
-
-
-
-#3	soft panic
--------
+# soft panic
 
 1.	症状没有 `hard panic`严重
 
