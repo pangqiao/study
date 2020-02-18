@@ -1,5 +1,5 @@
 
-# 作用
+# kvm shared msr的作用
 
 guest在发生`VM-exit`时会切换**保存guest的寄存器值**，**加载host寄存器值**，因为host侧可能会使用对应的寄存器的值。
 
@@ -37,9 +37,11 @@ const u32 vmx_msr_index[] = {
 
 这些msr只在**userspace**才会被linux OS使用，**kernel**模式下并**不会**被读取，具体msr作用见如上注释。
 
-那么当VM发生`VM-exit`时，此时**无需load host msr值**，只需要在**VM退出到QEMU**时再load host msr，因为很多VM-exit是hypervisor直接处理的，无需退出到QEMU，那么此处就有了一些优化。
+那么当VM发生`VM-exit`时，此时**无需load host msr值**，只需要在**VM退出到QEMU**时再load host msr，因为很多`VM-exit`是hypervisor直接处理的，无需退出到QEMU，那么此处就有了一些优化。
 
+# kvm shared msr在KVM模块加载中的处理
 
+kvm shared msr有两个变量，`shared_msrs_global`和`shared_msrs`，对应代码如下：
 
 # 参考
 
