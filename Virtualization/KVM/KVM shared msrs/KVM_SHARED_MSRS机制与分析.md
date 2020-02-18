@@ -100,6 +100,10 @@ static __init int hardware_setup(void)
 
 `kvm_arch_init`和`hardware_setup`都是在KVM模块加载过程中执行的。
 
+# kvm shared msr在VM创建中的处理
+
+VM创建过程中执行`kvm_arch_hardware_enable`，继而`kvm_shared_msr_cpu_online`，shared_msr_update函数负责存储host的msr值
+
 
 
 # 参考
