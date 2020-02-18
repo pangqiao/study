@@ -102,7 +102,57 @@ static __init int hardware_setup(void)
 
 # kvm shared msr在VM创建中的处理
 
-VM创建过程中执行`kvm_arch_hardware_enable`，继而`kvm_shared_msr_cpu_online`，shared_msr_update函数负责存储host的msr值
+VM创建过程中执行`kvm_arch_hardware_enable`，继而`kvm_shared_msr_cpu_online`，`shared_msr_update`函数负责**存储host的msr值**
+
+```cpp
+static void kvm_shared_msr_cpu_online(void)
+{
+    unsigned i;
+ 
+    for (i = 0; i < shared_msrs_global.nr; ++i)
+        shared_msr_update(i, shared_msrs_global.msrs[i]);
+}
+static void shared_msr_update(unsigned slot, u32 msr)
+{
+    u64 value;
+    unsigned int cpu = smp_processor_id();
+    struct kvm_shared_msrs *smsr = per_cpu_ptr(shared_msrs, cpu);
+ 
+    /* only read, and nobody should modify it at this time,
+     * so don't need lock */
+    if (slot >= shared_msrs_global.nr) {
+        printk(KERN_ERR "kvm: invalid MSR slot!");
+        return;
+    }
+//VM-enter还没发生，此时msr是host值，而且host msr只获取这一次，VM生命周期内再也不会更新
+    rdmsrl_safe(msr, &value);
+    smsr->values[slot].host = value;
+    smsr->values[slot].curr = value;
+}
+```
+
+# kvm shared msr在VM运行中的切换
+
+前面提到**host msr**值已经**保存**在`smsr->values[slot].host`下，那么**进入guest前**则会执行`vmx_prepare_switch_to_guest`，通过`kvm_set_shared_msr`完成**加载guest msr的动作**。
+
+```cpp
+    /*
+        * Note that guest MSRs to be saved/restored can also be changed
+        * when guest state is loaded. This happens when guest transitions
+        * to/from long-mode by setting MSR_EFER.LMA.
+        */
+    if (!vmx->guest_msrs_ready) {
+        vmx->guest_msrs_ready = true;
+        for (i = 0; i < vmx->save_nmsrs; ++i)
+            kvm_set_shared_msr(vmx->guest_msrs[i].index,
+                        vmx->guest_msrs[i].data,
+                        vmx->guest_msrs[i].mask);
+
+    }
+    if (vmx->guest_state_loaded)
+        return;
+```
+
 
 
 
