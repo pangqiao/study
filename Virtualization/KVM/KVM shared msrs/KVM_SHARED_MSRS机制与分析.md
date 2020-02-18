@@ -35,7 +35,10 @@ const u32 vmx_msr_index[] = {
 };
 ```
 
-这些msr只在**userspace**才会被linux OS使用，kernel模式下并不会被读取，具体msr作用见如上注释。那么当VM发生VM-exit时，此时无需load host msr值，只需要在VM退出到QEMU时再load host msr，因为很多VM-exit是hypervisor直接处理的，无需退出到QEMU，那么此处就有了一些优化。
+这些msr只在**userspace**才会被linux OS使用，**kernel**模式下并**不会**被读取，具体msr作用见如上注释。
+
+那么当VM发生`VM-exit`时，此时**无需load host msr值**，只需要在VM退出到QEMU时再load host msr，因为很多VM-exit是hypervisor直接处理的，无需退出到QEMU，那么此处就有了一些优化。
+
 
 
 # 参考
