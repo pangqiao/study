@@ -1,4 +1,6 @@
 
+在做KVM模块热升级的过程中碰到了这个坑，通读代码时本来以为msr在vcpu load和vcpu exit中进行切换，便忽略了`kvm_shared_msr_cpu_online`，没想到它能直接重置了host，连投胎的过程都没有，直接没办法debug，还是要多亏这个问题在某种情况下不必现，chengwei才更快找到原因，顺便看了一下`kvm_shared_msrs`机制，理清楚了问题的触发逻辑，记录如下。
+
 # kvm shared msr的作用
 
 guest在发生`VM-exit`时会切换**保存guest的寄存器值**，**加载host寄存器值**，因为host侧可能会使用对应的寄存器的值。
@@ -202,10 +204,42 @@ void fire_user_return_notifiers(void)
 }
 ```
 
-实际上此时使用`user_return_notifier_register`只有`kvm_set_shared_msr`，看一下**回调函数**`kvm_on_user_return`，就干了两件事，将`smsr->values[slot].host`写入到**msr中**，和**取消**`kvm_on_user_return`的注册。
+实际上此时使用`user_return_notifier_register`只有`kvm_set_shared_msr`.
 
+看一下**回调函数**`kvm_on_user_return`，就干了两件事，将`smsr->values[slot].host`写入到**msr中**，和**取消**`kvm_on_user_return`的注册。
 
+```cpp
+static void kvm_on_user_return(struct user_return_notifier *urn)
+{
+    unsigned slot;
+    struct kvm_shared_msrs *locals
+        = container_of(urn, struct kvm_shared_msrs, urn);
+    struct kvm_shared_msr_values *values;
+    unsigned long flags;
+ 
+    /*
+     * Disabling irqs at this point since the following code could be
+     * interrupted and executed through kvm_arch_hardware_disable()
+     */
+    local_irq_save(flags);
+    if (locals->registered) {
+        locals->registered = false;
+        user_return_notifier_unregister(urn);
+    }
+    local_irq_restore(flags);
+    for (slot = 0; slot < shared_msrs_global.nr; ++slot) {
+        values = &locals->values[slot];
+        if (values->host != values->curr) {
+            wrmsrl(shared_msrs_global.msrs[slot], values->host);
+            values->curr = values->host;
+        }
+    }
+}
+```
 
+# 问题出现的场景
+
+当**KVM模块**A上的**VM**的某个VCPU运行在非用户态时，**KVM模块B**加载，因为`kvm_shared_msr_cpu_online`是通过`kvm_arch_hardware_enable`，`hardware_enable_nolock`在`hardware_enable_all`下的`on_each_cpu`函数上执行，即`kvm_shared_msr_cpu_online`被执行前，KVM模块A上的VCPU并没有发生从`kernel->userspace`，那么此时KVM模块B上`kvm_shared_msrs.values[X].host`存储的则是**KVM模块A**上**VM的guest msr值**，当KVM模块B上的VM切换到QEMU时，此刻host msr则被置为KVM模块A上VM的guest msr，于是就崩了。
 
 # 参考
 
