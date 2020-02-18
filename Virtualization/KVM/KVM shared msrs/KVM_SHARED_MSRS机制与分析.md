@@ -5,7 +5,7 @@ guest在发生`VM-exit`时会切换**保存guest的寄存器值**，**加载host
 
 当**再次进入VM**即发生`vcpu_load`时，**保存host寄存器值**，**加载guest的寄存器值**。
 
-来回的`save/load`就是成本，而**某些msr的值**在某种情况是**不会使用**的，那边就无需进行save/load，这些msr如下：
+来回的`save/load`就是成本，而**某些msr的值**在**某种情况**是**不会使用**的，那便就无需进行save/load，这些msr如下：
 
 ```cpp
 // arch/x86/kvm/vmx/vmx.c
@@ -199,6 +199,9 @@ void fire_user_return_notifiers(void)
     put_cpu_var(return_notifier_list);
 }
 ```
+
+实际上此时使用`user_return_notifier_register`只有`kvm_set_shared_msr`，看一下**回调函数**`kvm_on_user_return`，就干了两件事，将`smsr->values[slot].host`写入到**msr中**，和**取消**`kvm_on_user_return`的注册。
+
 
 
 
