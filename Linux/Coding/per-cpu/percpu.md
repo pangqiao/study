@@ -7,7 +7,7 @@
 
 在percpu-defs.h中有如下宏定义：
 
-```
+```cpp
 /*
  * Variant on the per-CPU variable declaration/definition theme used for
  * ordinary per-CPU variables.
