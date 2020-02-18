@@ -43,6 +43,33 @@ const u32 vmx_msr_index[] = {
 
 kvm shared msr有两个变量，`shared_msrs_global`和`shared_msrs`，对应代码如下：
 
+```cpp
+#define KVM_NR_SHARED_MSRS 16
+
+//标记这有那些MSR需要被shared，具体msr index存储在msrs下
+struct kvm_shared_msrs_global {
+    int nr;
+    u32 msrs[KVM_NR_SHARED_MSRS];
+};
+
+//这是per cpu变量，每个cpu下需要存储的msr值都在values中
+struct kvm_shared_msrs {
+    struct user_return_notifier urn;
+    bool registered;
+    struct kvm_shared_msr_values {
+                //host上msr值save到此处
+        u64 host;
+                //当前物理CPU上msr的值
+        u64 curr;
+    } values[KVM_NR_SHARED_MSRS];
+};
+
+static struct kvm_shared_msrs_global __read_mostly shared_msrs_global;
+static struct kvm_shared_msrs __percpu *shared_msrs;
+```
+
+
+
 # 参考
 
 http://oenhan.com/kvm_shared_msrs
