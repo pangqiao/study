@@ -1,7 +1,24 @@
 
-在做KVM模块热升级的过程中碰到了这个坑，通读代码时本来以为msr在vcpu load和vcpu exit中进行切换，便忽略了`kvm_shared_msr_cpu_online`，没想到它能直接重置了host，连投胎的过程都没有，直接没办法debug，还是要多亏这个问题在某种情况下不必现，chengwei才更快找到原因，顺便看了一下`kvm_shared_msrs`机制，理清楚了问题的触发逻辑，记录如下。
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
-# kvm shared msr的作用
+<!-- code_chunk_output -->
+
+- [1. kvm shared msr的作用](#1-kvm-shared-msr的作用)
+- [2. kvm shared msr两个变量以及定义](#2-kvm-shared-msr两个变量以及定义)
+- [3. kvm shared msr在KVM模块加载中的处理](#3-kvm-shared-msr在kvm模块加载中的处理)
+  - [3.1. shared_masrs初始化](#31-shared_masrs初始化)
+  - [3.2. shared_msrs_global初始化](#32-shared_msrs_global初始化)
+- [4. kvm shared msr在VM创建中的处理](#4-kvm-shared-msr在vm创建中的处理)
+- [5. kvm shared msr在VM运行中的切换](#5-kvm-shared-msr在vm运行中的切换)
+- [6. user_return_notifier的作用](#6-user_return_notifier的作用)
+- [7. 问题出现的场景](#7-问题出现的场景)
+- [8. 参考](#8-参考)
+
+<!-- /code_chunk_output -->
+
+在做**KVM模块热升级**的过程中碰到了这个坑，通读代码时本来以为msr在vcpu load和vcpu exit中进行切换，便忽略了`kvm_shared_msr_cpu_online`，没想到它能直接重置了host，连投胎的过程都没有，直接没办法debug，还是要多亏这个问题在某种情况下不必现，才更快找到原因，顺便看了一下`kvm_shared_msrs`机制，理清楚了问题的触发逻辑，记录如下。
+
+# 1. kvm shared msr的作用
 
 guest在发生`VM-exit`时会切换**保存guest的寄存器值**，**加载host寄存器值**，因为host侧可能会使用对应的寄存器的值。
 
@@ -42,7 +59,7 @@ const u32 vmx_msr_index[] = {
 
 那么当VM发生`VM-exit`时，此时**无需load host msr值**，只需要在**VM退出到QEMU**时再load host msr，因为很多`VM-exit`是hypervisor直接处理的，无需退出到QEMU，那么此处就有了一些优化。
 
-# kvm shared msr两个变量以及定义
+# 2. kvm shared msr两个变量以及定义
 
 kvm shared msr有两个变量，`shared_msrs_global`和`shared_msrs`，对应代码如下：
 
@@ -72,11 +89,11 @@ static struct kvm_shared_msrs_global __read_mostly shared_msrs_global;
 static struct kvm_shared_msrs __percpu *shared_msrs;
 ```
 
-# kvm shared msr在KVM模块加载中的处理
+# 3. kvm shared msr在KVM模块加载中的处理
 
 `kvm_arch_init`和`hardware_setup`都是在**KVM模块加载过程**中执行的。
 
-## shared_masrs初始化
+## 3.1. shared_masrs初始化
 
 `shared_msrs`在`kvm_arch_init`下初始化：
 
@@ -85,7 +102,7 @@ static struct kvm_shared_msrs __percpu *shared_msrs;
 shared_msrs = alloc_percpu(struct kvm_shared_msrs);
 ```
 
-## shared_msrs_global初始化
+## 3.2. shared_msrs_global初始化
 
 `shared_msrs_global`在`hardware_setup`下初始化，就是将`vmx_msr_index`的msr index填充到`shared_msrs_global`中：
 
@@ -104,7 +121,7 @@ static __init int hardware_setup(void)
 }
 ```
 
-# kvm shared msr在VM创建中的处理
+# 4. kvm shared msr在VM创建中的处理
 
 VM创建过程中执行`kvm_arch_hardware_enable`，继而调用`kvm_shared_msr_cpu_online`，再调用`shared_msr_update`函数负责**存储host的msr值**
 
@@ -135,7 +152,7 @@ static void shared_msr_update(unsigned slot, u32 msr)
 }
 ```
 
-# kvm shared msr在VM运行中的切换
+# 5. kvm shared msr在VM运行中的切换
 
 前面提到**host msr**值已经**保存**在`smsr->values[slot].host`下，那么**进入guest前**则会执行`vmx_prepare_switch_to_guest`，通过`kvm_set_shared_msr`完成**加载guest msr的动作**。
 
@@ -184,7 +201,7 @@ int kvm_set_shared_msr(unsigned slot, u64 value, u64 mask)
 }
 ```
 
-# user_return_notifier的作用
+# 6. user_return_notifier的作用
 
 `kvm_set_shared_msr`末尾设置了`smsr->urn.on_user_return`为`kvm_on_user_return`，`user_return_notifier_register`将其注册到`return_notifier_list`，顾名思义，就是**返回用户态时的通知链**。
 
@@ -237,10 +254,10 @@ static void kvm_on_user_return(struct user_return_notifier *urn)
 }
 ```
 
-# 问题出现的场景
+# 7. 问题出现的场景
 
 当**KVM模块**A上的**VM**的某个VCPU运行在非用户态时，**KVM模块B**加载，因为`kvm_shared_msr_cpu_online`是通过`kvm_arch_hardware_enable`，`hardware_enable_nolock`在`hardware_enable_all`下的`on_each_cpu`函数上执行，即`kvm_shared_msr_cpu_online`被执行前，KVM模块A上的VCPU并没有发生从`kernel->userspace`，那么此时KVM模块B上`kvm_shared_msrs.values[X].host`存储的则是**KVM模块A**上**VM的guest msr值**，当KVM模块B上的VM切换到QEMU时，此刻host msr则被置为KVM模块A上VM的guest msr，于是就崩了。
 
-# 参考
+# 8. 参考
 
 http://oenhan.com/kvm_shared_msrs
