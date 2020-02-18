@@ -155,7 +155,7 @@ static void shared_msr_update(unsigned slot, u32 msr)
         return;
 ```
 
-另外因为guest可能也会设置guest msr而发生`VM-exit`，这一步则由`vmx_set_msr`来完成，此处可知，guest msr保存在`vmx->guest_msrs`中。
+另外因为guest可能也会设置guest msr而发生`VM-exit`，这一步则由`vmx_set_msr`来完成，此处可知，**guest msr**保存在`vmx->guest_msrs`中。
 
 再说`kvm_set_shared_msr`，就是**设置物理MSR值**，同时将值保存在`smsr->values[slot].curr`。
 
