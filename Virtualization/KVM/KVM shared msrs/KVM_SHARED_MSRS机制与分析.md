@@ -72,6 +72,8 @@ static struct kvm_shared_msrs __percpu *shared_msrs;
 
 # kvm shared msr在KVM模块加载中的处理
 
+`kvm_arch_init`和`hardware_setup`都是在**KVM模块加载过程**中执行的。
+
 ## shared_masrs初始化
 
 `shared_msrs`在`kvm_arch_init`下初始化：
@@ -99,8 +101,6 @@ static __init int hardware_setup(void)
         kvm_define_shared_msr(i, vmx_msr_index[i]);
 }
 ```
-
-`kvm_arch_init`和`hardware_setup`都是在KVM模块加载过程中执行的。
 
 # kvm shared msr在VM创建中的处理
 
