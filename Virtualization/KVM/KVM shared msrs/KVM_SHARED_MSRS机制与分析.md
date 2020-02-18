@@ -79,6 +79,23 @@ shared_msrs = alloc_percpu(struct kvm_shared_msrs);
 
 `shared_msrs_global`在`hardware_setup`下初始化，就是将`vmx_msr_index`的msr index填充到`shared_msrs_global`中：
 
+```cpp
+void kvm_define_shared_msr(unsigned slot, u32 msr)
+{
+    BUG_ON(slot >= KVM_NR_SHARED_MSRS);
+    shared_msrs_global.msrs[slot] = msr;
+    if (slot >= shared_msrs_global.nr)
+        shared_msrs_global.nr = slot + 1;
+}
+static __init int hardware_setup(void)
+{
+    for (i = 0; i < ARRAY_SIZE(vmx_msr_index); ++i)
+        kvm_define_shared_msr(i, vmx_msr_index[i]);
+}
+```
+
+`kvm_arch_init`和`hardware_setup`都是在KVM模块加载过程中执行的。
+
 
 
 # 参考
