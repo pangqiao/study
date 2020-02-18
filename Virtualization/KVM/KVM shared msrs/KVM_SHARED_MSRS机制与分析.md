@@ -153,6 +153,52 @@ static void shared_msr_update(unsigned slot, u32 msr)
         return;
 ```
 
+另外因为guest可能也会设置guest msr而发生`VM-exit`，这一步则由`vmx_set_msr`来完成，此处可知，guest msr保存在`vmx->guest_msrs`中。
+
+再说`kvm_set_shared_msr`，就是**设置物理MSR值**，同时将值保存在`smsr->values[slot].curr`。
+
+```cpp
+int kvm_set_shared_msr(unsigned slot, u64 value, u64 mask)
+{
+    unsigned int cpu = smp_processor_id();
+    struct kvm_shared_msrs *smsr = per_cpu_ptr(shared_msrs, cpu);
+    int err;
+ 
+    if (((value ^ smsr->values[slot].curr) & mask) == 0)
+        return 0;
+    smsr->values[slot].curr = value;
+    err = wrmsrl_safe(shared_msrs_global.msrs[slot], value);
+    if (err)
+        return 1;
+ 
+    if (!smsr->registered) {
+        smsr->urn.on_user_return = kvm_on_user_return;
+        user_return_notifier_register(&smsr->urn);
+        smsr->registered = true;
+    }
+    return 0;
+}
+```
+
+# user_return_notifier的作用
+
+`kvm_set_shared_msr`末尾设置了`smsr->urn.on_user_return`为`kvm_on_user_return`，`user_return_notifier_register`将其注册到`return_notifier_list`，顾名思义，就是**返回用户态时的通知链**。
+
+在`do_syscall_64`和`do_fast_syscall_32`都会处理到`prepare_exit_to_usermode`，在`exit_to_usermode_loop`中会执行`fire_user_return_notifiers`，将**链表上的函数**执行一遍。
+
+```cpp
+void fire_user_return_notifiers(void)
+{
+    struct user_return_notifier *urn;
+    struct hlist_node *tmp2;
+    struct hlist_head *head;
+ 
+    head = &get_cpu_var(return_notifier_list);
+    hlist_for_each_entry_safe(urn, tmp2, head, link)
+        urn->on_user_return(urn);
+    put_cpu_var(return_notifier_list);
+}
+```
 
 
 
