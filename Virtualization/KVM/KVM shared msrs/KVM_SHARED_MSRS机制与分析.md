@@ -104,7 +104,7 @@ static __init int hardware_setup(void)
 
 # kvm shared msr在VM创建中的处理
 
-VM创建过程中执行`kvm_arch_hardware_enable`，继而`kvm_shared_msr_cpu_online`，`shared_msr_update`函数负责**存储host的msr值**
+VM创建过程中执行`kvm_arch_hardware_enable`，继而调用`kvm_shared_msr_cpu_online`，再调用`shared_msr_update`函数负责**存储host的msr值**
 
 ```cpp
 static void kvm_shared_msr_cpu_online(void)
