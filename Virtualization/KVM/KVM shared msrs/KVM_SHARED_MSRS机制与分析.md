@@ -14,6 +14,9 @@ guest在发生`VM-exit`时会切换**保存guest的寄存器值**，**加载host
 #define MSR_LSTAR               0xc0000082 /* long mode SYSCALL target */
 #define MSR_CSTAR               0xc0000083 /* compat mode SYSCALL target */
 #define MSR_SYSCALL_MASK        0xc0000084 /* EFLAGS mask for syscall */
+#define MSR_FS_BASE             0xc0000100 /* 64bit FS base */
+#define MSR_GS_BASE             0xc0000101 /* 64bit GS base */
+#define MSR_KERNEL_GS_BASE      0xc0000102 /* SwapGS GS shadow */
 #define MSR_TSC_AUX             0xc0000103 /* Auxiliary TSC */
 
 /*
@@ -32,7 +35,7 @@ const u32 vmx_msr_index[] = {
 };
 ```
 
-这些msr只在userspace才会被linux OS使用，kernel模式下并不会被读取，具体msr作用见如上注释。那么当VM发生VM-exit时，此时无需load host msr值，只需要在VM退出到QEMU时再load host msr，因为很多VM-exit是hypervisor直接处理的，无需退出到QEMU，那么此处就有了一些优化。
+这些msr只在**userspace**才会被linux OS使用，kernel模式下并不会被读取，具体msr作用见如上注释。那么当VM发生VM-exit时，此时无需load host msr值，只需要在VM退出到QEMU时再load host msr，因为很多VM-exit是hypervisor直接处理的，无需退出到QEMU，那么此处就有了一些优化。
 
 
 # 参考
