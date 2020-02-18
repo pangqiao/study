@@ -72,7 +72,12 @@ static struct kvm_shared_msrs __percpu *shared_msrs;
 
 `shared_msrs`在`kvm_arch_init`下初始化：
 
+```cpp
+// arch/x86/kvm/x86.c
+shared_msrs = alloc_percpu(struct kvm_shared_msrs);
+```
 
+`shared_msrs_global`在`hardware_setup`下初始化，就是将`vmx_msr_index`的msr index填充到`shared_msrs_global`中：
 
 
 
