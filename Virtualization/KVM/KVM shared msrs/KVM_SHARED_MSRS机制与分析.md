@@ -8,6 +8,7 @@ guest在发生`VM-exit`时会切换**保存guest的寄存器值**，**加载host
 来回的`save/load`就是成本，而**某些msr的值**在某种情况是**不会使用**的，那边就无需进行save/load，这些msr如下：
 
 ```cpp
+// arch/x86/kvm/vmx/vmx.c
 /* x86-64 specific MSRs */
 #define MSR_EFER                0xc0000080 /* extended feature register */
 #define MSR_STAR                0xc0000081 /* legacy mode SYSCALL target */
@@ -44,6 +45,7 @@ const u32 vmx_msr_index[] = {
 kvm shared msr有两个变量，`shared_msrs_global`和`shared_msrs`，对应代码如下：
 
 ```cpp
+// arch/x86/kvm/x86.c
 #define KVM_NR_SHARED_MSRS 16
 
 //标记这有那些MSR需要被shared，具体msr index存储在msrs下
@@ -57,9 +59,9 @@ struct kvm_shared_msrs {
     struct user_return_notifier urn;
     bool registered;
     struct kvm_shared_msr_values {
-                //host上msr值save到此处
+        //host上msr值save到此处
         u64 host;
-                //当前物理CPU上msr的值
+        //当前物理CPU上msr的值
         u64 curr;
     } values[KVM_NR_SHARED_MSRS];
 };
@@ -67,6 +69,10 @@ struct kvm_shared_msrs {
 static struct kvm_shared_msrs_global __read_mostly shared_msrs_global;
 static struct kvm_shared_msrs __percpu *shared_msrs;
 ```
+
+`shared_msrs`在`kvm_arch_init`下初始化：
+
+
 
 
 
