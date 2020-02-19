@@ -24,6 +24,7 @@
   - [3. 关于use_master_clock](#3-关于use_master_clock)
   - [4. KVMCLOCK的优点](#4-kvmclock的优点)
   - [5. Cpu Steal time](#5-cpu-steal-time)
+- [参考](#参考)
 
 <!-- /code_chunk_output -->
 
@@ -853,3 +854,8 @@ static void record_steal_time(struct kvm_vcpu *vcpu)
 
 }
 ```
+
+# 参考
+
+http://oenhan.com/kvm-pv-kvmclock-tsc
+
