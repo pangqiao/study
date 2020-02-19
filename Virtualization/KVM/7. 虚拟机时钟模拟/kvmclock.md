@@ -1,4 +1,32 @@
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [时钟实现概述](#时钟实现概述)
+  - [时钟中断计数](#时钟中断计数)
+  - [模拟时钟](#模拟时钟)
+  - [半虚拟化时钟kvmclock](#半虚拟化时钟kvmclock)
+- [kvm clock 时钟](#kvm-clock-时钟)
+  - [kvmclock 原理](#kvmclock-原理)
+  - [时钟源 kvm_clock 的定义](#时钟源-kvm_clock-的定义)
+    - [1.2. KVM clock 在 Guest 中](#12-kvm-clock-在-guest-中)
+      - [函数 kvm_register_clock](#函数-kvm_register_clock)
+      - [函数 kvm_sched_clock_init](#函数-kvm_sched_clock_init)
+      - [函数 clocksource_register_hz：时钟资源注册](#函数-clocksource_register_hz时钟资源注册)
+      - [a. 函数 kvm_get_tsc_khz](#a-函数-kvm_get_tsc_khz)
+      - [b. 函数 kvm_get_wallclock](#b-函数-kvm_get_wallclock)
+      - [函数pvclock_read_wallclock的访问](#函数pvclock_read_wallclock的访问)
+    - [1.2. KVM clock 在host中](#12-kvm-clock-在host中)
+      - [（1） MSR_KVM_WALL_CLOCK](#1-msr_kvm_wall_clock)
+      - [（2） MSR_KVM_SYSTEM_TIME](#2-msr_kvm_system_time)
+  - [2. kvm_guest_time_update分析](#2-kvm_guest_time_update分析)
+  - [3. 关于use_master_clock](#3-关于use_master_clock)
+  - [4. KVMCLOCK的优点](#4-kvmclock的优点)
+  - [5. Cpu Steal time](#5-cpu-steal-time)
+
+<!-- /code_chunk_output -->
+
 # 时钟实现概述
 
 ## 时钟中断计数
@@ -13,14 +41,14 @@
 
 为此kvm引入了基于半虚拟化的时钟kvmclock, 这种方式需要在guest上实现一个kvmclock驱动，建立guest os 到VMM的通道，这样通过这个通道 guest os 向 vmm 查询时间。`kvmclock`是一个**半虚拟化的时钟**，guest感知。guest向hypervisor询问时间，同时保证时钟的稳定和准确。默认情况下guest os会使用kvmclock，如fedora17
 
-## kvm clock 时钟
+# kvm clock 时钟
 
-### kvmclock 原理
+## kvmclock 原理
 
-guest注册内存页，里面包含kvmclock数据，该页在guest整个生命周期内存在，hypervisor会持续写这个页。
+guest注册内存页，里面包含**kvmclock数据**，该页在guest整个生命周期内存在，hypervisor会持续写这个页。
 
-```
-include\xen\arm\interface.h
+```cpp
+// include\xen\arm\interface.h
 
 /* TODO: Move pvclock definitions some place arch independent */
 struct pvclock_vcpu_time_info {
@@ -50,13 +78,11 @@ struct pvclock_wall_clock {
 } __attribute__((__packed__));
 ```
 
-#### 时钟源 kvm_clock 的定义
+## 时钟源 kvm_clock 的定义
 
-```
+```cpp
 static struct clocksource kvm_clock = {
-
     .name ="kvm-clock",
-
     .read = kvm_clock_get_cycles,
 
     .rating = 400, //rating400为理想时钟源
