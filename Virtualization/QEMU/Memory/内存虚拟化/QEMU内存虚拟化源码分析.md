@@ -3,31 +3,31 @@
 
 <!-- code_chunk_output -->
 
-- [0 内存虚拟化](#0-内存虚拟化)
-- [1 概述](#1-概述)
-- [2 相关数据结构](#2-相关数据结构)
-  - [2.1 AddressSpace](#21-addressspace)
-  - [2.2 MemoryRegion](#22-memoryregion)
-  - [2.3 RAMBlock](#23-ramblock)
-  - [2.4 FlatView](#24-flatview)
-  - [2.5 MemoryRegionSection](#25-memoryregionsection)
-  - [2.6 MemoryListener](#26-memorylistener)
-  - [2.7 AddressSpaceDispatch](#27-addressspacedispatch)
-- [3 初始化流程](#3-初始化流程)
-  - [3.1 memory\_map\_init: 全局memory space和io space初始化](#31-memory_map_init-全局memory-space和io-space初始化)
-  - [3.2 pc\_memory\_init](#32-pc_memory_init)
-    - [3.2.1 pc.ram分配](#321-pcram分配)
-    - [3.2.2 两个mr alias: ram\_below\_4g和ram\_above\_4g](#322-两个mr-alias-ram_below_4g和ram_above_4g)
-- [4 内存的提交](#4-内存的提交)
-  - [4.1 全局的memory\_listeners](#41-全局的memory_listeners)
-  - [4.2 memory\_listener\_register注册](#42-memory_listener_register注册)
-  - [4.3 内存更新](#43-内存更新)
-    - [4.3.1 新建AddressSpace时更新](#431-新建addressspace时更新)
+- [内存虚拟化](#内存虚拟化)
+- [概述](#概述)
+- [相关数据结构](#相关数据结构)
+  - [AddressSpace](#addressspace)
+  - [MemoryRegion](#memoryregion)
+  - [RAMBlock](#ramblock)
+  - [FlatView](#flatview)
+  - [MemoryRegionSection](#memoryregionsection)
+  - [MemoryListener](#memorylistener)
+  - [AddressSpaceDispatch](#addressspacedispatch)
+- [初始化流程](#初始化流程)
+  - [memory_map_init: 全局memory space和io space初始化](#memory_map_init-全局memory-space和io-space初始化)
+  - [pc_memory_init](#pc_memory_init)
+    - [pc.ram分配](#pcram分配)
+    - [两个mr alias: ram_below_4g和ram_above_4g](#两个mr-alias-ram_below_4g和ram_above_4g)
+- [内存的提交](#内存的提交)
+  - [全局的memory_listeners](#全局的memory_listeners)
+  - [memory_listener_register注册](#memory_listener_register注册)
+  - [内存更新](#内存更新)
+    - [新建AddressSpace时更新](#新建addressspace时更新)
 - [参考](#参考)
 
 <!-- /code_chunk_output -->
 
-# 0 内存虚拟化
+# 内存虚拟化
 
 内存虚拟化就是为虚拟机提供内存，使得虚拟机能够像在物理机上正常工作，这需要虚拟化软件为虚拟机展示一种物理内存的假象，内存虚拟化是虚拟化技术中关键技术之一。
 
@@ -35,7 +35,7 @@ qemu\+kvm的虚拟化方案中，内存虚拟化是由qemu和kvm共同完成的�
 
 本文主要介绍qemu在内存虚拟化方面的工作, 之后的文章会介绍内存kvm方面的内存虚拟化。
 
-# 1 概述
+# 概述
 
 内存虚拟化就是要让**虚拟机**能够**无缝的访问内存**，这个内存哪里来的，**qemu**的**进程地址空间**分出来的。
 
@@ -69,11 +69,11 @@ struct kvm_userspace_memory_region {
 
 这个**ioctl**主要就是**设置GPA到HVA的映射**。看似简单的工作在qemu里面却很复杂，下面逐一剖析之。
 
-# 2 相关数据结构
+# 相关数据结构
 
 ![](./images/2019-06-12-15-16-52.png)
 
-## 2.1 AddressSpace
+## AddressSpace
 
 首先，
 
@@ -106,7 +106,7 @@ struct AddressSpace {
 
 AddressSpace下面**root**及其**子树**形成了**一个虚拟机**的**物理地址！！！**
 
-## 2.2 MemoryRegion
+## MemoryRegion
 
 一个AddressSpace下面包含**多个MemoryRegion**，这些MemoryRegion结构通过**树**连接起来，**树的根**是AddressSpace的**root域**。
 
@@ -173,7 +173,7 @@ alias表示**一个MemoryRegion**的**一部分区域**，**MemoryRegion**也可
 
 **每个MemoryRegion结构体**中定义了RAMBlock \***ram\_block**成员指向**其对应的RAMBlock**，而在**RAMBlock**结构体中则定义了struct MemoryRegion \*mr指向**对应的MemoryRegion**。
 
-## 2.3 RAMBlock
+## RAMBlock
 
 ```c
 // include/exec/ram_addr.h
@@ -219,7 +219,7 @@ Address, MemoryRegion, RAMBlock关系如下图所示。
 
 ![](./images/2019-06-10-11-12-09.png)
 
-## 2.4 FlatView
+## FlatView
 
 AddressSpace下面**root及其子树**形成了一个**虚拟机的物理地址！！！**，但是在往**kvm进行设置！！！**的时候，需要将其转换为一个**平坦的地址模型**，也就是从0开始的。
 
@@ -267,7 +267,7 @@ struct FlatView {
 
 在FlatView中，FlatRange表示按照需要被切分为了几个范围。
 
-## 2.5 MemoryRegionSection
+## MemoryRegionSection
 
 在内存虚拟化中，还有一个重要的结构是MemoryRegionSection，这个结构通过函数section\_from\_flat\_range可由FlatRange转换过来。
 
@@ -290,7 +290,7 @@ MemoryRegionSection表示的是**MemoryRegion的一部分**。这个其实跟Fla
 
 ![](./images/2019-06-10-11-58-47.png)
 
-## 2.6 MemoryListener
+## MemoryListener
 
 为了**监控虚拟机的物理地址访问**，对于**每一个AddressSpace**，会有**一个MemoryListener**与之对应。每当**物理映射（GPA\-\>HVA**)发生改变时，会**回调这些函数**。
 
@@ -327,7 +327,7 @@ struct MemoryListener {
 };
 ```
 
-## 2.7 AddressSpaceDispatch
+## AddressSpaceDispatch
 
 为了在**虚拟机退出**时，能够顺利根据**虚拟机物理地址**找到**对应的HVA**地址，qemu会有一个AddressSpaceDispatch结构，用来在AddressSpace中进行位置的找寻，继而完成对IO/MMIO地址的访问。
 
@@ -349,7 +349,7 @@ struct AddressSpaceDispatch {
 
 ![](./images/2019-06-10-12-16-01.png)
 
-# 3 初始化流程
+# 初始化流程
 
 ```c
 main()                              // vl.c
@@ -363,7 +363,7 @@ main()                              // vl.c
 
 ```
 
-## 3.1 memory\_map\_init: 全局memory space和io space初始化
+## memory_map_init: 全局memory space和io space初始化
 
 首先在**main**\-\>**cpu\_exec\_init\_all**\-\>**memory\_map\_init**中对**全局的memory和io**进行初始化，
 
@@ -409,7 +409,7 @@ void address_space_init(AddressSpace *as, MemoryRegion *root, const char *name)
 
 在随后的**cpu初始化**之中，还会**初始化多个AddressSpace**，这些很多都是disabled的，对虚拟机意义不大。
 
-## 3.2 pc\_memory\_init
+## pc_memory_init
 
 在初始化虚拟机中, main中由QEMU入参标识QEMU\_OPTION\_m设定了ram\_size参数, 即虚拟机内存的大小, 通过调用machine\_run\_board\_init, 再调用machine\_class\-\>init(machine), 然后一步步传递给pc\_init1函数.
 
@@ -417,7 +417,7 @@ void address_space_init(AddressSpace *as, MemoryRegion *root, const char *name)
 
 整个过程中，分配内存也不会像MemoryRegion那么频繁，**mr**很多时候是**创建一个alias**，指向**已经存在的mr**的一部分，这也是**alias的作用**，就是把一个mr分割成多个不连续的mr。
 
-### 3.2.1 pc.ram分配
+### pc.ram分配
 
 **真正分配空间**的大概有这么几个，**pc.ram**, **pc.bios**, **pc.rom**, 以及**设备的一些ram**, rom等，vga.vram, vga.rom, e1000.rom等。
 
@@ -443,7 +443,7 @@ mmap
 
 可以看到，qemu通过使用**mmap**创建一个**内存映射**来作为ram。
 
-### 3.2.2 两个mr alias: ram\_below\_4g和ram\_above\_4g
+### 两个mr alias: ram_below_4g和ram_above_4g
 
 继续**pc\_memory\_init**，函数在创建好了ram并且分配好了空间之后，创建了**两个mr alias**，**ram\_below\_4g**以及**ram\_above\_4g**，这两个mr分别指向**ram的低4g**以及**高4g空间**，这两个alias是挂在**根system\_memory mr下面**的。即高低端内存（也不一定是32bit机器）
 
@@ -466,11 +466,11 @@ if (pcms->above_4g_mem_size > 0) {
 
 以后的情形类似，创建根mr，创建AddressSpace，然后在根mr下面加subregion。
 
-# 4 内存的提交
+# 内存的提交
 
 当我们每一次**更改上层的内存布局**之后，都需要**通知到kvm**。这个过程是通过一系列的**MemoryListener来实现**的。
 
-## 4.1 全局的memory\_listeners
+## 全局的memory_listeners
 
 首先系统有一个**全局的memory\_listeners**，上面挂上了**所有的MemoryListener**
 
@@ -480,7 +480,7 @@ static QTAILQ_HEAD(, MemoryListener) memory_listeners
     = QTAILQ_HEAD_INITIALIZER(memory_listeners);
 ```
 
-## 4.2 memory\_listener\_register注册
+## memory_listener_register注册
 
 ![](./images/2019-06-12-10-42-52.png)
 
@@ -524,7 +524,7 @@ void kvm_memory_listener_register(KVMState *s, KVMMemoryListener *kml,
 
 在这里我们看到kvm也注册了自己的MemoryListener, 也有自己的几个回调函数。
 
-## 4.3 内存更新
+## 内存更新
 
 在上面看到MemoryListener之后，我们看看什么时候需要更新内存。 
 
@@ -538,7 +538,7 @@ void kvm_memory_listener_register(KVMState *s, KVMMemoryListener *kml,
 
 总之一句话，我们**修改**了**虚拟机的内存布局/属性**时，就需要**通知到各个Listener**，这包括**各个AddressSpace对应**的，以及**kvm注册**的，这个过程叫做**commit**，通过函数memory\_region\_transaction\_commit实现。
 
-```c
+```cpp
 void memory_region_set_readonly(MemoryRegion *mr, bool readonly)
 {
     ......
@@ -549,7 +549,7 @@ void memory_region_set_readonly(MemoryRegion *mr, bool readonly)
 }
 ```
 
-```c
+```cpp
 // memory.c
 void memory_region_transaction_commit(void)
 {
@@ -608,7 +608,7 @@ void memory_region_transaction_commit(void)
 
 MEMORY\_LISTENER\_CALL\_GLOBAL对**memory\_listeners**上的**各个MemoryListener**调用指定函数。
 
-### 4.3.1 新建AddressSpace时更新
+### 新建AddressSpace时更新
 
 注: 我们**新创建了一个AddressSpace** address\_space\_init，是主动调用更新
 
