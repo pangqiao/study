@@ -4,7 +4,7 @@
 <!-- code_chunk_output -->
 
 - [1. kvm shared msr的作用](#1-kvm-shared-msr的作用)
-- [2. kvm shared msr两个变量以及定义](#2-kvm-shared-msr两个变量以及定义)
+- [2. kvm shared msr相关的两个变量以及定义](#2-kvm-shared-msr相关的两个变量以及定义)
 - [3. kvm shared msr在KVM模块加载中的处理](#3-kvm-shared-msr在kvm模块加载中的处理)
   - [3.1. shared_masrs初始化](#31-shared_masrs初始化)
   - [3.2. shared_msrs_global初始化](#32-shared_msrs_global初始化)
@@ -59,7 +59,7 @@ const u32 vmx_msr_index[] = {
 
 那么当VM发生`VM-exit`时，此时**无需load host msr值**，只需要在**VM退出到QEMU**时再load host msr，因为很多`VM-exit`是hypervisor直接处理的，无需退出到QEMU，那么此处就有了一些优化。
 
-# 2. kvm shared msr两个变量以及定义
+# 2. kvm shared msr相关的两个变量以及定义
 
 kvm shared msr有两个变量，`shared_msrs_global`和`shared_msrs`，对应代码如下：
 
