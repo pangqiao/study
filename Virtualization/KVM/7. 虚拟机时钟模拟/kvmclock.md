@@ -1,23 +1,17 @@
-时间的一种保持方式是通过时钟中断计数，进而换算得到，这种方式在虚拟机里有问题，因为有时运行vpcu的cpu被调度出来使时钟中断不能准时到达guest os。
+
+# 时钟实现概述
+
+## 时钟中断计数
+
+时间的一种保持方式是通过**时钟中断计数**，进而换算得到，这种方式在**虚拟机**里有问题，因为有时**运行vpcu的cpu被调度**出来使时钟**中断不能准时**到达guest os。
 
 另外一种方式，如模拟HPET，guest os当需要的时候会去读当前的时间，这种方式会使得虚拟机频繁的退出(VM-exit)，严重影响性能。
 
-为此kvm引入了基于半虚拟化的时钟kvmclock,这种方式需要在guest上实现一个kvmclock驱动，建立guest os 到VMM的通道，这样通过这个通道 guest os 向 vmm 查询时间。kvmclock是一个半虚拟化的时钟，guest感知。guest向hypervisor询问时间，同时保证时钟的稳定和准确。默认情况下guest os会使用kvmclock，如fedora17
+为此kvm引入了基于半虚拟化的时钟kvmclock,这种方式需要在guest上实现一个kvmclock驱动，建立guest os 到VMM的通道，这样通过这个通道 guest os 向 vmm 查询时间。`kvmclock`是一个**半虚拟化的时钟**，guest感知。guest向hypervisor询问时间，同时保证时钟的稳定和准确。默认情况下guest os会使用kvmclock，如fedora17
 
-```
-1. kvm clock 时钟
-    1.1. kvmclock 原理
-    1.2. KVM clock 在 Guest 中
-    1.2. KVM clock 在host中
-2. kvm_guest_time_update分析
-3. 关于use_master_clock
-4. KVMCLOCK的优点
-5. Cpu Steal time
-```
+## kvm clock 时钟
 
-## 1. kvm clock 时钟
-
-### 1.1. kvmclock 原理
+### kvmclock 原理
 
 guest注册内存页，里面包含kvmclock数据，该页在guest整个生命周期内存在，hypervisor会持续写这个页。
 
