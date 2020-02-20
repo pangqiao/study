@@ -111,8 +111,269 @@ struct kvm {
 
 # KVM_CREATE_VCPU
 
-kvm_vm_ioctl_create_vcpu主要有三部分，kvm_arch_vcpu_create，kvm_arch_vcpu_setup和kvm_arch_vcpu_postcreate，重点自然是kvm_arch_vcpu_create。老样子，在这之前先看一下VCPU的结构体。
+`kvm_vm_ioctl_create_vcpu`主要有三部分，`kvm_arch_vcpu_create`，`kvm_arch_vcpu_setup`和`kvm_arch_vcpu_postcreate`，重点自然是`kvm_arch_vcpu_create`。
 
+老样子，在这之前先看一下VCPU的结构体。
+
+```cpp
+struct kvm_vcpu {
+    struct kvm *kvm;  //归属的KVM
+#ifdef CONFIG_PREEMPT_NOTIFIERS
+    struct preempt_notifier preempt_notifier;
+#endif
+    int cpu;
+    int vcpu_id;
+    int srcu_idx;
+    int mode;
+    unsigned long requests;
+    unsigned long guest_debug;
+ 
+    struct mutex mutex;
+    struct kvm_run *run;  //运行时的状态
+ 
+    int fpu_active;
+    int guest_fpu_loaded, guest_xcr0_loaded;
+    wait_queue_head_t wq; //队列
+    struct pid *pid;
+    int sigset_active;
+    sigset_t sigset;
+    struct kvm_vcpu_stat stat; //一些数据
+ 
+#ifdef CONFIG_HAS_IOMEM
+    int mmio_needed;
+    int mmio_read_completed;
+    int mmio_is_write;
+    int mmio_cur_fragment;
+    int mmio_nr_fragments;
+    struct kvm_mmio_fragment mmio_fragments[KVM_MAX_MMIO_FRAGMENTS];
+#endif
+ 
+#ifdef CONFIG_KVM_ASYNC_PF
+    struct {
+        u32 queued;
+        struct list_head queue;
+        struct list_head done;
+        spinlock_t lock;
+    } async_pf;
+#endif
+ 
+#ifdef CONFIG_HAVE_KVM_CPU_RELAX_INTERCEPT
+    /*
+     * Cpu relax intercept or pause loop exit optimization
+     * in_spin_loop: set when a vcpu does a pause loop exit
+     *  or cpu relax intercepted.
+     * dy_eligible: indicates whether vcpu is eligible for directed yield.
+     */
+    struct {
+        bool in_spin_loop;
+        bool dy_eligible;
+    } spin_loop;
+#endif
+    bool preempted;
+    struct kvm_vcpu_arch arch;  //当前VCPU虚拟的架构，默认介绍X86
+};
+```
+
+借着看`kvm_arch_vcpu_create`，它借助`kvm_x86_ops->vcpu_create`即`vmx_create_vcpu`完成任务，vmx是X86硬件虚拟化层，从代码看，qemu用户态是一层，kernel 中KVM通用代码是一层，类似`kvm_x86_ops`是一层，针对各个不同硬件架构，而`vcpu_vmx`则是具体架构的虚拟化方案一层。首先是kvm_vcpu_init初始化，主要是填充结构体，可以注意的是vcpu->run分派了一页内存，下面有kvm_arch_vcpu_init负责填充x86 CPU结构体，下面就是kvm_vcpu_arch：
+
+```cpp
+struct kvm_vcpu_arch {
+    /*
+     * rip and regs accesses must go through
+     * kvm_{register,rip}_{read,write} functions.
+     */
+    unsigned long regs[NR_VCPU_REGS];
+    u32 regs_avail;
+    u32 regs_dirty;
+//类似这些寄存器就是就是用来缓存真正的CPU值的
+    unsigned long cr0;
+    unsigned long cr0_guest_owned_bits;
+    unsigned long cr2;
+    unsigned long cr3;
+    unsigned long cr4;
+    unsigned long cr4_guest_owned_bits;
+    unsigned long cr8;
+    u32 hflags;
+    u64 efer;
+    u64 apic_base;
+    struct kvm_lapic *apic;    /* kernel irqchip context */
+    unsigned long apic_attention;
+    int32_t apic_arb_prio;
+    int mp_state;
+    u64 ia32_misc_enable_msr;
+    bool tpr_access_reporting;
+    u64 ia32_xss;
+ 
+    /*
+     * Paging state of the vcpu
+     *
+     * If the vcpu runs in guest mode with two level paging this still saves
+     * the paging mode of the l1 guest. This context is always used to
+     * handle faults.
+     */
+    struct kvm_mmu mmu; //内存管理，更多的是附带了直接操作函数
+ 
+    /*
+     * Paging state of an L2 guest (used for nested npt)
+     *
+     * This context will save all necessary information to walk page tables
+     * of the an L2 guest. This context is only initialized for page table
+     * walking and not for faulting since we never handle l2 page faults on
+     * the host.
+     */
+    struct kvm_mmu nested_mmu;
+ 
+    /*
+     * Pointer to the mmu context currently used for
+     * gva_to_gpa translations.
+     */
+    struct kvm_mmu *walk_mmu;
+ 
+    struct kvm_mmu_memory_cache mmu_pte_list_desc_cache;
+    struct kvm_mmu_memory_cache mmu_page_cache;
+    struct kvm_mmu_memory_cache mmu_page_header_cache;
+ 
+    struct fpu guest_fpu;
+    u64 xcr0;
+    u64 guest_supported_xcr0;
+    u32 guest_xstate_size;
+ 
+    struct kvm_pio_request pio;
+    void *pio_data;
+ 
+    u8 event_exit_inst_len;
+ 
+    struct kvm_queued_exception {
+        bool pending;
+        bool has_error_code;
+        bool reinject;
+        u8 nr;
+        u32 error_code;
+    } exception;
+ 
+    struct kvm_queued_interrupt {
+        bool pending;
+        bool soft;
+        u8 nr;
+    } interrupt;
+ 
+    int halt_request; /* real mode on Intel only */
+ 
+    int cpuid_nent;
+    struct kvm_cpuid_entry2 cpuid_entries[KVM_MAX_CPUID_ENTRIES];
+ 
+    int maxphyaddr;
+ 
+    /* emulate context */
+//下面是KVM的软件模拟模式，也就是没有vmx的情况，估计也没人用这一套
+    struct x86_emulate_ctxt emulate_ctxt;
+    bool emulate_regs_need_sync_to_vcpu;
+    bool emulate_regs_need_sync_from_vcpu;
+    int (*complete_userspace_io)(struct kvm_vcpu *vcpu);
+ 
+    gpa_t time;
+    struct pvclock_vcpu_time_info hv_clock;
+    unsigned int hw_tsc_khz;
+    struct gfn_to_hva_cache pv_time;
+    bool pv_time_enabled;
+    /* set guest stopped flag in pvclock flags field */
+    bool pvclock_set_guest_stopped_request;
+ 
+    struct {
+        u64 msr_val;
+        u64 last_steal;
+        u64 accum_steal;
+        struct gfn_to_hva_cache stime;
+        struct kvm_steal_time steal;
+    } st;
+ 
+    u64 last_guest_tsc;
+    u64 last_host_tsc;
+    u64 tsc_offset_adjustment;
+    u64 this_tsc_nsec;
+    u64 this_tsc_write;
+    u64 this_tsc_generation;
+    bool tsc_catchup;
+    bool tsc_always_catchup;
+    s8 virtual_tsc_shift;
+    u32 virtual_tsc_mult;
+    u32 virtual_tsc_khz;
+    s64 ia32_tsc_adjust_msr;
+ 
+    atomic_t nmi_queued;  /* unprocessed asynchronous NMIs */
+    unsigned nmi_pending; /* NMI queued after currently running handler */
+    bool nmi_injected;    /* Trying to inject an NMI this entry */
+ 
+    struct mtrr_state_type mtrr_state;
+    u64 pat;
+ 
+    unsigned switch_db_regs;
+    unsigned long db[KVM_NR_DB_REGS];
+    unsigned long dr6;
+    unsigned long dr7;
+    unsigned long eff_db[KVM_NR_DB_REGS];
+    unsigned long guest_debug_dr7;
+ 
+    u64 mcg_cap;
+    u64 mcg_status;
+    u64 mcg_ctl;
+    u64 *mce_banks;
+ 
+    /* Cache MMIO info */
+    u64 mmio_gva;
+    unsigned access;
+    gfn_t mmio_gfn;
+    u64 mmio_gen;
+ 
+    struct kvm_pmu pmu;
+ 
+    /* used for guest single stepping over the given code position */
+    unsigned long singlestep_rip;
+ 
+    /* fields used by HYPER-V emulation */
+    u64 hv_vapic;
+ 
+    cpumask_var_t wbinvd_dirty_mask;
+ 
+    unsigned long last_retry_eip;
+    unsigned long last_retry_addr;
+ 
+    struct {
+        bool halted;
+        gfn_t gfns[roundup_pow_of_two(ASYNC_PF_PER_VCPU)];
+        struct gfn_to_hva_cache data;
+        u64 msr_val;
+        u32 id;
+        bool send_user_only;
+    } apf;
+ 
+    /* OSVW MSRs (AMD only) */
+    struct {
+        u64 length;
+        u64 status;
+    } osvw;
+ 
+    struct {
+        u64 msr_val;
+        struct gfn_to_hva_cache data;
+    } pv_eoi;
+ 
+    /*
+     * Indicate whether the access faults on its page table in guest
+     * which is set when fix page fault and used to detect unhandeable
+     * instruction.
+     */
+    bool write_fault_to_shadow_pgtable;
+ 
+    /* set at EPT violation at this point */
+    unsigned long exit_qualification;
+ 
+    /* pv related host specific info */
+    struct {
+        bool pv_unhalted;
+    } pv;
+};
+```
 
 # 4. 参考
 
