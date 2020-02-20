@@ -421,11 +421,11 @@ static struct x86_emulate_ops emulate_ops = {
 
 `x86_emulate_ops`函数看看就好，实际上也**很少**有人**放弃vmx直接软件模拟**。后面又有`mp_state`，给`pio_data`分配了**一个page**，`kvm_set_tsc_khz`设置**TSC**，`kvm_mmu_create`则是**初始化MMU的函数**，里面的函数都是**地址转换的重点**，在**内存虚拟化**重点提到。`kvm_create_lapic`初始化**lapic**，初始化`mce_banks`结构，还有`pv_time`、`xcr0`、`xstat`、`pmu`等，类似x86硬件结构上需要存在的，**OS底层**需要看到的**硬件名称**都要有**对应的软件结构**。
 
-回到`vmx_create_vcpu`，vmx的`guest_msrs`分配得到**一个page**，后面是**vmcs的分配**，`vmx->loaded_vmcs->vmcs = alloc_vmcs()`，`alloc_vmcs`为**当前cpu**执行`alloc_vmcs_cpu`，`alloc_vmcs_cpu`中`alloc_pages_exact_node`分配给vmcs，`alloc_pages_exact_node`调用`__alloc_pages`实现，原来以为vmcs占用了一个page，但此处从 [伙伴系统](http://www.oenhan.com/size-512-slab-kmalloc) 申请了`2^vmcs_config.order`页，此处`vmcs_config`在`setup_vmcs_config`中初始化，`vmcs_conf->order = get_order(vmcs_config.size)`，而`vmcs_conf->size = vmx_msr_high & 0x1fff`，又`rdmsr(MSR_IA32_VMX_BASIC, vmx_msr_low, vmx_msr_high)`，此处**size由于与0x1fff与运算**，大小必然**小于4k**，order则为0，然来绕去还是一个page大小。这么做估计是为了兼容vmcs_config中的size计算。
+回到`vmx_create_vcpu`，vmx的`guest_msrs`分配得到**一个page**，后面是**vmcs的分配**，`vmx->loaded_vmcs->vmcs = alloc_vmcs()`，`alloc_vmcs`为**当前cpu**执行`alloc_vmcs_cpu`，`alloc_vmcs_cpu`中`alloc_pages_exact_node`分配给vmcs，`alloc_pages_exact_node`调用`__alloc_pages`实现，原来以为vmcs占用了一个page，但此处从 [伙伴系统](http://www.oenhan.com/size-512-slab-kmalloc) 申请了`2^vmcs_config.order`页，此处`vmcs_config`在`setup_vmcs_config`中初始化，`vmcs_conf->order = get_order(vmcs_config.size)`，而`vmcs_conf->size = vmx_msr_high & 0x1fff`，又`rdmsr(MSR_IA32_VMX_BASIC, vmx_msr_low, vmx_msr_high)`，此处**size由于与0x1fff与运算**，大小必然**小于4k**，**order则为0**，然来绕去还是**一个page大小**。这么做估计是为了**兼容**`vmcs_config`中的size计算。
 
-下面根据vmm_exclusive进行kvm_cpu_vmxon，进入vmx模式，初始化loaded_vmcs，然后用kvm_cpu_vmxoff退出vmx模式。
+下面根据`vmm_exclusive`进行`kvm_cpu_vmxon`，进入**vmx模式**，初始化`loaded_vmcs`，然后用`kvm_cpu_vmxoff`**退出vmx模式**。
 
-vmx_vcpu_load加载VCPU的信息，切换到指定cpu，进入到vmx模式，将loaded_vmcs的vmcs和当前cpu的vmcs绑定到一起。vmx_vcpu_setup则是初始化vmcs内容，主要是赋值计算，下面的vmx_vcpu_put则是vmx_vcpu_load的反运算。下面还有一些apic，nested，pml就不说了。
+`vmx_vcpu_load`**加载VCPU的信息**，**切换到指定cpu**，**进入到vmx模式**，将`loaded_vmcs`的**vmcs**和**当前cpu的vmcs绑定到一起**。`vmx_vcpu_setup`则是**初始化vmcs内容**，主要是**赋值计算**，下面的`vmx_vcpu_put`则是`vmx_vcpu_load`的**反运算**。下面还有一些apic，nested，pml就不说了。
 
 vmx_create_vcpu结束就直接回到kvm_vm_ioctl_create_vcpu函数，下面是kvm_arch_vcpu_setup，整个就一条线到kvm_arch_vcpu_load函数，主要有kvm_x86_ops->vcpu_load(vcpu, cpu)和tsc处理，vcpu_load就是vmx_vcpu_load，刚说了，就是进入vcpu模式下准备工作。
 kvm_arch_vcpu_setup后面是create_vcpu_fd为proc创建控制fd，让qemu使用。kvm_arch_vcpu_postcreate则是马后炮般，重新vcpu_load，写msr，tsc。
