@@ -3,13 +3,14 @@
 
 <!-- code_chunk_output -->
 
-* [1. VT-x 技术](#1-vt-x-技术)
-* [2. VMCS寄存器](#2-vmcs寄存器)
-* [3. VM-Entry/VM-Exit](#3-vm-entryvm-exit)
+- [1. VT-x 技术](#1-vt-x-技术)
+- [2. VMCS寄存器](#2-vmcs寄存器)
+- [3. VM-Entry/VM-Exit](#3-vm-entryvm-exit)
+- [4. 参考](#4-参考)
 
 <!-- /code_chunk_output -->
 
-## 1. VT-x 技术
+# 1. VT-x 技术
 
 Intel处理器支持的虚拟化技术即是VT-x，之所以CPU支持硬件虚拟化是因为软件虚拟化的效率太低。
 
@@ -23,7 +24,7 @@ Intel处理器支持的虚拟化技术即是VT-x，之所以CPU支持硬件虚�
 
 在非根模式下敏感指令引发的陷入称为VM-Exit，VM-Exit发生后，CPU从非根模式切换到根模式；对应的，VM-Entry则是从根模式到非根模式，通常意味着调用VM进入运行态。VMLAUCH/VMRESUME命令则是用来发起VM-Entry。
 
-## 2. VMCS寄存器
+# 2. VMCS寄存器
 
 VMCS保存虚拟机的相关CPU状态，每个VCPU都有一个VMCS（内存的），每个物理CPU都有VMCS对应的寄存器（物理的），当CPU发生VM-Entry时，CPU则从VCPU指定的内存中读取VMCS加载到物理CPU上执行，当发生VM-Exit时，CPU则将当前的CPU状态保存到VCPU指定的内存中，即VMCS，以备下次VMRESUME。
 
@@ -33,7 +34,7 @@ VMLAUCH指VM的第一次VM-Entry，VMRESUME则是VMLAUCH之后后续的VM-Entry�
 
 关于具体控制域的细节，还是翻Intel手册吧。
 
-## 3. VM-Entry/VM-Exit
+# 3. VM-Entry/VM-Exit
 
 VM-Entry是从根模式切换到非根模式，即VMM切换到guest上，这个状态由VMM发起，发起之前先保存VMM中的关键寄存器内容到VMCS中，然后进入到VM-Entry，VM-Entry附带参数主要有3个：1.guest是否处于64bit模式，2.MSR VM-Entry控制，3.注入事件。1应该只在VMLAUCH有意义，3更多是在VMRESUME，而VMM发起VM-Entry更多是因为3，2主要用来每次更新MSR。
 
@@ -51,3 +52,7 @@ VM-Exit是CPU从非根模式切换到根模式，从guest切换到VMM的操作�
 
 VM-Exit发生时退出的相关信息，如退出原因、触发中断等，这些内容保存在VM-Exit信息域中。
 
+
+# 4. 参考
+
+http://oenhan.com/kvm-src-3-cpu
