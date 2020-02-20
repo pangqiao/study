@@ -71,7 +71,30 @@ VM-Entry是从根模式切换到非根模式，即VMM切换到guest上，这个�
 
 # KVM_CREATE_VM
 
-创建VM就写这里吧，`kvm_dev_ioctl_create_vm`函数是主干，在kvm_create_vm中，主要有两个函数，kvm_arch_init_vm和hardware_enable_all，需要注意，但是更先一步的是KVM结构体，下面的struct是精简后的版本。
+创建VM就写这里吧，`kvm_dev_ioctl_create_vm`函数是主干，在`kvm_create_vm`中，主要有**两个函数**，`kvm_arch_init_vm`和`hardware_enable_all`，需要注意，但是更先一步的是KVM结构体，下面的struct是精简后的版本。
+
+```cpp
+struct kvm {
+    struct mm_struct *mm; /* userspace tied to this vm */
+    struct kvm_memslots *memslots;  /*qemu模拟的内存条模型*/
+    struct kvm_vcpu *vcpus[KVM_MAX_VCPUS]; /* 模拟的CPU */
+    atomic_t online_vcpus;
+    int last_boosted_vcpu;
+    struct list_head vm_list;  //HOST上VM管理链表，
+    struct kvm_io_bus *buses[KVM_NR_BUSES];
+    struct kvm_vm_stat stat;
+    struct kvm_arch arch; //这个是host的arch的一些参数
+    atomic_t users_count;
+ 
+    long tlbs_dirty;
+    struct list_head devices;
+};
+```
+
+`kvm_arch_init_vm`基本没有特别动作，初始化了`KVM->arch`，以及更新了**kvmclock函数**，这个另外再说。
+
+而hardware_enable_all，针对于每个CPU执行“on_each_cpu(hardware_enable_nolock, NULL, 1）”，在hardware_enable_nolock中先把cpus_hardware_enabled置位，进入到kvm_arch_hardware_enable中，有hardware_enable和TSC初始化规则，主要看hardware_enable，crash_enable_local_vmclear清理位图，判断MSR_IA32_FEATURE_CONTROL寄存器是否满足虚拟环境，不满足则将条件写入到寄存器内，CR4将X86_CR4_VMXE置位，另外还有kvm_cpu_vmxon打开VMX操作模式，外层包了vmm_exclusive的判断，它是kvm_intel.ko的外置参数，默认唯一，可以让用户强制不使用VMM硬件支持。
+
 
 
 
