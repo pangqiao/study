@@ -49,7 +49,7 @@ VM-Entry是从根模式切换到非根模式，即VMM切换到guest上，这个�
 
 1应该**只在VMLAUCH有意义**，3更多是在VMRESUME，而VMM发起`VM-Entry`更多是因为3，2主要用来每次更新MSR。
 
-VM-Exit是CPU从非根模式切换到根模式，从guest切换到VMM的操作，VM-Exit触发的原因就很多了，执行敏感指令，[发生中断](http://www.oenhan.com/rwsem-realtime-task-hung)，模拟特权资源等。
+`VM-Exit`是CPU从**非根模式**切换到**根模式**，从guest切换到VMM的操作，`VM-Exit`触发的原因就很多了，执行**敏感指令**，[**发生中断**](http://www.oenhan.com/rwsem-realtime-task-hung)，**模拟特权资源**等。
 
 运行在非根模式下的敏感指令一般分为3个方面：
 
