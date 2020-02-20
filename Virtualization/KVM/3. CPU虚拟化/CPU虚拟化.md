@@ -22,13 +22,18 @@ Intel处理器支持的虚拟化技术即是VT-x，之所以CPU支持硬件虚�
 
 ![config](images/1.png)
 
-在非根模式下敏感指令引发的陷入称为VM-Exit，VM-Exit发生后，CPU从非根模式切换到根模式；对应的，VM-Entry则是从根模式到非根模式，通常意味着调用VM进入运行态。VMLAUCH/VMRESUME命令则是用来发起VM-Entry。
+在非根模式下敏感指令引发的陷入称为`VM-Exit`，`VM-Exit`发生后，CPU从非根模式切换到根模式；对应的，`VM-Entry`则是从根模式到非根模式，通常意味着调用VM进入运行态。`VMLAUCH`/`VMRESUME`命令则是用来发起`VM-Entry`。
 
 # 2. VMCS寄存器
 
-VMCS保存虚拟机的相关CPU状态，每个VCPU都有一个VMCS（内存的），每个物理CPU都有VMCS对应的寄存器（物理的），当CPU发生VM-Entry时，CPU则从VCPU指定的内存中读取VMCS加载到物理CPU上执行，当发生VM-Exit时，CPU则将当前的CPU状态保存到VCPU指定的内存中，即VMCS，以备下次VMRESUME。
+**VMCS**保存**虚拟机**的**相关CPU状态**，**每个VCPU**都有一个**VMCS**（内存的），**每个物理CPU**都有**VMCS**对应的**寄存器（物理的**）.
 
-VMLAUCH指VM的第一次VM-Entry，VMRESUME则是VMLAUCH之后后续的VM-Entry。VMCS下有一些控制域：
+- 当CPU发生`VM-Entry`时，CPU则从**VCPU指定的内存**中**读取VMCS**加载到**物理CPU**上执行;
+- 当发生`VM-Exit`时，CPU则将**当前的CPU状态**保存到**VCPU指定的内存**中，即VMCS，以备下次`VMRESUME`。
+
+`VMLAUCH`指VM的**第一次**`VM-Entry`，`VMRESUME`则是**VMLAUCH之后**后续的`VM-Entry`。
+
+VMCS下有一些**控制域**：
 
 ![config](images/2.png)
 
