@@ -12,6 +12,7 @@
   - [hardware_enable_all](#hardware_enable_all)
 - [KVM_CREATE_VCPU](#kvm_create_vcpu)
   - [struct kvm_vcpu](#struct-kvm_vcpu)
+- [KVM_RUN](#kvm_run)
 - [4. 参考](#4-参考)
 
 <!-- /code_chunk_output -->
@@ -379,6 +380,60 @@ struct kvm_vcpu_arch {
     } pv;
 };
 ```
+
+整个arch结构真是长，很适合凑篇幅，很多结构其他过程涉及到的再提吧，反正我也不知道。
+`kvm_arch_vcpu_init`初始化了**x86**在**虚拟化底层**的实现函数，首先是`pv`和`emulate_ctxt`，这些不支持VMX下的模拟虚拟化，尤其是`vcpu->arch.emulate_ctxt.ops = &emulate_ops`，`emulate_ops`初始化虚拟化模拟的对象函数。
+
+```cpp
+static struct x86_emulate_ops emulate_ops = {
+    .read_std            = kvm_read_guest_virt_system,
+    .write_std           = kvm_write_guest_virt_system,
+    .fetch               = kvm_fetch_guest_virt,
+    .read_emulated       = emulator_read_emulated,
+    .write_emulated      = emulator_write_emulated,
+    .cmpxchg_emulated    = emulator_cmpxchg_emulated,
+    .invlpg              = emulator_invlpg,
+    .pio_in_emulated     = emulator_pio_in_emulated,
+    .pio_out_emulated    = emulator_pio_out_emulated,
+    .get_segment         = emulator_get_segment,
+    .set_segment         = emulator_set_segment,
+    .get_cached_segment_base = emulator_get_cached_segment_base,
+    .get_gdt             = emulator_get_gdt,
+    .get_idt         = emulator_get_idt,
+    .set_gdt             = emulator_set_gdt,
+    .set_idt         = emulator_set_idt,
+    .get_cr              = emulator_get_cr,
+    .set_cr              = emulator_set_cr,
+    .cpl                 = emulator_get_cpl,
+    .get_dr              = emulator_get_dr,
+    .set_dr              = emulator_set_dr,
+    .set_msr             = emulator_set_msr,
+    .get_msr             = emulator_get_msr,
+    .halt                = emulator_halt,
+    .wbinvd              = emulator_wbinvd,
+    .fix_hypercall       = emulator_fix_hypercall,
+    .get_fpu             = emulator_get_fpu,
+    .put_fpu             = emulator_put_fpu,
+    .intercept           = emulator_intercept,
+    .get_cpuid           = emulator_get_cpuid,
+};
+```
+
+x86_emulate_ops函数看看就好，实际上也很少有人放弃vmx直接软件模拟。后面又有mp_state，给pio_data分配了一个page，kvm_set_tsc_khz设置TSC，kvm_mmu_create则是初始化MMU的函数，里面的函数都是地址转换的重点，在内存虚拟化重点提到。kvm_create_lapic初始化lapic，初始化mce_banks结构，还有pv_time,xcr0,xstat,pmu等，类似x86硬件结构上需要存在的，OS底层需要看到的硬件名称都要有对应的软件结构。
+
+回到vmx_create_vcpu，vmx的guest_msrs分配得到一个page，后面是vmcs的分配，vmx->loaded_vmcs->vmcs = alloc_vmcs()，alloc_vmcs为当前cpu执行alloc_vmcs_cpu，alloc_vmcs_cpu中alloc_pages_exact_node分配给vmcs，alloc_pages_exact_node调用__alloc_pages实现，原来以为vmcs占用了一个page，但此处从伙伴系统申请了2^vmcs_config.order页，此处vmcs_config在setup_vmcs_config中初始化，vmcs_conf->order = get_order(vmcs_config.size)，而vmcs_conf->size = vmx_msr_high & 0x1fff，又rdmsr(MSR_IA32_VMX_BASIC, vmx_msr_low, vmx_msr_high)，此处size由于与0x1fff与运算，大小必然小于4k，order则为0，然来绕去还是一个page大小。这么做估计是为了兼容vmcs_config中的size计算。
+
+下面根据vmm_exclusive进行kvm_cpu_vmxon，进入vmx模式，初始化loaded_vmcs，然后用kvm_cpu_vmxoff退出vmx模式。
+
+vmx_vcpu_load加载VCPU的信息，切换到指定cpu，进入到vmx模式，将loaded_vmcs的vmcs和当前cpu的vmcs绑定到一起。vmx_vcpu_setup则是初始化vmcs内容，主要是赋值计算，下面的vmx_vcpu_put则是vmx_vcpu_load的反运算。下面还有一些apic，nested，pml就不说了。
+
+vmx_create_vcpu结束就直接回到kvm_vm_ioctl_create_vcpu函数，下面是kvm_arch_vcpu_setup，整个就一条线到kvm_arch_vcpu_load函数，主要有kvm_x86_ops->vcpu_load(vcpu, cpu)和tsc处理，vcpu_load就是vmx_vcpu_load，刚说了，就是进入vcpu模式下准备工作。
+kvm_arch_vcpu_setup后面是create_vcpu_fd为proc创建控制fd，让qemu使用。kvm_arch_vcpu_postcreate则是马后炮般，重新vcpu_load，写msr，tsc。
+如此整个vcpu就创建完成了。
+
+# KVM_RUN
+
+KVM run涉及内容也不少，先写完内存虚拟化之后再开篇专门写RUN流程。
 
 # 4. 参考
 
