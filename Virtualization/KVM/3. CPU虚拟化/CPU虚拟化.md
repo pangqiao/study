@@ -6,6 +6,7 @@
 - [1. VT-x 技术](#1-vt-x-技术)
 - [2. VMCS寄存器](#2-vmcs寄存器)
 - [3. VM-Entry/VM-Exit](#3-vm-entryvm-exit)
+- [KVM_CREATE_VM](#kvm_create_vm)
 - [4. 参考](#4-参考)
 
 <!-- /code_chunk_output -->
@@ -67,6 +68,9 @@ VM-Entry是从根模式切换到非根模式，即VMM切换到guest上，这个�
 典型的有“**RDTSC指令**”。除了大部分是优化性能的，还有一小部分是直接`VM-Exit`执行指令结果是异常的，或者说在[虚拟化](http://www.oenhan.com/kvm-src-1)场景下是不适用的，典型的就是**TSC offset**了。
 
 `VM-Exit`发生时退出的相关信息，如退出原因、触发中断等，这些内容保存在`VM-Exit`**信息域**中。
+
+# KVM_CREATE_VM
+
 
 
 # 4. 参考
