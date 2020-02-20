@@ -41,7 +41,13 @@ VMCS下有一些**控制域**：
 
 # 3. VM-Entry/VM-Exit
 
-VM-Entry是从根模式切换到非根模式，即VMM切换到guest上，这个状态由VMM发起，发起之前先保存VMM中的关键寄存器内容到VMCS中，然后进入到VM-Entry，VM-Entry附带参数主要有3个：1.guest是否处于64bit模式，2.MSR VM-Entry控制，3.注入事件。1应该只在VMLAUCH有意义，3更多是在VMRESUME，而VMM发起VM-Entry更多是因为3，2主要用来每次更新MSR。
+VM-Entry是从根模式切换到非根模式，即VMM切换到guest上，这个状态由**VMM发起**，**发起之前**先保存**VMM中的关键寄存器**内容到**VMCS**中，然后进入到VM-Entry，`VM-Entry`附带**参数主要有3个**：
+
+1. guest是否处于64bit模式，
+2. `MSR VM-Entry`控制，
+3. 注入事件。
+
+1应该**只在VMLAUCH有意义**，3更多是在VMRESUME，而VMM发起`VM-Entry`更多是因为3，2主要用来每次更新MSR。
 
 VM-Exit是CPU从非根模式切换到根模式，从guest切换到VMM的操作，VM-Exit触发的原因就很多了，执行敏感指令，[发生中断](http://www.oenhan.com/rwsem-realtime-task-hung)，模拟特权资源等。
 
