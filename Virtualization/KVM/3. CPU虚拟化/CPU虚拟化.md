@@ -425,15 +425,55 @@ static struct x86_emulate_ops emulate_ops = {
 
 下面根据`vmm_exclusive`进行`kvm_cpu_vmxon`，进入**vmx模式**，初始化`loaded_vmcs`，然后用`kvm_cpu_vmxoff`**退出vmx模式**。
 
-`vmx_vcpu_load`**加载VCPU的信息**，**切换到指定cpu**，**进入到vmx模式**，将`loaded_vmcs`的**vmcs**和**当前cpu的vmcs绑定到一起**。`vmx_vcpu_setup`则是**初始化vmcs内容**，主要是**赋值计算**，下面的`vmx_vcpu_put`则是`vmx_vcpu_load`的**反运算**。下面还有一些apic，nested，pml就不说了。
+`vmx_vcpu_load`**加载VCPU的信息**，**切换到指定cpu**，**进入到vmx模式**，将`loaded_vmcs`的**vmcs**和**当前cpu的vmcs绑定到一起**。`vmx_vcpu_setup`则是**初始化vmcs内容**，主要是**赋值计算**，下面的`vmx_vcpu_put`则是`vmx_vcpu_load`的**反运算**。下面还有一些`apic`、`nested`、`pml`就不说了。
 
-vmx_create_vcpu结束就直接回到kvm_vm_ioctl_create_vcpu函数，下面是kvm_arch_vcpu_setup，整个就一条线到kvm_arch_vcpu_load函数，主要有kvm_x86_ops->vcpu_load(vcpu, cpu)和tsc处理，vcpu_load就是vmx_vcpu_load，刚说了，就是进入vcpu模式下准备工作。
-kvm_arch_vcpu_setup后面是create_vcpu_fd为proc创建控制fd，让qemu使用。kvm_arch_vcpu_postcreate则是马后炮般，重新vcpu_load，写msr，tsc。
+`vmx_create_vcpu`**结束**就**直接回到**`kvm_vm_ioctl_create_vcpu`函数，下面是`kvm_arch_vcpu_setup`，整个就一条线到`kvm_arch_vcpu_load`函数，主要有`kvm_x86_ops->vcpu_load(vcpu, cpu)`和**tsc处理**，`vcpu_load`就是`vmx_vcpu_load`，刚说了，就是**进入vcpu模式下准备工作**。
+
+`kvm_arch_vcpu_setup`后面是`create_vcpu_fd`为**proc**创建**控制fd**，让qemu使用。`kvm_arch_vcpu_postcreate`则是马后炮般，**重新**`vcpu_load`，写msr，tsc。
+
 如此整个vcpu就创建完成了。
 
 # KVM_RUN
 
 KVM run涉及内容也不少，先写完内存虚拟化之后再开篇专门写RUN流程。
+
+**给vmcs分配空间并初始化**，在`alloc_vmcs_cpu`分配**一个页大小内存**，用来保存**vm**和**vmm信息**。
+
+```cpp
+    vmx->vmcs = alloc_vmcs();
+    if (!vmx->vmcs)
+        goto free_msrs;
+ 
+    vmcs_init(vmx->vmcs);
+```
+
+执行vm entry的时候将vmm状态保存到vmcs的host area，并加载对应vm的vmcs guest area信息到CPU中，vm exit的时候则反之，vmcs具体结构分配由硬件实现，程序员只需要通过VMWRITE和VMREAD指令去访问。
+
+vmx执行完后，回到kvm_vm_ioctl_create_vcpu函数。kvm_arch_vcpu_reset对vcpu的结构进行初始化，后面一些就是检查vcpu的合法性，最后和kvm串接到一起。
+
+vcpu的创建到此结束，下面说一下vcpu的运行。
+
+VCPU一旦创建成功，后续的控制基本上从kvm_vcpu_ioctl开始，控制开关有KVM_RUN，KVM_GET_REGS，KVM_SET_REGS，KVM_GET_SREGS，KVM_SET_SREGS，KVM_GET_MP_STATE，KVM_SET_MP_STATE，KVM_TRANSLATE，KVM_SET_GUEST_DEBUG，KVM_SET_SIGNAL_MASK等，如果不清楚具体开关作用，可以直接到qemu搜索对应开关代码，一目了然。
+
+KVM_RUN的实现函数是kvm_arch_vcpu_ioctl_run，进行安全检查之后进入__vcpu_run中，在while循环里面调用vcpu_enter_guest进入guest模式，首先处理vcpu->requests，对应的request做处理，kvm_mmu_reload加载mmu，通过kvm_x86_ops->prepare_guest_switch(vcpu)准备陷入到guest，prepare_guest_switch实现是vmx_save_host_state，顾名思义，就是保存host的当前状态。
+
+```cpp
+    kvm_x86_ops->prepare_guest_switch(vcpu);
+    if (vcpu->fpu_active)
+        kvm_load_guest_fpu(vcpu);
+    kvm_load_guest_xcr0(vcpu);
+ 
+    vcpu->mode = IN_GUEST_MODE;
+ 
+    /* We should set ->mode before check ->requests,
+     * see the comment in make_all_cpus_request.
+     */
+    smp_mb();
+ 
+    local_irq_disable();
+```
+
+
 
 # 4. 参考
 
