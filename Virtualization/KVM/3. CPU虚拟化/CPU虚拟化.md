@@ -7,6 +7,8 @@
 - [2. VMCS寄存器](#2-vmcs寄存器)
 - [3. VM-Entry/VM-Exit](#3-vm-entryvm-exit)
 - [KVM_CREATE_VM](#kvm_create_vm)
+  - [struct kvm](#struct-kvm)
+  - [kvm_arch_init_vm](#kvm_arch_init_vm)
 - [4. 参考](#4-参考)
 
 <!-- /code_chunk_output -->
@@ -71,7 +73,13 @@ VM-Entry是从根模式切换到非根模式，即VMM切换到guest上，这个�
 
 # KVM_CREATE_VM
 
-创建VM就写这里吧，`kvm_dev_ioctl_create_vm`函数是主干，在`kvm_create_vm`中，主要有**两个函数**，`kvm_arch_init_vm`和`hardware_enable_all`，需要注意，但是更先一步的是KVM结构体，下面的struct是精简后的版本。
+创建VM就写这里吧，`kvm_dev_ioctl_create_vm`函数是主干，在`kvm_create_vm`中，主要有**两个函数**，`kvm_arch_init_vm`和`hardware_enable_all`，需要注意.
+
+详细见
+
+## struct kvm
+
+但是更先一步的是KVM结构体，下面的struct是精简后的版本。
 
 ```cpp
 struct kvm {
@@ -90,6 +98,8 @@ struct kvm {
     struct list_head devices;
 };
 ```
+
+## kvm_arch_init_vm
 
 `kvm_arch_init_vm`基本没有特别动作，初始化了`KVM->arch`，以及更新了**kvmclock函数**，这个另外再说。
 
