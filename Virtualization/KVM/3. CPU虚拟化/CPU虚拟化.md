@@ -437,7 +437,7 @@ static struct x86_emulate_ops emulate_ops = {
 
 KVM run涉及内容也不少，先写完内存虚拟化之后再开篇专门写RUN流程。
 
-**给vmcs分配空间并初始化**，在`alloc_vmcs_cpu`分配**一个页大小内存**，用来保存**vm**和**vmm信息**。
+**给vmcs分配空间并初始化**，在`alloc_vmcs_cpu`分配 [**一个页大小内存**](http://oenhan.com/linux-kernel-khugepaged) ，用来保存**vm**和**vmm信息**。
 
 ```cpp
     vmx->vmcs = alloc_vmcs();
@@ -473,7 +473,234 @@ KVM_RUN的实现函数是kvm_arch_vcpu_ioctl_run，进行安全检查之后进�
     local_irq_disable();
 ```
 
+然后加载guest的寄存器等信息，fpu，xcr0,将vcpu模式设置为guest状态，屏蔽中断响应，准备进入guest。但仍进行一次检查，vcpu->mode和vcpu->requests等，如果有问题，则恢复host状态。
 
+kvm_guest_enter做了两件事：account_system_vtime计算虚拟机 [系统时间](http://www.oenhan.com/glibc_pthread_cond_timedwait_disable) ；rcu_virt_note_context_switch对rcu锁数据进行保护，完成上下文切换。
+
+准备工作搞定，kvm_x86_ops->run(vcpu)，开始运行guest，由vmx_vcpu_run实现。
+
+```cpp
+    if (vmx->emulation_required && emulate_invalid_guest_state)
+        return;
+ 
+    if (test_bit(VCPU_REGS_RSP, (unsigned long *)&vcpu->arch.regs_dirty))
+        vmcs_writel(GUEST_RSP, vcpu->arch.regs[VCPU_REGS_RSP]);
+    if (test_bit(VCPU_REGS_RIP, (unsigned long *)&vcpu->arch.regs_dirty))
+        vmcs_writel(GUEST_RIP, vcpu->arch.regs[VCPU_REGS_RIP]);
+```
+
+判断模拟器，RSP，RIP寄存器值。
+
+主要功能在这段内联汇编上
+
+```cpp
+asm(
+                /* Store host registers */
+        "push %%"R"dx; push %%"R"bp;"
+        "push %%"R"cx nt" /* placeholder for guest rcx */
+        "push %%"R"cx nt"
+                //如果vcpu host rsp和环境不等，则将其拷贝到vpu上
+        "cmp %%"R"sp, %c[host_rsp](%0) nt"
+        "je 1f nt"
+        "mov %%"R"sp, %c[host_rsp](%0) nt"
+        __ex(ASM_VMX_VMWRITE_RSP_RDX) "nt"//__kvm_handle_fault_on_reboot write host rsp
+        "1: nt"
+        /* Reload cr2 if changed */
+        "mov %c[cr2](%0), %%"R"ax nt"
+        "mov %%cr2, %%"R"dx nt"
+                //环境上cr2值和vpu上的值不同，则将vpu上值拷贝到环境上
+        "cmp %%"R"ax, %%"R"dx nt"
+        "je 2f nt"
+        "mov %%"R"ax, %%cr2 nt"
+        "2: nt"
+        /* Check if vmlaunch of vmresume is needed */
+        "cmpl $0, %c[launched](%0) nt"
+        /* Load guest registers.  Don't clobber flags. */
+        "mov %c[rax](%0), %%"R"ax nt"
+        "mov %c[rbx](%0), %%"R"bx nt"
+        "mov %c[rdx](%0), %%"R"dx nt"
+        "mov %c[rsi](%0), %%"R"si nt"
+        "mov %c[rdi](%0), %%"R"di nt"
+        "mov %c[rbp](%0), %%"R"bp nt"
+#ifdef CONFIG_X86_64
+        "mov %c[r8](%0),  %%r8  nt"
+        "mov %c[r9](%0),  %%r9  nt"
+        "mov %c[r10](%0), %%r10 nt"
+        "mov %c[r11](%0), %%r11 nt"
+        "mov %c[r12](%0), %%r12 nt"
+        "mov %c[r13](%0), %%r13 nt"
+        "mov %c[r14](%0), %%r14 nt"
+        "mov %c[r15](%0), %%r15 nt"
+#endif
+        "mov %c[rcx](%0), %%"R"cx nt" /* kills %0 (ecx) */
+ 
+        /* Enter guest mode */
+                //此处和cmpl $0, %c[launched](%0)是对应的，此处选择进入guest的两种模式
+                //RESUME和LAUNCH，通过__ex  __kvm_handle_fault_on_reboot执行
+        "jne .Llaunched nt"
+        __ex(ASM_VMX_VMLAUNCH) "nt"
+        "jmp .Lkvm_vmx_return nt"
+        ".Llaunched: " __ex(ASM_VMX_VMRESUME) "nt"
+                 //退出vmx，保存guest信息，加载host信息
+        ".Lkvm_vmx_return: "
+        /* Save guest registers, load host registers, keep flags */
+        "mov %0, %c[wordsize](%%"R"sp) nt"
+        "pop %0 nt"
+        "mov %%"R"ax, %c[rax](%0) nt"
+        "mov %%"R"bx, %c[rbx](%0) nt"
+        "pop"Q" %c[rcx](%0) nt"
+        "mov %%"R"dx, %c[rdx](%0) nt"
+        "mov %%"R"si, %c[rsi](%0) nt"
+        "mov %%"R"di, %c[rdi](%0) nt"
+        "mov %%"R"bp, %c[rbp](%0) nt"
+#ifdef CONFIG_X86_64
+        "mov %%r8,  %c[r8](%0) nt"
+        "mov %%r9,  %c[r9](%0) nt"
+        "mov %%r10, %c[r10](%0) nt"
+        "mov %%r11, %c[r11](%0) nt"
+        "mov %%r12, %c[r12](%0) nt"
+        "mov %%r13, %c[r13](%0) nt"
+        "mov %%r14, %c[r14](%0) nt"
+        "mov %%r15, %c[r15](%0) nt"
+#endif
+        "mov %%cr2, %%"R"ax   nt"
+        "mov %%"R"ax, %c[cr2](%0) nt"
+ 
+        "pop  %%"R"bp; pop  %%"R"dx nt"
+        "setbe %c[fail](%0) nt"
+          : : "c"(vmx), "d"((unsigned long)HOST_RSP),
+ 
+//下面加了前面寄存器的指针值，对应具体结构的值
+        [launched]"i"(offsetof(struct vcpu_vmx, launched)),
+        [fail]"i"(offsetof(struct vcpu_vmx, fail)),
+        [host_rsp]"i"(offsetof(struct vcpu_vmx, host_rsp)),
+        [rax]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_RAX])),
+        [rbx]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_RBX])),
+        [rcx]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_RCX])),
+        [rdx]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_RDX])),
+        [rsi]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_RSI])),
+        [rdi]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_RDI])),
+        [rbp]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_RBP])),
+#ifdef CONFIG_X86_64
+        [r8]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_R8])),
+        [r9]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_R9])),
+        [r10]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_R10])),
+        [r11]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_R11])),
+        [r12]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_R12])),
+        [r13]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_R13])),
+        [r14]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_R14])),
+        [r15]"i"(offsetof(struct vcpu_vmx, vcpu.arch.regs[VCPU_REGS_R15])),
+#endif
+        [cr2]"i"(offsetof(struct vcpu_vmx, vcpu.arch.cr2)),
+        [wordsize]"i"(sizeof(ulong))
+          : "cc", "memory"
+        , R"ax", R"bx", R"di", R"si"
+#ifdef CONFIG_X86_64
+        , "r8", "r9", "r10", "r11", "r12", "r13", "r14", "r15"
+#endif
+```
+
+以上代码相对容易理解的，根据注释大致清楚了具体作用。
+
+然后就是恢复系统NMI等中断:
+
+```cpp
+vmx_complete_atomic_exit(vmx);
+vmx_recover_nmi_blocking(vmx);
+vmx_complete_interrupts(vmx);
+```
+
+回到vcpu_enter_guest，通过hw_breakpoint_restore恢复 [硬件断点](http://www.oenhan.com/jprobe-hw-breakpoint) 。
+
+```cpp
+    if (hw_breakpoint_active())
+        hw_breakpoint_restore();
+ 
+    kvm_get_msr(vcpu, MSR_IA32_TSC, &vcpu->arch.last_guest_tsc);
+ 
+//设置vcpu模式，恢复host相关内容
+    vcpu->mode = OUTSIDE_GUEST_MODE;
+    smp_wmb();
+    local_irq_enable();
+ 
+    ++vcpu->stat.exits;
+ 
+    /*
+     * We must have an instruction between local_irq_enable() and
+     * kvm_guest_exit(), so the timer interrupt isn't delayed by
+     * the interrupt shadow.  The stat.exits increment will do nicely.
+     * But we need to prevent reordering, hence this barrier():
+     */
+    barrier();
+//刷新系统时间
+    kvm_guest_exit();
+ 
+    preempt_enable();
+ 
+    vcpu->srcu_idx = srcu_read_lock(&vcpu->kvm->srcu);
+ 
+    /*
+     * Profile KVM exit RIPs:
+     */
+    if (unlikely(prof_on == KVM_PROFILING)) {
+        unsigned long rip = kvm_rip_read(vcpu);
+        profile_hit(KVM_PROFILING, (void *)rip);
+    }
+ 
+    kvm_lapic_sync_from_vapic(vcpu);
+//处理vmx退出
+    r = kvm_x86_ops->handle_exit(vcpu);
+```
+
+handle_exit退出函数由vmx_handle_exit实现，主要设置vcpu->run->exit_reason，让外部感知退出原因，并对应处理。对于vpu而言，handle_exit只是意味着一个传统linux一个时间片的结束，后续的工作都是由handle完成的，handle_exit对应的函数集如下：
+
+```cpp
+static int (*kvm_vmx_exit_handlers[])(struct kvm_vcpu *vcpu) = {
+    [EXIT_REASON_EXCEPTION_NMI]           = handle_exception,
+    [EXIT_REASON_EXTERNAL_INTERRUPT]      = handle_external_interrupt,
+    [EXIT_REASON_TRIPLE_FAULT]            = handle_triple_fault,
+    [EXIT_REASON_NMI_WINDOW]          = handle_nmi_window,
+    [EXIT_REASON_IO_INSTRUCTION]          = handle_io,
+    [EXIT_REASON_CR_ACCESS]               = handle_cr,
+    [EXIT_REASON_DR_ACCESS]               = handle_dr,
+    [EXIT_REASON_CPUID]                   = handle_cpuid,
+    [EXIT_REASON_MSR_READ]                = handle_rdmsr,
+    [EXIT_REASON_MSR_WRITE]               = handle_wrmsr,
+    [EXIT_REASON_PENDING_INTERRUPT]       = handle_interrupt_window,
+    [EXIT_REASON_HLT]                     = handle_halt,
+    [EXIT_REASON_INVD]              = handle_invd,
+    [EXIT_REASON_INVLPG]              = handle_invlpg,
+    [EXIT_REASON_VMCALL]                  = handle_vmcall,
+    [EXIT_REASON_VMCLEAR]                  = handle_vmx_insn,
+    [EXIT_REASON_VMLAUNCH]                = handle_vmx_insn,
+    [EXIT_REASON_VMPTRLD]                 = handle_vmx_insn,
+    [EXIT_REASON_VMPTRST]                 = handle_vmx_insn,
+    [EXIT_REASON_VMREAD]                  = handle_vmx_insn,
+    [EXIT_REASON_VMRESUME]                = handle_vmx_insn,
+    [EXIT_REASON_VMWRITE]                 = handle_vmx_insn,
+    [EXIT_REASON_VMOFF]                   = handle_vmx_insn,
+    [EXIT_REASON_VMON]                    = handle_vmx_insn,
+    [EXIT_REASON_TPR_BELOW_THRESHOLD]     = handle_tpr_below_threshold,
+    [EXIT_REASON_APIC_ACCESS]             = handle_apic_access,
+    [EXIT_REASON_WBINVD]                  = handle_wbinvd,
+    [EXIT_REASON_XSETBV]                  = handle_xsetbv,
+    [EXIT_REASON_TASK_SWITCH]             = handle_task_switch,
+    [EXIT_REASON_MCE_DURING_VMENTRY]      = handle_machine_check,
+    [EXIT_REASON_EPT_VIOLATION]          = handle_ept_violation,
+    [EXIT_REASON_EPT_MISCONFIG]           = handle_ept_misconfig,
+    [EXIT_REASON_PAUSE_INSTRUCTION]       = handle_pause,
+    [EXIT_REASON_MWAIT_INSTRUCTION]          = handle_invalid_op,
+    [EXIT_REASON_MONITOR_INSTRUCTION]     = handle_invalid_op,
+};
+```
+
+有handle_task_switch进行任务切换，handle_io处理qemu的外部模拟IO等，具体处理内容后面在写。
+
+再次退回到__vcpu_run函数，在while (r > 0)中，循环受vcpu_enter_guest返回值控制，只有运行异常的时候才退出循环，否则通过kvm_resched一直运行下去。
+
+```cpp
+
+```
 
 # 4. 参考
 
