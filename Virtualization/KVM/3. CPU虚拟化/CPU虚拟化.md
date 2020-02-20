@@ -699,8 +699,18 @@ static int (*kvm_vmx_exit_handlers[])(struct kvm_vcpu *vcpu) = {
 再次退回到__vcpu_run函数，在while (r > 0)中，循环受vcpu_enter_guest返回值控制，只有运行异常的时候才退出循环，否则通过kvm_resched一直运行下去。
 
 ```cpp
-
+        if (need_resched()) {
+            srcu_read_unlock(&kvm->srcu, vcpu->srcu_idx);
+            kvm_resched(vcpu);
+            vcpu->srcu_idx = srcu_read_lock(&kvm->srcu);
+        }
 ```
+
+再退就到了kvm_arch_vcpu_ioctl_run函数，此时kvm run的执行也结束。
+
+KVM cpu虚拟化的理解基本如上，涉及到的具体细节有时间后开篇另说。
+
+KVM源代码分析未完待续
 
 # 4. 参考
 
