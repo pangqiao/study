@@ -419,9 +419,9 @@ static struct x86_emulate_ops emulate_ops = {
 };
 ```
 
-`x86_emulate_ops`函数看看就好，实际上也**很少**有人**放弃vmx直接软件模拟**。后面又有`mp_state`，给`pio_data`分配了**一个page**，`kvm_set_tsc_khz`设置**TSC**，`kvm_mmu_create`则是**初始化MMU的函数**，里面的函数都是**地址转换的重点**，在内存虚拟化重点提到。kvm_create_lapic初始化lapic，初始化mce_banks结构，还有pv_time,xcr0,xstat,pmu等，类似x86硬件结构上需要存在的，OS底层需要看到的硬件名称都要有对应的软件结构。
+`x86_emulate_ops`函数看看就好，实际上也**很少**有人**放弃vmx直接软件模拟**。后面又有`mp_state`，给`pio_data`分配了**一个page**，`kvm_set_tsc_khz`设置**TSC**，`kvm_mmu_create`则是**初始化MMU的函数**，里面的函数都是**地址转换的重点**，在**内存虚拟化**重点提到。`kvm_create_lapic`初始化**lapic**，初始化`mce_banks`结构，还有`pv_time`、`xcr0`、`xstat`、`pmu`等，类似x86硬件结构上需要存在的，**OS底层**需要看到的**硬件名称**都要有**对应的软件结构**。
 
-回到vmx_create_vcpu，vmx的guest_msrs分配得到一个page，后面是vmcs的分配，vmx->loaded_vmcs->vmcs = alloc_vmcs()，alloc_vmcs为当前cpu执行alloc_vmcs_cpu，alloc_vmcs_cpu中alloc_pages_exact_node分配给vmcs，alloc_pages_exact_node调用__alloc_pages实现，原来以为vmcs占用了一个page，但此处从伙伴系统申请了2^vmcs_config.order页，此处vmcs_config在setup_vmcs_config中初始化，vmcs_conf->order = get_order(vmcs_config.size)，而vmcs_conf->size = vmx_msr_high & 0x1fff，又rdmsr(MSR_IA32_VMX_BASIC, vmx_msr_low, vmx_msr_high)，此处size由于与0x1fff与运算，大小必然小于4k，order则为0，然来绕去还是一个page大小。这么做估计是为了兼容vmcs_config中的size计算。
+回到`vmx_create_vcpu`，vmx的`guest_msrs`分配得到**一个page**，后面是**vmcs的分配**，`vmx->loaded_vmcs->vmcs = alloc_vmcs()`，alloc_vmcs为当前cpu执行alloc_vmcs_cpu，alloc_vmcs_cpu中alloc_pages_exact_node分配给vmcs，alloc_pages_exact_node调用__alloc_pages实现，原来以为vmcs占用了一个page，但此处从伙伴系统申请了2^vmcs_config.order页，此处vmcs_config在setup_vmcs_config中初始化，vmcs_conf->order = get_order(vmcs_config.size)，而vmcs_conf->size = vmx_msr_high & 0x1fff，又rdmsr(MSR_IA32_VMX_BASIC, vmx_msr_low, vmx_msr_high)，此处size由于与0x1fff与运算，大小必然小于4k，order则为0，然来绕去还是一个page大小。这么做估计是为了兼容vmcs_config中的size计算。
 
 下面根据vmm_exclusive进行kvm_cpu_vmxon，进入vmx模式，初始化loaded_vmcs，然后用kvm_cpu_vmxoff退出vmx模式。
 
