@@ -93,7 +93,7 @@ struct kvm {
 
 `kvm_arch_init_vm`基本没有特别动作，初始化了`KVM->arch`，以及更新了**kvmclock函数**，这个另外再说。
 
-而hardware_enable_all，针对于每个CPU执行“on_each_cpu(hardware_enable_nolock, NULL, 1）”，在hardware_enable_nolock中先把cpus_hardware_enabled置位，进入到kvm_arch_hardware_enable中，有hardware_enable和TSC初始化规则，主要看hardware_enable，crash_enable_local_vmclear清理位图，判断MSR_IA32_FEATURE_CONTROL寄存器是否满足虚拟环境，不满足则将条件写入到寄存器内，CR4将X86_CR4_VMXE置位，另外还有kvm_cpu_vmxon打开VMX操作模式，外层包了vmm_exclusive的判断，它是kvm_intel.ko的外置参数，默认唯一，可以让用户强制不使用VMM硬件支持。
+而`hardware_enable_all`，针对于每个CPU执行“on_each_cpu(hardware_enable_nolock, NULL, 1）”，在hardware_enable_nolock中先把cpus_hardware_enabled置位，进入到kvm_arch_hardware_enable中，有hardware_enable和TSC初始化规则，主要看hardware_enable，crash_enable_local_vmclear清理位图，判断MSR_IA32_FEATURE_CONTROL寄存器是否满足虚拟环境，不满足则将条件写入到寄存器内，CR4将X86_CR4_VMXE置位，另外还有kvm_cpu_vmxon打开VMX操作模式，外层包了vmm_exclusive的判断，它是kvm_intel.ko的外置参数，默认唯一，可以让用户强制不使用VMM硬件支持。
 
 
 
