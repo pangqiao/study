@@ -1,5 +1,19 @@
 
-# pstack的简介
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. pstack的简介](#1-pstack的简介)
+- [2. pstack的实现](#2-pstack的实现)
+- [3. pstack的shell](#3-pstack的shell)
+  - [3.1. 基本命令的使用](#31-基本命令的使用)
+  - [3.2. Here Document](#32-here-document)
+- [4. pstack里的GDB](#4-pstack里的gdb)
+- [5. pstack里procfs](#5-pstack里procfs)
+
+<!-- /code_chunk_output -->
+
+# 1. pstack的简介
 
 Linux下有时候我们需要知道一个进程在做什么，比如说程序不正常的时候，他到底在干吗？最直接的方法就是打印出他所有线程的调用栈，这样我们从栈再配合程序代码就知道程序在干吗了。
 
@@ -10,7 +24,7 @@ Linux下这个工具叫做pstack. 使用方法是
 Usage: pstack <process-id>
 ```
 
-# pstack的实现
+# 2. pstack的实现
 
 当然这个**被调查的程序**需要有**符号信息**。 
 
@@ -84,20 +98,20 @@ Thread 20 (Thread 0x7f67b494a700 (LWP 29305)):
 ......
 ```
 
-# pstack的shell
+# 3. pstack的shell
 
-## 基本命令的使用
+## 3.1. 基本命令的使用
 
 * `test -d`，检查目录是否存在
 * `test -f`，检查文件是否存在
 * `grep -e`，用`grep -q -e`更好一些
 * `sed -e s`，sed的替换命令
 
-## Here Document
+## 3.2. Here Document
 
 Here Document也是一种IO重定向，IO结束时会发EOF给GDB。
 
-# pstack里的GDB
+# 4. pstack里的GDB
 
 GDB的东西内容非常多，这里不展开，pstack里最核心的就是**调用GDB**，**attach到对应进程**，然后**执行bt命令**，如果程序是**多线程**就执行`thread apply all bt`命令，最后quit退出。
 
@@ -113,7 +127,7 @@ GDB的东西内容非常多，这里不展开，pstack里最核心的就是**调
 
 Here Document IO重定向结束的标志是EOF，GDB读到了EOF自动退出了。
 
-# pstack里procfs
+# 5. pstack里procfs
 
 pstack里面检查进程是否支持多线程的方法是检查进程对应的proc目录，方法没什么可说的，其中Older kernel下是通过检查/proc/pid/maps是否加载libpthread来搞的，这种是动态的，类似于静态的ldd。这种方法其实不太严谨，但由于GDB的thread apply all bt对多线程的支持也不是特别完美，所以也无可厚非。这里简单说说Linux的procfs。
 
