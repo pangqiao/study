@@ -69,8 +69,19 @@ pstack其实是个Shell脚本，核心原理是**GDB**的**thread apply all bt**
 在`/usr/bin/pstack`文件最前面添加`set -x`, 最后面加上`set +x`查看执行的命令
 
 ```
-
-
++ test 1 -ne 1
++ test '!' -r /proc/29298
++ backtrace=bt
++ test -d /proc/29298/task
+++ /bin/ls /proc/29298/task
+++ /usr/bin/wc -l
++ test 20 -gt 1
++ backtrace='thread apply all bt'
++ GDB=/usr/bin/gdb
++ /usr/bin/gdb --quiet -nx /proc/29298/exe 29298
++ /bin/sed -n -e 's/^\((gdb) \)*//' -e '/^#/p' -e '/^Thread/p'
+Thread 20 (Thread 0x7f67b494a700 (LWP 29305)):
+......
 ```
 
 # pstack的shell
@@ -94,10 +105,30 @@ GDB的东西内容非常多，这里不展开，pstack里最核心的就是**调
 
 >The first thing GDB does after arranging to debug the specified process is to stop it.
 
-看了这个应该就很容易明白为什么不能随便在生产环境中去attach一个正在运行的程序，如果attach上以后待着不动，程序就暂停了。
+看了这个应该就很容易明白为什么**不能随便**在生产环境中去**attach一个正在运行的程序**，如果attach上以后待着不动，程序就暂停了。
 
-那为什么用pstack没啥事儿呢，原因是pstack执行了一个GDB的bt子命令后立即退出了，可是源代码里面没有执行quit，它是怎么退出的呢，看这个文档说明：
+那为什么用pstack没啥事儿呢，原因是**pstack**执行了一个**GDB的bt子命令**后立即**退出**了，可是源代码里面没有执行quit，它是怎么退出的呢，看这个文档说明：
 
-To exit GDB, use the quit command (abbreviated q), or type an end-of-file character (usually Ctrl-d).
+>To exit GDB, use the quit command (abbreviated q), or type an end-of-file character (usually Ctrl-d).
 
 Here Document IO重定向结束的标志是EOF，GDB读到了EOF自动退出了。
+
+# pstack里procfs
+
+pstack里面检查进程是否支持多线程的方法是检查进程对应的proc目录，方法没什么可说的，其中Older kernel下是通过检查/proc/pid/maps是否加载libpthread来搞的，这种是动态的，类似于静态的ldd。这种方法其实不太严谨，但由于GDB的thread apply all bt对多线程的支持也不是特别完美，所以也无可厚非。这里简单说说Linux的procfs。
+
+虽然并不是所有的UNIX-Like操作系统都支持procfs，也不是Linux首创了这种虚拟文件系统，但绝对是Linux将其发扬光大的，早起内核中甚至达到了滥用的程度，内核开发者喊了好多年，说procfs即将被淘汰，但依然很火，主要是因为太方便了，比如procfs可以很容易的进行应用层与内核态进行通信。
+
+procfs在Linux中的应用不止是进程信息导出，详细的应用与内核模块联动，后续会写专门的文章介绍，如有兴趣，可以参考《深入理解Linux内核架构》和《Linux设备驱动程序》，关于进程的，以下信息可以了解一下：
+
+* /proc/PID/cmdline, 启动该进程的命令行.
+* /proc/PID/cwd, 当前工作目录的符号链接.
+* /proc/PID/environ 影响进程的环境变量的名字和值.
+* /proc/PID/exe, 最初的可执行文件的符号链接, 如果它还存在的话。
+* /proc/PID/fd, 一个目录，包含每个打开的文件描述符的符号链接.
+* /proc/PID/fdinfo, 一个目录，包含每个打开的文件描述符的位置和标记
+* /proc/PID/maps, 一个文本文件包含内存映射文件与块的信息。
+* /proc/PID/mem, 一个二进制图像(image)表示进程的虚拟内存, 只能通过ptrace化进程访问.
+* /proc/PID/root, 该进程所能看到的根路径的符号链接。如果没有chroot监狱，那么进程的根路径是/.
+* /proc/PID/status包含了进程的基本信息，包括运行状态、内存使用。
+* /proc/PID/task, 一个目录包含了硬链接到该进程启动的任何任务
