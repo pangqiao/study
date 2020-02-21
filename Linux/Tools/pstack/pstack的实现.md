@@ -9,8 +9,7 @@ Usage: pstack <process-id>
 
 当然这个**被调查的程序**需要有**符号信息**。 比较雷人的是这个程序竟然是个shell脚本，核心实现是**gdb**的 `thread apply all bt`， 我们可以观摩下他的实现，这个我们做类似的程序提供了一个很好的思路：
 
-```
-[root@=i ~]# cat `which pstack`
+```bash
 #!/bin/sh
  
 if test $# -ne 1; then
