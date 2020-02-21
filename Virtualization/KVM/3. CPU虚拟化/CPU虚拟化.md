@@ -6,14 +6,14 @@
 - [1. VT-x 技术](#1-vt-x-技术)
 - [2. VMCS寄存器](#2-vmcs寄存器)
 - [3. VM-Entry/VM-Exit](#3-vm-entryvm-exit)
-- [KVM_CREATE_VM](#kvm_create_vm)
-  - [struct kvm](#struct-kvm)
-  - [kvm_arch_init_vm](#kvm_arch_init_vm)
-  - [hardware_enable_all](#hardware_enable_all)
-- [KVM_CREATE_VCPU](#kvm_create_vcpu)
-  - [struct kvm_vcpu](#struct-kvm_vcpu)
-- [KVM_RUN](#kvm_run)
-- [4. 参考](#4-参考)
+- [4. KVM_CREATE_VM](#4-kvm_create_vm)
+  - [4.1. struct kvm](#41-struct-kvm)
+  - [4.2. kvm_arch_init_vm](#42-kvm_arch_init_vm)
+  - [4.3. hardware_enable_all](#43-hardware_enable_all)
+- [5. KVM_CREATE_VCPU](#5-kvm_create_vcpu)
+  - [5.1. struct kvm_vcpu](#51-struct-kvm_vcpu)
+- [6. KVM_RUN](#6-kvm_run)
+- [7. 参考](#7-参考)
 
 <!-- /code_chunk_output -->
 
@@ -75,13 +75,13 @@ VM-Entry是从根模式切换到非根模式，即VMM切换到guest上，这个�
 
 `VM-Exit`发生时退出的相关信息，如退出原因、触发中断等，这些内容保存在`VM-Exit`**信息域**中。
 
-# KVM_CREATE_VM
+# 4. KVM_CREATE_VM
 
 创建VM就写这里吧，`kvm_dev_ioctl_create_vm`函数是主干，在`kvm_create_vm`中，主要有**两个函数**，`kvm_arch_init_vm`和`hardware_enable_all`，需要注意.
 
 详细见
 
-## struct kvm
+## 4.1. struct kvm
 
 但是更先一步的是KVM结构体，下面的struct是精简后的版本。
 
@@ -103,19 +103,19 @@ struct kvm {
 };
 ```
 
-## kvm_arch_init_vm
+## 4.2. kvm_arch_init_vm
 
 `kvm_arch_init_vm`基本没有特别动作，初始化了`KVM->arch`，以及更新了**kvmclock函数**，这个另外再说。
 
-## hardware_enable_all
+## 4.3. hardware_enable_all
 
 而`hardware_enable_all`，针对于**每个CPU**执行“`on_each_cpu(hardware_enable_nolock, NULL, 1)`”，在`hardware_enable_nolock`中先把`cpus_hardware_enabled`**置位**，进入到`kvm_arch_hardware_enable`中，有`hardware_enable`和**TSC**初始化规则，主要看`hardware_enable`，`crash_enable_local_vmclear`清理位图，判断`MSR_IA32_FEATURE_CONTROL`寄存器**是否满足虚拟环境**，不满足则**将条件写入到寄存器**内，`CR4`将`X86_CR4_VMXE`**置位**，另外还有`kvm_cpu_vmxon`打开**VMX操作模式**，外层包了`vmm_exclusive`的判断，它是`kvm_intel.ko`的**外置参数**，默认唯一，可以让用户**强制不使用VMM硬件支持**。
 
-# KVM_CREATE_VCPU
+# 5. KVM_CREATE_VCPU
 
 `kvm_vm_ioctl_create_vcpu`主要有三部分，`kvm_arch_vcpu_create`，`kvm_arch_vcpu_setup`和`kvm_arch_vcpu_postcreate`，重点自然是`kvm_arch_vcpu_create`。
 
-## struct kvm_vcpu
+## 5.1. struct kvm_vcpu
 
 老样子，在这之前先看一下VCPU的结构体。
 
@@ -433,7 +433,7 @@ static struct x86_emulate_ops emulate_ops = {
 
 如此整个vcpu就创建完成了。
 
-# KVM_RUN
+# 6. KVM_RUN
 
 KVM run涉及内容也不少，先写完内存虚拟化之后再开篇专门写RUN流程。
 
@@ -712,6 +712,6 @@ KVM cpu虚拟化的理解基本如上，涉及到的具体细节有时间后开�
 
 KVM源代码分析未完待续
 
-# 4. 参考
+# 7. 参考
 
 http://oenhan.com/kvm-src-3-cpu
