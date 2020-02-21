@@ -340,12 +340,12 @@ struct kvm_vcpu_arch {
  
     /* fields used by HYPER-V emulation */
     u64 hv_vapic;
- 
+
     cpumask_var_t wbinvd_dirty_mask;
- 
+
     unsigned long last_retry_eip;
     unsigned long last_retry_addr;
- 
+
     struct {
         bool halted;
         gfn_t gfns[roundup_pow_of_two(ASYNC_PF_PER_VCPU)];
@@ -354,28 +354,28 @@ struct kvm_vcpu_arch {
         u32 id;
         bool send_user_only;
     } apf;
- 
+
     /* OSVW MSRs (AMD only) */
     struct {
         u64 length;
         u64 status;
     } osvw;
- 
+
     struct {
         u64 msr_val;
         struct gfn_to_hva_cache data;
     } pv_eoi;
- 
+
     /*
      * Indicate whether the access faults on its page table in guest
      * which is set when fix page fault and used to detect unhandeable
      * instruction.
      */
     bool write_fault_to_shadow_pgtable;
- 
+
     /* set at EPT violation at this point */
     unsigned long exit_qualification;
- 
+
     /* pv related host specific info */
     struct {
         bool pv_unhalted;
@@ -384,6 +384,7 @@ struct kvm_vcpu_arch {
 ```
 
 整个arch结构真是长，很适合凑篇幅，很多结构其他过程涉及到的再提吧，反正我也不知道。
+
 `kvm_arch_vcpu_init`初始化了**x86**在**虚拟化底层**的实现函数，首先是`pv`和`emulate_ctxt`，这些**不支持VMX下的模拟虚拟化**，尤其是`vcpu->arch.emulate_ctxt.ops = &emulate_ops`，`emulate_ops`初始化虚拟化模拟的对象函数。
 
 ```cpp
