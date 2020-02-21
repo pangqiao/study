@@ -107,7 +107,11 @@ struct kvm {
 
 ## 4.3. hardware_enable_all
 
-而`hardware_enable_all`，针对于**每个CPU**执行“`on_each_cpu(hardware_enable_nolock, NULL, 1)`”，在`hardware_enable_nolock`中先把`cpus_hardware_enabled`**置位**，进入到`kvm_arch_hardware_enable`中，有`hardware_enable`和**TSC**初始化规则，主要看`hardware_enable`，`crash_enable_local_vmclear`清理位图，判断`MSR_IA32_FEATURE_CONTROL`寄存器**是否满足虚拟环境**，不满足则**将条件写入到寄存器**内，`CR4`将`X86_CR4_VMXE`**置位**，另外还有`kvm_cpu_vmxon`打开**VMX操作模式**，外层包了`vmm_exclusive`的判断，它是`kvm_intel.ko`的**外置参数**，默认唯一，可以让用户**强制不使用VMM硬件支持**。
+而`hardware_enable_all`，针对于**每个CPU**执行“`on_each_cpu(hardware_enable_nolock, NULL, 1)`”，
+
+在`hardware_enable_nolock`中先把`cpus_hardware_enabled`**置位**，进入到`kvm_arch_hardware_enable`中，有`hardware_enable`和**TSC**初始化规则，
+
+主要看`hardware_enable`，`crash_enable_local_vmclear`**清理位图**，判断`MSR_IA32_FEATURE_CONTROL`寄存器**是否满足虚拟环境**，不满足则**将条件写入到寄存器**内，`CR4`将`X86_CR4_VMXE`**置位**，另外还有`kvm_cpu_vmxon`打开**VMX操作模式**，外层包了`vmm_exclusive`的判断，它是`kvm_intel.ko`的**外置参数**，默认唯一，可以让用户**强制不使用VMM硬件支持**。
 
 # 5. KVM_CREATE_VCPU
 
