@@ -23,3 +23,5 @@ KVM: http://blog.chinaunix.net/uid/26000137/cid-177246-list-1.html
 KVM介绍系列(必看): https://blog.csdn.net/weixin_33845881/article/details/85726907?utm_source=distribute.pc_relevant.none-task
 
 KVM(必看): https://www.cnblogs.com/popsuper1982/p/3815398.html
+
+KVM 虚拟化原理探究— overview: https://blog.csdn.net/sdulibh/article/details/78982751?utm_source=distribute.pc_relevant.none-task
