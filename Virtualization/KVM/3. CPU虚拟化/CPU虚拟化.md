@@ -52,9 +52,9 @@ VMCS下有一些**控制域**：
 
 1. guest是否处于64bit模式，
 2. `MSR VM-Entry`控制，
-3. 注入事件。
+3. **注入事件**。
 
-1应该**只在VMLAUCH有意义**，3更多是在VMRESUME，而VMM发起`VM-Entry`更多是因为3，2主要用来每次更新MSR。
+1应该**只在VMLAUCH有意义**，3更多是在**VMRESUME**，而VMM发起`VM-Entry`更多是因为3，2主要用来**每次更新MSR**。
 
 `VM-Exit`是CPU从**非根模式**切换到**根模式**，从guest切换到VMM的操作，`VM-Exit`触发的原因就很多了，执行**敏感指令**，[**发生中断**](http://www.oenhan.com/rwsem-realtime-task-hung)，**模拟特权资源**等。
 
