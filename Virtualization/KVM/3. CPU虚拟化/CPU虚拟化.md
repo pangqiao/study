@@ -79,8 +79,6 @@ VMCS下有一些**控制域**：
 
 创建VM就写这里吧，`kvm_dev_ioctl_create_vm`函数是主干，在`kvm_create_vm`中，主要有**两个函数**，`kvm_arch_init_vm`和`hardware_enable_all`，需要注意.
 
-详细见
-
 ## 4.1. struct kvm
 
 但是更先一步的是KVM结构体，下面的struct是精简后的版本。
