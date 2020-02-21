@@ -66,6 +66,13 @@ pstack其实是个Shell脚本，核心原理是**GDB**的**thread apply all bt**
 
 基本逻辑是通过**进程号**`process-id`来分析**是否使用了多线程**，同时使用**GDB Attach**到在跑进程上，最后**调用bt子命令**后**简单格式化输出**
 
+在`/usr/bin/pstack`文件最前面添加`set -x`, 最后面加上`set +x`查看执行的命令
+
+```
+
+
+```
+
 # pstack的shell
 
 ## 基本命令的使用
