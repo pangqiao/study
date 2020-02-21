@@ -48,7 +48,7 @@ VMCS下有一些**控制域**：
 
 # 3. VM-Entry/VM-Exit
 
-VM-Entry是从根模式切换到非根模式，即VMM切换到guest上，这个状态由**VMM发起**，**发起之前**先保存**VMM中的关键寄存器**内容到**VMCS**中，然后进入到VM-Entry，`VM-Entry`附带**参数主要有3个**：
+`VM-Entry`是从根模式切换到非根模式，即VMM切换到guest上，这个状态由**VMM发起**，**发起之前**先保存**VMM中的关键寄存器**内容到**VMCS**中，然后进入到VM-Entry，`VM-Entry`附带**参数主要有3个**：
 
 1. guest是否处于64bit模式，
 2. `MSR VM-Entry`控制，
