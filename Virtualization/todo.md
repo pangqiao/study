@@ -19,3 +19,7 @@ VT技术实现: B站视频: av67271788
 KVM: http://blog.chinaunix.net/uid/26000137/cid-177246-list-1.html
 
 虚拟化: https://blog.csdn.net/leoufung/category_5845399_3.html
+
+KVM介绍系列(必看): https://blog.csdn.net/weixin_33845881/article/details/85726907?utm_source=distribute.pc_relevant.none-task
+
+KVM(必看): https://www.cnblogs.com/popsuper1982/p/3815398.html
