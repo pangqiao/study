@@ -12,6 +12,7 @@
   - [4.3. hardware_enable_all](#43-hardware_enable_all)
 - [5. KVM_CREATE_VCPU](#5-kvm_create_vcpu)
   - [5.1. struct kvm_vcpu](#51-struct-kvm_vcpu)
+  - [kvm_arch_vcpu_create](#kvm_arch_vcpu_create)
 - [6. KVM_RUN](#6-kvm_run)
 - [7. 参考](#7-参考)
 
@@ -179,6 +180,8 @@ struct kvm_vcpu {
     struct kvm_vcpu_arch arch;  //当前VCPU虚拟的架构，默认介绍X86
 };
 ```
+
+## kvm_arch_vcpu_create
 
 接着看`kvm_arch_vcpu_create`，它借助`kvm_x86_ops->vcpu_create`即`vmx_create_vcpu`完成任务，vmx是X86硬件虚拟化层，从代码看，**qemu用户态**是**一层**，kernel 中**KVM通用代码**是**一层**，类似`kvm_x86_ops`是**一层**，针对各个不同硬件架构，而`vcpu_vmx`则是具体架构的虚拟化方案一层。
 
