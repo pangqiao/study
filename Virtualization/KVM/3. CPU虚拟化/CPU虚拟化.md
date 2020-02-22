@@ -185,7 +185,7 @@ struct kvm_vcpu {
 
 接着看`kvm_arch_vcpu_create`，它借助`kvm_x86_ops->vcpu_create`即`vmx_create_vcpu`完成任务，vmx是X86硬件虚拟化层，从代码看，**qemu用户态**是**一层**，kernel 中**KVM通用代码**是**一层**，类似`kvm_x86_ops`是**一层**，针对各个不同硬件架构，而`vcpu_vmx`则是具体架构的虚拟化方案一层。
 
-首先是`kvm_vcpu_init`初始化，主要是**填充结构体**，可以注意的是`vcpu->run`分配了**一页内存**，下面有`kvm_arch_vcpu_init`负责填充`x86 CPU结构体`，下面就是`kvm_vcpu_arch`：
+首先是`kvm_vcpu_init`初始化，主要是**填充结构体**，可以注意的是`vcpu->run`分配了**一页内存**，下面有`kvm_arch_vcpu_init`负责填充`x86 CPU kvm_vcpu_arch结构体`，下面就是`kvm_vcpu_arch`：
 
 ```cpp
 struct kvm_vcpu_arch {
