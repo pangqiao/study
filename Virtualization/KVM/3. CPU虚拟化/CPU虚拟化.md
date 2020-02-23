@@ -441,8 +441,6 @@ static struct x86_emulate_ops emulate_ops = {
 
 # 6. KVM_RUN
 
-KVM run涉及内容也不少，先写完内存虚拟化之后再开篇专门写RUN流程。
-
 **给vmcs分配空间并初始化**，在`alloc_vmcs_cpu`分配 [**一个页大小内存**](http://oenhan.com/linux-kernel-khugepaged) ，用来保存**vm**和**vmm信息**。
 
 ```cpp
