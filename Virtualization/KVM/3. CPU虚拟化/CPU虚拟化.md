@@ -439,8 +439,6 @@ static struct x86_emulate_ops emulate_ops = {
 
 如此整个vcpu就创建完成了。
 
-# 6. KVM_RUN
-
 **给vmcs分配空间并初始化**，在`alloc_vmcs_cpu`分配 [**一个页大小内存**](http://oenhan.com/linux-kernel-khugepaged) ，用来保存**vm**和**vmm信息**。
 
 ```cpp
@@ -451,9 +449,11 @@ static struct x86_emulate_ops emulate_ops = {
     vmcs_init(vmx->vmcs);
 ```
 
-执行vm entry的时候将vmm状态保存到vmcs的host area，并加载对应vm的vmcs guest area信息到CPU中，vm exit的时候则反之，vmcs具体结构分配由硬件实现，程序员只需要通过VMWRITE和VMREAD指令去访问。
+执行`vm entry`的时候将**vmm状态**保存到**vmcs**的**host area**，并加载对应vm的vmcs guest area信息到CPU中，vm exit的时候则反之，**vmcs具体结构分配**由**硬件**实现，程序员只需要通过VMWRITE和VMREAD指令去访问。
 
-vmx执行完后，回到kvm_vm_ioctl_create_vcpu函数。kvm_arch_vcpu_reset对vcpu的结构进行初始化，后面一些就是检查vcpu的合法性，最后和kvm串接到一起。
+vmx执行完后，回到`kvm_vm_ioctl_create_vcpu`函数。`kvm_arch_vcpu_reset`对**vcpu的结构**进行**初始化**，后面一些就是检查vcpu的合法性，最后和kvm串接到一起。
+
+# 6. KVM_RUN
 
 vcpu的创建到此结束，下面说一下vcpu的运行。
 
