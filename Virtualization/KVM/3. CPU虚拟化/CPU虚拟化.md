@@ -449,7 +449,7 @@ static struct x86_emulate_ops emulate_ops = {
     vmcs_init(vmx->vmcs);
 ```
 
-执行`vm entry`的时候将**vmm状态**保存到**vmcs**的**host area**，并加载对应vm的vmcs guest area信息到CPU中，vm exit的时候则反之，**vmcs具体结构分配**由**硬件**实现，程序员只需要通过VMWRITE和VMREAD指令去访问。
+执行`vm entry`的时候将**vmm状态**保存到**vmcs**的**host area**，并加载对应vm的vmcs guest area信息到CPU中，vm exit的时候则反之，**vmcs具体结构分配**由**硬件**实现，程序员只需要通过 `VMWRITE` 和 `VMREAD` 指令去访问。
 
 vmx执行完后，回到`kvm_vm_ioctl_create_vcpu`函数。`kvm_arch_vcpu_reset`对**vcpu的结构**进行**初始化**，后面一些就是检查vcpu的合法性，最后和kvm串接到一起。
 
@@ -457,9 +457,9 @@ vmx执行完后，回到`kvm_vm_ioctl_create_vcpu`函数。`kvm_arch_vcpu_reset`
 
 vcpu的创建到此结束，下面说一下vcpu的运行。
 
-VCPU一旦创建成功，后续的控制基本上从kvm_vcpu_ioctl开始，控制开关有KVM_RUN，KVM_GET_REGS，KVM_SET_REGS，KVM_GET_SREGS，KVM_SET_SREGS，KVM_GET_MP_STATE，KVM_SET_MP_STATE，KVM_TRANSLATE，KVM_SET_GUEST_DEBUG，KVM_SET_SIGNAL_MASK等，如果不清楚具体开关作用，可以直接到qemu搜索对应开关代码，一目了然。
+VCPU一旦创建成功，后续的控制基本上从 `kvm_vcpu_ioctl` 开始，控制开关有`KVM_RUN`，`KVM_GET_REGS`，`KVM_SET_REGS`，`KVM_GET_SREGS`，`KVM_SET_SREGS`，`KVM_GET_MP_STATE`，`KVM_SET_MP_STATE`，`KVM_TRANSLATE`，`KVM_SET_GUEST_DEBUG`，`KVM_SET_SIGNAL_MASK`等，如果不清楚具体开关作用，可以直接到qemu搜索对应开关代码，一目了然。
 
-KVM_RUN的实现函数是kvm_arch_vcpu_ioctl_run，进行安全检查之后进入__vcpu_run中，在while循环里面调用vcpu_enter_guest进入guest模式，首先处理vcpu->requests，对应的request做处理，kvm_mmu_reload加载mmu，通过kvm_x86_ops->prepare_guest_switch(vcpu)准备陷入到guest，prepare_guest_switch实现是vmx_save_host_state，顾名思义，就是保存host的当前状态。
+`KVM_RUN的实现函数是`kvm_arch_vcpu_ioctl_run`，进行安全检查之后进入__vcpu_run中，在while循环里面调用vcpu_enter_guest进入guest模式，首先处理vcpu->requests，对应的request做处理，kvm_mmu_reload加载mmu，通过kvm_x86_ops->prepare_guest_switch(vcpu)准备陷入到guest，prepare_guest_switch实现是vmx_save_host_state，顾名思义，就是保存host的当前状态。
 
 ```cpp
     kvm_x86_ops->prepare_guest_switch(vcpu);
