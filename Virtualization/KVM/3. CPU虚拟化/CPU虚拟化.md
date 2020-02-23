@@ -459,7 +459,7 @@ vcpu的创建到此结束，下面说一下vcpu的运行。
 
 VCPU一旦创建成功，后续的控制基本上从 `kvm_vcpu_ioctl` 开始，控制开关有`KVM_RUN`，`KVM_GET_REGS`，`KVM_SET_REGS`，`KVM_GET_SREGS`，`KVM_SET_SREGS`，`KVM_GET_MP_STATE`，`KVM_SET_MP_STATE`，`KVM_TRANSLATE`，`KVM_SET_GUEST_DEBUG`，`KVM_SET_SIGNAL_MASK`等，如果不清楚具体开关作用，可以直接到qemu搜索对应开关代码，一目了然。
 
-`KVM_RUN的实现函数是`kvm_arch_vcpu_ioctl_run`，进行安全检查之后进入__vcpu_run中，在while循环里面调用vcpu_enter_guest进入guest模式，首先处理vcpu->requests，对应的request做处理，kvm_mmu_reload加载mmu，通过kvm_x86_ops->prepare_guest_switch(vcpu)准备陷入到guest，prepare_guest_switch实现是vmx_save_host_state，顾名思义，就是保存host的当前状态。
+`KVM_RUN`的实现函数是`kvm_arch_vcpu_ioctl_run`，进行安全检查之后进入`__vcpu_run`中，在**while循环**里面调用`vcpu_enter_guest`**进入guest模式**，首先处理`vcpu->requests`，对应的request做处理，`kvm_mmu_reload`**加载mmu**，通过`kvm_x86_ops->prepare_guest_switch(vcpu)`**准备陷入到guest**，`prepare_guest_switch`实现是vmx_save_host_state，顾名思义，就是**保存host的当前状态**。
 
 ```cpp
     kvm_x86_ops->prepare_guest_switch(vcpu);
@@ -477,9 +477,9 @@ VCPU一旦创建成功，后续的控制基本上从 `kvm_vcpu_ioctl` 开始，�
     local_irq_disable();
 ```
 
-然后加载guest的寄存器等信息，fpu，xcr0,将vcpu模式设置为guest状态，屏蔽中断响应，准备进入guest。但仍进行一次检查，vcpu->mode和vcpu->requests等，如果有问题，则恢复host状态。
+然后**加载guest的寄存器等信息**，fpu，xcr0, 将**vcpu模式**设置为guest状态，屏蔽中断响应，准备进入guest。但仍进行一次检查，vcpu->mode和vcpu->requests等，如果有问题，则恢复host状态。
 
-kvm_guest_enter做了两件事：account_system_vtime计算虚拟机 [系统时间](http://www.oenhan.com/glibc_pthread_cond_timedwait_disable) ；rcu_virt_note_context_switch对rcu锁数据进行保护，完成上下文切换。
+`kvm_guest_enter`做了**两件事**：`account_system_vtime`计算虚拟机 [**系统时间**](http://www.oenhan.com/glibc_pthread_cond_timedwait_disable) ；`rcu_virt_note_context_switch`对rcu锁数据进行保护，完成**上下文切换**。
 
 准备工作搞定，kvm_x86_ops->run(vcpu)，开始运行guest，由vmx_vcpu_run实现。
 
