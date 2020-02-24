@@ -481,7 +481,7 @@ VCPU一旦创建成功，后续的控制基本上从 `kvm_vcpu_ioctl` 开始，�
 
 `kvm_guest_enter`做了**两件事**：`account_system_vtime`计算虚拟机 [**系统时间**](http://www.oenhan.com/glibc_pthread_cond_timedwait_disable) ；`rcu_virt_note_context_switch`对rcu锁数据进行保护，完成**上下文切换**。
 
-准备工作搞定，kvm_x86_ops->run(vcpu)，开始运行guest，由vmx_vcpu_run实现。
+准备工作搞定，`kvm_x86_ops->run(vcpu)`，开始运行guest，由`vmx_vcpu_run`实现。
 
 ```cpp
     if (vmx->emulation_required && emulate_invalid_guest_state)
