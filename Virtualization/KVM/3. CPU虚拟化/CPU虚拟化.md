@@ -656,7 +656,7 @@ vmx_complete_interrupts(vmx);
     r = kvm_x86_ops->handle_exit(vcpu);
 ```
 
-handle_exit退出函数由vmx_handle_exit实现，主要设置vcpu->run->exit_reason，让外部感知退出原因，并对应处理。对于vpu而言，handle_exit只是意味着一个传统linux一个时间片的结束，后续的工作都是由handle完成的，handle_exit对应的函数集如下：
+handle_exit退出函数由vmx_handle_exit实现，主要设置`vcpu->run->exit_reason`，让外部感知退出原因，并对应处理。对于vpu而言，`handle_exit`只是意味着一个传统linux一个时间片的结束，后续的工作都是由handle完成的，`handle_exit`对应的函数集如下：
 
 ```cpp
 static int (*kvm_vmx_exit_handlers[])(struct kvm_vcpu *vcpu) = {
@@ -698,9 +698,9 @@ static int (*kvm_vmx_exit_handlers[])(struct kvm_vcpu *vcpu) = {
 };
 ```
 
-有handle_task_switch进行任务切换，handle_io处理qemu的外部模拟IO等，具体处理内容后面在写。
+有`handle_task_switch`进行任务切换，`handle_io`处理qemu的外部模拟IO等，具体处理内容后面在写。
 
-再次退回到__vcpu_run函数，在while (r > 0)中，循环受vcpu_enter_guest返回值控制，只有运行异常的时候才退出循环，否则通过kvm_resched一直运行下去。
+再次退回到`__vcpu_run`函数，在`while (r > 0)`中，循环受`vcpu_enter_guest`返回值控制，只有**运行异常**的时候才**退出循环**，否则通过`kvm_resched`一直运行下去。
 
 ```cpp
         if (need_resched()) {
@@ -710,7 +710,7 @@ static int (*kvm_vmx_exit_handlers[])(struct kvm_vcpu *vcpu) = {
         }
 ```
 
-再退就到了kvm_arch_vcpu_ioctl_run函数，此时kvm run的执行也结束。
+再退就到了`kvm_arch_vcpu_ioctl_run`函数，此时kvm run的执行也结束。
 
 KVM cpu虚拟化的理解基本如上，涉及到的具体细节有时间后开篇另说。
 
