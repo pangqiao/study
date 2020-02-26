@@ -11,7 +11,7 @@
   - [2.4. relayfs文件系统](#24-relayfs文件系统)
   - [2.5. seq_file](#25-seq_file)
 - [3. printk](#3-printk)
-- [4. ftrace && trace-cmd](#4-ftrace-trace-cmd)
+- [4. ftrace trace-cmd](#4-ftrace-trace-cmd)
   - [4.1. trace && ftrace](#41-trace-ftrace)
   - [4.2. ftrace前端工具trace-cmd](#42-ftrace前端工具trace-cmd)
 - [5. Kprobe && systemtap](#5-kprobe-systemtap)
@@ -189,7 +189,7 @@ mount -t sysfs sysfs /sysfs
 
 [linux设备驱动学习笔记--内核调试方法之printk](http://blog.csdn.net/itsenlin/article/details/43205983)
 
-# 4. ftrace && trace-cmd
+# 4. ftrace trace-cmd
 
 ## 4.1. trace && ftrace
 
