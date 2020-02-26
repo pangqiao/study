@@ -74,6 +74,7 @@ usage:
           -c also trace the children of -F (or -P if kernel supports it)
           -C set the trace clock
           -T do a stacktrace on all events
+          下面这5个选项对应ftrace的设置set_ftrace_filter、set_graph_function、set_ftrace_notrace、buffer_size_kb、tracing_cpumask
           -l filter function name
           -g set graph function
           -n do not trace function
@@ -82,13 +83,16 @@ usage:
           -v will negate all -e after it (disable those events)
           -d disable function tracer when running
           -D Full disable of function tracing (for all users)
+          指定输出文件名
           -o data output file [default trace.dat]
           -O option to enable (or disable)
           -r real time priority to run the capture threads
+          默认1ms保存一次数据，加大有利于将此操作频率。1000000变成1s写一次数据。
           -s sleep interval between recording (in usecs) [default: 1000]
           -S used with --profile, to enable only events in command line
           -N host:port to connect to (see listen)
           -t used with -N, forces use of tcp in live trace
+          改变ring buffer大小
           -b change kernel buffersize (in kilobytes per CPU)
           -B create sub buffer and following events will be enabled here
           -k do not reset the buffers after tracing.
@@ -107,3 +111,18 @@ usage:
           --user execute the specified [command ...] as given user
 ```
 
+如下表示只记录`sched_switch`和s`ched_wakeup`两个事件，每1s写入一次数据。
+
+```
+trace-cmd record -e sched_switch -e sched_wakeup -s 1000000
+```
+
+# 正确发送ctrl+c
+
+在使用trace-cmd record记录事件的时候，通过ctrl+c可以停止记录。
+
+但是如果在adb shell中，ctrl+c可能优先退出了shell，而没有正常停止trace-cmd record。
+
+最终在目录下只有trace.dat.cpuX的文件，这些文件是中间文件，kernelshark是无法解析的
+
+解决方法有两种，一是在串口console中ctrl+c，另一种是通过kill发送SIGINT信号kill -2 pid。
