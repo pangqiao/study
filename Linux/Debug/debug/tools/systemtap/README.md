@@ -51,3 +51,7 @@ http://redmonk.com/sogrady/2008/07/01/dtrace-vs-systemtap-redux/
 
 
 [使用systemtap调试Linux内核](http://www.lenky.info/archives/2013/02/2209)
+
+http://www.cnblogs.com/hazir/p/systemtap_introduction.html
+
+https://www.ibm.com/developerworks/cn/linux/l-cn-systemtap3/
