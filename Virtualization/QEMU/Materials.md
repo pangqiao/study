@@ -24,4 +24,6 @@
 
 源码分析: https://blog.csdn.net/u011364612/article/category/6219019
 
-qemu: https://blog.csdn.net/sinat_38205774/article/details/104312303
+address_space_init源码分析（GPA的生成）: https://blog.csdn.net/sinat_38205774/article/details/104312303
+
+Qemu内存管理代码分析: https://blog.csdn.net/shirleylinyuer/article/details/83592758
