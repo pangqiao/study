@@ -1,4 +1,15 @@
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [所有CPU的基类](#所有cpu的基类)
+  - [CPUClass](#cpuclass)
+  - [CPUState](#cpustate)
+- [参考](#参考)
+
+<!-- /code_chunk_output -->
+
 CPU也是一种设备，因此CPU类继承自Device类。CPU这种设备相比其他设备来说种类非常繁杂。首先，CPU有着不同的架构，而对于每一种架构的CPU来说，随着时间的推移，CPU厂商也会给该架构的CPU不断地增加新特性和更新换代，这种更新换代造成该架构的CPU也有了各种不同的CPU模型。
 
 以x86 CPU为例，QEMU中可以支持的CPU的模型就包括以下几种，我们可以通过qemu-system-x86_64 \-cpu \?命令查看QEMU支持的X86 CPU类型。其中一些CPU模型是QEMU自己定义的，另外一些类型则是直接来自厂商。其中host类型是指将物理机上的CPU特性全部暴露给虚拟机，这样可以全面发挥CPU的性能，但是另一方面，由于全部特性被暴露给虚拟机，会造成具有不同特性的CPU架构或CPU模型的物理机之间动态迁移虚拟机会变得不可靠。
