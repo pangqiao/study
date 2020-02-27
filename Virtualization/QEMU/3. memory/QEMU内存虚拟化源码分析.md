@@ -99,8 +99,9 @@ struct AddressSpace {
 
     int ioeventfd_nb;
     struct MemoryRegionIoeventfd *ioeventfds;
+    // 该 AddressSpace 的 listeners 链表头
     QTAILQ_HEAD(, MemoryListener) listeners;
-    // 
+    // AddressSpace 链表节点
     QTAILQ_ENTRY(AddressSpace) address_spaces_link;
 };
 ```
