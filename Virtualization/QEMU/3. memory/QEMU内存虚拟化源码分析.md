@@ -116,7 +116,7 @@ QEMU通过MemoryRegion来管理**虚拟机内存**，通过内存属性，**GUES
 
 **结构体MemoryRegion**是联系**guest物理地址空间**和描述**真实内存的RAMBlocks(宿主机虚拟地址**)之间的桥梁。
 
-```c
+```cpp
 // include/exec/memory.h
 struct MemoryRegion {
     Object parent_obj;
