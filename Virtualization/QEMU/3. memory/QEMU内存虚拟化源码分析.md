@@ -125,6 +125,7 @@ struct MemoryRegion {
 
     /* The following fields should fit in a cache line */
     bool romd_mode;
+    // 是否是ram
     bool ram;
     bool subpage;
     bool readonly; /* For RAM regions */
@@ -158,7 +159,9 @@ struct MemoryRegion {
     MemoryRegion *alias;
     hwaddr alias_offset;
     int32_t priority;
+    // 子区域链表头
     QTAILQ_HEAD(, MemoryRegion) subregions;
+    // 子区域链表节点
     QTAILQ_ENTRY(MemoryRegion) subregions_link;
     QTAILQ_HEAD(, CoalescedMemoryRange) coalesced;
     //MemoryRegion的名字,调试时使用
@@ -179,16 +182,16 @@ alias表示**一个MemoryRegion**的**一部分区域**，**MemoryRegion**也可
 
 ## RAMBlock
 
-```c
+```cpp
 // include/exec/ram_addr.h
 typedef uint64_t ram_addr_t;
 
 struct RAMBlock {
     struct rcu_head rcu; //该数据结构受rcu机制保护
     struct MemoryRegion *mr;
-    uint8_t *host;  //RAMBlock在host上的虚拟内存起始位置
+    uint8_t *host;  //RAMBlock在host上的虚拟内存起始位置, 即HVA
     uint8_t *colo_cache; /* For colo, VM's ram cache */
-    ram_addr_t offset;  //在所有的RAMBlock中offset
+    ram_addr_t offset;  //在所有的RAMBlock中offset, 即在vm物理内存中的偏移, GPA
     ram_addr_t used_length; //已使用长度
     ram_addr_t max_length;  //最大分配内存
     void (*resized)(const char*, uint64_t length, void *host);
