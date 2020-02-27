@@ -99,7 +99,7 @@ configure\_accelerator中首先根据命令行输入的参数找到对应的acce
 6. `memory_listener_register`，该函数是**初始化内存**的主要函数
 7. `memory_listener_register`调用了两次**，分别注册了 `kvm_memory_listener`和`kvm_io_listener`，即**通用的内存**和**MMIO**是**分开管理**的。
 
-以**通用的内存注册**为例，函数首先在**全局的memory\_listener链表**中添加了**kvm\_memory\_listener**，之后调用**listener\_add\_address\_space**分别将**该listener**添加到**address\_space\_memory**和**address\_space\_io**中, address\_space\_io是虚机的io地址空间（**设备的io port**就分布在这个地址空间里）。
+以**通用的内存注册**为例，函数首先在**全局的memory\_listener链表**中添加了`kvm_memory_listener`，之后调用**listener\_add\_address\_space**分别将**该listener**添加到**address\_space\_memory**和**address\_space\_io**中, address\_space\_io是虚机的io地址空间（**设备的io port**就分布在这个地址空间里）。
 
 8. 然后**调用listener的region\_add**（即 `kvm_region_add()`），该函数最终调用了kvm\_set\_user\_memory\_region()，其中调用 `kvm_vm_ioctl(s, KVM_SET_USER_MEMORY_REGION, &mem)`，该调用是最终**将内存区域注册到kvm**中的函数。
 9. 之后在vl.c的main函数中调用了cpu\_exec\_init\_all() \=\> memory\_map\_init()，设置**system\_memory**和**system\_io**。
