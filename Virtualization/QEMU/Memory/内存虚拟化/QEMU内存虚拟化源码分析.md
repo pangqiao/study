@@ -108,6 +108,10 @@ AddressSpace下面**root**及其**子树**形成了**一个虚拟机**的**物�
 
 ## MemoryRegion
 
+QEMU通过MemoryRegion来管理**虚拟机内存**，通过内存属性，**GUEST物理地址**等特点对内存分类，就形成了**多个MemoryRegion**，这些MemoryRegion 通过**树状**组织起来，挂接到**根MemoryRegion**下。
+
+**每个MemoryRegion树！！！** 代表了一类作用的内存，如**系统内存空间**(`system_memory`)或**IO内存空间**(`system_io`), 这两个是qemu中的**两个全局MemoryRegion**。
+
 一个AddressSpace下面包含**多个MemoryRegion**，这些MemoryRegion结构通过**树**连接起来，**树的根**是AddressSpace的**root域**。
 
 **结构体MemoryRegion**是联系**guest物理地址空间**和描述**真实内存的RAMBlocks(宿主机虚拟地址**)之间的桥梁。
