@@ -27,3 +27,7 @@
 address_space_init源码分析（GPA的生成）: https://blog.csdn.net/sinat_38205774/article/details/104312303
 
 Qemu内存管理代码分析: https://blog.csdn.net/shirleylinyuer/article/details/83592758
+
+qemu 各个模块: https://richardweiyang.gitbooks.io/understanding_qemu/address_space/08-commit_mr.html
+
+qemu 2019: https://www.shangmayuan.com/a/b5d230757e6c49aa8868099d.html
