@@ -83,7 +83,7 @@ struct kvm_userspace_memory_region {
 
 qemu中用**AddressSpace**用来表示**CPU/设备**看到的**内存**.
 
-```c
+```cpp
 // include/exec/memory.h
 struct AddressSpace {
     /* All fields are private. */
@@ -100,6 +100,7 @@ struct AddressSpace {
     int ioeventfd_nb;
     struct MemoryRegionIoeventfd *ioeventfds;
     QTAILQ_HEAD(, MemoryListener) listeners;
+    // 
     QTAILQ_ENTRY(AddressSpace) address_spaces_link;
 };
 ```
