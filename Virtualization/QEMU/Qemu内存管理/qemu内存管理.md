@@ -87,7 +87,7 @@ AddressSpace设置了一段内存，其主要信息存储在root成员 中，roo
 
 Qemu的**主函数**是**vl.c**中的main函数，其中调用了`configure_accelerator()`，是KVM初始化的配置部分。
 
-configure\_accelerator中首先根据命令行输入的参数找到对应的accelerator，这里是KVM。之后调用`accel_list[i].init()`，即kvm\_init()。
+configure\_accelerator中首先根据命令行输入的参数找到对应的accelerator，这里是KVM。之后调用`accel_list[i].init()`，即`kvm_init()`。
 
 在kvm_init()函数中主要做如下几件事情：
 
