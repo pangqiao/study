@@ -490,7 +490,7 @@ static QTAILQ_HEAD(, MemoryListener) memory_listeners
 
 以kvm\_init为例
 
-```c
+```cpp
 static int kvm_init(MachineState *ms)
 {
     ......
