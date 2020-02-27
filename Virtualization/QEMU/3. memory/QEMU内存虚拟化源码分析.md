@@ -660,9 +660,7 @@ static void address_space_update_topology(AddressSpace *as)
 }
 ```
 
-前面我们已经说了，as\-\>root会被**展开**为一个**FlatView**，所以在这里update topology中，首先**得到上一次的FlatView**，之后
-
-调用**generate\_memory\_topology**生成一个**新的FlatView**，
+前面我们已经说了，as\-\>root会被**展开**为一个**FlatView**，所以在这里update topology中，首先**得到上一次的FlatView**，之后调用**generate\_memory\_topology**生成一个**新的FlatView**，
 
 ```cpp
 static FlatView *generate_memory_topology(MemoryRegion *mr)
