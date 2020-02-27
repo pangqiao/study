@@ -23,3 +23,5 @@
 ```
 
 源码分析: https://blog.csdn.net/u011364612/article/category/6219019
+
+qemu: https://blog.csdn.net/sinat_38205774/article/details/104312303
