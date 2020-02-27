@@ -626,7 +626,7 @@ MEMORY\_LISTENER\_CALL\_GLOBAL对**memory\_listeners**上的**各个MemoryListen
 
 注: 我们**新创建了一个AddressSpace** address\_space\_init，是主动调用更新
 
-```c
+```cpp
 void address_space_init(AddressSpace *as, MemoryRegion *root, const char *name)
 {
     memory_region_ref(root);
@@ -644,7 +644,7 @@ void address_space_init(AddressSpace *as, MemoryRegion *root, const char *name)
 
 address\_space\_update\_topology调用。
 
-```c
+```cpp
 // memory.c
 static void address_space_update_topology(AddressSpace *as)
 {
