@@ -281,17 +281,24 @@ struct FlatView {
 ```c
 // include/exec/memory.h
 struct MemoryRegionSection {
+    // 所属的 MR
     MemoryRegion *mr;
+    // 所属的 FV
     FlatView *fv;
+    // 在 MemoryRegion 中的偏移
     hwaddr offset_within_region;
+    // 大小
     Int128 size;
+    // 在 address space 的偏移, 该address space通过FV关联
     hwaddr offset_within_address_space;
     bool readonly;
     bool nonvolatile;
 };
 ```
 
-MemoryRegionSection表示的是**MemoryRegion的一部分**。这个其实跟FlatRange差不多。
+MemoryRegionSection表示的是**MemoryRegion的一部分**。
+
+这个其实跟FlatRange差不多。
 
 这几个数据结构关系如下：
 
@@ -655,7 +662,7 @@ static void address_space_update_topology(AddressSpace *as)
 
 调用**generate\_memory\_topology**生成一个**新的FlatView**，
 
-```c
+```cpp
 static FlatView *generate_memory_topology(MemoryRegion *mr)
 {
     int i;
