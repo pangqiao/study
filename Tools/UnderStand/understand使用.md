@@ -3,44 +3,44 @@
 
 <!-- code_chunk_output -->
 
-* [1 设置](#1-设置)
-* [2 导入项目](#2-导入项目)
-* [3 主要功能](#3-主要功能)
-	* [3.1 代码知识](#31-代码知识)
-	* [3.2 指标和报告](#32-指标和报告)
-	* [3.3 制图](#33-制图)
-	* [3.4 标准测试](#34-标准测试)
-	* [3.5 依赖性分析](#35-依赖性分析)
-	* [3.6 编辑](#36-编辑)
-	* [3.7 搜索](#37-搜索)
-	* [3.8 语言](#38-语言)
-* [4 搜索功能](#4-搜索功能)
-* [5 项目视图](#5-项目视图)
-	* [4.1 层级关系视图分类](#41-层级关系视图分类)
-	* [4.2 结构关系视图分类](#42-结构关系视图分类)
-* [术语 Terminology](#术语-terminology)
-	* [Architecture 层级:](#architecture-层级)
-	* [Database 数据库](#database-数据库)
-	* [Entity 实体](#entity-实体)
-	* [Project 工程](#project-工程)
-	* [Relationship 关联](#relationship-关联)
-	* [Script 脚本](#script-脚本)
-	* [parts 部件](#parts-部件)
-* [常用词汇](#常用词汇)
-* [右键菜单](#右键菜单)
-* [Project Configuration](#project-configuration)
-* [Entity Filter窗口](#entity-filter窗口)
-* [信息浏览器](#信息浏览器)
-* [引用查看](#引用查看)
-* [工程浏览器](#工程浏览器)
-* [上下文信息边栏](#上下文信息边栏)
-* [Structure Browser](#structure-browser)
-* [大小写修改](#大小写修改)
-* [层级结构浏览器](#层级结构浏览器)
+- [设置](#设置)
+- [导入项目](#导入项目)
+- [3 主要功能](#3-主要功能)
+  - [3.1 代码知识](#31-代码知识)
+  - [3.2 指标和报告](#32-指标和报告)
+  - [3.3 制图](#33-制图)
+  - [3.4 标准测试](#34-标准测试)
+  - [3.5 依赖性分析](#35-依赖性分析)
+  - [3.6 编辑](#36-编辑)
+  - [3.7 搜索](#37-搜索)
+  - [3.8 语言](#38-语言)
+- [4 搜索功能](#4-搜索功能)
+- [5 项目视图](#5-项目视图)
+  - [4.1 层级关系视图分类](#41-层级关系视图分类)
+  - [4.2 结构关系视图分类](#42-结构关系视图分类)
+- [术语 Terminology](#术语-terminology)
+  - [Architecture 层级:](#architecture-层级)
+  - [Database 数据库](#database-数据库)
+  - [Entity 实体](#entity-实体)
+  - [Project 工程](#project-工程)
+  - [Relationship 关联](#relationship-关联)
+  - [Script 脚本](#script-脚本)
+  - [parts 部件](#parts-部件)
+- [常用词汇](#常用词汇)
+- [右键菜单](#右键菜单)
+- [Project Configuration](#project-configuration)
+- [Entity Filter窗口](#entity-filter窗口)
+- [信息浏览器](#信息浏览器)
+- [引用查看](#引用查看)
+- [工程浏览器](#工程浏览器)
+- [上下文信息边栏](#上下文信息边栏)
+- [Structure Browser](#structure-browser)
+- [大小写修改](#大小写修改)
+- [层级结构浏览器](#层级结构浏览器)
 
 <!-- /code_chunk_output -->
 
-# 1 设置
+# 设置
 
 1. 设置字体和颜色风格
 
@@ -62,7 +62,7 @@ Preference → User Interface → Command Window Font
 
 2. 
 
-# 2 导入项目
+# 导入项目
 
 1. new → project, 输入项目名称(linux\-latest), understand的项目数据库(之前的目录)
 
