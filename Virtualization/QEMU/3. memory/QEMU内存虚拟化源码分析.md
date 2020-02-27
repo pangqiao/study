@@ -461,7 +461,7 @@ mmap
 
 继续**pc\_memory\_init**，函数在创建好了ram并且分配好了空间之后，创建了**两个mr alias**，**ram\_below\_4g**以及**ram\_above\_4g**，这两个mr分别指向**ram的低4g**以及**高4g空间**，这两个alias是挂在**根system\_memory mr下面**的。即高低端内存（也不一定是32bit机器）
 
-```c
+```cpp
 ram_below_4g = g_malloc(sizeof(*ram_below_4g));
 memory_region_init_alias(ram_below_4g, NULL, "ram-below-4g", ram,
                             0, pcms->below_4g_mem_size);
