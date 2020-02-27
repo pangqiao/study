@@ -3,23 +3,23 @@
 
 <!-- code_chunk_output -->
 
-* [1 Qemu内存分布](#1-qemu内存分布)
-* [2 内存初始化](#2-内存初始化)
-* [3 内存分配](#3-内存分配)
-* [4 内存映射](#4-内存映射)
-* [5 客户机物理地址到主机虚拟地址的转换](#5-客户机物理地址到主机虚拟地址的转换)
-	* [5.1 地址属性](#51-地址属性)
-	* [5.2 客户机物理地址到主机虚拟地址的转换步骤](#52-客户机物理地址到主机虚拟地址的转换步骤)
-* [6 Kvm映射](#6-kvm映射)
-* [7 参考](#7-参考)
+- [Qemu内存分布](#qemu内存分布)
+- [内存初始化](#内存初始化)
+- [内存分配](#内存分配)
+- [内存映射](#内存映射)
+- [客户机物理地址到主机虚拟地址的转换](#客户机物理地址到主机虚拟地址的转换)
+  - [地址属性](#地址属性)
+  - [客户机物理地址到主机虚拟地址的转换步骤](#客户机物理地址到主机虚拟地址的转换步骤)
+- [KVM 映射](#kvm-映射)
+- [参考](#参考)
 
 <!-- /code_chunk_output -->
 
-# 1 Qemu内存分布
+# Qemu内存分布
 
 ![](./images/2019-06-15-22-08-00.png)
 
-# 2 内存初始化
+# 内存初始化
 
 Qemu中的内存模型，简单来说就是Qemu**申请用户态内存**并进行管理，并将该部分申请的内存**注册**到**对应的加速器（如KVM）中**。
 
@@ -42,7 +42,7 @@ Qemu需要做的有两方面工作：
 
 Qemu主要通过如下结构来维护内存：
 
-```c
+```cpp
 // include/exec/memory.h
 struct AddressSpace {
     /* All fields are private. */
@@ -62,10 +62,11 @@ struct AddressSpace {
 };
 ```
 
-"memory"的root是static MemoryRegion system_memory;
-使用**链表address\_spaces**保存**虚拟机的内存**，该链表保存AddressSpace address\_space\_io和AddressSpace address\_space\_memory等信息
+"memory"的root是`static MemoryRegion system_memory`;
 
-```c
+使用**链表**`address_spaces`保存**虚拟机的内存**，该链表保存`AddressSpace address_space_io`和`AddressSpace address_space_memory`等信息
+
+```cpp
 // memory.c
 void address_space_init(AddressSpace *as, MemoryRegion *root, const char *name)
 {
@@ -82,11 +83,11 @@ void address_space_init(AddressSpace *as, MemoryRegion *root, const char *name)
 }
 ```
 
-AddressSpace设置了一段内存，其主要信息存储在root成员 中，root成员是个MemoryRegion结构，主要存储内存区的结构。在Qemu中最主要的两个AddressSpace是 address\_space_memory和address_space_io，分别对应的MemoryRegion变量是system_memory和 system\_io。
+AddressSpace设置了一段内存，其主要信息存储在root成员 中，root成员是个MemoryRegion结构，主要存储内存区的结构。在Qemu中最主要的两个AddressSpace是 `address_space_memory` 和 `address_space_io`，分别对应的MemoryRegion变量是`system_memory`和 `system\_io`。
 
-Qemu的**主函数**是**vl.c**中的main函数，其中调用了**configure\_accelerator**()，是KVM初始化的配置部分。
+Qemu的**主函数**是**vl.c**中的main函数，其中调用了`configure_accelerator()`，是KVM初始化的配置部分。
 
-configure\_accelerator中首先根据命令行输入的参数找到对应的accelerator，这里是KVM。之后调用accel\_list\[i].init()，即kvm\_init()。
+configure\_accelerator中首先根据命令行输入的参数找到对应的accelerator，这里是KVM。之后调用`accel_list[i].init()`，即kvm\_init()。
 
 在kvm_init()函数中主要做如下几件事情：
 
@@ -120,7 +121,7 @@ render_memory_region
 flatview_insert
 ```
 
-# 3 内存分配
+# 内存分配
 
 **内存的分配**实现函数为 ram\_addr\_t **qemu\_ram\_alloc**(ram\_addr\_t size, MemoryRegion \*mr), 输出为**该次分配的内存**在**所有分配内存**中的**顺序偏移**(即下图中的红色数字).
 
@@ -132,7 +133,7 @@ flatview_insert
 
 调用memory\_listener\_register注册
 
-# 4 内存映射
+# 内存映射
 
 使用的相关结构体如下：
 
@@ -209,9 +210,9 @@ address_space_update_topology_pass函数比较之前的内存块，做相应的�
 
 MEMORY_LISTENER_UPDATE_REGION函数，将变化的FlatRange构造一个MemoryRegionSection，然后 遍历所有的memory_listeners，如果memory_listeners监控的内存区域和MemoryRegionSection一样，则执 行第四个入参函数，如region_del函数，即kvm_region_del函数，这个是在kvm_init中初始化的。 kvm_region_add主要是kvm_set_phys_mem函数，主要是将MemoryRegionSection有效值转换成KVMSlot 形式，在kvm_set_user_memory_region中使用kvm_vm_ioctl(s, KVM_SET_USER_MEMORY_REGION, &mem)传递给kernel。
 
-# 5 客户机物理地址到主机虚拟地址的转换
+# 客户机物理地址到主机虚拟地址的转换
 
-## 5.1 地址属性
+## 地址属性
 
 内存映射是以页为单位的, 也就意味着phys_offset的低12bit为0, Qemu使用这些bit标识地址属性:
 
@@ -227,7 +228,7 @@ MMIO索引, 其中4个固定分配 SUBWIDTH SUBPAGE ROMD
 
 3: NOTDIRTY 
 
-## 5.2 客户机物理地址到主机虚拟地址的转换步骤
+## 客户机物理地址到主机虚拟地址的转换步骤
 
 虚拟机因mmio退出时，qemu处理该退出事件，相关的函数：
 
@@ -241,7 +242,7 @@ void cpu_physical_memory_rw(hwaddr addr, uint8_t buf, int len, int is_write)
 
 调函数void qemu_get_ram_ptr(ram_addr_t addr), 取主机虚拟地址起始位置, 再加上页内偏移, 即为对应的主机虚拟地址
 
-# 6 Kvm映射
+# KVM 映射
 
 ```c
 static void kvm_set_phys_mem(MemoryRegionSection section, bool add)
@@ -273,6 +274,6 @@ struct kvm_userspace_memory_region memory = {
 
 然后调用kvm的ioctl r = kvm\_vm\_ioctl(kvm\_state, KVM\_SET\_USER\_MEMORY\_REGION, \&memory);同时, qemu的kvm用户空间代码, 还定义了一些结构如mapping/slot, 用于地址空间的管理, 如防止重复映射等.
 
-# 7 参考
+# 参考
 
 https://blog.51cto.com/zybcloud/2149626
