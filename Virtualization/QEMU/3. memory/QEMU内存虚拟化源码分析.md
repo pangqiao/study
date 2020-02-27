@@ -14,7 +14,7 @@
   - [MemoryListener](#memorylistener)
   - [AddressSpaceDispatch](#addressspacedispatch)
 - [初始化流程](#初始化流程)
-  - [memory_map_init: 全局memory space和io space初始化](#memory_map_init-全局memory-space和io-space初始化)
+  - [全局address space: memory space和io space初始化](#全局address-space-memory-space和io-space初始化)
   - [pc_memory_init](#pc_memory_init)
     - [pc.ram分配](#pcram分配)
     - [两个mr alias: ram_below_4g和ram_above_4g](#两个mr-alias-ram_below_4g和ram_above_4g)
@@ -367,7 +367,7 @@ main()                              // vl.c
 
 ```
 
-## memory_map_init: 全局memory space和io space初始化
+## 全局address space: memory space和io space初始化
 
 首先在**main**\-\>**cpu\_exec\_init\_all**\-\>**memory\_map\_init**中对**全局的memory和io**进行初始化，
 
@@ -375,7 +375,7 @@ main()                              // vl.c
 
 - **system\_io**作为**address\_space\_io**的根MemoryRegion，大小为**65536**，也就是平时的**io port空间**。
 
-```c
+```cpp
 //exec.c
 static MemoryRegion *system_memory;
 static MemoryRegion *system_io;
@@ -415,17 +415,17 @@ void address_space_init(AddressSpace *as, MemoryRegion *root, const char *name)
 
 ## pc_memory_init
 
-在初始化虚拟机中, main中由QEMU入参标识QEMU\_OPTION\_m设定了ram\_size参数, 即虚拟机内存的大小, 通过调用machine\_run\_board\_init, 再调用machine\_class\-\>init(machine), 然后一步步传递给pc\_init1函数.
+在**初始化虚拟机**中, main中由QEMU入参标识`QEMU_OPTION_m`设定了`ram_size`参数, 即**虚拟机内存的大小**, 通过调用`machine_run_board_init`, 再调用`machine_class->init(machine)`, 然后一步步传递给`pc_init1`函数.
 
-重点在随后的main\-\>pc\_init\_v2\_8\-\>pc\_init1\-\>pc\_memory\_init中，这里面是**分配系统ram**，也是第一次**真正为虚拟机分配物理内存**。
+重点在随后的`main->pc_init_v2_8->pc_init1->pc_memory_init`中，这里面是**分配系统ram**，也是第一次**真正为虚拟机分配物理内存**。
 
-整个过程中，分配内存也不会像MemoryRegion那么频繁，**mr**很多时候是**创建一个alias**，指向**已经存在的mr**的一部分，这也是**alias的作用**，就是把一个mr分割成多个不连续的mr。
+整个过程中，分配内存也不会像MemoryRegion那么频繁，**mr**很多时候是**创建一个alias**，指向**已经存在的mr**的一部分，这也是**alias的作用**，就是把**一个mr**分割成**多个不连续的mr**。
 
 ### pc.ram分配
 
 **真正分配空间**的大概有这么几个，**pc.ram**, **pc.bios**, **pc.rom**, 以及**设备的一些ram**, rom等，vga.vram, vga.rom, e1000.rom等。
 
-```c
+```cpp
 memory_region_allocate_system_memory(ram, NULL, "pc.ram",
                                     machine->ram_size);
 ```
