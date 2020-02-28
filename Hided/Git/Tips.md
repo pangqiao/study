@@ -188,9 +188,9 @@ git log --oneline | wc -l
 
 ### 统计时间内提交次数
 
-git log --author=yourname --since="2017-08-01" --no-merges | grep -e 'commit [a-zA-Z0-9]*' | wc -l
+git log --author=yourname --since="2019-11-01" --until="2020-11-01" --no-merges | grep -e 'commit [a-zA-Z0-9]*' | wc -l
 
-
+git log --pretty=format:%ae --since="2019-11-01" --until="2020-11-01" --no-merges | gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
 
 ## http不用输入用户名密码
 
