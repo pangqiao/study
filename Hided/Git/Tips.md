@@ -205,7 +205,7 @@ git log --pretty=format:%ae --since="2019-11-01" --until="2020-11-01" --no-merge
 
 gawk -- '{split("yuzenghui@huawei.com",arr,"@");} END {printf arr[2];}'
 
-gawk -- '{split($0,arr,"@"); ++c[arr[2]]; } END {printf arr[2];}'
+gawk -- '{split($0,arr,"@"); ++c[arr[2]]; } END {printf c;}'
 
 
 
