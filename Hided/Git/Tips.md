@@ -193,7 +193,7 @@ git log --author=yourname --since="2019-11-01" --until="2020-11-01" --no-merges 
 git log --pretty=format:%ae --since="2019-11-01" --until="2020-11-01" --no-merges | gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
 
 
-git log --pretty=format:%ae --since="2019-11-01" --until="2020-11-01" --no-merges Documentation/virt/kvm/ include/trace/events/kvm.h include/uapi/asm-generic/kvm* include/uapi/linux/kvm* include/asm-generic/kvm* include/linux/kvm* include/kvm/iodev.h virt/kvm/* tools/kvm/ tools/testing/selftests/kvm/ | gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
+git log --pretty=format:%ae --since="2019-11-01" --until="2020-11-01" --no-merges -- Documentation/virt/kvm/ include/trace/events/kvm.h include/uapi/asm-generic/kvm* include/uapi/linux/kvm* include/asm-generic/kvm* include/linux/kvm* include/kvm/iodev.h virt/kvm/* tools/kvm/ tools/testing/selftests/kvm/ | gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
 
 
 ```
