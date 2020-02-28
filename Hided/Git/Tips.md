@@ -199,9 +199,16 @@ git log --pretty=format:%ae --since="2019-11-01" --until="2020-11-01" --no-merge
 git log --pretty=format:%ae --since="2019-11-01" --until="2020-11-01" --no-merges -- Documentation/virt/kvm/ include/trace/events/kvm.h include/uapi/asm-generic/kvm* include/uapi/linux/kvm* include/asm-generic/kvm* include/linux/kvm* include/kvm/iodev.h virt/kvm/* tools/kvm/ tools/testing/selftests/kvm/ | gawk -- '{ split($0,arr,"@"); ++c[arr[2]]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 10
 
 
+git log --pretty=format:%ae --since="2019-11-01" --until="2020-11-01" --no-merges -- Documentation/virt/kvm/ include/trace/events/kvm.h include/uapi/asm-generic/kvm* include/uapi/linux/kvm* include/asm-generic/kvm* include/linux/kvm* include/kvm/iodev.h virt/kvm/* tools/kvm/ tools/testing/selftests/kvm/
+
+
+
 gawk -- '{split("yuzenghui@huawei.com",arr,"@");} END {printf arr[2];}'
 
-gawk -- '{split($0,arr,"@");} END {printf arr[2];}'
+gawk -- '{split($0,arr,"@"); ++c[arr[2]]; } END {printf arr[2];}'
+
+
+
 
 ```
 KERNEL VIRTUAL MACHINE (KVM)
