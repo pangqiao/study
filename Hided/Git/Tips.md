@@ -192,6 +192,102 @@ git log --author=yourname --since="2019-11-01" --until="2020-11-01" --no-merges 
 
 git log --pretty=format:%ae --since="2019-11-01" --until="2020-11-01" --no-merges | gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
 
+```
+KERNEL VIRTUAL MACHINE (KVM)
+M:      Paolo Bonzini <pbonzini@redhat.com>
+L:      kvm@vger.kernel.org
+W:      http://www.linux-kvm.org
+T:      git git://git.kernel.org/pub/scm/virt/kvm/kvm.git
+S:      Supported
+F:      Documentation/virt/kvm/
+F:      include/trace/events/kvm.h
+F:      include/uapi/asm-generic/kvm*
+F:      include/uapi/linux/kvm*
+F:      include/asm-generic/kvm*
+F:      include/linux/kvm*
+F:      include/kvm/iodev.h
+F:      virt/kvm/*
+F:      tools/kvm/
+F:      tools/testing/selftests/kvm/
+
+KERNEL VIRTUAL MACHINE FOR ARM/ARM64 (KVM/arm, KVM/arm64)
+M:      Marc Zyngier <maz@kernel.org>
+R:      James Morse <james.morse@arm.com>
+R:      Julien Thierry <julien.thierry.kdev@gmail.com>
+R:      Suzuki K Poulose <suzuki.poulose@arm.com>
+L:      linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+L:      kvmarm@lists.cs.columbia.edu
+T:      git git://git.kernel.org/pub/scm/linux/kernel/git/kvmarm/kvmarm.git
+S:      Maintained
+F:      arch/arm/include/uapi/asm/kvm*
+F:      arch/arm/include/asm/kvm*
+F:      arch/arm/kvm/
+F:      arch/arm64/include/uapi/asm/kvm*
+F:      arch/arm64/include/asm/kvm*
+F:      arch/arm64/kvm/
+F:      virt/kvm/arm/
+F:      include/kvm/arm_*
+
+KERNEL VIRTUAL MACHINE FOR MIPS (KVM/mips)
+L:      linux-mips@vger.kernel.org
+L:      kvm@vger.kernel.org
+S:      Orphan
+F:      arch/mips/include/uapi/asm/kvm*
+F:      arch/mips/include/asm/kvm*
+F:      arch/mips/kvm/
+
+KERNEL VIRTUAL MACHINE FOR POWERPC (KVM/powerpc)
+M:      Paul Mackerras <paulus@ozlabs.org>
+L:      kvm-ppc@vger.kernel.org
+W:      http://www.linux-kvm.org/
+T:      git git://github.com/agraf/linux-2.6.git
+S:      Supported
+F:      arch/powerpc/include/uapi/asm/kvm*
+F:      arch/powerpc/include/asm/kvm*
+F:      arch/powerpc/kvm/
+F:      arch/powerpc/kernel/kvm*
+
+KERNEL VIRTUAL MACHINE for s390 (KVM/s390)
+M:      Christian Borntraeger <borntraeger@de.ibm.com>
+M:      Janosch Frank <frankja@linux.ibm.com>
+R:      David Hildenbrand <david@redhat.com>
+R:      Cornelia Huck <cohuck@redhat.com>
+L:      kvm@vger.kernel.org
+W:      http://www.ibm.com/developerworks/linux/linux390/
+T:      git git://git.kernel.org/pub/scm/linux/kernel/git/kvms390/linux.git
+S:      Supported
+F:      arch/s390/include/uapi/asm/kvm*
+F:      arch/s390/include/asm/gmap.h
+F:      arch/s390/include/asm/kvm*
+F:      arch/s390/kvm/
+F:      arch/s390/mm/gmap.c
+F:      tools/testing/selftests/kvm/s390x/
+F:      tools/testing/selftests/kvm/*/s390x/
+
+KERNEL VIRTUAL MACHINE FOR X86 (KVM/x86)
+M:      Paolo Bonzini <pbonzini@redhat.com>
+R:      Sean Christopherson <sean.j.christopherson@intel.com>
+R:      Vitaly Kuznetsov <vkuznets@redhat.com>
+R:      Wanpeng Li <wanpengli@tencent.com>
+R:      Jim Mattson <jmattson@google.com>
+R:      Joerg Roedel <joro@8bytes.org>
+L:      kvm@vger.kernel.org
+W:      http://www.linux-kvm.org
+T:      git git://git.kernel.org/pub/scm/virt/kvm/kvm.git
+S:      Supported
+F:      arch/x86/kvm/
+F:      arch/x86/kvm/*/
+F:      arch/x86/include/uapi/asm/kvm*
+F:      arch/x86/include/uapi/asm/vmx.h
+F:      arch/x86/include/uapi/asm/svm.h
+F:      arch/x86/include/asm/kvm*
+F:      arch/x86/include/asm/pvclock-abi.h
+F:      arch/x86/include/asm/svm.h
+F:      arch/x86/include/asm/vmx*.h
+F:      arch/x86/kernel/kvm.c
+F:      arch/x86/kernel/kvmclock.c
+```
+
 ## http不用输入用户名密码
 
 ```
