@@ -209,6 +209,20 @@ gawk -- '{split($0,arr,"@"); ++c[arr[2]]; } END {printf c;}'
 
 
 
+KVM:
+
+-- Documentation/virt/kvm/ include/trace/events/kvm.h include/uapi/asm-generic/kvm* include/uapi/linux/kvm* include/asm-generic/kvm* include/linux/kvm* include/kvm/iodev.h virt/kvm/* tools/kvm/ tools/testing/selftests/kvm/
+
+
+KVM/arm[64]: 
+
+-- arch/arm/include/uapi/asm/kvm* arch/arm/include/asm/kvm* arch/arm/kvm/
+arch/arm64/include/uapi/asm/kvm*
+arch/arm64/include/asm/kvm*
+arch/arm64/kvm/
+virt/kvm/arm/
+include/kvm/arm_*
+
 
 ```
 KERNEL VIRTUAL MACHINE (KVM)
