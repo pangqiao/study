@@ -209,6 +209,14 @@ git log --pretty=format:%ae --date-order --since="2019-11-01" --no-merges -- Doc
 
 
 
+
+gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
+
+
+gawk -- '{ split($0,arr,"@"); ++c[arr[2]]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 20
+
+
+
 git log --pretty=format:%ae --since="2019-11-01"  --no-merges -- Documentation/virt/kvm/ -- include/trace/events/kvm.h | gawk -- '{ split($0,arr,"@"); ++c[arr[2]]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 20 
 
 
