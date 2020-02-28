@@ -188,7 +188,11 @@ git log --oneline | wc -l
 
 ### 统计时间内提交次数
 
+根据 author
+
 git log --author=yourname --since="2019-11-01" --before="2020-02-28" --no-merges | grep -e 'commit [a-zA-Z0-9]*' | wc -l
+
+输出 邮箱地址
 
 git log --pretty=format:%ae --since="2019-11-01" --before="2020-02-28" --no-merges | gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
 
@@ -201,6 +205,8 @@ git log --pretty=format:%ae --since="2019-11-01" --before="2020-02-28" --no-merg
 
 git log --pretty=format:%ae --since="2019-11-01" --before="2020-02-28" --no-merges -- Documentation/virt/kvm/ include/trace/events/kvm.h include/uapi/asm-generic/kvm* include/uapi/linux/kvm* include/asm-generic/kvm* include/linux/kvm* include/kvm/iodev.h virt/kvm/* tools/kvm/ tools/testing/selftests/kvm/
 
+
+去掉 -u
 
 git log --pretty=format:%ae --date-order --since="2019-10-01" --until="2019-11-01" --no-merges -- Documentation/virt/kvm/ -- include/trace/events/kvm.h -- include/uapi/asm-generic/kvm* -- include/uapi/linux/kvm* -- include/asm-generic/kvm* -- include/linux/kvm* -- include/kvm/iodev.h -- virt/kvm/* -- tools/kvm/ -- tools/testing/selftests/kvm/ -- arch/arm/include/uapi/asm/kvm* -- arch/arm/include/asm/kvm* -- arch/arm/kvm/ -- arch/arm64/include/uapi/asm/kvm* -- arch/arm64/include/asm/kvm* -- arch/arm64/kvm/ -- virt/kvm/arm/ -- include/kvm/arm_* -- arch/mips/include/uapi/asm/kvm* -- arch/mips/include/asm/kvm* -- arch/mips/kvm/ -- arch/powerpc/include/uapi/asm/kvm* -- arch/powerpc/include/asm/kvm* -- arch/powerpc/kvm/ -- arch/powerpc/kernel/kvm* -- arch/s390/include/uapi/asm/kvm* -- arch/s390/include/asm/gmap.h -- arch/s390/include/asm/kvm* -- arch/s390/kvm/ -- arch/s390/mm/gmap.c -- tools/testing/selftests/kvm/s390x/ -- tools/testing/selftests/kvm/*/s390x/ -- arch/x86/kvm/ -- arch/x86/kvm/*/ -- arch/x86/include/uapi/asm/kvm* -- arch/x86/include/uapi/asm/vmx.h -- arch/x86/include/uapi/asm/svm.h -- arch/x86/include/asm/kvm* -- arch/x86/include/asm/pvclock-abi.h -- arch/x86/include/asm/svm.h -- arch/x86/include/asm/vmx*.h -- arch/x86/kernel/kvm.c -- arch/x86/kernel/kvmclock.c | gawk -- '{ split($0,arr,"@"); ++c[arr[2]]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -n -r | head -n 20
 
