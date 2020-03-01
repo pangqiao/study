@@ -13,7 +13,7 @@ qemu-kvm通过**ioctl vm**指令`KVM_SET_USER_MEMORY_REGION`来**为虚拟机设
 
 ioctl vm指令KVM_SET_USER_MEMORY_REGION在内核主要执行流程如下：
 
-```
+```cpp
 kvm_vm_ioctl()
     kvm_vm_ioctl_set_memory_region()
         kvm_set_memory_region()
@@ -23,3 +23,6 @@ kvm_vm_ioctl()
                 kvm_free_physmem_slot() // 释放旧内存区域相应的物理内存(HPA)
 ```
 
+# 代码分析
+
+kvm_mem_slot结构：
