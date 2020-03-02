@@ -1,5 +1,5 @@
 obj-m :=ipi_benchmark.o
 all:
-	make -C /data/linux/ M=$(PWD) modules
+	make -C /lib/modules/`uname -r`/build M=$(PWD) modules
 clean:
-	make -C /data/linux/ M=$(PWD) clean
+	make -C /lib/modules/`uname -r`/build M=$(PWD) clean
