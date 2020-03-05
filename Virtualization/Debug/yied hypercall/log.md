@@ -1,3 +1,5 @@
+guest中
+
 ```
 [root@lihaiwei-vm tracing]# cat set_graph_function
 kvm_vcpu_yield_to [kvm]
@@ -162,3 +164,13 @@ function_graph
 ```
 
 
+host:
+
+```
+[root@TENCENT64 /sys/kernel/debug/tracing]# cat set_graph_function
+kvm_sched_yield [kvm]
+kvm_vcpu_yield_to [kvm]
+kvm_emulate_hypercall [kvm]
+
+
+```
