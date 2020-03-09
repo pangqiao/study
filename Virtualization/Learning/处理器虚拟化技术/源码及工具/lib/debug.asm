@@ -1,11 +1,11 @@
 ;*************************************************
 ;* debug.asm                                     *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
 ;*
-;* ÕâÊÇÎªÖ§³Ö debug ¹¦ÄÜ¶¨ÒåµÄº¯Êı¿â
+;* è¿™æ˜¯ä¸ºæ”¯æŒ debug åŠŸèƒ½å®šä¹‰çš„å‡½æ•°åº“
 ;*
 
 LBR_FORMAT32                    EQU             0
@@ -15,7 +15,7 @@ LBR_FORMAT64_MISPRED            EQU             3
 PEBS_FORMAT_ENH                 EQU             1
 
 ;;
-;; ¶¨Òå debug µ¥Ôª×´Ì¬Âë
+;; å®šä¹‰ debug å•å…ƒçŠ¶æ€ç 
 ;;
 STATUS_BTS_SUCCESS                      EQU     0
 STATUS_BTS_ERROR                        EQU     1
@@ -32,8 +32,8 @@ STATUS_DS_NOT_READY                     EQU     10h
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       ³õÊ¼»¯´¦ÀíÆ÷µÄ debug store ¹¦ÄÜµ¥Ôª
+; æè¿°ï¼š
+;       åˆå§‹åŒ–å¤„ç†å™¨çš„ debug store åŠŸèƒ½å•å…ƒ
 ;-------------------------------------------------
 init_debug_store_unit:
         push ebx
@@ -43,7 +43,7 @@ init_debug_store_unit:
         mov ebx, [gs: PCB.Base]       
         
         ;;
-        ;; Èç¹ûÊôÓÚ AMD Æ½Ì¨ÔòÍË³ö
+        ;; å¦‚æœå±äº AMD å¹³å°åˆ™é€€å‡º
         ;;
         mov eax, [gs: PCB.Vendor]
         cmp eax, VENDOR_AMD
@@ -51,17 +51,17 @@ init_debug_store_unit:
                 
 
         ;;
-        ;; ¼ì²éÊÇ·ñÖ§³Ö 64 Î» DS 
+        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ 64 ä½ DS 
         ;;
         mov eax, [gs: PCB.DebugCapabilities]
         test eax, DEBUG_DS64_AVAILABLE
         jnz init_debug_unit.ds64
         
         ;;
-        ;; ÉèÖÃ DS ¹ÜÀí¼ÇÂ¼Ö¸Õë
+        ;; è®¾ç½® DS ç®¡ç†è®°å½•æŒ‡é’ˆ
         ;;
         xor ecx, ecx
-        lea eax, [ebx + PCB.DSManageRecord]                     ; DS ¹ÜÀí¼ÇÂ¼»ùÖ·
+        lea eax, [ebx + PCB.DSManageRecord]                     ; DS ç®¡ç†è®°å½•åŸºå€
 init_debug_unit.loop1:        
         mov [ebx + PCB.BtsBasePointer + ecx * 8], eax
         mov DWORD [ebx + PCB.BtsBasePointer + ecx * 8 + 4], 0
@@ -71,9 +71,9 @@ init_debug_unit.loop1:
         jb init_debug_unit.loop1
         
         ;;
-        ;; 32 Î»¸ñÊ½µÄ DS Size Öµ
-        ;; 1) Ã¿Ìõ BTS ¼ÇÂ¼Îª 12 ×Ö½Ú
-        ;; 2) Ã¿Ìõ PEBS ¼ÇÂ¼Îª 40 ×Ö½Ú
+        ;; 32 ä½æ ¼å¼çš„ DS Size å€¼
+        ;; 1) æ¯æ¡ BTS è®°å½•ä¸º 12 å­—èŠ‚
+        ;; 2) æ¯æ¡ PEBS è®°å½•ä¸º 40 å­—èŠ‚
         ;;
         mov DWORD [gs: PCB.BtsRecordSize], 12
         mov DWORD [gs: PCB.PebsRecordSize], 40
@@ -83,15 +83,15 @@ init_debug_unit.loop1:
         
 init_debug_unit.ds64:
         ;;
-        ;; 64 Î»¸ñÊ½µÄ DS size Öµ
-        ;; 1) Ã¿Ìõ BTS ¼ÇÂ¼Îª 24 ×Ö½Ú
-        ;; 2) ÔöÇ¿µÄ PEBS ¼ÇÂ¼Îª 176 ×Ö½Ú
-        ;; 3) ÆÕÍ¨µÄ PEBS ¼ÇÂ¼Îª 144 ×Ö½Ú
+        ;; 64 ä½æ ¼å¼çš„ DS size å€¼
+        ;; 1) æ¯æ¡ BTS è®°å½•ä¸º 24 å­—èŠ‚
+        ;; 2) å¢å¼ºçš„ PEBS è®°å½•ä¸º 176 å­—èŠ‚
+        ;; 3) æ™®é€šçš„ PEBS è®°å½•ä¸º 144 å­—èŠ‚
         ;;
         mov DWORD [gs: PCB.BtsRecordSize], 24
         
         ;;
-        ;; ¼ì²éÊÇ·ñÖ§³ÖÔöÇ¿µÄ PEBS ¼ÇÂ¼
+        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒå¢å¼ºçš„ PEBS è®°å½•
         ;;
         test eax, DEBUG_PEBS_ENH_AVAILABLE
         mov ecx, 144
@@ -100,10 +100,10 @@ init_debug_unit.ds64:
         mov [gs: PCB.PebsRecordSize], ecx
       
         ;;
-        ;; ÉèÖÃ DS ¹ÜÀí¼ÇÂ¼Ö¸Õë
+        ;; è®¾ç½® DS ç®¡ç†è®°å½•æŒ‡é’ˆ
         ;;         
         xor ecx, ecx
-        lea eax, [ebx + PCB.DSManageRecord]                     ; DS ¹ÜÀí¼ÇÂ¼»ùÖ·
+        lea eax, [ebx + PCB.DSManageRecord]                     ; DS ç®¡ç†è®°å½•åŸºå€
 init_debug_unit.loop2:        
         mov [ebx + PCB.BtsBasePointer + ecx * 8], eax
         mov DWORD [ebx + PCB.BtsBasePointer + ecx * 8 + 4], 0
@@ -115,7 +115,7 @@ init_debug_unit.loop2:
         
 init_debug_unit.next:
         ;;
-        ;; ÉèÖÃ DS ÇøÓò
+        ;; è®¾ç½® DS åŒºåŸŸ
         ;;
         call set_debug_store_area
         
@@ -131,15 +131,15 @@ init_debug_unit.done:
 ; input:
 ;       none
 ; output:
-;       ³É¹¦Ê±·µ»Ø Bts buffer£¬¡¡Ê§°ÜÊ±·µ»Ø 0
-; ÃèÊö£º
-;       µÃµ½ BTS buffer »ùÖ·£¨ÔÚ¿ªÆô paging ºóÊ¹ÓÃ£©
+;       æˆåŠŸæ—¶è¿”å› Bts bufferï¼Œã€€å¤±è´¥æ—¶è¿”å› 0
+; æè¿°ï¼š
+;       å¾—åˆ° BTS buffer åŸºå€ï¼ˆåœ¨å¼€å¯ paging åä½¿ç”¨ï¼‰
 ;-------------------------------------------------
 get_bts_buffer_base:
         push ecx
         xor ecx, ecx
-        mov eax, [fs: SDA.BtsBufferSize]                ; bts buffer ³¤¶È
-        lock xadd [fs: SDA.BtsPoolBase], eax            ; µÃµ½ bts buffer µØÖ·
+        mov eax, [fs: SDA.BtsBufferSize]                ; bts buffer é•¿åº¦
+        lock xadd [fs: SDA.BtsPoolBase], eax            ; å¾—åˆ° bts buffer åœ°å€
         cmp eax, [fs: SDA.BtsPoolTop]
         cmovae eax, ecx
         pop ecx
@@ -151,15 +151,15 @@ get_bts_buffer_base:
 ; input:
 ;       none
 ; output:
-;       ³É¹¦Ê±·µ»Ø PEBS buffer£¬¡¡Ê§°ÜÊ±·µ»Ø 0
-; ÃèÊö£º
-;       µÃµ½ PEBS buffer »ùÖ·£¨ÔÚ¿ªÆô paging ºóÊ¹ÓÃ£©
+;       æˆåŠŸæ—¶è¿”å› PEBS bufferï¼Œã€€å¤±è´¥æ—¶è¿”å› 0
+; æè¿°ï¼š
+;       å¾—åˆ° PEBS buffer åŸºå€ï¼ˆåœ¨å¼€å¯ paging åä½¿ç”¨ï¼‰
 ;-------------------------------------------------
 get_pebs_buffer_base:
         push ecx
         xor ecx, ecx
-        mov eax, [fs: SDA.PebsBufferSize]               ; pebs buffer ³¤¶È
-        lock xadd [fs: SDA.PebsPoolBase], eax           ; µÃµ½ pebs buffer µØÖ·
+        mov eax, [fs: SDA.PebsBufferSize]               ; pebs buffer é•¿åº¦
+        lock xadd [fs: SDA.PebsPoolBase], eax           ; å¾—åˆ° pebs buffer åœ°å€
         cmp eax, [fs: SDA.PebsPoolTop]
         cmovae eax, ecx
         pop ecx
@@ -175,8 +175,8 @@ get_pebs_buffer_base:
 ;       none
 ; output:
 ;       0 - succssful, error code - failure
-; ÃèÊö:
-;       ¿ªÆô bts »úÖÆ£¬³É¹¦ºó·µ»Ø 0£¬Ê§°Ü·µ»Ø´íÎóÂë
+; æè¿°:
+;       å¼€å¯ bts æœºåˆ¶ï¼ŒæˆåŠŸåè¿”å› 0ï¼Œå¤±è´¥è¿”å›é”™è¯¯ç 
 ;-----------------------------------------------------
 enable_bts:
 enable_branch_trace_store:
@@ -187,14 +187,14 @@ enable_branch_trace_store:
         mov eax, STATUS_BTS_SUCCESS
         
         ;;
-        ;; ¼ì²éÊÇ·ñÒÑ¾­¿ªÆô
+        ;; æ£€æŸ¥æ˜¯å¦å·²ç»å¼€å¯
         ;; 
         mov ebx, [gs: PCB.DebugStatus]
         test ebx, DEBUG_STATUS_BTS_ENABLE
         jnz enable_branch_trace_store.done
         
         ;;
-        ;; ¼ì²é BTS ÊÇ·ñ¿ÉÓÃ
+        ;; æ£€æŸ¥ BTS æ˜¯å¦å¯ç”¨
         ;;
         mov eax, [gs: PCB.DebugCapabilities]
 	test eax, DEBUG_BTS_AVAILABLE
@@ -202,21 +202,21 @@ enable_branch_trace_store:
 	jz enable_branch_trace_store.done
         
         ;;
-        ;; ¼ì²é BTS ÇøÓòÊÇ·ñÉèÖÃºÃ
+        ;; æ£€æŸ¥ BTS åŒºåŸŸæ˜¯å¦è®¾ç½®å¥½
         ;;
         test ebx, DEBUG_STATUS_BTS_READY
         mov eax, STATUS_BTS_NOT_READY
         jz enable_branch_trace_store.done
         
         ;;
-        ;; ¿ªÆô IA32_DEBUGCTL[6].TR ºÍ IA32_DEBUGCTL[7].BTS Î»
+        ;; å¼€å¯ IA32_DEBUGCTL[6].TR å’Œ IA32_DEBUGCTL[7].BTS ä½
         ;;
 	mov ecx, IA32_DEBUGCTL
 	rdmsr
 	or eax, 0C0h					; TR=1, BTS=1
 	wrmsr
         ;;
-        ;; ¸üĞÂ debug ×´Ì¬
+        ;; æ›´æ–° debug çŠ¶æ€
         ;;
         or ebx, DEBUG_STATUS_BTS_ENABLE
         mov [gs: PCB.DebugStatus], ebx
@@ -235,12 +235,12 @@ enable_branch_trace_store.done:
 ;       none
 ; output:
 ;       eax - status
-; ÃèÊö£º
-;       ¿ªÆô BTINT »úÖÆ£¬Ó¦ÔÚ enable_bts() Ö®ºóµ÷ÓÃ
-; Ê¾Àı£º
-;       call enable_bts                 ; ¿ªÆô BTS »úÖÆ
+; æè¿°ï¼š
+;       å¼€å¯ BTINT æœºåˆ¶ï¼Œåº”åœ¨ enable_bts() ä¹‹åè°ƒç”¨
+; ç¤ºä¾‹ï¼š
+;       call enable_bts                 ; å¼€å¯ BTS æœºåˆ¶
 ;       ...
-;       call enable_btint               ; ÆôÓÃ BTINT
+;       call enable_btint               ; å¯ç”¨ BTINT
 ;----------------------------------------------------
 enable_btint:
         push ecx
@@ -250,27 +250,27 @@ enable_btint:
         mov eax, STATUS_BTS_SUCCESS
         
         ;;
-        ;; ¼ì²é BTINT ÊÇ·ñÒÑ¾­¿ªÆô
+        ;; æ£€æŸ¥ BTINT æ˜¯å¦å·²ç»å¼€å¯
         ;; 
         mov ebx, [gs: PCB.DebugStatus]
         test ebx, DEBUG_STATUS_BTINT_ENABLE
         jnz enable_bts_with_int.done
         
         ;;
-        ;; ¼ì²é BTS ÊÇ·ñ×¼±¸ºÃ
+        ;; æ£€æŸ¥ BTS æ˜¯å¦å‡†å¤‡å¥½
         ;;
         test ebx, DEBUG_STATUS_BTS_READY
         mov eax, STATUS_BTS_NOT_READY
         jz enable_bts_with_int.done
         
         ;;
-        ;; ¼ì²é BTINT »úÖÆÊÇ·ñ×¼±¸ºÃ
+        ;; æ£€æŸ¥ BTINT æœºåˆ¶æ˜¯å¦å‡†å¤‡å¥½
         ;;
         test ebx, DEBUG_STATUS_BTINT_READY
         jnz enable_bts_with_int.next
         
         ;;
-        ;; ¸üĞÂ DS ¹ÜÀí¼ÇÂ¼µÄÉèÖÃ: BTS threadold <= BTS maximum
+        ;; æ›´æ–° DS ç®¡ç†è®°å½•çš„è®¾ç½®: BTS threadold <= BTS maximum
         ;;
         mov eax, [gs: PCB.BtsMaximumPointer]
         mov eax, [eax]
@@ -283,7 +283,7 @@ enable_btint:
         
 enable_bts_with_int.next:        
         ;;
-        ;; ¿ªÆô IA32_DEBUGCTL[8].BTINT Î»
+        ;; å¼€å¯ IA32_DEBUGCTL[8].BTINT ä½
         ;;
 	mov ecx, IA32_DEBUGCTL
 	rdmsr
@@ -291,7 +291,7 @@ enable_bts_with_int.next:
 	wrmsr
 
         ;;
-        ;; ¸üĞÂ Debug ×´Ì¬
+        ;; æ›´æ–° Debug çŠ¶æ€
         ;; 
         or DWORD [gs: PCB.DebugStatus], DEBUG_STATUS_BTINT_ENABLE
         
@@ -304,14 +304,14 @@ enable_bts_with_int.done:
 	
 	
 ;--------------------------------
-; disable_bts(): ¹Ø±Õ BTS ¹¦ÄÜ
+; disable_bts(): å…³é—­ BTS åŠŸèƒ½
 ;--------------------------------
 disable_bts:
         push ecx
         push edx
         push ebx
         ;;
-        ;; ¼ì²éÊÇ·ñÒÑ¿ªÆô
+        ;; æ£€æŸ¥æ˜¯å¦å·²å¼€å¯
         ;;
         mov ebx, [gs: PCB.DebugStatus]
         test ebx, DEBUG_STATUS_BTS_ENABLE
@@ -323,7 +323,7 @@ disable_bts:
 	wrmsr
        
         ;;
-        ;; ¸üĞÂ debug ×´Ì¬
+        ;; æ›´æ–° debug çŠ¶æ€
         ;;
         and ebx, ~DEBUG_STATUS_BTS_ENABLE
         mov [gs: PCB.DebugStatus], ebx
@@ -336,7 +336,7 @@ disable_bts.done:
 
 
 ;--------------------------------
-; disable_btint()£º¹Ø±Õ BTINT ¹¦ÄÜ
+; disable_btint()ï¼šå…³é—­ BTINT åŠŸèƒ½
 ;--------------------------------
 disable_btint:
         push ecx
@@ -352,7 +352,7 @@ disable_btint:
         wrmsr
         
         ;;
-        ;; ¸üĞÂ DS ¹ÜÀí¼ÇÂ¼ÉèÖÃ
+        ;; æ›´æ–° DS ç®¡ç†è®°å½•è®¾ç½®
         ;;
         mov ebx, [gs: PCB.BtsThresholdPointer]
         mov eax, [gs: PCB.BtsMaximumPointer]
@@ -363,7 +363,7 @@ disable_btint:
         mov [ebx], eax
         
         ;;
-        ;; ¸üĞÂ debug ×´Ì¬
+        ;; æ›´æ–° debug çŠ¶æ€
         ;;
         and DWORD [gs: PCB.DebugStatus], ~DEBUG_STATUS_BTINT_ENABLE
         and DWORD [gs: PCB.DebugStatus], ~DEBUG_STATUS_BTINT_READY
@@ -376,7 +376,7 @@ disable_btint.done:
 
 
 ;------------------------
-; support_debug_store(): ²éÑ¯ÊÇ·ñÖ§³Ö DS ÇøÓò
+; support_debug_store(): æŸ¥è¯¢æ˜¯å¦æ”¯æŒ DS åŒºåŸŸ
 ; output:
 ;       1-support, 0-no support
 ;------------------------
@@ -384,7 +384,7 @@ support_ds:
 support_debug_store:
         push edx
         ;;
-        ;; ¼ì²é CPUID.01H:EDX[21].Branch_Trace_Store Î»
+        ;; æ£€æŸ¥ CPUID.01H:EDX[21].Branch_Trace_Store ä½
         ;;
         mov edx, [gs: PCB.FeatureEdx]
 	bt edx, 21
@@ -394,14 +394,14 @@ support_debug_store:
 	ret
 
 ;---------------------------------------------
-; support_ds64: ²éÑ¯ÊÇ·ñÖ§³Ö DS save 64 Î»¸ñÊ½
+; support_ds64: æŸ¥è¯¢æ˜¯å¦æ”¯æŒ DS save 64 ä½æ ¼å¼
 ; output:
 ;       1-support, 0-no support
 ;---------------------------------------------
 support_ds64:
         push ecx
         ;;
-        ;; ¼ì²é CPUID.01H.ECX[2].DS64 Î»
+        ;; æ£€æŸ¥ CPUID.01H.ECX[2].DS64 ä½
         ;;
         mov ecx, [gs: PCB.FeatureEcx]
 	bt ecx, 2                               ; 64-bit DS AREA
@@ -423,7 +423,7 @@ available_branch_trace_store:
         push edx
         push ecx
         ;;
-        ;; ¼ì²é CPUID.01H:EDX[21].Branch_Trace_Store Î»
+        ;; æ£€æŸ¥ CPUID.01H:EDX[21].Branch_Trace_Store ä½
         ;;
         mov edx, [gs: PCB.FeatureEdx]
         bt edx, 21
@@ -431,7 +431,7 @@ available_branch_trace_store:
 	jnc available_branch_trace_store.done
         
         ;;
-        ;; ¼ì²é IA32_MISC_ENABLE[11].BTS_Unavailable Î»
+        ;; æ£€æŸ¥ IA32_MISC_ENABLE[11].BTS_Unavailable ä½
         ;;
 	mov ecx, IA32_MISC_ENABLE
 	rdmsr
@@ -445,7 +445,7 @@ available_branch_trace_store.done:
 
 
 ;--------------------------------------
-; avaiable_pebs(): ÊÇ·ñÖ§³Ö PEBS »úÖÆ
+; avaiable_pebs(): æ˜¯å¦æ”¯æŒ PEBS æœºåˆ¶
 ; output:
 ;       1-available, 0-unavailable
 ;--------------------------------------
@@ -454,7 +454,7 @@ available_pebs:
         push ecx
 
         ;;
-        ;; ¼ì²é CPUID.01H:EDX[21].Branch_Trace_Store Î»
+        ;; æ£€æŸ¥ CPUID.01H:EDX[21].Branch_Trace_Store ä½
         ;;
         mov edx, [gs: PCB.FeatureEdx]
         bt edx, 21
@@ -462,7 +462,7 @@ available_pebs:
 	jnc available_pebs.done
         
         ;;
-        ;; ¼ì²é IA32_MISC_ENABLE[12].PEBS_Unavailable Î»
+        ;; æ£€æŸ¥ IA32_MISC_ENABLE[12].PEBS_Unavailable ä½
         ;;
 	mov ecx, IA32_MISC_ENABLE
 	rdmsr
@@ -476,13 +476,13 @@ available_pebs.done:
 
 
 ;------------------------------------------------------------
-; support_enhancement_pebs(): ¼ì²âÊÇ·ñÖ§³ÖÔöÇ¿µÄ PEBS ¼ÇÂ¼
+; support_enhancement_pebs(): æ£€æµ‹æ˜¯å¦æ”¯æŒå¢å¼ºçš„ PEBS è®°å½•
 ; output:
 ;       1-support, 0-no support
 ;-----------------------------------------------------------
 support_enhancement_pebs:
         ;;
-        ;; ¼ì²é PerfCapabilities[8] Î»
+        ;; æ£€æŸ¥ PerfCapabilities[8] ä½
         ;;        
         mov eax, [gs: PCB.PerfCapabilities]
 	test eax, PERF_PEBS_ENH_AVAILABLE
@@ -497,8 +497,8 @@ support_enhancement_pebs:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       ¸üĞÂ´¦ÀíÆ÷ debug Ïà¹ØµÄ¹¦ÄÜ¼ÇÂ¼
+; æè¿°ï¼š
+;       æ›´æ–°å¤„ç†å™¨ debug ç›¸å…³çš„åŠŸèƒ½è®°å½•
 ;----------------------------------------------
 init_debug_capabilities_info:
         push ebx
@@ -528,7 +528,7 @@ init_debug_capabilities_info.@3:
 
 init_debug_capabilities_info.@4:        
         ;;
-        ;; ¼ì²éÊÜÏŞµÄ BTS, CPUID.01H:ECX[4].DS_CPL Î»
+        ;; æ£€æŸ¥å—é™çš„ BTS, CPUID.01H:ECX[4].DS_CPL ä½
         ;;
         mov eax, [gs: PCB.FeatureEcx]
         bt eax, 4
@@ -557,7 +557,7 @@ get_lbr_format:
 
 
 ;-------------------------------------------
-; set_debug_store_area(): ÉèÖÃ DS ÇøÓò»ùµØÖ·
+; set_debug_store_area(): è®¾ç½® DS åŒºåŸŸåŸºåœ°å€
 ; input:
 ;       none
 ; output:
@@ -568,21 +568,21 @@ set_debug_store_area:
         push edx
         
         ;;
-        ;; ÉèÖÃ IA32_DS_AERA ¼Ä´æÆ÷
+        ;; è®¾ç½® IA32_DS_AERA å¯„å­˜å™¨
         ;;
 	mov ecx, IA32_DS_AREA
         mov eax, [gs: PCB.Base]
-        add eax, PCB.DSManageRecord                     ; DS ¹ÜÀí¼ÇÂ¼»ùÖ·
+        add eax, PCB.DSManageRecord                     ; DS ç®¡ç†è®°å½•åŸºå€
 	xor edx, edx
 	wrmsr
         
         ;;
-        ;; ¸üĞÂ debug ×´Ì¬
+        ;; æ›´æ–° debug çŠ¶æ€
         ;;
         or DWORD [gs: PCB.DebugStatus], DEBUG_STATUS_DS_READY
         
         ;;
-        ;; ÉèÖÃ DS ¹ÜÀí¼ÇÂ¼
+        ;; è®¾ç½® DS ç®¡ç†è®°å½•
         ;;
         call set_ds_management_record
         pop edx
@@ -591,14 +591,14 @@ set_debug_store_area:
 
 
 ;----------------------------------------------------------------
-; set_ds_management_record() ÉèÖÃ¹ÜÀíÇø¼ÇÂ¼
+; set_ds_management_record() è®¾ç½®ç®¡ç†åŒºè®°å½•
 ; input:
 ;       none
 ; output:
 ;       status code
-; ÃèÊö:
-;       È±Ê¡Çé¿öÏÂ£¬ÅäÖÃÎª»·ĞÎ»ØÂ· buffer ĞÎÊ½£¬
-;       threshold Öµ´óÓÚ maximum£¬±ÜÃâ²úÉú DS buffer Òç³öÖĞ¶Ï
+; æè¿°:
+;       ç¼ºçœæƒ…å†µä¸‹ï¼Œé…ç½®ä¸ºç¯å½¢å›è·¯ buffer å½¢å¼ï¼Œ
+;       threshold å€¼å¤§äº maximumï¼Œé¿å…äº§ç”Ÿ DS buffer æº¢å‡ºä¸­æ–­
 ;--------------------------------------------------------------------
 set_ds_management_record:
 	push ebx
@@ -606,27 +606,27 @@ set_ds_management_record:
         push edx
              
         ;;
-        ;; ³õÊ¼ debug ×´Ì¬
+        ;; åˆå§‹ debug çŠ¶æ€
         ;;
         mov edx, [gs: PCB.DebugStatus]
         and edx, ~(DEBUG_STATUS_BTS_READY | DEBUG_STATUS_PEBS_READY)
         mov [gs: PCB.DebugStatus], edx
         
         ;;
-        ;; ·ÖÅäÒ»¸ö BTS buffer£¬ÉèÖÃ BTS buffer Base Öµ
+        ;; åˆ†é…ä¸€ä¸ª BTS bufferï¼Œè®¾ç½® BTS buffer Base å€¼
         ;;
         call get_bts_buffer_base
         mov esi, eax
         test eax, eax
         mov eax, STATUS_NO_RESOURCE
-        jz set_ds_management_record.done                                ; ·ÖÅä BTS buffer Ê§°Ü
+        jz set_ds_management_record.done                                ; åˆ†é… BTS buffer å¤±è´¥
 
         ;;
-        ;; ÉèÖÃ bts ¹ÜÀí¼ÇÂ¼£¬³õÊ¼×´Ì¬ÏÂ£º
+        ;; è®¾ç½® bts ç®¡ç†è®°å½•ï¼Œåˆå§‹çŠ¶æ€ä¸‹ï¼š
         ;; 1) BTS base = BTS buffer
         ;; 2) BTS index = BTS buffer
         ;; 3) BTS maximum = BTS record size * maximum
-        ;; 4) BTS threshold = BTS maximum + BTS record size£¨¼´ BtsMaximum ÏÂÒ»Ìõ¼ÇÂ¼£©
+        ;; 4) BTS threshold = BTS maximum + BTS record sizeï¼ˆå³ BtsMaximum ä¸‹ä¸€æ¡è®°å½•ï¼‰
         ;;
         mov ebx, [gs: PCB.BtsBasePointer]
         mov [ebx], esi
@@ -637,12 +637,12 @@ set_ds_management_record:
         add eax, [ebx]
         mov ebx, [gs: PCB.BtsMaximumPointer]
         mov [ebx], eax
-        add eax, [gs: PCB.BtsRecordSize]                                ; Bts threshold Öµ = Bts maximum + 1
+        add eax, [gs: PCB.BtsRecordSize]                                ; Bts threshold å€¼ = Bts maximum + 1
         mov ebx, [gs: PCB.BtsThresholdPointer]
         mov [ebx], eax
       
         ;;
-        ;; ÉèÖÃ pebs ¹ÜÀí¼ÇÂ¼£¬³õÊ¼×´Ì¬ÏÂ£º
+        ;; è®¾ç½® pebs ç®¡ç†è®°å½•ï¼Œåˆå§‹çŠ¶æ€ä¸‹ï¼š
         ;; 1) PEBS base = PEBS buffer
         ;; 2) PEBS index = PEBS buffer
         ;; 3) PEBS maximum = PEBS record size * maximum
@@ -662,7 +662,7 @@ set_ds_management_record:
         mov [ebx], eax        
 
         ;;
-        ;; ¸üĞÂ debug ×´Ì¬
+        ;; æ›´æ–° debug çŠ¶æ€
         ;;
         test edx, DEBUG_STATUS_DS_READY
         mov eax, STATUS_DS_NOT_READY
@@ -674,7 +674,7 @@ set_ds_management_record:
         
 set_ds_management_record.done:	
         ;;
-        ;; Çå PEBS buffer Òç³öÖ¸Ê¾Î» OvfBuffer
+        ;; æ¸… PEBS buffer æº¢å‡ºæŒ‡ç¤ºä½ OvfBuffer
         ;;
         RESET_PEBS_BUFFER_OVERFLOW
         
@@ -688,7 +688,7 @@ set_ds_management_record.done:
 
 
 ;--------------------------------------------------------------
-; check_bts_buffer_overflow(): ¼ì²éÊÇ·ñ·¢Éú BTS buffer Òç³ö
+; check_bts_buffer_overflow(): æ£€æŸ¥æ˜¯å¦å‘ç”Ÿ BTS buffer æº¢å‡º
 ; input:
 ;       none
 ; output:
@@ -697,18 +697,18 @@ set_ds_management_record.done:
 test_bts_buffer_overflow:
 check_bts_buffer_overflow:
         mov eax, [gs: PCB.BtsIndexPointer]
-        mov eax, [eax]                          ; ¶Á BTS index Öµ
+        mov eax, [eax]                          ; è¯» BTS index å€¼
         mov esi, [gs: PCB.BtsThresholdPointer]
-        cmp eax, [esi]                          ; ±È½Ï index >= threshold ?
+        cmp eax, [esi]                          ; æ¯”è¾ƒ index >= threshold ?
         setae al
         movzx eax, al
         ret
 
 
 ;-----------------------------------------
-; set_bts_buffer_size(): ÉèÖÃ BTS buffer ¼ÇÂ¼Êı
+; set_bts_buffer_size(): è®¾ç½® BTS buffer è®°å½•æ•°
 ; input:
-;       esi - BTS buffer ÈİÄÉµÄ¼ÇÂ¼Êı
+;       esi - BTS buffer å®¹çº³çš„è®°å½•æ•°
 ;-----------------------------------------
 set_bts_buffer_size:
         push ecx
@@ -717,26 +717,26 @@ set_bts_buffer_size:
         mov ecx, [gs: PCB.BtsRecordSize]
         
         ;;
-        ;; ÉèÖÃ bts maximum Öµ
+        ;; è®¾ç½® bts maximum å€¼
         ;;                
         imul esi, ecx                           ; count * sizeof(bts_record)
         mov edx, [gs: PCB.BtsMaximumPointer]
         mov ebx, [gs: PCB.BtsBasePointer]
-        mov eax, [ebx]                          ; ¶ÁÈ¡ BTS base Öµ
+        mov eax, [ebx]                          ; è¯»å– BTS base å€¼
         add esi, eax                            ; base + buffer size
-        mov [edx], esi                          ; ÉèÖÃ bts maximum Öµ
+        mov [edx], esi                          ; è®¾ç½® bts maximum å€¼
 
         ;;
-        ;; ¼ì²é bts index Öµ
+        ;; æ£€æŸ¥ bts index å€¼
         ;;
         mov edi, [gs: PCB.BtsIndexPointer]
         mov eax, [edi]
-        cmp eax, esi                          ; Èç¹û index > maximum 
+        cmp eax, esi                          ; å¦‚æœ index > maximum 
         cmovae eax, [ebx]
         mov [edi], eax
         
         ;;
-        ;; ÉèÖÃ bts threshold Öµ
+        ;; è®¾ç½® bts threshold å€¼
         ;;
         add esi, ecx
         mov eax, [gs: PCB.DebugStatus]
@@ -753,9 +753,9 @@ set_bts_buffer_size:
 
 
 ;--------------------------------------------------
-; set_pebs_buffer_size(): ÉèÖÃ PEBS buffer ¿ÉÈİÄÉÊı
+; set_pebs_buffer_size(): è®¾ç½® PEBS buffer å¯å®¹çº³æ•°
 ; input:
-;       esi - PEBS buffer ÈİÄÉµÄ¼ÇÂ¼Êı
+;       esi - PEBS buffer å®¹çº³çš„è®°å½•æ•°
 ;---------------------------------------------------
 set_pebs_buffer_size:
         push ecx
@@ -777,7 +777,7 @@ set_pebs_buffer_size:
 
 
 ;----------------------------------------------
-; reset_bts_index(): ÖØÖÃ BTS index Îª base Öµ
+; reset_bts_index(): é‡ç½® BTS index ä¸º base å€¼
 ; input:
 ;       none
 ; output:
@@ -786,13 +786,13 @@ set_pebs_buffer_size:
 reset_bts_index:
         mov edi, [gs: PCB.BtsIndexPointer]
         mov esi, [gs: PCB.BtsBasePointer]
-        mov esi, [esi]                                  ; ¶ÁÈ¡ BTS base Öµ
+        mov esi, [esi]                                  ; è¯»å– BTS base å€¼
         mov [edi], esi                                  ; BTS index = BTS base
         ret
 
 
 ;----------------------------------------------
-; reset_pebs_index()£ºÖØÖÃ PEBS index ÖµÎª base
+; reset_pebs_index()ï¼šé‡ç½® PEBS index å€¼ä¸º base
 ; input:
 ;       none
 ; output:
@@ -801,31 +801,31 @@ reset_bts_index:
 reset_pebs_index:
         mov edi, [gs: PCB.PebsIndexPointer]       
         mov esi, [gs: PCB.PebsBasePointer]
-        mov esi, [esi]                                  ; ¶ÁÈ¡ PEBS base Öµ
+        mov esi, [esi]                                  ; è¯»å– PEBS base å€¼
         mov [edi], esi                                  ; PEBS index = PEBS base
-        mov [gs: PCB.PebsBufferIndex], esi              ; ¸üĞÂ±£´æµÄ PEBS index Öµ
+        mov [gs: PCB.PebsBufferIndex], esi              ; æ›´æ–°ä¿å­˜çš„ PEBS index å€¼
         ret
 
 
 ;------------------------------------------------------------
-; update_pebs_index_track(): ¸üĞÂPEBS index µÄ¹ì¼£
+; update_pebs_index_track(): æ›´æ–°PEBS index çš„è½¨è¿¹
 ; input:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       ¸üĞÂ [gs: PCB.PebsBufferIndex]±äÁ¿µÄÖµ£¬±£³Ö¼ì²â PEBS ÖĞ¶Ï
-;       [gs: PCB.PebsBufferIndex] ¼ÇÂ¼×Å¡°µ±Ç°¡±µÄ PEBS index Öµ
+; æè¿°ï¼š
+;       æ›´æ–° [gs: PCB.PebsBufferIndex]å˜é‡çš„å€¼ï¼Œä¿æŒæ£€æµ‹ PEBS ä¸­æ–­
+;       [gs: PCB.PebsBufferIndex] è®°å½•ç€â€œå½“å‰â€çš„ PEBS index å€¼
 ;------------------------------------------------------------
 update_pebs_index_track:
         mov eax, [gs: PCB.PebsIndexPointer]
-        mov eax, [eax]                                  ; ¶Áµ±Ç° pebs index Öµ
-        mov [gs: PCB.PebsBufferIndex], eax              ; ¸üĞÂ±£´æµÄ pebs index Öµ        
+        mov eax, [eax]                                  ; è¯»å½“å‰ pebs index å€¼
+        mov [gs: PCB.PebsBufferIndex], eax              ; æ›´æ–°ä¿å­˜çš„ pebs index å€¼        
         ret
 
 
 ;------------------------------------------
-; get_bts_base(): ¶ÁÈ¡ BTS buffer base Öµ
+; get_bts_base(): è¯»å– BTS buffer base å€¼
 ; output:
 ;       eax - BTS base
 ;-------------------------------------------
@@ -836,7 +836,7 @@ get_bts_base:
 
 
 ;------------------------------------------
-; get_bts_index(): ¶ÁÈ¡ BTS buffer index Öµ
+; get_bts_index(): è¯»å– BTS buffer index å€¼
 ; output:
 ;       eax - BTS index
 ;-------------------------------------------
@@ -846,7 +846,7 @@ get_bts_index:
 	ret
 
 ;------------------------------------------
-; get_bts_maximum(): ¶ÁÈ¡ BTS buffer maximum Öµ
+; get_bts_maximum(): è¯»å– BTS buffer maximum å€¼
 ; output:
 ;       eax - BTS maximum
 ;-------------------------------------------
@@ -856,7 +856,7 @@ get_bts_maximum:
 	ret
 
 ;----------------------------------------------------
-; get_bts_threshold(): ¶ÁÈ¡ BTS buffer thresholdÖµ
+; get_bts_threshold(): è¯»å– BTS buffer thresholdå€¼
 ; output:
 ;       eax - BTS threshold
 ;----------------------------------------------------
@@ -867,7 +867,7 @@ get_bts_threshold:
 
 
 ;-------------------------------------------
-; set_bts_index(): ÉèÖÃ BTS index Öµ
+; set_bts_index(): è®¾ç½® BTS index å€¼
 ; input:
 ;       esi - BTS index
 ;-------------------------------------------
@@ -880,7 +880,7 @@ set_bts_index:
 ;---------------------------------------------------------
 ; get_last_pebs_record_pointer()
 ; output:
-;       eax - PEBS ¼ÇÂ¼µÄµØÖ·Öµ£¬·µ»Ø 0 Ê±±íÊ¾ÎŞ PEBS ¼ÇÂ¼
+;       eax - PEBS è®°å½•çš„åœ°å€å€¼ï¼Œè¿”å› 0 æ—¶è¡¨ç¤ºæ—  PEBS è®°å½•
 ;----------------------------------------------------------
 get_last_pebs_record_pointer:
         mov eax, [gs: PCB.PebsIndexPointer]

@@ -1,6 +1,6 @@
 ;*************************************************
 ;* system_manage_region.inc                      *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -76,7 +76,7 @@
 %define PERF_STATUS_PEBS_ENABLE                 2
 
 ;;
-;; ¶ÔÓ¦ÓÚ CPUID.01H:ECX ±êÖ¾Î» 
+;; å¯¹åº”äº CPUID.01H:ECX æ ‡å¿—ä½ 
 ;;
 %define CPU_FLAGS_SSE3                          1
 %define CPU_FLAGS_GFMUL                         2
@@ -109,7 +109,7 @@
 %define CPU_FLAGS_RDRAND                        40000000h
 
 ;;
-;; ¶ÔÓ¦ÓÚ CPUID.01H:EDX ±êÖ¾Î»
+;; å¯¹åº”äº CPUID.01H:EDX æ ‡å¿—ä½
 ;;
 %define CPU_FLAGS_FPU                           1
 %define CPU_FLAGS_VME                           2
@@ -143,19 +143,19 @@
 
 
 ;;
-;; ×î´óÖ§³Ö 16 ¸ö cpu
+;; æœ€å¤§æ”¯æŒ 16 ä¸ª cpu
 ;;
 CPU_COUNT_MAX                           EQU     16
 
 
 ;;
-;; Ã¿¸ö CPU µÄ GDT ´óĞ¡
+;; æ¯ä¸ª CPU çš„ GDT å¤§å°
 ;;
 GDT_TABLE_SIZE                          EQU     100h
 
 
 ;;
-;; selector ³£Á¿
+;; selector å¸¸é‡
 ;;
 KernelCsSelector64                      EQU     08h
 KernelSsSelector64                      EQU     10h
@@ -172,13 +172,13 @@ NextSelector                            EQU     68h
 
 
 ;;
-;; ĞéÄâ»úÄÚ´æ domain ³Ø£¬Ã¿¸öĞéÄâ»úµÄÎïÀíÄÚ´æ´ÓÕâ¸ö domain ³ØÖĞ·ÖÅä
-;; 1£©domain pool ÎïÀí»ùÖ·Îª 0800_0000h
-;; 2£©Ã¿¸ö domain Îª 8M
+;; è™šæ‹Ÿæœºå†…å­˜ domain æ± ï¼Œæ¯ä¸ªè™šæ‹Ÿæœºçš„ç‰©ç†å†…å­˜ä»è¿™ä¸ª domain æ± ä¸­åˆ†é…
+;; 1ï¼‰domain pool ç‰©ç†åŸºå€ä¸º 0800_0000h
+;; 2ï¼‰æ¯ä¸ª domain ä¸º 8M
 ;;
-;; Ê¾Àı£º
-;; VM1 domain: 0800_0000h µ½ 087F_FFFFh
-;; VM2 domain: 0880_0000h µ½ 08FF_FFFFh
+;; ç¤ºä¾‹ï¼š
+;; VM1 domain: 0800_0000h åˆ° 087F_FFFFh
+;; VM2 domain: 0880_0000h åˆ° 08FF_FFFFh
 ;; ... ...
 ;;
 DOMAIN_SIZE                             EQU     (8 * 100000h)
@@ -192,44 +192,44 @@ DOMAIN_POOL_SIZE                        EQU     8000000h
 
 
 ;;*
-;;* ¶¨Òå Processor Control Block ½á¹¹£¬Ê¹ÓÃÓÚ gs ½øĞĞÎ¬»¤ 
+;;* å®šä¹‰ Processor Control Block ç»“æ„ï¼Œä½¿ç”¨äº gs è¿›è¡Œç»´æŠ¤ 
 ;*
-;;* ËµÃ÷£º
-;;* 1) Ã¿¸ö logical processor ÓĞ×Ô¼ºµÄÒ»·İ PCB Êı¾İ£¬×Ü¹²ÈİÄÉ 16 ¸ö logical processor
-;;* 2) Ã¿·İ PCB Êı¾İ¹² 4K size
-;;* 3) ÔÚ legacy Ä£Ê½ÏÂÊ¹ÓÃ 32 Î»Êı¾İ£¬ÔÚ long Ä£Ê½ÏÂ¸üĞÂÎª 64 Î»Êı¾İ
-;;* 4) ´ó¶àÊıÊı¾İ¶¨ÒåÎª 64 Î»¿í£¨QWORDÀàĞÍ£©£¬ÔÚ legacy Ä£Ê½ÏÂÊ¹ÓÃµÍ 32£¬long Ä£Ê½ÏÂÊ¹ÓÃ full-width
+;;* è¯´æ˜ï¼š
+;;* 1) æ¯ä¸ª logical processor æœ‰è‡ªå·±çš„ä¸€ä»½ PCB æ•°æ®ï¼Œæ€»å…±å®¹çº³ 16 ä¸ª logical processor
+;;* 2) æ¯ä»½ PCB æ•°æ®å…± 4K size
+;;* 3) åœ¨ legacy æ¨¡å¼ä¸‹ä½¿ç”¨ 32 ä½æ•°æ®ï¼Œåœ¨ long æ¨¡å¼ä¸‹æ›´æ–°ä¸º 64 ä½æ•°æ®
+;;* 4) å¤§å¤šæ•°æ•°æ®å®šä¹‰ä¸º 64 ä½å®½ï¼ˆQWORDç±»å‹ï¼‰ï¼Œåœ¨ legacy æ¨¡å¼ä¸‹ä½¿ç”¨ä½ 32ï¼Œlong æ¨¡å¼ä¸‹ä½¿ç”¨ full-width
 ;;* 
 
 
 struc PCB
         ;;
-        ;; ÏµÍ³¹ÜÀíÇøÓò»ùÖ·, gs:[0] È¡µÃ PCB ¹ÜÀíÇø»ùÖ·£¬Õâ¸ö»ùÖ·ÊÇ virtual address
-        ;; ¶ø PhysicalBase ¼ÇÂ¼×ÅÎïÀíµØÖ·!
+        ;; ç³»ç»Ÿç®¡ç†åŒºåŸŸåŸºå€, gs:[0] å–å¾— PCB ç®¡ç†åŒºåŸºå€ï¼Œè¿™ä¸ªåŸºå€æ˜¯ virtual address
+        ;; è€Œ PhysicalBase è®°å½•ç€ç‰©ç†åœ°å€!
         ;;
-        .Base                   RESQ            1               ; ±£´æ PCB »ùÖ·
-        .PhysicalBase           RESQ            1               ; PCB ÎïÀí»ùÖ·
+        .Base                   RESQ            1               ; ä¿å­˜ PCB åŸºå€
+        .PhysicalBase           RESQ            1               ; PCB ç‰©ç†åŸºå€
         .Size                   RESD            1               ; PCB size
-        .SdaBase                RESQ            1               ; Ö¸ÏòÏµÍ³Êı¾İÇøÓò
-        .SdaPhysicalBase        RESQ            1               ; SDA ÎïÀíµØÖ·
-        .SrtBase                RESQ            1               ; Ö¸ÏòÏµÍ³·şÎñÀı³Ì±íÇøÓò
-        .SrtPhysicalBase        RESQ            1               ; SRT ÎïÀíµØÖ·
-        .LsbBase                RESQ            1               ; Ö¸Ïò±¾µØ´æ´¢¿é
-        .LsbPhysicalBase        RESQ            1               ; LSB ÎïÀíµØÖ·
-        .ReturnStackPointer     RESQ            1               ; Ö¸Ïò ReturnStack
+        .SdaBase                RESQ            1               ; æŒ‡å‘ç³»ç»Ÿæ•°æ®åŒºåŸŸ
+        .SdaPhysicalBase        RESQ            1               ; SDA ç‰©ç†åœ°å€
+        .SrtBase                RESQ            1               ; æŒ‡å‘ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹è¡¨åŒºåŸŸ
+        .SrtPhysicalBase        RESQ            1               ; SRT ç‰©ç†åœ°å€
+        .LsbBase                RESQ            1               ; æŒ‡å‘æœ¬åœ°å­˜å‚¨å—
+        .LsbPhysicalBase        RESQ            1               ; LSB ç‰©ç†åœ°å€
+        .ReturnStackPointer     RESQ            1               ; æŒ‡å‘ ReturnStack
         .PptPhysicalBase        RESQ            1
 
         ALIGNB 16
         .Ppt                    RESQ            4
 
         ;;
-        ;; ´¦ÀíÆ÷ÄÚ´æ domain ·¶Î§ 
+        ;; å¤„ç†å™¨å†…å­˜ domain èŒƒå›´ 
         ;;        
-        .Domain                 RESQ            1               ; ÄÚ´æ domain
-        .DomainTop              RESQ            1               ; domain ¶¥²¿
+        .Domain                 RESQ            1               ; å†…å­˜ domain
+        .DomainTop              RESQ            1               ; domain é¡¶éƒ¨
 
         ;;
-        ;; µ±Ç°ÓëÉÏÒ»¸öÓÅÏÈ¼¶£¬ÓÃÓÚ¹ÜÀíÖĞ¶Ï
+        ;; å½“å‰ä¸ä¸Šä¸€ä¸ªä¼˜å…ˆçº§ï¼Œç”¨äºç®¡ç†ä¸­æ–­
         ;;
         .CurrentTpl             RESD            1
         .PrevTpl                RESD            1
@@ -237,45 +237,45 @@ struc PCB
 
         ALIGNB 4
         ;;
-        ;; IPI ÖĞ¶ÏÖ´ĞĞµÄ routine Èë¿Ú
+        ;; IPI ä¸­æ–­æ‰§è¡Œçš„ routine å…¥å£
         ;;
         .IpiRoutinePointer      RESQ            1
         .IpiRoutineParameter    RESQ            1
         .IpiRoutineBottomHalf   RESQ            1
 
         ;;
-        ;; idle loop routine Èë¿Ú
+        ;; idle loop routine å…¥å£
         ;;
         .IdleLoopRoutine        RESQ            1
 
 
 
         ;;
-        ;; ¼ÇÂ¼×îºóÒ»´Î status code
+        ;; è®°å½•æœ€åä¸€æ¬¡ status code
         ;;
         .LastStatusCode         RESD            1
 
         ;;
-        ;; ¼ÇÂ¼´¦ÀíÆ÷·¢ÉúµÄ exception Î»Í¼
-        ;; 1) Òì³£·¢Éúºó ExceptionBitMask ÏàÓ¦Î»ÖÃÎ»
+        ;; è®°å½•å¤„ç†å™¨å‘ç”Ÿçš„ exception ä½å›¾
+        ;; 1) å¼‚å¸¸å‘ç”Ÿå ExceptionBitMask ç›¸åº”ä½ç½®ä½
         ;;
         .ExceptionBitMask       RESD            1
 
 
         ;;
-        ;; ¼ÇÂ¼ VMX µÄ VMXON pointer
+        ;; è®°å½• VMX çš„ VMXON pointer
         ;;
         .VmxonPointer           RESQ            1
         .VmxonPhysicalPointer   RESQ            1
 
         ;;
-        ;; ¼ÇÂ¼µ±Ç° VMCS region pointer
+        ;; è®°å½•å½“å‰ VMCS region pointer
         ;;
         .VmcsPointer            RESQ            1
         .VmcsPhysicalPointer    RESQ            1
         
         ;;
-        ;; ¼ÇÂ¼ 4 ¸ö VMCS ¹ÜÀíÖ¸Õë£¬Ö¸Ïò VMCS_MANAGE_BLOCK
+        ;; è®°å½• 4 ä¸ª VMCS ç®¡ç†æŒ‡é’ˆï¼ŒæŒ‡å‘ VMCS_MANAGE_BLOCK
         ;;
         .VmcsA                  RESQ            1
         .VmcsB                  RESQ            1
@@ -284,7 +284,7 @@ struc PCB
         .CurrentVmbPointer      RESQ            1
 
         ;;
-        ;; guest ¶ÓÁĞ¹ÜÀí¼ÇÂ¼
+        ;; guest é˜Ÿåˆ—ç®¡ç†è®°å½•
         ;;
         .GuestRunningQueue      RESQ            1
         .GuestReadyQueue        RESQ            1
@@ -295,7 +295,7 @@ struc PCB
 
         ALIGNB 8
         ;;
-        ;; Ã¿¸ö logical processor Ö§³Ö 4 ¸ö VMCS_MANAGE_BLOCK ½á¹¹
+        ;; æ¯ä¸ª logical processor æ”¯æŒ 4 ä¸ª VMCS_MANAGE_BLOCK ç»“æ„
         ;;
         .GuestA                 RESB            VMCS_MANAGE_BLOCK_SIZE
         .GuestB                 RESB            VMCS_MANAGE_BLOCK_SIZE
@@ -304,7 +304,7 @@ struc PCB
 
         ALIGNB 8
         ;;
-        ;; VMM ¹ÜÀí¼ÇÂ¼
+        ;; VMM ç®¡ç†è®°å½•
         ;;
         .VmmStack               RESQ            1
         .VmmMsrLoadAddress      RESQ            1
@@ -312,12 +312,12 @@ struc PCB
 
 
         ;;
-        ;; Guest flag Öµ£¬¼ÇÂ¼ÊÇ·ñ´¦ÓÚ Guest
+        ;; Guest flag å€¼ï¼Œè®°å½•æ˜¯å¦å¤„äº Guest
         ;;
         .EptEnableFlag          RESB            1
         
         ;;
-        ;; ##### ÏÂÃæÊÇ VMCS buffer¡¡#######
+        ;; ##### ä¸‹é¢æ˜¯ VMCS bufferã€€#######
         ;;
         .GuestStateBuf          RESB            GUEST_STATE_SIZE
         .HostStateBuf           RESB            HOST_STATE_SIZE
@@ -327,7 +327,7 @@ struc PCB
         .ExitInfoBuf            RESB            EXIT_INFO_SIZE
 
         ;;
-        ;; #### ÏÂÃæÊÇ VM-exit ĞÅÏ¢ buffer #####
+        ;; #### ä¸‹é¢æ˜¯ VM-exit ä¿¡æ¯ buffer #####
         ;;
         .GuestExitInfo          RESB            100h
         
@@ -337,9 +337,9 @@ struc PCB
 
 
         ;;
-        ;; GDT ±í selector
+        ;; GDT è¡¨ selector
         ;;
-        ;; GS ÓÃÓÚ¹ÜÀí PCB ÇøÓò£¬FS ÓÃÓÚ¹ÜÀí SDA ÇøÓò
+        ;; GS ç”¨äºç®¡ç† PCB åŒºåŸŸï¼ŒFS ç”¨äºç®¡ç† SDA åŒºåŸŸ
         ;;
         .GsSelector             RESW            1
         .TssSelector            RESW            1
@@ -349,92 +349,92 @@ struc PCB
         ALIGNB 4
 
         ;;
-        ;; Task Status Segment ¹ÜÀíÊı¾İ
+        ;; Task Status Segment ç®¡ç†æ•°æ®
         ;;
-        .TssBase                RESQ            1               ; ¼ÇÂ¼ TSS ¿éµÄ»ùÖ·
-        .TssPhysicalBase        RESQ            1               ; ¼ÇÂ¼ TSS ¿éÎïÀíµØÖ·
+        .TssBase                RESQ            1               ; è®°å½• TSS å—çš„åŸºå€
+        .TssPhysicalBase        RESQ            1               ; è®°å½• TSS å—ç‰©ç†åœ°å€
         .TssLimit               RESD            1               ; Tss limit
-        .IomapBase              RESQ            1               ; ¼ÇÂ¼ IOMAP ¿éµØÖ·
-        .IomapPhysicalBase      RESQ            1               ; ¼ÇÂ¼ IOMAP ¿éÎïÀíµØÖ·
+        .IomapBase              RESQ            1               ; è®°å½• IOMAP å—åœ°å€
+        .IomapPhysicalBase      RESQ            1               ; è®°å½• IOMAP å—ç‰©ç†åœ°å€
 
-        .GdtPointer             RESQ            1               ; ¼ÇÂ¼ GDT µØÖ· 
+        .GdtPointer             RESQ            1               ; è®°å½• GDT åœ°å€ 
         
         ;;
-        ;; Local Descriptor Table ¹ÜÀíÊı¾İ
+        ;; Local Descriptor Table ç®¡ç†æ•°æ®
         ;;
-        .LdtBase                RESQ            1               ; ¼ÇÂ¼ LDT ±í»ùÖ·
-        .LdtLimit               RESD            1               ; Ldt ±í limit
-        .LdtTop                 RESQ            1               ; ¼ÇÂ¼ LDT ±íµÄ¶¥ÉÏµØÖ·
-        .CurrentLdtBase         RESQ            1               ; ¼ÇÂ¼µ±Ç°µÄ LDT ±íµØÖ·        
-
-
-
-        ;;
-        ;; stack pointer ¼ÇÂ¼
-        ;;
-        .KernelStack            RESQ            1               ; kernel ´úÂëÊ¹ÓÃ
-        .UserStack              RESQ            1               ; user ´úÂëÊ¹ÓÃ
-        .SystemServiceStack     RESQ            1               ; ÖĞ¶Ï·şÎñÀı³ÌÊ¹ÓÃ
-        .FastSystemServiceStack RESQ            1               ; ¿ìËÙµ÷ÓÃ·şÎñÀı³ÌÊ¹ÓÃ
+        .LdtBase                RESQ            1               ; è®°å½• LDT è¡¨åŸºå€
+        .LdtLimit               RESD            1               ; Ldt è¡¨ limit
+        .LdtTop                 RESQ            1               ; è®°å½• LDT è¡¨çš„é¡¶ä¸Šåœ°å€
+        .CurrentLdtBase         RESQ            1               ; è®°å½•å½“å‰çš„ LDT è¡¨åœ°å€        
 
 
 
         ;;
-        ;; context ÇøÓòÖ¸Õë
+        ;; stack pointer è®°å½•
+        ;;
+        .KernelStack            RESQ            1               ; kernel ä»£ç ä½¿ç”¨
+        .UserStack              RESQ            1               ; user ä»£ç ä½¿ç”¨
+        .SystemServiceStack     RESQ            1               ; ä¸­æ–­æœåŠ¡ä¾‹ç¨‹ä½¿ç”¨
+        .FastSystemServiceStack RESQ            1               ; å¿«é€Ÿè°ƒç”¨æœåŠ¡ä¾‹ç¨‹ä½¿ç”¨
+
+
+
+        ;;
+        ;; context åŒºåŸŸæŒ‡é’ˆ
         ;;
         .ContextBase            RESQ            1
         .XMMStateImageBase      RESQ            1
 
 
         ;;
-        ;; memory type ¹ÜÀí
+        ;; memory type ç®¡ç†
         ;;
-        .MemTypeRecordMaximum   RESD            1               ; ¼ÇÂ¼ÄÚ´æÀàĞÍ¹ÜÀí¼ÇÂ¼×î´óÏî
-        .MemTypeRecordTop       RESD            1               ; ¼ÇÂ¼ÄÚ´æÀàĞÍ¹ÜÀí¼ÇÂ¼¶¥
+        .MemTypeRecordMaximum   RESD            1               ; è®°å½•å†…å­˜ç±»å‹ç®¡ç†è®°å½•æœ€å¤§é¡¹
+        .MemTypeRecordTop       RESD            1               ; è®°å½•å†…å­˜ç±»å‹ç®¡ç†è®°å½•é¡¶
         .MemTypeRecord          RESB            (MTMR_SIZE * 10)
 
 
         ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         ;$                                                     $
-        ;$                  ÏÂÃæÊÇ´¦ÀíÆ÷ĞÅÏ¢¿é                  $       
+        ;$                  ä¸‹é¢æ˜¯å¤„ç†å™¨ä¿¡æ¯å—                  $       
         ;$                                                     $
         ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-        .Vendor                 RESD            1               ; ´¦ÀíÆ÷µÄ³§ÉÌ
+        .Vendor                 RESD            1               ; å¤„ç†å™¨çš„å‚å•†
 
         ;;
-        ;; ¼ÇÂ¼´¦ÀíÆ÷µÄÆµÂÊ,µ¥Î» MHz¡£¼´£ºÃ¿´Î/us£¨Ã¿usÄÚticks´ÎÊı£©!
-        ;; 1) ProcessorFrequency: ´¦ÀíÆ÷ÏÔÊ¾³öÀ´µÄÆµÂÊ
-        ;; 2) TicksFrequency: ²âÁ¿³öÀ´µÄ´¦ÀíÆ÷ÆµÂÊ
-        ;; ×¢Òâ:
-        ;; 1) ProcessorFrequency Óë TicksFrequency ÓĞĞ©Æ«²î£¬»ùÓÚ³Ë³ıÔËËãÏÂ£¬»á²úÉúÎó²î
-        ;; 2) ProcessorFrequency ÉÔÎ¢±È TicksFrequency ´ó
-        ;; 2.1) ÔÚÒ»Ì¨ 2.4GHz ´¦ÀíÆ÷ÉÏ£¬ProcessorFrequency µÄÖµÎª 2400
-        ;; 2.2) ÄÇÃ´ TicksFrequency µÄÖµ´óÔ¼Îª 2394
+        ;; è®°å½•å¤„ç†å™¨çš„é¢‘ç‡,å•ä½ MHzã€‚å³ï¼šæ¯æ¬¡/usï¼ˆæ¯uså†…ticksæ¬¡æ•°ï¼‰!
+        ;; 1) ProcessorFrequency: å¤„ç†å™¨æ˜¾ç¤ºå‡ºæ¥çš„é¢‘ç‡
+        ;; 2) TicksFrequency: æµ‹é‡å‡ºæ¥çš„å¤„ç†å™¨é¢‘ç‡
+        ;; æ³¨æ„:
+        ;; 1) ProcessorFrequency ä¸ TicksFrequency æœ‰äº›åå·®ï¼ŒåŸºäºä¹˜é™¤è¿ç®—ä¸‹ï¼Œä¼šäº§ç”Ÿè¯¯å·®
+        ;; 2) ProcessorFrequency ç¨å¾®æ¯” TicksFrequency å¤§
+        ;; 2.1) åœ¨ä¸€å° 2.4GHz å¤„ç†å™¨ä¸Šï¼ŒProcessorFrequency çš„å€¼ä¸º 2400
+        ;; 2.2) é‚£ä¹ˆ TicksFrequency çš„å€¼å¤§çº¦ä¸º 2394
         ;;
 
-        .ProcessorFrequency     RESD            1               ; ´¦ÀíÆ÷ core ÆµÂÊ£¬
-        .TicksFrequency         RESD            1               ; ÕâÊ±²âÁ¿³öÀ´µÄ ticks ÆµÂÊÊı
+        .ProcessorFrequency     RESD            1               ; å¤„ç†å™¨ core é¢‘ç‡ï¼Œ
+        .TicksFrequency         RESD            1               ; è¿™æ—¶æµ‹é‡å‡ºæ¥çš„ ticks é¢‘ç‡æ•°
 
-        .LapicTimerFrequency    RESD            1               ; local timer µÄ¼ÆÊıÆµÂÊ£¬µ¥Î»Îª us
+        .LapicTimerFrequency    RESD            1               ; local timer çš„è®¡æ•°é¢‘ç‡ï¼Œå•ä½ä¸º us
 
-
-        ;;
-        ;; ´¦ÀíÆ÷×î´ó CPUID leaf ºÅ
-        ;;
-        .MaxBasicLeaf           RESD            1               ; ×î´ó»ù±¾Ò¶ºÅ
-        .MaxExtendedLeaf        RESD            1               ; ×î´óÀ©Õ¹Ò¶ºÅ
 
         ;;
-        ;; ´¦ÀíÆ÷»ù±¾ĞÅÏ¢
+        ;; å¤„ç†å™¨æœ€å¤§ CPUID leaf å·
         ;;
-        .CacheLineSize          RESD            1               ; cache line£¨×Ö½Úµ¥Î»£©
+        .MaxBasicLeaf           RESD            1               ; æœ€å¤§åŸºæœ¬å¶å·
+        .MaxExtendedLeaf        RESD            1               ; æœ€å¤§æ‰©å±•å¶å·
 
         ;;
-        ;; ´¦ÀíÆ÷ĞÍºÅĞÅÏ¢
+        ;; å¤„ç†å™¨åŸºæœ¬ä¿¡æ¯
         ;;
-        .DisplayModel           RESB            1               ; ĞÍºÅ
-        .DisplayFamily          RESB            1               ; ¼Ò×åºÅ
+        .CacheLineSize          RESD            1               ; cache lineï¼ˆå­—èŠ‚å•ä½ï¼‰
+
+        ;;
+        ;; å¤„ç†å™¨å‹å·ä¿¡æ¯
+        ;;
+        .DisplayModel           RESB            1               ; å‹å·
+        .DisplayFamily          RESB            1               ; å®¶æ—å·
         
         ALIGNB 4
 
@@ -532,120 +532,120 @@ struc PCB
 
 
         ;;
-        ;; »ù±¾À©Õ¹ĞÅÏ¢
+        ;; åŸºæœ¬æ‰©å±•ä¿¡æ¯
         ;;
         .ExtendedFeatureEcx     RESD            1               ; CPUID.80000001H:ECX
         .ExtendedFeatureEdx     RESD            1               ; CPUID.80000001H:EDX
 
-        .MaxPhysicalAddr        RESD            1               ; ×î´óµÄÎïÀíµØÖ·¿í¶È
-        .MaxVirtualAddr         RESD            1               ; ×î´óµÄĞéÄâµØÖ·¿í¶È
+        .MaxPhysicalAddr        RESD            1               ; æœ€å¤§çš„ç‰©ç†åœ°å€å®½åº¦
+        .MaxVirtualAddr         RESD            1               ; æœ€å¤§çš„è™šæ‹Ÿåœ°å€å®½åº¦
 
         ;;
-        ;; SSE Ö¸ÁîÖ§³Ö level, ·Ö±ğÎª£º
-        ;; 1) 0000h - ²»Ö§³Ö
+        ;; SSE æŒ‡ä»¤æ”¯æŒ level, åˆ†åˆ«ä¸ºï¼š
+        ;; 1) 0000h - ä¸æ”¯æŒ
         ;; 2) 0100h - SSE
         ;; 3) 0200h - SSE2
         ;; 4) 0300h - SSE3,     0301h - SSSE3
         ;; 5) 0401h - SSE4.1,   0402h - SSE4.2
         ;;
-        .SSELevel               RESD            1               ; Ö¸Ê¾Ö§³ÖÄÄ¸ö¼¶±ğµÄ SSE Ö¸Áî
+        .SSELevel               RESD            1               ; æŒ‡ç¤ºæ”¯æŒå“ªä¸ªçº§åˆ«çš„ SSE æŒ‡ä»¤
 
 
 
         ;;
-        ;; MAXPHYADDR = 32 Ê±£ºselect mask = 00000000_FFFFFFFFh
-        ;; MAXPHYADDR = 36 Ê±: select mask = 0000000F_FFFFFFFFh
-        ;; MAXPHYADDR = 40 Ê±: select mask = 000000FF_FFFFFFFFh
-        ;; MAXPHYADDR = 52 Ê±£ºselect mask = 000FFFFF_FFFFFFFFh
+        ;; MAXPHYADDR = 32 æ—¶ï¼šselect mask = 00000000_FFFFFFFFh
+        ;; MAXPHYADDR = 36 æ—¶: select mask = 0000000F_FFFFFFFFh
+        ;; MAXPHYADDR = 40 æ—¶: select mask = 000000FF_FFFFFFFFh
+        ;; MAXPHYADDR = 52 æ—¶ï¼šselect mask = 000FFFFF_FFFFFFFFh
         ;;
-        .MaxPhyAddrSelectMask   RESQ            1               ; ×î´óÎïÀíµØÖ·µÄ mask Î»
+        .MaxPhyAddrSelectMask   RESQ            1               ; æœ€å¤§ç‰©ç†åœ°å€çš„ mask ä½
 
-
-
-        ;;
-        ;; ´¦ÀíÆ÷ ID£¬APIC ÒÔ¼°¶àÏß³ÌÏà¹ØĞÅÏ¢
-        ;;
-        .LapicVersion           RESD            1               ; local APIC °æ±¾
-        .InitialApicId          RESD            1               ; ´¦ÀíÆ÷³õÊ¼ ID
-        .ApicId                 RESD            1               ; ´¦ÀíÆ÷ ID
-        .LogicalId              RESD            1               ; ´¦ÀíÆ÷Âß¼­ ID
-        .MaxLogicalProcessor    RESD            1               ; package ÄÚ×î´óÂß¼­´¦ÀíÆ÷Êı
-        .MaxProcessorCore       RESD            1               ; package ÄÚ×î´ó core Êı
-        .ProcessorIndex         RESD            1               ; ´¦ÀíÆ÷±àºÅ #0£¬#1 ...
-        .LapicBase              RESQ            1               ; local APIC ĞéÄâÓ³Éä»ùÖ·
-        .LapicPhysicalBase      RESQ            1               ; local APIC ÎïÀí»ùÖ·
-        .IapicBase              RESQ            1               ; IO APIC ĞéÄâÓ³Éä»ùÖ·
-        .IapicPhysicalBase      RESQ            1               ; IO APIC ÎïÀí»ùÖ·
 
 
         ;;
-        ;; ´¦ÀíÆ÷µÄ package,core ÒÔ¼° smt ID
+        ;; å¤„ç†å™¨ IDï¼ŒAPIC ä»¥åŠå¤šçº¿ç¨‹ç›¸å…³ä¿¡æ¯
+        ;;
+        .LapicVersion           RESD            1               ; local APIC ç‰ˆæœ¬
+        .InitialApicId          RESD            1               ; å¤„ç†å™¨åˆå§‹ ID
+        .ApicId                 RESD            1               ; å¤„ç†å™¨ ID
+        .LogicalId              RESD            1               ; å¤„ç†å™¨é€»è¾‘ ID
+        .MaxLogicalProcessor    RESD            1               ; package å†…æœ€å¤§é€»è¾‘å¤„ç†å™¨æ•°
+        .MaxProcessorCore       RESD            1               ; package å†…æœ€å¤§ core æ•°
+        .ProcessorIndex         RESD            1               ; å¤„ç†å™¨ç¼–å· #0ï¼Œ#1 ...
+        .LapicBase              RESQ            1               ; local APIC è™šæ‹Ÿæ˜ å°„åŸºå€
+        .LapicPhysicalBase      RESQ            1               ; local APIC ç‰©ç†åŸºå€
+        .IapicBase              RESQ            1               ; IO APIC è™šæ‹Ÿæ˜ å°„åŸºå€
+        .IapicPhysicalBase      RESQ            1               ; IO APIC ç‰©ç†åŸºå€
+
+
+        ;;
+        ;; å¤„ç†å™¨çš„ package,core ä»¥åŠ smt ID
         ;;
         .ProcessorTopology      RESB            TOPOLOGY_INFO_SIZE
-        .LogicalProcessorCount  RESD            1               ; ´¦ÀíÆ÷ÄÚ×Ü¹²ÓĞ¶àÉÙ¸ö local processor
-        .ProcessorCoreCount     RESD            1               ; ´¦ÀíÆ÷ÄÚ×Ü¹²ÓĞ¶àÉÙ¸ö processor core
+        .LogicalProcessorCount  RESD            1               ; å¤„ç†å™¨å†…æ€»å…±æœ‰å¤šå°‘ä¸ª local processor
+        .ProcessorCoreCount     RESD            1               ; å¤„ç†å™¨å†…æ€»å…±æœ‰å¤šå°‘ä¸ª processor core
 
         ;;
         ;;
-        ;; ´¦ÀíÆ÷ cache ĞÅÏ¢£¬¶¨Òå 4 ¸ö cache ĞÅÏ¢½á¹¹
-        ;;      1) L1D(level-1 data):           level-1 Êı¾İ cache
-        ;;      2) L1I(level-1 Instruction):    level-1 Ö¸Áî cache
-        ;;      3) L2(level-2 unified):         level-2 Í³Ò»µÄ cache
-        ;;      4) L3(level-3 unified):         level-3 Í³Ò»µÄ cache
+        ;; å¤„ç†å™¨ cache ä¿¡æ¯ï¼Œå®šä¹‰ 4 ä¸ª cache ä¿¡æ¯ç»“æ„
+        ;;      1) L1D(level-1 data):           level-1 æ•°æ® cache
+        ;;      2) L1I(level-1 Instruction):    level-1 æŒ‡ä»¤ cache
+        ;;      3) L2(level-2 unified):         level-2 ç»Ÿä¸€çš„ cache
+        ;;      4) L3(level-3 unified):         level-3 ç»Ÿä¸€çš„ cache
         ;;
-        .CacheLevel             RESD            1               ; cache ²ãÊı
+        .CacheLevel             RESD            1               ; cache å±‚æ•°
 
-        .L1D                    RESB            CACHE_INFO_SIZE ; level-1 data cache ĞÅÏ¢
-        .L1I                    RESB            CACHE_INFO_SIZE ; level-1 instruction cache ĞÅÏ¢
+        .L1D                    RESB            CACHE_INFO_SIZE ; level-1 data cache ä¿¡æ¯
+        .L1I                    RESB            CACHE_INFO_SIZE ; level-1 instruction cache ä¿¡æ¯
         .MLC:                                                   ; MLC(Middle Level Cache)
-        .L2                     RESB            CACHE_INFO_SIZE ; level-2 cache ĞÅÏ¢
+        .L2                     RESB            CACHE_INFO_SIZE ; level-2 cache ä¿¡æ¯
         .LLC:                                                   ; LLC(Last Level Cache)
-        .L3                     RESB            CACHE_INFO_SIZE ; level-3 cache ĞÅÏ¢
+        .L3                     RESB            CACHE_INFO_SIZE ; level-3 cache ä¿¡æ¯
 
 
         ;;
-        ;; ±êÖ¾Î»
+        ;; æ ‡å¿—ä½
         ;;
-        .IsMultiThreading       RESB            1               ; ´¦ÀíÆ÷ÊÇ·ñÖ§³Ö¶àÏß³Ì
-        .IsBsp                  RESB            1               ; ÊÇ·ñÎª BSP ´¦ÀíÆ÷
-        .IsLapicEnable          RESB            1               ; ¼ÇÂ¼ Local APIC ÊÇ·ñ¿ªÆô
-        .IsLx2ApicEnable        RESB            1               ; ÊÇ·ñÎª x2APIC Ä£¿é
-        .IsIapicEnable          RESB            1               ; ¼ÇÂ¼ IO APIC ÊÇ·ñ¿ªÆô
+        .IsMultiThreading       RESB            1               ; å¤„ç†å™¨æ˜¯å¦æ”¯æŒå¤šçº¿ç¨‹
+        .IsBsp                  RESB            1               ; æ˜¯å¦ä¸º BSP å¤„ç†å™¨
+        .IsLapicEnable          RESB            1               ; è®°å½• Local APIC æ˜¯å¦å¼€å¯
+        .IsLx2ApicEnable        RESB            1               ; æ˜¯å¦ä¸º x2APIC æ¨¡å—
+        .IsIapicEnable          RESB            1               ; è®°å½• IO APIC æ˜¯å¦å¼€å¯
 
 
         ;;
-        ;; ÏÂÃæ¼ÇÂ¼×Å´¦ÀíÆ÷¹¦ÄÜµÄ¿ªÆôÎ»
-        ;; [0] - PE Î»
-        ;; [1] - PG Î»
-        ;; [2] - PAE Î»
+        ;; ä¸‹é¢è®°å½•ç€å¤„ç†å™¨åŠŸèƒ½çš„å¼€å¯ä½
+        ;; [0] - PE ä½
+        ;; [1] - PG ä½
+        ;; [2] - PAE ä½
         ;;
         ALIGNB 4
         .ProcessorStatus        RESQ            1
         
         ;;
-        ;; ÏÂÃæ¼ÇÂ¼×Å´¦ÀíÆ÷Ö¸Áî¿ÉÓÃÎ»
+        ;; ä¸‹é¢è®°å½•ç€å¤„ç†å™¨æŒ‡ä»¤å¯ç”¨ä½
         ;;
         .InstructionStatus      RESQ            1
 
         ;;
-        ;; ´¦ÀíÆ÷µ±Ç°µÄ»î¶¯×´Ì¬
+        ;; å¤„ç†å™¨å½“å‰çš„æ´»åŠ¨çŠ¶æ€
         ;;
         .ActivityState          RESD            1
 
         ;;
-        ;; Î¬»¤´¦ÀíÆ÷ debug ¹¦ÄÜ
+        ;; ç»´æŠ¤å¤„ç†å™¨ debug åŠŸèƒ½
         ;;
-        .DebugCapabilities      RESQ            1               ; ¼ÇÂ¼´¦ÀíÆ÷µÄ debug ¹¦ÄÜ
-        .DebugStatus            RESQ            1               ; ¼ÇÂ¼´¦ÀíÆ÷µÄ debug ¿ªÆôÏî
+        .DebugCapabilities      RESQ            1               ; è®°å½•å¤„ç†å™¨çš„ debug åŠŸèƒ½
+        .DebugStatus            RESQ            1               ; è®°å½•å¤„ç†å™¨çš„ debug å¼€å¯é¡¹
 
         ;;
-        ;; Î¬»¤´¦ÀíÆ÷µÄ performance ¹¦ÄÜ
+        ;; ç»´æŠ¤å¤„ç†å™¨çš„ performance åŠŸèƒ½
         ;;
-        .PerfCapabilities       RESQ            1               ; ¼ÇÂ¼´¦ÀíÆ÷µÄ performance ¹¦ÄÜ
-        .PerfStatus             RESQ            1               ; ¼ÇÂ¼´¦ÀíÆ÷µÄ performance ¿ªÆôÏî
+        .PerfCapabilities       RESQ            1               ; è®°å½•å¤„ç†å™¨çš„ performance åŠŸèƒ½
+        .PerfStatus             RESQ            1               ; è®°å½•å¤„ç†å™¨çš„ performance å¼€å¯é¡¹
 
         ;;
-        ;; VMX capability information ¼ÇÂ¼
+        ;; VMX capability information è®°å½•
         ;;
         .VmxGlobalData:
         .VmxBasic               RESQ            1
@@ -665,7 +665,7 @@ struc PCB
         .VmFunction             RESQ            1
 
         ;;
-        ;; CR0 & CR4 fixed 1 mask£¨¹Ì¶¨Îª 1 Öµ£©
+        ;; CR0 & CR4 fixed 1 maskï¼ˆå›ºå®šä¸º 1 å€¼ï¼‰
         ;;
         .Cr0FixedMask           RESQ            1
         .Cr4FixedMask           RESQ            1
@@ -673,14 +673,14 @@ struc PCB
         .EptMemoryType          RESD            1
 
         ;;
-        ;; Èç¹û bit55 of IA32_VMX_BASIC Îª 1 Ê±, TrueFlag = 1
+        ;; å¦‚æœ bit55 of IA32_VMX_BASIC ä¸º 1 æ—¶, TrueFlag = 1
         ;;
         .TrueFlag               RESB            1
 
 
         ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
         ;$                                              $
-        ;$ ÏÂÃæÊÇ´¦ÀíÆ÷ context ĞÅÏ¢Óë State Image       $       
+        ;$ ä¸‹é¢æ˜¯å¤„ç†å™¨ context ä¿¡æ¯ä¸ State Image       $       
         ;$                                              $
         ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
@@ -757,9 +757,9 @@ struc PCB
 
 
         ;;
-        ;; FPU µ¥ÔªµÄ 32 Î»µÄ state image ÇøÓò£¨¹² 108 ×Ö½Ú£©
-        ;; *** 1) Í· 28 ¸ö×Ö½ÚÎª FPU environment ĞÅÏ¢£¨Ê¹ÓÃÓÚ FSTENV/FNSTENV Ö¸Áî£©
-        ;; *** 2) ºó 80 ¸ö×Ö½ÚÎª FPU/MMX µÄ stack ¼Ä´æÆ÷ image ĞÅÏ¢£¨Ê¹ÓÃÓÚ FSAVE/FNSAVE Ö¸Áî£©
+        ;; FPU å•å…ƒçš„ 32 ä½çš„ state image åŒºåŸŸï¼ˆå…± 108 å­—èŠ‚ï¼‰
+        ;; *** 1) å¤´ 28 ä¸ªå­—èŠ‚ä¸º FPU environment ä¿¡æ¯ï¼ˆä½¿ç”¨äº FSTENV/FNSTENV æŒ‡ä»¤ï¼‰
+        ;; *** 2) å 80 ä¸ªå­—èŠ‚ä¸º FPU/MMX çš„ stack å¯„å­˜å™¨ image ä¿¡æ¯ï¼ˆä½¿ç”¨äº FSAVE/FNSAVE æŒ‡ä»¤ï¼‰
         ;;
 
         ALIGNB 16
@@ -770,7 +770,7 @@ struc PCB
 
 
         ;;
-        ;; XMM image ÇøÓò£¬Ê¹ÓÃÓÚ FXSAVE/FXRSTOR Ö¸Áî£¨512×Ö½Ú£©
+        ;; XMM image åŒºåŸŸï¼Œä½¿ç”¨äº FXSAVE/FXRSTOR æŒ‡ä»¤ï¼ˆ512å­—èŠ‚ï¼‰
         ;;
 
         ALIGNB 16
@@ -779,32 +779,32 @@ struc PCB
 
 
         ;;
-        ;; ÏÂÃæÊÇ´¦ÀíÆ÷µÄ DS(Debug Store£©¹ÜÀíÖ¸Õë
-        ;; 1) Ö¸Ïò DS ¹ÜÀíÇø¼ÇÂ¼
+        ;; ä¸‹é¢æ˜¯å¤„ç†å™¨çš„ DS(Debug Storeï¼‰ç®¡ç†æŒ‡é’ˆ
+        ;; 1) æŒ‡å‘ DS ç®¡ç†åŒºè®°å½•
         ;;
         ALIGNB 4
-        .BtsBasePointer         RESQ            1               ; Bts buffer base Ö¸Õë
-        .BtsIndexPointer        RESQ            1               ; Bts buffer index Ö¸Õë
-        .BtsMaximumPointer      RESQ            1               ; Bts maximum Ö¸Õë
-        .BtsThresholdPointer    RESQ            1               ; Bts threshold Ö¸Õë
-        .PebsBasePointer        RESQ            1               ; Pebs buffer base Ö¸Õë
-        .PebsIndexPointer       RESQ            1               ; Pebs index Ö¸Õë
-        .PebsMaximumPointer     RESQ            1               ; Pebs maximum Ö¸Õë
-        .PebsThresholdPointer   RESQ            1               ; Pebs threshold Ö¸Õë
-        .Counter0Pointer        RESQ            1               ; Counter0 Ö¸Õë
-        .Counter1Pointer        RESQ            1               ; Counter1 Ö¸Õë
-        .Counter2Pointer        RESQ            1               ; Counter2 Ö¸Õë
-        .Counter3Pointer        RESQ            1               ; Counter3 Ö¸Õë
+        .BtsBasePointer         RESQ            1               ; Bts buffer base æŒ‡é’ˆ
+        .BtsIndexPointer        RESQ            1               ; Bts buffer index æŒ‡é’ˆ
+        .BtsMaximumPointer      RESQ            1               ; Bts maximum æŒ‡é’ˆ
+        .BtsThresholdPointer    RESQ            1               ; Bts threshold æŒ‡é’ˆ
+        .PebsBasePointer        RESQ            1               ; Pebs buffer base æŒ‡é’ˆ
+        .PebsIndexPointer       RESQ            1               ; Pebs index æŒ‡é’ˆ
+        .PebsMaximumPointer     RESQ            1               ; Pebs maximum æŒ‡é’ˆ
+        .PebsThresholdPointer   RESQ            1               ; Pebs threshold æŒ‡é’ˆ
+        .Counter0Pointer        RESQ            1               ; Counter0 æŒ‡é’ˆ
+        .Counter1Pointer        RESQ            1               ; Counter1 æŒ‡é’ˆ
+        .Counter2Pointer        RESQ            1               ; Counter2 æŒ‡é’ˆ
+        .Counter3Pointer        RESQ            1               ; Counter3 æŒ‡é’ˆ
         
         ;;
-        ;; DS ¹ÜÀí¼ÇÂ¼
+        ;; DS ç®¡ç†è®°å½•
         ;;
-        .BtsRecordSize          RESD            1               ; Bts ¼ÇÂ¼³¤¶È
-        .PebsRecordSize         RESD            1               ; PEBS ¼ÇÂ¼³¤¶È
-        .PebsBufferIndex        RESQ            1               ; ¼ÇÂ¼×Å PEBS ÉÏÒ»¸ö index Öµ
+        .BtsRecordSize          RESD            1               ; Bts è®°å½•é•¿åº¦
+        .PebsRecordSize         RESD            1               ; PEBS è®°å½•é•¿åº¦
+        .PebsBufferIndex        RESQ            1               ; è®°å½•ç€ PEBS ä¸Šä¸€ä¸ª index å€¼
 
         ;;
-        ;; ÏÂÃæÊÇ DS ¹ÜÀíÇø¼ÇÂ¼
+        ;; ä¸‹é¢æ˜¯ DS ç®¡ç†åŒºè®°å½•
         ;;
         ALIGNB 16
         .DSManageRecord         RESB            DSMR64_SIZE
@@ -812,7 +812,7 @@ struc PCB
 
 
         ;;                
-        ;; Ã¿¸ö PCB ¿éÎª 8K
+        ;; æ¯ä¸ª PCB å—ä¸º 8K
         ;;
         RESB            (4096 * 2 - $)
                                 
@@ -827,110 +827,110 @@ endstruc
 
 
 ;;************************************************************
-;;* ¶¨Òå System Data AREA ½á¹¹£¬ÓÃÓÚÎ¬»¤ÏµÍ³¹ÜÀí£¬Ê¹ÓÃÓÚ fs ¶Î 
+;;* å®šä¹‰ System Data AREA ç»“æ„ï¼Œç”¨äºç»´æŠ¤ç³»ç»Ÿç®¡ç†ï¼Œä½¿ç”¨äº fs æ®µ 
 ;;*
-;;* ËµÃ÷£º
-;;* 1) ÕâÊÇÏµÍ³ÔËĞĞËùĞèÒªµÄÊı¾İ½á¹¹£¬ËùÓĞ´¦ÀíÆ÷¹²Ïí
+;;* è¯´æ˜ï¼š
+;;* 1) è¿™æ˜¯ç³»ç»Ÿè¿è¡Œæ‰€éœ€è¦çš„æ•°æ®ç»“æ„ï¼Œæ‰€æœ‰å¤„ç†å™¨å…±äº«
 ;;************************************************************
 
 struc SDA
         ;;
-        ;; ÏµÍ³Êı¾İÇøÓò£¬Ìá¹©ËùÓĞ´¦ÀíÆ÷¹²ÓÃÊ¹ÓÃµÄÊı¾İ
+        ;; ç³»ç»Ÿæ•°æ®åŒºåŸŸï¼Œæä¾›æ‰€æœ‰å¤„ç†å™¨å…±ç”¨ä½¿ç”¨çš„æ•°æ®
         ;;
-        .Base                   RESQ            1               ; ´ËÇøÓòµÄµØÖ·£¨virtual address£©
-        .PhysicalBase           RESQ            1               ; ´ËÇøÓòµÄÎïÀíµØÖ·
-        .Size                   RESD            1               ; ´ËÇøÓòµÄ size
-        .PcbBase                RESQ            1               ; Ö¸Ïò CPU0 µÄ PCB ¿é
-        .PcbPhysicalBase        RESQ            1               ; Ö¸Ïò CPU0 µÄ PCB ¿é
+        .Base                   RESQ            1               ; æ­¤åŒºåŸŸçš„åœ°å€ï¼ˆvirtual addressï¼‰
+        .PhysicalBase           RESQ            1               ; æ­¤åŒºåŸŸçš„ç‰©ç†åœ°å€
+        .Size                   RESD            1               ; æ­¤åŒºåŸŸçš„ size
+        .PcbBase                RESQ            1               ; æŒ‡å‘ CPU0 çš„ PCB å—
+        .PcbPhysicalBase        RESQ            1               ; æŒ‡å‘ CPU0 çš„ PCB å—
 
         ;;
-        ;; ÏµÍ³¿ÉÓÃÎïÀíÄÚ´æ
+        ;; ç³»ç»Ÿå¯ç”¨ç‰©ç†å†…å­˜
         ;;
-        .MemorySize             RESD            1               ; ÒÔ KB Îªµ¥Î»
-        .BootDriver             RESD            1               ; boot µÄÇı¶¯Æ÷
+        .MemorySize             RESD            1               ; ä»¥ KB ä¸ºå•ä½
+        .BootDriver             RESD            1               ; boot çš„é©±åŠ¨å™¨
 
 
-        .ProcessorCount         RESD            1               ; ´¦ÀíÆ÷¼ÆÊı
-        .ApLockPointer          RESD            1               ; Ap ´¦ÀíÆ÷Ö´ĞĞËøÖ¸Õë
-        .ApLongmode             RESD            1               ; AP ´¦ÀíÆ÷ÊÇ·ñ½øÈë long mode
-        .ApStartupRoutineEntry  RESD            1               ; AP ´¦ÀíÆ÷µÄ Startup routine Èë¿ÚµØÖ·
-        .ApInitDoneCount        RESD            1               ; AP ´¦ÀíÆ÷³õÊ¼»¯Íê³É¼ÆÊı
-	    .ApStage		RESD		1		; AP ´¦ÓÚÄÄ¸ö stage
+        .ProcessorCount         RESD            1               ; å¤„ç†å™¨è®¡æ•°
+        .ApLockPointer          RESD            1               ; Ap å¤„ç†å™¨æ‰§è¡Œé”æŒ‡é’ˆ
+        .ApLongmode             RESD            1               ; AP å¤„ç†å™¨æ˜¯å¦è¿›å…¥ long mode
+        .ApStartupRoutineEntry  RESD            1               ; AP å¤„ç†å™¨çš„ Startup routine å…¥å£åœ°å€
+        .ApInitDoneCount        RESD            1               ; AP å¤„ç†å™¨åˆå§‹åŒ–å®Œæˆè®¡æ•°
+	    .ApStage		RESD		1		; AP å¤„äºå“ªä¸ª stage
         
         ;;
-        ;; AP Ö´ĞĞËø
+        ;; AP æ‰§è¡Œé”
         ;;
-        .Stage1LockPointer      RESD            1               ; stage1 Ëø
-        .Stage2LockPointer      RESD            1               ; stage2 Ëø
-        .Stage3LockPointer      RESD            1               ; stage3 Ëø
+        .Stage1LockPointer      RESD            1               ; stage1 é”
+        .Stage2LockPointer      RESD            1               ; stage2 é”
+        .Stage3LockPointer      RESD            1               ; stage3 é”
 
         ;;
-        ;; ĞÅºÅ
+        ;; ä¿¡å·
         ;;
-        .Signal                 RESD            1               ; ÄÚ²¿Ê¹ÓÃµÄĞÅºÅ
-        .SignalPointer          RESQ            1               ; ÒıÓÃÍâ²¿Ìá¹©µÄĞÅºÅ
+        .Signal                 RESD            1               ; å†…éƒ¨ä½¿ç”¨çš„ä¿¡å·
+        .SignalPointer          RESQ            1               ; å¼•ç”¨å¤–éƒ¨æä¾›çš„ä¿¡å·
 
         ;;
-        ;; NMI handler Ê¹ÓÃµÄ¹¦ÄÜºÅ£¬È±Ê¡Îª 0 Öµ£¬ÓÉÓ²¼ş´¥·¢
+        ;; NMI handler ä½¿ç”¨çš„åŠŸèƒ½å·ï¼Œç¼ºçœä¸º 0 å€¼ï¼Œç”±ç¡¬ä»¶è§¦å‘
         ;;
         .NmiIpiRequestMask      RESD            1
         .NmiIpiRoutine          RESQ            1
         
         ;;
-        ;; ¼ÇÂ¼ÓµÓĞ½¹µãµÄ processor index Öµ
+        ;; è®°å½•æ‹¥æœ‰ç„¦ç‚¹çš„ processor index å€¼
         ;;
         .InFocus                RESD            1
 
 
         ;;
-        ;; ¼ÇÂ¼µ±Ç° video buffer Î»ÖÃ
+        ;; è®°å½•å½“å‰ video buffer ä½ç½®
         ;;
         .VideoBufferHead        RESQ            1
         .VideoBufferPtr         RESQ            1
         .VideoBufferLastChar    RESD            1
 
         ;;
-        ;; keyboard buffer ¹ÜÀí¼ÇÂ¼
+        ;; keyboard buffer ç®¡ç†è®°å½•
         ;;
-        .KeyBufferHead          RESQ            1               ; ±£´æ LSB.LocalKeyBufferHead Öµ
-        .KeyBufferPtrPointer    RESQ            1               ; Ö¸Ïò local KeyBufferPtr
-        .KeyBufferLength        RESD            1               ; ¼üÅÌ»º³åÇø³¤¶È
+        .KeyBufferHead          RESQ            1               ; ä¿å­˜ LSB.LocalKeyBufferHead å€¼
+        .KeyBufferPtrPointer    RESQ            1               ; æŒ‡å‘ local KeyBufferPtr
+        .KeyBufferLength        RESD            1               ; é”®ç›˜ç¼“å†²åŒºé•¿åº¦
 
 
         ;;
-        ;;Decode Manage block Óë GPA map list
+        ;;Decode Manage block ä¸ GPA map list
         ;;
-        .DmbBase                RESQ            1               ; ¼ÇÂ¼ DMB µØÖ·        
-        .GmlBase                RESQ            1               ; ¼ÇÂ¼ GPA Ó³ÉäÁĞ±íµØÖ·
+        .DmbBase                RESQ            1               ; è®°å½• DMB åœ°å€        
+        .GmlBase                RESQ            1               ; è®°å½• GPA æ˜ å°„åˆ—è¡¨åœ°å€
 
 
         ALIGNB 4
         ;;
-        ;; system timer counter£¬¼ÇÂ¼ÖĞ¶Ï´ÎÊı
+        ;; system timer counterï¼Œè®°å½•ä¸­æ–­æ¬¡æ•°
         ;;        
         .TimerCount             RESD            1
 
         ;;
-        ;; ¼ÇÂ¼×îºóÒ»´Î³ö´íµÄ´íÎóÂë
+        ;; è®°å½•æœ€åä¸€æ¬¡å‡ºé”™çš„é”™è¯¯ç 
         ;;
         .LastStatusCode          RESD            1             
 
 
         ;;
-        ;; ¼ÇÂ¼´¦ÀíÆ÷¿ÕÏĞµÄ index mask ±êÖ¾Î»£¨Ö¸Ê¾ BSP ¿ÕÏĞ»òÃ¦×´Ì¬£©
+        ;; è®°å½•å¤„ç†å™¨ç©ºé—²çš„ index mask æ ‡å¿—ä½ï¼ˆæŒ‡ç¤º BSP ç©ºé—²æˆ–å¿™çŠ¶æ€ï¼‰
         ;;
         .UsableProcessorMask    RESD            1
         .ProcessMask            RESQ            1
 
 
         ;;
-        ;; ¶¨ÒåĞéÄâ»ú domain ¹ÜÀí¼ÇÂ¼
+        ;; å®šä¹‰è™šæ‹Ÿæœº domain ç®¡ç†è®°å½•
         ;;
-        .DomainPhysicalBase     RESQ            1                       ; domain pool ÎïÀí»ùÖ·
-        .DomainBase             RESQ            1                       ; domain pool ĞéÄâ»ùÖ·
+        .DomainPhysicalBase     RESQ            1                       ; domain pool ç‰©ç†åŸºå€
+        .DomainBase             RESQ            1                       ; domain pool è™šæ‹ŸåŸºå€
 
         ;;
-        ;; ¶¨Òå DEBUG_RECORD_STRUCTURE ¹ÜÀí¼ÇÂ¼
+        ;; å®šä¹‰ DEBUG_RECORD_STRUCTURE ç®¡ç†è®°å½•
         ;;
 %ifdef DEBUG_RECORD_ENABLE
         .DrsBase                RESQ            1
@@ -945,7 +945,7 @@ struc SDA
 %endif
 
         ;;
-        ;; EXTINT_RTE ¹ÜÀí¼ÇÂ¼
+        ;; EXTINT_RTE ç®¡ç†è®°å½•
         ;;
         .ExtIntRtePtr           RESQ            1
         .ExtIntRteIndex         RESQ            1
@@ -953,60 +953,60 @@ struc SDA
 
 
         ;;
-        ;; BTS pool Óë PEBS pool ¹ÜÀí¼ÇÂ¼
-        ;; 1) ÓÃÀ´¶¯Ì¬·ÖÅä BTS Óë PEBS buffer
-        ;; 2) ×î¶àÖ§³Ö 16 ¸ö BTS buffer Óë PEBS buffer
+        ;; BTS pool ä¸ PEBS pool ç®¡ç†è®°å½•
+        ;; 1) ç”¨æ¥åŠ¨æ€åˆ†é… BTS ä¸ PEBS buffer
+        ;; 2) æœ€å¤šæ”¯æŒ 16 ä¸ª BTS buffer ä¸ PEBS buffer
         ;; 
         ALIGNB 4
-        .BtsPoolBase            RESQ            1               ; Î¬»¤ BTS buffer µÄ·ÖÅä
-        .BtsPoolTop             RESQ            1               ; Bts pool ¶¥²¿
-        .BtsBufferSize          RESD            1               ; Ã¿¸ö BTS buffer µÄ³¤¶È
-        .BtsRecordMaximum       RESD            1               ; BTS ¼ÇÂ¼×î´óÊı
-        .PebsPoolBase           RESQ            1               ; Î¬»¤ PEBS buffer µÄ·ÖÅä
-        .PebsPoolTop            RESQ            1               ; PEBS buffer ¶¥²¿
-        .PebsBufferSize         RESD            1               ; Ã¿¸ö PEBS buffer µÄ³¤¶È
-        .PebsRecordMaximum      RESD            1               ; PEBS ¼ÇÂ¼×î´óÊı
+        .BtsPoolBase            RESQ            1               ; ç»´æŠ¤ BTS buffer çš„åˆ†é…
+        .BtsPoolTop             RESQ            1               ; Bts pool é¡¶éƒ¨
+        .BtsBufferSize          RESD            1               ; æ¯ä¸ª BTS buffer çš„é•¿åº¦
+        .BtsRecordMaximum       RESD            1               ; BTS è®°å½•æœ€å¤§æ•°
+        .PebsPoolBase           RESQ            1               ; ç»´æŠ¤ PEBS buffer çš„åˆ†é…
+        .PebsPoolTop            RESQ            1               ; PEBS buffer é¡¶éƒ¨
+        .PebsBufferSize         RESD            1               ; æ¯ä¸ª PEBS buffer çš„é•¿åº¦
+        .PebsRecordMaximum      RESD            1               ; PEBS è®°å½•æœ€å¤§æ•°
 
 
 
         ALIGNB 16
 
         ;;
-        ;; paging ¹ÜÀí¼ÇÂ¼
+        ;; paging ç®¡ç†è®°å½•
         ;;
-        .XdValue                RESD            1               ; ±£´æ XD ÖĞµÄÖµ£¬Õâ¸öÖµĞèÒª¿ªÆô XD ¹¦ÄÜ
-        .PtBase                 RESD            1               ; PT ±í»ùÖ·
-        .PtTop                  RESD            1               ; PT ±í¶¥¶Ë
-        .PtPhysicalBase         RESD            1               ; PT ±íÎïÀí»ùÖ·
-        .PdtBase                RESD            1               ; PDT ±í»ùÖ·
-        .PdtTop                 RESD            1               ; PDT ±í¶¥¶Ë
-        .PdtPhysicalBase        RESD            1               ; PDT ±íÎïÀí»ùÖ·
-        .PptBase                RESD            1               ; PPT ±í»ùÖ·
-        .PptTop                 RESD            1               ; PPT ±í¶¥¶Ë
-        .PptPhysicalBase        RESD            1               ; PPT ±íÎïÀí»ùÖ·
+        .XdValue                RESD            1               ; ä¿å­˜ XD ä¸­çš„å€¼ï¼Œè¿™ä¸ªå€¼éœ€è¦å¼€å¯ XD åŠŸèƒ½
+        .PtBase                 RESD            1               ; PT è¡¨åŸºå€
+        .PtTop                  RESD            1               ; PT è¡¨é¡¶ç«¯
+        .PtPhysicalBase         RESD            1               ; PT è¡¨ç‰©ç†åŸºå€
+        .PdtBase                RESD            1               ; PDT è¡¨åŸºå€
+        .PdtTop                 RESD            1               ; PDT è¡¨é¡¶ç«¯
+        .PdtPhysicalBase        RESD            1               ; PDT è¡¨ç‰©ç†åŸºå€
+        .PptBase                RESD            1               ; PPT è¡¨åŸºå€
+        .PptTop                 RESD            1               ; PPT è¡¨é¡¶ç«¯
+        .PptPhysicalBase        RESD            1               ; PPT è¡¨ç‰©ç†åŸºå€
 
         ;;
-        ;; ÏÂÃæÊÇ legacy Ä£Ê½ÏÂµÄ PPT ±í
+        ;; ä¸‹é¢æ˜¯ legacy æ¨¡å¼ä¸‹çš„ PPT è¡¨
         ;;
         ALIGNB 32
-        .Ppt                    RESQ            4               ; PPT ±íÏî
+        .Ppt                    RESQ            4               ; PPT è¡¨é¡¹
 
         ;;
-        ;; long-mode ÏÂµÄ paging ¹ÜÀí¼ÇÂ¼
+        ;; long-mode ä¸‹çš„ paging ç®¡ç†è®°å½•
         ;;
-        .PxtBase64              RESQ            1               ; PXT »ùÖ·
-        .PptBase64              RESQ            1               ; PPT ±í»ùÖ·£¨Page Directory Pointer Table£©
-        .PdtBase64              RESQ            1               ; PDT ±í»ùÖ·
-        .PtBase64               RESQ            1               ; PT ±í»ùÖ·
-        .PxtTop64               RESQ            1               ; PXT ±í¶¥¶Ë
-        .PtTop64                RESQ            1               ; PT ±í¶¥¶Ë¡¡
-        .PdtTop64               RESQ            1               ; PDT ±í¶¥¶Ë
-        .PptTop64               RESQ            1               ; PPT ±í¶¥¶Ë
-        .PxtPhysicalBase64      RESQ            1               ; PXT ÎïÀí»ùÖ·
-        .PptPhysicalBase64      RESQ            1               ; PPT ±íÎïÀí»ùÖ·
+        .PxtBase64              RESQ            1               ; PXT åŸºå€
+        .PptBase64              RESQ            1               ; PPT è¡¨åŸºå€ï¼ˆPage Directory Pointer Tableï¼‰
+        .PdtBase64              RESQ            1               ; PDT è¡¨åŸºå€
+        .PtBase64               RESQ            1               ; PT è¡¨åŸºå€
+        .PxtTop64               RESQ            1               ; PXT è¡¨é¡¶ç«¯
+        .PtTop64                RESQ            1               ; PT è¡¨é¡¶ç«¯ã€€
+        .PdtTop64               RESQ            1               ; PDT è¡¨é¡¶ç«¯
+        .PptTop64               RESQ            1               ; PPT è¡¨é¡¶ç«¯
+        .PxtPhysicalBase64      RESQ            1               ; PXT ç‰©ç†åŸºå€
+        .PptPhysicalBase64      RESQ            1               ; PPT è¡¨ç‰©ç†åŸºå€
 
         ;;
-        ;; ¼ÇÂ¼ PPT ±íÇøÓò£¨2M£©ÊÇ·ñÓĞĞ§£¬ÓĞĞ§Ê±±íÃ÷ÒÑ¾­Ó³Éä PPT ±í
+        ;; è®°å½• PPT è¡¨åŒºåŸŸï¼ˆ2Mï¼‰æ˜¯å¦æœ‰æ•ˆï¼Œæœ‰æ•ˆæ—¶è¡¨æ˜å·²ç»æ˜ å°„ PPT è¡¨
         ;;
         .PptValid               RESB            1               ; 
 
@@ -1014,46 +1014,46 @@ struc SDA
         ALIGNB 4
 
         ;;
-        ;; ÏÂÃæ¼ÇÂ¼Õ»¿Õ¼ä·ÖÅä
+        ;; ä¸‹é¢è®°å½•æ ˆç©ºé—´åˆ†é…
         ;;
-        .UserStackBase                  RESQ    1               ; ÓÃ»§Õ»»ùÖ·
+        .UserStackBase                  RESQ    1               ; ç”¨æˆ·æ ˆåŸºå€
         .UserStackPhysicalBase          RESQ    1
-        .KernelStackBase                RESQ    1               ; kernelÕ»»ùÖ·
+        .KernelStackBase                RESQ    1               ; kernelæ ˆåŸºå€
         .KernelStackPhysicalBase        RESQ    1
         
         ;;
-        ;; ÏÂÃæ¼ÇÂ¼ pool¿Õ¼ä·ÖÅä
+        ;; ä¸‹é¢è®°å½• poolç©ºé—´åˆ†é…
         ;;
-        .UserPoolBase           RESQ            1               ; ÓÃ»§ pool »ùÖ·
+        .UserPoolBase           RESQ            1               ; ç”¨æˆ· pool åŸºå€
         .UserPoolPhysicalBase   RESQ            1
-        .KernelPoolBase         RESQ            1               ; Kernel pool »ùÖ·
+        .KernelPoolBase         RESQ            1               ; Kernel pool åŸºå€
         .KernelPoolPhysicalBase RESQ            1
 
 
         ;;
-        ;; ÏÂÃæ¼ÇÂ¼ PCB pool ¿Õ¼ä·ÖÅä
+        ;; ä¸‹é¢è®°å½• PCB pool ç©ºé—´åˆ†é…
         ;;
-        .PcbPoolBase            RESQ            1               ; PCB pool ĞéÄâ»ùÖ·
-        .PcbPoolTop             RESQ            1               ; PCB pool ¶¥²¿
-        .PcbPoolPhysicalBase    RESQ            1               ; PCB pool ÎïÀí»ùÖ·
-        .PcbPoolPhysicalTop     RESQ            1               ; PCB pool µÄ¶¥²¿
-        .PcbPoolSize            RESQ            1               ; PCB pool µÄ´óĞ¡
+        .PcbPoolBase            RESQ            1               ; PCB pool è™šæ‹ŸåŸºå€
+        .PcbPoolTop             RESQ            1               ; PCB pool é¡¶éƒ¨
+        .PcbPoolPhysicalBase    RESQ            1               ; PCB pool ç‰©ç†åŸºå€
+        .PcbPoolPhysicalTop     RESQ            1               ; PCB pool çš„é¡¶éƒ¨
+        .PcbPoolSize            RESQ            1               ; PCB pool çš„å¤§å°
 
 
         ;;
-        ;; long-mode ÏÂ paging ÖĞµÄ PT pool ¹ÜÀí¼ÇÂ¼
+        ;; long-mode ä¸‹ paging ä¸­çš„ PT pool ç®¡ç†è®°å½•
         ;;
-        .PtPoolPhysicalBase     RESQ            1               ; PT POOL ÎïÀí»ùÖ·
-        .PtPoolPhysicalTop      RESQ            1               ; PT POOL ¶¥²¿
-        .PtPoolSize             RESQ            1               ; PT POOL ´óĞ¡
-        .PtPoolBase             RESQ            1               ; PT Pool ÇøÓò»ùÖ·
-        .PtPoolFree             RESB            1               ; PT Pool ÊÇ·ñ¿ÕÏĞ¿ÉÓÃ
+        .PtPoolPhysicalBase     RESQ            1               ; PT POOL ç‰©ç†åŸºå€
+        .PtPoolPhysicalTop      RESQ            1               ; PT POOL é¡¶éƒ¨
+        .PtPoolSize             RESQ            1               ; PT POOL å¤§å°
+        .PtPoolBase             RESQ            1               ; PT Pool åŒºåŸŸåŸºå€
+        .PtPoolFree             RESB            1               ; PT Pool æ˜¯å¦ç©ºé—²å¯ç”¨
 
 
         ALIGNB 4
 
         ;;
-        ;; ±¸ÓÃ PT Pool ¹ÜÀí¼ÇÂ¼
+        ;; å¤‡ç”¨ PT Pool ç®¡ç†è®°å½•
         ;;
         .PtPool2PhysicalBase    RESQ            1
         .PtPool2PhysicalTop     RESQ            1
@@ -1064,28 +1064,28 @@ struc SDA
 
         ALIGNB 4
         ;;
-        ;; TSS Pool£¬ÓÃÀ´ÎªÃ¿¸ö´¦ÀíÆ÷·ÖÅä×Ô¼ºµÄ TSS ¿é
-        ;; ×¢Òâ:
-        ;; 1) Ã¿¸ö TSS ·ÖÅä size Îª£º100h ×Ö½Ú
-        ;; 2) ¹²Ö§³Ö 16 ¸ö´¦ÀíÆ÷
+        ;; TSS Poolï¼Œç”¨æ¥ä¸ºæ¯ä¸ªå¤„ç†å™¨åˆ†é…è‡ªå·±çš„ TSS å—
+        ;; æ³¨æ„:
+        ;; 1) æ¯ä¸ª TSS åˆ†é… size ä¸ºï¼š100h å­—èŠ‚
+        ;; 2) å…±æ”¯æŒ 16 ä¸ªå¤„ç†å™¨
         ;;
-        .TssPoolBase            RESQ            1               ; Tss pool »ùÖ·
-        .TssPoolPhysicalBase    RESQ            1               ; Tss pool ÎïÀí»ùÖ·
-        .TssPoolTop             RESQ            1               ; Tss pool ¶¥²¿
-        .TssPoolPhysicalTop     RESQ            1               ; Tss pool ÎïÀí¶¥²¿
-        .TssPoolGranularity     RESD            1               ; Tss pool ·ÖÅäµÄÁ£¶È£¬Ä¬ÈÏÎª 100h ×Ö½Ú
+        .TssPoolBase            RESQ            1               ; Tss pool åŸºå€
+        .TssPoolPhysicalBase    RESQ            1               ; Tss pool ç‰©ç†åŸºå€
+        .TssPoolTop             RESQ            1               ; Tss pool é¡¶éƒ¨
+        .TssPoolPhysicalTop     RESQ            1               ; Tss pool ç‰©ç†é¡¶éƒ¨
+        .TssPoolGranularity     RESD            1               ; Tss pool åˆ†é…çš„ç²’åº¦ï¼Œé»˜è®¤ä¸º 100h å­—èŠ‚
 
 
         ;;
-        ;; VMX ept£¨extended page table£©¹ÜÀí¼ÇÂ¼
+        ;; VMX eptï¼ˆextended page tableï¼‰ç®¡ç†è®°å½•
         ;;
-        .EptPxtBase64           RESQ            1               ; PXT ĞéÄâµØÖ·
-        .EptPxtPhysicalBase64   RESQ            1               ; PXT ÎïÀíµØÖ·
+        .EptPxtBase64           RESQ            1               ; PXT è™šæ‹Ÿåœ°å€
+        .EptPxtPhysicalBase64   RESQ            1               ; PXT ç‰©ç†åœ°å€
         .EptPxtTop64            RESQ            1               ; 
         .EptPxtPhysicalTop64    RESQ            1
 
-        .EptPptBase64           RESQ            1               ; PPT ĞéÄâµØÖ·
-        .EptPptPhysicalBase64   RESQ            1               ; PPT ÎïÀíµØÖ·
+        .EptPptBase64           RESQ            1               ; PPT è™šæ‹Ÿåœ°å€
+        .EptPptPhysicalBase64   RESQ            1               ; PPT ç‰©ç†åœ°å€
         .EptPptTop64            RESQ            1
         .EptPptPhysicalTop64    RESQ            1
 
@@ -1108,31 +1108,31 @@ struc SDA
         ALIGNB 4
 
         ;;
-        ;; Global Descriptor Table ¹ÜÀí¼ÇÂ¼
+        ;; Global Descriptor Table ç®¡ç†è®°å½•
         ;;
         .GdtPointer:
-        .GdtLimit               RESW            1               ; GDT ±í limit Öµ
-        .GdtBase                RESQ            1               ; GDT ±í base Öµ
+        .GdtLimit               RESW            1               ; GDT è¡¨ limit å€¼
+        .GdtBase                RESQ            1               ; GDT è¡¨ base å€¼
 
         ALIGNB 4
-        .GdtTop                 RESQ            1               ; ¼ÇÂ¼ GDT ±íµ±Ç°¶¥ÉÏµÄÃèÊö·ûµØÖ·
+        .GdtTop                 RESQ            1               ; è®°å½• GDT è¡¨å½“å‰é¡¶ä¸Šçš„æè¿°ç¬¦åœ°å€
         
         ;;
-        ;; Interrupt Descriptor Table ¹ÜÀí¼ÇÂ¼
+        ;; Interrupt Descriptor Table ç®¡ç†è®°å½•
         ;;
         .IdtPointer:
-        .IdtLimit               RESW            1               ; IDT ±í limit Öµ
-        .IdtBase                RESQ            1               ; IDT ±í base Öµ
+        .IdtLimit               RESW            1               ; IDT è¡¨ limit å€¼
+        .IdtBase                RESQ            1               ; IDT è¡¨ base å€¼
 
         ALIGNB 4
-        .IdtTop                 RESQ            1               ; IDT ±í¶¥²¿
+        .IdtTop                 RESQ            1               ; IDT è¡¨é¡¶éƒ¨
 
 
                                 RESB            (4096 * 1) - $
 
 
         ;;
-        ;; ¶¨Òå Global Descriptor Table Êı¾İÇøÓò£¨¹²4K£©
+        ;; å®šä¹‰ Global Descriptor Table æ•°æ®åŒºåŸŸï¼ˆå…±4Kï¼‰
         ;;
         .Gdt:
         .NullDesc               RESQ            1                   
@@ -1140,48 +1140,48 @@ struc SDA
 
 
         ;;
-        ;; ÏÂÃæÊÇ IDT ËùÔÚÇøÓò£¨¹²4K£©
+        ;; ä¸‹é¢æ˜¯ IDT æ‰€åœ¨åŒºåŸŸï¼ˆå…±4Kï¼‰
         ;;
         .Idt:                   RESB            (4096 * 3) - $
 
 
         ;;
-        ;; ÏÂÃæÊÇ TSS ÇøÓò£¨¹²4K£©
+        ;; ä¸‹é¢æ˜¯ TSS åŒºåŸŸï¼ˆå…±4Kï¼‰
         ;;
         .Tss:                   RESB            (4096 * 4) - $
 
 
         ;;
-        ;; ÏÂÃæÊÇ IOMAP ÇøÓò£¨¹²8K£©
+        ;; ä¸‹é¢æ˜¯ IOMAP åŒºåŸŸï¼ˆå…±8Kï¼‰
         ;;
         .Iomap:                 RESB            (4096 * 6) - $
         
 
         ;;
-        ;; ÏÂÃæÊÇ LDT ÇøÓò
+        ;; ä¸‹é¢æ˜¯ LDT åŒºåŸŸ
         .Ldt:                   RESB            (4096 * 7) - $
 
 
         ;;
-        ;; ÏÂÃæÊÇ EPT-PXT ±íÇøÓò
+        ;; ä¸‹é¢æ˜¯ EPT-PXT è¡¨åŒºåŸŸ
         ;;
         .EptPxt                 RESB            (4096 * 8) - $
 
 
         ;;
-        ;; ÏÂÃæÊÇ BTS buffer ÇøÓò£¨¹²4K£©
+        ;; ä¸‹é¢æ˜¯ BTS buffer åŒºåŸŸï¼ˆå…±4Kï¼‰
         ;;
         .BtsBuffer:             RESB            (4096 * 9) - $
 
         ;;
-        ;; ÏÂÃæÊÇ PEBS buffer ÇøÓò£¨¹²16*4K£©
+        ;; ä¸‹é¢æ˜¯ PEBS buffer åŒºåŸŸï¼ˆå…±16*4Kï¼‰
         ;;
         .PebsBuffer:            RESB            (4096 * (9+16)) - $
 
 
 %ifdef DEBUG_RECORD_ENABLE
         ;;
-        ;; ÏÂÃæÊÇ DEBUG_RECORD_STRUCTURE ÇøÓò£¨Ä¬ÈÏÎª32K£©
+        ;; ä¸‹é¢æ˜¯ DEBUG_RECORD_STRUCTURE åŒºåŸŸï¼ˆé»˜è®¤ä¸º32Kï¼‰
         ;;
         .DrsBuffer:             RESB            (4096 * (9+16) + DRS_AREA_SIZE) - $
 %endif
@@ -1198,8 +1198,8 @@ endstruc
 
 
 ;;
-;; LSB£¨Local Storage Block£¬±¾µØ´æ´¢¿é£©£¬Ã¿¸ö´¦ÀíÆ÷ÓµÓĞ×Ô¼ºµÄ LSB ÇøÓò¡£
-;; Ã¿¸ö LSB ½á¹¹Îª 8K£¬±£´æ´¦ÀíÆ÷µÄ local video buffer, local keyboard buffer µÈ
+;; LSBï¼ˆLocal Storage Blockï¼Œæœ¬åœ°å­˜å‚¨å—ï¼‰ï¼Œæ¯ä¸ªå¤„ç†å™¨æ‹¥æœ‰è‡ªå·±çš„ LSB åŒºåŸŸã€‚
+;; æ¯ä¸ª LSB ç»“æ„ä¸º 8Kï¼Œä¿å­˜å¤„ç†å™¨çš„ local video buffer, local keyboard buffer ç­‰
 ;;
 
 struc LSB
@@ -1207,7 +1207,7 @@ struc LSB
         .PhysicalBase           RESQ            1
 
         ;;
-        ;; local video buffer ¹ÜÀí¼ÇÂ¼
+        ;; local video buffer ç®¡ç†è®°å½•
         ;;
         .LocalVideoBufferHead   RESQ            1
         .LocalVideoBufferPtr    RESQ            1
@@ -1215,7 +1215,7 @@ struc LSB
         .LocalVideoBufferSize   RESD            1
         
         ;;
-        ;; local keyboard buffer ¹ÜÀí¼ÇÂ¼
+        ;; local keyboard buffer ç®¡ç†è®°å½•
         ;;        
         ALIGNB 8
         .LocalKeyBufferHead     RESQ            1
@@ -1224,29 +1224,29 @@ struc LSB
         
 
         ;;
-        ;; local timer ¹ÜÀí¼ÇÂ¼
+        ;; local timer ç®¡ç†è®°å½•
         ;;
         .LapicTimerRequestMask  RESD            1
         .LapicTimerRoutine      RESQ            1
         .LapicTimerCount        RESD            1
 
         ;;
-        ;; Ê±¼ä¼ÆÊıÖµ
+        ;; æ—¶é—´è®¡æ•°å€¼
         ;;
         .Hour                   RESD            1
         .Minute                 RESD            1
         .Second                 RESD            1
 
         ;;
-        ;; ±¾µØ keyboard buffer ÇøÓò£¬¹² 256 ¸ö×Ö½Ú£¬±£´æ°´¼üÉ¨ÃèÂë
+        ;; æœ¬åœ° keyboard buffer åŒºåŸŸï¼Œå…± 256 ä¸ªå­—èŠ‚ï¼Œä¿å­˜æŒ‰é”®æ‰«æç 
         ;;
         .LocalKeyBuffer         RESB            256
      
         .Reserved               RESB            4096 - $
 
         ;;
-        ;; ±¾µØ video buffer ÇøÓò£¬´æ·Å´¦ÀíÆ÷µÄÆÁÄ»ĞÅÏ¢
-        ;; 4K£¬´æ·ÅÔ¼ 25 * 80 * 2 ĞÅÏ¢
+        ;; æœ¬åœ° video buffer åŒºåŸŸï¼Œå­˜æ”¾å¤„ç†å™¨çš„å±å¹•ä¿¡æ¯
+        ;; 4Kï¼Œå­˜æ”¾çº¦ 25 * 80 * 2 ä¿¡æ¯
         ;;
         .LocalVideoBuffer       RESB            (4096 * 2 - $)
 
@@ -1261,29 +1261,29 @@ endstruc
 
 
 ;;
-;; ¶¨ÒåÏµÍ³·şÎñÀı³Ì±í½á¹¹£¨system_service_routine_table£©
+;; å®šä¹‰ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹è¡¨ç»“æ„ï¼ˆsystem_service_routine_tableï¼‰
 ;;
 
 struc SRT
         ;;
-        ;; Ê¹ÓÃÓÚ fs ¹ÜÀí£¬½Ó×Å SDA ÇøÓò
+        ;; ä½¿ç”¨äº fs ç®¡ç†ï¼Œæ¥ç€ SDA åŒºåŸŸ
 
         RESB    ((SYSTEM_DATA_AREA_SIZE + 0xfff) & 0xfffff000)
 
         ;;ALIGNB 8
 
-        .Base                   RESQ            1               ; SSR ¿éµÄ»ùÖ·
-        .PhysicalBase           RESQ            1               ; SSR ¿éµÄÎïÀíµØÖ·
+        .Base                   RESQ            1               ; SSR å—çš„åŸºå€
+        .PhysicalBase           RESQ            1               ; SSR å—çš„ç‰©ç†åœ°å€
         .Size                   RESD            1               ; 
         .Top                    RESQ            1
         .Index                  RESQ            1
-        .ServiceRoutineVector   RESD            1               ; ÏµÍ³·şÎñÀı³ÌµÄÖĞ¶ÏÏòÁ¿ºÅ
+        .ServiceRoutineVector   RESD            1               ; ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹çš„ä¸­æ–­å‘é‡å·
 
 
         ALIGNB 16
        
         ;;
-        ;; Ô¤Áô 64 ¸öÏµÍ³Àı³Ì
+        ;; é¢„ç•™ 64 ä¸ªç³»ç»Ÿä¾‹ç¨‹
         ;;
         .Entry                  RESQ            64
         SRT_TOP                 EQU             $
@@ -1296,7 +1296,7 @@ endstruc
 
 
 ;;
-;; ¶¨Òå 32 Î»µÄ TSS ½á¹¹
+;; å®šä¹‰ 32 ä½çš„ TSS ç»“æ„
 ;;
 STRUC tss32
         .task_link              RESW            1
@@ -1335,7 +1335,7 @@ STRUC tss32
                                 RESW            1
         .ldt_selector           RESW            1
                                 RESW            1
-        .trap                   RESW            1               ; Trap ±êÖ¾Î»
+        .trap                   RESW            1               ; Trap æ ‡å¿—ä½
         .IomapBase              RESW            1
 
         TSS_LENGTH              EQU             $ - 1
@@ -1379,7 +1379,7 @@ STRUC TSS32
                                 RESW            1
         .LdtrSelector           RESW            1
                                 RESW            1
-        .Trap                   RESW            1               ; Trap ±êÖ¾Î»
+        .Trap                   RESW            1               ; Trap æ ‡å¿—ä½
         .IoBitmapBase           RESW            1
 
         TSS_SIZE                EQU             $ - 1
@@ -1387,7 +1387,7 @@ ENDSTRUC
 
 
 ;;
-;; ¶¨Òå 64 Î»µÄ TSS ½á¹¹
+;; å®šä¹‰ 64 ä½çš„ TSS ç»“æ„
 ;;
 STRUC tss64
                                 RESD            1
@@ -1419,40 +1419,40 @@ ENDSTRUC
 
 
 ;;
-;; ÏÂÃæ¶¨Òå´¦ÀíÆ÷ĞÅÏ¢½á¹¹
+;; ä¸‹é¢å®šä¹‰å¤„ç†å™¨ä¿¡æ¯ç»“æ„
 ;;
 STRUC   ProcessorInfo
-        .Vendor                  RESD           1               ; ´¦ÀíÆ÷µÄ³§ÉÌ
+        .Vendor                  RESD           1               ; å¤„ç†å™¨çš„å‚å•†
         
         ;;
-        ;; ´¦ÀíÆ÷ĞÍºÅĞÅÏ¢
+        ;; å¤„ç†å™¨å‹å·ä¿¡æ¯
         ;;
-        .DisplayModel           RESB            1               ; ĞÍºÅ
-        .DisplayFamily          RESB            1               ; ¼Ò×åºÅ
+        .DisplayModel           RESB            1               ; å‹å·
+        .DisplayFamily          RESB            1               ; å®¶æ—å·
                                 RESW            1
-        .MaxPhysicalAddr        RESD            1               ; ×î´óµÄÎïÀíµØÖ·¿í¶È
-        .MaxVirtualAddr         RESD            1               ; ×î´óµÄĞéÄâµØÖ·¿í¶È
+        .MaxPhysicalAddr        RESD            1               ; æœ€å¤§çš„ç‰©ç†åœ°å€å®½åº¦
+        .MaxVirtualAddr         RESD            1               ; æœ€å¤§çš„è™šæ‹Ÿåœ°å€å®½åº¦
 
 ENDSTRUC
 
 
 ;;
-;; ¶¨Òå cahce ÀàĞÍ
+;; å®šä¹‰ cahce ç±»å‹
 ;;
-CACHE_NONE                      EQU             0               ; ÎŞ
-CACHE_DATA                      EQU             1               ; Êı¾İ cache
-CACHE_INSTRUCTION               EQU             2               ; Ö¸Áî cache
-CACHE_UNIFIED                   EQU             3               ; Í³Ò»µÄ cache
+CACHE_NONE                      EQU             0               ; æ— 
+CACHE_DATA                      EQU             1               ; æ•°æ® cache
+CACHE_INSTRUCTION               EQU             2               ; æŒ‡ä»¤ cache
+CACHE_UNIFIED                   EQU             3               ; ç»Ÿä¸€çš„ cache
 
-CACHE_L1D                       EQU             1               ; level 1 µÄÊı¾İ cahce
-CACHE_L1I                       EQU             2               ; level 1 µÄÖ¸Áî cache
-CACHE_MLC                       EQU             3               ; level 2 µÄÍ³Ò» cache
-CACHE_LLC                       EQU             3               ; level 3 µÄÍ³Ò» cache
+CACHE_L1D                       EQU             1               ; level 1 çš„æ•°æ® cahce
+CACHE_L1I                       EQU             2               ; level 1 çš„æŒ‡ä»¤ cache
+CACHE_MLC                       EQU             3               ; level 2 çš„ç»Ÿä¸€ cache
+CACHE_LLC                       EQU             3               ; level 3 çš„ç»Ÿä¸€ cache
 
 
 STRUC CacheInfo
-        .Type                   RESW            1               ; cache ÀàĞÍ
-        .Level                  RESW            1               ; cache ²ã¼¶
+        .Type                   RESW            1               ; cache ç±»å‹
+        .Level                  RESW            1               ; cache å±‚çº§
         .Size                   RESD            1               ; cache size
         .Ways                   RESW            1               ; cache ways
         .Partitions             RESW            1               ; line partitions
@@ -1465,7 +1465,7 @@ ENDSTRUC
 
 
 ;;
-;; ´¦ÀíÆ÷ÍØÆËÖĞµÄ level
+;; å¤„ç†å™¨æ‹“æ‰‘ä¸­çš„ level
 ;; 
 
 LEVEL_THREAD                    EQU             1
@@ -1474,42 +1474,42 @@ LEVEL_INVALID                   EQU             0
 
 
 ;;
-;; ¶¨Òå´¦ÀíÆ÷ ID µÄÍØÆË½á¹¹ĞÅÏ¢
+;; å®šä¹‰å¤„ç†å™¨ ID çš„æ‹“æ‰‘ç»“æ„ä¿¡æ¯
 ;;
 STRUC TopologyInfo
-        .CoreId                 RESB            1               ; ±£´æ Core Id Öµ
-        .ThreadId               RESB            1               ; ±£´æ SMT ID Öµ
-        .CoreMaskWidth          RESB            1               ; core ÓòµÄ mask ¿í¶È
-        .ThreadMaskWidth        RESB            1               ; SMT ÓòµÄ mask ¿í¶È
-        .CoreSelectMask         RESD            1               ; core ÓòµÄ select mask Î»
-        .ThreadSelectMask       RESD            1               ; SMT ÓòµÄ select mask Î»
+        .CoreId                 RESB            1               ; ä¿å­˜ Core Id å€¼
+        .ThreadId               RESB            1               ; ä¿å­˜ SMT ID å€¼
+        .CoreMaskWidth          RESB            1               ; core åŸŸçš„ mask å®½åº¦
+        .ThreadMaskWidth        RESB            1               ; SMT åŸŸçš„ mask å®½åº¦
+        .CoreSelectMask         RESD            1               ; core åŸŸçš„ select mask ä½
+        .ThreadSelectMask       RESD            1               ; SMT åŸŸçš„ select mask ä½
         
-        .PackageId              RESD            1               ; ´¦ÀíÆ÷µÄ package id
-        .ProcessorId            RESD            1               ; 32 Î»µÄ´¦ÀíÆ÷ Id Öµ
+        .PackageId              RESD            1               ; å¤„ç†å™¨çš„ package id
+        .ProcessorId            RESD            1               ; 32 ä½çš„å¤„ç†å™¨ Id å€¼
 
-        .LogicalProcessorPerCore        RESD    1               ; Ã¿¸ö core ÄÚÓĞ¶àÉÙ¸ö local processor
-        .LogicalProcessorPerPackage     RESD    1               ; Ã¿¸ö´¦ÀíÆ÷ÎïÀí package ÄÚÓĞ¶àÉÙ¸ö local processor
+        .LogicalProcessorPerCore        RESD    1               ; æ¯ä¸ª core å†…æœ‰å¤šå°‘ä¸ª local processor
+        .LogicalProcessorPerPackage     RESD    1               ; æ¯ä¸ªå¤„ç†å™¨ç‰©ç† package å†…æœ‰å¤šå°‘ä¸ª local processor
 
         TOPOLOGY_INFO_SIZE      EQU     $
 ENDSTRUC
 
 
 ;;
-;; MTMR£¨Memory Type Manange Record£©½á¹¹
+;; MTMRï¼ˆMemory Type Manange Recordï¼‰ç»“æ„
 ;;
 STRUC MTMR
-        .InUsed                 RESB            1               ; ¼ÇÂ¼ÊÇ·ñÔÚÊ¹ÓÃ        ¡¡
-        .Type                   RESB            1               ; ÄÚ´æÀàĞÍ
+        .InUsed                 RESB            1               ; è®°å½•æ˜¯å¦åœ¨ä½¿ç”¨        ã€€
+        .Type                   RESB            1               ; å†…å­˜ç±»å‹
         ALIGNB 4
-        .Start                  RESQ            1               ; ÄÚ´æÆğÊ¼Î»ÖÃ
-        .Length                 RESD            1               ; ÄÚ´æ·¶Î§³¤¶È
+        .Start                  RESQ            1               ; å†…å­˜èµ·å§‹ä½ç½®
+        .Length                 RESD            1               ; å†…å­˜èŒƒå›´é•¿åº¦
 
         MTMR_SIZE               EQU     $
 ENDSTRUC 
 
 
 ;;
-;; DSMR(Debug Store Manage Record)¹ÜÀí¼ÇÂ¼½á¹¹
+;; DSMR(Debug Store Manage Record)ç®¡ç†è®°å½•ç»“æ„
 ;;
 STRUC DSMR64
         .BtsBufferBase          RESQ            1
@@ -1549,18 +1549,18 @@ ENDSTRUC
 
 
 ;;
-;; ¶¨ÒåÃ¿¸ö´¦ÀíÆ÷ BTS buffer ÇøÓòµÄ·ÖÅäÁ£¶È
+;; å®šä¹‰æ¯ä¸ªå¤„ç†å™¨ BTS buffer åŒºåŸŸçš„åˆ†é…ç²’åº¦
 ;;
 BTS_BUFFER_SIZE                 EQU             100h
 
 ;;
-;; ¶¨ÒåÃ¿¸ö´¦ÀíÆ÷ PEBS buffer ÇøÓòµÄ·ÖÅäÁ£¶È
+;; å®šä¹‰æ¯ä¸ªå¤„ç†å™¨ PEBS buffer åŒºåŸŸçš„åˆ†é…ç²’åº¦
 ;;
 PEBS_BUFFER_SIZE                EQU             400h
 
 
 ;;
-;; ÓÃÓÚ pre-stage3 ½×¶ÎµÄÁÙÊ± longmode »·¾³
+;; ç”¨äº pre-stage3 é˜¶æ®µçš„ä¸´æ—¶ longmode ç¯å¢ƒ
 ;;
 struc PreStage3Env
         .GdtPointer:
@@ -1573,11 +1573,11 @@ struc PreStage3Env
         .IdtBase        RESQ    1
 
 ;;
-;; PreStageEnv.Gdt ¹² 40 ×Ö½Ú
-;; 1) 00h: NULL ÃèÊö·û
-;; 2) 08h: CS ÃèÊö·û
-;; 3) 10h: SS ÃèÊö·û
-;; 4) 18h: TSS ÃèÊö·û£¨Õ¼16¸ö×Ö½Ú£©
+;; PreStageEnv.Gdt å…± 40 å­—èŠ‚
+;; 1) 00h: NULL æè¿°ç¬¦
+;; 2) 08h: CS æè¿°ç¬¦
+;; 3) 10h: SS æè¿°ç¬¦
+;; 4) 18h: TSS æè¿°ç¬¦ï¼ˆå 16ä¸ªå­—èŠ‚ï¼‰
 ;;        
 PreStage3Env.CsSelector64  EQU     08h
 PreStage3Env.CsSelector    EQU     10h
@@ -1585,9 +1585,9 @@ PreStage3Env.SsSelector    EQU     18h
 PreStage3Env.TssSelector   EQU     20h
         
         ALIGNB 8
-        .Gdt            RESQ    6                       ; ÈİÄÉ 6 ¸ö»ù±¾µÄ longmode ¶Î
-        .Idt            RESQ    (32 * 2)                ; ÈİÄÉ 32 ¸öÒì³£ÖĞ¶ÏÏòÁ¿
-        .Tss            RESB    104                     ; TSS 104 ¸ö×Ö½Ú
+        .Gdt            RESQ    6                       ; å®¹çº³ 6 ä¸ªåŸºæœ¬çš„ longmode æ®µ
+        .Idt            RESQ    (32 * 2)                ; å®¹çº³ 32 ä¸ªå¼‚å¸¸ä¸­æ–­å‘é‡
+        .Tss            RESB    104                     ; TSS 104 ä¸ªå­—èŠ‚
         
         RESB            0FF0h - $
 
@@ -1600,7 +1600,7 @@ endstruc
 
 
 ;;
-;; VMX  global data ½á¹¹ 
+;; VMX  global data ç»“æ„ 
 ;;
 
 struc VGA
@@ -1623,9 +1623,9 @@ struc VGA
         .TrueEntryCtls          RESQ    1
         
         ;;
-        ;; Èç¹û bit55 of IA32_VMX_BASIC Îª 1 Ê±, Ö§³Ö 4 ¸ö capability ¼Ä´æÆ÷
-        ;; 1) Ö§³ÖÊ±£¬TrueFlag µÄÖµÎª 1
-        ;; 2) ²»Ö§³ÖÊ±£¬TrueFlag µÄÖµÎª 0
+        ;; å¦‚æœ bit55 of IA32_VMX_BASIC ä¸º 1 æ—¶, æ”¯æŒ 4 ä¸ª capability å¯„å­˜å™¨
+        ;; 1) æ”¯æŒæ—¶ï¼ŒTrueFlag çš„å€¼ä¸º 1
+        ;; 2) ä¸æ”¯æŒæ—¶ï¼ŒTrueFlag çš„å€¼ä¸º 0
         ;;
         .TrueFlag               RESD    1
 

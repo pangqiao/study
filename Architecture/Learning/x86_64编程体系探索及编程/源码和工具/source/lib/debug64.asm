@@ -1,36 +1,36 @@
 ; debug64.asm
-; Copyright (c) 2009-2012 µËÖ¾
+; Copyright (c) 2009-2012 é‚“å¿—
 ; All rights reserved.
 
 
 ;*
-;* 64 Î»µÄ debug ¿â
+;* 64 ä½çš„ debug åº“
 ;*
 
 
 
 ;-------------------------------------------
-; set_debug_store_area(): ÉèÖÃ DS ÇøÓò»ùµØÖ·
+; set_debug_store_area(): è®¾ç½® DS åŒºåŸŸåŸºåœ°å€
 ;-------------------------------------------
 set_debug_store_area:
 	mov rsi, DS_SAVE_BASE
-	call clear_4K_page64		; ÏÈÇå¿Õ debug store area
+	call clear_4K_page64		; å…ˆæ¸…ç©º debug store area
 
-; ÉèÖÃ IA32_DS_AERA ¼Ä´æÆ÷
+; è®¾ç½® IA32_DS_AERA å¯„å­˜å™¨
 	mov ecx, IA32_DS_AREA
-	mov eax, DS_SAVE_BASE		; DS ÇøÓò»ùµØÖ·
+	mov eax, DS_SAVE_BASE		; DS åŒºåŸŸåŸºåœ°å€
 	mov edx, 0
 	wrmsr
 	ret
 
 ;----------------------------------------------------------------
-; set_ds_management_record() ÉèÖÃ¹ÜÀíÇø¼ÇÂ¼»ùÓÚ DS_SAVE_BASE
+; set_ds_management_record() è®¾ç½®ç®¡ç†åŒºè®°å½•åŸºäº DS_SAVE_BASE
 ; input:
 ;		rsi - BTS buffer base
 ;		rdi - PEBS buffer base
 ; description:
-;		È±Ê¡Çé¿öÏÂ£¬ÅäÖÃÎª»·ĞÎ»ØÂ· buffer ĞÎÊ½£¬
-;		threshold Öµ´óÓÚ maximum£¬±ÜÃâ²úÉú DS buffer Òç³öÖĞ¶Ï
+;		ç¼ºçœæƒ…å†µä¸‹ï¼Œé…ç½®ä¸ºç¯å½¢å›è·¯ buffer å½¢å¼ï¼Œ
+;		threshold å€¼å¤§äº maximumï¼Œé¿å…äº§ç”Ÿ DS buffer æº¢å‡ºä¸­æ–­
 ;--------------------------------------------------------------------
 set_ds_management_record:
 	push rbp
@@ -39,17 +39,17 @@ set_ds_management_record:
 	push rdx
 	push rbx
 
-	;; ÉèÖÃ 64 Î» BTS ¹ÜÀíÇø
+	;; è®¾ç½® 64 ä½ BTS ç®¡ç†åŒº
 	mov [DS_SAVE_BASE + BTS64_BASE], rsi
 	mov [DS_SAVE_BASE + BTS64_INDEX], rsi
 	lea rax, [rsi + BTS_RECORD_MAXIMUM * 24]
-	mov [DS_SAVE_BASE + BTS64_MAXIMUM], rax			; ×î´ó¼ÇÂ¼ÊıÎª BTS_RECORD_MAXIMUM Öµ
+	mov [DS_SAVE_BASE + BTS64_MAXIMUM], rax			; æœ€å¤§è®°å½•æ•°ä¸º BTS_RECORD_MAXIMUM å€¼
 
-	;; ÅäÖÃÎª»·ĞÎ»ØÂ· BTS buffer
+	;; é…ç½®ä¸ºç¯å½¢å›è·¯ BTS buffer
 	lea rax, [rsi + BTS_RECORD_CIRCULAR_THRESHOLD * 24]
-	mov [DS_SAVE_BASE + BTS64_THRESHOLD], rax			; ÁÙ½çÖµ¼ÇÂ¼ÊıÎª BTS_RECORD_THRESHOLD Öµ
+	mov [DS_SAVE_BASE + BTS64_THRESHOLD], rax			; ä¸´ç•Œå€¼è®°å½•æ•°ä¸º BTS_RECORD_THRESHOLD å€¼
 
-	;; ÏÂÃæ´æ·Å BTS ¹ÜÀíÇøµÄ pointer Öµ
+	;; ä¸‹é¢å­˜æ”¾ BTS ç®¡ç†åŒºçš„ pointer å€¼
 	mov rax, DS_SAVE_BASE + BTS64_BASE
 	mov [bts_base_pointer], rax
 	mov rax, DS_SAVE_BASE + BTS64_INDEX
@@ -60,26 +60,26 @@ set_ds_management_record:
 	mov [bts_threshold_pointer], rax
 
 
-	;; ÉèÖÃ 64 Î» PEBS ¹ÜÀíÇø
+	;; è®¾ç½® 64 ä½ PEBS ç®¡ç†åŒº
 	mov ecx, IA32_PERF_CAPABILITIES
 	rdmsr
 	shr eax, 8
-	and eax, 0Fh			; µÃµ½ IA32_PREF_CAPABILITIES[11:8]
-	cmp eax, 0001B			; ²âÊÔÊÇ·ñÖ§³ÖÔöÇ¿µÄ PEBS ¸ñÊ½
+	and eax, 0Fh			; å¾—åˆ° IA32_PREF_CAPABILITIES[11:8]
+	cmp eax, 0001B			; æµ‹è¯•æ˜¯å¦æ”¯æŒå¢å¼ºçš„ PEBS æ ¼å¼
 	je enhancement_pebs64
-	mov DWORD [enhancement_pebs_flag], 0				; ²»Ö§³Ö, enhancement_pebs_flag ±êÖ¾Çå 0
+	mov DWORD [enhancement_pebs_flag], 0				; ä¸æ”¯æŒ, enhancement_pebs_flag æ ‡å¿—æ¸… 0
 	mov DWORD [pebs_record_length], 144
-	lea rax, [rdi + PEBS_RECORD_MAXIMUM * 144]			; maximum Öµ
+	lea rax, [rdi + PEBS_RECORD_MAXIMUM * 144]			; maximum å€¼
 	lea rdx, [rdi + PEBS_RECORD_THRESHOLD * 144]
 	jmp set_pebs64
 enhancement_pebs64:
 	;*
-	;* ÔöÇ¿µÄ PEBS ¸ñÊ½£¬Ã¿Ìõ¼ÇÂ¼¹² 176 ¸ö×Ö½Ú *
+	;* å¢å¼ºçš„ PEBS æ ¼å¼ï¼Œæ¯æ¡è®°å½•å…± 176 ä¸ªå­—èŠ‚ *
 	;*
-	mov DWORD [enhancement_pebs_flag], 1				; Ö§³Ö£¬enhancement_pebs_flag ±êÖ¾ÖÃ 1
+	mov DWORD [enhancement_pebs_flag], 1				; æ”¯æŒï¼Œenhancement_pebs_flag æ ‡å¿—ç½® 1
 	mov DWORD [pebs_record_length], 176
-	lea rax, [rdi + PEBS_RECORD_MAXIMUM * 176]			; maximum Öµ
-	lea rdx, [rdi + PEBS_RECORD_THRESHOLD * 176]			; threshold Öµ
+	lea rax, [rdi + PEBS_RECORD_MAXIMUM * 176]			; maximum å€¼
+	lea rdx, [rdi + PEBS_RECORD_THRESHOLD * 176]			; threshold å€¼
 
 set_pebs64:
 	mov [DS_SAVE_BASE + PEBS64_BASE], rdi			; pebs buffer base
@@ -88,19 +88,19 @@ set_pebs64:
 	mov [DS_SAVE_BASE + PEBS64_THRESHOLD], rdx		; pebs buffer threshold
 
         ;*
-        ;* ±£´æ pebs index Öµ
-        ;* ×÷ÎªÅĞ¶Ï PEBS ÖĞ¶ÏÌõ¼ş
+        ;* ä¿å­˜ pebs index å€¼
+        ;* ä½œä¸ºåˆ¤æ–­ PEBS ä¸­æ–­æ¡ä»¶
         ;*
         mov [pebs_buffer_index], rdi
 
-	;; ÉèÖÃ counter reset
+	;; è®¾ç½® counter reset
 	mov rax, 0
 	mov [DS_SAVE_BASE + PEBS64_COUNTER0], rax
 	mov [DS_SAVE_BASE + PEBS64_COUNTER1], rax
 	mov [DS_SAVE_BASE + PEBS64_COUNTER2], rax
 	mov [DS_SAVE_BASE + PEBS64_COUNTER3], rax
 
-	;; ÏÂÃæ´æ·Å PEBS ¹ÜÀíÇø pointer
+	;; ä¸‹é¢å­˜æ”¾ PEBS ç®¡ç†åŒº pointer
 	mov rax, DS_SAVE_BASE + PEBS64_BASE
 	mov [pebs_base_pointer], rax
 	mov rax, DS_SAVE_BASE + PEBS64_INDEX
@@ -118,7 +118,7 @@ set_pebs64:
 	mov rax, DS_SAVE_BASE + PEBS64_COUNTER3
 	mov [pebs_counter3_pointer], rax
 
-        ; Çå PEBS buffer Òç³öÖ¸Ê¾Î» OvfBuffer
+        ; æ¸… PEBS buffer æº¢å‡ºæŒ‡ç¤ºä½ OvfBuffer
         RESET_PEBS_BUFFER_OVERFLOW
 
 set_ds_management_record_done:	
@@ -131,22 +131,22 @@ set_ds_management_record_done:
 
 
 ;--------------------------------------------------------------
-; test_bts_buffer_overflow(): ²âÊÔÊÇ·ñ·¢Éú BTS buffer Òç³öÖĞ¶Ï
+; test_bts_buffer_overflow(): æµ‹è¯•æ˜¯å¦å‘ç”Ÿ BTS buffer æº¢å‡ºä¸­æ–­
 ;--------------------------------------------------------------
 test_bts_buffer_overflow:
         mov rax, [bts_index_pointer]
-        mov rax, [rax]                          ; ¶Á BTS index Öµ
+        mov rax, [rax]                          ; è¯» BTS index å€¼
         mov rsi, [bts_threshold_pointer]
-        cmp rax, [rsi]                          ; ±È½Ï index >= threshold ?
+        cmp rax, [rsi]                          ; æ¯”è¾ƒ index >= threshold ?
         setae al
         movzx eax, al
         ret
 
 
 ;-----------------------------------------
-; set_bts_buffer_size(): ÉèÖÃ BTS buffer ¼ÇÂ¼Êı
+; set_bts_buffer_size(): è®¾ç½® BTS buffer è®°å½•æ•°
 ; input:
-;       esi-BTS buffer ÈİÄÉµÄ¼ÇÂ¼Êı
+;       esi-BTS buffer å®¹çº³çš„è®°å½•æ•°
 ;-----------------------------------------
 set_bts_buffer_size:
         push rcx
@@ -156,21 +156,21 @@ set_bts_buffer_size:
         imul esi, ecx                           ; count * sizeof(bts_record)
         mov rdi, [bts_maximum_pointer]
         mov rax, [bts_base_pointer]
-        mov rax, [rax]                          ; ¶ÁÈ¡ BTS base Öµ
+        mov rax, [rax]                          ; è¯»å– BTS base å€¼
         add rsi, rax                            ; base + buffer size
-        mov [rdi], rsi                          ; ÉèÖÃ bts maximum Öµ
+        mov [rdi], rsi                          ; è®¾ç½® bts maximum å€¼
 
         mov rdi, [bts_threshold_pointer]
-        mov [rdi], rsi                          ; ÉèÖÃ bts thrshold Öµ
+        mov [rdi], rsi                          ; è®¾ç½® bts thrshold å€¼
         mov rsi, rcx                            ; sizeof(bts_record)
 
         mov ecx, IA32_DEBUGCTL
         rdmsr 
-        bt eax, BTINT_BIT                       ; ²âÊÔÊÇ·ñ¿ªÆô BTINT Î»
+        bt eax, BTINT_BIT                       ; æµ‹è¯•æ˜¯å¦å¼€å¯ BTINT ä½
         mov ecx, 0
-        cmovc rsi, rcx                          ; Èç¹û¿ªÆôÁË£¬bts threshold = bts maximum
-                                                ; ·ñÔò bts threshold = bts maximum + sizeof(bts_record)
-        add [rdi], rsi                          ; ×îÖÕµÄ bts threshold Öµ
+        cmovc rsi, rcx                          ; å¦‚æœå¼€å¯äº†ï¼Œbts threshold = bts maximum
+                                                ; å¦åˆ™ bts threshold = bts maximum + sizeof(bts_record)
+        add [rdi], rsi                          ; æœ€ç»ˆçš„ bts threshold å€¼
         pop rdx
         pop rcx
         ret
@@ -183,11 +183,11 @@ set_int_bts_buffer_size:
         imul esi, ecx                           ; count * sizeof(bts_record)
         mov rdi, [bts_maximum_pointer]
         mov rax, [bts_base_pointer]
-        mov rax, [rax]                          ; ¶ÁÈ¡ BTS base Öµ
+        mov rax, [rax]                          ; è¯»å– BTS base å€¼
         add rsi, rax                            ; base + buffer size
-        mov [rdi], rsi                          ; ÉèÖÃ bts maximum Öµ
+        mov [rdi], rsi                          ; è®¾ç½® bts maximum å€¼
         mov rdi, [bts_threshold_pointer]
-        mov [rdi], rsi                          ; ÉèÖÃ bts thrshold Öµ
+        mov [rdi], rsi                          ; è®¾ç½® bts thrshold å€¼
         pop rdx
         pop rcx
         ret
@@ -195,66 +195,66 @@ set_int_bts_buffer_size:
 
 
 ;--------------------------------------------------
-; set_pebs_buffer_size(): ÉèÖÃ PEBS buffer ¿ÉÈİÄÉÊı
+; set_pebs_buffer_size(): è®¾ç½® PEBS buffer å¯å®¹çº³æ•°
 ; input:
-;       esi-PEBS buffer ÈİÄÉµÄ¼ÇÂ¼Êı
+;       esi-PEBS buffer å®¹çº³çš„è®°å½•æ•°
 ;---------------------------------------------------
 set_pebs_buffer_size:
         push rcx
-        cmp DWORD [enhancement_pebs_flag], 1            ; ²âÊÔÊÇ·ñÖ§³ÖÔöÇ¿µÄ PEBS ¼ÇÂ¼¸ñÊ½
+        cmp DWORD [enhancement_pebs_flag], 1            ; æµ‹è¯•æ˜¯å¦æ”¯æŒå¢å¼ºçš„ PEBS è®°å½•æ ¼å¼
         mov ecx, PEBS_ENHANCEMENT_RECORD64_SIZE
         mov edi, PEBS_RECORD64_SIZE
         cmovne ecx, edi                                  
         imul esi, ecx                                   ; count * size(pebs_record)
         mov rdi, [pebs_maximum_pointer]
         mov rax, [pebs_base_pointer]
-        mov rax, [rax]                                  ; ¶ÁÈ¡ pebs base Öµ
+        mov rax, [rax]                                  ; è¯»å– pebs base å€¼
         add rsi, rax                                    ; base + buffer_size
-        mov [rdi], rsi                                  ; ÉèÖÃ pebs maximum
+        mov [rdi], rsi                                  ; è®¾ç½® pebs maximum
         mov rdi, [pebs_threshold_pointer]
-        mov [rdi], rsi                                  ; ÉèÖÃ pebs threshold Öµ
+        mov [rdi], rsi                                  ; è®¾ç½® pebs threshold å€¼
         pop rcx
         ret
 
 
 ;----------------------------------------------
-; reset_bts_index(): ÖØÖÃ BTS index Îª base Öµ
+; reset_bts_index(): é‡ç½® BTS index ä¸º base å€¼
 ;----------------------------------------------
 reset_bts_index:
         mov rdi, [bts_index_pointer]
         mov rsi, [bts_base_pointer]
-        mov rsi, [rsi]                                  ; ¶ÁÈ¡ BTS base Öµ
+        mov rsi, [rsi]                                  ; è¯»å– BTS base å€¼
         mov [rdi], rsi                                  ; BTS index = BTS base
         ret
 
 ;----------------------------------------------
-; reset_pebs_index()£ºÖØÖÃ PEBS index ÖµÎª base
+; reset_pebs_index()ï¼šé‡ç½® PEBS index å€¼ä¸º base
 ;----------------------------------------------
 reset_pebs_index:
         mov rdi, [pebs_index_pointer]       
         mov rsi, [pebs_base_pointer]
-        mov rsi, [rsi]                                  ; ¶ÁÈ¡ PEBS base Öµ
+        mov rsi, [rsi]                                  ; è¯»å– PEBS base å€¼
         mov [rdi], rsi                                  ; PEBS index = PEBS base
-        mov [pebs_buffer_index], rsi                    ; ¸üĞÂ±£´æµÄ PEBS index Öµ
+        mov [pebs_buffer_index], rsi                    ; æ›´æ–°ä¿å­˜çš„ PEBS index å€¼
         ret
 
 
 ;------------------------------------------------------------
-; update_pebs_index_track(): ¸üĞÂPEBS index µÄ¹ì¼£
-; ÃèÊö£º
-;       ¸üĞÂ [pebs_buffer_index]±äÁ¿µÄÖµ£¬±£³Ö¼ì²â PEBS ÖĞ¶Ï
-;       [pebs_buffer_index] ¼ÇÂ¼×Å¡°µ±Ç°¡±µÄ PEBS index Öµ
+; update_pebs_index_track(): æ›´æ–°PEBS index çš„è½¨è¿¹
+; æè¿°ï¼š
+;       æ›´æ–° [pebs_buffer_index]å˜é‡çš„å€¼ï¼Œä¿æŒæ£€æµ‹ PEBS ä¸­æ–­
+;       [pebs_buffer_index] è®°å½•ç€â€œå½“å‰â€çš„ PEBS index å€¼
 ;------------------------------------------------------------
 update_pebs_index_track:
         mov rax, [pebs_index_pointer]
-        mov rax, [rax]                                  ; ¶Áµ±Ç° pebs index Öµ
-        mov [pebs_buffer_index], rax                    ; ¸üĞÂ±£´æµÄ pebs index Öµ        
+        mov rax, [rax]                                  ; è¯»å½“å‰ pebs index å€¼
+        mov [pebs_buffer_index], rax                    ; æ›´æ–°ä¿å­˜çš„ pebs index å€¼        
         ret
 
 
 
 ;-----------------------------
-; ´òÓ¡ BTS ¹ÜÀíÇøÊı¾İ
+; æ‰“å° BTS ç®¡ç†åŒºæ•°æ®
 ;----------------------------
 dump_ds_management:
 	jmp do_dump_ds_management
@@ -275,13 +275,13 @@ do_dump_ds_management:
 	push rbx
 
 
-;; ÏÂÃæ´òÓ¡ DS ¹ÜÀíÇø¼ÇÂ¼	
+;; ä¸‹é¢æ‰“å° DS ç®¡ç†åŒºè®°å½•	
 	mov esi, dbm_msg1
 	LIB32_PUTS_CALL
 	mov rax, [bts_base_pointer]
 	mov esi, [rax]
 	mov edi, [rax + 4]
-	LIB32_PRINT_QWORD_VALUE_CALL		; ´òÓ¡ bts base
+	LIB32_PRINT_QWORD_VALUE_CALL		; æ‰“å° bts base
 	mov esi, dbm_msg0
 	LIB32_PUTS_CALL
 	mov esi, dbm_msg5
@@ -289,14 +289,14 @@ do_dump_ds_management:
 	mov rax, [pebs_base_pointer]
 	mov esi, [rax]
 	mov edi, [rax + 4]
-	LIB32_PRINT_QWORD_VALUE_CALL		; ´òÓ¡ pebs base
+	LIB32_PRINT_QWORD_VALUE_CALL		; æ‰“å° pebs base
 	LIB32_PRINTLN_CALL
 	mov esi, dbm_msg2
 	LIB32_PUTS_CALL
 	mov rax, [bts_index_pointer]
 	mov esi, [rax]
 	mov edi, [rax + 4]
-	LIB32_PRINT_QWORD_VALUE_CALL		; ´òÓ¡ bts index
+	LIB32_PRINT_QWORD_VALUE_CALL		; æ‰“å° bts index
 	mov esi, dbm_msg0
 	LIB32_PUTS_CALL
 	mov esi, dbm_msg6
@@ -304,14 +304,14 @@ do_dump_ds_management:
 	mov rax, [pebs_index_pointer]
 	mov esi, [rax]
 	mov edi, [rax + 4]
-	LIB32_PRINT_QWORD_VALUE_CALL		; ´òÓ¡ pebs index
+	LIB32_PRINT_QWORD_VALUE_CALL		; æ‰“å° pebs index
 	LIB32_PRINTLN_CALL
 	mov esi, dbm_msg3
 	LIB32_PUTS_CALL
 	mov rax, [bts_maximum_pointer]
 	mov esi, [rax]
 	mov edi, [rax + 4]
-	LIB32_PRINT_QWORD_VALUE_CALL		; ´òÓ¡ bts maximum
+	LIB32_PRINT_QWORD_VALUE_CALL		; æ‰“å° bts maximum
 	mov esi, dbm_msg0
 	LIB32_PUTS_CALL
 	mov esi, dbm_msg7
@@ -319,14 +319,14 @@ do_dump_ds_management:
 	mov rax, [pebs_maximum_pointer]
 	mov esi, [rax]
 	mov edi, [rax + 4]
-	LIB32_PRINT_QWORD_VALUE_CALL		; ´òÓ¡ pebs maximum
+	LIB32_PRINT_QWORD_VALUE_CALL		; æ‰“å° pebs maximum
 	LIB32_PRINTLN_CALL
 	mov esi, dbm_msg4
 	LIB32_PUTS_CALL
 	mov rax, [bts_threshold_pointer]
 	mov esi, [rax]
 	mov edi, [rax + 4]
-	LIB32_PRINT_QWORD_VALUE_CALL		; ´òÓ¡ bts threshold
+	LIB32_PRINT_QWORD_VALUE_CALL		; æ‰“å° bts threshold
 	mov esi, dbm_msg0
 	LIB32_PUTS_CALL
 	mov esi, dbm_msg8
@@ -334,7 +334,7 @@ do_dump_ds_management:
 	mov rax, [pebs_threshold_pointer]
 	mov esi, [rax]
 	mov edi, [rax + 4]
-	LIB32_PRINT_QWORD_VALUE_CALL		; ´òÓ¡ pebs threshold
+	LIB32_PRINT_QWORD_VALUE_CALL		; æ‰“å° pebs threshold
 	LIB32_PRINTLN_CALL
 	
 dump_ds_management_done:	
@@ -346,7 +346,7 @@ dump_ds_management_done:
 
 
 ;--------------------------------------
-;´òÓ¡ BTS ¼ÇÂ¼
+;æ‰“å° BTS è®°å½•
 ;--------------------------------------
 dump_bts_record:
 	jmp do_dump_bts_record
@@ -363,29 +363,29 @@ do_dump_bts_record:
 	push rbx
 	push r10
 
-	; ´òÓ¡±íÍ·
+	; æ‰“å°è¡¨å¤´
 	mov esi, br_msg1
 	LIB32_PUTS_CALL
 
 	mov rax, [bts_maximum_pointer]
-	mov r10, [rax]				; È¡ BTS maximum Öµ
+	mov r10, [rax]				; å– BTS maximum å€¼
 	mov rax, [bts_threshold_pointer]
-	cmp r10, [rax]				; maximum Óë threshold ±È½Ï
-	cmovb r10, [rax]			; ÕÒ³ö maximum Óë threshold µÄ×î´óÖµ
+	cmp r10, [rax]				; maximum ä¸ threshold æ¯”è¾ƒ
+	cmovb r10, [rax]			; æ‰¾å‡º maximum ä¸ threshold çš„æœ€å¤§å€¼
 
 	mov rax, [bts_base_pointer]
-	mov rbx, [rax]				; È¡ BTS base Öµ
+	mov rbx, [rax]				; å– BTS base å€¼
 
 
-; ÏÖÔÚ£ºrbx = base Öµ£¬r10 = BTS buffer ×î´óÖµ
+; ç°åœ¨ï¼šrbx = base å€¼ï¼Œr10 = BTS buffer æœ€å¤§å€¼
 
 	xor rcx, rcx
 dump_bts_record_loop:
-	cmp rbx, r10				; ÊÇ·ñ >= BTS maximum »ò BTS threshold ?
+	cmp rbx, r10				; æ˜¯å¦ >= BTS maximum æˆ– BTS threshold ?
 	jg do_dump_bts_record_done
 	
 
-	; ²âÊÔÊÇ·ñÓöµ½ BTS maximum
+	; æµ‹è¯•æ˜¯å¦é‡åˆ° BTS maximum
 	mov rax, [bts_maximum_pointer]
 	cmp rbx, [rax]
 	jne dump_bts_record_next
@@ -394,9 +394,9 @@ dump_bts_record_loop:
 
 dump_bts_record_next:
 
-; ´òÓ¡ threshold ĞÅÏ¢
+; æ‰“å° threshold ä¿¡æ¯
 	mov rax, [bts_threshold_pointer]
-	cmp rbx, [rax]				; ÊÇ·ñÎª threshold Öµ
+	cmp rbx, [rax]				; æ˜¯å¦ä¸º threshold å€¼
 	mov esi, 0
 	mov edi, br_msg3
 	cmove esi, edi
@@ -418,7 +418,7 @@ dump_bts_record_next:
 	LIB32_PRINT_QWORD_VALUE_CALL
 
 	mov rax, [bts_index_pointer]
-	cmp rbx, [rax]					; µ±Ç°ÊÇ·ñÎª index Öµ
+	cmp rbx, [rax]					; å½“å‰æ˜¯å¦ä¸º index å€¼
 	mov eax, br_msg7
 	mov esi, br_msg2
 	cmovne esi, eax
@@ -452,7 +452,7 @@ do_dump_bts_record_done:
 	
 
 ;-----------------------------------------
-; dump_reg64(): ´òÓ¡Í¨ÓÃ¼Ä´æÆ÷×é
+; dump_reg64(): æ‰“å°é€šç”¨å¯„å­˜å™¨ç»„
 ;-----------------------------------------
 dump_reg64:
         jmp do_dump_reg64
@@ -486,7 +486,7 @@ do_dump_reg64_loop:
 
 
 ;---------------------------------------------
-; dump_pebs_record()£º´òÓ¡×îºóÒ»Ìõ PEBS ¼ÇÂ¼
+; dump_pebs_record()ï¼šæ‰“å°æœ€åä¸€æ¡ PEBS è®°å½•
 ;---------------------------------------------
 dump_pebs_record:
 	jmp do_dump_pebs_record
@@ -513,7 +513,7 @@ do_dump_pebs_record:
 	mov rax, [pebs_index_pointer]
 	mov r10, [rax]
 	mov rax, [pebs_base_pointer]
-	cmp r10, [rax]			; index Óë base ±È½Ï
+	cmp r10, [rax]			; index ä¸ base æ¯”è¾ƒ
 	ja dump_pebs_record_next
 	mov esi, dpr_msg1
 	LIB32_PUTS_CALL
@@ -543,7 +543,7 @@ dump_pebs_record_loop:
 	cmp DWORD [rbx], 0
 	jne dump_pebs_record_loop
 
-	;; ÊÇ·ñÎªÔöÇ¿ PEBS ¼ÇÂ¼
+	;; æ˜¯å¦ä¸ºå¢å¼º PEBS è®°å½•
 	cmp DWORD [enhancement_pebs_flag], 1
 	jne dump_pebs_record_done
         
@@ -574,7 +574,7 @@ dump_pebs_record_done:
 
 
 ;-----------------------
-; ´òÓ¡ËùÓĞ LBR stack
+; æ‰“å°æ‰€æœ‰ LBR stack
 ;-----------------------
 dump_lbr_stack:
 	jmp do_dump_lbr_stack
@@ -606,7 +606,7 @@ do_dump_lbr_stack:
 	mov esi, [eax * 4 + address_format_falgs]
 	LIB32_PUTS_CALL
 	
-; ´òÓ¡ĞÅÏ¢
+; æ‰“å°ä¿¡æ¯
 dump_lbr_stack_loop:
 
 	mov esi, fs_msg1
@@ -619,7 +619,7 @@ dump_lbr_stack_loop:
 	mov esi, fs_msg3
 	LIB32_PUTS_CALL
 
-; ´òÓ¡ from ip
+; æ‰“å° from ip
 	lea ecx, [r12d + MSR_LASTBRANCH_0_FROM_IP]
 	rdmsr
 	mov esi, eax
@@ -637,7 +637,7 @@ dump_lbr_from_stack_next:
 	mov esi, fs_msg4
 	LIB32_PUTS_CALL
 
-;; ´òÓ¡ to ip
+;; æ‰“å° to ip
 dump_lbr_to_stack:
 	mov esi, fs_msg5
 	LIB32_PUTS_CALL
@@ -670,7 +670,7 @@ dump_lbr_stack_next:
 	ret
 
 ;-----------------------------
-; ´òÓ¡ last exception from/to
+; æ‰“å° last exception from/to
 ;-----------------------------
 dump_last_exception:
 	mov esi, last_exception_from
@@ -691,7 +691,7 @@ dump_last_exception:
 	ret
 	
 ;-------------------------------
-; ´òÓ¡ IA32_DEBUGCTL ¼Ä´æÆ÷
+; æ‰“å° IA32_DEBUGCTL å¯„å­˜å™¨
 ;-------------------------------
 dump_debugctl:
 	mov esi, debugctl_msg
@@ -709,7 +709,7 @@ dump_debugctl:
 
 
 ;-----------------------
-; ´òÓ¡ DR0-DR3 ¼Ä´æÆ÷
+; æ‰“å° DR0-DR3 å¯„å­˜å™¨
 ;----------------------
 dump_drs:
 	mov esi, dr0_msg
@@ -743,7 +743,7 @@ dump_drs:
 	ret
 	
 ;-----------------------
-; ´òÓ¡ DR6 ¼Ä´æÆ÷
+; æ‰“å° DR6 å¯„å­˜å™¨
 ;-----------------------
 dump_dr6:
 	mov esi, dr6_msg
@@ -757,9 +757,9 @@ dump_dr6:
 	ret
 
 ;-------------------------------------------
-; dump_dr6_flags(): ´òÓ¡ DR6 ±êÖ¾Ê¹ÓÃÊäÈëµÄÖµ
+; dump_dr6_flags(): æ‰“å° DR6 æ ‡å¿—ä½¿ç”¨è¾“å…¥çš„å€¼
 ; input:
-;		esi: ÊäÈëÖµ
+;		esi: è¾“å…¥å€¼
 ;-------------------------------------------
 dump_dr6_flags:
 	push rcx
@@ -777,7 +777,7 @@ dump_dr6_flags:
 
 
 ;----------------------------
-; ´òÓ¡ dr7 ¼Ä´æÆ÷
+; æ‰“å° dr7 å¯„å­˜å™¨
 ;----------------------------
 dump_dr7:
 	push r10	
@@ -813,9 +813,9 @@ dump_dr7_next:
 	pop r10 	
 	ret
 	
-;***** Êı¾İÇø *********
+;***** æ•°æ®åŒº *********
 
-;;; ÏÂÃæÊÇ´æ·Å¹ÜÀíÇøµØÖ·
+;;; ä¸‹é¢æ˜¯å­˜æ”¾ç®¡ç†åŒºåœ°å€
 bts_base_pointer	dq 0
 bts_index_pointer	dq 0
 bts_maximum_pointer	dq 0
@@ -829,7 +829,7 @@ pebs_counter1_pointer	dq 0
 pebs_counter2_pointer	dq 0
 pebs_counter3_pointer	dq 0
 
-; ¹ÜÀíÇø¼ÇÂ¼Öµ
+; ç®¡ç†åŒºè®°å½•å€¼
 bts_buffer_base		dq 0
 bts_buffer_index	dq 0
 bts_buffer_maximum	dq 0
@@ -842,15 +842,15 @@ pebs_record_length	dq 0
 enhancement_pebs_flag	dq 0
 
 
-;; ¼Ä´æÆ÷Ô­ÉèÖÃÖµ
+;; å¯„å­˜å™¨åŸè®¾ç½®å€¼
 debugctl_value		dq 0
 pebs_enable_value	dq 0
 
 
-;; 64 Î»µÄ context ±£´æµØÖ·
+;; 64 ä½çš„ context ä¿å­˜åœ°å€
 debug_context64	times 20 dq 0
 
-; 64 Î» context
+; 64 ä½ context
 rflags_msg	db 'RFLAGS: ', 0
 rip_msg		db 'RIP: ', 0
 rax_msg		db 'RAX: ', 0
@@ -903,7 +903,7 @@ dr1_msg	db	'<DR1:> ', 0
 dr2_msg	db 	'<DR2:> ', 0
 dr3_msg	db	'<DR3:> ', 0
 
-;ÏÂÃæÊÇ dr6 µÄ±êÖ¾Î»
+;ä¸‹é¢æ˜¯ dr6 çš„æ ‡å¿—ä½
 b0_msg	db 'b0', 0
 b1_msg	db 'b1', 0
 b2_msg	db 'b2', 0
@@ -916,7 +916,7 @@ dr6_flags	dd 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 			dd bt_msg, bs_msg, bd_msg, 0, 0, 0, 0, 0, 0, 0, 0, 0, b3_msg, b2_msg, b1_msg, b0_msg,  -1
 			
 			
-;; ÏÂÃæÊÇ dr7 µÄ±êÖ¾Î»
+;; ä¸‹é¢æ˜¯ dr7 çš„æ ‡å¿—ä½
 dr7_msg		db '<DR7:> ',0
 rw0_msg		db 'RW0:', 0
 rw1_msg		db 'RW1:', 0

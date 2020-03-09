@@ -4,14 +4,14 @@
 
 
 ;*
-;* ÕâÊÇÎªÖ§³Ö debug ¹¦ÄÜ¶¨ÒåµÄº¯Êı¿â
+;* è¿™æ˜¯ä¸ºæ”¯æŒ debug åŠŸèƒ½å®šä¹‰çš„å‡½æ•°åº“
 ;*
 
 
 
 
 ;---------------------------------
-; ¿ªÆô BTS
+; å¼€å¯ BTS
 ;--------------------------------
 enable_bts:
 enable_branch_trace_store:
@@ -26,7 +26,7 @@ enable_branch_trace_store_done:
 	ret
 	
 ;--------------------------------
-; ¹Ø±Õ BTS
+; å…³é—­ BTS
 ;--------------------------------
 disable_bts:
 	mov ecx, IA32_DEBUGCTL
@@ -37,7 +37,7 @@ disable_bts:
 
 
 ;------------------------
-;support_debug_store(): ²éÑ¯ÊÇ·ñÖ§³Ö DS ÇøÓò
+;support_debug_store(): æŸ¥è¯¢æ˜¯å¦æ”¯æŒ DS åŒºåŸŸ
 ; output:
 ;		1-support, 0-no support
 ;------------------------
@@ -45,20 +45,20 @@ support_ds:
 support_debug_store:
 	mov eax, 1
 	cpuid
-	bt edx, 21				; DS Î»
+	bt edx, 21				; DS ä½
 	setc al
 	movzx eax, al
 	ret
 
 ;------------------------------------
-; support_ds64: ²éÑ¯ÊÇ·ñÖ§³Ö DS save 64 Î»¸ñÊ½
+; support_ds64: æŸ¥è¯¢æ˜¯å¦æ”¯æŒ DS save 64 ä½æ ¼å¼
 ; output:
 ;		1-support, 0-no support
 ;-----------------------------------
 support_ds64:
 	mov eax, 1
 	cpuid
-	bt ecx, 2				; DEST64 Î»
+	bt ecx, 2				; DEST64 ä½
 	setc al
 	movzx eax, al
 	ret
@@ -78,7 +78,7 @@ available_branch_trace_store:
 	jnc available_branch_trace_store_done		; no-support
 	mov ecx, IA32_MISC_ENABLE
 	rdmsr
-	bt eax, 11					; BTS unavailable Î»
+	bt eax, 11					; BTS unavailable ä½
 	setnc al
 available_branch_trace_store_done:	
 	movzx eax, al
@@ -86,7 +86,7 @@ available_branch_trace_store_done:
 
 
 ;--------------------------------------
-; avaiable_pebs(): ÊÇ·ñÖ§³Ö PEBS »úÖÆ
+; avaiable_pebs(): æ˜¯å¦æ”¯æŒ PEBS æœºåˆ¶
 ; output:
 ;		1-available, 0-unavailable
 ;--------------------------------------
@@ -98,14 +98,14 @@ available_pebs:
 	jnc available_pebs_done
 	mov ecx, IA32_MISC_ENABLE
 	rdmsr
-	bt eax, 12					; PEBS unavailable Î»
+	bt eax, 12					; PEBS unavailable ä½
 	setnc al
 available_pebs_done:
 	movzx eax, al
 	ret
 
 ;------------------------------------------------------------
-; support_enhancement_pebs(): ¼ì²âÊÇ·ñÖ§³ÖÔöÇ¿µÄ PEBS ¼ÇÂ¼
+; support_enhancement_pebs(): æ£€æµ‹æ˜¯å¦æ”¯æŒå¢å¼ºçš„ PEBS è®°å½•
 ; output:
 ;	1-support, 0-no support
 ;-----------------------------------------------------------
@@ -113,15 +113,15 @@ support_enhancement_pebs:
 	mov ecx, IA32_PERF_CAPABILITIES
 	rdmsr
 	shr eax, 8
-	and eax, 0Fh			; µÃµ½ IA32_PREF_CAPABILITIES[11:8]
-	cmp eax, 0001B			; ²âÊÔÊÇ·ñÖ§³ÖÔöÇ¿µÄ PEBS ¸ñÊ½
+	and eax, 0Fh			; å¾—åˆ° IA32_PREF_CAPABILITIES[11:8]
+	cmp eax, 0001B			; æµ‹è¯•æ˜¯å¦æ”¯æŒå¢å¼ºçš„ PEBS æ ¼å¼
 	sete al
 	movzx eax, al
 	ret
 
 
 ;----------------------------------------------
-; dump_support_ds(): ²âÊÔ´¦ÀíÆ÷¶Ô DS ºÍ BTS, PEBS Ö§³Ö¶È
+; dump_support_ds(): æµ‹è¯•å¤„ç†å™¨å¯¹ DS å’Œ BTS, PEBS æ”¯æŒåº¦
 ;-----------------------------------------------
 dump_support_ds:
 	jmp do_dump_support_ds
@@ -132,7 +132,7 @@ dsd_msg3	db 'available PEBS: ', 0
 dsd_yes		db 'yes', 10,0
 dsd_no		db 'no', 10, 0
 do_dump_support_ds:
-; ²âÊÔ DS
+; æµ‹è¯• DS
 	mov esi, dsd_msg0
 	call puts
 	call support_ds
@@ -141,7 +141,7 @@ do_dump_support_ds:
 	test eax, eax
 	cmovz esi, edi
 	call puts
-; ²âÊÔ DS64
+; æµ‹è¯• DS64
 	mov esi, dsd_msg1
 	call puts
 	call support_ds64
@@ -150,7 +150,7 @@ do_dump_support_ds:
 	test eax, eax
 	cmovz esi, edi
 	call puts
-; ²âÊÔ BTS
+; æµ‹è¯• BTS
 	mov esi, dsd_msg2
 	call puts
 	call available_bts
@@ -159,7 +159,7 @@ do_dump_support_ds:
 	test eax, eax
 	cmovz esi, edi
 	call puts
-; ²âÊÔ PEBS
+; æµ‹è¯• PEBS
 	mov esi, dsd_msg3
 	call puts
 	call available_pebs
@@ -172,27 +172,27 @@ do_dump_support_ds:
 
 
 ;-------------------------------------------
-; set_debug_store_area(): ÉèÖÃ DS ÇøÓò»ùµØÖ·
+; set_debug_store_area(): è®¾ç½® DS åŒºåŸŸåŸºåœ°å€
 ;-------------------------------------------
 set_debug_store_area:
 	mov esi, DS_SAVE_BASE
-	call clear_4K_page		; ÏÈÇå¿Õ debug store area
+	call clear_4K_page		; å…ˆæ¸…ç©º debug store area
 
-; ÉèÖÃ IA32_DS_AERA ¼Ä´æÆ÷
+; è®¾ç½® IA32_DS_AERA å¯„å­˜å™¨
 	mov ecx, IA32_DS_AREA
-	mov eax, DS_SAVE_BASE		; DS ÇøÓò»ùµØÖ·
+	mov eax, DS_SAVE_BASE		; DS åŒºåŸŸåŸºåœ°å€
 	mov edx, 0
 	wrmsr
 	ret
 
 ;----------------------------------------------------------------
-; set_ds_management_record() ÉèÖÃ¹ÜÀíÇø¼ÇÂ¼»ùÓÚ DS_SAVE_BASE
+; set_ds_management_record() è®¾ç½®ç®¡ç†åŒºè®°å½•åŸºäº DS_SAVE_BASE
 ; input:
 ;		esi - BTS buffer base
 ;		edi - PEBS buffer base
 ; description:
-;		È±Ê¡Çé¿öÏÂ£¬ÅäÖÃÎª»·ĞÎ»ØÂ· buffer ĞÎÊ½£¬
-;		threshold Öµ´óÓÚ maximum£¬±ÜÃâ²úÉú DS buffer Òç³öÖĞ¶Ï
+;		ç¼ºçœæƒ…å†µä¸‹ï¼Œé…ç½®ä¸ºç¯å½¢å›è·¯ buffer å½¢å¼ï¼Œ
+;		threshold å€¼å¤§äº maximumï¼Œé¿å…äº§ç”Ÿ DS buffer æº¢å‡ºä¸­æ–­
 ;--------------------------------------------------------------------
 set_ds_management_record:
 	push ebp
@@ -201,30 +201,30 @@ set_ds_management_record:
 	push edx
 	push ebx
 
-;; ²âÊÔÊÇ·ñÖ§³Ö 64Î»µÄ DS save ¸ñÊ½	
+;; æµ‹è¯•æ˜¯å¦æ”¯æŒ 64ä½çš„ DS save æ ¼å¼	
 	mov eax, 1
 	cpuid
-	bt ecx, 2						; DEST64 Î»
+	bt ecx, 2						; DEST64 ä½
 	jc set_ds_management_record64
 	
-	mov DWORD [ds64_flag], 0					; DS64 ²»Ö§³Ö£¬ds64_flags ±êÖ¾Çå0
-        mov DWORD [enhancement_pebs_flag], 0				; ²»Ö§³Ö, enhancement_pebs_flag ±êÖ¾Çå 0
+	mov DWORD [ds64_flag], 0					; DS64 ä¸æ”¯æŒï¼Œds64_flags æ ‡å¿—æ¸…0
+        mov DWORD [enhancement_pebs_flag], 0				; ä¸æ”¯æŒ, enhancement_pebs_flag æ ‡å¿—æ¸… 0
 
-	;; ÉèÖÃ 32Î»µÄ BTS ¸ñÊ½
+	;; è®¾ç½® 32ä½çš„ BTS æ ¼å¼
 	mov DWORD [DS_SAVE_BASE + BTS_BASE], esi
 	mov DWORD [DS_SAVE_BASE + BTS_INDEX], esi
 	lea eax, [esi + BTS_RECORD_MAXIMUM * 12]
-	mov DWORD [DS_SAVE_BASE + BTS_MAXIMUM], eax			; ×î´ó¼ÇÂ¼ÊıÎª BTS_RECORD_MAXIMUM Öµ		
+	mov DWORD [DS_SAVE_BASE + BTS_MAXIMUM], eax			; æœ€å¤§è®°å½•æ•°ä¸º BTS_RECORD_MAXIMUM å€¼		
 
-	; ÉèÖÃÎª»·ĞÎ»ØÂ· BTS buffer
+	; è®¾ç½®ä¸ºç¯å½¢å›è·¯ BTS buffer
 	lea eax, [esi + BTS_RECORD_CIRCULAR_THRESHOLD * 12]
-	mov DWORD [DS_SAVE_BASE + BTS_THRESHOLD], eax			; ÁÙ½çÖµ¼ÇÂ¼ÊıÎª BTS_RECORD_THRESHOLD Öµ
+	mov DWORD [DS_SAVE_BASE + BTS_THRESHOLD], eax			; ä¸´ç•Œå€¼è®°å½•æ•°ä¸º BTS_RECORD_THRESHOLD å€¼
 
 	
-	;; ÉèÖÃ 32 Î»µÄ PEBS ¸ñÊ½
+	;; è®¾ç½® 32 ä½çš„ PEBS æ ¼å¼
 	mov DWORD [DS_SAVE_BASE + PEBS_BASE], edi			; pebs buffer base
 	mov DWORD [DS_SAVE_BASE + PEBS_INDEX], edi			; pebs buffer index
-        mov DWORD [pebs_buffer_index], edi                              ; ±£´æ index Öµ
+        mov DWORD [pebs_buffer_index], edi                              ; ä¿å­˜ index å€¼
 	lea eax, [edi + PEBS_RECORD_MAXIMUM * 40]			; base + m * 40
 	mov DWORD [DS_SAVE_BASE + PEBS_MAXIMUM], eax			; pebs buffer maximum
 	lea eax, [edi + PEBS_RECORD_THRESHOLD * 40]			; base + t * 40
@@ -234,13 +234,13 @@ set_ds_management_record:
 	mov DWORD [DS_SAVE_BASE + PEBS_COUNTER2], 0
 	mov DWORD [DS_SAVE_BASE + PEBS_COUNTER3], 0
 
-	;; ÏÂÃæ´æ·Å BTS ¹ÜÀíÇøµÄ pointer Öµ
+	;; ä¸‹é¢å­˜æ”¾ BTS ç®¡ç†åŒºçš„ pointer å€¼
 	mov DWORD [bts_base_pointer], DS_SAVE_BASE + BTS_BASE
 	mov DWORD [bts_index_pointer], DS_SAVE_BASE + BTS_INDEX
 	mov DWORD [bts_maximum_pointer], DS_SAVE_BASE + BTS_MAXIMUM
 	mov DWORD [bts_threshold_pointer], DS_SAVE_BASE + BTS_THRESHOLD
 
-	;; ÏÂÃæ´æ·Å PEBS ¹ÜÀíÇø pointer 
+	;; ä¸‹é¢å­˜æ”¾ PEBS ç®¡ç†åŒº pointer 
 	mov DWORD [pebs_base_pointer], DS_SAVE_BASE + PEBS_BASE
 	mov DWORD [pebs_index_pointer], DS_SAVE_BASE + PEBS_INDEX
 	mov DWORD [pebs_maximum_pointer], DS_SAVE_BASE + PEBS_MAXIMUM
@@ -253,49 +253,49 @@ set_ds_management_record:
 	jmp set_ds_management_record_done
 
 set_ds_management_record64:	
-	mov DWORD [ds64_flag], 1					; DS64 Ö§³Ö, ds64_flags ±êÖ¾ÖÃ 1
+	mov DWORD [ds64_flag], 1					; DS64 æ”¯æŒ, ds64_flags æ ‡å¿—ç½® 1
 
-	;; ÉèÖÃ 64 Î» BTS ¹ÜÀíÇø
+	;; è®¾ç½® 64 ä½ BTS ç®¡ç†åŒº
 	mov DWORD [DS_SAVE_BASE + BTS64_BASE], esi
 	mov DWORD [DS_SAVE_BASE + BTS64_BASE + 4], 0
 	mov DWORD [DS_SAVE_BASE + BTS64_INDEX], esi
 	mov DWORD [DS_SAVE_BASE + BTS64_INDEX + 4], 0
 	lea eax, [esi + BTS_RECORD_MAXIMUM * 24]
-	mov DWORD [DS_SAVE_BASE + BTS64_MAXIMUM], eax			; ×î´ó¼ÇÂ¼ÊıÎª BTS_RECORD_MAXIMUM Öµ
+	mov DWORD [DS_SAVE_BASE + BTS64_MAXIMUM], eax			; æœ€å¤§è®°å½•æ•°ä¸º BTS_RECORD_MAXIMUM å€¼
 	mov DWORD [DS_SAVE_BASE + BTS64_MAXIMUM + 4], 0
 
-	;; ÅäÖÃÎª»·ĞÎ»ØÂ· BTS buffer
+	;; é…ç½®ä¸ºç¯å½¢å›è·¯ BTS buffer
 	lea eax, [esi + BTS_RECORD_CIRCULAR_THRESHOLD * 24]
-	mov DWORD [DS_SAVE_BASE + BTS64_THRESHOLD], eax			; ÁÙ½çÖµ¼ÇÂ¼ÊıÎª BTS_RECORD_THRESHOLD Öµ
+	mov DWORD [DS_SAVE_BASE + BTS64_THRESHOLD], eax			; ä¸´ç•Œå€¼è®°å½•æ•°ä¸º BTS_RECORD_THRESHOLD å€¼
 	mov DWORD [DS_SAVE_BASE + BTS64_THRESHOLD + 4], 0
 
-	;; ÏÂÃæ´æ·Å BTS ¹ÜÀíÇøµÄ pointer Öµ
+	;; ä¸‹é¢å­˜æ”¾ BTS ç®¡ç†åŒºçš„ pointer å€¼
 	mov DWORD [bts_base_pointer], DS_SAVE_BASE + BTS64_BASE
 	mov DWORD [bts_index_pointer], DS_SAVE_BASE + BTS64_INDEX
 	mov DWORD [bts_maximum_pointer], DS_SAVE_BASE + BTS64_MAXIMUM
 	mov DWORD [bts_threshold_pointer], DS_SAVE_BASE + BTS64_THRESHOLD
 
         
-	;; ÉèÖÃ 64 Î» PEBS ¹ÜÀíÇø
+	;; è®¾ç½® 64 ä½ PEBS ç®¡ç†åŒº
 	mov ecx, IA32_PERF_CAPABILITIES
 	rdmsr
 	shr eax, 8
-	and eax, 0Fh			; µÃµ½ IA32_PREF_CAPABILITIES[11:8]
-	cmp eax, 0001B			; ²âÊÔÊÇ·ñÖ§³ÖÔöÇ¿µÄ PEBS ¸ñÊ½
+	and eax, 0Fh			; å¾—åˆ° IA32_PREF_CAPABILITIES[11:8]
+	cmp eax, 0001B			; æµ‹è¯•æ˜¯å¦æ”¯æŒå¢å¼ºçš„ PEBS æ ¼å¼
 	je enhancement_pebs64
-	mov DWORD [enhancement_pebs_flag], 0				; ²»Ö§³Ö, enhancement_pebs_flag ±êÖ¾Çå 0
+	mov DWORD [enhancement_pebs_flag], 0				; ä¸æ”¯æŒ, enhancement_pebs_flag æ ‡å¿—æ¸… 0
 	mov DWORD [pebs_record_length], 144
-	lea eax, [edi + PEBS_RECORD_MAXIMUM * 144]			; maximum Öµ
+	lea eax, [edi + PEBS_RECORD_MAXIMUM * 144]			; maximum å€¼
 	lea edx, [edi + PEBS_RECORD_THRESHOLD * 144]
 	jmp set_pebs64
 enhancement_pebs64:
 	;*
-	;* ÔöÇ¿µÄ PEBS ¸ñÊ½£¬Ã¿Ìõ¼ÇÂ¼¹² 176 ¸ö×Ö½Ú *
+	;* å¢å¼ºçš„ PEBS æ ¼å¼ï¼Œæ¯æ¡è®°å½•å…± 176 ä¸ªå­—èŠ‚ *
 	;*
-	mov DWORD [enhancement_pebs_flag], 1				; Ö§³Ö£¬enhancement_pebs_flag ±êÖ¾ÖÃ 1
+	mov DWORD [enhancement_pebs_flag], 1				; æ”¯æŒï¼Œenhancement_pebs_flag æ ‡å¿—ç½® 1
 	mov DWORD [pebs_record_length], 176
-	lea eax, [edi + PEBS_RECORD_MAXIMUM * 176]			; maximum Öµ
-	lea edx, [edi + PEBS_RECORD_THRESHOLD * 176]			; threshold Öµ
+	lea eax, [edi + PEBS_RECORD_MAXIMUM * 176]			; maximum å€¼
+	lea edx, [edi + PEBS_RECORD_THRESHOLD * 176]			; threshold å€¼
 
 set_pebs64:
 	mov DWORD [DS_SAVE_BASE + PEBS64_BASE], edi			; pebs buffer base
@@ -308,13 +308,13 @@ set_pebs64:
 	mov DWORD [DS_SAVE_BASE + PEBS64_THRESHOLD + 4], 0
 
         ;*
-        ;* ±£´æ pebs index Öµ
-        ;* ×÷ÎªÅĞ¶Ï PEBS ÖĞ¶ÏÌõ¼ş
+        ;* ä¿å­˜ pebs index å€¼
+        ;* ä½œä¸ºåˆ¤æ–­ PEBS ä¸­æ–­æ¡ä»¶
         ;*
         mov DWORD [pebs_buffer_index], edi
         mov DWORD [pebs_buffer_index + 4], 0
 
-	;; ÉèÖÃ counter reset
+	;; è®¾ç½® counter reset
 	mov DWORD [DS_SAVE_BASE + PEBS64_COUNTER0], 0
 	mov DWORD [DS_SAVE_BASE + PEBS64_COUNTER0 + 4], 0
 	mov DWORD [DS_SAVE_BASE + PEBS64_COUNTER1], 0
@@ -324,7 +324,7 @@ set_pebs64:
 	mov DWORD [DS_SAVE_BASE + PEBS64_COUNTER3], 0
 	mov DWORD [DS_SAVE_BASE + PEBS64_COUNTER3 + 4], 0
 
-	;; ÏÂÃæ´æ·Å PEBS ¹ÜÀíÇø pointer 
+	;; ä¸‹é¢å­˜æ”¾ PEBS ç®¡ç†åŒº pointer 
 	mov DWORD [pebs_base_pointer], DS_SAVE_BASE + PEBS64_BASE
 	mov DWORD [pebs_index_pointer], DS_SAVE_BASE + PEBS64_INDEX
 	mov DWORD [pebs_maximum_pointer], DS_SAVE_BASE + PEBS64_MAXIMUM
@@ -335,7 +335,7 @@ set_pebs64:
 	mov DWORD [pebs_counter3_pointer], DS_SAVE_BASE + PEBS64_COUNTER3
 
 set_ds_management_record_done:	
-        ; Çå PEBS buffer Òç³öÖ¸Ê¾Î» OvfBuffer
+        ; æ¸… PEBS buffer æº¢å‡ºæŒ‡ç¤ºä½ OvfBuffer
         RESET_PEBS_BUFFER_OVERFLOW
 
 	pop ebx
@@ -348,139 +348,139 @@ set_ds_management_record_done:
 
 
 ;--------------------------------------------------------------
-; test_bts_buffer_overflow(): ²âÊÔÊÇ·ñ·¢Éú BTS buffer Òç³öÖĞ¶Ï
+; test_bts_buffer_overflow(): æµ‹è¯•æ˜¯å¦å‘ç”Ÿ BTS buffer æº¢å‡ºä¸­æ–­
 ;--------------------------------------------------------------
 test_bts_buffer_overflow:
         mov eax, [bts_index_pointer]
-        mov eax, [eax]                          ; ¶Á BTS index Öµ
+        mov eax, [eax]                          ; è¯» BTS index å€¼
         mov esi, [bts_threshold_pointer]
-        cmp eax, [esi]                          ; ±È½Ï index >= threshold ?
+        cmp eax, [esi]                          ; æ¯”è¾ƒ index >= threshold ?
         setae al
         movzx eax, al
         ret
 
 
 ;-----------------------------------------
-; set_bts_buffer_size(): ÉèÖÃ BTS buffer ¼ÇÂ¼Êı
+; set_bts_buffer_size(): è®¾ç½® BTS buffer è®°å½•æ•°
 ; input:
-;       esi-BTS buffer ÈİÄÉµÄ¼ÇÂ¼Êı
+;       esi-BTS buffer å®¹çº³çš„è®°å½•æ•°
 ;-----------------------------------------
 set_bts_buffer_size:
         push ecx
         push edx
-        cmp DWORD [ds64_flag], 1                ; ²âÊÔÊÇ·ñÖ§³Ö DS64 ¸ñÊ½
+        cmp DWORD [ds64_flag], 1                ; æµ‹è¯•æ˜¯å¦æ”¯æŒ DS64 æ ¼å¼
         mov ecx, BTS_RECORD_SIZE
         mov edi, BTS_RECORD64_SIZE
-        cmove ecx, edi                          ; µÃµ½¼ÇÂ¼ size
+        cmove ecx, edi                          ; å¾—åˆ°è®°å½• size
         imul esi, ecx                           ; count * sizeof(bts_record)
         mov edi, [bts_maximum_pointer]
         mov eax, [bts_base_pointer]
-        mov eax, [eax]                          ; ¶ÁÈ¡ BTS base Öµ
+        mov eax, [eax]                          ; è¯»å– BTS base å€¼
         add esi, eax                            ; base + buffer size
-        mov [edi], esi                          ; ÉèÖÃ bts maximum Öµ
+        mov [edi], esi                          ; è®¾ç½® bts maximum å€¼
 
         mov edi, [bts_threshold_pointer]
-        mov [edi], esi                          ; ÉèÖÃ bts thrshold Öµ
+        mov [edi], esi                          ; è®¾ç½® bts thrshold å€¼
         mov esi, ecx                            ; sizeof(bts_record)
 
         mov ecx, IA32_DEBUGCTL
         rdmsr 
-        bt eax, BTINT_BIT                       ; ²âÊÔÊÇ·ñ¿ªÆô BTINT Î»
+        bt eax, BTINT_BIT                       ; æµ‹è¯•æ˜¯å¦å¼€å¯ BTINT ä½
         mov ecx, 0
-        cmovc esi, ecx                          ; Èç¹û¿ªÆôÁË£¬bts threshold = bts maximum
-                                                ; ·ñÔò bts threshold = bts maximum + sizeof(bts_record)
-        add [edi], esi                          ; ×îÖÕµÄ bts threshold Öµ
+        cmovc esi, ecx                          ; å¦‚æœå¼€å¯äº†ï¼Œbts threshold = bts maximum
+                                                ; å¦åˆ™ bts threshold = bts maximum + sizeof(bts_record)
+        add [edi], esi                          ; æœ€ç»ˆçš„ bts threshold å€¼
         pop edx
         pop ecx
         ret
 
 
 ;---------------------------------------------------------
-; set_int_bts_buffer_size(): ÉèÖÃ INT ĞÍ bts buffer ¼ÇÂ¼Êı
+; set_int_bts_buffer_size(): è®¾ç½® INT å‹ bts buffer è®°å½•æ•°
 ; input:
-;       esi - ¼ÇÂ¼Êı
+;       esi - è®°å½•æ•°
 ;--------------------------------------------------------
 set_int_bts_buffer_size:
         push ecx
         push edx
-        cmp DWORD [ds64_flag], 1                ; ²âÊÔÊÇ·ñÖ§³Ö DS64 ¸ñÊ½
+        cmp DWORD [ds64_flag], 1                ; æµ‹è¯•æ˜¯å¦æ”¯æŒ DS64 æ ¼å¼
         mov ecx, BTS_RECORD_SIZE
         mov edi, BTS_RECORD64_SIZE
-        cmove ecx, edi                          ; µÃµ½¼ÇÂ¼ size
+        cmove ecx, edi                          ; å¾—åˆ°è®°å½• size
         imul esi, ecx                           ; count * sizeof(bts_record)
         mov edi, [bts_maximum_pointer]
         mov eax, [bts_base_pointer]
-        mov eax, [eax]                          ; ¶ÁÈ¡ BTS base Öµ
+        mov eax, [eax]                          ; è¯»å– BTS base å€¼
         add esi, eax                            ; base + buffer size
-        mov [edi], esi                          ; ÉèÖÃ bts maximum Öµ
+        mov [edi], esi                          ; è®¾ç½® bts maximum å€¼
         mov edi, [bts_threshold_pointer]
-        mov [edi], esi                          ; ÉèÖÃ bts thrshold Öµ
+        mov [edi], esi                          ; è®¾ç½® bts thrshold å€¼
         pop edx
         pop ecx
         ret
 
 ;--------------------------------------------------
-; set_pebs_buffer_size(): ÉèÖÃ PEBS buffer ¿ÉÈİÄÉÊı
+; set_pebs_buffer_size(): è®¾ç½® PEBS buffer å¯å®¹çº³æ•°
 ; input:
-;       esi-PEBS buffer ÈİÄÉµÄ¼ÇÂ¼Êı
+;       esi-PEBS buffer å®¹çº³çš„è®°å½•æ•°
 ;---------------------------------------------------
 set_pebs_buffer_size:
         push ecx
-        cmp DWORD [enhancement_pebs_flag], 1            ; ²âÊÔÊÇ·ñÖ§³ÖÔöÇ¿µÄ PEBS ¼ÇÂ¼¸ñÊ½
+        cmp DWORD [enhancement_pebs_flag], 1            ; æµ‹è¯•æ˜¯å¦æ”¯æŒå¢å¼ºçš„ PEBS è®°å½•æ ¼å¼
         mov ecx, PEBS_ENHANCEMENT_RECORD64_SIZE
         mov edi, PEBS_RECORD64_SIZE
         cmovne ecx, edi                                  
-        cmp DWORD [ds64_flag], 1                        ; ²âÊÔÊÇ·ñÖ§³Ö DS64 ¸ñÊ½
+        cmp DWORD [ds64_flag], 1                        ; æµ‹è¯•æ˜¯å¦æ”¯æŒ DS64 æ ¼å¼
         mov edi, PEBS_RECORD_SIZE
-        cmovne ecx, edi                                 ; ²»Ö§³ÖµÄ»°£¬Ê¹ÓÃ PEBS_RECORD_SIZE ³ß´ç
+        cmovne ecx, edi                                 ; ä¸æ”¯æŒçš„è¯ï¼Œä½¿ç”¨ PEBS_RECORD_SIZE å°ºå¯¸
         imul esi, ecx                                   ; count * size(pebs_record)
         mov edi, [pebs_maximum_pointer]
         mov eax, [pebs_base_pointer]
-        mov eax, [eax]                                  ; ¶ÁÈ¡ pebs base Öµ
+        mov eax, [eax]                                  ; è¯»å– pebs base å€¼
         add esi, eax                                    ; base + buffer_size
-        mov [edi], esi                                  ; ÉèÖÃ pebs maximum
+        mov [edi], esi                                  ; è®¾ç½® pebs maximum
         mov edi, [pebs_threshold_pointer]
-        mov [edi], esi                                  ; ÉèÖÃ pebs threshold Öµ
+        mov [edi], esi                                  ; è®¾ç½® pebs threshold å€¼
         pop ecx
         ret
 
 
 ;----------------------------------------------
-; reset_bts_index(): ÖØÖÃ BTS index Îª base Öµ
+; reset_bts_index(): é‡ç½® BTS index ä¸º base å€¼
 ;----------------------------------------------
 reset_bts_index:
         mov edi, [bts_index_pointer]
         mov esi, [bts_base_pointer]
-        mov esi, [esi]                                  ; ¶ÁÈ¡ BTS base Öµ
+        mov esi, [esi]                                  ; è¯»å– BTS base å€¼
         mov [edi], esi                                  ; BTS index = BTS base
         ret
 
 ;----------------------------------------------
-; reset_pebs_index()£ºÖØÖÃ PEBS index ÖµÎª base
+; reset_pebs_index()ï¼šé‡ç½® PEBS index å€¼ä¸º base
 ;----------------------------------------------
 reset_pebs_index:
         mov edi, [pebs_index_pointer]       
         mov esi, [pebs_base_pointer]
-        mov esi, [esi]                                  ; ¶ÁÈ¡ PEBS base Öµ
+        mov esi, [esi]                                  ; è¯»å– PEBS base å€¼
         mov [edi], esi                                  ; PEBS index = PEBS base
-        mov [pebs_buffer_index], esi                    ; ¸üĞÂ±£´æµÄ PEBS index Öµ
+        mov [pebs_buffer_index], esi                    ; æ›´æ–°ä¿å­˜çš„ PEBS index å€¼
         ret
 
 ;------------------------------------------------------------
-; update_pebs_index_track(): ¸üĞÂPEBS index µÄ¹ì¼£
-; ÃèÊö£º
-;       ¸üĞÂ [pebs_buffer_index]±äÁ¿µÄÖµ£¬±£³Ö¼ì²â PEBS ÖĞ¶Ï
-;       [pebs_buffer_index] ¼ÇÂ¼×Å¡°µ±Ç°¡±µÄ PEBS index Öµ
+; update_pebs_index_track(): æ›´æ–°PEBS index çš„è½¨è¿¹
+; æè¿°ï¼š
+;       æ›´æ–° [pebs_buffer_index]å˜é‡çš„å€¼ï¼Œä¿æŒæ£€æµ‹ PEBS ä¸­æ–­
+;       [pebs_buffer_index] è®°å½•ç€â€œå½“å‰â€çš„ PEBS index å€¼
 ;------------------------------------------------------------
 update_pebs_index_track:
         mov eax, [pebs_index_pointer]
-        mov eax, [eax]                          ; ¶Áµ±Ç° pebs index Öµ
-        mov [pebs_buffer_index], eax            ; ¸üĞÂ±£´æµÄ pebs index Öµ        
+        mov eax, [eax]                          ; è¯»å½“å‰ pebs index å€¼
+        mov [pebs_buffer_index], eax            ; æ›´æ–°ä¿å­˜çš„ pebs index å€¼        
         ret
 
 
 ;------------------------------------------
-; get_bts_base(): ¶ÁÈ¡ BTS buffer base Öµ
+; get_bts_base(): è¯»å– BTS buffer base å€¼
 ; output:
 ;		eax - BTS base
 ;-------------------------------------------
@@ -491,7 +491,7 @@ get_bts_base:
 
 
 ;------------------------------------------
-; get_bts_index(): ¶ÁÈ¡ BTS buffer index Öµ
+; get_bts_index(): è¯»å– BTS buffer index å€¼
 ; output:
 ;		eax - BTS index
 ;-------------------------------------------
@@ -501,7 +501,7 @@ get_bts_index:
 	ret
 
 ;------------------------------------------
-; get_bts_maximum(): ¶ÁÈ¡ BTS buffer maximum Öµ
+; get_bts_maximum(): è¯»å– BTS buffer maximum å€¼
 ; output:
 ;		eax - BTS maximum
 ;-------------------------------------------
@@ -511,7 +511,7 @@ get_bts_maximum:
 	ret
 
 ;----------------------------------------------------
-; get_bts_threshold(): ¶ÁÈ¡ BTS buffer thresholdÖµ
+; get_bts_threshold(): è¯»å– BTS buffer thresholdå€¼
 ; output:
 ;		eax - BTS threshold
 ;----------------------------------------------------
@@ -522,7 +522,7 @@ get_bts_threshold:
 
 
 ;-------------------------------------------
-; set_bts_index(): ÉèÖÃ BTS index Öµ
+; set_bts_index(): è®¾ç½® BTS index å€¼
 ; input:
 ;	esi - BTS index
 ;-------------------------------------------
@@ -535,7 +535,7 @@ set_bts_index:
 ;---------------------------------------------------------
 ; get_last_pebs_record_pointer()
 ; output:
-;       eax - PEBS ¼ÇÂ¼µÄµØÖ·Öµ£¬·µ»Ø 0 Ê±±íÊ¾ÎŞ PEBS ¼ÇÂ¼
+;       eax - PEBS è®°å½•çš„åœ°å€å€¼ï¼Œè¿”å› 0 æ—¶è¡¨ç¤ºæ—  PEBS è®°å½•
 ;----------------------------------------------------------
 get_last_pebs_record_pointer:
         mov eax, [pebs_index_pointer]
@@ -552,7 +552,7 @@ get_last_pebs_record_pointer_done:
 
 
 ;-----------------------------
-; ´òÓ¡ BTS ¹ÜÀíÇøÊı¾İ
+; æ‰“å° BTS ç®¡ç†åŒºæ•°æ®
 ;----------------------------
 dump_ds_management:
 	jmp do_dump_ds_management
@@ -573,20 +573,20 @@ do_dump_ds_management:
 	push ebx
 
 
-; ²âÊÔÊÇ·ñÖ§³Ö 64 Î»¸ñÊ½
+; æµ‹è¯•æ˜¯å¦æ”¯æŒ 64 ä½æ ¼å¼
 	test DWORD [ds64_flag], 1
-	mov eax, print_dword_value		; Èç¹û²»Ö§³Ö£¬´òÓ¡ 32 Î»¸ñÊ½
-	mov edx, print_qword_value		; Èç¹ûÖ§³Ö£¬´òÓ¡ 64 Î»¸ñÊ½
-	cmovz edx, eax				; edx ´æ·Å´òÓ¡º¯Êı
+	mov eax, print_dword_value		; å¦‚æœä¸æ”¯æŒï¼Œæ‰“å° 32 ä½æ ¼å¼
+	mov edx, print_qword_value		; å¦‚æœæ”¯æŒï¼Œæ‰“å° 64 ä½æ ¼å¼
+	cmovz edx, eax				; edx å­˜æ”¾æ‰“å°å‡½æ•°
 	
 
-;; ÏÂÃæ´òÓ¡ DS ¹ÜÀíÇø¼ÇÂ¼	
+;; ä¸‹é¢æ‰“å° DS ç®¡ç†åŒºè®°å½•	
 	mov esi, dbm_msg1
 	call puts
 	mov eax, [bts_base_pointer]
 	mov esi, [eax]
 	mov edi, [eax + 4]
-	call edx				; ´òÓ¡ bts base
+	call edx				; æ‰“å° bts base
 	mov esi, dbm_msg0
 	call puts
 	mov esi, dbm_msg5
@@ -594,14 +594,14 @@ do_dump_ds_management:
 	mov eax, [pebs_base_pointer]
 	mov esi, [eax]
 	mov edi, [eax + 4]
-	call edx				; ´òÓ¡ pebs base
+	call edx				; æ‰“å° pebs base
 	call println
 	mov esi, dbm_msg2
 	call puts
 	mov eax, [bts_index_pointer]
 	mov esi, [eax]
 	mov edi, [eax + 4]
-	call edx				; ´òÓ¡ bts index
+	call edx				; æ‰“å° bts index
 	mov esi, dbm_msg0
 	call puts
 	mov esi, dbm_msg6
@@ -609,14 +609,14 @@ do_dump_ds_management:
 	mov eax, [pebs_index_pointer]
 	mov esi, [eax]
 	mov edi, [eax + 4]
-	call edx				; ´òÓ¡ pebs index
+	call edx				; æ‰“å° pebs index
 	call println
 	mov esi, dbm_msg3
 	call puts
 	mov eax, [bts_maximum_pointer]
 	mov esi, [eax]
 	mov edi, [eax + 4]
-	call edx				; ´òÓ¡ bts maximum
+	call edx				; æ‰“å° bts maximum
 	mov esi, dbm_msg0
 	call puts
 	mov esi, dbm_msg7
@@ -624,14 +624,14 @@ do_dump_ds_management:
 	mov eax, [pebs_maximum_pointer]
 	mov esi, [eax]
 	mov edi, [eax + 4]
-	call edx				; ´òÓ¡ pebs maximum
+	call edx				; æ‰“å° pebs maximum
 	call println
 	mov esi, dbm_msg4
 	call puts
 	mov eax, [bts_threshold_pointer]
 	mov esi, [eax]
 	mov edi, [eax + 4]
-	call edx				; ´òÓ¡ bts threshold
+	call edx				; æ‰“å° bts threshold
 	mov esi, dbm_msg0
 	call puts
 	mov esi, dbm_msg8
@@ -639,7 +639,7 @@ do_dump_ds_management:
 	mov eax, [pebs_threshold_pointer]
 	mov esi, [eax]
 	mov edi, [eax + 4]
-	call edx				; ´òÓ¡ pebs threshold
+	call edx				; æ‰“å° pebs threshold
 	call println
 	
 dump_ds_management_done:	
@@ -650,7 +650,7 @@ dump_ds_management_done:
 
 
 ;--------------------------------------
-;´òÓ¡ BTS ¼ÇÂ¼
+;æ‰“å° BTS è®°å½•
 ;--------------------------------------
 dump_bts_record:
 	jmp do_dump_bts_record
@@ -666,38 +666,38 @@ do_dump_bts_record:
 	push ebx
 	push ebp
 ;*
-;* ÊÇ·ñÖ§³Ö DEST64, Èç¹ûÖ§³Ö DEST64 ¹¦ÄÜ£¬Ôò´òÓ¡ 64 Î»¸ñÊ½
+;* æ˜¯å¦æ”¯æŒ DEST64, å¦‚æœæ”¯æŒ DEST64 åŠŸèƒ½ï¼Œåˆ™æ‰“å° 64 ä½æ ¼å¼
 ;*
 	test DWORD [ds64_flag], 1
-	mov eax, print_dword_value		; ²»Ö§³Ö£¬´òÓ¡ 32 Î»
-	mov edx, print_qword_value		; Ö§³Ö£¬´òÓ¡ 64 Î»
+	mov eax, print_dword_value		; ä¸æ”¯æŒï¼Œæ‰“å° 32 ä½
+	mov edx, print_qword_value		; æ”¯æŒï¼Œæ‰“å° 64 ä½
 	cmovz edx, eax
 
-	; ´òÓ¡±íÍ·
+	; æ‰“å°è¡¨å¤´
 	mov esi, db64_msg1
 	mov edi, br_msg1
 	cmovz esi, edi
 	call puts
 
 	mov eax, [bts_maximum_pointer]
-	mov ebp, [eax]				; È¡ BTS maximum Öµ
+	mov ebp, [eax]				; å– BTS maximum å€¼
 	mov eax, [bts_threshold_pointer]
-	cmp ebp, [eax]				; maximum Óë threshold ±È½Ï
-	cmovb ebp, [eax]			; ÕÒ³ö maximum Óë threshold µÄ×î´óÖµ
+	cmp ebp, [eax]				; maximum ä¸ threshold æ¯”è¾ƒ
+	cmovb ebp, [eax]			; æ‰¾å‡º maximum ä¸ threshold çš„æœ€å¤§å€¼
 
 	mov eax, [bts_base_pointer]
-	mov ebx, [eax]				; È¡ BTS base Öµ
+	mov ebx, [eax]				; å– BTS base å€¼
 
 
-; ÏÖÔÚ£ºebx = base Öµ£¬ebp = BTS buffer ×î´óÖµ
+; ç°åœ¨ï¼šebx = base å€¼ï¼Œebp = BTS buffer æœ€å¤§å€¼
 
 	xor ecx, ecx
 dump_bts_record_loop:
-	cmp ebx, ebp				; ÊÇ·ñ >= BTS maximum »ò BTS threshold ?
+	cmp ebx, ebp				; æ˜¯å¦ >= BTS maximum æˆ– BTS threshold ?
 	jg do_dump_bts_record_done
 	
 
-	; ²âÊÔÊÇ·ñÓöµ½ BTS maximum
+	; æµ‹è¯•æ˜¯å¦é‡åˆ° BTS maximum
 	mov eax, [bts_maximum_pointer]
 	cmp ebx, [eax]
 	jne dump_bts_record_next
@@ -706,9 +706,9 @@ dump_bts_record_loop:
 
 dump_bts_record_next:
 
-; ´òÓ¡ threshold ĞÅÏ¢
+; æ‰“å° threshold ä¿¡æ¯
 	mov eax, [bts_threshold_pointer]
-	cmp ebx, [eax]				; ÊÇ·ñÎª threshold Öµ
+	cmp ebx, [eax]				; æ˜¯å¦ä¸º threshold å€¼
 	mov esi, 0
 	mov edi, br_msg3
 	cmove esi, edi
@@ -728,7 +728,7 @@ dump_bts_record_next:
 	call edx
 
 	mov eax, [bts_index_pointer]
-	cmp ebx, [eax]					; µ±Ç°ÊÇ·ñÎª index Öµ
+	cmp ebx, [eax]					; å½“å‰æ˜¯å¦ä¸º index å€¼
 	mov eax, fs_msg4
 	mov esi, br_msg2
 	cmovne esi, eax
@@ -761,7 +761,7 @@ do_dump_bts_record_done:
 	
 
 ;-------------------------------------
-; dump_pebs32_record(): ´òÓ¡Ò»Ìõ PEBS 32 ¼ÇÂ¼
+; dump_pebs32_record(): æ‰“å°ä¸€æ¡ PEBS 32 è®°å½•
 ; input:
 ;	esi - address of PEBS record
 ;-------------------------------------
@@ -775,7 +775,7 @@ do_dump_pebs32_record:
 	ret
 
 ;--------------------------------------------
-; dump_pebs64_record(): ´òÓ¡Ò»Ìõ PEBS 64 ¼ÇÂ¼
+; dump_pebs64_record(): æ‰“å°ä¸€æ¡ PEBS 64 è®°å½•
 ; input:
 ;	esi - address of PEBS record
 ;--------------------------------------------
@@ -811,11 +811,11 @@ dump_pebs64_record_loop:
 	add ebx, 4
 	cmp DWORD [ebx], 0
 	jne dump_pebs64_record_loop
-	cmp DWORD [pebs_record_length], 176	; ÊÇ·ñÎªÔöÇ¿µÄ PEBS ¼ÇÂ¼
+	cmp DWORD [pebs_record_length], 176	; æ˜¯å¦ä¸ºå¢å¼ºçš„ PEBS è®°å½•
 	jne dump_pebs64_record_done
 	
         
-	;; ´òÓ¡ÔöÇ¿µÄ¼ÇÂ¼ĞÅÏ¢
+	;; æ‰“å°å¢å¼ºçš„è®°å½•ä¿¡æ¯
         mov esi, dpr64_msg
         call puts
 	mov ebx, enhancement_flags
@@ -836,7 +836,7 @@ dump_pebs64_record_done:
 	ret
 
 ;---------------------------------------------
-; dump_pebs_record()£º´òÓ¡×îºóÒ»Ìõ PEBS ¼ÇÂ¼
+; dump_pebs_record()ï¼šæ‰“å°æœ€åä¸€æ¡ PEBS è®°å½•
 ;---------------------------------------------
 dump_pebs_record:
 	jmp do_dump_pebs_record
@@ -851,14 +851,14 @@ do_dump_pebs_record:
 	call puts
 
 ;*
-;* ÊÇ·ñÖ§³Ö DEST64, Èç¹ûÖ§³Ö DEST64 ¹¦ÄÜ£¬Ôò´òÓ¡ 64 Î»¸ñÊ½
+;* æ˜¯å¦æ”¯æŒ DEST64, å¦‚æœæ”¯æŒ DEST64 åŠŸèƒ½ï¼Œåˆ™æ‰“å° 64 ä½æ ¼å¼
 ;*
 	test DWORD [ds64_flag], 1
 	jnz dump_pebs64
 	mov eax, [pebs_base_pointer]
 	mov esi, [pebs_index_pointer]
 	mov esi, [esi]
-	cmp esi, [eax]			; index Óë base ±È½Ï
+	cmp esi, [eax]			; index ä¸ base æ¯”è¾ƒ
 	ja dump_pebs_next
 	mov esi, dpr_msg1
 	call puts
@@ -872,7 +872,7 @@ dump_pebs64:
 	mov eax, [pebs_base_pointer]
 	mov esi, [pebs_index_pointer]
 	mov esi, [esi]
-	cmp esi, [eax]			; index Óë base ±È½Ï
+	cmp esi, [eax]			; index ä¸ base æ¯”è¾ƒ
 	ja dump_pebs64_next
 	mov esi, dpr_msg1
 	call puts
@@ -889,7 +889,7 @@ dump_pebs_record_done:
 	ret
 
 ;-----------------------
-; ´òÓ¡ËùÓĞ LBR stack
+; æ‰“å°æ‰€æœ‰ LBR stack
 ;-----------------------
 dump_lbr_stack:
 	jmp do_dump_lbr_stack
@@ -910,7 +910,7 @@ do_dump_lbr_stack:
 	mov esi, fs_msg0
 	call puts
 
-; ´òÓ¡ĞÅÏ¢
+; æ‰“å°ä¿¡æ¯
 dump_lbr_stack_loop:
 
 	mov esi, fs_msg1
@@ -923,7 +923,7 @@ dump_lbr_stack_loop:
 	mov esi, fs_msg3
 	call puts
 
-; ´òÓ¡ from ip
+; æ‰“å° from ip
 	lea ecx, [ebx + MSR_LASTBRANCH_0_FROM_IP]
 	rdmsr
 	mov esi, eax
@@ -940,7 +940,7 @@ dump_lbr_from_stack_next:
 	mov esi, fs_msg4
 	call puts
 
-;; ´òÓ¡ to ip
+;; æ‰“å° to ip
 dump_lbr_to_stack:
 	mov esi, fs_msg5
 	call puts
@@ -982,7 +982,7 @@ dump_lbr_stack_next:
 	ret
 
 ;-----------------------------
-; ´òÓ¡ last exception from/to
+; æ‰“å° last exception from/to
 ;-----------------------------
 dump_last_exception:
 	mov esi, last_exception_from
@@ -1001,7 +1001,7 @@ dump_last_exception:
 	ret
 	
 ;-------------------------------
-; ´òÓ¡ IA32_DEBUGCTL ¼Ä´æÆ÷
+; æ‰“å° IA32_DEBUGCTL å¯„å­˜å™¨
 ;-------------------------------
 dump_debugctl:
 	mov esi, debugctl_msg
@@ -1019,7 +1019,7 @@ dump_debugctl:
 
 
 ;-----------------------
-; ´òÓ¡ DR0-DR3 ¼Ä´æÆ÷
+; æ‰“å° DR0-DR3 å¯„å­˜å™¨
 ;----------------------
 dump_drs:
 	mov esi, dr0_msg
@@ -1045,7 +1045,7 @@ dump_drs:
 	ret
 	
 ;-----------------------
-; ´òÓ¡ DR6 ¼Ä´æÆ÷
+; æ‰“å° DR6 å¯„å­˜å™¨
 ;-----------------------
 dump_dr6:
 	mov esi, dr6_msg
@@ -1059,9 +1059,9 @@ dump_dr6:
 	ret
 
 ;-------------------------------------------
-; dump_dr6_flags(): ´òÓ¡ DR6 ±êÖ¾Ê¹ÓÃÊäÈëµÄÖµ
+; dump_dr6_flags(): æ‰“å° DR6 æ ‡å¿—ä½¿ç”¨è¾“å…¥çš„å€¼
 ; input:
-;		esi: ÊäÈëÖµ
+;		esi: è¾“å…¥å€¼
 ;-------------------------------------------
 dump_dr6_flags:
 	push ecx
@@ -1079,7 +1079,7 @@ dump_dr6_flags:
 
 
 ;----------------------------
-; ´òÓ¡ dr7 ¼Ä´æÆ÷
+; æ‰“å° dr7 å¯„å­˜å™¨
 ;----------------------------
 dump_dr7:
 	push ebx	
@@ -1113,7 +1113,7 @@ dump_dr7_next:
 	pop ebx 	
 	ret
 	
-;***** Êı¾İÇø *********
+;***** æ•°æ®åŒº *********
 bts_buffer_base		dq 0
 bts_buffer_index	dq 0
 bts_buffer_maximum	dq 0
@@ -1124,7 +1124,7 @@ pebs_buffer_maximum	dq 0
 pebs_buffer_threshold	dq 0
 pebs_record_length	dd 0
 
-;;; ÏÂÃæÊÇ´æ·Å¹ÜÀíÇøµØÖ·
+;;; ä¸‹é¢æ˜¯å­˜æ”¾ç®¡ç†åŒºåœ°å€
 bts_base_pointer	dd 0
 bts_index_pointer	dd 0
 bts_maximum_pointer	dd 0
@@ -1138,12 +1138,12 @@ pebs_counter1_pointer	dd 0
 pebs_counter2_pointer	dd 0
 pebs_counter3_pointer	dd 0
 
-;; ±êÖ¾±äÁ¿
+;; æ ‡å¿—å˜é‡
 ds64_flag		dd 0
 enhancement_pebs_flag	dd 0
 
 
-;; ÏÂÃæÊÇ IA32_DEBUGCTL Óë IA32_PEBS_ENABLE ¼Ä´æÆ÷
+;; ä¸‹é¢æ˜¯ IA32_DEBUGCTL ä¸ IA32_PEBS_ENABLE å¯„å­˜å™¨
 debugctl_value		dq 0
 pebs_enable_value	dq 0
 
@@ -1174,7 +1174,7 @@ dr1_msg	db	'<DR1:> ', 0
 dr2_msg	db 	'<DR2:> ', 0
 dr3_msg	db	'<DR3:> ', 0
 
-;ÏÂÃæÊÇ dr6 µÄ±êÖ¾Î»
+;ä¸‹é¢æ˜¯ dr6 çš„æ ‡å¿—ä½
 b0_msg	db 'b0', 0
 b1_msg	db 'b1', 0
 b2_msg	db 'b2', 0
@@ -1186,19 +1186,19 @@ dr6_msg	db '<DR6:> ', 0
 dr6_flags	dd 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 			dd bt_msg, bs_msg, bd_msg, 0, 0, 0, 0, 0, 0, 0, 0, 0, b3_msg, b2_msg, b1_msg, b0_msg,  -1
 			
-;; ¶¨Òå 32 Î»Í¨ÓÃ¼Ä´æÆ÷ context
-;; ÓÉ inc\lib.inc ÎÄ¼şÀïµÄ STORE_CONTEXT() Óë RESTORE_CONTEXT() ºêÀ´ÒıÓÃ
+;; å®šä¹‰ 32 ä½é€šç”¨å¯„å­˜å™¨ context
+;; ç”± inc\lib.inc æ–‡ä»¶é‡Œçš„ STORE_CONTEXT() ä¸ RESTORE_CONTEXT() å®æ¥å¼•ç”¨
 
 debug_context	times 10 dd 0
 
 ;*
-;* µ¥²½µ÷ÓÃÍ£Ö¹Ä¿±êµØÖ·
-;* µ± #DB handler ¼ì²âµ½Ä¿±êµØÖ·Îª¸ÃÖµÊ±£¬ÖÕÖ¹µ¥²½µ÷ÊÔ
+;* å•æ­¥è°ƒç”¨åœæ­¢ç›®æ ‡åœ°å€
+;* å½“ #DB handler æ£€æµ‹åˆ°ç›®æ ‡åœ°å€ä¸ºè¯¥å€¼æ—¶ï¼Œç»ˆæ­¢å•æ­¥è°ƒè¯•
 ;*
 db_stop_address         dd 0
 
 
-;; 32 Î» context ĞÅÏ¢
+;; 32 ä½ context ä¿¡æ¯
 eflags_msg	db 'EFLAGS: ', 0
 eip_msg		db 'EIP: ', 0
 eax_msg		db 'EAX: ', 0
@@ -1210,7 +1210,7 @@ ebp_msg		db 'EBP: ', 0
 esi_msg		db 'ESI: ', 0
 edi_msg		db 'EDI: ', 0
 
-; 64 Î» context
+; 64 ä½ context
 rflags_msg	db 'RFLAGS: ', 0
 rip_msg		db 'RIP: ', 0
 rax_msg		db 'RAX: ', 0
@@ -1234,7 +1234,7 @@ data_linear_address_msg		db 'data linear address:     ', 0
 data_source_encoding_msg	db 'data source encoding:    ', 0
 latency_value_msg		db 'latency value:           ', 0
 
-;; ÏÂÃæÊÇ dr7 µÄ±êÖ¾Î»
+;; ä¸‹é¢æ˜¯ dr7 çš„æ ‡å¿—ä½
 dr7_msg		db '<DR7:> ',0
 rw0_msg		db 'RW0:', 0
 rw1_msg		db 'RW1:', 0
