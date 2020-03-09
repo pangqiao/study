@@ -2,7 +2,7 @@
 
 以下全部来自Intel手册, 章节号已经标出
 
-# 1. \[30.1\]PERFORMANCE MONITORING OVERVIEW
+# 1. [30.1]PERFORMANCE MONITORING OVERVIEW
 
 从Pentium奔腾处理器开始，Intel引入了**一组计数寄存器**用于做**系统性能监视**（System Performance monitoring）。针对**不同型号的CPU处理器**，它们各自拥有的**性能计数寄存器是不同**的，因此，相对ISA标准的普通寄存器而言，这些寄存器被称之为属于PMU中的MSR寄存器。
 
