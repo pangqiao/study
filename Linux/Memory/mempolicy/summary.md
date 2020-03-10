@@ -8,12 +8,13 @@ memory policy是决定在NUMA系统上从哪个节点分配内存的策略，它
 
 Linux分四种类型policy，分别是：
 
-`System Default Policy`，它是在没用应用下面其他policy时的**默认policy**，具体行为是：系统启动过程中，采用**interleave策略**分配内存，
+- `System Default Policy`，它是在没用应用下面其他policy时的**默认policy**，具体行为是：**系统启动过程中**，采用**interleave策略**分配内存，即在所有**可满足需求的节点**上**交叉分配**，防止启动时在**某个节点上负载过重**；在**系统启动后**，采用**local allocation**，即在task运行的cpu所在的node上进行内存分配.
 
-即在所有可满足需求的节点上交叉分配，防止启动时在某个节点上负载过重；在系统启动后，采用local allocation，即在task运行的cpu所在的node上进行内存分配。
-Task/Process Policy，它是task用来制定其内存分配时的策略，如果没有定义，将fall back到system default policy。
-VMA Policy，它是制定在某段VMA进行内存分配时策略，如果没有定义，将fall back到Task/Process Policy，如果Task/Process Policy没有定义，递归fall back到system default policy。
-Shared Policy，它是制定在分配某个内存对象时的policy，这个内存对象可能被多个task共享，而VMA policy只限定某个task的某段VMA。
+- `Task/Process Policy`，它是**task用来制定其内存分配时的策略**，如果**没有定义**，将fall back到system default policy。fork()等可继承(inheritable), 见`Memory Policy APIs <memory_policy_apis>`节. 
+
+- `VMA Policy`，它是制定在某段VMA进行内存分配时策略，如果没有定义，将fall back到Task/Process Policy，如果Task/Process Policy没有定义，递归fall back到system default policy。
+
+- `Shared Policy`，它是制定在分配某个内存对象时的policy，这个内存对象可能被多个task共享，而VMA policy只限定某个task的某段VMA。
 
 
 
