@@ -14,7 +14,7 @@ Linux分四种类型policy，分别是：
 
 - `VMA Policy`，它是针对在**某段VMA进行内存分配**时策略，如果没有定义，将fall back到Task/Process Policy，如果Task/Process Policy没有定义，递归fall back到system default policy。
 
-- `Shared Policy`，它是制定在分配某个内存对象时的policy，这个内存对象可能被多个task共享，而VMA policy只限定某个task的某段VMA。
+- `Shared Policy`，它是制定在分配某个内存对象时的policy，这个内存对象可能被多个task共享，而VMA policy只限定某个task的某段VMA。挂在这个shared对象上的所有tasks会遵循这个policy.
 
 
 
