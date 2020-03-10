@@ -18,18 +18,19 @@ Linux分四种类型policy，分别是：
 
 
 
-Linux 内存分配方法包含三部分：mode，optional mode flags，an optional set of nodes。
+Linux 内存分配方法包含三部分：`mode`，`optional mode flags`，`an optional set of nodes`。
 
-mode决定policy的具体行为，the optional mode flags决定mode的行为，an optional set of nodes可以看做是以上行为的参数。
+mode决定**policy**的**具体行为**，the optional mode flags决定**mode的行为**，an optional set of nodes可以看做是以上行为的参数。
 
+`struct mempolicy`来实现memory policy.
 
 mode有四种：
 
 Default Mode--MPOL_DEFAULT，
 
-MPOL_BIND，它指定在哪几个节点上进行内存分配。
+MPOL_BIND，它指定在**哪几个节点**上进行内存分配。
 
-MPOL_PREFERRED，它指定首先在preferred的节点上进行内存分配，如果失败再搜索其他节点。
+MPOL_PREFERRED，它指定首先在**preferred的节点**上进行内存分配，如果失败再搜索其他节点。
 
 MPOL_INTERLEAVED，它指定在an optional set of nodes几个节点上，以页为单位，交叉分配内存。
 
