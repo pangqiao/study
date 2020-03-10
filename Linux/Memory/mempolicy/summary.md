@@ -1,4 +1,4 @@
-参考内核文档：`Document/vm/numa_memory_policy`
+参考内核文档：`Documentation/admin-guide/mm/numa_memory_policy.rst`
 
 memory policy是决定在NUMA系统上从哪个节点分配内存的策略，它是一类提供给能更好利用NUMA系统进行内存分配的应用程序使用的编程接口，
 
@@ -26,39 +26,45 @@ mode决定**policy**的**具体行为**，the optional mode flags决定**mode的
 
 mode有四种：
 
-Default Mode--MPOL_DEFAULT，
+* Default Mode--MPOL_DEFAULT，
 
-MPOL_BIND，它指定在**哪几个节点**上进行内存分配。
+* MPOL_BIND，它指定在**哪几个节点**上进行内存分配。
 
-MPOL_PREFERRED，它指定首先在**preferred的节点**上进行内存分配，如果失败再搜索其他节点。
+* MPOL_PREFERRED，它指定首先在**preferred的节点**上进行内存分配，如果失败再搜索其他节点。
 
-MPOL_INTERLEAVED，它指定在an optional set of nodes几个节点上，以页为单位，交叉分配内存。
+* MPOL_INTERLEAVED，它指定在**an optional set of nodes几个节点**上，**以页为单位**，**交叉分配内存**。
 
 
 
 optional mode flags：
 
-    MPOL_F_STATIC_NODES:  该标志指定，在policy定义后，如果task或VMA设置的可分配nodes发生了改变，用户传递过来的nodemask不应被remap。
-    MPOL_F_RELATIVE_NODES:  和上个flag相反，该情况时，用户传递过来的nodemask应被remap。
+- MPOL_F_STATIC_NODES:  该标志指定，**在policy定义后**，如果task或VMA设置的可分配nodes发生了改变，用户传递过来的nodemask**不应被remap**。
+- MPOL_F_RELATIVE_NODES:  和上个flag相反，该情况时，用户传递过来的**nodemask**应**被remap**。
 
 
 
 Linux为内存分配策略提供了三个APIs：
 
-设置内存分配策略
-    long set_mempolicy(int mode, const unsigned long *nmask, unsigned long maxnode);
-Get内存分配策略及相关信息，flags决定mode的行为是get哪些信息
-    long get_mempolicy(int *mode, const unsigned long *nmask, unsigned long maxnode, void *addr, int flags);
-安装内存分配策略
+- 设置内存分配策略
 
+```
+    long set_mempolicy(int mode, const unsigned long *nmask, unsigned long maxnode);
+```
+
+- Get内存分配策略及相关信息，flags决定mode的行为是get哪些信息
+
+```
+    long get_mempolicy(int *mode, const unsigned long *nmask, unsigned long maxnode, void *addr, int flags);
+```
+
+- 安装内存分配策略
+
+```
     long mbind(void *start, unsigned long len, int mode, const unsigned long *nmask, unsigned long maxnode,
      unsigned flags);
-
+```
 
 命令行工具：
 
 + set the task policy for a specified program via set_mempolicy(2), fork(2) and exec(2)
 + set the shared policy for a shared memory segment via mbind(2)
-————————————————
-版权声明：本文为CSDN博主「glmwu」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
-原文链接：https://blog.csdn.net/glmwu/article/details/19691865
