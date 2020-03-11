@@ -251,3 +251,80 @@ EXPORT_SYMBOL_GPL(__kvm_set_memory_region);
 该函数主要用来建立**guest物理地址空间**(虚拟机物理地址空间)中的**内存区域**与`qemu-kvm`**虚拟地址空间**(宿主机虚拟地址, HVA)中的**内存区域的映射**, 相应信息由`uerspace_memory_region` 参数传入，而其源头来自于**用户态qemu-kvm**。
 
 每次调用**设置一个内存区间**。内存区域可以**不连续**(实际的物理内存区域也经常不连续，因为有可能有保留内存)
+
+最终调用`kvm_set_memslot()`
+
+```cpp
+static int kvm_set_memslot(struct kvm *kvm,
+                           const struct kvm_userspace_memory_region *mem,
+                           struct kvm_memory_slot *old,
+                           struct kvm_memory_slot *new, int as_id,
+                           enum kvm_mr_change change)
+{
+        struct kvm_memory_slot *slot;
+        struct kvm_memslots *slots;
+        int r;
+        // 复制kvm->memslots的副本
+        slots = kvm_dup_memslots(__kvm_memslots(kvm, as_id), change);
+        if (!slots)
+                return -ENOMEM;
+        // 如果删除或move内存区域
+        if (change == KVM_MR_DELETE || change == KVM_MR_MOVE) {
+                /*
+                 * Note, the INVALID flag needs to be in the appropriate entry
+                 * in the freshly allocated memslots, not in @old or @new.
+                 */
+                slot = id_to_memslot(slots, old->id);
+                slot->flags |= KVM_MEMSLOT_INVALID;
+
+                /*
+                 * We can re-use the old memslots, the only difference from the
+                 * newly installed memslots is the invalid flag, which will get
+                 * dropped by update_memslots anyway.  We'll also revert to the
+                 * old memslots if preparing the new memory region fails.
+                 */
+                // 安装新memslots，返回旧的memslots
+                slots = install_new_memslots(kvm, as_id, slots);
+
+                /* From this point no new shadow pages pointing to a deleted,
+                 * or moved, memslot will be created.
+                 *
+                 * validation of sp->gfn happens in:
+                 *      - gfn_to_hva (kvm_read_guest, gfn_to_pfn)
+                 *      - kvm_is_visible_gfn (mmu_check_root)
+                 */
+                kvm_arch_flush_shadow_memslot(kvm, slot);
+        }
+
+        r = kvm_arch_prepare_memory_region(kvm, new, mem, change);
+        if (r)
+                goto out_slots;
+
+        update_memslots(slots, new, change);
+        slots = install_new_memslots(kvm, as_id, slots);
+
+        kvm_arch_commit_memory_region(kvm, mem, old, new, change);
+
+        kvfree(slots);
+        return 0;
+
+out_slots:
+        if (change == KVM_MR_DELETE || change == KVM_MR_MOVE)
+                slots = install_new_memslots(kvm, as_id, slots);
+        kvfree(slots);
+        return r;
+}
+```
+
+```cpp
+int kvm_arch_prepare_memory_region(struct kvm *kvm,
+                                struct kvm_memory_slot *memslot,
+                                const struct kvm_userspace_memory_region *mem,
+                                enum kvm_mr_change change)
+{
+        if (change == KVM_MR_CREATE || change == KVM_MR_MOVE)
+                return kvm_alloc_memslot_metadata(memslot,
+                                                  mem->memory_size >> PAGE_SHIFT);
+        return 0;
+}
+```
