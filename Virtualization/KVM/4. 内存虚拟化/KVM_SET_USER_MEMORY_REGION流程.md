@@ -274,6 +274,7 @@ static int kvm_set_memslot(struct kvm *kvm,
                  * Note, the INVALID flag needs to be in the appropriate entry
                  * in the freshly allocated memslots, not in @old or @new.
                  */
+                // 获取旧的slot(内存条模型)
                 slot = id_to_memslot(slots, old->id);
                 slot->flags |= KVM_MEMSLOT_INVALID;
 
