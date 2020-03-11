@@ -171,9 +171,8 @@ int __kvm_set_memory_region(struct kvm *kvm,
 
         if (new.npages > KVM_MEM_MAX_NR_PAGES)
                 return -EINVAL;
-        // 判断是否需新创建内存区域
+        // 旧pages为0
         if (!old.npages) {
-                // 旧pages为0
                 change = KVM_MR_CREATE;
                 new.dirty_bitmap = NULL;
                 memset(&new.arch, 0, sizeof(new.arch));
