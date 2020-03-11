@@ -25,11 +25,15 @@ kvm_vm_ioctl()
 
 # 代码分析
 
+## kvm_mem_slot 结构体: GPA到HVA的映射关系
+
 由于**GPA不能直接用于物理 MMU 进行寻址！！！**，所以需要**将GPA转换为HVA**，kvm中利用 `kvm_memory_slot` 数据结构来记录**每一个地址区间**(**Guest中的物理地址区间**)中**GPA与HVA**的**映射关系**
 
-`kvm_mem_slot`结构：
-
 ```cpp
+struct kvm_rmap_head {
+        unsigned long val;
+};
+
 struct kvm_lpage_info {
         int disallow_lpage;
 };
@@ -49,8 +53,48 @@ struct kvm_memory_slot {
         unsigned long *dirty_bitmap;
         // 架构相关部分
         struct kvm_arch_memory_slot arch;
+        /*
+         * GPA对应的host虚拟地址(HVA), 由于虚拟机都运行在qemu的地址空间中
+         * 而qemu是用户态程序, 所以通常使用root-module下的用户地址空间.
+         */
         unsigned long userspace_addr;
         u32 flags;
         short id;
 };
+```
+
+## kvm_vm_ioctl(): vm指令入口
+
+**kvm ioctl vm指令的入口**，传入的fd为`KVM_CREATE_VM`中返回的fd。主要用于针对VM虚拟机进行控制，如：内存设置、创建VCPU等。
+
+```cpp
+static long kvm_vm_ioctl(struct file *filp,
+             unsigned int ioctl, unsigned long arg)
+{
+    struct kvm *kvm = filp->private_data;
+    void __user *argp = (void __user *)arg;
+    int r;
+
+    if (kvm->mm != current->mm)
+        return -EIO;
+    switch (ioctl) {
+    // 创建VCPU
+    case KVM_CREATE_VCPU:
+        r = kvm_vm_ioctl_create_vcpu(kvm, arg);
+        break;
+    // 建立guest物理地址空间中的内存区域与qemu-kvm虚拟地址空间中的内存区域的映射
+    case KVM_SET_USER_MEMORY_REGION: {
+        // 存放内存区域信息的结构体，该内存区域从qemu-kvm进程的用户地址空间中分配
+        struct kvm_userspace_memory_region kvm_userspace_mem;
+
+        r = -EFAULT;
+        // 从用户态拷贝相应数据到内核态，入参argp指向用户态地址
+        if (copy_from_user(&kvm_userspace_mem, argp,
+                        sizeof kvm_userspace_mem))
+            goto out;
+        // 进入实际处理流程
+        r = kvm_vm_ioctl_set_memory_region(kvm, &kvm_userspace_mem);
+        break;
+    }
+...
 ```
