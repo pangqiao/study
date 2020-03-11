@@ -25,3 +25,5 @@ KVM介绍系列(必看): https://blog.csdn.net/weixin_33845881/article/details/8
 KVM(必看): https://www.cnblogs.com/popsuper1982/p/3815398.html
 
 KVM 虚拟化原理探究— overview: https://blog.csdn.net/sdulibh/article/details/78982751?utm_source=distribute.pc_relevant.none-task
+
+虚拟化: https://www.cnblogs.com/ccxikka/p/9477530.html
