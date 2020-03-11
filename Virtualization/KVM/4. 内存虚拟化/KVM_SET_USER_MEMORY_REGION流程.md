@@ -25,4 +25,32 @@ kvm_vm_ioctl()
 
 # 代码分析
 
-kvm_mem_slot结构：
+由于**GPA不能直接用于物理 MMU 进行寻址！！！**，所以需要**将GPA转换为HVA**，kvm中利用 `kvm_memory_slot` 数据结构来记录**每一个地址区间**(**Guest中的物理地址区间**)中**GPA与HVA**的**映射关系**
+
+`kvm_mem_slot`结构：
+
+```cpp
+struct kvm_lpage_info {
+        int disallow_lpage;
+};
+
+struct kvm_arch_memory_slot {
+        struct kvm_rmap_head *rmap[KVM_NR_PAGE_SIZES];
+        struct kvm_lpage_info *lpage_info[KVM_NR_PAGE_SIZES - 1];
+        unsigned short *gfn_track[KVM_PAGE_TRACK_MAX];
+};
+
+struct kvm_memory_slot {
+        // 虚拟机物理地址(即GPA)对应的页框号
+        gfn_t base_gfn;
+        // 当前slot中包含的page数目
+        unsigned long npages;
+        // 脏页位图
+        unsigned long *dirty_bitmap;
+        // 架构相关部分
+        struct kvm_arch_memory_slot arch;
+        unsigned long userspace_addr;
+        u32 flags;
+        short id;
+};
+```
