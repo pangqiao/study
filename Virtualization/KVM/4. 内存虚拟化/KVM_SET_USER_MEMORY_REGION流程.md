@@ -11,7 +11,7 @@ qemu-kvm通过**ioctl vm**指令`KVM_SET_USER_MEMORY_REGION`来**为虚拟机设
 
 # 基本流程
 
-ioctl vm指令KVM_SET_USER_MEMORY_REGION在内核主要执行流程如下：
+ioctl vm指令`KVM_SET_USER_MEMORY_REGION`在内核主要执行流程如下：
 
 ```cpp
 kvm_vm_ioctl()
