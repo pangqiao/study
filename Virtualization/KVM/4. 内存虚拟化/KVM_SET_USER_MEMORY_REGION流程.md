@@ -173,6 +173,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
                 return -EINVAL;
         // 判断是否需新创建内存区域
         if (!old.npages) {
+                // 旧pages为0
                 change = KVM_MR_CREATE;
                 new.dirty_bitmap = NULL;
                 memset(&new.arch, 0, sizeof(new.arch));
@@ -191,8 +192,10 @@ int __kvm_set_memory_region(struct kvm *kvm,
                  */
                 if (new.base_gfn != old.base_gfn)
                         change = KVM_MR_MOVE;
+                // 如果仅仅是flag不同，则仅修改标记，设置KVM_MR_FLAGS_ONLY标记
                 else if (new.flags != old.flags)
                         change = KVM_MR_FLAGS_ONLY;
+                // 否则, 啥也不干, 退出
                 else /* Nothing to change. */
                         return 0;
 
@@ -200,7 +203,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
                 new.dirty_bitmap = old.dirty_bitmap;
                 memcpy(&new.arch, &old.arch, sizeof(new.arch));
         }
-
+        // 
         if ((change == KVM_MR_CREATE) || (change == KVM_MR_MOVE)) {
                 /* Check for overlaps */
                 kvm_for_each_memslot(tmp, __kvm_memslots(kvm, as_id)) {
