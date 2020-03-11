@@ -157,7 +157,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
                 memset(&old, 0, sizeof(old));
                 old.id = id;
         }
-
+        // 新设置区域大小为 0, 删除原有区域
         if (!mem->memory_size)
                 return kvm_delete_memslot(kvm, mem, &old, as_id);
 
