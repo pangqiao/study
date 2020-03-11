@@ -171,22 +171,28 @@ int __kvm_set_memory_region(struct kvm *kvm,
 
         if (new.npages > KVM_MEM_MAX_NR_PAGES)
                 return -EINVAL;
-        // 旧pages为0
+
         if (!old.npages) {
+                /*
+                 * 旧 pages 为0, 说明要创建新内存区域
+                 * 设置 KVM_MR_CREATE 标记
+                 */
                 change = KVM_MR_CREATE;
                 new.dirty_bitmap = NULL;
                 memset(&new.arch, 0, sizeof(new.arch));
         } else { /* Modify an existing slot. */
                 // 判断是否修改现有的内存区域
-                // 修改的区域的HVA不同或者大小不同或者flag中的
-                // KVM_MEM_READONLY标记不同，直接退出。
+                // 旧 page 数不为 0
+                // 修改的区域的HVA不同 或者 大小不同 或者 flag中的
+                // KVM_MEM_READONLY 标记不同，直接退出。
                 if ((new.userspace_addr != old.userspace_addr) ||
                     (new.npages != old.npages) ||
                     ((new.flags ^ old.flags) & KVM_MEM_READONLY))
                         return -EINVAL;
                 /*
                  * 走到这，说明被修改的区域HVA和大小都是相同的
-                 * 判断区域起始的GFN是否相同，如果是，则说明需
+                 *
+                 * 判断区域起始的 GFN 是否相同，如果是，则说明需
                  * 要在Guest物理地址空间中move这段区域，设置KVM_MR_MOVE标记
                  */
                 if (new.base_gfn != old.base_gfn)
@@ -202,9 +208,9 @@ int __kvm_set_memory_region(struct kvm *kvm,
                 new.dirty_bitmap = old.dirty_bitmap;
                 memcpy(&new.arch, &old.arch, sizeof(new.arch));
         }
-        // 
         if ((change == KVM_MR_CREATE) || (change == KVM_MR_MOVE)) {
                 /* Check for overlaps */
+                // 检查现有区域中是否重叠
                 kvm_for_each_memslot(tmp, __kvm_memslots(kvm, as_id)) {
                         if (tmp->id == id)
                                 continue;
