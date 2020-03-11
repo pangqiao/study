@@ -125,7 +125,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
 
         as_id = mem->slot >> 16;
         id = (u16)mem->slot;
-
+        // 合规检查, 防止用户态恶意传参而导致安全漏洞
         /* General sanity checks */
         if (mem->memory_size & (PAGE_SIZE - 1))
                 return -EINVAL;
@@ -148,6 +148,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
          * memslot needs to be referenced after calling update_memslots(), e.g.
          * to free its resources and for arch specific behavior.
          */
+        // 将 kvm_userspace_memory_region->slot 转换为 kvm_mem_slot 结构，该结构从 kvm->memslots 获取
         tmp = id_to_memslot(__kvm_memslots(kvm, as_id), id);
         if (tmp) {
                 old = *tmp;
@@ -161,24 +162,33 @@ int __kvm_set_memory_region(struct kvm *kvm,
                 return kvm_delete_memslot(kvm, mem, &old, as_id);
 
         new.id = id;
+        // 内存区域起始位置在Guest物理地址空间中的页框号
         new.base_gfn = mem->guest_phys_addr >> PAGE_SHIFT;
+        // 内存区域大小转换为page单位
         new.npages = mem->memory_size >> PAGE_SHIFT;
         new.flags = mem->flags;
         new.userspace_addr = mem->userspace_addr;
 
         if (new.npages > KVM_MEM_MAX_NR_PAGES)
                 return -EINVAL;
-
+        // 判断是否需新创建内存区域
         if (!old.npages) {
                 change = KVM_MR_CREATE;
                 new.dirty_bitmap = NULL;
                 memset(&new.arch, 0, sizeof(new.arch));
         } else { /* Modify an existing slot. */
+                // 判断是否修改现有的内存区域
+                // 修改的区域的HVA不同或者大小不同或者flag中的
+                // KVM_MEM_READONLY标记不同，直接退出。
                 if ((new.userspace_addr != old.userspace_addr) ||
                     (new.npages != old.npages) ||
                     ((new.flags ^ old.flags) & KVM_MEM_READONLY))
                         return -EINVAL;
-
+                /*
+                 * 走到这，说明被修改的区域HVA和大小都是相同的
+                 * 判断区域起始的GFN是否相同，如果是，则说明需
+                 * 要在Guest物理地址空间中move这段区域，设置KVM_MR_MOVE标记
+                 */
                 if (new.base_gfn != old.base_gfn)
                         change = KVM_MR_MOVE;
                 else if (new.flags != old.flags)
