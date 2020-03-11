@@ -293,6 +293,7 @@ static int kvm_set_memslot(struct kvm *kvm,
                  *      - gfn_to_hva (kvm_read_guest, gfn_to_pfn)
                  *      - kvm_is_visible_gfn (mmu_check_root)
                  */
+                // flush影子页表中的条目
                 kvm_arch_flush_shadow_memslot(kvm, slot);
         }
 
@@ -301,6 +302,7 @@ static int kvm_set_memslot(struct kvm *kvm,
                 goto out_slots;
 
         update_memslots(slots, new, change);
+        // 安装新memslots, 返回旧的memslots
         slots = install_new_memslots(kvm, as_id, slots);
 
         kvm_arch_commit_memory_region(kvm, mem, old, new, change);
@@ -322,6 +324,7 @@ int kvm_arch_prepare_memory_region(struct kvm *kvm,
                                 const struct kvm_userspace_memory_region *mem,
                                 enum kvm_mr_change change)
 {
+        // 创建或move区域
         if (change == KVM_MR_CREATE || change == KVM_MR_MOVE)
                 return kvm_alloc_memslot_metadata(memslot,
                                                   mem->memory_size >> PAGE_SHIFT);
