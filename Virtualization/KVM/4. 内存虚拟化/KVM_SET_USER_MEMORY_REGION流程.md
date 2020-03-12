@@ -210,10 +210,12 @@ int __kvm_set_memory_region(struct kvm *kvm,
         }
         if ((change == KVM_MR_CREATE) || (change == KVM_MR_MOVE)) {
                 /* Check for overlaps */
-                // 检查现有区域中是否重叠
+                // 检查现有区域中是否重叠, 有的话直接返回
                 kvm_for_each_memslot(tmp, __kvm_memslots(kvm, as_id)) {
+                        // 当前要加入的slot, 不管, 直接跳过
                         if (tmp->id == id)
                                 continue;
+                        // new_end > slot_base && new_base < slot_end，说明已经有覆盖该段内存了
                         if (!((new.base_gfn + new.npages <= tmp->base_gfn) ||
                               (new.base_gfn >= tmp->base_gfn + tmp->npages)))
                                 return -EEXIST;
@@ -307,7 +309,7 @@ static int kvm_set_memslot(struct kvm *kvm,
         slots = install_new_memslots(kvm, as_id, slots);
 
         kvm_arch_commit_memory_region(kvm, mem, old, new, change);
-        // 释放旧内存区域
+        // 释放旧内存区域相应的物理内存, HPA
         kvfree(slots);
         return 0;
 
@@ -327,6 +329,7 @@ int kvm_arch_prepare_memory_region(struct kvm *kvm,
 {
         // 创建或move区域
         if (change == KVM_MR_CREATE || change == KVM_MR_MOVE)
+                // 初始化memslot中arch相关内容
                 return kvm_alloc_memslot_metadata(memslot,
                                                   mem->memory_size >> PAGE_SHIFT);
         return 0;
