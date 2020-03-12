@@ -259,6 +259,29 @@ EXPORT_SYMBOL_GPL(__kvm_set_memory_region);
 
 每次调用**设置一个内存区间**。内存区域可以**不连续**(实际的物理内存区域也经常不连续，因为有可能有保留内存)
 
+```cpp
+static int kvm_delete_memslot(struct kvm *kvm,
+                              const struct kvm_userspace_memory_region *mem,
+                              struct kvm_memory_slot *old, int as_id)
+{
+        struct kvm_memory_slot new;
+        int r;
+
+        if (!old->npages)
+                return -EINVAL;
+        // 
+        memset(&new, 0, sizeof(new));
+        new.id = old->id;
+        // 也是调用kvm_set_memslot
+        r = kvm_set_memslot(kvm, mem, old, &new, as_id, KVM_MR_DELETE);
+        if (r)
+                return r;
+
+        kvm_free_memslot(kvm, old);
+        return 0;
+}
+```
+
 最终调用`kvm_set_memslot()`
 
 ```cpp
