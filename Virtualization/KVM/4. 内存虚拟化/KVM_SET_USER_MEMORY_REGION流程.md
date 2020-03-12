@@ -132,12 +132,13 @@ int __kvm_set_memory_region(struct kvm *kvm,
         // 如果客户机物理地址不是页对齐, 直接失败
         if (mem->guest_phys_addr & (PAGE_SIZE - 1))
                 return -EINVAL;
-        /* We can read the guest memory with __xxx_user() later on. */
+        /* 如果slot的id在合法范围, 但是用户空间地址不是页对齐/不在地址范围, 直接失败 */
         if ((id < KVM_USER_MEM_SLOTS) &&
             ((mem->userspace_addr & (PAGE_SIZE - 1)) ||
              !access_ok((void __user *)(unsigned long)mem->userspace_addr,
                         mem->memory_size)))
                 return -EINVAL;
+        // slot id太大, 失败
         if (as_id >= KVM_ADDRESS_SPACE_NUM || id >= KVM_MEM_SLOTS_NUM)
                 return -EINVAL;
         if (mem->guest_phys_addr + mem->memory_size < mem->guest_phys_addr)
