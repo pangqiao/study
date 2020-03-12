@@ -297,17 +297,17 @@ static int kvm_set_memslot(struct kvm *kvm,
                 // flush影子页表中的条目
                 kvm_arch_flush_shadow_memslot(kvm, slot);
         }
-
+        // 处理private memory slots, 对其分配用户态地址, 即HVA
         r = kvm_arch_prepare_memory_region(kvm, new, mem, change);
         if (r)
                 goto out_slots;
 
         update_memslots(slots, new, change);
-        // 安装新memslots, 返回旧的memslots
+        // 安装新memslots, 将其写入kvm->memslots[]数组, 返回旧的memslots
         slots = install_new_memslots(kvm, as_id, slots);
 
         kvm_arch_commit_memory_region(kvm, mem, old, new, change);
-
+        // 释放旧内存区域
         kvfree(slots);
         return 0;
 
