@@ -71,17 +71,6 @@ struct kvm_memory_slot {
 static long kvm_vm_ioctl(struct file *filp,
              unsigned int ioctl, unsigned long arg)
 {
-    struct kvm *kvm = filp->private_data;
-    void __user *argp = (void __user *)arg;
-    int r;
-
-    if (kvm->mm != current->mm)
-        return -EIO;
-    switch (ioctl) {
-    // 创建VCPU
-    case KVM_CREATE_VCPU:
-        r = kvm_vm_ioctl_create_vcpu(kvm, arg);
-        break;
     // 建立guest物理地址空间中的内存区域与qemu-kvm虚拟地址空间中的内存区域的映射
     case KVM_SET_USER_MEMORY_REGION: {
         // 存放内存区域信息的结构体，该内存区域从qemu-kvm进程的用户地址空间中分配
@@ -98,8 +87,19 @@ static long kvm_vm_ioctl(struct file *filp,
     }
 ...
 ```
+可以看到首要任务就是把参数复制到内核，然后调用了`kvm_vm_ioctl_set_memory_region()`函数。
 
-根据流程, 最终调用 `__kvm_set_memory_region()`
+```cpp
+int kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
+                   struct kvm_userspace_memory_region *mem)
+{
+    if (mem->slot >= KVM_USER_MEM_SLOTS)
+        return -EINVAL;
+    return kvm_set_memory_region(kvm, mem);
+}
+```
+
+函数检查下slot编号如果超额，那没办法，无法添加，否则调用`kvm_set_memory_region()`函数。而该函数没做别的，最终调用 `__kvm_set_memory_region()`
 
 ```cpp
 /*
@@ -126,9 +126,10 @@ int __kvm_set_memory_region(struct kvm *kvm,
         as_id = mem->slot >> 16;
         id = (u16)mem->slot;
         // 合规检查, 防止用户态恶意传参而导致安全漏洞
-        /* General sanity checks */
+        /* 如果memory_size 不是页对齐, 直接失败 */
         if (mem->memory_size & (PAGE_SIZE - 1))
                 return -EINVAL;
+        // 如果客户机物理地址不是页对齐, 直接失败
         if (mem->guest_phys_addr & (PAGE_SIZE - 1))
                 return -EINVAL;
         /* We can read the guest memory with __xxx_user() later on. */
