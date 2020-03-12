@@ -306,6 +306,7 @@ static int kvm_set_memslot(struct kvm *kvm,
                  */
                 // 获取旧的slot(内存条模型)
                 slot = id_to_memslot(slots, old->id);
+                // 在删除或move时, 旧slot应该不可用, 然后在下面install时会被销毁
                 slot->flags |= KVM_MEMSLOT_INVALID;
 
                 /*
