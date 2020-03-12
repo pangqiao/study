@@ -269,14 +269,14 @@ static int kvm_delete_memslot(struct kvm *kvm,
 
         if (!old->npages)
                 return -EINVAL;
-        // 
+        // 新的slot全部置为0
         memset(&new, 0, sizeof(new));
         new.id = old->id;
         // 也是调用kvm_set_memslot
         r = kvm_set_memslot(kvm, mem, old, &new, as_id, KVM_MR_DELETE);
         if (r)
                 return r;
-
+        // 释放掉旧slot的所有空间
         kvm_free_memslot(kvm, old);
         return 0;
 }
