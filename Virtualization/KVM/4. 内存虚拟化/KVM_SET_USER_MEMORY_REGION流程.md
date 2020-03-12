@@ -306,7 +306,7 @@ static int kvm_set_memslot(struct kvm *kvm,
                  */
                 // 获取旧的slot(内存条模型)
                 slot = id_to_memslot(slots, old->id);
-                // 在删除或move时, 旧slot应该不可用, 然后在下面install时会被销毁
+                // 在删除或move时, 旧slot应该不可用
                 slot->flags |= KVM_MEMSLOT_INVALID;
 
                 /*
@@ -328,11 +328,11 @@ static int kvm_set_memslot(struct kvm *kvm,
                 // flush影子页表中的条目
                 kvm_arch_flush_shadow_memslot(kvm, slot);
         }
-        // 处理private memory slots, 对其分配用户态地址, 即HVA
+        // 
         r = kvm_arch_prepare_memory_region(kvm, new, mem, change);
         if (r)
                 goto out_slots;
-
+        // 更新
         update_memslots(slots, new, change);
         // 安装新memslots, 将其写入kvm->memslots[]数组, 返回旧的memslots
         slots = install_new_memslots(kvm, as_id, slots);
@@ -362,6 +362,34 @@ int kvm_arch_prepare_memory_region(struct kvm *kvm,
                 return kvm_alloc_memslot_metadata(memslot,
                                                   mem->memory_size >> PAGE_SHIFT);
         return 0;
+}
+```
+
+```cpp
+static void update_memslots(struct kvm_memslots *slots,
+                            struct kvm_memory_slot *memslot,
+                            enum kvm_mr_change change)
+{
+        int i;
+        // 删除
+        if (change == KVM_MR_DELETE) {
+                kvm_memslot_delete(slots, memslot);
+        } else {
+                if (change == KVM_MR_CREATE)
+                        // 创建, 返回 slots->used_slots++
+                        i = kvm_memslot_insert_back(slots);
+                else    
+                        // move
+                        i = kvm_memslot_move_backward(slots, memslot);
+                i = kvm_memslot_move_forward(slots, memslot, i);
+
+                /*
+                 * Copy the memslot to its new position in memslots and update
+                 * its index accordingly.
+                 */
+                slots->memslots[i] = *memslot;
+                slots->id_to_index[memslot->id] = i;
+        }
 }
 ```
 
