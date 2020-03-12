@@ -212,7 +212,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
                 // 将原有slot的arch相关信息全部复制给新的slot
                 memcpy(&new.arch, &old.arch, sizeof(new.arch));
         }
-        // 对于创建或move
+        // 对于创建或move, 检查重叠
         if ((change == KVM_MR_CREATE) || (change == KVM_MR_MOVE)) {
                 /* Check for overlaps */
                 // 检查现有区域中是否重叠, 有的话直接返回
@@ -340,3 +340,6 @@ int kvm_arch_prepare_memory_region(struct kvm *kvm,
         return 0;
 }
 ```
+
+# 参考
+
