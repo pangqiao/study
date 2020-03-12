@@ -149,6 +149,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
          * to free its resources and for arch specific behavior.
          */
         // 将 kvm_userspace_memory_region->slot 转换为 kvm_mem_slot 结构，该结构从 kvm->memslots 获取
+        // 完全拷贝了一份到tmp
         tmp = id_to_memslot(__kvm_memslots(kvm, as_id), id);
         if (tmp) {
                 old = *tmp;
