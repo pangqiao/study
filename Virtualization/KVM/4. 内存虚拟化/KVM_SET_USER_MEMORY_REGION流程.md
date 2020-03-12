@@ -160,22 +160,23 @@ int __kvm_set_memory_region(struct kvm *kvm,
         }
         // 新设置区域大小为 0, 删除原有区域
         if (!mem->memory_size)
+                // 最终还是会调用 kvm_set_memslot
                 return kvm_delete_memslot(kvm, mem, &old, as_id);
-
+        // 新的 kvm_memory_slot
         new.id = id;
         // 内存区域起始位置在Guest物理地址空间中的页框号
         new.base_gfn = mem->guest_phys_addr >> PAGE_SHIFT;
         // 内存区域大小转换为page单位
         new.npages = mem->memory_size >> PAGE_SHIFT;
         new.flags = mem->flags;
+        // HVA
         new.userspace_addr = mem->userspace_addr;
 
         if (new.npages > KVM_MEM_MAX_NR_PAGES)
                 return -EINVAL;
-
+        // 旧 pages 为0, 说明要创建新内存区域
         if (!old.npages) {
                 /*
-                 * 旧 pages 为0, 说明要创建新内存区域
                  * 设置 KVM_MR_CREATE 标记
                  */
                 change = KVM_MR_CREATE;
