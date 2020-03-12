@@ -238,7 +238,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
                 if (kvm_dirty_log_manual_protect_and_init_set(kvm))
                         bitmap_set(new.dirty_bitmap, 0, new.npages);
         }
-
+        // 真正执行的代码
         r = kvm_set_memslot(kvm, mem, &old, &new, as_id, change);
         if (r)
                 goto out_bitmap;
