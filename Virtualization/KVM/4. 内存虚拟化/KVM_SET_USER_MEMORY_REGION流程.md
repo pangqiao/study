@@ -182,6 +182,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
                 change = KVM_MR_CREATE;
                 new.dirty_bitmap = NULL;
                 memset(&new.arch, 0, sizeof(new.arch));
+        // 修改一个存在的slot
         } else { /* Modify an existing slot. */
                 // 判断是否修改现有的内存区域
                 // 旧 page 数不为 0
@@ -208,8 +209,10 @@ int __kvm_set_memory_region(struct kvm *kvm,
 
                 /* Copy dirty_bitmap and arch from the current memslot. */
                 new.dirty_bitmap = old.dirty_bitmap;
+                // 将原有slot的arch相关信息全部复制给新的slot
                 memcpy(&new.arch, &old.arch, sizeof(new.arch));
         }
+        // 对于创建或move
         if ((change == KVM_MR_CREATE) || (change == KVM_MR_MOVE)) {
                 /* Check for overlaps */
                 // 检查现有区域中是否重叠, 有的话直接返回
