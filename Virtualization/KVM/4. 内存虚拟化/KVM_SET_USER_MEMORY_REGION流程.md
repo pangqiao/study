@@ -1,4 +1,17 @@
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [基本原理](#基本原理)
+- [基本流程](#基本流程)
+- [代码分析](#代码分析)
+  - [kvm_mem_slot 结构体: GPA到HVA的映射关系](#kvm_mem_slot-结构体-gpa到hva的映射关系)
+  - [kvm_vm_ioctl(): vm指令入口](#kvm_vm_ioctl-vm指令入口)
+- [参考](#参考)
+
+<!-- /code_chunk_output -->
+
 # 基本原理
 
 kvm虚拟机实际运行于`qemu-kvm`的**进程上下文**中，因此，需要建立**虚拟机的物理内存空间**(GPA)与`qemu-kvm`**进程的虚拟地址空间**(HVA)的映射关系。
