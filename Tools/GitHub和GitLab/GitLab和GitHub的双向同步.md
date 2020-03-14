@@ -23,4 +23,30 @@
 
 ## 在GitHub上建立空仓库用来同步
 
-生成空的项目后, 记录URL
+生成空的项目后, 记录URL, 类似
+
+```
+https://github.com/haiwei-li/test.git
+```
+
+## 在GitLab上配置镜像地址
+
+登录GitLab, 进入需要同步的项目, 进入 `settings -> repository -> Mirroring repositories`, 填写GitHub的空代码库地址
+
+注意地址需要添加用户名(自然是为了和token对应)
+
+原本URL是
+
+```
+https://github.com/haiwei-li/test.git
+```
+
+这里要填写的是
+
+```
+https://haiwei-li@github.com/haiwei-li/test.git
+```
+
+密码处 填写的就是上面获取的token。
+
+如果github中创建的是公有的仓库，可以尝试自己的**github的登录密码**填写此处，以或许更多更完整的权限
