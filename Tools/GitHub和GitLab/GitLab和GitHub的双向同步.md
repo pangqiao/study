@@ -9,7 +9,7 @@
 
 3. 在**GitLab**上**配置镜像地址**，完成同步【8-13步】
 
-## 
+## 在GitHub上生成token
 
 登录GitHub, 进入 `setting -> Develop settings -> Personal access tokens`
 
@@ -17,3 +17,10 @@
 
 ![2020-03-15-00-00-28.png](./images/2020-03-15-00-00-28.png)
 
+保存生成的新的token到其他地方, 之后就看不到了, 因为这个相当于密码
+
+![2020-03-15-00-05-31.png](./images/2020-03-15-00-05-31.png)
+
+## 在GitHub上建立空仓库用来同步
+
+生成空的项目后, 记录URL
