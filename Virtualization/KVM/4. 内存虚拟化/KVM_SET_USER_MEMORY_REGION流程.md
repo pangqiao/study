@@ -210,8 +210,9 @@ int __kvm_set_memory_region(struct kvm *kvm,
                 /*
                  * 走到这，说明被修改的区域HVA和大小都是相同的
                  *
-                 * 判断区域起始的 GFN 是否相同，如果是，则说明需
+                 * 判断区域起始的 GFN 是否相同，如果不是，则说明需
                  * 要在Guest物理地址空间中move这段区域，设置KVM_MR_MOVE标记
+                 * 也就是需要移动内存条
                  */
                 if (new.base_gfn != old.base_gfn)
                         change = KVM_MR_MOVE;
