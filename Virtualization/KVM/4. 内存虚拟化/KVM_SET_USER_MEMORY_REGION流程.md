@@ -136,7 +136,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
         r = check_memory_region_flags(mem);
         if (r)
                 return r;
-        // slot编号右移4位
+        // address_space ID = slot编号右移4位
         as_id = mem->slot >> 16;
         // slot编号
         id = (u16)mem->slot;
