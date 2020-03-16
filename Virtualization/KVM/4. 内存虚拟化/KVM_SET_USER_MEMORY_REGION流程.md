@@ -136,8 +136,9 @@ int __kvm_set_memory_region(struct kvm *kvm,
         r = check_memory_region_flags(mem);
         if (r)
                 return r;
-
+        // slot编号右移4位
         as_id = mem->slot >> 16;
+        // slot编号
         id = (u16)mem->slot;
         // 合规检查, 防止用户态恶意传参而导致安全漏洞
         /* 如果memory_size 不是页对齐, 直接失败 */
