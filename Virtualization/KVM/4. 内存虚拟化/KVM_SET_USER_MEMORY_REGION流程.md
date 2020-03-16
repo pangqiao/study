@@ -106,6 +106,7 @@ static long kvm_vm_ioctl(struct file *filp,
 int kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
                    struct kvm_userspace_memory_region *mem)
 {
+        // slot编号过大
     if (mem->slot >= KVM_USER_MEM_SLOTS)
         return -EINVAL;
     return kvm_set_memory_region(kvm, mem);
