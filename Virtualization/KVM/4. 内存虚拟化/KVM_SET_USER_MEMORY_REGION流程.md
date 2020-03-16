@@ -145,7 +145,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
         // 如果客户机物理地址不是页对齐, 直接失败
         if (mem->guest_phys_addr & (PAGE_SIZE - 1))
                 return -EINVAL;
-        /* 如果slot的id在合法范围, 但是用户空间地址不是页对齐/不在地址范围, 直接失败 */
+        /* 如果slot的id在合法范围, 但是用户空间地址(host线性地址)不是页对齐/不在地址范围, 直接失败 */
         if ((id < KVM_USER_MEM_SLOTS) &&
             ((mem->userspace_addr & (PAGE_SIZE - 1)) ||
              !access_ok((void __user *)(unsigned long)mem->userspace_addr,
@@ -163,7 +163,7 @@ int __kvm_set_memory_region(struct kvm *kvm,
          * memslot needs to be referenced after calling update_memslots(), e.g.
          * to free its resources and for arch specific behavior.
          */
-        // 将 kvm_userspace_memory_region->slot 转换为 kvm_mem_slot 结构，该结构从 kvm->memslots 获取
+        // 根据 kvm_userspace_memory_region->slot(qemu的内存槽号) 得到 kvm_mem_slot(kvm的内存槽号) 结构，该结构从 kvm->memslots 获取
         // 完全拷贝了一份到tmp
         tmp = id_to_memslot(__kvm_memslots(kvm, as_id), id);
         if (tmp) {
@@ -173,10 +173,11 @@ int __kvm_set_memory_region(struct kvm *kvm,
                 memset(&old, 0, sizeof(old));
                 old.id = id;
         }
-        // 新设置区域大小为 0, 删除原有区域, 直接返回
+        // 新设置区域大小为 0, 意味着删除原有区域, 然后直接返回
         if (!mem->memory_size)
                 // 最终还是会调用 kvm_set_memslot
                 return kvm_delete_memslot(kvm, mem, &old, as_id);
+        
         // 新的 kvm_memory_slot
         new.id = id;
         // 内存区域起始位置在Guest物理地址空间中的页框号
@@ -271,9 +272,25 @@ out_bitmap:
 EXPORT_SYMBOL_GPL(__kvm_set_memory_region);
 ```
 
+check_memory_region_flags检查`mem->flags`是否合法，而当前flag也就使用了两位，`KVM_MEM_LOG_DIRTY_PAGES`和`KVM_MEM_READONLY`, 从qemu传过来的只能是`KVM_MEM_LOG_DIRTY_PAGES`
+
+`id_to_memslot`则是根据qemu的内存槽号得到kvm结构下的内存槽号，转换关系来自id_to_index数组，那映射关系怎么来的，映射关系是**一一对应**的，在kvm_create_vm虚拟机创建过程中，`kvm_init_memslots_id`初始化对应关系，即`slots->id_to_index[i] = slots->memslots[i].id = i`，当前映射是没有意义的，估计是为了后续扩展而存在的。
+
 该函数主要用来建立**guest物理地址空间**(虚拟机物理地址空间)中的**内存区域**与`qemu-kvm`**虚拟地址空间**(宿主机虚拟地址, HVA)中的**内存区域的映射**, 相应信息由`uerspace_memory_region` 参数传入，而其源头来自于**用户态qemu-kvm**。
 
+
 每次调用**设置一个内存区间**。内存区域可以**不连续**(实际的物理内存区域也经常不连续，因为有可能有保留内存)
+
+另外看`kvm_mr_change`就知道memslot的变动值了：
+
+```cpp
+enum kvm_mr_change {
+    KVM_MR_CREATE,
+    KVM_MR_DELETE,
+    KVM_MR_MOVE,
+    KVM_MR_FLAGS_ONLY,
+};
+```
 
 ```cpp
 static int kvm_delete_memslot(struct kvm *kvm,
