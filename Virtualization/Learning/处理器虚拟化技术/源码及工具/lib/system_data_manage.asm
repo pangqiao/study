@@ -1,6 +1,6 @@
 ;*************************************************
 ;* system_data_manage.asm                        *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -8,29 +8,29 @@
 
 
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-; ÎïÀíµØÖ·¿Õ¼äËµÃ÷:
-;; 1) 8000h - FFFFh£ºsetup Ä£¿éÊ¹ÓÃ
-;; 2) 1_0000h - 1_FFFFh£º±£ÁôÎ´ÓÃ
-;; 3) 2_0000h - 2_FFFFh£ºpreccted/long Ä£¿éÊ¹ÓÃ
-;; 4) 10_0000h - 11_FFFFh£ºPCB ÇøÓò£¨¹²128K£©
-;; 5) 12_0000h - 14_FFFFh£ºSDA ÇøÓò£¨¹²192K£©
-;; 6) 20_0000h - 9F_FFFFh£ºLegacy Ä£Ê½ÏÂµÄ PT ÇøÓò£¨¹²8M£©
-;; 7) 200_0000h - 21F_FFFFh£ºLongmode ÏÂµÄ PPT ÇøÓò£¨¹²2M£©
-;; 8) 220_0000h - 2FF_FFFFh£ºPT pool ÇøÓò£¨¹²14M£©
-;; 9) 101_0000h ~ £ºUser Stack Base ÇøÓò
-;; 10) 104_0000h ~£ºKernel Stack Base ÇøÓò
-;; 11) 300_1000h ~£ºUser Pool Base ÇøÓò
-;; 12) 320_0000h ~£ºKernel Pool Base ÇøÓò
-;; 13) A0_0000h ~ BF_FFFFh : EPT PPT ÇøÓò
-;; 14) C0_0000h ~ FF_FFFFh £º±£ÁôÎ´ÓÃ
+; ç‰©ç†åœ°å€ç©ºé—´è¯´æ˜:
+;; 1) 8000h - FFFFhï¼šsetup æ¨¡å—ä½¿ç”¨
+;; 2) 1_0000h - 1_FFFFhï¼šä¿ç•™æœªç”¨
+;; 3) 2_0000h - 2_FFFFhï¼špreccted/long æ¨¡å—ä½¿ç”¨
+;; 4) 10_0000h - 11_FFFFhï¼šPCB åŒºåŸŸï¼ˆå…±128Kï¼‰
+;; 5) 12_0000h - 14_FFFFhï¼šSDA åŒºåŸŸï¼ˆå…±192Kï¼‰
+;; 6) 20_0000h - 9F_FFFFhï¼šLegacy æ¨¡å¼ä¸‹çš„ PT åŒºåŸŸï¼ˆå…±8Mï¼‰
+;; 7) 200_0000h - 21F_FFFFhï¼šLongmode ä¸‹çš„ PPT åŒºåŸŸï¼ˆå…±2Mï¼‰
+;; 8) 220_0000h - 2FF_FFFFhï¼šPT pool åŒºåŸŸï¼ˆå…±14Mï¼‰
+;; 9) 101_0000h ~ ï¼šUser Stack Base åŒºåŸŸ
+;; 10) 104_0000h ~ï¼šKernel Stack Base åŒºåŸŸ
+;; 11) 300_1000h ~ï¼šUser Pool Base åŒºåŸŸ
+;; 12) 320_0000h ~ï¼šKernel Pool Base åŒºåŸŸ
+;; 13) A0_0000h ~ BF_FFFFh : EPT PPT åŒºåŸŸ
+;; 14) C0_0000h ~ FF_FFFFh ï¼šä¿ç•™æœªç”¨
 ;;
 ;;
-;; ¼ÙÉèÎïÀíÄÚ´æÎª256M£¬µØÖ·´Ó 0000_0000h - 0FFF_FFFFh
+;; å‡è®¾ç‰©ç†å†…å­˜ä¸º256Mï¼Œåœ°å€ä» 0000_0000h - 0FFF_FFFFh
 ;;
-;; VM ÄÚ´æ domain ·ÖÅäËµÃ÷£º
+;; VM å†…å­˜ domain åˆ†é…è¯´æ˜ï¼š
 ;; 1) VM 0: 0000_0000h - 087F_FFFFh
 ;; 2) VM 1: 0880_0000 - 08FF_FFFFh (8M)
-;; 3) VM 2: 0900_0000 - 097F_FFFFh (8M£©
+;; 3) VM 2: 0900_0000 - 097F_FFFFh (8Mï¼‰
 ;; 4) VM 3: 0980_0000 - 09FF_FFFFh (8M)
 ;; 5) VM 4: 0A00_0000 - 0A7F_FFFFh (8M)
 ;; 6) VM 5: 0A80_0000 - 0AFF_FFFFh (8M)
@@ -40,36 +40,36 @@
 ;; 10) ... ...
 ;;
 
-;; ĞéÄâµØÖ·¿Õ¼äËµÃ÷£º
-;; Ò». legacy Ä£Ê½ÏÂ£º
-;; 1) 8000h - FFFFh£ºsetup Ä£¿éÊ¹ÓÃ
-;; 2) 1_0000h - 1_FFFFh£º±£ÁôÎ´ÓÃ
-;; 3) 2_0000h - 2_FFFFh£ºprotected/long Ä£¿éÊ¹ÓÃ
-;; 4) 8000_0000h - 8001_FFFFh£ºPCB ÇøÓò£¨Ó³Éäµ½ 10_0000h - 11_FFFFh£©
-;; 5) 8002_0000h - 8003_FFFFh£ºSDA ÇøÓò£¨Ó³Éäµ½ 12_0000h - 13_FFFFh£©
-;; 6) 7FE0_0000h ~£ºUser Stack Base ÇøÓò
-;; 7) FFE0_0000h ~£ºKernel Stack Base ÇøÓò
-;; 8) 8320_0000h ~£ºKernel Pool Base ÇøÓò
-;; 9) 7300_1000h ~£ºUser Pool Base  ÇøÓò
-;; 10) C000_0000h - C07F_FFFFh£ºPT ±íÇøÓò£¨8M£©
-;; 11) C0A0_0000h - C0BF_FFFFh£ºEPT PPT ÇøÓò£¨2M)
-;; 12) 8800_0000h ~ 8xxxx_xxxx£ºVM domain ÇøÓò
+;; è™šæ‹Ÿåœ°å€ç©ºé—´è¯´æ˜ï¼š
+;; ä¸€. legacy æ¨¡å¼ä¸‹ï¼š
+;; 1) 8000h - FFFFhï¼šsetup æ¨¡å—ä½¿ç”¨
+;; 2) 1_0000h - 1_FFFFhï¼šä¿ç•™æœªç”¨
+;; 3) 2_0000h - 2_FFFFhï¼šprotected/long æ¨¡å—ä½¿ç”¨
+;; 4) 8000_0000h - 8001_FFFFhï¼šPCB åŒºåŸŸï¼ˆæ˜ å°„åˆ° 10_0000h - 11_FFFFhï¼‰
+;; 5) 8002_0000h - 8003_FFFFhï¼šSDA åŒºåŸŸï¼ˆæ˜ å°„åˆ° 12_0000h - 13_FFFFhï¼‰
+;; 6) 7FE0_0000h ~ï¼šUser Stack Base åŒºåŸŸ
+;; 7) FFE0_0000h ~ï¼šKernel Stack Base åŒºåŸŸ
+;; 8) 8320_0000h ~ï¼šKernel Pool Base åŒºåŸŸ
+;; 9) 7300_1000h ~ï¼šUser Pool Base  åŒºåŸŸ
+;; 10) C000_0000h - C07F_FFFFhï¼šPT è¡¨åŒºåŸŸï¼ˆ8Mï¼‰
+;; 11) C0A0_0000h - C0BF_FFFFhï¼šEPT PPT åŒºåŸŸï¼ˆ2M)
+;; 12) 8800_0000h ~ 8xxxx_xxxxï¼šVM domain åŒºåŸŸ
 ;;
-;; ¶ş. longmode ÏÂ£º
-;; 1) 8000h - FFFFh£ºsetup Ä£¿éÊ¹ÓÃ
-;; 2) 1_0000h - 1_FFFFh£º±£ÁôÎ´ÓÃ
-;; 3) 2_0000h - 2_FFFFh£ºlong Ä£¿éÊ¹ÓÃ
-;; 4) FFFF_F800_8000_0000h ~£ºPCB ÇøÓò
-;; 5) FFFF_F800_8002_0000h ~£ºSDA ÇøÓò
-;; 6) 7FE0_0000h ~£ºUser Stack Base ÇøÓò
-;; 7) FFFF_FF80_FFE0_0000h ~£ºKernel Stack Base ÇøÓò
-;; 8) FFFF_F800_8320_0000h ~£ºKernel Pool Base ÇøÓò
-;; 9) 7300_1000h ~£ºUser Pool Base  ÇøÓò
-;; 10) FFFF_F6FB_7DA0_0000h ~£ºPPT ±íÇøÓò£¨8M£©
-;; 11) FFFF_F800_8220_0000h ~£ºPT Pool ÇøÓò
-;; 12) FFFF_F800_8020_0000h ~£º±¸ÓÃ PT Pool ÇøÓò
-;; 13) FFFF_F800_C0A0_0000h ~ FFFF_F800_C0BF_FFFFh£ºEPT PXT ÇøÓò£¨2M£©
-;; 14) FFFF_F800_8800_0000h ~ FFFF_F800_8xxx_xxxx£ºVM domain ÇøÓò
+;; äºŒ. longmode ä¸‹ï¼š
+;; 1) 8000h - FFFFhï¼šsetup æ¨¡å—ä½¿ç”¨
+;; 2) 1_0000h - 1_FFFFhï¼šä¿ç•™æœªç”¨
+;; 3) 2_0000h - 2_FFFFhï¼šlong æ¨¡å—ä½¿ç”¨
+;; 4) FFFF_F800_8000_0000h ~ï¼šPCB åŒºåŸŸ
+;; 5) FFFF_F800_8002_0000h ~ï¼šSDA åŒºåŸŸ
+;; 6) 7FE0_0000h ~ï¼šUser Stack Base åŒºåŸŸ
+;; 7) FFFF_FF80_FFE0_0000h ~ï¼šKernel Stack Base åŒºåŸŸ
+;; 8) FFFF_F800_8320_0000h ~ï¼šKernel Pool Base åŒºåŸŸ
+;; 9) 7300_1000h ~ï¼šUser Pool Base  åŒºåŸŸ
+;; 10) FFFF_F6FB_7DA0_0000h ~ï¼šPPT è¡¨åŒºåŸŸï¼ˆ8Mï¼‰
+;; 11) FFFF_F800_8220_0000h ~ï¼šPT Pool åŒºåŸŸ
+;; 12) FFFF_F800_8020_0000h ~ï¼šå¤‡ç”¨ PT Pool åŒºåŸŸ
+;; 13) FFFF_F800_C0A0_0000h ~ FFFF_F800_C0BF_FFFFhï¼šEPT PXT åŒºåŸŸï¼ˆ2Mï¼‰
+;; 14) FFFF_F800_8800_0000h ~ FFFF_F800_8xxx_xxxxï¼šVM domain åŒºåŸŸ
 ;;
 ;;
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -77,30 +77,30 @@
 
 
 ;;
-;; Ö§³Ö´¦ÀíÆ÷ÊıÁ¿
+;; æ”¯æŒå¤„ç†å™¨æ•°é‡
 ;;
 PROCESSOR_MAX           EQU     16
 
 
 ;;
-;; PCB(Processor Control Block)¿É·ÖÅäÊ¹ÓÃµÄ pool ³¤¶È
+;; PCB(Processor Control Block)å¯åˆ†é…ä½¿ç”¨çš„ pool é•¿åº¦
 ;;
 PCB_SIZE                EQU     PROCESSOR_CONTROL_BLOCK_SIZE
 PCB_POOL_SIZE           EQU     (PCB_SIZE * PROCESSOR_MAX)
 
 ;;
-;; PCB pool ÎïÀí»ùÖ·£¬Ã¿¸ö´¦ÀíÆ÷µÄ PCB ¿é´ÓÕâÀï·ÖÅä
+;; PCB pool ç‰©ç†åŸºå€ï¼Œæ¯ä¸ªå¤„ç†å™¨çš„ PCB å—ä»è¿™é‡Œåˆ†é…
 ;;
 PCB_PHYSICAL_POOL       EQU     100000h
 
 
 ;;
-;; PCB Óë SDA ĞéÄâ»ùÖ·
-;; ÔÚ 32 Î»ÏÂ£º
+;; PCB ä¸ SDA è™šæ‹ŸåŸºå€
+;; åœ¨ 32 ä½ä¸‹ï¼š
 ;; 1) PCB_BASE  =  8000_0000h
 ;; 2) SDA_BASE  =  8002_0000h (PCB_BASE + PCB_POOL_SIZE)
 ;;
-;; ÔÚ 64 Î»ÏÂ£º
+;; åœ¨ 64 ä½ä¸‹ï¼š
 ;; 1) PCB_BASE64  = ffff_f800_8000_0000h
 ;; 2) SDA_BASE64  = ffff_f800_8002_0000h (PCB_BASE64 + PCB_POOL_SIZE)
 ;;
@@ -111,7 +111,7 @@ SDA_BASE64              EQU     (PCB_BASE64 + PCB_POOL_SIZE)
 
 
 ;;
-;; PCB Óë SDA ÎïÀí»ùÖ·:
+;; PCB ä¸ SDA ç‰©ç†åŸºå€:
 ;; 1) PCB_PHYSICAL_BASE  =  100000h (PCB_PHYSICAL_POOL)
 ;; 2) SDA_PHYSICAL_BASE  =  120000h (PCB_PHYSICAL_POOL + PCB_POOL_SIZE)
 ;;
@@ -129,19 +129,19 @@ SDA_PHYSICAL_BASE       EQU     (PCB_PHYSICAL_POOL + PCB_POOL_SIZE)
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       Í¨¹ı apic µÄ¿ªÆô£¬·ñÔò´¦ÀíÆ÷½øÈë HLT ×´Ì¬
+; æè¿°ï¼š
+;       é€šè¿‡ apic çš„å¼€å¯ï¼Œå¦åˆ™å¤„ç†å™¨è¿›å…¥ HLT çŠ¶æ€
 ;---------------------------------------------------
 init_apic:
         push ecx
         push edx
         mov eax, 1
         cpuid
-        bt edx, 9                               ; ¼ì²éÊÇ·ñÖ§³Ö APIC on Chip
+        bt edx, 9                               ; æ£€æŸ¥æ˜¯å¦æ”¯æŒ APIC on Chip
         jnc init_apic.error
         
         ;;
-        ;; ¿ªÆô global enable Î»
+        ;; å¼€å¯ global enable ä½
         ;;
         mov ecx, IA32_APIC_BASE
         rdmsr
@@ -149,7 +149,7 @@ init_apic:
         wrmsr
         
         ;;
-        ;; ¿ªÆô software enable Î»
+        ;; å¼€å¯ software enable ä½
         ;;
         and eax, 0FFFFF000h                     ; local APIC base
         mov ebx, [eax + LAPIC_SVR]
@@ -170,37 +170,37 @@ init_apic.error:
         
 
 ;-------------------------------------------------------------------
-; append_gdt_descriptor(): Íù GDT ±íÌí¼ÓÒ»¸öÃèÊö·û
+; append_gdt_descriptor(): å¾€ GDT è¡¨æ·»åŠ ä¸€ä¸ªæè¿°ç¬¦
 ; input:
-;       edx:eax - 64 Î»ÃèÊö·û
+;       edx:eax - 64 ä½æè¿°ç¬¦
 ; output:
-;       eax - ·µ»Ø selector Öµ
-; ÃèÊö£º
-;       1) Ìí¼ÓÒ»¸öÃèÊö·û£¬²¢¸üĞÂ GDTR 
+;       eax - è¿”å› selector å€¼
+; æè¿°ï¼š
+;       1) æ·»åŠ ä¸€ä¸ªæè¿°ç¬¦ï¼Œå¹¶æ›´æ–° GDTR 
 ;-------------------------------------------------------------------
 append_gdt_descriptor:
-        mov esi, [fs: SDA.GdtTop]                       ; ¶ÁÈ¡ GDT ¶¥¶ËÔ­Öµ
-        add esi, 8                                      ; Ö¸ÏòÏÂÒ»Ìõ entry
+        mov esi, [fs: SDA.GdtTop]                       ; è¯»å– GDT é¡¶ç«¯åŸå€¼
+        add esi, 8                                      ; æŒ‡å‘ä¸‹ä¸€æ¡ entry
         mov [esi], eax
         mov [esi + 4], edx
-        mov [fs: SDA.GdtTop], esi                       ; ¸üĞÂ gdt_top ¼ÇÂ¼
-        add DWORD [fs: SDA.GdtLimit], 8                 ; ¸üĞÂ gdt_limit ¼ÇÂ¼
-        sub esi, [fs: SDA.GdtBase]                      ; µÃµ½ selector Öµ
+        mov [fs: SDA.GdtTop], esi                       ; æ›´æ–° gdt_top è®°å½•
+        add DWORD [fs: SDA.GdtLimit], 8                 ; æ›´æ–° gdt_limit è®°å½•
+        sub esi, [fs: SDA.GdtBase]                      ; å¾—åˆ° selector å€¼
         ;;
-        ;; ÏÂÃæË¢ĞÂ gdtr ¼Ä´æÆ÷
+        ;; ä¸‹é¢åˆ·æ–° gdtr å¯„å­˜å™¨
         ;;
         lgdt [fs: SDA.GdtPointer]
-        mov eax, esi                                    ; ·µ»ØÌí¼ÓµÄ selector
+        mov eax, esi                                    ; è¿”å›æ·»åŠ çš„ selector
         ret
 
 
 
 ;-------------------------------------------------------------------
-; remove_gdt_descriptor(): ÒÆ³ı GDT ±íµÄÒ»¸öÃèÊö·û
+; remove_gdt_descriptor(): ç§»é™¤ GDT è¡¨çš„ä¸€ä¸ªæè¿°ç¬¦
 ; input:
 ;       none
 ; output:
-;       edx:eax - ·µ»ØÒÆ³ıµÄÃèÊö·û
+;       edx:eax - è¿”å›ç§»é™¤çš„æè¿°ç¬¦
 ;-------------------------------------------------------------------
 remove_gdt_descriptor:
         push ebx
@@ -210,9 +210,9 @@ remove_gdt_descriptor:
         cmp ebx, [fs: SDA.GdtBase]
         jbe remove_gdt_descriptor.done
         mov edx, [ebx + 4]
-        mov eax, [ebx]                                  ; ¶ÁÔ­ÃèÊö·ûÖµ
+        mov eax, [ebx]                                  ; è¯»åŸæè¿°ç¬¦å€¼
         mov DWORD [ebx], 0
-        mov DWORD [ebx + 4], 0                          ; ÇåÃèÊö·ûÖµ
+        mov DWORD [ebx + 4], 0                          ; æ¸…æè¿°ç¬¦å€¼
         sub ebx, 8
         mov [fs: SDA.GdtTop], ebx
         sub DWORD [fs: SDA.GdtLimit], 8
@@ -224,12 +224,12 @@ remove_gdt_descriptor.done:
 
 
 ;-------------------------------------------------------------------
-; set_gdt_descriptor(): ¸ù¾İÌá¹©µÄ selector ÖµÔÚ GDT ±íĞ´ÈëÒ»¸öÃèÊö·û
+; set_gdt_descriptor(): æ ¹æ®æä¾›çš„ selector å€¼åœ¨ GDT è¡¨å†™å…¥ä¸€ä¸ªæè¿°ç¬¦
 ; input:
 ;       esi - selector 
-;       edx:eax - 64 Î»ÃèÊö·ûÖµ
+;       edx:eax - 64 ä½æè¿°ç¬¦å€¼
 ; output:
-;       eax - ·µ»ØÃèÊö·ûµØÖ·
+;       eax - è¿”å›æè¿°ç¬¦åœ°å€
 ;-------------------------------------------------------------------        
 set_gdt_descriptor:
         push ebx
@@ -240,7 +240,7 @@ set_gdt_descriptor:
         mov [ebx + 4], edx
         
         ;;
-        ;; ¼ì²â¼°¸üĞÂ GDT µÄ limit ºÍ top
+        ;; æ£€æµ‹åŠæ›´æ–° GDT çš„ limit å’Œ top
         ;;
         add esi, 7
         cmp ebx, [fs: SDA.GdtTop]
@@ -249,13 +249,13 @@ set_gdt_descriptor:
              
 set_gdt_descriptor.next:
         ;;
-        ;; Èç¹ûÉèÖÃµÄ GDT entry Î»ÖÃ³¬³öÁË GDT limit
-        ;; ¾Í¸üĞÂ limit£¬²¢Ë¢ĞÂ gdtr ¼Ä´æÆ÷
+        ;; å¦‚æœè®¾ç½®çš„ GDT entry ä½ç½®è¶…å‡ºäº† GDT limit
+        ;; å°±æ›´æ–° limitï¼Œå¹¶åˆ·æ–° gdtr å¯„å­˜å™¨
         ;;
         cmp esi, [fs: SDA.GdtLimit]
         jbe set_gdt_descriptor.done
         mov [fs: SDA.GdtLimit], esi
-        lgdt [fs: SDA.GdtPointer]               ; Ë¢ĞÂ gdtr ¼Ä´æÆ÷
+        lgdt [fs: SDA.GdtPointer]               ; åˆ·æ–° gdtr å¯„å­˜å™¨
 set_gdt_descriptor.done:        
         mov eax, ebx
         pop ebx
@@ -263,11 +263,11 @@ set_gdt_descriptor.done:
 
 
 ;-------------------------------------------------------------------
-; get_gdt_descriptor(): ¶ÁÈ¡ GDT ÃèÊö·û
+; get_gdt_descriptor(): è¯»å– GDT æè¿°ç¬¦
 ; input:
 ;       esi - selector 
 ; output:
-;       edx:eax - ³É¹¦Ê±£¬·µ»Ø 64 Î»ÃèÊö·û£¬Ê§°ÜÊ±£¬·µ»Ø -1 Öµ
+;       edx:eax - æˆåŠŸæ—¶ï¼Œè¿”å› 64 ä½æè¿°ç¬¦ï¼Œå¤±è´¥æ—¶ï¼Œè¿”å› -1 å€¼
 ;------------------------------------------------------------------- 
 get_gdt_descriptor:
         push ebx
@@ -279,7 +279,7 @@ get_gdt_descriptor:
         add esi, 7
         
         ;; 
-        ;; ¼ì²éÊÇ·ñ³¬ limit
+        ;; æ£€æŸ¥æ˜¯å¦è¶… limit
         cmp esi, [fs: SDA.GdtLimit]
         ja get_gdt_descriptor.done
         
@@ -293,11 +293,11 @@ get_gdt_descriptor.done:
 
 
 ;-------------------------------------------------------------------
-; get_idt_descriptor(): ¶ÁÈ¡ IDT ÃèÊö·û
+; get_idt_descriptor(): è¯»å– IDT æè¿°ç¬¦
 ; input:
 ;       esi - vector  
 ; output:
-;       edx:eax - ³É¹¦Ê±£¬·µ»Ø 64 Î»ÃèÊö·û£¬Ê§°ÜÊ±£¬·µ»Ø -1 Öµ
+;       edx:eax - æˆåŠŸæ—¶ï¼Œè¿”å› 64 ä½æè¿°ç¬¦ï¼Œå¤±è´¥æ—¶ï¼Œè¿”å› -1 å€¼
 ;------------------------------------------------------------------- 
 get_idt_descrptor:
         push ebx
@@ -310,12 +310,12 @@ get_idt_descrptor:
         add esi, 7
         
         ;;
-        ;; ¼ì²éÊÇ·ñ³¬ limit
+        ;; æ£€æŸ¥æ˜¯å¦è¶… limit
         cmp esi, [fs: SDA.IdtLimit]
         ja get_idt_descriptor.done
         
         ;;
-        ;; ¶Á IDT entry
+        ;; è¯» IDT entry
         add ebx, [fs: SDA.IdtBase]
         mov eax, [ebx]
         mov edx, [ebx + 4]
@@ -326,12 +326,12 @@ get_idt_descriptor.done:
 
 
 ;-------------------------------------------------------------------
-; set_idt_descriptor(): ¸ù¾İÌá¹©µÄ vector ÖµÔÚ IDT ±íĞ´ÈëÒ»¸öÃèÊö·û
+; set_idt_descriptor(): æ ¹æ®æä¾›çš„ vector å€¼åœ¨ IDT è¡¨å†™å…¥ä¸€ä¸ªæè¿°ç¬¦
 ; input:
 ;       esi - vector
-;       edx:eax - 64 Î»ÃèÊö·ûÖµ
+;       edx:eax - 64 ä½æè¿°ç¬¦å€¼
 ; output:
-;       eax - ·µ»ØÃèÊö·ûµØÖ·
+;       eax - è¿”å›æè¿°ç¬¦åœ°å€
 ;-------------------------------------------------------------------  
 set_idt_descriptor:
         push ebx
@@ -350,9 +350,9 @@ set_idt_descriptor:
 
 
 ;-------------------------------------------------------------------
-; mask_io_port_access(): ÆÁ±Î¶ÔÄ³¸ö¶Ë¿ÚµÄ·ÃÎÊ
+; mask_io_port_access(): å±è”½å¯¹æŸä¸ªç«¯å£çš„è®¿é—®
 ; input:
-;       esi - ¶Ë¿ÚÖµ
+;       esi - ç«¯å£å€¼
 ; output:
 ;       none
 ;-------------------------------------------------------------------
@@ -368,23 +368,23 @@ set_iomap_bit:
 %endif
         
         REX.Wrxb
-        mov ebx, [ebp + PCB.IomapBase]                          ; ¶Áµ±Ç° Iomap »ùÖ·
+        mov ebx, [ebp + PCB.IomapBase]                          ; è¯»å½“å‰ Iomap åŸºå€
         test DWORD [ebp + PCB.ProcessorStatus], CPU_STATUS_PG
         REX.Wrxb
         cmovz ebx, [ebp + PCB.IomapPhysicalBase]
         mov eax, esi
         shr eax, 3                                              ; port / 8
-        and esi, 7                                              ; È¡ byte ÄÚÎ»ÖÃ
-        bts DWORD [ebx + eax], esi                              ; ÖÃÎ»
+        and esi, 7                                              ; å– byte å†…ä½ç½®
+        bts DWORD [ebx + eax], esi                              ; ç½®ä½
         pop ebx
         pop ebp
         ret
 
 
 ;-------------------------------------------------------------------
-; unmask_io_port_access(): ÆÁ±Î¶ÔÄ³¸ö¶Ë¿ÚµÄ·ÃÎÊ
+; unmask_io_port_access(): å±è”½å¯¹æŸä¸ªç«¯å£çš„è®¿é—®
 ; input:
-;       esi - ¶Ë¿ÚÖµ
+;       esi - ç«¯å£å€¼
 ; output:
 ;       none
 ;-------------------------------------------------------------------
@@ -400,14 +400,14 @@ clear_iomap_bit:
 %endif
 
         REX.Wrxb
-        mov ebx, [ebp + PCB.IomapBase]                          ; ¶Áµ±Ç° Iomap »ùÖ·
+        mov ebx, [ebp + PCB.IomapBase]                          ; è¯»å½“å‰ Iomap åŸºå€
         test DWORD [ebp + PCB.ProcessorStatus], CPU_STATUS_PG
         REX.Wrxb
         cmovz ebx, [ebp + PCB.IomapPhysicalBase]        
         mov eax, esi
         shr eax, 3                                              ; port / 8
-        and esi, 7                                              ; È¡ byte ÄÚÎ»ÖÃ
-        btr DWORD [ebx + eax], esi                              ; ÇåÎ»
+        and esi, 7                                              ; å– byte å†…ä½ç½®
+        btr DWORD [ebx + eax], esi                              ; æ¸…ä½
         pop ebx
         pop ebp
         ret
@@ -415,14 +415,14 @@ clear_iomap_bit:
         
         
 ;-------------------------------------------------------------------
-; init_processor_basic_info(): ¸üĞÂ»ù±¾µÄ´¦ÀíÆ÷ĞÅÏ¢
+; init_processor_basic_info(): æ›´æ–°åŸºæœ¬çš„å¤„ç†å™¨ä¿¡æ¯
 ; input:
 ;       none
 ; output:
 ;       none
 ;
-; ×¢Òâ£º
-;       ´Ëº¯ÊıÔÚ¿ªÆô paging Ç°µ÷ÓÃ
+; æ³¨æ„ï¼š
+;       æ­¤å‡½æ•°åœ¨å¼€å¯ paging å‰è°ƒç”¨
 ;-------------------------------------------------------------------
 init_processor_basic_info:
         push ebx
@@ -430,7 +430,7 @@ init_processor_basic_info:
         push edx
 
         ;;
-        ;; ÉèÖÃ´¦ÀíÆ÷ index Óë count Öµ
+        ;; è®¾ç½®å¤„ç†å™¨ index ä¸ count å€¼
         ;;
         mov eax, [LoaderBase+LOADER_BLOCK.CpuIndex]     ; CpuIndex
         mov [gs: PCB.ProcessorIndex], eax               
@@ -438,7 +438,7 @@ init_processor_basic_info:
         
         
         ;;
-        ;; ¶ÁÈ¡ basic ºÍ extended µÄ×î´ó CPUID leaf
+        ;; è¯»å– basic å’Œ extended çš„æœ€å¤§ CPUID leaf
         ;;
         xor eax, eax
         cpuid
@@ -448,72 +448,72 @@ init_processor_basic_info:
         mov [gs: PCB.MaxExtendedLeaf], eax
                                                   
         ;;
-        ;; µÃµ½  vendor ID Öµ
+        ;; å¾—åˆ°  vendor ID å€¼
         ;;
         call get_vendor_id
         mov [gs: PCB.Vendor], eax        
         
         ;;
-        ;; µÃµ½»ù±¾ CPUID ĞÅÏ¢
+        ;; å¾—åˆ°åŸºæœ¬ CPUID ä¿¡æ¯
         ;;
         call update_cpuid_info
         
         mov ebx, [gs: PCB.CpuidLeaf01Ebx]
         mov ecx, ebx
         and ecx, 0FF00h
-        shr ecx, 5                                      ; cache line = EBX[15:08] * 8£¨bytes)
+        shr ecx, 5                                      ; cache line = EBX[15:08] * 8ï¼ˆbytes)
         mov [gs: PCB.CacheLineSize], ecx       
         mov ecx, ebx
         shr ecx, 16
         and ecx, 0FFh
-        mov [gs: PCB.MaxLogicalProcessor], ecx          ; ×î´óÂß¼­´¦ÀíÆ÷Êı        
+        mov [gs: PCB.MaxLogicalProcessor], ecx          ; æœ€å¤§é€»è¾‘å¤„ç†å™¨æ•°        
         shr ebx, 24
-        mov [gs: PCB.InitialApicId], ebx                ; ³õÊ¼ APIC ID       
+        mov [gs: PCB.InitialApicId], ebx                ; åˆå§‹ APIC ID       
         mov esi, [gs: PCB.CpuidLeaf01Eax]
         call get_display_family_model
         mov [gs: PCB.DisplayModel], ax                  ; DisplayFamily_DiplayModel
         
         ;;
-        ;; ¼ì²éÊÇ·ñÖ§³Ö SMT
+        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ SMT
         ;;
         call check_multi_threading_support
         mov [gs: PCB.IsMultiThreading], al
                 
         ;;
-        ;; ¼ì²é SSE Ö¸ÁîÖ§³Ö¶È
+        ;; æ£€æŸ¥ SSE æŒ‡ä»¤æ”¯æŒåº¦
         ;;
         call get_sse_level
         mov [gs: PCB.SSELevel], eax
        
         ;;
-        ;; ¸üĞÂ cache ĞÅÏ¢
+        ;; æ›´æ–° cache ä¿¡æ¯
         ;;
         call update_cache_info
 
         
         ;;
-        ;; ¸üĞÂ»ù±¾µÄÀ©Õ¹ĞÅÏ¢
+        ;; æ›´æ–°åŸºæœ¬çš„æ‰©å±•ä¿¡æ¯
         ;; 
         mov eax, 80000001h
         cpuid
-        mov [gs: PCB.ExtendedFeatureEcx], ecx           ; ±£´æ CPUID.80000001H Ò¶ĞÅÏ¢
+        mov [gs: PCB.ExtendedFeatureEcx], ecx           ; ä¿å­˜ CPUID.80000001H å¶ä¿¡æ¯
         mov [gs: PCB.ExtendedFeatureEdx], edx
         mov eax, 80000008h
-        cmp [gs: PCB.MaxExtendedLeaf], eax              ; ÊÇ·ñÖ§³Ö 8000000h leaf
-        mov ecx, 2020h                                  ; 32 Î»
+        cmp [gs: PCB.MaxExtendedLeaf], eax              ; æ˜¯å¦æ”¯æŒ 8000000h leaf
+        mov ecx, 2020h                                  ; 32 ä½
         jb init_processor_basic_info.@1
         cpuid
         mov ecx, eax
         
 init_processor_basic_info.@1:        
         ;;
-        ;; ¸üĞÂ MAXPHYADDR Öµ
+        ;; æ›´æ–° MAXPHYADDR å€¼
         ;;
         mov [gs: PCB.MaxPhysicalAddr], cl
         mov [gs: PCB.MaxVirtualAddr], ch
         
         ;;
-        ;; ¼ÆËã MAXPHYADDR MASK Öµ
+        ;; è®¡ç®— MAXPHYADDR MASK å€¼
         ;;
         call get_maxphyaddr_select_mask
         mov [gs: PCB.MaxPhyAddrSelectMask], eax
@@ -521,8 +521,8 @@ init_processor_basic_info.@1:
         
      
         ;;
-        ;; IA32_PERF_CAPABILITIES ¼Ä´æÆ÷ÊÇ·ñ¿ÉÓÃ
-        ;; ¼ì²é CPUID.01H:ECX[15].PDCM (Perfmon and Debug Capability)
+        ;; IA32_PERF_CAPABILITIES å¯„å­˜å™¨æ˜¯å¦å¯ç”¨
+        ;; æ£€æŸ¥ CPUID.01H:ECX[15].PDCM (Perfmon and Debug Capability)
         ;;
         xor edx, edx
         mov eax, [gs: PCB.FeatureEcx]
@@ -537,41 +537,41 @@ init_processor_basic_info.@2:
 
       
         ;;
-        ;; APIC »ù±¾ĞÅÏ¢
+        ;; APIC åŸºæœ¬ä¿¡æ¯
         ;;
         mov ecx, IA32_APIC_BASE
         rdmsr
         mov ebx, eax
-        bt eax, 8                                       ; ¼ì²éÊÇ·ñÎª BSP
+        bt eax, 8                                       ; æ£€æŸ¥æ˜¯å¦ä¸º BSP
         setc BYTE [gs: PCB.IsBsp]
         and eax, 0FFFFF000h
-        mov [gs: PCB.LapicPhysicalBase], eax            ; local APIC ÎïÀí»ùÖ·
-        mov DWORD [gs: PCB.LapicBase], LAPIC_BASE       ; local APIC »ùÖ·£¨virutal address£©
+        mov [gs: PCB.LapicPhysicalBase], eax            ; local APIC ç‰©ç†åŸºå€
+        mov DWORD [gs: PCB.LapicBase], LAPIC_BASE       ; local APIC åŸºå€ï¼ˆvirutal addressï¼‰
         mov ecx, [gs: PCB.ProcessorIndex]
         mov edx, 01000000h
-        shl edx, cl                                     ; Éú³É´¦ÀíÆ÷Âß¼­ ID
+        shl edx, cl                                     ; ç”Ÿæˆå¤„ç†å™¨é€»è¾‘ ID
         mov [gs: PCB.LogicalId], edx
-        mov [eax + LAPIC_LDR], edx                      ; ÉèÖÃ local APIC µÄÂß¼­ ID
+        mov [eax + LAPIC_LDR], edx                      ; è®¾ç½® local APIC çš„é€»è¾‘ ID
          
         ;; 
-        ;; ¸üĞÂ loacal APIC ĞÅÏ¢
+        ;; æ›´æ–° loacal APIC ä¿¡æ¯
         ;;
         mov BYTE [gs: PCB.IsLapicEnable], 1
         mov BYTE [gs: PCB.IsLx2ApicEnable], 0
         mov ebx, [eax + LAPIC_ID]
-        mov [gs: PCB.ApicId], ebx                       ; ¸üĞÂ Lapic ID
+        mov [gs: PCB.ApicId], ebx                       ; æ›´æ–° Lapic ID
         mov ebx, [eax + LAPIC_VERSION]
-        mov [gs: PCB.LapicVersion], ebx                 ; ¸üĞÂ Lapic version        
+        mov [gs: PCB.LapicVersion], ebx                 ; æ›´æ–° Lapic version        
         
         ;;
-        ;; ÉèÖÃ´¦ÀíÆ÷µÄ³õÊ¼ TPR Öµ 
+        ;; è®¾ç½®å¤„ç†å™¨çš„åˆå§‹ TPR å€¼ 
         ;;
         movzx ebx, BYTE [gs: PCB.CurrentTpl]
         shl ebx, 4
         mov [eax + LAPIC_TPR], ebx
         
         ;;
-        ;; ³õÊ¼»¯ local LVT ¼Ä´æÆ÷
+        ;; åˆå§‹åŒ– local LVT å¯„å­˜å™¨
         ;;
         mov DWORD [eax + LVT_PERFMON], FIXED_DELIVERY | LAPIC_PERFMON_VECTOR
         mov DWORD [eax + LVT_TIMER], TIMER_ONE_SHOT | LAPIC_TIMER_VECTOR | LVT_MASKED
@@ -589,30 +589,30 @@ init_processor_basic_info.@3:
         jne init_processor_basic_info.@4
         
         ;;
-        ;; ³õÊ¼»¯ IOAPIC
+        ;; åˆå§‹åŒ– IOAPIC
         ;;
         call init_ioapic_unit    
 
         ;;
-        ;; ²âÁ¿´¦ÀíÆ÷ÆµÂÊ
+        ;; æµ‹é‡å¤„ç†å™¨é¢‘ç‡
         ;;
         call init_processor_frequency
         jmp init_processor_basic_info.@5
         
 init_processor_basic_info.@4:
         ;;
-        ;; ÆÁ±Î APs LINT0 ºÍ LINT1
+        ;; å±è”½ APs LINT0 å’Œ LINT1
         ;;
         mov DWORD [eax + LVT_LINT0], LVT_MASKED | EXTINT_DELIVERY
         mov DWORD [eax + LVT_LINT1], LVT_MASKED | NMI_DELIVERY
                 
         ;;
-        ;; ¶ÁÈ¡ BSP µÄ PCB ¿é
+        ;; è¯»å– BSP çš„ PCB å—
         ;;
         mov ebx, [fs: SDA.PcbPhysicalBase]
         
         ;;
-        ;; ¸´ÖÆ BSP µÄÆµÂÊÊı¾İ
+        ;; å¤åˆ¶ BSP çš„é¢‘ç‡æ•°æ®
         ;;        
         mov eax, [ebx + PCB.ProcessorFrequency]
         mov [gs: PCB.ProcessorFrequency], eax
@@ -620,14 +620,14 @@ init_processor_basic_info.@4:
         mov [gs: PCB.TicksFrequency], eax
         
         ;;
-        ;; ¸´ÖÆ BSP µÄ lapic timer ¼ÆÊıÆµÂÊ
+        ;; å¤åˆ¶ BSP çš„ lapic timer è®¡æ•°é¢‘ç‡
         ;;
         mov eax, [ebx + PCB.LapicTimerFrequency]
         mov [gs: PCB.LapicTimerFrequency], eax
                
 init_processor_basic_info.@5:
         ;;
-        ;; ÉèÖÃ Ioapic enable ×´Ì¬
+        ;; è®¾ç½® Ioapic enable çŠ¶æ€
         ;;
         mov BYTE [gs: PCB.IsIapicEnable], 1
         mov DWORD [gs: PCB.IapicPhysicalBase], 0FEC00000h
@@ -635,17 +635,17 @@ init_processor_basic_info.@5:
         
         
         ;;
-        ;; ÆôÓÃÏà¹Ø´¦ÀíÆ÷¹¦ÄÜºÍÖ¸ÁîÖ§³Ö
-        ;; 1) ¿ªÆô PAE 
-        ;; 2) ÆôÓÃ XD Ö§³Ö
-        ;; 3) ÆôÓÃ SMEP ¹¦ÄÜ
+        ;; å¯ç”¨ç›¸å…³å¤„ç†å™¨åŠŸèƒ½å’ŒæŒ‡ä»¤æ”¯æŒ
+        ;; 1) å¼€å¯ PAE 
+        ;; 2) å¯ç”¨ XD æ”¯æŒ
+        ;; 3) å¯ç”¨ SMEP åŠŸèƒ½
         ;;
         call pae_enable
         call xd_page_enable
         call smep_enable
         
         ;;
-        ;; ¿ªÆô CR4.OSFXSR Î»£¬ÔÊĞíÖ´ĞĞ SSE Ö¸Áî        
+        ;; å¼€å¯ CR4.OSFXSR ä½ï¼Œå…è®¸æ‰§è¡Œ SSE æŒ‡ä»¤        
         ;;
         mov eax, cr4
         bts eax, 9                                      ; CR4.OSFXSR = 1
@@ -653,9 +653,9 @@ init_processor_basic_info.@5:
         or DWORD [gs: PCB.InstructionStatus], INST_STATUS_SSE
 
         ;;
-        ;; ¿ªÆô Read/Write FS/GS base ¹¦ÄÜ£¬ÔÊĞíÊ¹ÓÃ RD/WR FS/GS base Ö¸Áî
+        ;; å¼€å¯ Read/Write FS/GS base åŠŸèƒ½ï¼Œå…è®¸ä½¿ç”¨ RD/WR FS/GS base æŒ‡ä»¤
         ;;
-        test DWORD [gs: PCB.FeatureAddition], 1         ; ¼ì²é RWFSBASE ¹¦ÄÜÎ»
+        test DWORD [gs: PCB.FeatureAddition], 1         ; æ£€æŸ¥ RWFSBASE åŠŸèƒ½ä½
         jz init_processor_basic_info.@6
         mov eax, cr4
         bts eax, 16                                     ; CR4.RWFSBASE = 1
@@ -664,7 +664,7 @@ init_processor_basic_info.@5:
         
 init_processor_basic_info.@6:
         ;;
-        ;; Ö§³Ö VMX Ê±£¬¶ÁÈ¡ VMX capabilities MSR
+        ;; æ”¯æŒ VMX æ—¶ï¼Œè¯»å– VMX capabilities MSR
         ;;                
         test DWORD [gs: PCB.FeatureEcx], CPU_FLAGS_VMX
         jz init_processor_basic_info.@7
@@ -681,7 +681,7 @@ init_processor_basic_info.done:
         
         
 ;-------------------------------------------------------------------
-; get_vendor_id(): ·µ»Ø vendor ID
+; get_vendor_id(): è¿”å› vendor ID
 ; input:
 ;       none
 ; output:
@@ -693,7 +693,7 @@ get_vendor_id:
         mov eax, VENDOR_UNKNOWN
         
         ;;
-        ;; ¼ì²é£º
+        ;; æ£€æŸ¥ï¼š
         ;; 1) Intel: "GenuineIntel"
         ;; 2) AMD: "AuthenticAMD"
         ;;
@@ -725,8 +725,8 @@ get_vendor_id.unknown:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¶ÁÈ¡´¦ÀíÆ÷ CPUID ĞÅÏ¢
+; æè¿°ï¼š
+;       1) è¯»å–å¤„ç†å™¨ CPUID ä¿¡æ¯
 ;-------------------------------------------------------------------
 update_cpuid_info:
         push ecx
@@ -734,7 +734,7 @@ update_cpuid_info:
         push ebx
               
         ;;
-        ;; ×î´ó¶ÁÈ¡ 0B leaf
+        ;; æœ€å¤§è¯»å– 0B leaf
         ;;
         mov edi, 0Bh
         mov esi, [gs: PCB.MaxBasicLeaf]
@@ -744,7 +744,7 @@ update_cpuid_info:
         mov eax, esi        
         mov edi, [gs: PCB.PhysicalBase]
         shl eax, 4                                      ; MaxBasicLeaf * 16
-        lea edi, [edi + PCB.CpuidLeaf01Eax + eax]       ; Cpuid Leaf ¶¥²¿
+        lea edi, [edi + PCB.CpuidLeaf01Eax + eax]       ; Cpuid Leaf é¡¶éƒ¨
         
 update_cpuid_info.@0:
         sub edi, 16
@@ -767,31 +767,31 @@ update_cpuid_info.@0:
 
 
 ;-----------------------------------------------------------------
-; get_maxphyaddr_select_mask(): ¼ÆÊı³ö MAXPHYADDR ÖµµÄ SELECT MASK
+; get_maxphyaddr_select_mask(): è®¡æ•°å‡º MAXPHYADDR å€¼çš„ SELECT MASK
 ; output:
 ;       edx:eax - maxphyaddr select mask
-; ÃèÊö£º
-;       select mask ÖµÓÃÓÚÈ¡µÃ MAXPHYADDR ¶ÔÓ¦µÄÎïÀíµØÖ·Öµ
-; ÀıÈç£º
-;       MAXPHYADDR = 32 Ê±£ºselect mask = 00000000_FFFFFFFFh
-;       MAXPHYADDR = 36 Ê±: select mask = 0000000F_FFFFFFFFh
-;       MAXPHYADDR = 40 Ê±: select mask = 000000FF_FFFFFFFFh
-;       MAXPHYADDR = 52 Ê±£ºselect mask = 000FFFFF_FFFFFFFFh
+; æè¿°ï¼š
+;       select mask å€¼ç”¨äºå–å¾— MAXPHYADDR å¯¹åº”çš„ç‰©ç†åœ°å€å€¼
+; ä¾‹å¦‚ï¼š
+;       MAXPHYADDR = 32 æ—¶ï¼šselect mask = 00000000_FFFFFFFFh
+;       MAXPHYADDR = 36 æ—¶: select mask = 0000000F_FFFFFFFFh
+;       MAXPHYADDR = 40 æ—¶: select mask = 000000FF_FFFFFFFFh
+;       MAXPHYADDR = 52 æ—¶ï¼šselect mask = 000FFFFF_FFFFFFFFh
 ;-----------------------------------------------------------------
 get_maxphyaddr_select_mask:
         push ecx
-        movzx ecx, BYTE [gs: PCB.MaxPhysicalAddr]       ; µÃµ½ MAXPHYADDR Öµ
+        movzx ecx, BYTE [gs: PCB.MaxPhysicalAddr]       ; å¾—åˆ° MAXPHYADDR å€¼
         xor eax, eax
         xor edx, edx
-        and ecx, 1Fh                                    ; È¡³ı 32 µÄÓàÊı
-        dec eax                                         ; eax = -1£¨FFFFFFFFh)
+        and ecx, 1Fh                                    ; å–é™¤ 32 çš„ä½™æ•°
+        dec eax                                         ; eax = -1ï¼ˆFFFFFFFFh)
         shld edx, eax, cl                               ; edx = n1
         pop ecx
         ret
         
         
 ;---------------------------------------------------------------------
-; get_sse_level(): »ñµÃ SSE Ö¸ÁîÖ§³Ö¼¶±ğ
+; get_sse_level(): è·å¾— SSE æŒ‡ä»¤æ”¯æŒçº§åˆ«
 ; input:
 ;       none
 ; output:
@@ -827,9 +827,9 @@ get_sse_level.done:
 
         
 ;---------------------------------------------------------------------
-; get_display_family_model(): »ñµÃ DisplayFamily Óë DisplayModel
+; get_display_family_model(): è·å¾— DisplayFamily ä¸ DisplayModel
 ; input:
-;       esi - processor version£¨from CPUID.01H£©
+;       esi - processor versionï¼ˆfrom CPUID.01Hï¼‰
 ; output:
 ;       ax - DisplayFamily_DisplayModel
 ;--------------------------------------------------------------------
@@ -842,15 +842,15 @@ get_display_family_model:
 	mov edx, eax
 	mov ecx, eax
 	shr eax, 4
-	and eax, 0Fh                                    ; eax = bits 7:4 (µÃµ½ model Öµ)
+	and eax, 0Fh                                    ; eax = bits 7:4 (å¾—åˆ° model å€¼)
 	shr edx, 8
-	and edx, 0Fh                                    ; edx = bits 11:8 (µÃµ½ family Öµ)
+	and edx, 0Fh                                    ; edx = bits 11:8 (å¾—åˆ° family å€¼)
 	
 
 	cmp edx, 0Fh
 	jne test_family_06
 	;;
-        ;; Èç¹ûÊÇ Pentium 4 ¼Ò×å: DisplayFamily = ExtendedFamily + Family
+        ;; å¦‚æœæ˜¯ Pentium 4 å®¶æ—: DisplayFamily = ExtendedFamily + Family
         ;;
 	shr ebx, 20                                     
 	add edx, ebx                                    ; edx = ExtendedFamily + Family
@@ -866,7 +866,7 @@ get_displaymodel:
         ;;
 	shr ecx, 12                                     ; ecx = ExtendedMode << 4
 	and ecx, 0xf0
-	add eax, ecx                                    ; µÃµ½ DisplayModel
+	add eax, ecx                                    ; å¾—åˆ° DisplayModel
         
 get_display_family_model.done:	
 	mov ah, dl
@@ -881,18 +881,18 @@ get_display_family_model.done:
 ;       none
 ; output:
 ;       1 - yes, 0 - no
-; ÃèÊö£º
-;       ¼ì²é´¦ÀíÆ÷ÊÇ·ñÖ§³Ö¶àÏß³Ì
+; æè¿°ï¼š
+;       æ£€æŸ¥å¤„ç†å™¨æ˜¯å¦æ”¯æŒå¤šçº¿ç¨‹
 ;-----------------------------------------------------------------------
 check_multi_threading_support:
         ;;
-        ;; ĞèÒª¼ì²é CPUID.01H:EDX[28] ÒÔ¼° CPUID.01H:EBX[23:16] µÄÖµ
+        ;; éœ€è¦æ£€æŸ¥ CPUID.01H:EDX[28] ä»¥åŠ CPUID.01H:EBX[23:16] çš„å€¼
         ;; 
         xor eax, eax
-        bt DWORD [gs: PCB.FeatureEdx], 28               ; ¼ì²é CPUID.01H:EDX[28] Î»
+        bt DWORD [gs: PCB.FeatureEdx], 28               ; æ£€æŸ¥ CPUID.01H:EDX[28] ä½
         jnc check_multi_threading_support.done
         ;;
-        ;; È»ºó¼ì²éÖ§³Ö×î´óÂß¼­´¦ÀíÆ÷Êı
+        ;; ç„¶åæ£€æŸ¥æ”¯æŒæœ€å¤§é€»è¾‘å¤„ç†å™¨æ•°
         ;;
         cmp DWORD [gs: PCB.MaxLogicalProcessor], 1
         jb check_multi_threading_support.done
@@ -908,8 +908,8 @@ check_multi_threading_support.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       »ñÈ¡´¦ÀíÆ÷ Cache ĞÅÏ¢£¨ÔÚ¿ªÆô paging Ç°µ÷ÓÃ£©
+; æè¿°ï¼š
+;       è·å–å¤„ç†å™¨ Cache ä¿¡æ¯ï¼ˆåœ¨å¼€å¯ paging å‰è°ƒç”¨ï¼‰
 ;-----------------------------------------------------------------------
 update_cache_info:
         push ecx
@@ -918,10 +918,10 @@ update_cache_info:
         push ebp
         
         ;;
-        ;; Í¨¹ıÃ¶¾Ù CPUID.04H leaf À´»ñÈ¡ cache ĞÅÏ¢
+        ;; é€šè¿‡æšä¸¾ CPUID.04H leaf æ¥è·å– cache ä¿¡æ¯
         ;;
-        mov esi, 0                                      ; ³õÊ¼×ÓÒ¶
-        mov ebp, [gs: PCB.PhysicalBase]                 ; Ê¹ÓÃÎïÀíµØÖ·
+        mov esi, 0                                      ; åˆå§‹å­å¶
+        mov ebp, [gs: PCB.PhysicalBase]                 ; ä½¿ç”¨ç‰©ç†åœ°å€
         
 update_cache_info.loop:
         mov eax, 04h
@@ -930,15 +930,15 @@ update_cache_info.loop:
         mov edi, eax
         
         ;;
-        ;; Ã»ÓĞ cache ĞÅÏ¢
+        ;; æ²¡æœ‰ cache ä¿¡æ¯
         ;;
         and eax, 1Fh
         cmp eax, CACHE_NONE
         je update_cache_info.done
         
         mov eax, edi        
-        call get_cache_level_base                       ; »ñÈ¡ cache ĞÅÏ¢½á¹¹µØÖ·
-        add ebp, eax                                    ; ebp ´æ·Å cache ĞÅÏ¢½á¹¹µØÖ·
+        call get_cache_level_base                       ; è·å– cache ä¿¡æ¯ç»“æ„åœ°å€
+        add ebp, eax                                    ; ebp å­˜æ”¾ cache ä¿¡æ¯ç»“æ„åœ°å€
         mov eax, edi
         shr eax, 5
         and eax, 3                                      ; EAX[7:5] = cache level
@@ -977,40 +977,40 @@ update_cache_info.done:
 ;-----------------------------------------------------------------------
 ; get_cache_level_base()
 ; input:
-;       eax - CPUID.01H:EAX Öµ
+;       eax - CPUID.01H:EAX å€¼
 ; output:
-;       eax - ÏàÓ¦µÄ cache ĞÅÏ¢½á¹¹µØÖ·
-; ÃèÊö:
-;       ´Ëº¯ÊıÔÚ update_cache_info() ÄÚ²¿Ê¹ÓÃ
+;       eax - ç›¸åº”çš„ cache ä¿¡æ¯ç»“æ„åœ°å€
+; æè¿°:
+;       æ­¤å‡½æ•°åœ¨ update_cache_info() å†…éƒ¨ä½¿ç”¨
 ;-----------------------------------------------------------------------
 get_cache_level_base:
         push ecx
         push ebx
         mov ecx, eax
-        and eax, 01Fh                                   ; EAX[4:0] = cache type Öµ
+        and eax, 01Fh                                   ; EAX[4:0] = cache type å€¼
         shr ecx, 5
-        and ecx, 3                                      ; EAX[7:5] = cache level Öµ
+        and ecx, 3                                      ; EAX[7:5] = cache level å€¼
         
         ;;
-        ;; ÏÂÃæ¼ì²é level ¼¶ºÍ cache ÀàĞÍ
+        ;; ä¸‹é¢æ£€æŸ¥ level çº§å’Œ cache ç±»å‹
         ;;
-        cmp eax, CACHE_L1D                              ; ÊÇ·ñÎª level-1 data cache
+        cmp eax, CACHE_L1D                              ; æ˜¯å¦ä¸º level-1 data cache
         mov ebx, PCB.L1D
         je get_cache_level_base.done
-        cmp eax, CACHE_L1I                              ; ÊÇ·ñÎª level-1 instruction cache
+        cmp eax, CACHE_L1I                              ; æ˜¯å¦ä¸º level-1 instruction cache
         mov ebx, PCB.L1I
         je get_cache_level_base.done
 
         ;;
-        ;; Èç¹ûÊÇ unified cache Ôò£¬¼ì²é level ¼¶
+        ;; å¦‚æœæ˜¯ unified cache åˆ™ï¼Œæ£€æŸ¥ level çº§
         ;;
         mov ebx, PCB.L2
-        cmp ecx, 2                                      ; ÊÇ·ñÎª level-2
+        cmp ecx, 2                                      ; æ˜¯å¦ä¸º level-2
         mov ecx, PCB.L3
-        cmovne ebx, ecx                                 ; ·ñÔòÎª level-3
+        cmovne ebx, ecx                                 ; å¦åˆ™ä¸º level-3
         
 get_cache_level_base.done:
-        mov eax, ebx                                    ; ·µ»ØÏàÓ¦µÄ cache ĞÅÏ¢½á¹¹µØÖ·
+        mov eax, ebx                                    ; è¿”å›ç›¸åº”çš„ cache ä¿¡æ¯ç»“æ„åœ°å€
         pop ebx                   
         pop ecx
         ret
@@ -1019,11 +1019,11 @@ get_cache_level_base.done:
 ;-----------------------------------------------------------------------
 ; get_cache_size()
 ; input:
-;       ebp - cache ½á¹¹µØÖ·
+;       ebp - cache ç»“æ„åœ°å€
 ; output:
 ;       eax - cache size
-; ÃèÊö:
-;       ´Ëº¯ÊıÔÚ update_cache_info() ÄÚ²¿Ê¹ÓÃ
+; æè¿°:
+;       æ­¤å‡½æ•°åœ¨ update_cache_info() å†…éƒ¨ä½¿ç”¨
 ;-----------------------------------------------------------------------
 get_cache_size:
         push edx
@@ -1056,10 +1056,10 @@ get_cache_size:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1) ¼ÆÊı´¦ÀíÆ÷ÆµÂÊ
-; È¨ÏŞËµÃ÷£º
-;       1) ¸Ãº¯ÊıÀ´×Ô Intel µÄ CPUFREQ.ASM ´úÂë
+; æè¿°:
+;       1) è®¡æ•°å¤„ç†å™¨é¢‘ç‡
+; æƒé™è¯´æ˜ï¼š
+;       1) è¯¥å‡½æ•°æ¥è‡ª Intel çš„ CPUFREQ.ASM ä»£ç 
 
 ; Filename: CPUFREQ.ASM
 ; Copyright(c) 2003 - 2009 by Intel Corporation
@@ -1094,15 +1094,15 @@ init_processor_frequency:
 %define UPF.Delta66Mhz          ebp - 14
 
 ;;
-;; ²âÁ¿¼ä¸ôÎª 5 Ãë
-;; 1) Ä¬ÈÏÎª 18.2 * 5 = 91
-;; 2) ÏÖÔÚĞŞ¸ÄÎª 18 ´Î
+;; æµ‹é‡é—´éš”ä¸º 5 ç§’
+;; 1) é»˜è®¤ä¸º 18.2 * 5 = 91
+;; 2) ç°åœ¨ä¿®æ”¹ä¸º 18 æ¬¡
 ;;
 INTERVAL_IN_TICKS               EQU     18
         
         
         ;;
-        ;; ¿ªÆô PIT timer ¼°ÖĞ¶ÏĞí¿É
+        ;; å¼€å¯ PIT timer åŠä¸­æ–­è®¸å¯
         ;;
         call init_8253
         call enable_8259_timer
@@ -1110,128 +1110,128 @@ INTERVAL_IN_TICKS               EQU     18
 
 %ifdef REAL
         ;;
-        ;; ¼ì²éÊÇ·ñÖ§³Ö IA32_MPERF
-        ;; 1) Ö§³ÖÊ±£¬Ê¹ÓÃ IA32_MPERF À´¼ÆÊı
-        ;; 2) ·ñÔò£¬Ê¹ÓÃ time stamp À´¼ÆÊı
+        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ IA32_MPERF
+        ;; 1) æ”¯æŒæ—¶ï¼Œä½¿ç”¨ IA32_MPERF æ¥è®¡æ•°
+        ;; 2) å¦åˆ™ï¼Œä½¿ç”¨ time stamp æ¥è®¡æ•°
         ;;
-        test DWORD [gs: PCB.CpuidLeaf06Ecx], 1                  ; ¼ì²é CPUID.06H:ECX[0]
+        test DWORD [gs: PCB.CpuidLeaf06Ecx], 1                  ; æ£€æŸ¥ CPUID.06H:ECX[0]
         jnz init_processor_frequency.enh
 %endif
         
         ;;
-        ;; ¶ÁÇ°Ò»´ÎÊ±¼äÖĞ¶Ï¼ÆÊıÖµ
+        ;; è¯»å‰ä¸€æ¬¡æ—¶é—´ä¸­æ–­è®¡æ•°å€¼
         ;;
         mov ebx, [fs: SDA.TimerCount]                           
 
         ;;
-        ;; µÈ´ıÏÂÒ»¸ö timer ÖĞ¶Ïµ½À´
+        ;; ç­‰å¾…ä¸‹ä¸€ä¸ª timer ä¸­æ–­åˆ°æ¥
         ;;
 init_processor_frequency.@0:        
         cmp ebx, [fs: SDA.TimerCount]
         je init_processor_frequency.@0
       
         ;;
-        ;; ¶Á time stamp Öµ£¬×÷Îª¼ÆÊı¿ªÊ¼Öµ
+        ;; è¯» time stamp å€¼ï¼Œä½œä¸ºè®¡æ•°å¼€å§‹å€¼
         ;;
         rdtsc
-        mov [UPF.TscLow32], eax                                 ; BeginTscLow32 Öµ
-        mov [UPF.TscHi32], edx                                  ; BeginTscHi32 Öµ
+        mov [UPF.TscLow32], eax                                 ; BeginTscLow32 å€¼
+        mov [UPF.TscHi32], edx                                  ; BeginTscHi32 å€¼
         
         ;;
-        ;; ÉèÖÃ lapic timer count ³õÊ¼ÖµÎª 0FFFFFFFFh
-        ;; ÓÃÀ´²âÁ¿ lapic timer Ã¿Ãë¼ÆÊı
+        ;; è®¾ç½® lapic timer count åˆå§‹å€¼ä¸º 0FFFFFFFFh
+        ;; ç”¨æ¥æµ‹é‡ lapic timer æ¯ç§’è®¡æ•°
         ;;
         mov DWORD [0FEE00000h + TIMER_ICR], 0FFFFFFFFh
         
         
         ;;
-        ;; ÉèÖÃ timer ÖĞ¶ÏÑÓÊ±¼ÆÊıÖµ
-        ;; 1) ÉèÖÃ 5 ÃëµÄÑÓÊ±Öµ£º18.2 * 5 = 91£¨PIT Ã¿ÃëÖĞ¶Ï18.2´Î£¬5ÃëÄÚ²úÉú91´ÎÖĞ¶Ï£©
-        ;; 2) Ôö¼Ó 1 ´ÎµÄÑÓÊ±
+        ;; è®¾ç½® timer ä¸­æ–­å»¶æ—¶è®¡æ•°å€¼
+        ;; 1) è®¾ç½® 5 ç§’çš„å»¶æ—¶å€¼ï¼š18.2 * 5 = 91ï¼ˆPIT æ¯ç§’ä¸­æ–­18.2æ¬¡ï¼Œ5ç§’å†…äº§ç”Ÿ91æ¬¡ä¸­æ–­ï¼‰
+        ;; 2) å¢åŠ  1 æ¬¡çš„å»¶æ—¶
         ;;
         
         ;;
-        ;; ĞŞ¸Ä£º
-        ;; 1£©ÏÖÔÚĞŞ¸ÄÎª 1 ÃëµÄÑÓÊ±Öµ£ºÔ¼Îª 19 ´Î
+        ;; ä¿®æ”¹ï¼š
+        ;; 1ï¼‰ç°åœ¨ä¿®æ”¹ä¸º 1 ç§’çš„å»¶æ—¶å€¼ï¼šçº¦ä¸º 19 æ¬¡
         ;;
         add ebx, INTERVAL_IN_TICKS + 1
         
         ;;
-        ;; ÏÂÃæµÈ´ı²âÁ¿Ê±¼äµ½À´£¬¼´µÈ´ı 1 ÃëÖÓ
+        ;; ä¸‹é¢ç­‰å¾…æµ‹é‡æ—¶é—´åˆ°æ¥ï¼Œå³ç­‰å¾… 1 ç§’é’Ÿ
         ;;
 init_processor_frequency.@1:        
         cmp ebx, [fs: SDA.TimerCount]
         ja init_processor_frequency.@1
         
         ;;
-        ;; ¶ÁÈ¡½áÊøµÄ TSC Öµ£¬¼ÆËãÁ½¶Î TSC ²îÖµ
+        ;; è¯»å–ç»“æŸçš„ TSC å€¼ï¼Œè®¡ç®—ä¸¤æ®µ TSC å·®å€¼
         ;;
         rdtsc
         sub eax, [UPF.TscLow32]
         sbb edx, [UPF.TscHi32]
         
         ;;
-        ;; ¶ÁÈ¡ lapic timer count ¼ÆÊıÖµ
+        ;; è¯»å– lapic timer count è®¡æ•°å€¼
         ;;
-        mov ecx, [0FEE00000h + TIMER_CCR]                       ; ¶Á lapic timer µ±Ç°¼ÆÊıÖµ
-        mov DWORD [0FEE00000h + TIMER_ICR], 0                   ; Çå lapic timer ³õÊ¼¼ÆÊıÖµ
+        mov ecx, [0FEE00000h + TIMER_CCR]                       ; è¯» lapic timer å½“å‰è®¡æ•°å€¼
+        mov DWORD [0FEE00000h + TIMER_ICR], 0                   ; æ¸… lapic timer åˆå§‹è®¡æ•°å€¼
         
         neg ecx
-        dec ecx                                                 ; µÃµ½ lapic timer 1ÃëµÄ¼ÆÊı´ÎÊı
+        dec ecx                                                 ; å¾—åˆ° lapic timer 1ç§’çš„è®¡æ•°æ¬¡æ•°
         jmp init_processor_frequency.next
         
         ;;
-        ;; ÏÂÃæÊ¹ÓÃÔöÇ¿µÄ·½Ê½
+        ;; ä¸‹é¢ä½¿ç”¨å¢å¼ºçš„æ–¹å¼
         ;;
 init_processor_frequency.enh:
         ;;
-        ;; Çå IA32_MPERF ¼ÆÊıÆ÷
+        ;; æ¸… IA32_MPERF è®¡æ•°å™¨
         ;;
         mov ecx, IA32_MPERF
         xor eax, eax
         xor edx, edx
 
         ;;
-        ;; ¶ÁÇ°Ò»´ÎÊ±¼äÖĞ¶Ï¼ÆÊıÖµ
+        ;; è¯»å‰ä¸€æ¬¡æ—¶é—´ä¸­æ–­è®¡æ•°å€¼
         ;;
         mov ebx, [fs: SDA.TimerCount]                           
 
         ;;
-        ;; µÈ´ıÏÂÒ»¸ö timer ÖĞ¶Ïµ½À´
+        ;; ç­‰å¾…ä¸‹ä¸€ä¸ª timer ä¸­æ–­åˆ°æ¥
         ;;
 init_processor_frequency.@2:        
         cmp ebx, [fs: SDA.TimerCount]
         je init_processor_frequency.@2
         
         ;;
-        ;; Çå C0_MCNT Öµ£¬´Ó 0 ¿ªÊ¼¼ÆÊı
+        ;; æ¸… C0_MCNT å€¼ï¼Œä» 0 å¼€å§‹è®¡æ•°
         ;;
         wrmsr
         
         ;;
-        ;; ÉèÖÃ timer ÖĞ¶ÏÑÓÊ±¼ÆÊıÖµ
-        ;; 1) ÉèÖÃ 5 ÃëµÄÑÓÊ±Öµ£º18.2 * 5 = 91£¨PIT Ã¿ÃëÖĞ¶Ï18.2´Î£©
-        ;; 2) Ôö¼Ó 1 ´ÎµÄÑÓÊ±
+        ;; è®¾ç½® timer ä¸­æ–­å»¶æ—¶è®¡æ•°å€¼
+        ;; 1) è®¾ç½® 5 ç§’çš„å»¶æ—¶å€¼ï¼š18.2 * 5 = 91ï¼ˆPIT æ¯ç§’ä¸­æ–­18.2æ¬¡ï¼‰
+        ;; 2) å¢åŠ  1 æ¬¡çš„å»¶æ—¶
         ;;
         add ebx, INTERVAL_IN_TICKS + 1
         
         ;;
-        ;; ÏÂÃæµÈ´ı²âÁ¿Ê±¼äµ½À´£¬¼´µÈ´ı 5 ÃëÖÓ
+        ;; ä¸‹é¢ç­‰å¾…æµ‹é‡æ—¶é—´åˆ°æ¥ï¼Œå³ç­‰å¾… 5 ç§’é’Ÿ
         ;;
 init_processor_frequency.@3:        
         cmp ebx, [fs: SDA.TimerCount]
         ja init_processor_frequency.@3
    
         ;;
-        ;; ¶Á C0_MCNT ×÷Îª½áÊøÖµ
+        ;; è¯» C0_MCNT ä½œä¸ºç»“æŸå€¼
         ;;
         rdmsr
 
                 
 init_processor_frequency.next:       
         ;;
-        ;; ÏÂÃæ¼ÆËã CPU ÆµÂÊ
-        ;; 1) MHz µ¥Î»Öµ£º54945 = (1 / 18.2) * 1,000,000£¬¼´£º55ms²úÉúÒ»´ÎÖĞ¶Ï£¬100Íò´ÎÖĞ¶ÏĞèÒª54945Ãë
+        ;; ä¸‹é¢è®¡ç®— CPU é¢‘ç‡
+        ;; 1) MHz å•ä½å€¼ï¼š54945 = (1 / 18.2) * 1,000,000ï¼Œå³ï¼š55msäº§ç”Ÿä¸€æ¬¡ä¸­æ–­ï¼Œ100ä¸‡æ¬¡ä¸­æ–­éœ€è¦54945ç§’
         ;; 2) tick_interval = 54945 * INTERVAL_IN_TICKS
         ;; 3) CpuFreq = TSC / tick_interval
         ;;
@@ -1239,7 +1239,7 @@ init_processor_frequency.next:
         div ebx 
         
         ;;
-        ;; eax = ´¦ÀíÆ÷ÆµÂÊ
+        ;; eax = å¤„ç†å™¨é¢‘ç‡
         ;;
         mov [gs: PCB.TicksFrequency], eax
         
@@ -1305,32 +1305,32 @@ delta50:
 correct666:
 useNearest50Mhz:
         ;;
-        ;; ¼ÆËã³ö´¦ÀíÆ÷±¨¸æµÄÆµÂÊ
+        ;; è®¡ç®—å‡ºå¤„ç†å™¨æŠ¥å‘Šçš„é¢‘ç‡
         ;;
         movzx eax, bx
         mov [gs: PCB.ProcessorFrequency], eax
 
         ;;
-        ;; ¼ÆÊı 1Î¢Ãë lapic timer ¼ÆÊı´ÎÊı
+        ;; è®¡æ•° 1å¾®ç§’ lapic timer è®¡æ•°æ¬¡æ•°
         ;;
         xor edx, edx
         mov eax, ecx
-        mov ecx, 1000000                                ; µ¥Î»Îª us
+        mov ecx, 1000000                                ; å•ä½ä¸º us
         div ecx
-        cmp edx, 500000                                 ; Èç¹ûÓàÊı´óÓÚ 1000000/2 µÄ»°
+        cmp edx, 500000                                 ; å¦‚æœä½™æ•°å¤§äº 1000000/2 çš„è¯
         seta cl
         movzx ecx, cl
         add eax, ecx
         mov [gs: PCB.LapicTimerFrequency], eax
         
         ;;
-        ;; ¹Ø±Õ timer ºÍÖĞ¶ÏĞí¿É
+        ;; å…³é—­ timer å’Œä¸­æ–­è®¸å¯
         ;;
         cli
         call disable_8259_timer
         
         ;;
-        ;; Çå timer ¼ÆÊıÖµ
+        ;; æ¸… timer è®¡æ•°å€¼
         ;;
         mov DWORD [fs: SDA.TimerCount], 0
         
@@ -1353,24 +1353,24 @@ useNearest50Mhz:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¶ÁÈ¡ VMX Ïà¹ØĞÅÏ¢
-;       2) ÔÚ stage1 ½×¶Îµ÷ÓÃ
+; æè¿°ï¼š
+;       1) è¯»å– VMX ç›¸å…³ä¿¡æ¯
+;       2) åœ¨ stage1 é˜¶æ®µè°ƒç”¨
 ;------------------------------------------------------
 get_vmx_global_data:
         push ecx
         push edx
         
         ;;
-        ;; VmxGlobalData ÇøÓò
+        ;; VmxGlobalData åŒºåŸŸ
         ;;
         mov edi, [gs: PCB.PhysicalBase]
         add edi, PCB.VmxGlobalData
 
         ;;
-        ;; ### step 1: ¶ÁÈ¡ VMX MSR Öµ ###
-        ;; 1) µ± CPUID.01H:ECX[5]=1Ê±£¬IA32_VMX_BASIC µ½ IA32_VMX_VMCS_ENUM ¼Ä´æÆ÷ÓĞĞ§
-        ;; 2) Ê×ÏÈ¶ÁÈ¡ IA32_VMX_BASIC µ½ IA32_VMX_VMCS_ENUM ¼Ä´æÆ÷Öµ
+        ;; ### step 1: è¯»å– VMX MSR å€¼ ###
+        ;; 1) å½“ CPUID.01H:ECX[5]=1æ—¶ï¼ŒIA32_VMX_BASIC åˆ° IA32_VMX_VMCS_ENUM å¯„å­˜å™¨æœ‰æ•ˆ
+        ;; 2) é¦–å…ˆè¯»å– IA32_VMX_BASIC åˆ° IA32_VMX_VMCS_ENUM å¯„å­˜å™¨å€¼
         ;;
         
         mov esi, IA32_VMX_BASIC
@@ -1386,8 +1386,8 @@ get_vmx_global_data.@1:
         jbe get_vmx_global_data.@1
         
         ;;
-        ;; ### step 2: ½Ó×Å¶ÁÈ¡ IA32_VMX_PROCBASED_CTLS2 ###
-        ;; 1) µ± CPUID.01H:ECX[5]=1£¬²¢ÇÒ IA32_VMX_PROCBASED_CTLS[63] = 1Ê±£¬IA32_VMX_PROCBASED_CTLS2 ¼Ä´æÆ÷ÓĞĞ§
+        ;; ### step 2: æ¥ç€è¯»å– IA32_VMX_PROCBASED_CTLS2 ###
+        ;; 1) å½“ CPUID.01H:ECX[5]=1ï¼Œå¹¶ä¸” IA32_VMX_PROCBASED_CTLS[63] = 1æ—¶ï¼ŒIA32_VMX_PROCBASED_CTLS2 å¯„å­˜å™¨æœ‰æ•ˆ
         ;;
         test DWORD [gs: PCB.ProcessorBasedCtls + 4], ACTIVATE_SECONDARY_CONTROL
         jz get_vmx_global_data.@5
@@ -1398,8 +1398,8 @@ get_vmx_global_data.@1:
         mov [gs: PCB.ProcessorBasedCtls2 + 4], edx
 
         ;;
-        ;; ### step 3: ½Ó×Å¶ÁÈ¡ IA32_VMX_EPT_VPID_CAP
-        ;; 1) µ± CPUID.01H:ECX[5]=1£¬IA32_VMX_PROCBASED_CTLS[63]=1£¬²¢ÇÒ IA32_PROCBASED_CTLS2[33]=1 Ê±£¬IA32_VMX_EPT_VPID_CAP ¼Ä´æÆ÷ÓĞĞ§
+        ;; ### step 3: æ¥ç€è¯»å– IA32_VMX_EPT_VPID_CAP
+        ;; 1) å½“ CPUID.01H:ECX[5]=1ï¼ŒIA32_VMX_PROCBASED_CTLS[63]=1ï¼Œå¹¶ä¸” IA32_PROCBASED_CTLS2[33]=1 æ—¶ï¼ŒIA32_VMX_EPT_VPID_CAP å¯„å­˜å™¨æœ‰æ•ˆ
         ;;
         test edx, ENABLE_EPT
         jz get_vmx_global_data.@5        
@@ -1410,9 +1410,9 @@ get_vmx_global_data.@1:
         mov [gs: PCB.EptVpidCap + 4], edx
         
         ;;
-        ;; ### step 4: ¶ÁÈ¡ IA32_VMX_VMFUNC¡¡###
-        ;; 1) IA32_VMX_VMFUNC ¼Ä´æÆ÷½öÔÚÖ§³Ö "enable VM functions" 1-setting Ê±ÓĞĞ§£¬Òò´ËĞèÒª¼ì²âÊÇ·ñÖ§³Ö!
-        ;; 2) ¼ì²é IA32_VMX_PROCBASED_CTLS2[45] ÊÇ·ñÎª 1 Öµ
+        ;; ### step 4: è¯»å– IA32_VMX_VMFUNCã€€###
+        ;; 1) IA32_VMX_VMFUNC å¯„å­˜å™¨ä»…åœ¨æ”¯æŒ "enable VM functions" 1-setting æ—¶æœ‰æ•ˆï¼Œå› æ­¤éœ€è¦æ£€æµ‹æ˜¯å¦æ”¯æŒ!
+        ;; 2) æ£€æŸ¥ IA32_VMX_PROCBASED_CTLS2[45] æ˜¯å¦ä¸º 1 å€¼
         ;;
         test DWORD [gs: PCB.ProcessorBasedCtls2 + 4], ENABLE_VM_FUNCTION
         jz get_vmx_global_data.@5
@@ -1426,9 +1426,9 @@ get_vmx_global_data.@1:
 get_vmx_global_data.@5:        
 
         ;;
-        ;; ### step 5: ¶ÁÈ¡ 4 ¸ö VMX TRUE capability ¼Ä´æÆ÷ ###
+        ;; ### step 5: è¯»å– 4 ä¸ª VMX TRUE capability å¯„å­˜å™¨ ###
         ;;
-        ;; Èç¹û bit55 of IA32_VMX_BASIC Îª 1 Ê±, Ö§³Ö 4 ¸ö capability ¼Ä´æÆ÷£º
+        ;; å¦‚æœ bit55 of IA32_VMX_BASIC ä¸º 1 æ—¶, æ”¯æŒ 4 ä¸ª capability å¯„å­˜å™¨ï¼š
         ;; 1) IA32_VMX_TRUE_PINBASED_CTLS  = 48Dh
         ;; 2) IA32_VMX_TRUE_PROCBASED_CTLS = 48Eh
         ;; 3) IA32_VMX_TRUE_EXIT_CTLS      = 48Fh   
@@ -1437,14 +1437,14 @@ get_vmx_global_data.@5:
         bt DWORD [gs: PCB.VmxBasic + 4], 23
         jnc get_vmx_global_data.@6
 
-        mov BYTE [gs: PCB.TrueFlag], 1                                  ; ÉèÖÃ TrueFlag ±êÖ¾Î»
+        mov BYTE [gs: PCB.TrueFlag], 1                                  ; è®¾ç½® TrueFlag æ ‡å¿—ä½
         ;;
-        ;; Èç¹ûÖ§³Ö TRUE MSR µÄ»°£¬ÄÇÃ´¾Í¸üĞÂÏÂÃæ MSR:
+        ;; å¦‚æœæ”¯æŒ TRUE MSR çš„è¯ï¼Œé‚£ä¹ˆå°±æ›´æ–°ä¸‹é¢ MSR:
         ;; 1) IA32_VMX_PINBASED_CTLS
         ;; 2) IA32_VMX_PROCBASED_CTLS
         ;; 3) IA32_VMX_EXIT_CTLS
         ;; 4) IA32_VMX_ENTRY_CTLS
-        ;; ÓÃ TRUE MSR µÄÖµÌæ´úÉÏÃæ MSR!
+        ;; ç”¨ TRUE MSR çš„å€¼æ›¿ä»£ä¸Šé¢ MSR!
         ;;
         mov ecx, IA32_VMX_TRUE_PINBASED_CTLS
         rdmsr
@@ -1466,7 +1466,7 @@ get_vmx_global_data.@5:
                 
 get_vmx_global_data.@6:
         ;;
-        ;; ### step 6: ÉèÖÃ CR0 Óë CR4 µÄ mask Öµ£¨¹Ì¶¨Îª1Öµ£©
+        ;; ### step 6: è®¾ç½® CR0 ä¸ CR4 çš„ mask å€¼ï¼ˆå›ºå®šä¸º1å€¼ï¼‰
         ;; 1) Cr0FixedMask = Cr0Fixed0 & Cr0Fixed1
         ;; 2) Cr4FixedMask = Cr4Fixed0 & Cr4Fxied1
         ;;
@@ -1474,40 +1474,40 @@ get_vmx_global_data.@6:
         mov edx, [gs: PCB.Cr0Fixed0 + 4]
         and eax, [gs: PCB.Cr0Fixed1]
         and edx, [gs: PCB.Cr0Fixed1 + 4]
-        mov [gs: PCB.Cr0FixedMask], eax                                 ; CR0 ¹Ì¶¨Îª 1 Öµ
+        mov [gs: PCB.Cr0FixedMask], eax                                 ; CR0 å›ºå®šä¸º 1 å€¼
         mov [gs: PCB.Cr0FixedMask + 4], edx
         mov eax, [gs: PCB.Cr4Fixed0]
         mov edx, [gs: PCB.Cr4Fixed0 + 4]
         and eax, [gs: PCB.Cr4Fixed1]
         and edx, [gs: PCB.Cr4Fixed1 + 4]
-        mov [gs: PCB.Cr4FixedMask], eax                                 ; CR4 ¹Ì¶¨Îª 1 Öµ
+        mov [gs: PCB.Cr4FixedMask], eax                                 ; CR4 å›ºå®šä¸º 1 å€¼
         mov [gs: PCB.Cr4FixedMask + 4], edx
         
         ;;
-        ;; ¹ØÓÚ IA32_FEATURE_CONTROL.lock Î»£º
-        ;; 1) µ± lock = 0 Ê±£¬Ö´ĞĞ VMXON ²úÉú #GP Òì³£
-        ;; 2) µ± lock = 1 Ê±£¬Ğ´ IA32_FEATURE_CONTROL ¼Ä´æÆ÷²úÉú #GP Òì³£
+        ;; å…³äº IA32_FEATURE_CONTROL.lock ä½ï¼š
+        ;; 1) å½“ lock = 0 æ—¶ï¼Œæ‰§è¡Œ VMXON äº§ç”Ÿ #GP å¼‚å¸¸
+        ;; 2) å½“ lock = 1 æ—¶ï¼Œå†™ IA32_FEATURE_CONTROL å¯„å­˜å™¨äº§ç”Ÿ #GP å¼‚å¸¸
         ;;
         
         ;;
-        ;; ÏÂÃæ½«¼ì²é IA32_FEATURE_CONTROL ¼Ä´æÆ÷
-        ;; 1) µ± lock Î»Îª 0 Ê±£¬ĞèÒª½øĞĞÒ»Ğ©ÉèÖÃ£¬È»ºóËøÉÏ IA32_FEATURE_CONTROL
+        ;; ä¸‹é¢å°†æ£€æŸ¥ IA32_FEATURE_CONTROL å¯„å­˜å™¨
+        ;; 1) å½“ lock ä½ä¸º 0 æ—¶ï¼Œéœ€è¦è¿›è¡Œä¸€äº›è®¾ç½®ï¼Œç„¶åé”ä¸Š IA32_FEATURE_CONTROL
         ;;        
         mov ecx, IA32_FEATURE_CONTROL
         rdmsr
-        bts eax, 0                                                      ; ¼ì²é lock Î»£¬²¢ÉÏËø
+        bts eax, 0                                                      ; æ£€æŸ¥ lock ä½ï¼Œå¹¶ä¸Šé”
         jc get_vmx_global_data.@7
         
-        ;; lock Î´ÉÏËøÊ±£º
-        ;; 1) ¶Ô lock ÖÃÎ»£¨ËøÉÏ IA32_FEATURE_CONTROL ¼Ä´æÆ÷£©
-        ;; 2) ¶Ô bit 2 ÖÃÎ»£¨ÆôÓÃ enable VMXON outside SMX£©
-        ;; 3) Èç¹ûÖ§³Ö enable VMXON inside SMX Ê±£¬¶Ô bit 1 ÖÃÎ»!
+        ;; lock æœªä¸Šé”æ—¶ï¼š
+        ;; 1) å¯¹ lock ç½®ä½ï¼ˆé”ä¸Š IA32_FEATURE_CONTROL å¯„å­˜å™¨ï¼‰
+        ;; 2) å¯¹ bit 2 ç½®ä½ï¼ˆå¯ç”¨ enable VMXON outside SMXï¼‰
+        ;; 3) å¦‚æœæ”¯æŒ enable VMXON inside SMX æ—¶ï¼Œå¯¹ bit 1 ç½®ä½!
         ;; 
         mov esi, 6                                                      ; enable VMX outside SMX = 1, enable VMX inside SMX = 1
         mov edi, 4                                                      ; enable VMX outside SMX = 1, enable VMX inside SMX = 0
         
         ;;
-        ;; ¼ì²éÊÇ·ñÖ§³Ö SMX Ä£Ê½
+        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ SMX æ¨¡å¼
         ;;
         test DWORD [gs: PCB.FeatureEcx], CPU_FLAGS_SMX
         cmovz esi, edi        
@@ -1518,41 +1518,41 @@ get_vmx_global_data.@6:
 get_vmx_global_data.@7:        
 
         ;;
-        ;; ¼ÙÈçÊ¹ÓÃ enable VMX inside SMX ¹¦ÄÜ£¬Ôò¸ù¾İ IA32_FEATURE_CONTROL[1] À´¾ö¶¨ÊÇ·ñ±ØĞë¿ªÆô CR4.SMXE
-        ;; 1) ±¾ÊéÀı×ÓÖĞÃ»ÓĞ¿ªÆô CR4.SMXE
+        ;; å‡å¦‚ä½¿ç”¨ enable VMX inside SMX åŠŸèƒ½ï¼Œåˆ™æ ¹æ® IA32_FEATURE_CONTROL[1] æ¥å†³å®šæ˜¯å¦å¿…é¡»å¼€å¯ CR4.SMXE
+        ;; 1) æœ¬ä¹¦ä¾‹å­ä¸­æ²¡æœ‰å¼€å¯ CR4.SMXE
         ;;
 %ifdef ENABLE_VMX_INSIDE_SMX
         ;;
-        ;; ### step 7: ÉèÖÃ Cr4FixedMask µÄ CR4.SMXE Î» ###
+        ;; ### step 7: è®¾ç½® Cr4FixedMask çš„ CR4.SMXE ä½ ###
         ;;
-        ;; ÔÙ´Î¶ÁÈ¡ IA32_FEATURE_CONTROL ¼Ä´æÆ÷
-        ;; 1) ¼ì²é enable VMX inside SMX Î»£¨bit1£©
-        ;;    1.1) Èç¹ûÊÇ inside SMX£¨¼´ bit1 = 1£©£¬ÔòÉèÖÃ CR4FixedMask Î»µÄÏàÓ¦Î»
+        ;; å†æ¬¡è¯»å– IA32_FEATURE_CONTROL å¯„å­˜å™¨
+        ;; 1) æ£€æŸ¥ enable VMX inside SMX ä½ï¼ˆbit1ï¼‰
+        ;;    1.1) å¦‚æœæ˜¯ inside SMXï¼ˆå³ bit1 = 1ï¼‰ï¼Œåˆ™è®¾ç½® CR4FixedMask ä½çš„ç›¸åº”ä½
         ;; 
         rdmsr
-        and eax, 2                                                      ; È¡ enable VMX inside SMX Î»µÄÖµ£¨bit1£©
-        shl eax, 13                                                     ; ¶ÔÓ¦ÔÚ CR4 ¼Ä´æÆ÷µÄ bit 14 Î»£¨¼´ CR4.SMXE Î»£©
-        or DWORD [ebp + PCB.Cr4FixedMask], eax                          ; ÔÚ Cr4FixedMask ÀïÉèÖÃ enable VMX inside SMX Î»µÄÖµ¡¡        
+        and eax, 2                                                      ; å– enable VMX inside SMX ä½çš„å€¼ï¼ˆbit1ï¼‰
+        shl eax, 13                                                     ; å¯¹åº”åœ¨ CR4 å¯„å­˜å™¨çš„ bit 14 ä½ï¼ˆå³ CR4.SMXE ä½ï¼‰
+        or DWORD [ebp + PCB.Cr4FixedMask], eax                          ; åœ¨ Cr4FixedMask é‡Œè®¾ç½® enable VMX inside SMX ä½çš„å€¼ã€€        
         
 %endif
 
 get_vmx_global_data.@8:        
         ;;
-        ;; ### step 8: ²éÑ¯ Vmcs ÒÔ¼° access page µÄÄÚ´æ cache ÀàĞÍ ###
-        ;; 1) VMCS ÇøÓòÄÚ´æÀàĞÍ
-        ;; 2) VMCS ÄÚµÄ¸÷ÖÖ bitmap ÇøÓò£¬access page ÄÚ´æÀàĞÍ
+        ;; ### step 8: æŸ¥è¯¢ Vmcs ä»¥åŠ access page çš„å†…å­˜ cache ç±»å‹ ###
+        ;; 1) VMCS åŒºåŸŸå†…å­˜ç±»å‹
+        ;; 2) VMCS å†…çš„å„ç§ bitmap åŒºåŸŸï¼Œaccess page å†…å­˜ç±»å‹
         ;;
         mov eax, [gs: PCB.VmxBasic + 4]
-        shr eax, 50-32                                                  ; ¶ÁÈ¡ IA32_VMX_BASIC[53:50]
+        shr eax, 50-32                                                  ; è¯»å– IA32_VMX_BASIC[53:50]
         and eax, 0Fh
         mov [gs: PCB.VmcsMemoryType], eax
 
 
 get_vmx_global_data.@9:        
         ;;
-        ;; ### step 9: ¼ì²é VMX ËùÖ§³ÖµÄ EPT page memory attribute ###
-        ;; 1) Èç¹ûÖ§³Ö WB ÀàĞÍÔòÊ¹ÓÃ WB, ·ñÔòÊ¹ÓÃ UC
-        ;; 2) ÔÚ EPT ÉèÖÃ memory type Ê±£¬Ö±½Ó»òÉÏ [gs: PCB.EptMemoryType]
+        ;; ### step 9: æ£€æŸ¥ VMX æ‰€æ”¯æŒçš„ EPT page memory attribute ###
+        ;; 1) å¦‚æœæ”¯æŒ WB ç±»å‹åˆ™ä½¿ç”¨ WB, å¦åˆ™ä½¿ç”¨ UC
+        ;; 2) åœ¨ EPT è®¾ç½® memory type æ—¶ï¼Œç›´æ¥æˆ–ä¸Š [gs: PCB.EptMemoryType]
         ;;
         mov esi, MEM_TYPE_WB                                            ; WB 
         mov eax, MEM_TYPE_UC                                            ; UC        
@@ -1573,12 +1573,12 @@ get_vmx_global_data.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¿ªÆô CR4.PAE
+; æè¿°ï¼š
+;       1) å¼€å¯ CR4.PAE
 ;---------------------------------------------
 pae_enable:
         ;;
-        ;; ¼ì²é CPUID.01H.EDX[6] ±êÖ¾Î»
+        ;; æ£€æŸ¥ CPUID.01H.EDX[6] æ ‡å¿—ä½
         ;;
         mov eax, [gs: PCB.CpuidLeaf01Edx]        
         bt eax, 6                                       ; PAE support?
@@ -1598,12 +1598,12 @@ pae_enable_done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¿ªÆô XD Î»
+; æè¿°ï¼š
+;       1) å¼€å¯ XD ä½
 ;-------------------------------------------------
 xd_page_enable:
         ;;
-        ;; ¼ì²é CPUID.80000001H:EDX[20].XD
+        ;; æ£€æŸ¥ CPUID.80000001H:EDX[20].XD
         ;;
         mov eax, [gs: PCB.ExtendedFeatureEdx]
         bt eax, 20                                      ; XD support ?
@@ -1615,7 +1615,7 @@ xd_page_enable:
         wrmsr        
         mov eax, XD
 xd_page_enable.done:        
-        mov DWORD [fs: SDA.XdValue], eax                ; Ğ´ XD ±êÖ¾Öµ
+        mov DWORD [fs: SDA.XdValue], eax                ; å†™ XD æ ‡å¿—å€¼
         ret
 
 
@@ -1627,12 +1627,12 @@ xd_page_enable.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¿ªÆô SEMP ¹¦ÄÜ
+; æè¿°ï¼š
+;       1) å¼€å¯ SEMP åŠŸèƒ½
 ;----------------------------------------------
 smep_enable:
         ;;
-        ;; ¼ì²é CPUID.07H:EBX[7].SMEP Î»
+        ;; æ£€æŸ¥ CPUID.07H:EBX[7].SMEP ä½
         ;;
         mov eax, [gs: PCB.CpuidLeaf07Ebx]
         bt eax, 7                                       ; SMEP suport ?
