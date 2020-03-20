@@ -514,12 +514,11 @@ echo 0 > tracing_on
 ```
 [root@linux tracing]# pwd 
 /sys/kernel/debug/tracing 
-[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 0 > tracing_on
 [root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
 [root@linux tracing]# echo function_graph > current_tracer 
 [root@linux tracing]# echo __do_fault > set_graph_function 
-[root@linux tracing]# echo 1 > tracing_on 
-[root@linux tracing]# echo 1 > tracing_enabled 
+[root@linux tracing]# echo 1 > tracing_on
 
 # 让内核运行一段时间，这样 ftrace 可以收集一些跟踪信息，之后再停止跟踪
 
