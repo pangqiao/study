@@ -531,7 +531,7 @@ echo 0 > tracing_on
 
 # 让内核运行一段时间，这样 ftrace 可以收集一些跟踪信息，之后再停止跟踪
 
-[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 0 > tracing_on
 [root@linux tracing]# cat trace | head -20 
 # tracer: function_graph 
 # 
