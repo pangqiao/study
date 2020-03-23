@@ -26,7 +26,7 @@
 - [13. preemptirqsoff跟踪器](#13-preemptirqsoff跟踪器)
 - [14. 动态跟踪](#14-动态跟踪)
   - [14.1. 指定模块](#141-指定模块)
-  - [跟踪模块初始化](#跟踪模块初始化)
+  - [14.2. 跟踪模块初始化](#142-跟踪模块初始化)
 - [15. trace选项(启用或禁用)](#15-trace选项启用或禁用)
 - [16. Max Stack Tracer 的使用](#16-max-stack-tracer-的使用)
 - [17. 事件追踪](#17-事件追踪)
@@ -970,7 +970,7 @@ inet6_create
 ipv6_addr_copy
 ```
 
-## 跟踪模块初始化
+## 14.2. 跟踪模块初始化
 
 ```
 # echo ':mod:snd_seq' > set_ftrace_filter
