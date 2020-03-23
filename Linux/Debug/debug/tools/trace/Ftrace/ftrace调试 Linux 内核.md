@@ -330,7 +330,9 @@ cd /sys/kernel/debug/tracing
 echo 0 > tracing_on
 ```
 
-4. **激活 ftrace\_enabled**，否则 function 跟踪器的行为类似于 nop；另外，激活该选项还可以让一些跟踪器比如 irqsoff 获取更丰富的信息。建议使用 ftrace 时将其激活。要激活 `ftrace_enabled` ，可以通过 `proc` 文件系统接口来设置：
+4. **激活 ftrace\_enabled**，否则 function 跟踪器的行为类似于 nop；另外，激活该选项还可以让一些跟踪器比如 irqsoff 获取更丰富的信息。
+
+建议使用 ftrace 时将其激活。要激活 `ftrace_enabled` ，可以通过 `proc` 文件系统接口来设置：
 
 ```
 echo 1 > /proc/sys/kernel/ftrace_enabled
@@ -434,7 +436,9 @@ trace 文件给出的信息格式很清晰。
 
 ## 8.1. 特定进程
 
-ftrace允许你对一个特定的进程进行跟踪。在`/sys/kernel/debug/tracing`目录下，文件`set_ftrace_pid`的值要更新为你想跟踪的进程的PID。
+ftrace允许你对一个特定的进程进行跟踪。
+
+在`/sys/kernel/debug/tracing`目录下，文件`set_ftrace_pid`的值要更新为你想跟踪的进程的PID。
 
 手动操作: 
 
@@ -482,6 +486,10 @@ exec $*
 
 # stop the tracing
 echo 0 > tracing_on
+```
+
+```
+./traceprocess.sh ls
 ```
 
 如图中跟踪ls命令所示。
