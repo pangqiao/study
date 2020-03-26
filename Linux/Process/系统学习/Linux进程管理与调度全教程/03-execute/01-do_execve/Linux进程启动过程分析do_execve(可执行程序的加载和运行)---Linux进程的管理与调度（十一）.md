@@ -3,21 +3,21 @@
 
 <!-- code_chunk_output -->
 
-* [1 execve系统调用](#1-execve系统调用)
-	* [1.1 execve系统调用](#11-execve系统调用)
-	* [1.2 exec()函数族](#12-exec函数族)
-* [2 ELF文件格式以及可执行程序的表示](#2-elf文件格式以及可执行程序的表示)
-	* [2.1 ELF可执行文件格式](#21-elf可执行文件格式)
-	* [2.2 struct linux\_binprm结构描述一个可执行程序](#22-struct-linux_binprm结构描述一个可执行程序)
-	* [2.3 struct linux\_binfmt可执行格式的结构](#23-struct-linux_binfmt可执行格式的结构)
-* [3 execve加载可执行程序的过程](#3-execve加载可执行程序的过程)
-	* [3.1 execve的入口函数sys\_execve](#31-execve的入口函数sys_execve)
-	* [3.2 do\_execve函数](#32-do_execve函数)
-	* [3.3 程序的加载do\_execve\_common和do\_execveat\_common](#33-程序的加载do_execve_common和do_execveat_common)
-	* [3.4 exec\_binprm()识别并加载二进程程序](#34-exec_binprm识别并加载二进程程序)
-	* [3.5 search\_binary\_handler识别二进程程序](#35-search_binary_handler识别二进程程序)
-	* [3.6 load\_binary()加载可执行程序](#36-load_binary加载可执行程序)
-* [4 参考](#4-参考)
+- [1 execve系统调用](#1-execve系统调用)
+  - [1.1 execve系统调用](#11-execve系统调用)
+  - [1.2 exec()函数族](#12-exec函数族)
+- [2 ELF文件格式以及可执行程序的表示](#2-elf文件格式以及可执行程序的表示)
+  - [2.1 ELF可执行文件格式](#21-elf可执行文件格式)
+  - [2.2 struct linux_binprm结构描述一个可执行程序](#22-struct-linux_binprm结构描述一个可执行程序)
+  - [2.3 struct linux\_binfmt可执行格式的结构](#23-struct-linux_binfmt可执行格式的结构)
+- [3 execve加载可执行程序的过程](#3-execve加载可执行程序的过程)
+  - [3.1 execve的入口函数sys\_execve](#31-execve的入口函数sys_execve)
+  - [3.2 do\_execve函数](#32-do_execve函数)
+  - [3.3 程序的加载do\_execve\_common和do\_execveat\_common](#33-程序的加载do_execve_common和do_execveat_common)
+  - [3.4 exec\_binprm()识别并加载二进程程序](#34-exec_binprm识别并加载二进程程序)
+  - [3.5 search\_binary\_handler识别二进程程序](#35-search_binary_handler识别二进程程序)
+  - [3.6 load\_binary()加载可执行程序](#36-load_binary加载可执行程序)
+- [4 参考](#4-参考)
 
 <!-- /code_chunk_output -->
 
@@ -55,7 +55,7 @@ Linux下标准的可执行文件格式是ELF. ELF(**Executable and Linking Forma
 
 同时我们需要一种方法来**保存可执行程序的信息**,比如可执行文件的路径,运行的参数和环境变量等信息，即linux\_binprm结构
 
-## 2.2 struct linux\_binprm结构描述一个可执行程序
+## 2.2 struct linux_binprm结构描述一个可执行程序
 
 linux\_binprm是定义在[include/linux/binfmts.h](http://lxr.free-electrons.com/source/include/linux/binfmts.h#L14)中, 用来保存**要执行的文件相关的信息**, 包括可执行程序的路径, 参数和环境变量的信息
 
