@@ -3,9 +3,9 @@
 
 <!-- code_chunk_output -->
 
-  - [1. git pull时出现冲突,放弃本地修改，使远程库内容强制覆盖本地代码](#1-git-pull时出现冲突放弃本地修改使远程库内容强制覆盖本地代码)
-  - [2. 在 add 以后 commit 前撤销修改:](#2-在-add-以后-commit-前撤销修改)
-  - [3. add以及commit 前撤销对文件的修改:](#3-add以及commit-前撤销对文件的修改)
+  - [1. pull冲突, 放弃本地修改](#1-pull冲突-放弃本地修改)
+  - [2. add后commit前](#2-add后commit前)
+  - [3. add前](#3-add前)
   - [4. 当前工作区内容已被修改，但是并未完成。而前面的分支上面有一个Bug，需要立即修复。可是又不想提交目前的修改，因为修改没有完成。但是，不提交的话，又没有办法checkout到前面的分支。](#4-当前工作区内容已被修改但是并未完成而前面的分支上面有一个bug需要立即修复可是又不想提交目前的修改因为修改没有完成但是不提交的话又没有办法checkout到前面的分支)
   - [5. 删除某个远程分支](#5-删除某个远程分支)
   - [6. git log的通用配置命令](#6-git-log的通用配置命令)
@@ -16,19 +16,19 @@
   - [11. Windows/Unix换行符](#11-windowsunix换行符)
   - [12. 中文乱码](#12-中文乱码)
   - [13. 统计代码](#13-统计代码)
-    - [统计所有的增删行数](#统计所有的增删行数)
-    - [扫描 Log 单独统计每个人的增删行数加强版](#扫描-log-单独统计每个人的增删行数加强版)
-    - [单独统计每个人和所有的增删行数](#单独统计每个人和所有的增删行数)
-    - [统计当前用户的增删行数](#统计当前用户的增删行数)
-    - [指定用户名增删行数](#指定用户名增删行数)
-    - [扫描 Log 统计增删行数](#扫描-log-统计增删行数)
-    - [仓库提交者排名前 5（如果看全部，去掉 head 管道即可）：](#仓库提交者排名前-5如果看全部去掉-head-管道即可)
-    - [仓库提交者（邮箱）排名前5](#仓库提交者邮箱排名前5)
-    - [贡献人数统计](#贡献人数统计)
-    - [提交次数统计](#提交次数统计)
-    - [统计时间内提交次数](#统计时间内提交次数)
-  - [http不用输入用户名密码](#http不用输入用户名密码)
-  - [编辑配置项](#编辑配置项)
+    - [13.1. 统计所有的增删行数](#131-统计所有的增删行数)
+    - [13.2. 扫描 Log 单独统计每个人的增删行数加强版](#132-扫描-log-单独统计每个人的增删行数加强版)
+    - [13.3. 单独统计每个人和所有的增删行数](#133-单独统计每个人和所有的增删行数)
+    - [13.4. 统计当前用户的增删行数](#134-统计当前用户的增删行数)
+    - [13.5. 指定用户名增删行数](#135-指定用户名增删行数)
+    - [13.6. 扫描 Log 统计增删行数](#136-扫描-log-统计增删行数)
+    - [13.7. 仓库提交者排名前 5（如果看全部，去掉 head 管道即可）：](#137-仓库提交者排名前-5如果看全部去掉-head-管道即可)
+    - [13.8. 仓库提交者（邮箱）排名前5](#138-仓库提交者邮箱排名前5)
+    - [13.9. 贡献人数统计](#139-贡献人数统计)
+    - [13.10. 提交次数统计](#1310-提交次数统计)
+    - [13.11. 统计时间内提交次数](#1311-统计时间内提交次数)
+  - [14. http不用输入用户名密码](#14-http不用输入用户名密码)
+  - [15. 编辑配置项](#15-编辑配置项)
 - [](#)
 - [某一行代码的所有提交历史](#某一行代码的所有提交历史)
 - [.gitignore的模板](#gitignore的模板)
@@ -36,7 +36,9 @@
 <!-- /code_chunk_output -->
 
 
-## 1. git pull时出现冲突,放弃本地修改，使远程库内容强制覆盖本地代码
+## 1. pull冲突, 放弃本地修改
+
+git pull时出现冲突,放弃本地修改，使远程库内容强制覆盖本地代码
 
 ```
 git fetch --all //只是下载代码到本地，不进行合并操作
@@ -44,7 +46,9 @@ git fetch --all //只是下载代码到本地，不进行合并操作
 git reset --hard origin/master  //把HEAD指向最新下载的版本
 ```
 
-## 2. 在 add 以后 commit 前撤销修改:
+## 2. add后commit前
+
+在 add 以后 commit 前撤销修改:
 
 ```
 git reset <file> // 撤销提交单独文件
@@ -52,7 +56,9 @@ git reset <file> // 撤销提交单独文件
 git reset        // unstage all due changes
 ```
 
-## 3. add以及commit 前撤销对文件的修改:
+## 3. add前
+
+add以及commit 前撤销对文件的修改:
 
 ```
 git checkout -- README.md  // 注意, add添加后(同commit提交后)就无法通过这种方式撤销修改
@@ -136,15 +142,15 @@ git push时有俩参数，‘matching’ 参数是 Git 1.x 的默认行为，其
 
 ## 13. 统计代码
 
-### 统计所有的增删行数
+### 13.1. 统计所有的增删行数
 
 > git log --pretty=tformat: --numstat | gawk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2} END { printf "added lines: %s, removed lines : %s, now lines: %s, total lines: %s\n",add,subs,loc,total }'
 
-### 扫描 Log 单独统计每个人的增删行数加强版
+### 13.2. 扫描 Log 单独统计每个人的增删行数加强版
 
 > echo -en "\n"; git log --pretty=tformat: --numstat | gawk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2} END { printf "added lines: %s, removed lines : %s, now lines: %s, total lines: %s\n",add,subs,loc,total }';git log --format='%aN' | sort -u | while read name; do echo -en "$name\t"; git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2 } END { printf "added lines: %s, removed lines: %s, now lines: %s, total lines: %s\n", add, subs, loc, total }' -; done
 
-### 单独统计每个人和所有的增删行数
+### 13.3. 单独统计每个人和所有的增删行数
 
 单独统计每个人
 
@@ -154,39 +160,39 @@ git push时有俩参数，‘matching’ 参数是 Git 1.x 的默认行为，其
 
 > echo -en "\n"; git log --format='%aN' | sort -u | while read name;do echo -en "$name\t"; git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2 } END { printf "added lines: %s, removed lines: %s, now lines: %s, total lines: %s\n", add, subs, loc, total }' -; done;git log --pretty=tformat: --numstat | gawk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2} END { printf "\nadded lines: %s, removed lines : %s, now lines: %s, total lines: %s\n",add,subs,loc,total }'
 
-### 统计当前用户的增删行数
+### 13.4. 统计当前用户的增删行数
 
 > git log --author="$(git config --get user.name)" --pretty=tformat: --numstat | gawk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2} END { printf "added lines: %s, removed lines : %s, now lines: %s, total lines: %s\n",add,subs,loc,total }'
 
-### 指定用户名增删行数
+### 13.5. 指定用户名增删行数
 
 > git log --author="your_name_here" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2 } END { printf "added lines: %s, removed lines: %s, now lines: %s, total lines: %s\n", add, subs, loc, total }'
 
-### 扫描 Log 统计增删行数
+### 13.6. 扫描 Log 统计增删行数
 
 > git log --shortstat --pretty="%cE" | sed 's/\(.*\)@.*/\1/' | grep -v "^$" | awk 'BEGIN { line=""; } !/^ / { if (line=="" || !match(line, $0)) {line = $0 "," line }} /^ / { print line " # " $0; line=""}' | sort | sed -E 's/# //;s/ files? changed,//;s/([0-9]+) ([0-9]+ deletion)/\1 0 insertions\(+\), \2/;s/\(\+\)$/\(\+\), 0 deletions\(-\)/;s/insertions?\(\+\), //;s/ deletions?\(-\)//' | awk 'BEGIN {name=""; files=0; insertions=0; deletions=0;} {if ($1 != name && name != "") { print name ": " files " files changed, " insertions " insertions(+), " deletions " deletions(-), " insertions-deletions " net"; files=0; insertions=0; deletions=0; name=$1; } name=$1; files+=$2; insertions+=$3; deletions+=$4} END {print name ": " files " files changed, " insertions " insertions(+), " deletions " deletions(-), " insertions-deletions " net";}'
 
 两个人同时修改，可能是 merge 操作，没有深究
 
-### 仓库提交者排名前 5（如果看全部，去掉 head 管道即可）：
+### 13.7. 仓库提交者排名前 5（如果看全部，去掉 head 管道即可）：
 
 > git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r | head -n 5
 
-### 仓库提交者（邮箱）排名前5
+### 13.8. 仓库提交者（邮箱）排名前5
 
 这个统计可能不会太准，因为很多人有不同的邮箱，但会使用相同的名字
 
 git log --pretty=format:%ae | gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
 
-### 贡献人数统计
+### 13.9. 贡献人数统计
 
 git log --pretty='%aN' | sort -u | wc -l
 
-### 提交次数统计
+### 13.10. 提交次数统计
 
 git log --oneline | wc -l 
 
-### 统计时间内提交次数
+### 13.11. 统计时间内提交次数
 
 根据 author
 
@@ -363,13 +369,13 @@ F:      arch/x86/kernel/kvm.c
 F:      arch/x86/kernel/kvmclock.c
 ```
 
-## http不用输入用户名密码
+## 14. http不用输入用户名密码
 
 ```
 git remote set-url origin git+ssh://git@github.com/Gerry-Lee/Study.git
 ```
 
-## 编辑配置项
+## 15. 编辑配置项
 
 1.查看Git所有配置
 
