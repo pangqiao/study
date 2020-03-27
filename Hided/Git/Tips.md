@@ -3,40 +3,40 @@
 
 <!-- code_chunk_output -->
 
-  - [1. pull冲突, 放弃本地修改](#1-pull冲突-放弃本地修改)
-  - [2. add后commit前](#2-add后commit前)
-  - [3. add前](#3-add前)
-  - [4. 当前工作区内容已被修改，但是并未完成。而前面的分支上面有一个Bug，需要立即修复。可是又不想提交目前的修改，因为修改没有完成。但是，不提交的话，又没有办法checkout到前面的分支。](#4-当前工作区内容已被修改但是并未完成而前面的分支上面有一个bug需要立即修复可是又不想提交目前的修改因为修改没有完成但是不提交的话又没有办法checkout到前面的分支)
-  - [5. 删除某个远程分支](#5-删除某个远程分支)
-  - [6. git log的通用配置命令](#6-git-log的通用配置命令)
-  - [7. 基于某个分支创建分支](#7-基于某个分支创建分支)
-  - [8. 查看某文件修改历史](#8-查看某文件修改历史)
-  - [9. 文件名大小写](#9-文件名大小写)
-  - [10. matching和simple](#10-matching和simple)
-  - [11. Windows/Unix换行符](#11-windowsunix换行符)
-  - [12. 中文乱码](#12-中文乱码)
-  - [13. 统计代码](#13-统计代码)
-    - [13.1. 统计所有的增删行数](#131-统计所有的增删行数)
-    - [13.2. 扫描 Log 单独统计每个人的增删行数加强版](#132-扫描-log-单独统计每个人的增删行数加强版)
-    - [13.3. 单独统计每个人和所有的增删行数](#133-单独统计每个人和所有的增删行数)
-    - [13.4. 统计当前用户的增删行数](#134-统计当前用户的增删行数)
-    - [13.5. 指定用户名增删行数](#135-指定用户名增删行数)
-    - [13.6. 扫描 Log 统计增删行数](#136-扫描-log-统计增删行数)
-    - [13.7. 仓库提交者排名前 5（如果看全部，去掉 head 管道即可）：](#137-仓库提交者排名前-5如果看全部去掉-head-管道即可)
-    - [13.8. 仓库提交者（邮箱）排名前5](#138-仓库提交者邮箱排名前5)
-    - [13.9. 贡献人数统计](#139-贡献人数统计)
-    - [13.10. 提交次数统计](#1310-提交次数统计)
-    - [13.11. 统计时间内提交次数](#1311-统计时间内提交次数)
-  - [14. http不用输入用户名密码](#14-http不用输入用户名密码)
-  - [15. 编辑配置项](#15-编辑配置项)
-- [](#)
-- [某一行代码的所有提交历史](#某一行代码的所有提交历史)
-- [.gitignore的模板](#gitignore的模板)
+- [1. pull冲突, 放弃本地修改](#1-pull冲突-放弃本地修改)
+- [2. add前](#2-add前)
+- [3. add后commit前](#3-add后commit前)
+- [4. 修改未完成](#4-修改未完成)
+- [5. 删除某个远程分支](#5-删除某个远程分支)
+- [6. git log的通用配置命令](#6-git-log的通用配置命令)
+- [7. 基于某个分支创建分支](#7-基于某个分支创建分支)
+- [8. 查看某文件修改历史](#8-查看某文件修改历史)
+- [9. 文件名大小写](#9-文件名大小写)
+- [10. matching和simple](#10-matching和simple)
+- [11. Windows/Unix换行符](#11-windowsunix换行符)
+- [12. 中文乱码](#12-中文乱码)
+- [13. 统计代码](#13-统计代码)
+  - [13.1. 统计所有的增删行数](#131-统计所有的增删行数)
+  - [13.2. 扫描 Log 单独统计每个人的增删行数加强版](#132-扫描-log-单独统计每个人的增删行数加强版)
+  - [13.3. 单独统计每个人和所有的增删行数](#133-单独统计每个人和所有的增删行数)
+  - [13.4. 统计当前用户的增删行数](#134-统计当前用户的增删行数)
+  - [13.5. 指定用户名增删行数](#135-指定用户名增删行数)
+  - [13.6. 扫描 Log 统计增删行数](#136-扫描-log-统计增删行数)
+  - [13.7. 仓库提交者排名前 5（如果看全部，去掉 head 管道即可）：](#137-仓库提交者排名前-5如果看全部去掉-head-管道即可)
+  - [13.8. 仓库提交者（邮箱）排名前5](#138-仓库提交者邮箱排名前5)
+  - [13.9. 贡献人数统计](#139-贡献人数统计)
+  - [13.10. 提交次数统计](#1310-提交次数统计)
+  - [13.11. 统计时间内提交次数](#1311-统计时间内提交次数)
+- [14. http不用输入用户名密码](#14-http不用输入用户名密码)
+- [15. 编辑配置项](#15-编辑配置项)
+- [16. branch](#16-branch)
+- [17. 某一行代码的所有提交历史](#17-某一行代码的所有提交历史)
+- [18. .gitignore的模板](#18-gitignore的模板)
 
 <!-- /code_chunk_output -->
 
 
-## 1. pull冲突, 放弃本地修改
+# 1. pull冲突, 放弃本地修改
 
 git pull时出现冲突,放弃本地修改，使远程库内容强制覆盖本地代码
 
@@ -46,7 +46,15 @@ git fetch --all //只是下载代码到本地，不进行合并操作
 git reset --hard origin/master  //把HEAD指向最新下载的版本
 ```
 
-## 2. add后commit前
+# 2. add前
+
+add以及commit 前撤销对文件的修改:
+
+```
+git checkout -- README.md  // 注意, add添加后(同commit提交后)就无法通过这种方式撤销修改
+```
+
+# 3. add后commit前
 
 在 add 以后 commit 前撤销修改:
 
@@ -56,23 +64,15 @@ git reset <file> // 撤销提交单独文件
 git reset        // unstage all due changes
 ```
 
-## 3. add前
+# 4. 修改未完成
 
-add以及commit 前撤销对文件的修改:
+当前工作区内容已被修改，但是并未完成。而前面的分支上面有一个Bug，需要立即修复。可是又不想提交目前的修改，因为修改没有完成。但是，不提交的话，又没有办法checkout到前面的分支。
 
-```
-git checkout -- README.md  // 注意, add添加后(同commit提交后)就无法通过这种方式撤销修改
-```
-
-## 4. 当前工作区内容已被修改，但是并未完成。而前面的分支上面有一个Bug，需要立即修复。可是又不想提交目前的修改，因为修改没有完成。但是，不提交的话，又没有办法checkout到前面的分支。
-
-```
 此时用Git Stash就相当于备份工作区了。
 
 然后在Checkout过去修改，就能够达到保存当前工作区，并及时恢复的作用。
-```
 
-## 5. 删除某个远程分支
+# 5. 删除某个远程分支
 
 ```
 $ git push origin :master
@@ -80,13 +80,13 @@ $ git push origin :master
 $ git push origin --delete master
 ```
 
-## 6. git log的通用配置命令
+# 6. git log的通用配置命令
 
 ```
 $ git config --global alias.lg "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 ```
 
-## 7. 基于某个分支创建分支
+# 7. 基于某个分支创建分支
 
 ```
 $ git checkout <remote>/<branch> -b <branch> //设置跟踪关系
@@ -94,7 +94,7 @@ $ git checkout <remote>/<branch> -b <branch> //设置跟踪关系
 $ git pull origin auto-test-v0.9:autotest
 ```
 
-## 8. 查看某文件修改历史
+# 8. 查看某文件修改历史
 
 ```
 git log -- filename （git log filename）可以看到该文件相关的commit记录
@@ -106,7 +106,7 @@ git show commit-id     根据commit-id查看某个提交
 git show commit-id filename    查看某次提交中的某个文件变化
 ```
 
-## 9. 文件名大小写
+# 9. 文件名大小写
 
 只好用 --force了，强制更新掉远程的文件
 
@@ -124,33 +124,33 @@ git show commit-id filename    查看某次提交中的某个文件变化
 
 > git config --global core.ignorecase false
 
-## 10. matching和simple
+# 10. matching和simple
 
 git push时有俩参数，‘matching’ 参数是 Git 1.x 的默认行为，其意是如果你执行 git push 但没有指定分支，它将 push **所有你本地的分支**到远程仓库中对应匹配的分支。
 
 而 Git 2.x 默认的是 simple，意味着执行 git push 没有指定分支时，只有**当前分支**会被 push 到你使用 git pull 获取的代码
 
-## 11. Windows/Unix换行符
+# 11. Windows/Unix换行符
 
 > git config --global core.autocrlf false //* 让Git不要管Windows/Unix换行符转换的事
 
-## 12. 中文乱码
+# 12. 中文乱码
 
 > git config --global gui.encoding utf-8 #//避免git gui中的中文乱码
 
 > git config --global core.quotepath off // 避免git status显示的中文文件名乱码
 
-## 13. 统计代码
+# 13. 统计代码
 
-### 13.1. 统计所有的增删行数
+## 13.1. 统计所有的增删行数
 
 > git log --pretty=tformat: --numstat | gawk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2} END { printf "added lines: %s, removed lines : %s, now lines: %s, total lines: %s\n",add,subs,loc,total }'
 
-### 13.2. 扫描 Log 单独统计每个人的增删行数加强版
+## 13.2. 扫描 Log 单独统计每个人的增删行数加强版
 
 > echo -en "\n"; git log --pretty=tformat: --numstat | gawk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2} END { printf "added lines: %s, removed lines : %s, now lines: %s, total lines: %s\n",add,subs,loc,total }';git log --format='%aN' | sort -u | while read name; do echo -en "$name\t"; git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2 } END { printf "added lines: %s, removed lines: %s, now lines: %s, total lines: %s\n", add, subs, loc, total }' -; done
 
-### 13.3. 单独统计每个人和所有的增删行数
+## 13.3. 单独统计每个人和所有的增删行数
 
 单独统计每个人
 
@@ -160,39 +160,39 @@ git push时有俩参数，‘matching’ 参数是 Git 1.x 的默认行为，其
 
 > echo -en "\n"; git log --format='%aN' | sort -u | while read name;do echo -en "$name\t"; git log --author="$name" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2 } END { printf "added lines: %s, removed lines: %s, now lines: %s, total lines: %s\n", add, subs, loc, total }' -; done;git log --pretty=tformat: --numstat | gawk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2} END { printf "\nadded lines: %s, removed lines : %s, now lines: %s, total lines: %s\n",add,subs,loc,total }'
 
-### 13.4. 统计当前用户的增删行数
+## 13.4. 统计当前用户的增删行数
 
 > git log --author="$(git config --get user.name)" --pretty=tformat: --numstat | gawk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2} END { printf "added lines: %s, removed lines : %s, now lines: %s, total lines: %s\n",add,subs,loc,total }'
 
-### 13.5. 指定用户名增删行数
+## 13.5. 指定用户名增删行数
 
 > git log --author="your_name_here" --pretty=tformat: --numstat | awk '{ add += $1; subs += $2; loc += $1 - $2; total += $1 + $2 } END { printf "added lines: %s, removed lines: %s, now lines: %s, total lines: %s\n", add, subs, loc, total }'
 
-### 13.6. 扫描 Log 统计增删行数
+## 13.6. 扫描 Log 统计增删行数
 
 > git log --shortstat --pretty="%cE" | sed 's/\(.*\)@.*/\1/' | grep -v "^$" | awk 'BEGIN { line=""; } !/^ / { if (line=="" || !match(line, $0)) {line = $0 "," line }} /^ / { print line " # " $0; line=""}' | sort | sed -E 's/# //;s/ files? changed,//;s/([0-9]+) ([0-9]+ deletion)/\1 0 insertions\(+\), \2/;s/\(\+\)$/\(\+\), 0 deletions\(-\)/;s/insertions?\(\+\), //;s/ deletions?\(-\)//' | awk 'BEGIN {name=""; files=0; insertions=0; deletions=0;} {if ($1 != name && name != "") { print name ": " files " files changed, " insertions " insertions(+), " deletions " deletions(-), " insertions-deletions " net"; files=0; insertions=0; deletions=0; name=$1; } name=$1; files+=$2; insertions+=$3; deletions+=$4} END {print name ": " files " files changed, " insertions " insertions(+), " deletions " deletions(-), " insertions-deletions " net";}'
 
 两个人同时修改，可能是 merge 操作，没有深究
 
-### 13.7. 仓库提交者排名前 5（如果看全部，去掉 head 管道即可）：
+## 13.7. 仓库提交者排名前 5（如果看全部，去掉 head 管道即可）：
 
 > git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r | head -n 5
 
-### 13.8. 仓库提交者（邮箱）排名前5
+## 13.8. 仓库提交者（邮箱）排名前5
 
 这个统计可能不会太准，因为很多人有不同的邮箱，但会使用相同的名字
 
 git log --pretty=format:%ae | gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
 
-### 13.9. 贡献人数统计
+## 13.9. 贡献人数统计
 
 git log --pretty='%aN' | sort -u | wc -l
 
-### 13.10. 提交次数统计
+## 13.10. 提交次数统计
 
 git log --oneline | wc -l 
 
-### 13.11. 统计时间内提交次数
+## 13.11. 统计时间内提交次数
 
 根据 author
 
@@ -369,13 +369,13 @@ F:      arch/x86/kernel/kvm.c
 F:      arch/x86/kernel/kvmclock.c
 ```
 
-## 14. http不用输入用户名密码
+# 14. http不用输入用户名密码
 
 ```
 git remote set-url origin git+ssh://git@github.com/Gerry-Lee/Study.git
 ```
 
-## 15. 编辑配置项
+# 15. 编辑配置项
 
 1.查看Git所有配置
 
@@ -391,7 +391,7 @@ git config --global --unset user.name
 
 git config --global --edit
 
-# 
+# 16. branch
 
 ```
 git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch path-of-remove-file' --prune-empty --tag-name-filter cat -- --all
@@ -401,10 +401,10 @@ git filter-branch --force --index-filter 'git rm --cached --ignore-unmatch path-
 git push origin --force --all
 ```
 
-# 某一行代码的所有提交历史
+# 17. 某一行代码的所有提交历史
 
 `git log -p filename`, 然后搜索代码，看谁提交的
 
-# .gitignore的模板
+# 18. .gitignore的模板
 
 各种模板: https://github.com/github/gitignore
