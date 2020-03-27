@@ -34,6 +34,14 @@
 
 这个`perf`工具在linux源码的`tools/perf`.
 
+build工具:
+
+```
+make -C <kernel source root directory>/tools/perf
+```
+
+使用:
+
 ```
 $ sudo mount -t debugfs none /sys/kernel/debug
 $ sudo ./perf stat -e 'kvm:*' -a sleep 1h
