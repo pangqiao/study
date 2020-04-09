@@ -1,6 +1,6 @@
 ;*************************************************
 ;* pci.asm                                       *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -172,32 +172,32 @@ write_pci_byte:
 
 
 ;-------------------------------------------
-; get_PMBASE(): µÃµ½Power Management I/O base
+; get_PMBASE(): å¾—åˆ°Power Management I/O base
 ; output:
-;	eax: PMBASE£¨I/O µØÖ·£©
+;	eax: PMBASEï¼ˆI/O åœ°å€ï¼‰
 ;-------------------------------------------
 get_PMBASE:
-; ¶Á bus 0, device 31, function 0, offset 40h
+; è¯» bus 0, device 31, function 0, offset 40h
 	READ_PCI_DWORD	0, 31, 0, 40h
-; ·µ»Ø PMBASE
-	and eax, 0FF80h			; PMBASE µØÖ· 128 bytes ¶ÔÆë
+; è¿”å› PMBASE
+	and eax, 0FF80h			; PMBASE åœ°å€ 128 bytes å¯¹é½
 	ret
 
 
 ;-------------------------------------------
-; get_GPIOBASE(): µÃµ½ GPIO I/O base
+; get_GPIOBASE(): å¾—åˆ° GPIO I/O base
 ; output:
-;	eax: GPIOBASE£¨I/O µØÖ·£©
+;	eax: GPIOBASEï¼ˆI/O åœ°å€ï¼‰
 ;-------------------------------------------
 get_GPIOBASE:
-; ¶Á bus 0, device 31, function 0, offset 48h
+; è¯» bus 0, device 31, function 0, offset 48h
 	READ_PCI_DWORD	0, 31, 0, 48h
-; ·µ»Ø GPIOBASE
-	and eax, 0FF80h			; GPIOBASE µØÖ· 128 bytes ¶ÔÆë
+; è¿”å› GPIOBASE
+	and eax, 0FF80h			; GPIOBASE åœ°å€ 128 bytes å¯¹é½
 	ret
 
 ;----------------------------------------------
-; enable_GPIO(): ¿ªÆô GPIO£¬Ê¹ÓÃ GPIOBASE ÓĞĞ§
+; enable_GPIO(): å¼€å¯ GPIOï¼Œä½¿ç”¨ GPIOBASE æœ‰æ•ˆ
 ;-----------------------------------------------
 enable_GPIO:
 	READ_PCI_DWORD 0, 31, 0, 4Ch
@@ -207,9 +207,9 @@ enable_GPIO:
 	ret
 
 ;----------------------------------------------
-; get_TCOBASE(): µÃµ½ TCO I/O Base
+; get_TCOBASE(): å¾—åˆ° TCO I/O Base
 ; output:
-;	eax: TCOBASE£¨I/O µØÖ·£©
+;	eax: TCOBASEï¼ˆI/O åœ°å€ï¼‰
 ;----------------------------------------------
 get_TCOBASE:
 	call get_PMBASE
@@ -218,21 +218,21 @@ get_TCOBASE:
 
 
 ;-----------------------------------------------
-; get_RCBA(): µÃµ½ Root complex base address
+; get_RCBA(): å¾—åˆ° Root complex base address
 ;-----------------------------------------------
 get_RCBA:
-        READ_PCI_DWORD  0, 31, 0, 0F0h          ; ¶Á bus 0, device 31, function 0, offset F0h
+        READ_PCI_DWORD  0, 31, 0, 0F0h          ; è¯» bus 0, device 31, function 0, offset F0h
         ret
 
 ;-------------------------------------------------
-; get_root_complex_base_address(): µÃµ½ RCBA µØÖ·
+; get_root_complex_base_address(): å¾—åˆ° RCBA åœ°å€
 ; output:
-;       eax - RCBA address£¨memroy space)
+;       eax - RCBA addressï¼ˆmemroy space)
 ;-------------------------------------------------
 get_root_complex_base_address:
-        ;* ¶Á RCBA ¼Ä´æÆ÷
-        READ_PCI_DWORD  0, 31, 0, 0F0h         ; ¶Á bus 0, device 31, function 0, offset F0h 
-        and eax, 0FFFFC000h                    ; µÃµ½ base address
+        ;* è¯» RCBA å¯„å­˜å™¨
+        READ_PCI_DWORD  0, 31, 0, 0F0h         ; è¯» bus 0, device 31, function 0, offset F0h 
+        and eax, 0FFFFC000h                    ; å¾—åˆ° base address
         ret
 
 
@@ -242,7 +242,7 @@ read_OIC:
         and eax, 0xFFFFC000
         mov ebx, 0xFEC00000
         sub eax, ebx
-        mov eax, [eax + PCI_FEC00000 + 0x31fe]                 ; ¶Á OIC£¨other interrupt control£©¼Ä´æÆ÷
+        mov eax, [eax + PCI_FEC00000 + 0x31fe]                 ; è¯» OICï¼ˆother interrupt controlï¼‰å¯„å­˜å™¨
         and eax, 0xffff
         pop ebx
         ret
@@ -264,15 +264,15 @@ write_OIC:
         
 
 ;---------------------------------
-; enable_APMC(): ¿ªÆô APM ¿ØÖÆÆ÷
+; enable_APMC(): å¼€å¯ APM æ§åˆ¶å™¨
 ;---------------------------------
 enable_APMC:
 	call get_PMBASE
-	lea edx, [eax + 30h]		; SMI_EN ¼Ä´æÆ÷
-	in eax, dx			; ¶Á SMI_EN ¼Ä´æÆ÷ DWORD
+	lea edx, [eax + 30h]		; SMI_EN å¯„å­˜å™¨
+	in eax, dx			; è¯» SMI_EN å¯„å­˜å™¨ DWORD
 	bts eax, 5			; APMC_EN = 1
 	bts eax, 0			; BGL_SMI_EN = 1
-	out dx, eax			; ¿ªÆô SMI
+	out dx, eax			; å¼€å¯ SMI
 	ret
 
 
