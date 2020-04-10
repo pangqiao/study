@@ -3,13 +3,13 @@
 
 <!-- code_chunk_output -->
 
-* [1 1号进程](#1-1号进程)
-	* [1.1 kernel\_init](#11-kernel_init)
-	* [1.2 init进程](#12-init进程)
-	* [1.3 关于init程序](#13-关于init程序)
-* [2 附录](#2-附录)
-	* [2.1 kernel\_init\_freeable流程分析](#21-kernel_init_freeable流程分析)
-	* [2.2 kernel\_init分析](#22-kernel_init分析)
+- [1号进程](#1号进程)
+  - [kernel_init](#kernel_init)
+  - [1.2 init进程](#12-init进程)
+  - [1.3 关于init程序](#13-关于init程序)
+- [2 附录](#2-附录)
+  - [2.1 kernel\_init\_freeable流程分析](#21-kernel_init_freeable流程分析)
+  - [2.2 kernel\_init分析](#22-kernel_init分析)
 
 <!-- /code_chunk_output -->
 
@@ -17,13 +17,13 @@
 
 Linux系统中的init进程(pid=1)是除了idle进程(pid=0，也就是init\_task)之外另一个比较特殊的进程，它是Linux内核开始建立起进程概念时第一个通过kernel\_thread产生的进程，其开始在内核态执行，然后通过一个系统调用，开始执行用户空间的/sbin/init程序，期间Linux内核也经历了从内核态到用户态的特权级转变，/sbin/init极有可能产生出了shell，然后所有的用户进程都有该进程派生出来
 
-# 1 1号进程
+# 1号进程
 
 前面我们了解到了0号进程是系统所有进程的先祖,它的进程描述符init\_task是内核静态创建的,而它在进行初始化的时候,通过kernel\_thread的方式创建了两个内核线程，分别是kernel\_init和kthreadd，其中kernel\_init进程号为1
 
 start\_kernel在其最后一个函数rest\_init的调用中，会通过**kernel\_thread来生成一个内核进程**，后者则会在新进程环境下**调用kernel\_init**函数，kernel\_init一个让人感兴趣的地方在于它会调用**run\_init\_process**来**执行根文件系统下的/sbin/init等程序**：
 
-## 1.1 kernel\_init
+## kernel_init
 
 0号进程创建1号进程的方式如下
 
