@@ -5,11 +5,11 @@
 
 - [1号进程](#1号进程)
   - [kernel_init](#kernel_init)
-  - [1.2 init进程](#12-init进程)
+  - [init进程](#init进程)
   - [1.3 关于init程序](#13-关于init程序)
 - [2 附录](#2-附录)
   - [2.1 kernel\_init\_freeable流程分析](#21-kernel_init_freeable流程分析)
-  - [2.2 kernel\_init分析](#22-kernel_init分析)
+  - [kernel_init分析](#kernel_init分析)
 
 <!-- /code_chunk_output -->
 
@@ -37,7 +37,7 @@ kernel\_init函数将完成**设备驱动程序的初始化**，并调用**init\
 
 由0号进程创建**1号进程（内核态**），**1号内核线程**负责执行**内核的部分初始化**工作及进行**系统配置**，并创建**若干**个用于**高速缓存**和**虚拟主存管理**的**内核线程**。
 
-## 1.2 init进程
+## init进程
 
 随后，**1号进程**调用**do\_execve**运行**可执行程序init**，并**演变成用户态1号进程**，即**init进程**。
 
@@ -181,7 +181,7 @@ static noinline void __init kernel_init_freeable(void)
 | integrity\_load\_keys | 至此我们初始化工作完成, 文件系统也已经准备好了，那么接下来加载 load integrity keys hook |
 | load\_default\_modules | 加载基本的模块 |
 
-## 2.2 kernel\_init分析
+## kernel_init分析
 
 ```c
 static int __ref kernel_init(void *unused)
