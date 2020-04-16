@@ -7,18 +7,18 @@
 %ifndef MTRR_INC
 %define MTRR_INC
 
-;; Õâ¸öÄ£¿éÊÇ mtrr ¼Ä´æÆ÷µÄÀı³Ì
+;; è¿™ä¸ªæ¨¡å—æ˜¯ mtrr å¯„å­˜å™¨çš„ä¾‹ç¨‹
 
         bits 32
         
 ;-------------------------------------------------------------------------
-; set_variable_rang(): ÉèÖÃ variable_rang ÇøÓò
+; set_variable_rang(): è®¾ç½® variable_rang åŒºåŸŸ
 ; input:
-;                 esi£ºedi-ÎïÀí»ùµØÖ·£¬ edx:eax ½áÊøµØÖ·£¬ [esp+4]: variable_rangĞòºÅ, [esp+8]: memory type
-; ÃèÊö£º
-;                Õâ¸öº¯ÊıÊ¹ÓÃÁË4¸ö²ÎÊı£¬µÚ3£¬4¸ö²ÎÊıÍ¨¹ıstack´«µİ
-;                esi:edi Õâ¶Ô¼Ä´æÆ÷Ìá¹©»ùµØÖ·£¨64Î»Öµ£©£¬¡¡edx:eax Õâ¶Ô¼Ä´æÆ÷Ìá¹©½áÊøµØÖ·£¨64Î»Öµ)
-; Àı×Ó£º
+;                 esiï¼šedi-ç‰©ç†åŸºåœ°å€ï¼Œ edx:eax ç»“æŸåœ°å€ï¼Œ [esp+4]: variable_rangåºå·, [esp+8]: memory type
+; æè¿°ï¼š
+;                è¿™ä¸ªå‡½æ•°ä½¿ç”¨äº†4ä¸ªå‚æ•°ï¼Œç¬¬3ï¼Œ4ä¸ªå‚æ•°é€šè¿‡stackä¼ é€’
+;                esi:edi è¿™å¯¹å¯„å­˜å™¨æä¾›åŸºåœ°å€ï¼ˆ64ä½å€¼ï¼‰ï¼Œã€€edx:eax è¿™å¯¹å¯„å­˜å™¨æä¾›ç»“æŸåœ°å€ï¼ˆ64ä½å€¼)
+; ä¾‹å­ï¼š
 ;                mov esi, 1000000H
 ;                mov edi, 0H
 ;                mov edx, 0
@@ -26,13 +26,13 @@
 ;                push 0
 ;                push 06H
 ;                cal set_variable_rang
-; ×¢Òâ£º
-;                Õâ¸öº¯ÊıÊ¹ÓÃÁË²¿·Ö enumerate_variable_rang() µÄ±äÁ¿!!
+; æ³¨æ„ï¼š
+;                è¿™ä¸ªå‡½æ•°ä½¿ç”¨äº†éƒ¨åˆ† enumerate_variable_rang() çš„å˜é‡!!
 ;-------------------------------------------------------------------
 set_variable_rang:
         jmp do_set_variable_rang
-set_physbase    dq 0                        ; ĞèÒªÉèÖÃµÄ baseÖµ(64Î»)
-set_physlimit   dq 0                        ; ĞèÒªÉèÖÃµÄ limitÖµ(64Î»)
+set_physbase    dq 0                        ; éœ€è¦è®¾ç½®çš„ baseå€¼(64ä½)
+set_physlimit   dq 0                        ; éœ€è¦è®¾ç½®çš„ limitå€¼(64ä½)
 set_number      dd 0
 set_type        dd 0
 do_set_variable_rang:        
@@ -40,7 +40,7 @@ do_set_variable_rang:
         push ebx
         push edx
         
-;; ±£´æ²ÎÊı        
+;; ä¿å­˜å‚æ•°        
         mov [set_physbase], esi
         mov [set_physbase + 4], edi
         mov [set_physlimit], eax
@@ -50,53 +50,53 @@ do_set_variable_rang:
         mov eax, [esp + 16]
         mov [set_type], eax
         
-;; ¼ì²éÊäÈëµÄĞòºÅÊÇ·ñ³¬ÏŞ
+;; æ£€æŸ¥è¾“å…¥çš„åºå·æ˜¯å¦è¶…é™
         mov ecx, IA32_MTRRCAP
         rdmsr
         and eax, 0x0f
-        mov [number], eax                       ; ´æ·Å number
+        mov [number], eax                       ; å­˜æ”¾ number
         cmp eax, [set_number]
-        jb set_variable_rang_done               ; Èç¹û³¬ÏŞ£¬Ê²Ã´¶¼²»×ö
+        jb set_variable_rang_done               ; å¦‚æœè¶…é™ï¼Œä»€ä¹ˆéƒ½ä¸åš
 
-;; ÉèÖÃĞ´ÈëÖµ
-        mov edx, [set_physbase + 4]             ; ¸ßÎ»
-        mov eax, [set_physbase]                 ; µÍÎ»
-        and eax, 0FFFFF000H                     ; ÇåµÍ 12Î»
+;; è®¾ç½®å†™å…¥å€¼
+        mov edx, [set_physbase + 4]             ; é«˜ä½
+        mov eax, [set_physbase]                 ; ä½ä½
+        and eax, 0FFFFF000H                     ; æ¸…ä½ 12ä½
         mov ebx, [set_type]
         and ebx, 0x0f
-        or eax, ebx                             ; Éè memory type£¨×¢Òâ£¬Ã»ÓĞ¼ì²éºÏ·¨ĞÔ£©
+        or eax, ebx                             ; è®¾ memory typeï¼ˆæ³¨æ„ï¼Œæ²¡æœ‰æ£€æŸ¥åˆæ³•æ€§ï¼‰
         mov ebx, [set_number]
         mov ecx, [mtrr_physbase_table + ebx * 4]                
-        wrmsr                                   ; Ğ´ IA32_MTRR_PHYSBASE ¼Ä´æÆ÷
+        wrmsr                                   ; å†™ IA32_MTRR_PHYSBASE å¯„å­˜å™¨
 
-;;;;; ÏÂÃæ¼ÆËã PhysMask Öµ¡¡;;;;;;
+;;;;; ä¸‹é¢è®¡ç®— PhysMask å€¼ã€€;;;;;;
         mov esi, set_physlimit
         mov edi, set_physbase
-        call subtract64                         ; Ê¹ÓÃ64Î»µÄ¼õ·¨£ºlimit - base
+        call subtract64                         ; ä½¿ç”¨64ä½çš„å‡æ³•ï¼šlimit - base
         push edx
         push eax
         
-;; µÃµ½ MAXPHYADDR Öµ
+;; å¾—åˆ° MAXPHYADDR å€¼
         call get_MAXPHYADDR
         mov [maxphyaddr], eax
         cmp eax, 40                             ; MAXPHYADDR = 40 ?
         je do_set_physmask
         cmp eax, 52                             ; MAXPHYADDR = 52 ?
         je maxphyaddr_52
-        mov DWORD [maxphyaddr_value + 4], 0x0F          ; ÉèÖÃ 36 Î»µØÖ·µÄ×î¸ß4Î»Öµ
+        mov DWORD [maxphyaddr_value + 4], 0x0F          ; è®¾ç½® 36 ä½åœ°å€çš„æœ€é«˜4ä½å€¼
         jmp do_set_physmask
 maxphyaddr_52:
-        mov DWORD [maxphyaddr_value + 4], 0xFFFF        ; ÉèÖÃ 52 Î»µØÖ·µÄ×î¸ß16Î»Öµ
+        mov DWORD [maxphyaddr_value + 4], 0xFFFF        ; è®¾ç½® 52 ä½åœ°å€çš„æœ€é«˜16ä½å€¼
 
 do_set_physmask:        
-        mov esi, maxphyaddr_value                       ; ×î´óÖµ
-        mov edi, esp                                    ; ¼õ²î
+        mov esi, maxphyaddr_value                       ; æœ€å¤§å€¼
+        mov edi, esp                                    ; å‡å·®
         call subtract64
         and eax, 0FFFFF000H
-        bts eax, 11                                      ; Éè valid = 1
+        bts eax, 11                                      ; è®¾ valid = 1
         mov ebx, [set_number]        
         mov ecx, [mtrr_physmask_table + ebx * 4]
-        wrmsr                                            ; Ğ´ IA32_MTRR_PHYSMASK ¼Ä´æÆ÷
+        wrmsr                                            ; å†™ IA32_MTRR_PHYSMASK å¯„å­˜å™¨
         
         add esp, 8                
 set_variable_rang_done:
@@ -108,7 +108,7 @@ set_variable_rang_done:
         
         
 ;--------------------------------------------------------
-; enumerate_variable_rang(): Ã¶¾Ù³öµ±Ç°ËùÓĞµÄvariableÇøÓò
+; enumerate_variable_rang(): æšä¸¾å‡ºå½“å‰æ‰€æœ‰çš„variableåŒºåŸŸ
 ;--------------------------------------------------------
 enumerate_variable_rang:
         jmp do_enumerate_variable_rang
@@ -124,21 +124,21 @@ type_msg        db 'type: ', 0
 emsg2           db 'MTRR disable', 10, 0
 emsg3           db ' ---> ', 0
 emsg4           db ' <invalid>', 0
-;; È±Ê¡Îª 40 Î»µÄ×î¸ßµØÖ·Öµ: 0xFF_FFFFFFFF
+;; ç¼ºçœä¸º 40 ä½çš„æœ€é«˜åœ°å€å€¼: 0xFF_FFFFFFFF
 maxphyaddr_value        dd 0xFFFFFFFF, 0xFF
 maxphyaddr              dd 0                
-vcnt                    dd 0                        ; ±£´æÊıÁ¿Öµ
-physbase                dq 0                        ; ±£´æ PhysBase Öµ
-type                    dd 0                        ; ±£´æ memory ÀàĞÍ
-physmask                dq 0                        ; ±£´æ PhysMask Öµ
-valid                   dd 0                        ; ±£´æ valid Î»
+vcnt                    dd 0                        ; ä¿å­˜æ•°é‡å€¼
+physbase                dq 0                        ; ä¿å­˜ PhysBase å€¼
+type                    dd 0                        ; ä¿å­˜ memory ç±»å‹
+physmask                dq 0                        ; ä¿å­˜ PhysMask å€¼
+valid                   dd 0                        ; ä¿å­˜ valid ä½
 
 do_enumerate_variable_rang:        
         push ecx
         push edx
         push ebp
 
-;; ²âÊÔÊÇ·ñ¿ªÆô MTRR ¹¦ÄÜ        
+;; æµ‹è¯•æ˜¯å¦å¼€å¯ MTRR åŠŸèƒ½        
         mov ecx, IA32_MTRR_DEF_TYPE
         rdmsr                        
         bt eax, 11                                   ; MTRR enable ?
@@ -150,32 +150,32 @@ do_enumerate_variable_rang:
 do_enumerate_variable_rang_enable:        
         xor ebp, ebp
         mov ecx, IA32_MTRRCAP
-        rdmsr                                        ; ¶Á IA32_MTRRCAP ¼Ä´æÆ÷
+        rdmsr                                        ; è¯» IA32_MTRRCAP å¯„å­˜å™¨
         mov esi, eax                                
-        and esi, 0x0f                                ; µÃµ½ IA32_MTRRCAP.VCNT Öµ
-        mov [vcnt], esi                              ; ±£´æ variable-rang ÊıÁ¿
+        and esi, 0x0f                                ; å¾—åˆ° IA32_MTRRCAP.VCNT å€¼
+        mov [vcnt], esi                              ; ä¿å­˜ variable-rang æ•°é‡
         mov edi, number
-        call get_byte_hex_string                     ; Ğ´Èë buffer ÖĞ
+        call get_byte_hex_string                     ; å†™å…¥ buffer ä¸­
         mov esi, emsg1
         call puts
         call println
-        cmp DWORD [vcnt], 0                           ; Èç¹û VCNT = 0
+        cmp DWORD [vcnt], 0                           ; å¦‚æœ VCNT = 0
         je do_enumerate_variable_rang_done
         
-;; µÃµ½ MAXPHYADDR Öµ
+;; å¾—åˆ° MAXPHYADDR å€¼
         call get_MAXPHYADDR
         mov [maxphyaddr], eax
         cmp eax, 40                                    ; MAXPHYADDR = 40 ?
         je do_enumerate_variable_rang_loop
         cmp eax, 52                                    ; MAXPHYADDR = 52 ?
         je set_maxphyaddr_52
-        mov DWORD [maxphyaddr_value + 4], 0x0F         ; ÉèÖÃ 36 Î»µØÖ·µÄ×î¸ß4Î»Öµ
+        mov DWORD [maxphyaddr_value + 4], 0x0F         ; è®¾ç½® 36 ä½åœ°å€çš„æœ€é«˜4ä½å€¼
         jmp do_enumerate_variable_rang_loop
 set_maxphyaddr_52:
-        mov DWORD [maxphyaddr_value + 4], 0xFFFF       ; ÉèÖÃ 52 Î»µØÖ·µÄ×î¸ß16Î»Öµ
+        mov DWORD [maxphyaddr_value + 4], 0xFFFF       ; è®¾ç½® 52 ä½åœ°å€çš„æœ€é«˜16ä½å€¼
         
 do_enumerate_variable_rang_loop:
-;; ´òÓ¡ĞòºÅ        
+;; æ‰“å°åºå·        
         mov esi, ebp
         mov edi, nn + 1
         call get_byte_hex_string
@@ -184,26 +184,26 @@ do_enumerate_variable_rang_loop:
         mov esi, emsg3
         call puts
         
-;; ´òÓ¡        base µØÖ·
+;; æ‰“å°        base åœ°å€
         mov esi, physbase_msg
         call puts
-        mov ecx, [mtrr_physbase_table + ebp * 4]       ; µÃµ½ MTRR_PHYSBASE ¼Ä´æÆ÷µØÖ·
+        mov ecx, [mtrr_physbase_table + ebp * 4]       ; å¾—åˆ° MTRR_PHYSBASE å¯„å­˜å™¨åœ°å€
         rdmsr
         
         mov [physbase], eax
         mov [physbase + 4], edx
-        and DWORD [physbase], 0xFFFFFFF0               ; È¥µô type Öµ
-        and eax, 0xf0                                  ; µÃµ½ type Öµ
+        and DWORD [physbase], 0xFFFFFFF0               ; å»æ‰ type å€¼
+        and eax, 0xf0                                  ; å¾—åˆ° type å€¼
         mov [type], eax
-        mov ecx, [mtrr_physmask_table + ebp * 4]        ; µÃµ½ MTRR_PHYSMASK ¼Ä´æÆ÷µØÖ·
+        mov ecx, [mtrr_physmask_table + ebp * 4]        ; å¾—åˆ° MTRR_PHYSMASK å¯„å­˜å™¨åœ°å€
         rdmsr
-        btr eax, 11                                     ; µÃµ½ valid Öµ
+        btr eax, 11                                     ; å¾—åˆ° valid å€¼
         mov [physmask], eax
         mov [physmask + 4], edx
         setc al
         movzx eax, al
-        mov [valid], eax                                ; ±£´æ valid Öµ
-;; ´òÓ¡»ùÖ·
+        mov [valid], eax                                ; ä¿å­˜ valid å€¼
+;; æ‰“å°åŸºå€
         mov esi, physbase
         mov edi, physbase_value
         call get_qword_hex_string
@@ -211,7 +211,7 @@ do_enumerate_variable_rang_loop:
         call puts
         mov esi, physlimit_msg
         call puts
-;; ¼ÆËã·¶Î§Öµ
+;; è®¡ç®—èŒƒå›´å€¼
         mov esi, maxphyaddr_value
         mov edi, physmask
         call subtract64
@@ -229,7 +229,7 @@ do_enumerate_variable_rang_loop:
         mov esi, physlimit_value
         call puts
 
-;; ÊÇ·ñ valid
+;; æ˜¯å¦ valid
         cmp DWORD [valid], 0
         jne print_memory_type
         mov esi, emsg4
@@ -246,7 +246,7 @@ print_memory_type:
 do_enumerate_variable_rang_next:        
         call println        
         inc ebp
-        cmp ebp, [vcnt]                                     ; ±éÀú VCNT ´ÎÊı
+        cmp ebp, [vcnt]                                     ; éå† VCNT æ¬¡æ•°
         jb do_enumerate_variable_rang_loop
         
 do_enumerate_variable_rang_done:        
@@ -274,40 +274,40 @@ do_dump_smrr_region:
         bt eax, 11                                      ; SMRR support ?
         jnc smrr_not_support
 
-;; µÃµ½ MAXPHYADDR Öµ
+;; å¾—åˆ° MAXPHYADDR å€¼
         call get_MAXPHYADDR
         mov [maxphyaddr], eax
         cmp eax, 40                                     ; MAXPHYADDR = 40 ?
         je dump_smrr_region_next
         cmp eax, 52                                     ; MAXPHYADDR = 52 ?
         je set_smrr_maxphyaddr_52
-        mov DWORD [maxphyaddr_value + 4], 0x0F          ; ÉèÖÃ 36 Î»µØÖ·µÄ×î¸ß4Î»Öµ
+        mov DWORD [maxphyaddr_value + 4], 0x0F          ; è®¾ç½® 36 ä½åœ°å€çš„æœ€é«˜4ä½å€¼
         jmp dump_smrr_region_next
 set_smrr_maxphyaddr_52:
-        mov DWORD [maxphyaddr_value + 4], 0xFFFF        ; ÉèÖÃ 52 Î»µØÖ·µÄ×î¸ß16Î»Öµ
+        mov DWORD [maxphyaddr_value + 4], 0xFFFF        ; è®¾ç½® 52 ä½åœ°å€çš„æœ€é«˜16ä½å€¼
         
         
 dump_smrr_region_next:
         
         mov ecx, IA32_SMRR_PHYSBASE                                                
-        rdmsr                                           ; ¶Á IA32_SMRR_PHYSBASE
+        rdmsr                                           ; è¯» IA32_SMRR_PHYSBASE
         
-;;; Ê¹ÓÃÁË enumerate_variable_rang() µÄ±äÁ¿
+;;; ä½¿ç”¨äº† enumerate_variable_rang() çš„å˜é‡
         mov [physbase], eax                                
-        mov [physbase + 4], edx                         ; ±£´æ SMRR region
-        and DWORD [physbase], 0xFFFFFFF0                ; È¥µô type Öµ
-        and eax, 0xff                                    ; µÃµ½ type Öµ
+        mov [physbase + 4], edx                         ; ä¿å­˜ SMRR region
+        and DWORD [physbase], 0xFFFFFFF0                ; å»æ‰ type å€¼
+        and eax, 0xff                                    ; å¾—åˆ° type å€¼
         mov [type], eax
         mov ecx, IA32_SMRR_PHYSMASK                                
-        rdmsr                                           ; ¶Á IA32_SMRR_PHYSMASK
-        btr eax, 11                                     ; µÃµ½ valid Öµ
+        rdmsr                                           ; è¯» IA32_SMRR_PHYSMASK
+        btr eax, 11                                     ; å¾—åˆ° valid å€¼
         mov [physmask], eax
         mov [physmask + 4], edx
         setc al
         movzx eax, al
-        mov [valid], eax                                ; ±£´æ valid Öµ
+        mov [valid], eax                                ; ä¿å­˜ valid å€¼
         
-;; ´òÓ¡»ùÖ·
+;; æ‰“å°åŸºå€
         mov esi, physbase
         mov edi, smrr_value
         call get_qword_hex_string
@@ -315,7 +315,7 @@ dump_smrr_region_next:
         call puts
         mov esi, dsr_msg2
         call puts
-;; ¼ÆËã·¶Î§Öµ
+;; è®¡ç®—èŒƒå›´å€¼
         mov esi, maxphyaddr_value
         mov edi, physmask
         call subtract64
@@ -333,7 +333,7 @@ dump_smrr_region_next:
         mov esi, smrrlimit_value
         call puts
 
-;; ÊÇ·ñ valid
+;; æ˜¯å¦ valid
         cmp DWORD [valid], 0
         jne print_smrr_type
         mov esi, dsr_msg3
@@ -359,7 +359,7 @@ do_dump_smrr_region_done:
 
 
 ;------------------------------------------
-; dump_fixed64K_rang(): ´òÓ¡ fixed-rang µÄÀàĞÍ
+; dump_fixed64K_rang(): æ‰“å° fixed-rang çš„ç±»å‹
 ; input:
 ;                esi: low32, edi: hi32
 ;------------------------------------------
@@ -393,7 +393,7 @@ do_dump_fixed64K_rang_loop:
         mov esi, [ebx + ecx * 4]
         cmp esi, -1
         jz do_dump_fixed64K_rang_done
-        call puts                                                ; ´òÓ¡ĞÅÏ¢
+        call puts                                                ; æ‰“å°ä¿¡æ¯
         movzx eax, BYTE [mtrr_value + ecx]
         mov esi, [memory_type_table + eax * 4]
         call puts
@@ -407,13 +407,13 @@ do_dump_fixed64K_rang_done:
         ret
 
 
-;; **** ÏÂÃæÊÇ¸ÃÄ£¿éµÄÒ»Ğ©¹²ÓÃµÄ±äÁ¿ ****
+;; **** ä¸‹é¢æ˜¯è¯¥æ¨¡å—çš„ä¸€äº›å…±ç”¨çš„å˜é‡ ****
 
-;; IA32_MTRR_PHYSBASE µØÖ·±í
+;; IA32_MTRR_PHYSBASE åœ°å€è¡¨
 mtrr_physbase_table        dd IA32_MTRR_PHYSBASE0, IA32_MTRR_PHYSBASE1, IA32_MTRR_PHYSBASE2, IA32_MTRR_PHYSBASE3, IA32_MTRR_PHYSBASE4
                            dd IA32_MTRR_PHYSBASE5, IA32_MTRR_PHYSBASE6, IA32_MTRR_PHYSBASE7, IA32_MTRR_PHYSBASE8, IA32_MTRR_PHYSBASE9
 
-;; IA32_MTRR_PHYSMASK µØÖ·±í                                
+;; IA32_MTRR_PHYSMASK åœ°å€è¡¨                                
 mtrr_physmask_table        dd IA32_MTRR_PHYSMASK0, IA32_MTRR_PHYSMASK1, IA32_MTRR_PHYSMASK2, IA32_MTRR_PHYSMASK3, IA32_MTRR_PHYSMASK4
                            dd IA32_MTRR_PHYSMASK5, IA32_MTRR_PHYSMASK6, IA32_MTRR_PHYSMASK7, IA32_MTRR_PHYSMASK8, IA32_MTRR_PHYSMASK9
 

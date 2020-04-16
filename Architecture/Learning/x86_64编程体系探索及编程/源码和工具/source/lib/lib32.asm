@@ -14,11 +14,11 @@
 lib32_length        dw        LIB32_END - $
 
 ;*
-;* ËµÃ÷£º
-;*      1. ÏÂÃæÊÇ lib32 ¿âº¯ÊıµÄµ¼³ö±í
-;*      2. ÓÉÇ¶Èëµ½ protected.asm Ä£¿éµÄµ¼Èë±í lib32_import_table.imt ËùÊ¹ÓÃ
-;*      3. µ¼³ö±íÊÇÒ»¸öÌø×ª±í£¬Ìø×ªµ½×îÖÕµÄº¯Êı´úÂë
-;*      4. Ã¿ÌõÌø×ª¶¼ÊÇ 5 ¸ö×Ö½Ú¿í£¬ÓÉµ¼Èë±í¼ÆËã³öµØÖ·
+;* è¯´æ˜ï¼š
+;*      1. ä¸‹é¢æ˜¯ lib32 åº“å‡½æ•°çš„å¯¼å‡ºè¡¨
+;*      2. ç”±åµŒå…¥åˆ° protected.asm æ¨¡å—çš„å¯¼å…¥è¡¨ lib32_import_table.imt æ‰€ä½¿ç”¨
+;*      3. å¯¼å‡ºè¡¨æ˜¯ä¸€ä¸ªè·³è½¬è¡¨ï¼Œè·³è½¬åˆ°æœ€ç»ˆçš„å‡½æ•°ä»£ç 
+;*      4. æ¯æ¡è·³è½¬éƒ½æ˜¯ 5 ä¸ªå­—èŠ‚å®½ï¼Œç”±å¯¼å…¥è¡¨è®¡ç®—å‡ºåœ°å€
 
 putc:                           jmp     DWORD __putc
 println:                        jmp     DWORD __println
@@ -38,7 +38,7 @@ addition64:                     jmp     DWORD __addition64
 print_value:                    jmp     DWORD __print_value
 printblank:                     jmp     DWORD __printblank
 print_half_byte_value:          jmp     DWORD __print_half_byte_value
-; ÏÂÃæÁ½¸öÊÇ±£ÁôÎ»
+; ä¸‹é¢ä¸¤ä¸ªæ˜¯ä¿ç•™ä½
 RESERVED_0                      jmp     DWORD __reserved_func
 RESERVED_1                      jmp     DWORD __reserved_func
 set_interrupt_handler:          jmp     DWORD __set_interrupt_handler
@@ -72,7 +72,7 @@ get_video_current               jmp     DWORD __get_video_current
 mul64:                          jmp     DWORD __mul64
 
 ;*
-;* ÏÂÃæÊÇ lib32 ¿âº¯ÊıµÄÊµÏÖ
+;* ä¸‹é¢æ˜¯ lib32 åº“å‡½æ•°çš„å®ç°
 ;*
 
 __reserved_func:        
@@ -80,7 +80,7 @@ __reserved_func:
 
 
 ;-----------------------------------------
-; strlen(): µÃÈ¡×Ö·û´®³¤¶È
+; strlen(): å¾—å–å­—ç¬¦ä¸²é•¿åº¦
 ; input:
 ;                esi: string
 ; output:
@@ -99,9 +99,9 @@ strlen_done:
         
         
 ;---------------------------------------------------
-; memcpy(): ¸´ÖÆ×Ö·û
+; memcpy(): å¤åˆ¶å­—ç¬¦
 ; input:
-;                esi: Ô´buffer edi:Ä¿±êbuffer [esp+4]: ×Ö½ÚÊı
+;                esi: æºbuffer edi:ç›®æ ‡buffer [esp+4]: å­—èŠ‚æ•°
 ;---------------------------------------------------
 __memcpy:
         push es
@@ -119,7 +119,7 @@ __memcpy:
         ret
 
 ;----------------------------------------------
-; reverse():        °´bit·´×ª
+; reverse():        æŒ‰bitåè½¬
 ; input:
 ;                esi: DWORD value
 ; ouput:
@@ -171,15 +171,15 @@ __get_current_column:
 
 
 ;--------------------------------------------
-; test_println():        ²âÊÔÊÇ·ñĞèÒª´òÓ¡»»ĞĞ·û
+; test_println():        æµ‹è¯•æ˜¯å¦éœ€è¦æ‰“å°æ¢è¡Œç¬¦
 ; input:
 ;                esi: string
 ; output:
-;                eax: 1(ĞèÒª), 0(²»ĞèÒª£©
+;                eax: 1(éœ€è¦), 0(ä¸éœ€è¦ï¼‰
 ;--------------------------------------------
 __test_println:
         push ecx
-        call __strlen                ; µÃµ½×Ö·û´®³¤¶È
+        call __strlen                ; å¾—åˆ°å­—ç¬¦ä¸²é•¿åº¦
         mov ecx, eax
         shl ecx, 1                        ; len * 2
         call __get_current_column
@@ -192,9 +192,9 @@ __test_println:
         ret
         
 ;-------------------------------------------
-; write_char(char c): Íù video ÀïĞ´ÈëÒ»¸ö×Ö·û
+; write_char(char c): å¾€ video é‡Œå†™å…¥ä¸€ä¸ªå­—ç¬¦
 ; input:
-;                esi: ×Ö·û
+;                esi: å­—ç¬¦
 ;-------------------------------------------
 __write_char:
         push ebx
@@ -221,7 +221,7 @@ do_write_char_done:
         
 
 ;--------------------------------
-; putc(): ´òÓ¡Ò»¸ö×Ö·û
+; putc(): æ‰“å°ä¸€ä¸ªå­—ç¬¦
 ; input: 
 ;                esi: char
 ;--------------------------------
@@ -231,14 +231,14 @@ __putc:
         ret
 
 ;--------------------------------
-; println(): ´òÓ¡»»ĞĞ
+; println(): æ‰“å°æ¢è¡Œ
 ;--------------------------------
 __println:
         mov si, 10
         call __putc
         ret
 ;------------------------------
-; printblank(): ´òÓ¡Ò»¸ö¿Õ¸ñ
+; printblank(): æ‰“å°ä¸€ä¸ªç©ºæ ¼
 ;-----------------------------
 __printblank:
         mov si, ' '
@@ -246,7 +246,7 @@ __printblank:
         ret        
 
 ;--------------------------------
-; puts(): ´òÓ¡×Ö·û´®ĞÅÏ¢
+; puts(): æ‰“å°å­—ç¬¦ä¸²ä¿¡æ¯
 ; input: 
 ;                esi: message
 ;--------------------------------
@@ -271,7 +271,7 @@ do_puts_done:
 
 
 ;-----------------------------------------
-; hex_to_char(): ½« Hex Êı×Ö×ª»»Îª Char ×Ö·û
+; hex_to_char(): å°† Hex æ•°å­—è½¬æ¢ä¸º Char å­—ç¬¦
 ; input:
 ;                esi: Hex number
 ; ouput:
@@ -289,16 +289,16 @@ do_hex_to_char:
         ret
 
 ;--------------------------------------
-; dump_hex() : ´òÓ¡ hex ´®
+; dump_hex() : æ‰“å° hex ä¸²
 ; input:
 ;        esi: value
 ;--------------------------------------
 __dump_hex:
         push ecx
         push esi
-        mov ecx, 8                                        ; 8 ¸ö half-byte
+        mov ecx, 8                                        ; 8 ä¸ª half-byte
 do_dump_hex_loop:
-        rol esi, 4                                        ; ¸ß4Î» --> µÍ 4Î»
+        rol esi, 4                                        ; é«˜4ä½ --> ä½ 4ä½
         mov edi, esi
         call __hex_to_char
         mov esi, eax
@@ -311,7 +311,7 @@ do_dump_hex_loop:
         ret
 
 ;---------------------------------------
-; print_value(): ´òÓ¡Öµ
+; print_value(): æ‰“å°å€¼
 ;---------------------------------------
 __print_value:
         call __dump_hex
@@ -325,32 +325,32 @@ __print_half_byte_value:
         ret
 
 ;------------------------
-; print_decimal(): ´òÓ¡Ê®½øÖÆÊı
+; print_decimal(): æ‰“å°åè¿›åˆ¶æ•°
 ; input:
-;                esi - 32 Î»Öµ
+;                esi - 32 ä½å€¼
 ;-------------------------
 __print_decimal:
         jmp do_print_decimal
-quotient        dd 0                        ; ÉÌ
-remainder        dd 0                        ; ÓàÊı
+quotient        dd 0                        ; å•†
+remainder        dd 0                        ; ä½™æ•°
 value_table: times 20 db 0
 do_print_decimal:        
         push edx
         push ecx
-        mov eax, esi                        ; ³õÊ¼ÉÌÖµ
+        mov eax, esi                        ; åˆå§‹å•†å€¼
         mov [quotient], eax        
         mov ecx, 10
         lea esi, [value_table+19]        
         
 do_print_decimal_loop:
-        dec esi                              ; Ö¸Ïò value_table
+        dec esi                              ; æŒ‡å‘ value_table
         xor edx, edx
-        div ecx                              ; ÉÌ/10
-        test eax, eax                        ; ÉÌ == 0 ?
+        div ecx                              ; å•†/10
+        test eax, eax                        ; å•† == 0 ?
         cmovz edx, [quotient]
         mov [quotient], eax
         lea edx, [edx + '0']        
-        mov [esi], dl                        ; Ğ´ÈëÓàÊıÖµ
+        mov [esi], dl                        ; å†™å…¥ä½™æ•°å€¼
         jnz do_print_decimal_loop
         
 do_print_decimal_done:
@@ -361,9 +361,9 @@ do_print_decimal_done:
 
 
 ;--------------------------------------
-; print_dword_float(): ´òÓ¡µ¥¾«¶ÈÖµ
+; print_dword_float(): æ‰“å°å•ç²¾åº¦å€¼
 ; input:
-;       esi - float µØÖ·Öµ
+;       esi - float åœ°å€å€¼
 ;-------------------------------------
 __print_dword_float:
         fnsave [fpu_image32]
@@ -374,9 +374,9 @@ __print_dword_float:
         ret
             
 ;--------------------------------------
-; print_qword_float(): ´òÓ¡Ë«¾«¶ÈÖµ
+; print_qword_float(): æ‰“å°åŒç²¾åº¦å€¼
 ; input:
-;       esi - double float µØÖ·Öµ
+;       esi - double float åœ°å€å€¼
 ;-------------------------------------
 __print_qword_float:
         fnsave [fpu_image32]
@@ -387,7 +387,7 @@ __print_qword_float:
         ret
 
 ;--------------------------------------
-; ´òÓ¡À©Õ¹Ë«¾«¶ÈÖµ
+; æ‰“å°æ‰©å±•åŒç²¾åº¦å€¼
 ;-------------------------------------
 __print_tword_float:
         fnsave [fpu_image32]
@@ -398,7 +398,7 @@ __print_tword_float:
         ret
                 
 ;-------------------------------------------
-; ´òÓ¡Ğ¡ÊıµãÇ°µÄÖµ
+; æ‰“å°å°æ•°ç‚¹å‰çš„å€¼
 ;-------------------------------------------     
 __print_point:
         jmp do_print_point
@@ -408,16 +408,16 @@ do_print_point:
         lea ebx, [digit_array + 98]
         mov BYTE [ebx], '.'
 print_point_loop:        
-;; µ±Ç°£º
+;; å½“å‰ï¼š
 ;; st(3) = 10.0
 ;; st(2) = 1.0
-;; st(1) = ÓàÊıÖµ
-;; st(0) = point Öµ
+;; st(1) = ä½™æ•°å€¼
+;; st(0) = point å€¼
         dec ebx
         fdiv st0, st3           ; value / 10
         fld st2
         fld st1
-        fprem                   ; ÇóÓàÊı
+        fprem                   ; æ±‚ä½™æ•°
         fsub st2, st0
         fmul st0, st5
         fistp DWORD [value]
@@ -426,7 +426,7 @@ print_point_loop:
         mov BYTE [ebx], al  
         fstp DWORD [value]      
         fldz
-        fcomip st0, st1         ; ÓàÊıĞ¡ÓÚ 0
+        fcomip st0, st1         ; ä½™æ•°å°äº 0
         jnz print_point_loop
 
 print_point_done:        
@@ -437,7 +437,7 @@ print_point_done:
         ret    
                 
 ;--------------------
-; ´òÓ¡¸¡µãÊı
+; æ‰“å°æµ®ç‚¹æ•°
 ;--------------------        
 __print_float:
         jmp do_print_float
@@ -448,29 +448,29 @@ do_print_float:
         fld TWORD [f_value]             ; st2
         fld1                            ; st1
         fld st2                         ; st0
-        fprem                           ; st0/st1, È¡ÓàÊı
+        fprem                           ; st0/st1, å–ä½™æ•°
         fld st3
         fsub st0, st1
         call __print_point
         
         mov DWORD [point], 0                
-;; µ±Ç°£º
+;; å½“å‰ï¼š
 ;; st(2) = 10.0
 ;; st(1) = 1.0
-;; st(0) = ÓàÊıÖµ        
+;; st(0) = ä½™æ•°å€¼        
 do_print_float_loop:        
         fldz
-        fcomip st0, st1                 ; ÓàÊıÊÇ·ñÎª 0
+        fcomip st0, st1                 ; ä½™æ•°æ˜¯å¦ä¸º 0
         jz print_float_next
-        fmul st0, st2                   ; ÓàÊı * 10
+        fmul st0, st2                   ; ä½™æ•° * 10
         fld st1                         ; 1.0
-        fld st1                         ; ÓàÊı * 10
-        fprem                           ; È¡ÓàÊı
+        fld st1                         ; ä½™æ•° * 10
+        fprem                           ; å–ä½™æ•°
         fld st2
         fsub st0, st1
         fistp DWORD [value]
         mov esi, [value]
-        call print_dword_decimal          ; ´òÓ¡Öµ    
+        call print_dword_decimal          ; æ‰“å°å€¼    
         mov DWORD [point], 1
         fxch st2
         fstp DWORD [value]
@@ -487,7 +487,7 @@ print_float_done:
 
 
 ;;---------------------------
-;; ´òÓ¡Ò»¸ö byte
+;; æ‰“å°ä¸€ä¸ª byte
 ;------------------------------        
 __print_byte_value:
         push ebx
@@ -533,7 +533,7 @@ __print_dword_value:
 ;--------------------------
 ; print_qword_value()
 ; input:
-;                edi:esi - 64 Î»Öµ
+;                edi:esi - 64 ä½å€¼
 ;--------------------------
 __print_qword_value:
         push ebx
@@ -548,11 +548,11 @@ __print_qword_value:
         ret        
         
 ;-------------------------------------------
-; letter():  ²âÊÔÊÇ·ñÎª×ÖÄ¸
+; letter():  æµ‹è¯•æ˜¯å¦ä¸ºå­—æ¯
 ; input:
 ;                esi: char
 ; output:
-;                eax: 1(ÊÇ×ÖÄ¸), 0(²»ÊÇ×ÖÄ¸£©
+;                eax: 1(æ˜¯å­—æ¯), 0(ä¸æ˜¯å­—æ¯ï¼‰
 ;-------------------------------------------
 __letter:
         and esi, 0xff
@@ -572,11 +572,11 @@ test_letter_done:
         ret
 
 ;---------------------------------------
-; lowercase(): ²âÊÔÊÇ·ñÎªĞ¡Ğ´×ÖÄ¸
+; lowercase(): æµ‹è¯•æ˜¯å¦ä¸ºå°å†™å­—æ¯
 ; input:
 ;                esi: char
 ; output:
-;                1: ÊÇ£¬ 0²»ÊÇ
+;                1: æ˜¯ï¼Œ 0ä¸æ˜¯
 ;----------------------------------------
 __lowercase:
         and esi, 0xff
@@ -590,11 +590,11 @@ test_lowercase_done:
         ret
         
 ;---------------------------------------
-; uppercase(): ²âÊÔÊÇ·ñÎª´óĞ´×ÖÄ¸
+; uppercase(): æµ‹è¯•æ˜¯å¦ä¸ºå¤§å†™å­—æ¯
 ; input:
 ;                esi: char
 ; output:
-;                1: ÊÇ£¬ 0²»ÊÇ
+;                1: æ˜¯ï¼Œ 0ä¸æ˜¯
 ;----------------------------------------
 __uppercase:
         and esi, 0xff
@@ -608,7 +608,7 @@ test_uppercase_done:
         ret
 
 ;-----------------------------------------
-; digit(): ²âÊÔÊÇ·ñÎªÊı×Ö
+; digit(): æµ‹è¯•æ˜¯å¦ä¸ºæ•°å­—
 ; input:
 ;                esi: char
 ; output: 
@@ -628,9 +628,9 @@ test_digit_done:
         
         
 ;----------------------------------------------------------------------
-; lower_upper():        ´óĞ¡Ğ´×ÖÄ¸µÄ×ª»»
+; lower_upper():        å¤§å°å†™å­—æ¯çš„è½¬æ¢
 ; input:
-;                esi:ĞèÒª×ª»»µÄ×ÖÄ¸,  edi: 1 (Ğ¡×Ö×ª»»Îª´óĞ´)£¬0 (´óĞ´×ª»»ÎªĞ¡Ğ´)
+;                esi:éœ€è¦è½¬æ¢çš„å­—æ¯,  edi: 1 (å°å­—è½¬æ¢ä¸ºå¤§å†™)ï¼Œ0 (å¤§å†™è½¬æ¢ä¸ºå°å†™)
 ; output:
 ;                eax: result letter
 ;---------------------------------------------------------------------
@@ -639,10 +639,10 @@ __lower_upper:
         mov ecx, DWORD ('a' - 'A')
         call __letter
         test eax, eax
-        jz do_lower_upper_done                   ; Èç¹û²»ÊÇ×ÖÄ¸
+        jz do_lower_upper_done                   ; å¦‚æœä¸æ˜¯å­—æ¯
         bt edi, 0
         jnc set_lower_upper                      ; 1?
-        neg ecx                                 ; Ğ¡Ğ´×ª´óĞ´£º¼õ
+        neg ecx                                 ; å°å†™è½¬å¤§å†™ï¼šå‡
 set_lower_upper:                
         add esi, ecx
 do_lower_upper_done:                
@@ -651,32 +651,32 @@ do_lower_upper_done:
         ret
 
 ;---------------------------------------------------
-; upper_to_lower(): ´óĞ´×ÖÄ¸×ªĞ¡Ğ´×ÖÄ¸
+; upper_to_lower(): å¤§å†™å­—æ¯è½¬å°å†™å­—æ¯
 ; input:
-;                esi: ĞèÒª×ª»»µÄ×ÖÄ¸
+;                esi: éœ€è¦è½¬æ¢çš„å­—æ¯
 ; output:
-;                eax: Ğ¡Ğ´×ÖÄ¸
+;                eax: å°å†™å­—æ¯
 ;---------------------------------------------------
 __upper_to_lower:
-        call __uppercase                        ; ÊÇ·ñÎª´óĞ´×ÖÄ¸
+        call __uppercase                        ; æ˜¯å¦ä¸ºå¤§å†™å­—æ¯
         test eax, eax
-        jz do_upper_to_lower_done        ; Èç¹û²»ÊÇ¾Í²»¸Ä±ä
+        jz do_upper_to_lower_done        ; å¦‚æœä¸æ˜¯å°±ä¸æ”¹å˜
         mov eax, DWORD ('a' - 'A')
 do_upper_to_lower_done:        
         add eax, esi
         ret
         
 ;---------------------------------------------------
-; lower_to_upper(): Ğ¡Ğ´×ÖÄ¸×ª´óĞ´×ÖÄ¸
+; lower_to_upper(): å°å†™å­—æ¯è½¬å¤§å†™å­—æ¯
 ; input:
-;                esi: ĞèÒª×ª»»µÄ×ÖÄ¸
+;                esi: éœ€è¦è½¬æ¢çš„å­—æ¯
 ; output:
-;                eax: ´óĞ´×ÖÄ¸
+;                eax: å¤§å†™å­—æ¯
 ;---------------------------------------------------
 __lower_to_upper:
-        call __lowercase                        ; ÊÇ·ñÎªĞ¡Ğ´×ÖÄ¸
+        call __lowercase                        ; æ˜¯å¦ä¸ºå°å†™å­—æ¯
         test eax, eax
-        jz do_lower_to_upper_done        ; Èç¹û²»ÊÇ¾Í²»¸Ä±ä
+        jz do_lower_to_upper_done        ; å¦‚æœä¸æ˜¯å°±ä¸æ”¹å˜
         mov eax, DWORD ('a' - 'A')
         neg eax
 do_lower_to_upper_done:        
@@ -684,9 +684,9 @@ do_lower_to_upper_done:
         ret
                 
 ;---------------------------------------------------
-; lowers_to_uppers(): Ğ¡Ğ´´®×ª»»Îª´óĞ´´®
+; lowers_to_uppers(): å°å†™ä¸²è½¬æ¢ä¸ºå¤§å†™ä¸²
 ; input:
-;                esi: Ô´´®£¬ edi:Ä¿±ê´®        
+;                esi: æºä¸²ï¼Œ edi:ç›®æ ‡ä¸²        
 ;---------------------------------------------------
 __lowers_to_uppers:
         push ecx
@@ -715,9 +715,9 @@ do_lowers_to_uppers_done:
         ret
 
 ;---------------------------------------------------
-; uppers_to_lowers(): ´óĞ´´®×ª»»ÎªĞ¡Ğ´´®
+; uppers_to_lowers(): å¤§å†™ä¸²è½¬æ¢ä¸ºå°å†™ä¸²
 ; input:
-;                esi: Ô´´®£¬ edi:Ä¿±ê´®        
+;                esi: æºä¸²ï¼Œ edi:ç›®æ ‡ä¸²        
 ;---------------------------------------------------
 __uppers_to_lowers:
         push ecx
@@ -746,15 +746,15 @@ do_uppers_to_lowers_done:
         ret
 
 ;--------------------------------------------------------------
-; get_qword_hex_string(): ½« QWORD ×ª»»Îª×Ö·û´®
+; get_qword_hex_string(): å°† QWORD è½¬æ¢ä¸ºå­—ç¬¦ä¸²
 ; input:
-;                esi: Ö¸Áî QWORD ÖµµÄÖ¸Õë, edi: buffer£¨×îÉÙĞèÒª17bytes)
+;                esi: æŒ‡ä»¤ QWORD å€¼çš„æŒ‡é’ˆ, edi: bufferï¼ˆæœ€å°‘éœ€è¦17bytes)
 ;--------------------------------------------------------------
 __get_qword_hex_string:
         push ecx
         push esi
         mov ecx, esi
-        mov esi, [ecx + 4]                        ; dump ¸ß 32 Î»
+        mov esi, [ecx + 4]                        ; dump é«˜ 32 ä½
         call __get_dword_hex_string
         mov esi, [ecx]
         call __get_dword_hex_string
@@ -763,17 +763,17 @@ __get_qword_hex_string:
         ret
 
 ;-------------------------------------------------
-; get_dword_hex_string(): ½«Êı (DWORD) ×ª»»Îª×Ö·û´®
+; get_dword_hex_string(): å°†æ•° (DWORD) è½¬æ¢ä¸ºå­—ç¬¦ä¸²
 ; input:
-;                esi: Ğè×ª»»µÄÊı£¨dword size)
-;                edi: Ä¿±ê´® buffer£¨×î¶ÌĞèÒª 9 bytes£¬°üÀ¨ 0)
+;                esi: éœ€è½¬æ¢çš„æ•°ï¼ˆdword size)
+;                edi: ç›®æ ‡ä¸² bufferï¼ˆæœ€çŸ­éœ€è¦ 9 bytesï¼ŒåŒ…æ‹¬ 0)
 ;---------------------------------------------------
 __get_dword_hex_string:
         push ecx
         push esi
-        mov ecx, 8                                        ; 8 ¸ö half-byte
+        mov ecx, 8                                        ; 8 ä¸ª half-byte
 do_get_dword_hex_string_loop:
-        rol esi, 4                                        ; ¸ß4Î» --> µÍ 4Î»
+        rol esi, 4                                        ; é«˜4ä½ --> ä½ 4ä½
         call __hex_to_char
         mov byte [edi], al
         inc edi
@@ -785,9 +785,9 @@ do_get_dword_hex_string_loop:
         ret        
 
 ;----------------------------------------------------
-; get_byte_hex_string(): ½« BYTE ×ª»»Îª×Ö·û´®
+; get_byte_hex_string(): å°† BYTE è½¬æ¢ä¸ºå­—ç¬¦ä¸²
 ; input:
-;                esi: BYTE Öµ, edi: buffer£¨×î¶ÌĞèÒª3¸ö)
+;                esi: BYTE å€¼, edi: bufferï¼ˆæœ€çŸ­éœ€è¦3ä¸ª)
 ;----------------------------------------------------
 __get_byte_hex_string:
         push ecx
@@ -807,18 +807,18 @@ __get_byte_hex_string:
         ret
 
 ;---------------------------------------------------------
-; dump_flags():                ´òÓ¡ 32 Î»µÄ¼Ä´æÆ÷±ê¼ÇÖµ
+; dump_flags():                æ‰“å° 32 ä½çš„å¯„å­˜å™¨æ ‡è®°å€¼
 ; description:
-;                Õâ¸öº¯ÊıÓÃÀ´¸ù¾İÊäÈëÒ» mask ÖµºÍ¶ÔÓ¦µÄ flags×Ö·û´®
-;                Èç¹û bit±»mask£¬´òÓ¡´óĞ´´®£¬·ñÔò´òÓ¡Ğ¡Ğ´´®
+;                è¿™ä¸ªå‡½æ•°ç”¨æ¥æ ¹æ®è¾“å…¥ä¸€ mask å€¼å’Œå¯¹åº”çš„ flagså­—ç¬¦ä¸²
+;                å¦‚æœ bitè¢«maskï¼Œæ‰“å°å¤§å†™ä¸²ï¼Œå¦åˆ™æ‰“å°å°å†™ä¸²
 ; example:
-;                CPUID.EAX=01H ·µ»ØµÄ EDX ¼Ä´æÆ÷º¬ÓĞ´¦ÀíÆ÷Ö§³ÖµÄÀ©Õ¹¹¦ÄÜ
-;                Èç¹û EDX µÄÎ»ÖĞ£¬Ö§³Ö¾Í´òÓ¡´óĞ´£¬²»Ö§³Ö¾Í´òÓ¡Ğ¡Ğ´
-;                mov esi, edx                        ;; CPUID.EAX=01H ·µ»ØµÄ edx¼Ä´æÆ÷
+;                CPUID.EAX=01H è¿”å›çš„ EDX å¯„å­˜å™¨å«æœ‰å¤„ç†å™¨æ”¯æŒçš„æ‰©å±•åŠŸèƒ½
+;                å¦‚æœ EDX çš„ä½ä¸­ï¼Œæ”¯æŒå°±æ‰“å°å¤§å†™ï¼Œä¸æ”¯æŒå°±æ‰“å°å°å†™
+;                mov esi, edx                        ;; CPUID.EAX=01H è¿”å›çš„ edxå¯„å­˜å™¨
 ;                mov edi, edx_flags
 ;                call dump_flags
 ; input:
-;                esi: ¼Ä´æÆ÷Öµ, edi: flags´®
+;                esi: å¯„å­˜å™¨å€¼, edi: flagsä¸²
 ;---------------------------------------------------------
 __dump_flags:
         push ebx
@@ -828,28 +828,28 @@ __dump_flags:
         mov ebx, edi
 do_dump_flags_loop:        
         mov edx, [ebx]
-        cmp edx, -1                                 ; ½áÊø±êÖ¾ 0xFFFFFFFF
+        cmp edx, -1                                 ; ç»“æŸæ ‡å¿— 0xFFFFFFFF
         je do_dump_flags_done
         shr ecx, 1
         setc al
         test edx, edx
         jz dump_flags_next
-        mov esi, edx                                        ; Ô´´®
-        mov edi, edx                                        ; Ä¿±ê´®
+        mov esi, edx                                        ; æºä¸²
+        mov edi, edx                                        ; ç›®æ ‡ä¸²
         test al, al
-        jz do_dump_flags_disable                ; ±»ÇåÎ»¾Í´óĞ´×ªĞ¡Ğ´
-        call __lowers_to_uppers                        ; ±»ÖÃÎ»¾ÍĞ¡Ğ´×ª´óĞ´
+        jz do_dump_flags_disable                ; è¢«æ¸…ä½å°±å¤§å†™è½¬å°å†™
+        call __lowers_to_uppers                        ; è¢«ç½®ä½å°±å°å†™è½¬å¤§å†™
         jmp print_flags_msg        
 do_dump_flags_disable:                                
         call __uppers_to_lowers
 print_flags_msg:
         mov esi, edx
-        call __test_println                                ; ²âÊÔÊÇ·ñĞèÒª»»ĞĞ
+        call __test_println                                ; æµ‹è¯•æ˜¯å¦éœ€è¦æ¢è¡Œ
         test eax, eax
         jz skip_ln
         call println
 skip_ln:        
-        mov esi, edx                                        ; ´òÓ¡ flags ĞÅÏ¢
+        mov esi, edx                                        ; æ‰“å° flags ä¿¡æ¯
         call __puts
         mov esi, DWORD ' '
         call __putc
@@ -869,11 +869,11 @@ do_dump_flags_done:
 ;        push edx
 ;        push ebx
 ;        mov ecx, 0
-;        mov ebx, edi                                ; flags ×Ö·û´®
+;        mov ebx, edi                                ; flags å­—ç¬¦ä¸²
 ;        mov edx, esi
 ;do_dump_flags_loop:
 ;        mov ebp, [ebx + ecx * 4]
-;        cmp ebp, -1                                        ; ²âÊÔ½áÊø·û 0xFFFFFFFF
+;        cmp ebp, -1                                        ; æµ‹è¯•ç»“æŸç¬¦ 0xFFFFFFFF
 ;        je do_dump_flags_done
 ;        test ebp, ebp
 ;        jnz dump_flags_next
@@ -883,19 +883,19 @@ do_dump_flags_done:
 ;        mov esi, ebp        
 ;        mov edi, ebp
 ;        bt edx, ecx
-;        jnc do_dump_flags_disable                ; ±»ÇåÎ»¾Í´óĞ´×ªĞ¡Ğ´
-;        call __lowers_to_uppers                        ; ±»ÖÃÎ»¾ÍĞ¡Ğ´×ª´óĞ´
+;        jnc do_dump_flags_disable                ; è¢«æ¸…ä½å°±å¤§å†™è½¬å°å†™
+;        call __lowers_to_uppers                        ; è¢«ç½®ä½å°±å°å†™è½¬å¤§å†™
 ;        jmp print_flags_msg        
 ;do_dump_flags_disable:                                
 ;        call __uppers_to_lowers
 ;print_flags_msg:
 ;        mov esi, ebp
-;        call __test_println                                ; ²âÊÔÊÇ·ñĞèÒª»»ĞĞ
+;        call __test_println                                ; æµ‹è¯•æ˜¯å¦éœ€è¦æ¢è¡Œ
 ;        test eax, eax
 ;        jz skip_ln
 ;        call println
 ;skip_ln:        
-;        mov esi, ebp                                        ; ´òÓ¡ flags ĞÅÏ¢
+;        mov esi, ebp                                        ; æ‰“å° flags ä¿¡æ¯
 ;        call __puts
 ;        mov esi, DWORD ' '
 ;        call __putc
@@ -911,7 +911,7 @@ do_dump_flags_done:
 
 
 ;----------------------------------------------
-; get_MAXPHYADDR(): µÃµ½ MAXPHYADDR Öµ
+; get_MAXPHYADDR(): å¾—åˆ° MAXPHYADDR å€¼
 ; output:
 ;                eax: MAXPHYADDR
 ;----------------------------------------------
@@ -922,10 +922,10 @@ __get_MAXPHYADDR:
         mov eax, 80000000H
         cpuid
         cmp eax, 80000008H
-        jb test_pse36                                                ; ²»Ö§³Ö 80000008H leaf
+        jb test_pse36                                                ; ä¸æ”¯æŒ 80000008H leaf
         mov eax, 80000008H
         cpuid
-        movzx ecx, al                                                ; MAXPHYADDR Öµ
+        movzx ecx, al                                                ; MAXPHYADDR å€¼
         jmp do_get_MAXPHYADDR_done
 test_pse36:        
         mov eax, 01H
@@ -941,11 +941,11 @@ do_get_MAXPHYADDR_done:
         
         
 ;--------------------------------------------
-; subtract64(): 64Î»µÄ¼õ·¨
+; subtract64(): 64ä½çš„å‡æ³•
 ; input:
-;                esi: ±»¼õÊıµØÖ·£¬ edi: ¼õÊıµØÖ·
+;                esi: è¢«å‡æ•°åœ°å€ï¼Œ edi: å‡æ•°åœ°å€
 ; ouput:
-;                edx:eax ½á¹ûÖµ
+;                edx:eax ç»“æœå€¼
 ;--------------------------------------------
 __subtract64:
         mov eax, [esi]
@@ -955,11 +955,11 @@ __subtract64:
         ret
         
 ;----------------------------------------
-; addition64(): 64Î»¼Ó·¨
+; addition64(): 64ä½åŠ æ³•
 ; input:
-;                esi: ±»¼ÓÊıµØÖ·£¬ edi: ¼ÓÊıµØÖ·
+;                esi: è¢«åŠ æ•°åœ°å€ï¼Œ edi: åŠ æ•°åœ°å€
 ; ouput:
-;                edx:eax ½á¹ûÖµ
+;                edx:eax ç»“æœå€¼
 ;---------------------------------------
 __addition64:
         mov eax, [esi]
@@ -969,10 +969,10 @@ __addition64:
         ret
         
 ;------------------------------------------------------        
-; mul64(): 64Î»³Ë·¨
+; mul64(): 64ä½ä¹˜æ³•
 ; input:
-;       esi: ±»³ËÊıµØÖ·, edi: ³ËÊıµØÖ·, ebp: ½á¹ûÖµµØÖ·
-; ÃèÊö£º
+;       esi: è¢«ä¹˜æ•°åœ°å€, edi: ä¹˜æ•°åœ°å€, ebp: ç»“æœå€¼åœ°å€
+; æè¿°ï¼š
 ; c3:c2:c1:c0 = a1:a0 * b1:b0
 ;(1) a0*b0 = d1:d0
 ;(2) a1*b0 = e1:e0
@@ -1005,37 +1005,37 @@ do_mul64:
         mov ebx, [esi + 4]              ; a1        
         mov ecx, [edi]                  ; b0
         mul ecx                         ; a0 * b0 = d1:d0, eax = d0, edx = d1
-        mov [ebp], eax                  ; ±£´æ c0
-        mov ecx, edx                    ; ±£´æ d1
+        mov [ebp], eax                  ; ä¿å­˜ c0
+        mov ecx, edx                    ; ä¿å­˜ d1
         mov eax, [edi]                  ; b0
         mul ebx                         ; a1 * b0 = e1:e0, eax = e0, edx = e1
         add ecx, eax                    ; ecx = d1 + e0
-        mov [temp_value], edx           ; ±£´æ e1
-        adc DWORD [c2_carry], 0         ; ±£´æ c2 ½øÎ»
+        mov [temp_value], edx           ; ä¿å­˜ e1
+        adc DWORD [c2_carry], 0         ; ä¿å­˜ c2 è¿›ä½
         mov ebx, [esi]                  ; a0
         mov eax, [edi + 4]              ; b1
         mul ebx                         ; a0 * b1 = f1:f0
         add ecx, eax                    ; d1 + e0 + f0
-        mov [ebp + 4], ecx              ; ±£´æ c1
-        adc DWORD [c2_carry], 0         ; Ôö¼Ó c2 ½øÎ»
+        mov [ebp + 4], ecx              ; ä¿å­˜ c1
+        adc DWORD [c2_carry], 0         ; å¢åŠ  c2 è¿›ä½
         add [temp_value], edx           ; e1 + f1
-        adc DWORD [c3_carry], 0         ; ±£´æ c3 ½øÎ»
+        adc DWORD [c3_carry], 0         ; ä¿å­˜ c3 è¿›ä½
         mov eax, [esi + 4]              ; a1
         mul ebx                         ; a1 * b1 = h1:h0
         add [temp_value], eax           ; e1 + f1 + h0
-        adc DWORD [c3_carry], 0         ; Ôö¼Ó c3 ½øÎ»
-        mov eax, [c2_carry]             ; ¶ÁÈ¡ c2 ½øÎ»Öµ
+        adc DWORD [c3_carry], 0         ; å¢åŠ  c3 è¿›ä½
+        mov eax, [c2_carry]             ; è¯»å– c2 è¿›ä½å€¼
         add eax, [temp_value]           ; e1 + f1 + h0 + carry
-        mov [ebp + 8], eax              ; ±£´æ c2
+        mov [ebp + 8], eax              ; ä¿å­˜ c2
         add edx, [c3_carry]             ; h1 + carry
-        mov [ebp + 12], edx             ; ±£´æ c3
+        mov [ebp + 12], edx             ; ä¿å­˜ c3
         pop edx
         pop ebx
         pop ecx
         ret
         
         
-;;########### ÏÂÃæÊÇÏµÍ³Ïà¹ØµÄ lib ´úÂë ###########
+;;########### ä¸‹é¢æ˜¯ç³»ç»Ÿç›¸å…³çš„ lib ä»£ç  ###########
         
 ;------------------------------------------------------
 ; set_interrupt_handler(int vector, void(*)()handler)
@@ -1067,7 +1067,7 @@ __set_user_interrupt_handler:
         
 
 ;------------------------------------------------------
-; move_gdt(): ½« GDT ±í¶¨ÔÚÄ³¸öÎ»ÖÃÉÏ
+; move_gdt(): å°† GDT è¡¨å®šåœ¨æŸä¸ªä½ç½®ä¸Š
 ; input:
 ;       esi: address
 ;--------------------------------------------------------
@@ -1115,7 +1115,7 @@ __write_gdt_descriptor:
                 
         
 ;-------------------------------------------------------
-; get_tss_base(): »ñµÃ TSS ÇøÓò»ùµØÖ·
+; get_tss_base(): è·å¾— TSS åŒºåŸŸåŸºåœ°å€
 ; input:
 ;                esi: TSS selector
 ; output:
@@ -1132,7 +1132,7 @@ __get_tss_base:
         ret
 
 ;-----------------------------------------------------
-; get_tr_base(): ·µ»Ø TR.base
+; get_tr_base(): è¿”å› TR.base
 ;-----------------------------------------------------        
 __get_tr_base:
         str esi
@@ -1144,8 +1144,8 @@ __get_tr_base:
 ; set_call_gate(int selector, long address, int count)
 ; input:
 ;                esi: selector,  edi: address, eax: count
-; ×¢Òâ£º
-;                ÕâÀï½« call gate µÄÈ¨ÏŞÉèÎª 3 ¼¶£¬´ÓÓÃ»§´úÂë¿ÉÒÔµ÷ÓÃ
+; æ³¨æ„ï¼š
+;                è¿™é‡Œå°† call gate çš„æƒé™è®¾ä¸º 3 çº§ï¼Œä»ç”¨æˆ·ä»£ç å¯ä»¥è°ƒç”¨
 ;--------------------------------------------------------------------------
 __set_call_gate:
         push ebx
@@ -1172,28 +1172,28 @@ __set_ldt_descriptor:
         sgdt [__gdt_pointer]
         mov ebx, [__gdt_pointer + 2]
         and esi, 0FFF8h
-        mov [ebx + esi + 4], edi                ; Ğ´ base [31:24]
-        mov [ebx + esi], cx                     ; Ğ´ limit [15:0]
-        mov [ebx + esi + 2], edi                ; Ğ´ base [23:0]
+        mov [ebx + esi + 4], edi                ; å†™ base [31:24]
+        mov [ebx + esi], cx                     ; å†™ limit [15:0]
+        mov [ebx + esi + 2], edi                ; å†™ base [23:0]
         mov BYTE [ebx + esi + 5], 82h           ; type=LDT, P=1, DPL=0
         shr eax, 16
         and eax, 0Fh
-        mov [ebx + esi + 6], al                 ; Ğ´ limit [19:16]
+        mov [ebx + esi + 6], al                 ; å†™ limit [19:16]
         pop ebx
         ret
 
 
 ;--------------------------------------------------------
-; set_IO_bitmap(int port, int value): ÉèÖÃ IOBITMAP ÖĞµÄÖµ
+; set_IO_bitmap(int port, int value): è®¾ç½® IOBITMAP ä¸­çš„å€¼
 ; input:
-;       esi - port£¨¶Ë¿ÚÖµ£©£¬edi - value ÉèÖÃµÄÖµ
+;       esi - portï¼ˆç«¯å£å€¼ï¼‰ï¼Œedi - value è®¾ç½®çš„å€¼
 ;---------------------------------------------------------
 __set_IO_bitmap:
         push ebx
         push ecx
-        str eax                                  ; µÃµ½ TSS selector
+        str eax                                  ; å¾—åˆ° TSS selector
         and eax, 0FFF8h
-        sgdt [__gdt_pointer]                     ; µÃµ½ GDT base
+        sgdt [__gdt_pointer]                     ; å¾—åˆ° GDT base
         add eax, [__gdt_pointer + 2]             ;
         mov ebx, [eax + 4]        
         and ebx, 0FFh
@@ -1201,84 +1201,84 @@ __set_IO_bitmap:
         mov ecx, [eax + 4]
         and ecx, 0FF000000h
         or ebx, ecx
-        mov eax, [eax]                            ; µÃµ½ TSS descriptor
+        mov eax, [eax]                            ; å¾—åˆ° TSS descriptor
         shr eax, 16
         or eax, ebx
         movzx ebx, WORD [eax + 102]
-        add eax, ebx                              ; µÃµ½ IOBITMAP
+        add eax, ebx                              ; å¾—åˆ° IOBITMAP
         mov ebx, esi
         shr ebx, 3
         and esi, 7
         bt edi, 0
         jc set_bitmap
-        btr DWORD [eax + ebx], esi               ; ÇåÎ»
+        btr DWORD [eax + ebx], esi               ; æ¸…ä½
         jmp do_set_IO_bitmap_done
 set_bitmap:
-        bts DWORD [eax + ebx], esi               ; ÖÃÎ»
+        bts DWORD [eax + ebx], esi               ; ç½®ä½
 do_set_IO_bitmap_done:        
         pop ecx
         pop ebx
         ret
 
 ;-----------------------------------------------------
-; set_sysenter(): ÉèÖÃÏµÍ³µÄ sysenter/sysexit Ê¹ÓÃ»·¾³
+; set_sysenter(): è®¾ç½®ç³»ç»Ÿçš„ sysenter/sysexit ä½¿ç”¨ç¯å¢ƒ
 ;-----------------------------------------------------
 __set_sysenter:
         xor edx, edx
         mov eax, KERNEL_CS
         mov ecx, IA32_SYSENTER_CS
-        wrmsr                                                        ; ÉèÖÃ IA32_SYSENTER_CS
+        wrmsr                                                        ; è®¾ç½® IA32_SYSENTER_CS
         mov eax, PROCESSOR_KERNEL_ESP
         mov ecx, IA32_SYSENTER_ESP                
-        wrmsr                                                        ; ÉèÖÃ IA32_SYSENTER_ESP
+        wrmsr                                                        ; è®¾ç½® IA32_SYSENTER_ESP
         mov eax, __sys_service
         mov ecx, IA32_SYSENTER_EIP
-        wrmsr                                                        ; ÉèÖÃ IA32_SYSENTER_EIP
+        wrmsr                                                        ; è®¾ç½® IA32_SYSENTER_EIP
         ret
 
 ;---------------------------------------------------
-; sys_service_enter(): ¿ìËÙÇĞÈë service µÄ stub º¯Êı
+; sys_service_enter(): å¿«é€Ÿåˆ‡å…¥ service çš„ stub å‡½æ•°
 ;---------------------------------------------------
 __sys_service_enter:
         push ecx
         push edx
-        mov ecx, esp                                            ; ·µ»Ø´úÂëµÄ ESP Öµ 
-        mov edx, return_address                                 ; ·µ»Ø´úÂëµÄ EIP Öµ
-        sysenter                                                ; ½øÈë 0 ¼¶ service
+        mov ecx, esp                                            ; è¿”å›ä»£ç çš„ ESP å€¼ 
+        mov edx, return_address                                 ; è¿”å›ä»£ç çš„ EIP å€¼
+        sysenter                                                ; è¿›å…¥ 0 çº§ service
 return_address:
         pop edx
         pop ecx
         ret
 
 ;--------------------------------------------------------
-; sys_service()£ºÊ¹ÓÃ sysenter/sysexit °æ±¾µÄÏµÍ³·şÎñÀı³Ì
+; sys_service()ï¼šä½¿ç”¨ sysenter/sysexit ç‰ˆæœ¬çš„ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹
 ; input:
-;                eax: ÏµÍ³·şÎñÀı³ÌºÅ
+;                eax: ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å·
 ;--------------------------------------------------------
 __sys_service:
-        push ecx                                                ; ±£´æ·µ»Ø esp Öµ
-        push edx                                                ; ±£´æ·µ»Ø eip Öµ
+        push ecx                                                ; ä¿å­˜è¿”å› esp å€¼
+        push edx                                                ; ä¿å­˜è¿”å› eip å€¼
         mov eax, [system_service_table + eax * 4]
-        call eax                                                ; µ÷ÓÃÏµÍ³·şÎñÀı³Ì        
+        call eax                                                ; è°ƒç”¨ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹        
         pop edx
         pop ecx
         sysexit
         
         
 ;-------------------------------------------------------
-; system_service(): ÏµÍ³·şÎñÀı³Ì,Ê¹ÓÃÖĞ¶Ï0x40ºÅµ÷ÓÃ½øÈë¡¡
+; system_service(): ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹,ä½¿ç”¨ä¸­æ–­0x40å·è°ƒç”¨è¿›å…¥ã€€
 ; input:
-;                eax: ÏµÍ³·şÎñÀı³ÌºÅ
+;                eax: ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å·
 ;--------------------------------------------------------
 __system_service:
         mov eax, [system_service_table + eax * 4]
-        call eax                                ; µ÷ÓÃÏµÍ³·şÎñÀı³Ì
+        call eax                                ; è°ƒç”¨ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹
         iret
 
 ;-------------------------------------------------------
-; set_system_service_table(): ÉèÖÃÖĞ¶Ïµ÷ÓÃº¯Êı
+; set_system_service_table(): è®¾ç½®ä¸­æ–­è°ƒç”¨å‡½æ•°
 ; input:
-;       esi: ¹¦ÄÜºÅ£¬¡¡edi: ·şÎñÀı³Ì
+;       esi: åŠŸèƒ½å·ï¼Œã€€edi: æœåŠ¡ä¾‹ç¨‹
 ;-------------------------------------------------------
 __set_system_service_table:
         mov [system_service_table + esi * 4], edi
@@ -1302,29 +1302,29 @@ __get_video_current:
 
 
 
-; ¼ÓÈë conforming_lib32.asm ¿â
+; åŠ å…¥ conforming_lib32.asm åº“
 %include "..\lib\conforming_lib32.asm"
 
 
-;******** lib32 Ä£¿éµÄ±äÁ¿¶¨Òå ********
+;******** lib32 æ¨¡å—çš„å˜é‡å®šä¹‰ ********
 video_current   dd 0B8000h
 
 
-;******** ÏµÍ³·şÎñÀı³Ìº¯Êı±í ***************
+;******** ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å‡½æ•°è¡¨ ***************
 system_service_table:
-        dd __puts                                       ; 0 ºÅ
-        dd __read_gdt_descriptor                        ; 1 ºÅ
-        dd __write_gdt_descriptor                       ; 2 ºÅ
-        dd 0                                            ; 3 ºÅ
-        dd 0                                            ; 4 ºÅ
-        dd 0                                            ; 5 ºÅ
-        dd 0                                            ; 6 ºÅ
+        dd __puts                                       ; 0 å·
+        dd __read_gdt_descriptor                        ; 1 å·
+        dd __write_gdt_descriptor                       ; 2 å·
+        dd 0                                            ; 3 å·
+        dd 0                                            ; 4 å·
+        dd 0                                            ; 5 å·
+        dd 0                                            ; 6 å·
         dd 0
         dd 0
         dd 0
 
         
-;; ¹² 28 ¸ö×Ö½Ú
+;; å…± 28 ä¸ªå­—èŠ‚
 fpu_image32:
 x87env32:
 control_word    dd 0
@@ -1336,8 +1336,8 @@ opcode          dw 0
 op_offset       dd 0
 op_selector     dd 0
 
-;; FSAVE/FNSAVE£¬FRSTOR Ö¸ÁîµÄ¸½¼ÓÓ³Ïñ
-;; ¶¨Òå 8 ¸ö 80 Î»µÄÄÚ´æµØÖ·±£´æ data ¼Ä´æÆ÷Öµ
+;; FSAVE/FNSAVEï¼ŒFRSTOR æŒ‡ä»¤çš„é™„åŠ æ˜ åƒ
+;; å®šä¹‰ 8 ä¸ª 80 ä½çš„å†…å­˜åœ°å€ä¿å­˜ data å¯„å­˜å™¨å€¼
 r0_value        dt 0.0
 r1_value        dt 0.0
 r2_value        dt 0.0
@@ -1347,22 +1347,22 @@ r5_value        dt 0.0
 r6_value        dt 0.0
 r7_value        dt 0.0
 
-;; ¶¨Òå 32 Î»µÄ GPRs ÉÏÏÂÎÄ´æ´¢Çø
+;; å®šä¹‰ 32 ä½çš„ GPRs ä¸Šä¸‹æ–‡å­˜å‚¨åŒº
 lib32_context  times 10 dd 0
 
 
-; GDT ±íÖ¸Õë
+; GDT è¡¨æŒ‡é’ˆ
 __gdt_pointer:
-                dw 0                        ; GDT limit Öµ
-                dd 0                        ; GDT base Öµ
+                dw 0                        ; GDT limit å€¼
+                dd 0                        ; GDT base å€¼
 
-; IDT ±íÖ¸Õë
+; IDT è¡¨æŒ‡é’ˆ
 __idt_pointer:
-                dw 0                        ; IDT limit Öµ
-                dd 0                        ; IDT base Öµ
+                dw 0                        ; IDT limit å€¼
+                dd 0                        ; IDT base å€¼
                         
                                                 
 LIB32_END:        
 
 ; 
-; ÕâÊÇ protected mode ÏÂÊ¹ÓÃµÄ¿â
+; è¿™æ˜¯ protected mode ä¸‹ä½¿ç”¨çš„åº“
