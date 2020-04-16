@@ -21,28 +21,78 @@ call指令**不能实现短转移**，它的书写格式同**jmp指令**
 汇编解释：(1) push IP (2) jmp near ptr 标号
 
 ```
-(sp)=(sp)−2(sp)=(sp)−2
-((ss)∗16+(sp))=(IP)((ss)∗16+(sp))=(IP)
-(IP)=(IP)+16位位移
+1. (sp)=(sp)−2(sp)=(sp)−2
+2. ((ss)∗16+(sp))=(IP)((ss)∗16+(sp))=(IP)
+3. (IP)=(IP)+16位位移
 ```
 
-### 
+### 检测点
 
-下面的程序执行后，ax中的数值为多少？
+下面的程序执行后，**ax**中的数值为多少？
+
+内存地址 | 机器码 | 汇编指令 | ax
+-----|-----|------|---
+1000:0 | b8 00 00 | mov ax,0 | ax=0000h
+1000:3 | e8 01 00 | call s | ip=0006h
+1000:6 | 40 | inc ax | 没有执行
+1000:7 | 58 | s:pop ax | ax=0006h
+
+发现，**push**的**IP**是执行**指令后的IP！！！**。
+
+
 
 ## 依据目的地址在指令中的call指令
 
-语法格式：call far ptr 标号
+语法格式：call far ptr 标号, 实现段间转移
 
 汇编解释：(1) push CS (2) push IP (3) jmp far ptr 标号
 
-转移地址在寄存器中的call指令
+```
+1. (sp)=(sp)−2(sp)=(sp)−2
+2. ((ss)∗16+(sp))=(CS)((ss)∗16+(sp))=(CS)
+3. (sp)=(sp)−2(sp)=(sp)−2
+4. ((ss)∗16+(sp))=(IP)((ss)∗16+(sp))=(IP)
+5. (CS)=标号所在段的段地址(CS)=标号所在段的段地址
+6. (IP)=标号在段中的偏移地址
+```
+
+### 检测点
+
+下面的程序执行后，ax中的数值为多少？
+
+内存地址 | 机器码 | 汇编指令 | ax
+-----|-----|------|---
+1000:0 | b8 00 00 | mov ax,0 | ax=0000h
+1000:3 | 9A 09 00 00 10 | call far ptr s | cs=1000h,ip=0008h
+1000:8 | 40 | inc ax | 没有执行
+1000:9 | 58 | s: pop ax | ax=0008h
+1000:10 | pop ax | ax=1000h | 
+
+## 转移地址在寄存器中的call指令
 
 语法格式：call 16位reg
 
 汇编解释：(1) push IP (2) jmp 16位reg
 
-转移地址在内存中的call指令
+```
+1. (sp)=(sp)−2
+2. ((ss)∗16+(sp))=(IP)
+3. (IP)=(16位reg)
+```
+
+### 检测点
+
+内存地址 | 机器码 | 汇编指令 | ax
+-----|-----|------|---
+1000:0 | b8 06 00 | mov ax,6 | ax=0006h
+1000:2 | ff d0 | call ax | ip=0005h
+1000:5 | 40 | inc ax | 没有执行
+1000:6 | 8b ec | mov bp,sp | bp=sp
+1000:8 | 03 36 00 | add ax,[bp] | ax=000Ah
+
+注意，最后一条指令是add指令。
+
+## 转移地址在内存中的call指令
 
 语法格式一：call word ptr 内存单元地址
 
@@ -51,6 +101,34 @@ call指令**不能实现短转移**，它的书写格式同**jmp指令**
 语法格式二：call dword ptr 内存单元地址
 
 汇编解释二：(1) push CS (2) push IP (3) jmp dword ptr 内存单元地址
+
+### 检测点
+
+下面的程序执行后，ax中的数值为多少？(注意：用call指令的原理来分析，不要在Debug中单步跟踪来验证你的结论。对于此程序，在Debug中单步跟踪的结果，不能代表CPU的实际执行结果)
+
+```assembly
+assume cs:code
+stack segment
+    dw 8 dup(0)
+stack ends
+code segment
+    start:
+        mov ax,stack                ;ax=stack
+        mov ss,ax                   ;ss=ax
+        mov sp,16                   ;sp=16
+        mov ds,ax                   ;ds=ax
+        mov ax,0                    ;ax=0
+        call word ptr ds:[0EH]      ;push ip AND jmp ds:[0eh]
+        inc ax                      ;上面的应该是这条指令的ip,jmp ds:[0eh]应该
+                                    ;转跳这条指令,那么ax=1
+
+        inc ax                      ;ax=2
+        inc ax                      ;ax=3
+        mov ax,4c00h
+        int 21h
+code ends
+end start
+```
 
 # 2. ret指令和retf指令
 
