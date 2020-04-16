@@ -104,7 +104,7 @@ call指令**不能实现短转移**，它的书写格式同**jmp指令**
 
 ### 检测点
 
-下面的程序执行后，ax中的数值为多少？(注意：用call指令的原理来分析，不要在Debug中单步跟踪来验证你的结论。对于此程序，在Debug中单步跟踪的结果，不能代表CPU的实际执行结果)
+(1) 下面的程序执行后，ax中的数值为多少？(注意：用call指令的原理来分析，不要在Debug中单步跟踪来验证你的结论。对于此程序，在Debug中单步跟踪的结果，不能代表CPU的实际执行结果)
 
 ```assembly
 assume cs:code
@@ -129,6 +129,40 @@ code segment
 code ends
 end start
 ```
+
+这真的很奇怪的程序，会懵！
+
+（2）下面的程序执行后，ax和bx中的数值为多少？
+
+```assembly
+assume cs:code
+data segment
+    dw 8 dup(0)
+data ends
+code segment
+    start:
+        mov ax,data                     ;ax=data
+        mov ss,ax                       ;ss=ax
+        mov sp,16                       ;sp=16
+        mov word ptr ss:[0],offset s    ;ss:[0]=s的地址
+        mov ss:[2],cs                   ;ss:[2]=cs
+        call dword ptr ss:[0]           ;call (cs):(s的地址)
+        nop                             ;ss:[0ch]=这条指令的地址
+                                        ;ss:[0eh]=cs
+    s:
+        mov ax,offset s                 ;ax=s的地址
+        sub ax,ss:[0ch]                 ;ax=ax-ss:[0ch] = 1
+        mov bx,cs                       ;bx=cs
+        sub bx,ss:[0eh]                 ;bx=bx-cs=0
+        mov ax,4c00h
+        int 21h
+code ends
+end start
+```
+
+实验结果如下：
+
+![2020-04-16-23-32-41.png](./images/2020-04-16-23-32-41.png)
 
 # 2. ret指令和retf指令
 
@@ -194,3 +228,62 @@ end start
 实验结果如下：
 
 ![2020-04-16-23-13-43.png](./images/2020-04-16-23-13-43.png)
+
+# call和ret的配合使用
+
+现在来看一下，如何将它们配合使用来实现子程序的机制。
+
+## 问题 
+
+下面程序返回前，bx中的值是多少？
+
+```
+assume cs:code
+code segment
+    start:
+        mov ax,1        ;1.ax=1
+        mov cx,3        ;2.cx=3
+        call s          ;3.push 下一条指令的IP,jmp s处
+        mov bx,ax       ;6.(bx)=8
+        mov ax,4c00h
+        int 21h
+    s:
+        add ax,ax       
+        loop s          ;4.ax=2^3次方,后结束这个loop
+        ret             ;5.pop ip,就返回到6处
+code ends
+end start
+```
+
+具有子程序的源程序框架如下：
+
+```
+assume cs:code
+code segment
+    main: 
+            ..
+            ..
+            call sub1    ;调用子程序sub1
+            ..
+            mov ax,4c00h
+            int 21h
+
+    sub1:
+            ..           ;子程序sub1开始
+            call sub2    ;调用子程序sub2
+            ..
+            ret          ;sub1子程序返回
+    sub2:
+            ..           ;子程序sub2开始
+            ..
+            ret          ;sub2子程序返回
+code ends
+end main
+```
+
+# mul指令
+
+
+# 参考
+
+https://blog.csdn.net/qq_37340753/article/details/81585083 (未完)
