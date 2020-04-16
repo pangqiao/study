@@ -1,6 +1,6 @@
 ;*************************************************
 ;* services64.asm                                *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -12,13 +12,13 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ context ĞÅÏ¢
+; æè¿°ï¼š
+;       1) æ‰“å° context ä¿¡æ¯
 ;-----------------------------------------------------
 %macro DO_EXCEPTION_REPORT64 0
         ;;
-        ;; µ±Ç°Õ»ÖĞÓĞ 16 ¸ö GPRs
-        ;; rbp Ö¸ÏòÕ»¶¥
+        ;; å½“å‰æ ˆä¸­æœ‰ 16 ä¸ª GPRs
+        ;; rbp æŒ‡å‘æ ˆé¡¶
         ;;
         mov rsi, Services.ProcessorIdMsg
         call puts
@@ -51,7 +51,7 @@
         call puts
         
         ;;
-        ;; ´òÓ¡¼Ä´æÆ÷Öµ
+        ;; æ‰“å°å¯„å­˜å™¨å€¼
         ;;
         mov rsi, Services.EflagsMsg
         call puts
@@ -59,7 +59,7 @@
         call print_dword_value
         
         ;;
-        ;; ÊÇ·ñÊôÓÚ #PF Òì³£
+        ;; æ˜¯å¦å±äº #PF å¼‚å¸¸
         ;;
         cmp ecx, PF_VECTOR
         jne %%0
@@ -99,12 +99,12 @@
                 
 ;-----------------------------------------------------
 ; error_code_default_handler64()
-; ÃèÊö£º
-;       1) ĞèÒªÑ¹Èë´íÎóÂëµÄÈ±Ê¡ handler
+; æè¿°ï¼š
+;       1) éœ€è¦å‹å…¥é”™è¯¯ç çš„ç¼ºçœ handler
 ;-----------------------------------------------------
 error_code_default_handler64:
         ;;
-        ;; È¡³ö´íÎóÂë
+        ;; å–å‡ºé”™è¯¯ç 
         ;;
         pop QWORD [gs: PCB.ErrorCode]
 
@@ -115,22 +115,22 @@ error_code_default_handler64:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) È±Ê¡µÄÒì³£·şÎñÀı³Ì
-;       2) ËùÓĞÈ±Ê¡Òì³£·ÅÈëÏÂ°ë²¿´¦Àí
-;       3) ÏÂ°ë²¿ÔÊĞíÖĞ¶Ï
+; æè¿°ï¼š
+;       1) ç¼ºçœçš„å¼‚å¸¸æœåŠ¡ä¾‹ç¨‹
+;       2) æ‰€æœ‰ç¼ºçœå¼‚å¸¸æ”¾å…¥ä¸‹åŠéƒ¨å¤„ç†
+;       3) ä¸‹åŠéƒ¨å…è®¸ä¸­æ–­
 ;-----------------------------------------------------
 exception_default_handler64:
         pusha64
         mov rbp, rsp
 exception_default_handler64.@0:                
         ;;
-        ;; ´òÓ¡ context ĞÅÏ¢
+        ;; æ‰“å° context ä¿¡æ¯
         ;;
-        DO_EXCEPTION_REPORT64                           ; ´òÓ¡Òì³£ĞÅÏ¢               
+        DO_EXCEPTION_REPORT64                           ; æ‰“å°å¼‚å¸¸ä¿¡æ¯               
         
         ;;
-        ;; µÈ´ı <ESC> ¼üÖØÆô
+        ;; ç­‰å¾… <ESC> é”®é‡å¯
         ;;
         call wait_esc_for_reset
        
@@ -146,30 +146,30 @@ exception_default_handler64.@0:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÓÉÓ²¼ş»òIPIµ÷ÓÃ
+; æè¿°ï¼š
+;       1) ç”±ç¡¬ä»¶æˆ–IPIè°ƒç”¨
 ;-----------------------------------------------------
 nmi_handler64:
         pusha64        
         mov rbp, rsp
         ;; 
-        ;; ¶ÁÈ¡´¦ÀíÆ÷index£¬ÅĞ¶ÏNMI handler´¦Àí·½Ê½
-        ;; 1) µ±´¦ÀíÆ÷index ÏàÓ¦µÄ RequestMask Î»Îª 1Ê±£¬Ö´ĞĞ IPI routine
-        ;; 2) RequestMask Îª 0Ê±£¬Ö´ĞĞÈ±Ê¡ NMI Àı³Ì
+        ;; è¯»å–å¤„ç†å™¨indexï¼Œåˆ¤æ–­NMI handlerå¤„ç†æ–¹å¼
+        ;; 1) å½“å¤„ç†å™¨index ç›¸åº”çš„ RequestMask ä½ä¸º 1æ—¶ï¼Œæ‰§è¡Œ IPI routine
+        ;; 2) RequestMask ä¸º 0æ—¶ï¼Œæ‰§è¡Œç¼ºçœ NMI ä¾‹ç¨‹
         ;;
         mov ecx, [gs: PCB.ProcessorIndex]
         lock btr DWORD [fs: SDA.NmiIpiRequestMask], ecx
-        jnc exception02                                 ; ×ªÈëÖ´ĞĞÈ±Ê¡ NMI Àı³Ì
+        jnc exception02                                 ; è½¬å…¥æ‰§è¡Œç¼ºçœ NMI ä¾‹ç¨‹
         
 
         ;;
-        ;; ÏÂÃæµ÷ÓÃ IPI routine
+        ;; ä¸‹é¢è°ƒç”¨ IPI routine
         ;;
         mov rax, [fs: SDA.NmiIpiRoutine]
         call rax
 
         ;;
-        ;; ÖÃÄÚ²¿ĞÅºÅÓĞĞ§
+        ;; ç½®å†…éƒ¨ä¿¡å·æœ‰æ•ˆ
         ;;        
         SET_INTERNAL_SIGNAL
 
@@ -187,8 +187,8 @@ nmi_handler64:
 ;       rdi - interrupt handler
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) °²×° kernel Ê¹ÓÃµÄÖĞ¶ÏÀı³Ì
+; æè¿°ï¼š
+;       1) å®‰è£… kernel ä½¿ç”¨çš„ä¸­æ–­ä¾‹ç¨‹
 ;-----------------------------------------------------
 install_kernel_interrupt_handler64:
         push rdx
@@ -217,8 +217,8 @@ install_kernel_interrupt_handler64:
 ;       rdi - interrupt handler
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) °²×° user Ê¹ÓÃµÄÖĞ¶ÏÀı³Ì
+; æè¿°ï¼š
+;       1) å®‰è£… user ä½¿ç”¨çš„ä¸­æ–­ä¾‹ç¨‹
 ;-----------------------------------------------------
 install_user_interrupt_handler64:
         push rdx
@@ -246,8 +246,8 @@ install_user_interrupt_handler64:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       ÉèÖÃ sysenter Ö¸ÁîÊ¹ÓÃ»·¾³
+; æè¿°ï¼š
+;       è®¾ç½® sysenter æŒ‡ä»¤ä½¿ç”¨ç¯å¢ƒ
 ;-----------------------------------------------------
 setup_sysenter64:
         push rdx
@@ -264,10 +264,10 @@ setup_sysenter64:
         jnz setup_sysenter64.next
         
         ;;
-        ;; ·ÖÅäÒ»¸ö kernel stack ÒÔ¹© SYSENTER Ê¹ÓÃ
+        ;; åˆ†é…ä¸€ä¸ª kernel stack ä»¥ä¾› SYSENTER ä½¿ç”¨
         ;;        
         call get_kernel_stack_pointer               
-        mov [gs: PCB.FastSystemServiceStack], rax               ; ±£´æ¿ìËÙÏµÍ³·şÎñÀı³Ì stack        
+        mov [gs: PCB.FastSystemServiceStack], rax               ; ä¿å­˜å¿«é€Ÿç³»ç»ŸæœåŠ¡ä¾‹ç¨‹ stack        
         
 setup_sysenter64.next:        
         shld rdx, rax, 32
@@ -291,9 +291,9 @@ setup_sysenter64.next:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) PIC 8259 µÄ IRQ0 ÖĞ¶Ï·şÎñÀı³Ì
-;       2) ¾ßÌåÊµÏÖÔÚ 32 Î»µÄ pic8159a.asm Ä£¿éÀï
+; æè¿°ï¼š
+;       1) PIC 8259 çš„ IRQ0 ä¸­æ–­æœåŠ¡ä¾‹ç¨‹
+;       2) å…·ä½“å®ç°åœ¨ 32 ä½çš„ pic8159a.asm æ¨¡å—é‡Œ
 ;-----------------------------------------------------
 timer_8259_handler64:
         jmp timer_8259_handler
@@ -308,8 +308,8 @@ timer_8259_handler64:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1) Local APIC µÄ timer ´¦ÀíÀı³Ì
+; æè¿°:
+;       1) Local APIC çš„ timer å¤„ç†ä¾‹ç¨‹
 ;-----------------------------------------------------
 lapic_timer_handler64:       
         pusha64
@@ -320,18 +320,18 @@ lapic_timer_handler64:
         
         
         mov eax, [rbx + LSB.Second]
-        inc eax                                                 ; Ôö¼ÓÃëÊı
+        inc eax                                                 ; å¢åŠ ç§’æ•°
         cmp eax, 60
         jb lapic_timer_handler64.@1
         ;;
-        ;; Èç¹û´óÓÚ 59 Ãë£¬ÔòÔö¼Ó·ÖÖÓÊı
+        ;; å¦‚æœå¤§äº 59 ç§’ï¼Œåˆ™å¢åŠ åˆ†é’Ÿæ•°
         ;;
         mov ecx, [rbx + LSB.Minute]
-        inc ecx                                                 ; Ôö¼Ó·ÖÖÓÊı
+        inc ecx                                                 ; å¢åŠ åˆ†é’Ÿæ•°
         cmp ecx, 60
         jb lapic_timer_handler64.@0
         ;;
-        ;; Èç¹û´óÓÚ 59 ·Ö£¬ÔòÔö¼ÓĞ¡Ê±Êı
+        ;; å¦‚æœå¤§äº 59 åˆ†ï¼Œåˆ™å¢åŠ å°æ—¶æ•°
         ;;
         xor ecx, ecx
         inc DWORD [rbx + LSB.Hour]
@@ -348,7 +348,7 @@ lapic_timer_handler.next:
         inc DWORD [rbx + LSB.LapicTimerCount]
 
         ;;
-        ;; Èç¹ûÓĞ»Øµ÷º¯Êı£¬ÔòÖ´ĞĞ
+        ;; å¦‚æœæœ‰å›è°ƒå‡½æ•°ï¼Œåˆ™æ‰§è¡Œ
         ;;        
         mov rsi, [rbx + LSB.LapicTimerRoutine]
         test rsi, rsi
@@ -358,7 +358,7 @@ lapic_timer_handler.next:
         
 lapic_timer_handler64.done:  
         ;;
-        ;; EOI ÃüÁî
+        ;; EOI å‘½ä»¤
         ;;
         mov rax, [gs: PCB.LapicBase]
         mov DWORD [rax + EOI], 0

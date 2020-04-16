@@ -2,7 +2,7 @@
 ; Copyright (c) 2009-2012 mik 
 ; All rights reserved.
 
-;; long mode ÏÂµÄ¿â
+;; long mode ä¸‹çš„åº“
 
 %include "..\inc\long.inc"
 
@@ -30,14 +30,14 @@ set_user_system_service:                jmp DWORD __set_user_system_service
 user_system_service_call:               jmp DWORD __user_system_service_call
 
 ;-----------------------------------------------------
-; strlen(): µÃÈ¡×Ö·û´®³¤¶È
+; strlen(): å¾—å–å­—ç¬¦ä¸²é•¿åº¦
 ; input:
 ;                rsi: string
 ; output:
 ;                rax: length of string
 ;
-; ÃèÊö£º
-;                Õâ¸öº¯Êı·ÅÖÃÔÚ conforming ¶ÎÀïÓÉÈÎÒâÈ¨ÏŞÖ´ĞĞ(Ê¹ÓÃ far pointerÖ¸ÕëĞÎÊ½£©¡¡
+; æè¿°ï¼š
+;                è¿™ä¸ªå‡½æ•°æ”¾ç½®åœ¨ conforming æ®µé‡Œç”±ä»»æ„æƒé™æ‰§è¡Œ(ä½¿ç”¨ far pointeræŒ‡é’ˆå½¢å¼ï¼‰ã€€
 ;-----------------------------------------------------
 __strlen:
         mov rax, -1
@@ -53,87 +53,87 @@ strlen_done:
 
 
 ;-------------------------------------------------------
-; lib32_service(): ¶ÔÍâ½Ó¿Ú
+; lib32_service(): å¯¹å¤–æ¥å£
 ; input:
-;                rax: ¿âº¯Êı±àºÅ
-; ÃèÊö£º
-;                Í¨¹ı call-gate ½øĞĞµ÷ÓÃÊµ¼Ê¹¤×÷µÄ lib32_service()
+;                rax: åº“å‡½æ•°ç¼–å·
+; æè¿°ï¼š
+;                é€šè¿‡ call-gate è¿›è¡Œè°ƒç”¨å®é™…å·¥ä½œçš„ lib32_service()
 ;-------------------------------------------------------
 lib32_service:
         jmp lib32_service_next
 CALL_GATE_POINTER:      dq 0
                         dw call_gate_sel
 lib32_service_next:                                        
-        call QWORD far [CALL_GATE_POINTER]      ;; ´Ó 64 Î»Ä£Ê½Àïµ÷ÓÃ call gate                                        
+        call QWORD far [CALL_GATE_POINTER]      ;; ä» 64 ä½æ¨¡å¼é‡Œè°ƒç”¨ call gate                                        
         ret
 
 
 
-;; **** Ê¹ÓÃ 32 Î»±àÒë ****
+;; **** ä½¿ç”¨ 32 ä½ç¼–è¯‘ ****
         bits 32
 ;---------------------------------------------------------------------------
-; compatibility_lib32_service(): ¶ÔÍâ½Ó¿Ú£¬ÓÃÓÚ 32-bit compatibilityÄ£Ê½ÏÂ
+; compatibility_lib32_service(): å¯¹å¤–æ¥å£ï¼Œç”¨äº 32-bit compatibilityæ¨¡å¼ä¸‹
 ; input:
-;                eax: ¿âº¯Êı±àºÅ
-; ÃèÊö£º
-;; ÏÂÃæÊÇ¼æÈİÄ£Ê½ÏÂµÄµ÷ÓÃ lib32_service() stub º¯Êı
+;                eax: åº“å‡½æ•°ç¼–å·
+; æè¿°ï¼š
+;; ä¸‹é¢æ˜¯å…¼å®¹æ¨¡å¼ä¸‹çš„è°ƒç”¨ lib32_service() stub å‡½æ•°
 ;---------------------------------------------------------------------------
 compatibility_lib32_service:
         jmp compatibility_lib32_service_next
 CALL_GATE_POINTER32:    dd 0
                         dw call_gate_sel
 compatibility_lib32_service_next:                                        
-        call DWORD far [CALL_GATE_POINTER32]    ;; ´Ó compatibility Ä£Ê½Àïµ÷ÓÃ call gate                                        
+        call DWORD far [CALL_GATE_POINTER32]    ;; ä» compatibility æ¨¡å¼é‡Œè°ƒç”¨ call gate                                        
         ret
                 
 
 
 
-;; **** ×ª»Ø 64 Î»±àÒë *****                
+;; **** è½¬å› 64 ä½ç¼–è¯‘ *****                
         bits 64
 
 
 
 ;****************************************************************************************
-;* Bug»òÉè¼ÆÈ±ÏİËµÃ÷£º                                                                  *
-;*      lib32_service() Éè¼ÆÉÏµÄÓĞ¡°²»¿ÉÖØÈë¡±µÄÈ±Ïİ£¡                                    *
-;*      µ±ÔÚ64-bitÄ£Ê½Í¨¹ı lib32_service()µ÷ÓÃlib32¿âº¯ÊıÊ±,                            *
-;*      lib32_service()×ªÈëcompatibilityÄ£Ê½Ç°ÖØÉèstackÖ¸ÕëespÎªLIB32_ESPÖµ             *
-;*      Èç¹ûÖ´ĞĞlib32¿âº¯ÊıÆÚ¼ä·¢Éú±»Òì³£»òÆäËüÖĞ¶ÏÇÀÕ¼Ê±£¬Èç¹ûÕâ¸öÒì³£»òÖĞ¶Ï           *
-;*      ÔÙ´Îµ÷ÓÃlib32_service()À´Ö´ĞĞlib32¿âº¯ÊıÊ±£¬·¢ÉúÑÏÖØºó¹û¡£                      *
-;*      ½á¹ûÊÇ£ºstackÖ¸ÕëÓÖ±»ÖØÖÃÎªLIB32_ESPÖµ£¬µ¼ÖÂstack·¢Éú´íÂÒ!                      *
+;* Bugæˆ–è®¾è®¡ç¼ºé™·è¯´æ˜ï¼š                                                                  *
+;*      lib32_service() è®¾è®¡ä¸Šçš„æœ‰â€œä¸å¯é‡å…¥â€çš„ç¼ºé™·ï¼                                    *
+;*      å½“åœ¨64-bitæ¨¡å¼é€šè¿‡ lib32_service()è°ƒç”¨lib32åº“å‡½æ•°æ—¶,                            *
+;*      lib32_service()è½¬å…¥compatibilityæ¨¡å¼å‰é‡è®¾stackæŒ‡é’ˆespä¸ºLIB32_ESPå€¼             *
+;*      å¦‚æœæ‰§è¡Œlib32åº“å‡½æ•°æœŸé—´å‘ç”Ÿè¢«å¼‚å¸¸æˆ–å…¶å®ƒä¸­æ–­æŠ¢å æ—¶ï¼Œå¦‚æœè¿™ä¸ªå¼‚å¸¸æˆ–ä¸­æ–­           *
+;*      å†æ¬¡è°ƒç”¨lib32_service()æ¥æ‰§è¡Œlib32åº“å‡½æ•°æ—¶ï¼Œå‘ç”Ÿä¸¥é‡åæœã€‚                      *
+;*      ç»“æœæ˜¯ï¼šstackæŒ‡é’ˆåˆè¢«é‡ç½®ä¸ºLIB32_ESPå€¼ï¼Œå¯¼è‡´stackå‘ç”Ÿé”™ä¹±!                      *
 ;*                                                                                      *
-;* ½â¾ö°ì·¨£º                                                                           *
-;*      1)ÔÚÎŞ·¨Ô¤Öª·ñ»áÔÚlib32¿âº¯ÊıÖ´ĞĞÆÚ¼ä²úÉúÖĞ¶ÏÇé¿öÏÂ£¬¿ÉÒÔÊ¹ÓÃÖĞ¶Ïµ÷ÓÃ·½Ê½       *
-;*        ±ÜÃâÊ¹ÓÃ call-gate ·½Ê½µ÷ÓÃlib32_service()À´×ªÈëcompatibilityÄ£Ê½¡£           *
-;*        ÕâÑù£º¿ÉÒÔ±ÜÃâ±»ÖĞ¶Ï´¥·¢Ê±ÇÀÕ¼Çé¿öµÄ²úÉú£¬µ«²»ÄÜ±ÜÃâ±»Òì³£ÇÀÕ¼£¡              *
+;* è§£å†³åŠæ³•ï¼š                                                                           *
+;*      1)åœ¨æ— æ³•é¢„çŸ¥å¦ä¼šåœ¨lib32åº“å‡½æ•°æ‰§è¡ŒæœŸé—´äº§ç”Ÿä¸­æ–­æƒ…å†µä¸‹ï¼Œå¯ä»¥ä½¿ç”¨ä¸­æ–­è°ƒç”¨æ–¹å¼       *
+;*        é¿å…ä½¿ç”¨ call-gate æ–¹å¼è°ƒç”¨lib32_service()æ¥è½¬å…¥compatibilityæ¨¡å¼ã€‚           *
+;*        è¿™æ ·ï¼šå¯ä»¥é¿å…è¢«ä¸­æ–­è§¦å‘æ—¶æŠ¢å æƒ…å†µçš„äº§ç”Ÿï¼Œä½†ä¸èƒ½é¿å…è¢«å¼‚å¸¸æŠ¢å ï¼              *
 ;*                                                                                      *
-;*      2)Éè¼ÆÔÚ64-bit´úÂëÏÂµÄstackÇøÓòÓëcompatibilityÄ£Ê½µÄstackÇøÓòÖØºÏ£¬             *
-;*        µ±×ªÈëcompaibilityÄ£Ê½ºóµÄ32Î»ESPÖµÓÉÓÚRSPµÄ¸ß32Î»Çå0ºó£¬»¹ÄÜ±£³ÖÓĞĞ§ĞÔ¡£     *
-;*        ÔÚÕâÖÖ·½·¨ÏÂ£¬ÔÚ½øÈëlib32_service()ºóÎŞĞë¶ÔESP½øĞĞÖØÉè£¡                      *
-;*        µ«±ØĞëÈ·±£RSPµÄµÍ32Î»Öµ£¬ÔÚÎŞĞëĞŞ¸ÄµÄÇé¿öÏÂ±£³ÖÕıÈ·ĞÔ£¨RSPÓëESPÖµÏà¶ÔÓ¦£©     *
+;*      2)è®¾è®¡åœ¨64-bitä»£ç ä¸‹çš„stackåŒºåŸŸä¸compatibilityæ¨¡å¼çš„stackåŒºåŸŸé‡åˆï¼Œ             *
+;*        å½“è½¬å…¥compaibilityæ¨¡å¼åçš„32ä½ESPå€¼ç”±äºRSPçš„é«˜32ä½æ¸…0åï¼Œè¿˜èƒ½ä¿æŒæœ‰æ•ˆæ€§ã€‚     *
+;*        åœ¨è¿™ç§æ–¹æ³•ä¸‹ï¼Œåœ¨è¿›å…¥lib32_service()åæ— é¡»å¯¹ESPè¿›è¡Œé‡è®¾ï¼                      *
+;*        ä½†å¿…é¡»ç¡®ä¿RSPçš„ä½32ä½å€¼ï¼Œåœ¨æ— é¡»ä¿®æ”¹çš„æƒ…å†µä¸‹ä¿æŒæ­£ç¡®æ€§ï¼ˆRSPä¸ESPå€¼ç›¸å¯¹åº”ï¼‰     *
 ;*                                                                                      *
-;*      3)ÖØĞÂ±àĞ´lib32¿â¶ÔÓ¦µÄ64Î»°æ±¾µÄº¯Êı¿â£¬±ÜÃâÔÚ64-bit´úÂëÏÂÊ¹ÓÃlib32¿â!      ¡¡ *
-;*      ¡¡ÏÔÈ»£¬ÕâÊÇ×î¸ù±¾£¬×îÕıÈ·µÄ½â¾ö·½·¨£¬µ«ÊÇlib32¿âº¯Êı²»ÓÃ±»ÖØÓÃ¡£               *
+;*      3)é‡æ–°ç¼–å†™lib32åº“å¯¹åº”çš„64ä½ç‰ˆæœ¬çš„å‡½æ•°åº“ï¼Œé¿å…åœ¨64-bitä»£ç ä¸‹ä½¿ç”¨lib32åº“!      ã€€ *
+;*      ã€€æ˜¾ç„¶ï¼Œè¿™æ˜¯æœ€æ ¹æœ¬ï¼Œæœ€æ­£ç¡®çš„è§£å†³æ–¹æ³•ï¼Œä½†æ˜¯lib32åº“å‡½æ•°ä¸ç”¨è¢«é‡ç”¨ã€‚               *
 ;****************************************************************************************
 
 
 ;-------------------------------------------------------
-; lib32_service(): ÔÚ64Î»µÄ´úÂëÏÂÊ¹ÓÃ32Î»µÄ¿âº¯Êı
+; lib32_service(): åœ¨64ä½çš„ä»£ç ä¸‹ä½¿ç”¨32ä½çš„åº“å‡½æ•°
 ; input:
-;                rax: ¿âº¯Êı±àºÅ£¬rsi...ÏàÓ¦µÄº¯Êı²ÎÊı
-; ÃèÊö:
-;                (1) rax ÊÇ32Î»¿âº¯ÊıºÅ£¬ÀàËÆÓÚÏµÍ³·şÎñÀı³ÌµÄ¹¦ÄÜºÅ
-;                (2) ´úÂë»áÏÈÇĞ»»µ½ compaitibility Ä£Ê½µ÷ÓÃ 32 Î»Ä£Ê½µÄº¯Êı
-;                (3) 32 Î»Àı³ÌÖ´ĞĞÍê±Ï£¬ÇĞ»»»Ø 64 Î»Ä£Ê½
-;                (4) ´Ó 64 Î»Ä£Ê½ÖĞ·µ»Øµ÷ÓÃÕß
-;                (5) lib32_service() º¯ÊıÊ¹ÓÃ call-gate ½øĞĞµ÷ÓÃ
+;                rax: åº“å‡½æ•°ç¼–å·ï¼Œrsi...ç›¸åº”çš„å‡½æ•°å‚æ•°
+; æè¿°:
+;                (1) rax æ˜¯32ä½åº“å‡½æ•°å·ï¼Œç±»ä¼¼äºç³»ç»ŸæœåŠ¡ä¾‹ç¨‹çš„åŠŸèƒ½å·
+;                (2) ä»£ç ä¼šå…ˆåˆ‡æ¢åˆ° compaitibility æ¨¡å¼è°ƒç”¨ 32 ä½æ¨¡å¼çš„å‡½æ•°
+;                (3) 32 ä½ä¾‹ç¨‹æ‰§è¡Œå®Œæ¯•ï¼Œåˆ‡æ¢å› 64 ä½æ¨¡å¼
+;                (4) ä» 64 ä½æ¨¡å¼ä¸­è¿”å›è°ƒç”¨è€…
+;                (5) lib32_service() å‡½æ•°ä½¿ç”¨ call-gate è¿›è¡Œè°ƒç”¨
 ;-------------------------------------------------------
 __lib32_service:
 ;*
-;* changlog: Ê¹ÓÃ r15 ´úÌæ rbp ±£´æ rsp Ö¸Õë
-;*           Ä¿µÄ£ºÊ¹ÓÃ lib32 ¿âÀï¿ÉÒÔÊ¹ÓÃ ebp Ö¸Õë£¡   
-;*                 Èç¹ûÊ¹ÓÃ rbp ±£´æ rsp Ö¸Õë£¬ÄÇÃ´µ±lib32 ¿âº¯ÊıÊ¹ÓÃ ebp Ê±½«Ë¢µô rbp ¼Ä´æÆ÷Öµ
+;* changlog: ä½¿ç”¨ r15 ä»£æ›¿ rbp ä¿å­˜ rsp æŒ‡é’ˆ
+;*           ç›®çš„ï¼šä½¿ç”¨ lib32 åº“é‡Œå¯ä»¥ä½¿ç”¨ ebp æŒ‡é’ˆï¼   
+;*                 å¦‚æœä½¿ç”¨ rbp ä¿å­˜ rsp æŒ‡é’ˆï¼Œé‚£ä¹ˆå½“lib32 åº“å‡½æ•°ä½¿ç”¨ ebp æ—¶å°†åˆ·æ‰ rbp å¯„å­˜å™¨å€¼
 ;*
         push r15
         mov r15, rsp
@@ -142,21 +142,21 @@ __lib32_service:
         push rcx
         push rdx
 
-        ; ±£´æ²ÎÊı
+        ; ä¿å­˜å‚æ•°
         mov rcx, rsi
         mov rdx, rdi
-        mov rbx, rax                            ; ¹¦ÄÜºÅ
+        mov rbx, rax                            ; åŠŸèƒ½å·
 
-        mov rsi, [r15 + 16]                     ; ¶Á CS selector
+        mov rsi, [r15 + 16]                     ; è¯» CS selector
         call read_segment_descriptor
         shr rax, 32
 
-        ; »Ö¸´²ÎÊı
+        ; æ¢å¤å‚æ•°
         mov rsi, rcx
         mov rdi, rdx
 
-        jmp QWORD far [lib32_service_compatiblity_pointer]      ; ´Ó 64 Î»ÇĞ»»µ½ compatibilityÄ£Ê½
-;; ¶¨Òå far pointer        
+        jmp QWORD far [lib32_service_compatiblity_pointer]      ; ä» 64 ä½åˆ‡æ¢åˆ° compatibilityæ¨¡å¼
+;; å®šä¹‰ far pointer        
 lib32_service_compatiblity_pointer:     dq        lib32_service_compatibility
                                         dw        code32_sel
 lib32_service_64_pointer:               dd        lib32_service_done
@@ -164,44 +164,44 @@ lib32_service_64_pointer:               dd        lib32_service_done
 
         bits 32                                                                        
 lib32_service_compatibility:
-        bt eax, 21                              ; ²âÊÔ CS.L
-        jc reload_sreg                          ; µ÷ÓÃÕßÊÇ 64 Î»´úÂë
+        bt eax, 21                              ; æµ‹è¯• CS.L
+        jc reload_sreg                          ; è°ƒç”¨è€…æ˜¯ 64 ä½ä»£ç 
         shr eax, 13
-        and eax, 0x03                           ; È¡ RPL
+        and eax, 0x03                           ; å– RPL
         cmp eax, 0
-        je call_lib32                           ; È¨ÏŞ²»±ä
+        je call_lib32                           ; æƒé™ä¸å˜
 reload_sreg:
-;; ÖØĞÂÉèÖÃ 32 Î»»·¾³
+;; é‡æ–°è®¾ç½® 32 ä½ç¯å¢ƒ
         mov ax, data32_sel
         mov ds, ax
         mov es, ax        
         mov ss, ax
 ;*
-;* ¶Ô compatibility µÄstack½á¹¹½øĞĞÉèÖÃ
-;* Õâ¸öµ¼ÖÂ²»¿ÉÖØÈë ==> mov esp, LIB32_ESP
+;* å¯¹ compatibility çš„stackç»“æ„è¿›è¡Œè®¾ç½®
+;* è¿™ä¸ªå¯¼è‡´ä¸å¯é‡å…¥ ==> mov esp, LIB32_ESP
 ;*
-;* chang log: È¥µô mov esp, LIB32_ESP ÕâÌõÖ¸Áî£¬ÎŞĞèÉèÖÃ compatibility Ä£Ê½ÏÂµÄ esp Öµ
-;*            Ê¹ÓÃ compatibility Ä£Ê½µÄ esp Óë 64-bit rsp µÍ 32 Î»ÏàÍ¬µÄÓ³Éä·½Ê½
+;* chang log: å»æ‰ mov esp, LIB32_ESP è¿™æ¡æŒ‡ä»¤ï¼Œæ— éœ€è®¾ç½® compatibility æ¨¡å¼ä¸‹çš„ esp å€¼
+;*            ä½¿ç”¨ compatibility æ¨¡å¼çš„ esp ä¸ 64-bit rsp ä½ 32 ä½ç›¸åŒçš„æ˜ å°„æ–¹å¼
 ;*
 
 
 ;*
-;* ÏÂÃæµÄ´úÂë½«µ÷ÓÃ lib32.asm ¿âÄÚµÄº¯Êı£¬ÔËĞĞÔÚ compatibility Ä£Ê½ÏÂ
+;* ä¸‹é¢çš„ä»£ç å°†è°ƒç”¨ lib32.asm åº“å†…çš„å‡½æ•°ï¼Œè¿è¡Œåœ¨ compatibility æ¨¡å¼ä¸‹
 ;*
 call_lib32:
-        lea eax, [LIB32_SEG + ebx * 4 + ebx]            ; rbx * 5 + LIB32_SEG µÃµ½ lib32 ¿âº¯ÊıµØÖ·
-        call eax                                        ;; Ö´ĞĞ 32Î»Àı³Ì
-        jmp DWORD far [lib32_service_64_pointer]        ;; ÇĞ»»»Ø 64 Î»Ä£Ê½
+        lea eax, [LIB32_SEG + ebx * 4 + ebx]            ; rbx * 5 + LIB32_SEG å¾—åˆ° lib32 åº“å‡½æ•°åœ°å€
+        call eax                                        ;; æ‰§è¡Œ 32ä½ä¾‹ç¨‹
+        jmp DWORD far [lib32_service_64_pointer]        ;; åˆ‡æ¢å› 64 ä½æ¨¡å¼
 
         bits 64
 lib32_service_done:   
-        lea rsp, [r15 - 32]                             ; È¡»ØÔ­ RSP Öµ
+        lea rsp, [r15 - 32]                             ; å–å›åŸ RSP å€¼
         pop rdx
         pop rcx
         pop rbx
         pop rbp
         pop r15
-        retf64                                          ; Ê¹ÓÃºê ref64 
+        retf64                                          ; ä½¿ç”¨å® ref64 
 
 
 
@@ -219,15 +219,15 @@ __set_system_descriptor:
         or r9b, 80h
         mov [rax + rsi + 5], r9b                ; DPL=0, type=r9
 
-        ;* ÏÂÃæÉèÖÃ limit Öµ
-        ;* Èç¹û limit ´óÓÚ 4K µÄ»°
+        ;* ä¸‹é¢è®¾ç½® limit å€¼
+        ;* å¦‚æœ limit å¤§äº 4K çš„è¯
         mov r8, rdi
-        shr r8, 12                              ; ³ı 4K
-        cmovz r8d, edi                          ; Îª 0 Ê¹ÓÃÔ­Öµ
-        setnz dil                                ; ²»Îª 0 ÖÃ G Î»
+        shr r8, 12                              ; é™¤ 4K
+        cmovz r8d, edi                          ; ä¸º 0 ä½¿ç”¨åŸå€¼
+        setnz dil                                ; ä¸ä¸º 0 ç½® G ä½
         mov [rax + rsi], r8w                    ; limit[15:0]
         shl r8w, 5
-        shrd r8w, di, 17                        ; ÉèÖÃ G Î»
+        shrd r8w, di, 17                        ; è®¾ç½® G ä½
         mov [rax + rsi + 6], r8b                ; limit[19:16]
         ret
         
@@ -235,8 +235,8 @@ __set_system_descriptor:
 ; set_call_gate(int selector, long long address)
 ; input:
 ;                rsi: selector,  rdi: address, r8: DPL, r9: code_selector
-; ×¢Òâ£º
-;                ÕâÀï½« call gate µÄÈ¨ÏŞÉèÎª 3 ¼¶£¬´ÓÓÃ»§´úÂë¿ÉÒÔµ÷ÓÃ
+; æ³¨æ„ï¼š
+;                è¿™é‡Œå°† call gate çš„æƒé™è®¾ä¸º 3 çº§ï¼Œä»ç”¨æˆ·ä»£ç å¯ä»¥è°ƒç”¨
 ;--------------------------------------------------------------------------
 __set_call_gate:
         sgdt [gdt_pointer]
@@ -244,7 +244,7 @@ __set_call_gate:
         and esi, 0FFF8h
         mov [rax + rsi], rdi                    ; offset[15:0]
         mov [rax + rsi + 4], rdi                ; offset[63:16]
-        mov DWORD [rax + rsi + 12], 0           ; Çå¸ßÎ»
+        mov DWORD [rax + rsi + 12], 0           ; æ¸…é«˜ä½
         mov [rax + rsi + 2], r9d                ; selector
         and r8b, 0Fh
         shl r8b, 5
@@ -286,7 +286,7 @@ __set_user_interrupt_handler:
         ret
                 
 ;-----------------------------------------------------
-; read_idt_descriptor(): ¶Á IDT ±íÀïµÄ gate descriptor
+; read_idt_descriptor(): è¯» IDT è¡¨é‡Œçš„ gate descriptor
 ; input:
 ;                rsi: vector
 ; output:
@@ -301,9 +301,9 @@ __read_idt_descriptor:
         ret
 
 ;-----------------------------------------------------
-; write_idt_descriptor(): Ğ´Èë IDT ±í
+; write_idt_descriptor(): å†™å…¥ IDT è¡¨
 ; input:
-;                rsi: vector£¬ rdx:rax - gate descriptor
+;                rsi: vectorï¼Œ rdx:rax - gate descriptor
 ;------------------------------------------------------
 __write_idt_descriptor:
         sidt [idt_pointer]        
@@ -315,7 +315,7 @@ __write_idt_descriptor:
         
                         
 ;------------------------------------------------------
-; read_segment_descriptor(): ¶Á¶ÎÃèÊö·û
+; read_segment_descriptor(): è¯»æ®µæè¿°ç¬¦
 ; input:
 ;                rsi: selector
 ; output:
@@ -341,7 +341,7 @@ __write_segment_descriptor:
         ret        
 
 ;------------------------------------------------------
-; read_system_descriptor(): ¶ÁÏµÍ³ÃèÊö·û
+; read_system_descriptor(): è¯»ç³»ç»Ÿæè¿°ç¬¦
 ; input:
 ;                rsi: selector
 ; output:
@@ -381,7 +381,7 @@ __get_tr_base:
         
         
 ;---------------------------------------------------------
-; set_segment_descriptor(): ÉèÖÃ¶ÎÃèÊö·û
+; set_segment_descriptor(): è®¾ç½®æ®µæè¿°ç¬¦
 ; input:
 ;                rsi: selector, rdi: limit, r8: base, r9: attribute
 ;---------------------------------------------------------
@@ -404,24 +404,24 @@ __set_segment_descriptor:
 
 
 ;----------------------------------------------------------------
-; set_sysenter():       long-mode Ä£Ê½µÄ sysenter/sysexitÊ¹ÓÃ»·¾³
+; set_sysenter():       long-mode æ¨¡å¼çš„ sysenter/sysexitä½¿ç”¨ç¯å¢ƒ
 ;----------------------------------------------------------------
 __set_sysenter:
         xor edx, edx
         mov eax, KERNEL_CS
         mov ecx, IA32_SYSENTER_CS
-        wrmsr                                                        ; ÉèÖÃ IA32_SYSENTER_CS
+        wrmsr                                                        ; è®¾ç½® IA32_SYSENTER_CS
 
 %ifdef MP
 ;*
 ;* chang log: 
-;       Ôö¼Ó¶Ô¶à´¦ÀíÆ÷»·¾³µÄÖ§³Ö
-;*      Ã¿¸ö´¦ÀíÆ÷·ÖÅä²»Í¬µÄ RSP Öµ
+;       å¢åŠ å¯¹å¤šå¤„ç†å™¨ç¯å¢ƒçš„æ”¯æŒ
+;*      æ¯ä¸ªå¤„ç†å™¨åˆ†é…ä¸åŒçš„ RSP å€¼
 ;*
-        mov ecx, [processor_index]                                      ; index Öµ
-        mov eax, PROCESSOR_STACK_SIZE                                   ; Ã¿¸ö´¦ÀíÆ÷µÄ stack ¿Õ¼ä´óĞ¡
+        mov ecx, [processor_index]                                      ; index å€¼
+        mov eax, PROCESSOR_STACK_SIZE                                   ; æ¯ä¸ªå¤„ç†å™¨çš„ stack ç©ºé—´å¤§å°
         mul ecx                                                         ; stack_offset = STACK_SIZE * index
-        mov rcx, PROCESSOR_SYSENTER_RSP                                 ; stack »ùÖµ
+        mov rcx, PROCESSOR_SYSENTER_RSP                                 ; stack åŸºå€¼
         add rax, rcx  
 %else
         mov rax, KERNEL_RSP
@@ -429,19 +429,19 @@ __set_sysenter:
         mov rdx, rax
         shr rdx, 32
         mov ecx, IA32_SYSENTER_ESP                
-        wrmsr                                                        ; ÉèÖÃ IA32_SYSENTER_ESP
+        wrmsr                                                        ; è®¾ç½® IA32_SYSENTER_ESP
         mov rdx, __sys_service
         shr rdx, 32
         mov rax, __sys_service
         mov ecx, IA32_SYSENTER_EIP
-        wrmsr                                                        ; ÉèÖÃ IA32_SYSENTER_EIP
+        wrmsr                                                        ; è®¾ç½® IA32_SYSENTER_EIP
         ret        
 
 ;----------------------------------------------------------------
-; set_syscall():        long-mode Ä£Ê½µÄ syscall/sysretÊ¹ÓÃ»·¾³ 
+; set_syscall():        long-mode æ¨¡å¼çš„ syscall/sysretä½¿ç”¨ç¯å¢ƒ 
 ;----------------------------------------------------------------
 __set_syscall:
-; enable syscall Ö¸Áî
+; enable syscall æŒ‡ä»¤
         mov ecx, IA32_EFER
         rdmsr
         bts eax, 0                                      ; SYSCALL enable bit
@@ -449,17 +449,17 @@ __set_syscall:
         mov edx, KERNEL_CS | (sysret_cs_sel << 16)
         xor eax, eax
         mov ecx, IA32_STAR
-        wrmsr                                           ; ÉèÖÃ IA32_STAR
+        wrmsr                                           ; è®¾ç½® IA32_STAR
         mov rdx, __sys_service_routine
         shr rdx, 32
         mov rax, __sys_service_routine
         mov ecx, IA32_LSTAR
-        wrmsr                                            ; ÉèÖÃ IA32_LSTAR
+        wrmsr                                            ; è®¾ç½® IA32_LSTAR
         xor eax, eax
         xor edx, edx
         mov ecx, IA32_FMASK
         wrmsr
-;;  ÏÂÃæÉèÖÃ KERNEL_GS_BASE ¼Ä´æÆ÷
+;;  ä¸‹é¢è®¾ç½® KERNEL_GS_BASE å¯„å­˜å™¨
         mov rdx, kernel_data_base
         mov rax, rdx
         shr rdx, 32
@@ -468,9 +468,9 @@ __set_syscall:
         ret
 
 ;-----------------------------------------------------
-; sys_service_enter():         ÏµÍ³·şÎñÀı³Ì½Ó¿Ú stub º¯Êı
+; sys_service_enter():         ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹æ¥å£ stub å‡½æ•°
 ; input:
-;                rax: ÏµÍ³·şÎñÀı³ÌºÅ
+;                rax: ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å·
 ;-----------------------------------------------------
 __sys_service_enter:
         push rcx
@@ -484,15 +484,15 @@ return_64_address:
         ret
 
 ;-----------------------------------------------------
-; sys_service_call():         ÏµÍ³·şÎñÀı³Ì½Ó¿Ú stub º¯Êı, syscall °æ±¾
+; sys_service_call():         ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹æ¥å£ stub å‡½æ•°, syscall ç‰ˆæœ¬
 ; input:
-;                rax: ÏµÍ³·şÎñÀı³ÌºÅ
+;                rax: ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å·
 ;-----------------------------------------------------
 __sys_service_call:
         push rbp
         push rcx
-        mov rbp, rsp                                    ; ±£´æµ÷ÓÃÕßµÄ rsp Öµ
-        mov rcx, return_64_address_syscall              ; ·µ»ØµØÖ·
+        mov rbp, rsp                                    ; ä¿å­˜è°ƒç”¨è€…çš„ rsp å€¼
+        mov rcx, return_64_address_syscall              ; è¿”å›åœ°å€
         syscall
 return_64_address_syscall:        
         mov rsp, rbp
@@ -505,9 +505,9 @@ return_64_address_syscall:
 
         bits 32
 ;-------------------------------------------------------------
-; compatibility_sys_service_enter(): compatibility Ä£Ê½ÏÂµÄ stub
-; ÃèÊö£º
-;       ½ö¹©ÔÚ compatibilityÄ£Ê½ÏÂÊ¹ÓÃ
+; compatibility_sys_service_enter(): compatibility æ¨¡å¼ä¸‹çš„ stub
+; æè¿°ï¼š
+;       ä»…ä¾›åœ¨ compatibilityæ¨¡å¼ä¸‹ä½¿ç”¨
 ;----------------------------------------------------------------
 __compatibility_sys_service_enter:
         push ecx
@@ -519,7 +519,7 @@ return_compatibility_pointer:   dq compatibility_sys_service_enter_done
                                 dw user_code32_sel | 3        
 return_compatibility_address:        
         bits 64
-        jmp QWORD far [return_compatibility_pointer]            ; ´Ó64-bitÇĞ»»»ØcompatibilityÄ£Ê½
+        jmp QWORD far [return_compatibility_pointer]            ; ä»64-bitåˆ‡æ¢å›compatibilityæ¨¡å¼
 compatibility_sys_service_enter_done:
         bits 32
         pop edx
@@ -529,7 +529,7 @@ compatibility_sys_service_enter_done:
 
         bits 64
 ;---------------------------------------------------
-; sys_service(): ÏµÍ³·şÎñÀı³Ì, sysenter/sysexit°æ±¾
+; sys_service(): ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹, sysenter/sysexitç‰ˆæœ¬
 ;---------------------------------------------------
 __sys_service:
         push rbp
@@ -540,9 +540,9 @@ __sys_service:
         mov rbx, rax
         
         
-        jmp QWORD far [lib32_service_enter_compatiblity_pointer]        ; ´Ó 64 Î»ÇĞ»»µ½ compatibilityÄ£Ê½
+        jmp QWORD far [lib32_service_enter_compatiblity_pointer]        ; ä» 64 ä½åˆ‡æ¢åˆ° compatibilityæ¨¡å¼
         
-;; ¶¨Òå far pointer        
+;; å®šä¹‰ far pointer        
 lib32_service_enter_compatiblity_pointer:       dq        lib32_service_enter_compatibility
                                                 dw        code32_sel
 lib32_service_enter_64_pointer:                 dd        lib32_service_enter_done
@@ -550,16 +550,16 @@ lib32_service_enter_64_pointer:                 dd        lib32_service_enter_do
                                                                         
 lib32_service_enter_compatibility:
         bits 32
-;; ÖØĞÂÉèÖÃ 32 Î»»·¾³
+;; é‡æ–°è®¾ç½® 32 ä½ç¯å¢ƒ
         mov ax, data32_sel
         mov ds, ax
         mov es, ax        
         mov ss, ax
 ;        mov esp, LIB32_ESP
 lib32_enter:
-        lea eax, [LIB32_SEG + ebx * 4 + ebx]                      ; rbx * 5 + LIB32_SEG µÃµ½ lib32 ¿âº¯ÊıµØÖ·
-        call eax                                                  ;; Ö´ĞĞ 32Î»Àı³Ì
-        jmp DWORD far [lib32_service_enter_64_pointer]            ;; ÇĞ»»»Ø 64 Î»Ä£Ê½
+        lea eax, [LIB32_SEG + ebx * 4 + ebx]                      ; rbx * 5 + LIB32_SEG å¾—åˆ° lib32 åº“å‡½æ•°åœ°å€
+        call eax                                                  ;; æ‰§è¡Œ 32ä½ä¾‹ç¨‹
+        jmp DWORD far [lib32_service_enter_64_pointer]            ;; åˆ‡æ¢å› 64 ä½æ¨¡å¼
         bits 64
 lib32_service_enter_done:        
         mov rsp, rbp
@@ -567,14 +567,14 @@ lib32_service_enter_done:
         pop rdx
         pop rcx
         pop rbp
-        sysexit64                                                 ; ·µ»Øµ½ 64-bit Ä£Ê½
+        sysexit64                                                 ; è¿”å›åˆ° 64-bit æ¨¡å¼
         
 ;-----------------------------------------------------
-; sys_service_routine():  ÏµÍ³·şÎñÀı³Ì£¬syscall/sysret °æ±¾
+; sys_service_routine():  ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹ï¼Œsyscall/sysret ç‰ˆæœ¬
 ;-----------------------------------------------------        
 __sys_service_routine:
-        swapgs                                 ; »ñÈ¡ Kernel Êı¾İ
-        mov rsp, [gs:0]                        ; µÃµ½ kernel rsp Öµ
+        swapgs                                 ; è·å– Kernel æ•°æ®
+        mov rsp, [gs:0]                        ; å¾—åˆ° kernel rsp å€¼
         push rbp
         push r11
         push rcx
@@ -582,9 +582,9 @@ __sys_service_routine:
         mov rbp, rsp
         mov rbx, rax
 
-        jmp QWORD far [lib32_service_call_compatiblity_pointer] ; ´Ó 64 Î»ÇĞ»»µ½ compatibilityÄ£Ê½
+        jmp QWORD far [lib32_service_call_compatiblity_pointer] ; ä» 64 ä½åˆ‡æ¢åˆ° compatibilityæ¨¡å¼
         
-;; ¶¨Òå far pointer
+;; å®šä¹‰ far pointer
 lib32_service_call_compatiblity_pointer:        dq        lib32_service_call_compatibility
                                                 dw         code32_sel
 lib32_service_call_64_pointer:                  dd        lib32_service_call_done
@@ -592,16 +592,16 @@ lib32_service_call_64_pointer:                  dd        lib32_service_call_don
                                                                         
 lib32_service_call_compatibility:
         bits 32
-;; ÖØĞÂÉèÖÃ 32 Î»»·¾³
+;; é‡æ–°è®¾ç½® 32 ä½ç¯å¢ƒ
         mov ax, data32_sel
         mov ds, ax
         mov es, ax        
         mov ss, ax
 ;        mov esp, LIB32_ESP
 lib32_call:
-        lea eax, [LIB32_SEG + ebx * 4 + ebx]                        ; rbx * 5 + LIB32_SEG µÃµ½ lib32 ¿âº¯ÊıµØÖ·
-        call eax                                                     ;; Ö´ĞĞ 32Î»Àı³Ì
-        jmp DWORD far [lib32_service_call_64_pointer]                ;; ÇĞ»»»Ø 64 Î»Ä£Ê½
+        lea eax, [LIB32_SEG + ebx * 4 + ebx]                        ; rbx * 5 + LIB32_SEG å¾—åˆ° lib32 åº“å‡½æ•°åœ°å€
+        call eax                                                     ;; æ‰§è¡Œ 32ä½ä¾‹ç¨‹
+        jmp DWORD far [lib32_service_call_64_pointer]                ;; åˆ‡æ¢å› 64 ä½æ¨¡å¼
         bits 64
 lib32_service_call_done:
         
@@ -610,36 +610,36 @@ lib32_service_call_done:
         pop rcx
         pop r11
         pop rbp
-        swapgs                                        ; »ÖµÃ GS.base
-        sysret64                                      ; ·µ»Ø 64-bit Ä£Ê½
+        swapgs                                        ; æ¢å¾— GS.base
+        sysret64                                      ; è¿”å› 64-bit æ¨¡å¼
         
         
 
 ;*
-;* ÉèÖÃ¹Ò½ÓÏµÍ³·şÎñ±í
-;* Ê¹ÓÃÓÚÔÚÓÃ»§´úÂëÀï int 40h µ÷ÓÃ
+;* è®¾ç½®æŒ‚æ¥ç³»ç»ŸæœåŠ¡è¡¨
+;* ä½¿ç”¨äºåœ¨ç”¨æˆ·ä»£ç é‡Œ int 40h è°ƒç”¨
 ;*
 
 ;--------------------------------------
-; set_system_service(): ÉèÖÃÏµÍ³·şÎñ±í
+; set_system_service(): è®¾ç½®ç³»ç»ŸæœåŠ¡è¡¨
 ; input:
-;       rsi - ÓÃ»§×Ô¶¨ÒåÏµÍ³·şÎñÀı³ÌºÅ
-;       rdi - ÓÃ»§×Ô¶¨ÒåÏµÍ³·şÎñÀı³Ì
+;       rsi - ç”¨æˆ·è‡ªå®šä¹‰ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å·
+;       rdi - ç”¨æˆ·è‡ªå®šä¹‰ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹
 ;-------------------------------------
 __set_user_system_service:
         cmp rsi, 10
-        jae set_system_service_done                     ; ¼ÙÈçÓÃ»§Àı³ÌºÅ´óÓÚµÈÓÚ 10 ¾ÍÍË³ö
-        mov [__system_service_table + rsi * 8], rdi     ; Ğ´ÈëÓÃ»§×Ô¶¨ÒåÀı³Ì
+        jae set_system_service_done                     ; å‡å¦‚ç”¨æˆ·ä¾‹ç¨‹å·å¤§äºç­‰äº 10 å°±é€€å‡º
+        mov [__system_service_table + rsi * 8], rdi     ; å†™å…¥ç”¨æˆ·è‡ªå®šä¹‰ä¾‹ç¨‹
 set_system_service_done:        
         ret
 
 
 ;------------------------------------------------------
-; user_system_service_call(): µ÷ÓÃÓÃ»§×Ô¶¨ÒåµÄ·şÎñÀı³Ì
+; user_system_service_call(): è°ƒç”¨ç”¨æˆ·è‡ªå®šä¹‰çš„æœåŠ¡ä¾‹ç¨‹
 ; input:
-;       rax - ÓÃ»§×Ô¶¨ÒåÏµÍ³·şÎñÀı³ÌºÅ
-; ÃèÊö£º
-;       ÓÉº¯ÊıÓÉ Int 40h À´µ÷ÓÃ
+;       rax - ç”¨æˆ·è‡ªå®šä¹‰ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å·
+; æè¿°ï¼š
+;       ç”±å‡½æ•°ç”± Int 40h æ¥è°ƒç”¨
 ;-----------------------------------------------------
 __user_system_service_call:
         cmp rax, 10
@@ -650,32 +650,32 @@ user_system_service_call_done:
         iret64
 
                 
-;******** lib64 Ä£¿éµÄ±äÁ¿¶¨Òå ********
+;******** lib64 æ¨¡å—çš„å˜é‡å®šä¹‰ ********
 
 video_current        dd 0B8000h
 
 
-;****** ÏµÍ³·şÎñ±í ***********
+;****** ç³»ç»ŸæœåŠ¡è¡¨ ***********
 
 __system_service_table:
-        times 10 dq 0                                   ; ±£Áô 10 ¸ö×Ô¶¨ÒåÏµÍ³·şÎñº¯Êı
+        times 10 dq 0                                   ; ä¿ç•™ 10 ä¸ªè‡ªå®šä¹‰ç³»ç»ŸæœåŠ¡å‡½æ•°
 
 
 lib64_context   times 20 dq 0
 
 
-;; ÏµÍ³Êı¾İ±í
-kernel_data_base        dq        PROCESSOR_SYSCALL_RSP         ; ÏµÍ³Õ»
+;; ç³»ç»Ÿæ•°æ®è¡¨
+kernel_data_base        dq        PROCESSOR_SYSCALL_RSP         ; ç³»ç»Ÿæ ˆ
 
                 
 
-; GDT ±íÖ¸Õë
-gdt_pointer             dw 0                        ; GDT limit Öµ
-                        dq 0                        ; GDT base Öµ
+; GDT è¡¨æŒ‡é’ˆ
+gdt_pointer             dw 0                        ; GDT limit å€¼
+                        dq 0                        ; GDT base å€¼
 
-; IDT ±íÖ¸Õë
-idt_pointer             dw 0                        ; IDT limit Öµ
-                        dq 0                        ; IDT base Öµ
+; IDT è¡¨æŒ‡é’ˆ
+idt_pointer             dw 0                        ; IDT limit å€¼
+                        dq 0                        ; IDT base å€¼
                         
                         
 LIB64_END:                

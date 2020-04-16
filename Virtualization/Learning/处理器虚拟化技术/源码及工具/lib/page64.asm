@@ -1,6 +1,6 @@
 ;*************************************************
 ; page64.asm                                     *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
@@ -11,10 +11,10 @@
 
 
 ;;
-;; page64 Ä£¿éËµÃ÷£º
-;; 1) page64 Ä£¿é´úÂëÇ°°ë²¿·ÖÎª legacy ÏÂµÄ 32 Î»¶øÐ´£¬ÔÚÎ´½øÈë long mode Ö®Ç°Ê¹ÓÃ
-;; 2) ºó°ë²¿·ÖÎª 64-bit ´úÂë¶øÐ´£¬ÔÚ½øÈë 64-bit »·¾³ºóÊ¹ÓÃ
-;; 3) legacy ´úÂëºó×ºÊ¹ÓÃ "32"£¬64-bit ´úÂëºó×ºÊ¹ÓÃ "64"
+;; page64 æ¨¡å—è¯´æ˜Žï¼š
+;; 1) page64 æ¨¡å—ä»£ç å‰åŠéƒ¨åˆ†ä¸º legacy ä¸‹çš„ 32 ä½è€Œå†™ï¼Œåœ¨æœªè¿›å…¥ long mode ä¹‹å‰ä½¿ç”¨
+;; 2) åŽåŠéƒ¨åˆ†ä¸º 64-bit ä»£ç è€Œå†™ï¼Œåœ¨è¿›å…¥ 64-bit çŽ¯å¢ƒåŽä½¿ç”¨
+;; 3) legacy ä»£ç åŽç¼€ä½¿ç”¨ "32"ï¼Œ64-bit ä»£ç åŽç¼€ä½¿ç”¨ "64"
 ;;
 
 
@@ -22,14 +22,14 @@
 
 
 ;;
-;; ¶¨Òå page table entry ±êÖ¾Î»£¬¶ÔÓ¦ entry[11:9]
+;; å®šä¹‰ page table entry æ ‡å¿—ä½ï¼Œå¯¹åº” entry[11:9]
 ;;
 
 PTE_INVALID                     EQU             0
 PTE_VALID                       EQU             800h
 
 ;;
-;; pte ¼ì²éÓÐÐ§ÐÔ±êÖ¾£¨PTE_VALID | P)
+;; pte æ£€æŸ¥æœ‰æ•ˆæ€§æ ‡å¿—ï¼ˆPTE_VALID | P)
 ;;
 VALID_FLAGS                     EQU             801h
 
@@ -45,15 +45,15 @@ VALID_FLAGS                     EQU             801h
 ;       none
 ; output:
 ;       none
-; ×¢Òâ£º
-;       1) ÔÚ³õÊ¼»¯Ò³×ª»»±í½á¹¹Ç°µ÷ÓÃ
-;       2) ÔÚ legacy Ä£Ê½ÏÂÖ´ÐÐ
-;       3) ÔÚ init_longmode_basic_page() ÄÚ²¿Ê¹ÓÃ
+; æ³¨æ„ï¼š
+;       1) åœ¨åˆå§‹åŒ–é¡µè½¬æ¢è¡¨ç»“æž„å‰è°ƒç”¨
+;       2) åœ¨ legacy æ¨¡å¼ä¸‹æ‰§è¡Œ
+;       3) åœ¨ init_longmode_basic_page() å†…éƒ¨ä½¿ç”¨
 ;---------------------------------------------------------------
 clear_2m_for_longmode_ppt:
         push ecx
         ;;
-        ;; Çå PPT ±íÇøÓò£¬¹² 2M ¿Õ¼ä
+        ;; æ¸… PPT è¡¨åŒºåŸŸï¼Œå…± 2M ç©ºé—´
         ;;
         mov esi, [fs: SDA.PptPhysicalBase64]
         mov edi, 200000h / 1000h
@@ -70,23 +70,23 @@ clear_2m_for_longmode_ppt:
 ;       none
 ; output:
 ;       edx:eax - physical address of PT 
-; ÃèÊö£º
-;       1) ÔÚ PT Pool Àï·ÖÅäÒ»¸ö 4K µÄÎïÀí¿é£¬×÷Îª PT »ò PDT¡¡
-;       2) ´Ëº¯ÊýÔÚ legacy Ä£Ê½ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       1) åœ¨ PT Pool é‡Œåˆ†é…ä¸€ä¸ª 4K çš„ç‰©ç†å—ï¼Œä½œä¸º PT æˆ– PDTã€€
+;       2) æ­¤å‡½æ•°åœ¨ legacy æ¨¡å¼ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 get_pt_physical_base32:
         push ebx  
         ;;
-        ;; ÔÚ PtPoolPhysicalBase ³ØÀï·ÖÅä PT ÎïÀíµØÖ·
-        ;; 1) ÏÖÔÚ´¦ÓÚ stage1 ½×¶Î£¬Ê¹ÓÃPtPoolÎïÀíµØÖ·
+        ;; åœ¨ PtPoolPhysicalBase æ± é‡Œåˆ†é… PT ç‰©ç†åœ°å€
+        ;; 1) çŽ°åœ¨å¤„äºŽ stage1 é˜¶æ®µï¼Œä½¿ç”¨PtPoolç‰©ç†åœ°å€
         ;;    
         mov esi, SDA_PHYSICAL_BASE + SDA.PtPoolPhysicalBase
-        xor edx, edx                                            ; ·ÖÅäÁ£¶ÈÎª 4K
+        xor edx, edx                                            ; åˆ†é…ç²’åº¦ä¸º 4K
         mov eax, 4096
         call locked_xadd64                                      ; edx:eax = Pt pool address
         mov ebx, eax
         mov esi, eax
-        call clear_4k_page32                                    ; Çå¿ÕÇøÓò
+        call clear_4k_page32                                    ; æ¸…ç©ºåŒºåŸŸ
         mov eax, ebx
         pop ebx
         ret
@@ -101,15 +101,15 @@ get_pt_physical_base32:
 ;       edx:eax - virtual address
 ; output:
 ;       edx:eax - PTE address
-; ÃèÊö£º
-;       ÔÚ legacy Ä£Ê½ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       åœ¨ legacy æ¨¡å¼ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 get_pte_virutal_address32:
         push ecx
         push ebx
         
-        and edx, 0FFFFh                                         ; ÇåµØÖ·¸ß 16 Î»
-        and eax, 0FFFFF000h                                     ; ÇåµØÖ·µÍ 12 Î»
+        and edx, 0FFFFh                                         ; æ¸…åœ°å€é«˜ 16 ä½
+        and eax, 0FFFFF000h                                     ; æ¸…åœ°å€ä½Ž 12 ä½
 
         ;;
         ;; offset = va >> 12 * 8
@@ -136,14 +136,14 @@ get_pte_virutal_address32:
 ;       edx:eax - va
 ; output:
 ;       edx:eax - offset
-; ÃèÊö£º
-;       µÃµ½ PXT entry µÄ offset Öµ
-; ×¢Òâ£º
-;       ÔÚ legacy Ä£Ê½ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       å¾—åˆ° PXT entry çš„ offset å€¼
+; æ³¨æ„ï¼š
+;       åœ¨ legacy æ¨¡å¼ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 get_pxe_offset32:
         push ecx
-        and edx, 0FFFFh                                         ; Çå va ¸ß 16 Î»
+        and edx, 0FFFFh                                         ; æ¸… va é«˜ 16 ä½
         mov ecx, (12 + 9 + 9 + 9)                               ; index = va >> 39
         call shr64
         mov ecx, 3
@@ -157,13 +157,13 @@ get_pxe_offset32:
 ;       edx:eax - va
 ; output:
 ;       edx:eax - offset
-; ÃèÊö£º
-;       µÃµ½ PPT entry µÄ offset Öµ
-;       ÔÚ legacy ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       å¾—åˆ° PPT entry çš„ offset å€¼
+;       åœ¨ legacy ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 get_ppe_offset32:
         push ecx
-        and edx, 0FFFFh                                         ; Çå va ¸ß 16 Î»
+        and edx, 0FFFFh                                         ; æ¸… va é«˜ 16 ä½
         mov ecx, (12 + 9 + 9)                                   ; index = va >> 30
         call shr64
         mov ecx, 3
@@ -180,13 +180,13 @@ get_ppe_offset32:
 ;       edx:eax - va
 ; output:
 ;       edx:eax - offset
-; ÃèÊö£º
-;       µÃµ½ PDT entry µÄ offset Öµ
-;       ÔÚ legacy ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       å¾—åˆ° PDT entry çš„ offset å€¼
+;       åœ¨ legacy ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 get_pde_offset32:
         push ecx
-        and edx, 0FFFFh                                         ; Çå va ¸ß 16 Î»
+        and edx, 0FFFFh                                         ; æ¸… va é«˜ 16 ä½
         mov ecx, (12 + 9)                                       ; index = va >> 21
         call shr64
         mov ecx, 3
@@ -200,8 +200,8 @@ get_pde_offset32:
 ;       edx:eax - va
 ; output:
 ;       eax - index
-; ÃèÊö£º
-;       1) ÔÚ legacy ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       1) åœ¨ legacy ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 get_pde_index32:
         shr eax, (12 + 9)
@@ -218,14 +218,14 @@ get_pde_index32:
 ;       edx:eax - va
 ; output:
 ;       edx:eax - offset
-; ÃèÊö£º
-;       µÃµ½ PT entry µÄ offset Öµ
-;       ÔÚ legacy ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       å¾—åˆ° PT entry çš„ offset å€¼
+;       åœ¨ legacy ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 get_pte_offset32:
         push ecx
-        and edx, 0FFFFh                                         ; Çå va ¸ß 16 Î»
-        and eax, 0FFFFF000h                                     ; Çå va µÍ 12 Î»
+        and edx, 0FFFFh                                         ; æ¸… va é«˜ 16 ä½
+        and eax, 0FFFFF000h                                     ; æ¸… va ä½Ž 12 ä½
         mov ecx, 12 - 3                                         ; va >> 12 << 3
         call shr64
         pop ecx
@@ -237,8 +237,8 @@ get_pte_offset32:
 ;       edx:eax - va
 ; output:
 ;       eax - index
-; ÃèÊö£º
-;       1) ÔÚ legacy ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       1) åœ¨ legacy ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 get_pte_index32:
         shr eax, 12
@@ -258,10 +258,10 @@ get_pte_index32:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´Ëº¯ÊýÓÃÀ´Ó³Éä PXT, PPT, PDT ÇøÓò
-;       2) init_longmode_page() Ö´ÐÐÆäËüÓ³ÉäÇ°µ÷ÓÃ
-;       3) ´Ëº¯ÊýÊ¹ÓÃÔÚ legacy Ä£Ê½ÏÂ
+; æè¿°ï¼š
+;       1) æ­¤å‡½æ•°ç”¨æ¥æ˜ å°„ PXT, PPT, PDT åŒºåŸŸ
+;       2) init_longmode_page() æ‰§è¡Œå…¶å®ƒæ˜ å°„å‰è°ƒç”¨
+;       3) æ­¤å‡½æ•°ä½¿ç”¨åœ¨ legacy æ¨¡å¼ä¸‹
 ;---------------------------------------------------------------
 map_longmode_page_transition_table32:
         push ecx
@@ -269,12 +269,12 @@ map_longmode_page_transition_table32:
         push edx
         
         ;;
-        ;; Çå 2M µÄ PPT ±íÎïÀíÇøÓò
+        ;; æ¸… 2M çš„ PPT è¡¨ç‰©ç†åŒºåŸŸ
         ;;
         call clear_2m_for_longmode_ppt
 
         ;;
-        ;; ÐèÒªÐ´ÈëµÄPPT ÎïÀíµØÖ·Öµ£¨200_0000h£©
+        ;; éœ€è¦å†™å…¥çš„PPT ç‰©ç†åœ°å€å€¼ï¼ˆ200_0000hï¼‰
         ;;
         mov eax, [fs: SDA.PptPhysicalBase64]
         mov edx, [fs: SDA.PptPhysicalBase64 + 4]
@@ -282,15 +282,15 @@ map_longmode_page_transition_table32:
         and edx, [gs: PCB.MaxPhyAddrSelectMask + 4]
                 
         ;;
-        ;; 4K µÄ PXT ±íÎïÀíÇøÓò£¨21ed000h - 21edfffh)
+        ;; 4K çš„ PXT è¡¨ç‰©ç†åŒºåŸŸï¼ˆ21ed000h - 21edfffh)
         ;;
         mov ebx, [fs: SDA.PxtPhysicalBase64]
 
         ;;
-        ;; ´Ó¸ßÍùÏÂÐ´Èë 21ff000h - 2000000h
+        ;; ä»Žé«˜å¾€ä¸‹å†™å…¥ 21ff000h - 2000000h
         ;;
-        add eax, (200000h - 1000h)                      ; ÆðÊ¼Ð´Èë 21ff000h Öµ
-        mov ecx, (1000h - 8)                            ; ´Ó 21edff8h ¿ªÊ¼Ð´
+        add eax, (200000h - 1000h)                      ; èµ·å§‹å†™å…¥ 21ff000h å€¼
+        mov ecx, (1000h - 8)                            ; ä»Ž 21edff8h å¼€å§‹å†™
         or eax, VALID_FLAGS | RW                        ; Supervisor, Read/Write, Present, PTE valid
         mov esi, VALID_FLAGS | US | RW                  ; User, Read/Write, Prsent, PTE valid
         
@@ -298,12 +298,12 @@ map_longmode_page_transition_table32.loop:
         cmp ecx, 800h
         jae map_longmode_page_transition_table32.@1
         ;;
-        ;; 21ed000h - 21ed7f8 Ö®¼äÐ´Èë User È¨ÏÞ
+        ;; 21ed000h - 21ed7f8 ä¹‹é—´å†™å…¥ User æƒé™
         ;;
         or eax, esi
 
         ;;
-        ;; 21ed800h - 21edff8 Ö®¼äÐ´Èë Supervisor È¨ÏÞ
+        ;; 21ed800h - 21edff8 ä¹‹é—´å†™å…¥ Supervisor æƒé™
         ;;        
 map_longmode_page_transition_table32.@1:        
         mov [ebx + ecx], eax
@@ -313,7 +313,7 @@ map_longmode_page_transition_table32.@1:
         jns map_longmode_page_transition_table32.loop
         
         ;;
-        ;; ¸üÐÂ PPT ±íÇøÓò¹ÜÀí±êÖ¾ÎªÓÐÐ§
+        ;; æ›´æ–° PPT è¡¨åŒºåŸŸç®¡ç†æ ‡å¿—ä¸ºæœ‰æ•ˆ
         ;;
         mov BYTE [fs: SDA.PptValid], 1
         
@@ -335,13 +335,13 @@ map_longmode_page_transition_table32.@1:
 ;       ecx - page attribute
 ; output:
 ;       0 - succssful, otherwise - error code
-; ÃèÊö:
-;       1) Ö´ÐÐ 64 Î»µÄÐéÄâµØÖ·Ó³Éä²Ù×÷
-;       2) ³É¹¦·µ»Ø 0£¬³ö´í·µ»Ø´íÎóÂë
-;       3) ÔÚ legacy Ä£Ê½ÏÂÊ¹ÓÃ
+; æè¿°:
+;       1) æ‰§è¡Œ 64 ä½çš„è™šæ‹Ÿåœ°å€æ˜ å°„æ“ä½œ
+;       2) æˆåŠŸè¿”å›ž 0ï¼Œå‡ºé”™è¿”å›žé”™è¯¯ç 
+;       3) åœ¨ legacy æ¨¡å¼ä¸‹ä½¿ç”¨
 ;
-; attribute ÃèÊö£º
-;       ecx ´«µÝ¹ýÀ´µÄ attribute ÓÉÏÂÃæ±êÖ¾Î»×é³É£º
+; attribute æè¿°ï¼š
+;       ecx ä¼ é€’è¿‡æ¥çš„ attribute ç”±ä¸‹é¢æ ‡å¿—ä½ç»„æˆï¼š
 ;       [0] - P
 ;       [1] - R/W
 ;       [2] - U/S
@@ -353,8 +353,8 @@ map_longmode_page_transition_table32.@1:
 ;       [8] - G
 ;       [12] - PAT
 ;       [28] - INGORE
-;       [29] - FORCE£¬ÖÃÎ»Ê±£¬Ç¿ÖÆ½øÐÐÓ³Éä
-;       [30] - PHYSICAL£¬ÖÃÎ»Ê±£¬±íÊ¾»ùÓÚÎïÀíµØÖ·½øÐÐÓ³Éä£¨ÓÃÓÚ³õÊ¼»¯Ê±£©
+;       [29] - FORCEï¼Œç½®ä½æ—¶ï¼Œå¼ºåˆ¶è¿›è¡Œæ˜ å°„
+;       [30] - PHYSICALï¼Œç½®ä½æ—¶ï¼Œè¡¨ç¤ºåŸºäºŽç‰©ç†åœ°å€è¿›è¡Œæ˜ å°„ï¼ˆç”¨äºŽåˆå§‹åŒ–æ—¶ï¼‰
 ;       [31] - XD
 ;---------------------------------------------------------------
 do_prev_stage3_virtual_address_mapping32:
@@ -367,9 +367,9 @@ do_prev_stage3_virtual_address_mapping32:
         push edi
         
         ;;
-        ;; ¼ì²éÓ³ÉäµÄÐéÄâµØÖ·ÊÇ·ñÔÚ PPT ±íÇøÓòÄÚ£º
-        ;; ffff_f6fb_7da0_0000h - ffff_f6fb_7dbf_ffffh£¨2M ¿Õ¼ä£©
-        ;; 1) ÊÇµÄ»°£¬ºöÂÔ±jÉä
+        ;; æ£€æŸ¥æ˜ å°„çš„è™šæ‹Ÿåœ°å€æ˜¯å¦åœ¨ PPT è¡¨åŒºåŸŸå†…ï¼š
+        ;; ffff_f6fb_7da0_0000h - ffff_f6fb_7dbf_ffffhï¼ˆ2M ç©ºé—´ï¼‰
+        ;; 1) æ˜¯çš„è¯ï¼Œå¿½ç•¥çœå°„
         ;;
         mov eax, esi
         mov edx, edi
@@ -384,139 +384,139 @@ do_prev_stage3_virtual_address_mapping32:
 do_prev_stage3_virtual_address_mapping32.next:        
         
         ;;
-        ;; ¶Á PPE Öµ
+        ;; è¯» PPE å€¼
         ;;        
         mov eax, esi
         mov edx, edi
         call get_ppe_offset32
         add eax, [fs: SDA.PptPhysicalBase64]
-        mov ebp, eax                                            ; PPE µØÖ·
-        mov eax, [eax]                                          ; eax = PPE µÍ 32 Î»¡¡
+        mov ebp, eax                                            ; PPE åœ°å€
+        mov eax, [eax]                                          ; eax = PPE ä½Ž 32 ä½ã€€
         
         ;;
-        ;; ¼ì²é PPE ÊÇ·ñÓÐÐ§
+        ;; æ£€æŸ¥ PPE æ˜¯å¦æœ‰æ•ˆ
         ;;
         and eax, VALID_FLAGS
         cmp eax, VALID_FLAGS
         jne do_prev_stage3_virtual_address_mapping32.write_ppe
         
         ;;
-        ;; PPE ÓÐÐ§Ê±£¬¶Á PDT ±íµØÖ·£¬ÏÂÒ»²½¼ÌÐø¼ì²é PDE
+        ;; PPE æœ‰æ•ˆæ—¶ï¼Œè¯» PDT è¡¨åœ°å€ï¼Œä¸‹ä¸€æ­¥ç»§ç»­æ£€æŸ¥ PDE
         ;;
         mov eax, [ebp]
         and eax, 0FFFFF000h
-        mov ebp, eax                                            ; PDT ±íµØÖ·
+        mov ebp, eax                                            ; PDT è¡¨åœ°å€
         
         jmp do_prev_stage3_virtual_address_mapping32.check_pde
         
         
 do_prev_stage3_virtual_address_mapping32.write_ppe:
         ;;
-        ;; PPE ÎÞÐ§Ê±:
-        ;; 1) ÐèÒª·ÖÅä4K¿Õ¼ä×÷ÎªÏÂÒ»¼¶µÄ PDT ±íÇøÓò
-        ;; 2) Ð´Èë PPE ÖÐ
+        ;; PPE æ— æ•ˆæ—¶:
+        ;; 1) éœ€è¦åˆ†é…4Kç©ºé—´ä½œä¸ºä¸‹ä¸€çº§çš„ PDT è¡¨åŒºåŸŸ
+        ;; 2) å†™å…¥ PPE ä¸­
         ;;
-        call get_pt_physical_base32                             ; edx:eax - 4K¿Õ¼äÎïÀíµØÖ·
+        call get_pt_physical_base32                             ; edx:eax - 4Kç©ºé—´ç‰©ç†åœ°å€
         mov ecx, [esp + 20]                                     ; page attribute
-        and ecx, 07h                                            ; ±£Áô U/S, R/W ¼° P ÊôÐÔ£¬PCD/PWT ÊôÐÔ²»ÉèÖÃ
-        or ecx, VALID_FLAGS                                     ; ¼ÓÉÏ VALAGS_FLAGS ±êÖ¾¡¡
+        and ecx, 07h                                            ; ä¿ç•™ U/S, R/W åŠ P å±žæ€§ï¼ŒPCD/PWT å±žæ€§ä¸è®¾ç½®
+        or ecx, VALID_FLAGS                                     ; åŠ ä¸Š VALAGS_FLAGS æ ‡å¿—ã€€
         or ecx, eax
         ;;
-        ;; Ð´Èë PPE
+        ;; å†™å…¥ PPE
         ;;
         mov [ebp], ecx
         mov [ebp + 4], edx
-        mov ebp, eax                                            ; PDT ±íµØÖ·
+        mov ebp, eax                                            ; PDT è¡¨åœ°å€
         
 do_prev_stage3_virtual_address_mapping32.check_pde:        
         ;;
-        ;; ¼ì²é PDE Ïî
+        ;; æ£€æŸ¥ PDE é¡¹
         ;;
         mov eax, [esp + 4]
         mov edx, [esp]
         call get_pde_index32
-        add ebp, eax                                            ; PDE µØÖ·
-        mov eax, [ebp]                                          ; PDE Öµ
+        add ebp, eax                                            ; PDE åœ°å€
+        mov eax, [ebp]                                          ; PDE å€¼
         ;;
-        ;; ¼ì²é PDE ÊÇ·ñÓÐÐ§
+        ;; æ£€æŸ¥ PDE æ˜¯å¦æœ‰æ•ˆ
         ;; 
         and eax, VALID_FLAGS
         cmp eax, VALID_FLAGS
         jne do_prev_stage3_virtual_address_mapping32.write_pde
         ;;
-        ;; PDE ÓÐÐ§Ê±£¬¶ÁÈ¡ PT ±íµØÖ·£¬ÏÂÒ»²½¼ÌÐø¼ì²é PTE Ïî
+        ;; PDE æœ‰æ•ˆæ—¶ï¼Œè¯»å– PT è¡¨åœ°å€ï¼Œä¸‹ä¸€æ­¥ç»§ç»­æ£€æŸ¥ PTE é¡¹
         ;;
         mov eax, [ebp]
         and eax, 0FFFFF000h
-        mov ebp, eax                                            ; PT ±íµØÖ·
+        mov ebp, eax                                            ; PT è¡¨åœ°å€
         
         jmp do_prev_stage3_virtual_address_mapping32.check_pte
         
 do_prev_stage3_virtual_address_mapping32.write_pde:
         ;;
-        ;; PDE ÎÞÐ§Ê±£¬ÐèÒªÐ´Èë PDE£º
-        ;; ×¢Òâ£º
-        ;; 1) Ê×ÏÈ£¬¼ì²éÊÇ·ñÊ¹ÓÃ 2M Ò³Ó³Éä
-        ;; 2) ÊôÓÚ 2M Ò³Ó³Éä£¬Ôò²»ÐèÒª·ÖÅä PT ±í
-        ;; 3) ÊôÓÚ 4K Ò³Ó³Éä£¬ÔòÐèÒª·ÖÅä PT ±í¡¡
+        ;; PDE æ— æ•ˆæ—¶ï¼Œéœ€è¦å†™å…¥ PDEï¼š
+        ;; æ³¨æ„ï¼š
+        ;; 1) é¦–å…ˆï¼Œæ£€æŸ¥æ˜¯å¦ä½¿ç”¨ 2M é¡µæ˜ å°„
+        ;; 2) å±žäºŽ 2M é¡µæ˜ å°„ï¼Œåˆ™ä¸éœ€è¦åˆ†é… PT è¡¨
+        ;; 3) å±žäºŽ 4K é¡µæ˜ å°„ï¼Œåˆ™éœ€è¦åˆ†é… PT è¡¨ã€€
         ;; 
         
         ;;
-        ;; ¼ì²é page ÊôÐÔ
+        ;; æ£€æŸ¥ page å±žæ€§
         ;;
-        mov ecx, [esp + 20]                                     ; ÊôÐÔ
-        test ecx, PS                                            ; PS Î»
+        mov ecx, [esp + 20]                                     ; å±žæ€§
+        test ecx, PS                                            ; PS ä½
         jnz do_prev_stage3_virtual_address_mapping32.write_pde.@1
         ;;
-        ;; ÊôÓÚ 4K Ò³Ó³Éä
-        ;; 1) ·ÖÅä 4K ¿Õ¼ä£¬×÷Îª PT ±íµØÖ·
-        ;; 2) Ð´Èë PDE ÖÐ
+        ;; å±žäºŽ 4K é¡µæ˜ å°„
+        ;; 1) åˆ†é… 4K ç©ºé—´ï¼Œä½œä¸º PT è¡¨åœ°å€
+        ;; 2) å†™å…¥ PDE ä¸­
         ;;
         call get_pt_physical_base32
-        and ecx, 07                                             ; ±£Áô U/S, R/W ¼° P Î»
-        or ecx, eax                                             ; ºÏ³É page attribute
-        or ecx, VALID_FLAGS                                     ; ÓÐÐ§±êÖ¾Î»
+        and ecx, 07                                             ; ä¿ç•™ U/S, R/W åŠ P ä½
+        or ecx, eax                                             ; åˆæˆ page attribute
+        or ecx, VALID_FLAGS                                     ; æœ‰æ•ˆæ ‡å¿—ä½
         
         ;;
-        ;; Ð´Èë PDE
+        ;; å†™å…¥ PDE
         ;; 
         mov [ebp], ecx
         mov [ebp + 4], edx
-        mov ebp, eax                                            ; PT ±íµØÖ·
+        mov ebp, eax                                            ; PT è¡¨åœ°å€
         
         jmp do_prev_stage3_virtual_address_mapping32.check_pte
         
         
 do_prev_stage3_virtual_address_mapping32.write_pde.@1:        
         ;;
-        ;; ÊôÓÚ 2M Ò³Ó³Éä£¬Ð´Èë page frame µØÖ·Öµ
+        ;; å±žäºŽ 2M é¡µæ˜ å°„ï¼Œå†™å…¥ page frame åœ°å€å€¼
         ;;
         mov eax, [esp + 24]
-        mov edx, [esp + 16]                                     ; edx:eax = page frame µØÖ·
-        and eax, 0FFE00000h                                     ; 2M ±ß½ç
+        mov edx, [esp + 16]                                     ; edx:eax = page frame åœ°å€
+        and eax, 0FFE00000h                                     ; 2M è¾¹ç•Œ
         ;;
-        ;; ±£Ö¤ÔÚ´¦ÀíÆ÷Ö§³ÖµÄ×î´óÎïÀíµØÖ·ÄÚ
+        ;; ä¿è¯åœ¨å¤„ç†å™¨æ”¯æŒçš„æœ€å¤§ç‰©ç†åœ°å€å†…
         ;;
         and eax, [gs: PCB.MaxPhyAddrSelectMask]
         and edx, [gs: PCB.MaxPhyAddrSelectMask + 4]
         
         ;;
-        ;; ±£Áô page attribute µÄ [12:0] Î»
+        ;; ä¿ç•™ page attribute çš„ [12:0] ä½
         ;;
-        mov ecx, [esp + 20]                                     ; ¶Á page attribute
+        mov ecx, [esp + 20]                                     ; è¯» page attribute
         mov esi, ecx
         
         ;;
-        ;; Éú³É XD ±êÖ¾Î», attribute & XdValue
+        ;; ç”Ÿæˆ XD æ ‡å¿—ä½, attribute & XdValue
         ;;
-        and esi, [fs: SDA.XdValue]                              ; ÊÇ·ñ¿ªÆô XD ¹¦ÄÜ
-        or edx, esi                                             ; ºÏ³É XD ±êÖ¾
-        and ecx, 1FFFh                                          ; ±£Áô 12:0
-        or ecx, VALID_FLAGS                                     ; ¼ÓÉÏ VALAGS_FLAGS ±êÖ¾¡¡
+        and esi, [fs: SDA.XdValue]                              ; æ˜¯å¦å¼€å¯ XD åŠŸèƒ½
+        or edx, esi                                             ; åˆæˆ XD æ ‡å¿—
+        and ecx, 1FFFh                                          ; ä¿ç•™ 12:0
+        or ecx, VALID_FLAGS                                     ; åŠ ä¸Š VALAGS_FLAGS æ ‡å¿—ã€€
         or ecx, eax
         
         ;;
-        ;; Ð´Èë PDE£¬Íê³ÉÓ³Éä
+        ;; å†™å…¥ PDEï¼Œå®Œæˆæ˜ å°„
         ;;
         mov [ebp], ecx
         mov [ebp + 4], edx
@@ -529,11 +529,11 @@ do_prev_stage3_virtual_address_mapping32.check_pte:
         mov edx, [esp]
         mov eax, [esp + 4]                                      ; edx:eax = va
         call get_pte_index32
-        add ebp, eax                                            ; PTE µØÖ·
+        add ebp, eax                                            ; PTE åœ°å€
         mov eax, [ebp]
         
         ;;
-        ;; ¼ì²é PTE ÊÇ·ñÓÐÐ§
+        ;; æ£€æŸ¥ PTE æ˜¯å¦æœ‰æ•ˆ
         ;;
         and eax, VALID_FLAGS
         cmp eax, VALID_FLAGS
@@ -542,35 +542,35 @@ do_prev_stage3_virtual_address_mapping32.check_pte:
 do_prev_stage3_virtual_address_mapping32.write_pte:
         
         ;;
-        ;; ÎÞÐ§Ê±£¬Ð´Èë page frame µØÖ·Öµ
+        ;; æ— æ•ˆæ—¶ï¼Œå†™å…¥ page frame åœ°å€å€¼
         ;;
         
         mov eax, [esp + 24]
-        mov edx, [esp + 16]                                     ; edx:eax = page frame µØÖ·
-        and eax, 0FFFFF000h                                     ; 4K ±ß½ç
+        mov edx, [esp + 16]                                     ; edx:eax = page frame åœ°å€
+        and eax, 0FFFFF000h                                     ; 4K è¾¹ç•Œ
         ;;
-        ;; ±£Ö¤ÔÚ´¦ÀíÆ÷Ö§³ÖµÄ×î´óÎïÀíµØÖ·ÄÚ
+        ;; ä¿è¯åœ¨å¤„ç†å™¨æ”¯æŒçš„æœ€å¤§ç‰©ç†åœ°å€å†…
         ;;
         and eax, [gs: PCB.MaxPhyAddrSelectMask]
         and edx, [gs: PCB.MaxPhyAddrSelectMask + 4]
         
         ;;
-        ;; ºÏ³É page attribute
+        ;; åˆæˆ page attribute
         ;;
         mov ecx, [esp + 20]
-        btr ecx, 12                                             ; È¡ PAT Î»
+        btr ecx, 12                                             ; å– PAT ä½
         setc bl
-        shl bl, 7                                               ; PTE.PAT Î»
+        shl bl, 7                                               ; PTE.PAT ä½
         or cl, bl
         mov esi, ecx
         and esi, [fs: SDA.XdValue]
-        or edx, esi                                             ; ºÏ³É XD ±êÖ¾Î»
-        and ecx, 0FFh                                           ; ±£Áô 8:0 Î»
+        or edx, esi                                             ; åˆæˆ XD æ ‡å¿—ä½
+        and ecx, 0FFh                                           ; ä¿ç•™ 8:0 ä½
         or eax, ecx
-        or eax, VALID_FLAGS                                     ; Ìí¼ÓÓÐÐ§±êÖ¾
+        or eax, VALID_FLAGS                                     ; æ·»åŠ æœ‰æ•ˆæ ‡å¿—
         
         ;;
-        ;; Ð´Èë PTE Ïî
+        ;; å†™å…¥ PTE é¡¹
         ;;
         mov [ebp], eax
         mov [ebp + 4], edx
@@ -580,9 +580,9 @@ do_prev_stage3_virtual_address_mapping32.write_pte:
 
 do_prev_stage3_virtual_address_mapping32.check_mapping:
         ;;
-        ;; ¼ÙÈç PTE ÊÇÓÐÐ§µÄ£¬±íÃ÷ va ÒÑ¾­±»Ó³Éä
-        ;; 1) ¼ì²éÊÇ·ñÇ¿ÐÐÓ³Éä
-        ;; 2) ²»ÊÇµÄ»°£¬ºöÂÔÓ³Éä
+        ;; å‡å¦‚ PTE æ˜¯æœ‰æ•ˆçš„ï¼Œè¡¨æ˜Ž va å·²ç»è¢«æ˜ å°„
+        ;; 1) æ£€æŸ¥æ˜¯å¦å¼ºè¡Œæ˜ å°„
+        ;; 2) ä¸æ˜¯çš„è¯ï¼Œå¿½ç•¥æ˜ å°„
         ;;
         mov ecx, [esp + 20]
         test ecx, FORCE
@@ -651,7 +651,7 @@ do_prev_stage3_virtual_address_mapping32_n.done:
 
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ;$                                              $
-;$              64-bit page64 ¿â                $
+;$              64-bit page64 åº“                $
 ;$                                              $
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
@@ -664,16 +664,16 @@ do_prev_stage3_virtual_address_mapping32_n.done:
 ; intput:
 ;       rsi - physical address of PT
 ; output:
-;       rax - virtual address of PT£¬Ê§°ÜÊ±·µ»Ø 0 Öµ
-; ÃèÊö£º
-;       1) ·µ»Ø PT pool ÖÐÎïÀíµØÖ·¶ÔÓ¦µÄÐéÄâµØÖ·
+;       rax - virtual address of PTï¼Œå¤±è´¥æ—¶è¿”å›ž 0 å€¼
+; æè¿°ï¼š
+;       1) è¿”å›ž PT pool ä¸­ç‰©ç†åœ°å€å¯¹åº”çš„è™šæ‹Ÿåœ°å€
 ;---------------------------------------------------------------
 get_pt_virtual_base64:
         push rsi
         xor eax, eax
         
         ;;
-        ;; ÐèÒª¼ì²éÎïÀíµØÖ·ÊÇÔÚÖ÷ PT pool ÄÚ£¬»¹ÊÇ±¸ÓÃ PT pool ÄÚ
+        ;; éœ€è¦æ£€æŸ¥ç‰©ç†åœ°å€æ˜¯åœ¨ä¸» PT pool å†…ï¼Œè¿˜æ˜¯å¤‡ç”¨ PT pool å†…
         ;;
         cmp rsi, PT_POOL_PHYSICAL_BASE64
         jb get_pt_virtual_base64.check_backup
@@ -708,63 +708,63 @@ get_pt_virtual_base64.done:
 ;       none
 ; output:
 ;       rax - physical address of PT 
-; ÃèÊö£º
-;       1) ÔÚ PT Pool Àï·ÖÅäÒ»¸ö 4K µÄÎïÀí¿é£¬×÷Îª PT »ò PDT¡¡
-;       2) Ê×ÏÈÔÚÖ÷ PT Pool Àï·ÖÅä£¬µ±Ö÷ PT pool ÓÃÍêºó£¬ÔÚ±¸ÓÃ PT pool ·ÖÅä
-;       3) µ±±¸ÓÃ PT Pool Ò²·ÖÅäÍê£¬·µ»Ø 0 Öµ
+; æè¿°ï¼š
+;       1) åœ¨ PT Pool é‡Œåˆ†é…ä¸€ä¸ª 4K çš„ç‰©ç†å—ï¼Œä½œä¸º PT æˆ– PDTã€€
+;       2) é¦–å…ˆåœ¨ä¸» PT Pool é‡Œåˆ†é…ï¼Œå½“ä¸» PT pool ç”¨å®ŒåŽï¼Œåœ¨å¤‡ç”¨ PT pool åˆ†é…
+;       3) å½“å¤‡ç”¨ PT Pool ä¹Ÿåˆ†é…å®Œï¼Œè¿”å›ž 0 å€¼
 ;---------------------------------------------------------------
 get_pt_physical_base64:
         push rbx
         xor esi, esi
-        mov eax, 4096                                   ; ·ÖÅäÁ£¶ÈÎª 4K
+        mov eax, 4096                                   ; åˆ†é…ç²’åº¦ä¸º 4K
         
         ;;
-        ;; ¼ì²éÖ÷ PT Pool ÊÇ·ñ¿ÕÏÐ¿ÉÓÃ
+        ;; æ£€æŸ¥ä¸» PT Pool æ˜¯å¦ç©ºé—²å¯ç”¨
         ;;
         cmp BYTE [fs: SDA.PtPoolFree], 1
         jne get_pt_physical_base64.check_backup
         
         ;;
-        ;; ¿ÉÓÃÊ±£¬´Ó Pt pool Àï·ÖÅäÒ»¸ö 4K ÎïÀí¿é
+        ;; å¯ç”¨æ—¶ï¼Œä»Ž Pt pool é‡Œåˆ†é…ä¸€ä¸ª 4K ç‰©ç†å—
         ;;
         lock xadd [fs: SDA.PtPoolPhysicalBase], rax
         
         ;;
-        ;; ¼ì²éÖ÷ Pt pool ÊÇ·ñ³¬ÏÞ
+        ;; æ£€æŸ¥ä¸» Pt pool æ˜¯å¦è¶…é™
         ;;
         cmp rax, [fs: SDA.PtPoolPhysicalTop]
         jb get_pt_physical_base64.ok
         
         ;;
-        ;; ³¬ÏÞÊ±£º
-        ;; 1) Çå PtPoolFree ±êÖ¾Î»
-        ;; 2) ³¢ÊÔÊ¹ÓÃ±¸ÓÃ Pt pool ¼ÌÐø·ÖÅä
+        ;; è¶…é™æ—¶ï¼š
+        ;; 1) æ¸… PtPoolFree æ ‡å¿—ä½
+        ;; 2) å°è¯•ä½¿ç”¨å¤‡ç”¨ Pt pool ç»§ç»­åˆ†é…
         ;;
         mov BYTE [fs: SDA.PtPoolFree], 0
         mov eax, 4096
                 
 get_pt_physical_base64.check_backup:       
         ;;
-        ;; ¼ì²é±¸ÓÃ Pt Pool ÊÇ·ñ¿ÕÏÐ¿ÉÓÃ
-        ;; ±¸ÓÃ Pt Pool ·Ç¿ÕÏÐÊ±£¬·µ»Ø 0 Öµ
+        ;; æ£€æŸ¥å¤‡ç”¨ Pt Pool æ˜¯å¦ç©ºé—²å¯ç”¨
+        ;; å¤‡ç”¨ Pt Pool éžç©ºé—²æ—¶ï¼Œè¿”å›ž 0 å€¼
         ;;
         cmp BYTE [fs: SDA.PtPool2Free], 1
         cmovne eax, esi
         jne get_pt_physical_base64.done
         
         ;;
-        ;; ´Ó±¸ÓÃ Pt pool Àï·ÖÅä 4K ÎïÀí¿é
+        ;; ä»Žå¤‡ç”¨ Pt pool é‡Œåˆ†é… 4K ç‰©ç†å—
         ;;        
         lock xadd [fs: SDA.PtPool2PhysicalBase], rax
         
         ;;
-        ;; ¼ì²é±¸ÓÃ Pt pool ÊÇ·ñ³¬ÏÞ
+        ;; æ£€æŸ¥å¤‡ç”¨ Pt pool æ˜¯å¦è¶…é™
         ;;
         cmp rax, [fs: SDA.PtPool2PhysicalTop]
         jb get_pt_physical_base64.ok
         
         ;;
-        ;; ³¬ÏÞÊ±£¬Çå Free ±êÖ¾
+        ;; è¶…é™æ—¶ï¼Œæ¸… Free æ ‡å¿—
         ;;
         mov BYTE [fs: SDA.PtPool2Free], 0
         mov eax, esi
@@ -773,7 +773,7 @@ get_pt_physical_base64.check_backup:
 get_pt_physical_base64.ok:
         mov rbx, rax
         ;;
-        ;; Çå PT Pool ¿é 
+        ;; æ¸… PT Pool å— 
         ;;
         mov rsi, rax
         call get_pt_virtual_base64
@@ -798,12 +798,12 @@ get_pt_physical_base64.done:
 ;       r8 - page attribute
 ; output:
 ;       0 - succssful, otherwise - error code
-; ÃèÊö:
-;       1) Ö´ÐÐ 64 Î»µÄÐéÄâµØÖ·Ó³Éä²Ù×÷
-;       2) ³É¹¦·µ»Ø 0£¬³ö´í·µ»Ø´íÎóÂë
+; æè¿°:
+;       1) æ‰§è¡Œ 64 ä½çš„è™šæ‹Ÿåœ°å€æ˜ å°„æ“ä½œ
+;       2) æˆåŠŸè¿”å›ž 0ï¼Œå‡ºé”™è¿”å›žé”™è¯¯ç 
 ;
-; attribute ÃèÊö£º
-;       r8 ´«µÝ¹ýÀ´µÄ attribute ÓÉÏÂÃæ±êÖ¾Î»×é³É£º
+; attribute æè¿°ï¼š
+;       r8 ä¼ é€’è¿‡æ¥çš„ attribute ç”±ä¸‹é¢æ ‡å¿—ä½ç»„æˆï¼š
 ;       [0] - P
 ;       [1] - R/W
 ;       [2] - U/S
@@ -813,12 +813,12 @@ get_pt_physical_base64.done:
 ;       [6] - D
 ;       [7] - PAT
 ;       [8] - G
-;       [12] - ºöÂÔ
-;       [26:13] - ºöÂÔ
+;       [12] - å¿½ç•¥
+;       [26:13] - å¿½ç•¥
 ;       [27] - GET_PHY_PAGE_FRAME
 ;       [28] - INGORE
-;       [29] - FORCE£¬ÖÃÎ»Ê±£¬Ç¿ÖÆ½øÐÐÓ³Éä
-;       [30] - PHYSICAL£¬ÖÃÎ»Ê±£¬±íÊ¾»ùÓÚÎïÀíµØÖ·½øÐÐÓ³Éä£¨ÓÃÓÚ³õÊ¼»¯Ê±£©
+;       [29] - FORCEï¼Œç½®ä½æ—¶ï¼Œå¼ºåˆ¶è¿›è¡Œæ˜ å°„
+;       [30] - PHYSICALï¼Œç½®ä½æ—¶ï¼Œè¡¨ç¤ºåŸºäºŽç‰©ç†åœ°å€è¿›è¡Œæ˜ å°„ï¼ˆç”¨äºŽåˆå§‹åŒ–æ—¶ï¼‰
 ;       [31] - XD
 ;---------------------------------------------------------------
 do_virtual_address_mapping64:
@@ -831,8 +831,8 @@ do_virtual_address_mapping64:
         mov r15, rdi
         
         ;;
-        ;; ¼ì²éÓ³ÉäµÄÐéÄâµØÖ·ÊÇ·ñÔÚ PPT ±íÇøÓòÄÚ£¨PPT_BASE - PPT_TOP64)£º
-        ;; 1) ÊÇµÄ»°£¬ÓÉÓÚÒÑ¾­Ó³Éä£¬ÐèÒªºöÂÔ±jÉä
+        ;; æ£€æŸ¥æ˜ å°„çš„è™šæ‹Ÿåœ°å€æ˜¯å¦åœ¨ PPT è¡¨åŒºåŸŸå†…ï¼ˆPPT_BASE - PPT_TOP64)ï¼š
+        ;; 1) æ˜¯çš„è¯ï¼Œç”±äºŽå·²ç»æ˜ å°„ï¼Œéœ€è¦å¿½ç•¥çœå°„
         ;;
         mov rax, PPT_BASE64
         cmp rsi, rax
@@ -843,54 +843,54 @@ do_virtual_address_mapping64:
         
 do_virtual_address_mapping64.next:        
         ;;
-        ;; ¶Á PPE Öµ
+        ;; è¯» PPE å€¼
         ;;
         call get_ppe_offset64
         add rax, [fs: SDA.PptBase64]
-        mov rbp, rax                                            ; PPE µØÖ·
-        mov rax, [rax]                                          ; PPE Öµ
+        mov rbp, rax                                            ; PPE åœ°å€
+        mov rax, [rax]                                          ; PPE å€¼
         
         ;;
-        ;; ¼ì²é PPE ÊÇ·ñÓÐÐ§
+        ;; æ£€æŸ¥ PPE æ˜¯å¦æœ‰æ•ˆ
         ;;
         and eax, VALID_FLAGS
         cmp eax, VALID_FLAGS
         jne do_virtual_address_mapping64.write_ppe
 
         ;;
-        ;; ¶Á PDT ±íµØÖ·£¬ÏÂÒ»²½¼ÌÐø¼ì²é PDE
+        ;; è¯» PDT è¡¨åœ°å€ï¼Œä¸‹ä¸€æ­¥ç»§ç»­æ£€æŸ¥ PDE
         ;;
         mov rax, [rbp]
-        and rax, ~0FFFh                                         ; Çå bits 11:0
+        and rax, ~0FFFh                                         ; æ¸… bits 11:0
         and rax, [gs: PCB.MaxPhyAddrSelectMask]                 ; 
         
         ;;
-        ;; PDT ±íÎïÀíµØÖ·×ª»»Îª¶ÔÓ¦µÄÐéÄâµØÖ·
+        ;; PDT è¡¨ç‰©ç†åœ°å€è½¬æ¢ä¸ºå¯¹åº”çš„è™šæ‹Ÿåœ°å€
         ;;
         mov rsi, rax
         call get_pt_virtual_base64
-        mov rbp, rax                                            ; PDT ±íµØÖ·
+        mov rbp, rax                                            ; PDT è¡¨åœ°å€
         
         jmp do_virtual_address_mapping64.check_pde
         
         
 do_virtual_address_mapping64.write_ppe:
         ;;
-        ;; PPE ÎÞÐ§Ê±:
-        ;; 1) ÐèÒª·ÖÅä4K¿Õ¼ä×÷ÎªÏÂÒ»¼¶µÄ PDT ±íÇøÓò
-        ;; 2) Ð´Èë PPE ÖÐ
+        ;; PPE æ— æ•ˆæ—¶:
+        ;; 1) éœ€è¦åˆ†é…4Kç©ºé—´ä½œä¸ºä¸‹ä¸€çº§çš„ PDT è¡¨åŒºåŸŸ
+        ;; 2) å†™å…¥ PPE ä¸­
         ;;
-        ;; page ÊôÐÔÉèÖÃËµÃ÷£º
-        ;; 1) ´Ó²»Ê¹ÓÃ 1G Ò³ÃæÓ³Éä£¬Òò´ËÐèÈ¥µô PS ±êÖ¾Î»
-        ;; 2) XD ±êÖ¾²»¼ÓÔÚ PPE ÉÏ
-        ;; 3) ´«µÝ¹ýÀ´µÄ User ºÍ Writable ÊôÐÔ£¬±ØÐëÒª¼ÓÉÏ!
-        ;; 4) PAT,PCD,PWT ÒÔ¼° G ÊôÐÔºöÂÔ!(ÕâÐ©ÊôÐÔÖ»¼ÓÔÚ page frame ÉÏ£©
+        ;; page å±žæ€§è®¾ç½®è¯´æ˜Žï¼š
+        ;; 1) ä»Žä¸ä½¿ç”¨ 1G é¡µé¢æ˜ å°„ï¼Œå› æ­¤éœ€åŽ»æŽ‰ PS æ ‡å¿—ä½
+        ;; 2) XD æ ‡å¿—ä¸åŠ åœ¨ PPE ä¸Š
+        ;; 3) ä¼ é€’è¿‡æ¥çš„ User å’Œ Writable å±žæ€§ï¼Œå¿…é¡»è¦åŠ ä¸Š!
+        ;; 4) PAT,PCD,PWT ä»¥åŠ G å±žæ€§å¿½ç•¥!(è¿™äº›å±žæ€§åªåŠ åœ¨ page frame ä¸Šï¼‰
         ;;
-        call get_pt_physical_base64                             ; rax - 4K¿Õ¼äÎïÀíµØÖ·
+        call get_pt_physical_base64                             ; rax - 4Kç©ºé—´ç‰©ç†åœ°å€
         
         ;;
-        ;; ¼ì²éÊÇ·ÖÅä 4K ÎïÀíµØÖ·ÊÇ·ñ³É¹¦:
-        ;; 1) ²»³É¹¦Ê±£¬·µ»Ø×´Ì¬ÂëÎª£ºMAPPING_NO_RESOURCE
+        ;; æ£€æŸ¥æ˜¯åˆ†é… 4K ç‰©ç†åœ°å€æ˜¯å¦æˆåŠŸ:
+        ;; 1) ä¸æˆåŠŸæ—¶ï¼Œè¿”å›žçŠ¶æ€ç ä¸ºï¼šMAPPING_NO_RESOURCE
         ;;
         test rax, rax
         mov esi, MAPPING_NO_RESOURCE
@@ -901,29 +901,29 @@ do_virtual_address_mapping64.write_ppe:
         or rax, VALID_FLAGS | PAGE_P | PAGE_WRITE | PAGE_USER
         
         ;;
-        ;; Ð´Èë PPE Ïî
+        ;; å†™å…¥ PPE é¡¹
         ;;
         mov [rbp], rax
-        call get_pt_virtual_base64                              ; È¡ PDT ¶ÔÓ¦µÄÐéÄâµØÖ·
-        mov rbp, rax                                            ; PDT ±íµØÖ·
+        call get_pt_virtual_base64                              ; å– PDT å¯¹åº”çš„è™šæ‹Ÿåœ°å€
+        mov rbp, rax                                            ; PDT è¡¨åœ°å€
         
 do_virtual_address_mapping64.check_pde:        
         ;;
-        ;; ¶ÁÈ¡ PDE Ïî
+        ;; è¯»å– PDE é¡¹
         ;;
         mov rsi, rbx
         call get_pde_index64
-        add rbp, rax                                            ; PDE µØÖ·
-        mov rax, [rbp]                                          ; PDE Öµ
+        add rbp, rax                                            ; PDE åœ°å€
+        mov rax, [rbp]                                          ; PDE å€¼
         ;;
-        ;; ¼ì²é PDE ÊÇ·ñÓÐÐ§
+        ;; æ£€æŸ¥ PDE æ˜¯å¦æœ‰æ•ˆ
         ;; 
         and eax, VALID_FLAGS
         cmp eax, VALID_FLAGS
         jne do_virtual_address_mapping64.write_pde
         
         ;;
-        ;; PDE ÓÐÐ§Ê±£¬¼ì²éÓ³ÉäÊÇ·ñÓÐÐ§
+        ;; PDE æœ‰æ•ˆæ—¶ï¼Œæ£€æŸ¥æ˜ å°„æ˜¯å¦æœ‰æ•ˆ
         ;;
         mov rsi, [rbp]
         mov rdi, r12
@@ -932,45 +932,45 @@ do_virtual_address_mapping64.check_pde:
         jne do_virtual_address_mapping64.done
                 
         ;;
-        ;; Ó³ÉäÓÐÐ§¼ì²éÍ¨¹ý£º¶ÁÈ¡ PT ±íµØÖ·£¬ÏÂÒ»²½¼ÌÐø¼ì²é PTE Ïî
+        ;; æ˜ å°„æœ‰æ•ˆæ£€æŸ¥é€šè¿‡ï¼šè¯»å– PT è¡¨åœ°å€ï¼Œä¸‹ä¸€æ­¥ç»§ç»­æ£€æŸ¥ PTE é¡¹
         ;;
         mov rax, [rbp]
         and rax, ~0FFFh
         and rax, [gs: PCB.MaxPhyAddrSelectMask]
         mov rsi, rax
         call get_pt_virtual_base64
-        mov rbp, rax                                            ; PT ±íµØÖ·
+        mov rbp, rax                                            ; PT è¡¨åœ°å€
         
         jmp do_virtual_address_mapping64.check_pte
         
 do_virtual_address_mapping64.write_pde:
         ;;
-        ;; PDE ÎÞÐ§Ê±£¬ÐèÒªÐ´Èë PDE£º
-        ;; ×¢Òâ£º
-        ;; 1) Ê×ÏÈ£¬¼ì²éÊÇ·ñÊ¹ÓÃ 2M Ò³Ó³Éä
-        ;; 2) ÊôÓÚ 2M Ò³Ó³Éä£¬Ôò²»ÐèÒª·ÖÅä PT ±í
-        ;; 3) ÊôÓÚ 4K Ò³Ó³Éä£¬ÔòÐèÒª·ÖÅä PT ±í¡¡
+        ;; PDE æ— æ•ˆæ—¶ï¼Œéœ€è¦å†™å…¥ PDEï¼š
+        ;; æ³¨æ„ï¼š
+        ;; 1) é¦–å…ˆï¼Œæ£€æŸ¥æ˜¯å¦ä½¿ç”¨ 2M é¡µæ˜ å°„
+        ;; 2) å±žäºŽ 2M é¡µæ˜ å°„ï¼Œåˆ™ä¸éœ€è¦åˆ†é… PT è¡¨
+        ;; 3) å±žäºŽ 4K é¡µæ˜ å°„ï¼Œåˆ™éœ€è¦åˆ†é… PT è¡¨ã€€
         ;; 
-        ;; page ÊôÐÔÉèÖÃËµÃ÷£º
-        ;; 1) ÊôÓÚ 2M page frame Ê±£¬²ÎÊýÖÐµÄËùÓÐ page ÊôÐÔ¶¼Òª¼ÓÉÏ
-        ;; 2) ÊôÓÚ 4K Ò³ÃæÓ³ÉäÊ±£¬Ö»È¡ page ÊôÐÔÖÐµÄ U/S, R/W ºÍ P
+        ;; page å±žæ€§è®¾ç½®è¯´æ˜Žï¼š
+        ;; 1) å±žäºŽ 2M page frame æ—¶ï¼Œå‚æ•°ä¸­çš„æ‰€æœ‰ page å±žæ€§éƒ½è¦åŠ ä¸Š
+        ;; 2) å±žäºŽ 4K é¡µé¢æ˜ å°„æ—¶ï¼Œåªå– page å±žæ€§ä¸­çš„ U/S, R/W å’Œ P
         ;;
         
         ;;
-        ;; ¼ì²éÊÇ·ñÎª 2M Ò³ÃæÓ³Éä
+        ;; æ£€æŸ¥æ˜¯å¦ä¸º 2M é¡µé¢æ˜ å°„
         ;;
         mov r8, r12
-        test r8d, PAGE_2M                                       ; PS Î»
+        test r8d, PAGE_2M                                       ; PS ä½
         jnz do_virtual_address_mapping64.write_pde.@1
         ;;
-        ;; ÊôÓÚ 4K Ò³Ó³Éä
-        ;; 1) ·ÖÅä 4K ¿Õ¼ä£¬×÷Îª PT ±íµØÖ·
-        ;; 2) Ð´Èë PDE ÖÐ
+        ;; å±žäºŽ 4K é¡µæ˜ å°„
+        ;; 1) åˆ†é… 4K ç©ºé—´ï¼Œä½œä¸º PT è¡¨åœ°å€
+        ;; 2) å†™å…¥ PDE ä¸­
         ;;
         call get_pt_physical_base64
         ;;
-        ;; ¼ì²éÊÇ·ÖÅä 4K ÎïÀíµØÖ·ÊÇ·ñ³É¹¦:
-        ;; 1) ²»³É¹¦Ê±£¬·µ»Ø×´Ì¬ÂëÎª£ºMAPPING_NO_RESOURCE
+        ;; æ£€æŸ¥æ˜¯åˆ†é… 4K ç‰©ç†åœ°å€æ˜¯å¦æˆåŠŸ:
+        ;; 1) ä¸æˆåŠŸæ—¶ï¼Œè¿”å›žçŠ¶æ€ç ä¸ºï¼šMAPPING_NO_RESOURCE
         ;;
         test rax, rax
         mov esi, MAPPING_NO_RESOURCE
@@ -981,46 +981,46 @@ do_virtual_address_mapping64.write_pde:
         or rax, VALID_FLAGS | PAGE_P | PAGE_WRITE | PAGE_USER
         
         ;;
-        ;; Ð´Èë PDE
+        ;; å†™å…¥ PDE
         ;; 
         mov [rbp], rax
         call get_pt_virtual_base64
-        mov rbp, rax                                            ; PT ±íµØÖ·
+        mov rbp, rax                                            ; PT è¡¨åœ°å€
         
         jmp do_virtual_address_mapping64.check_pte
         
         
 do_virtual_address_mapping64.write_pde.@1:        
         ;;
-        ;; ÊôÓÚ 2M Ò³Ó³Éä£¬Ð´Èë page frame µØÖ·Öµ
+        ;; å±žäºŽ 2M é¡µæ˜ å°„ï¼Œå†™å…¥ page frame åœ°å€å€¼
         ;;
         mov rax, r15
-        and rax, ~1FFFFFh                                       ; ±£Ö¤ 2M page frame ±ß½ç
-        and rax, [gs: PCB.MaxPhyAddrSelectMask]                 ; ±£Ö¤ÔÚ´¦ÀíÆ÷µÄ×î´óÎïÀíµØÖ··¶Î§ÄÚ
+        and rax, ~1FFFFFh                                       ; ä¿è¯ 2M page frame è¾¹ç•Œ
+        and rax, [gs: PCB.MaxPhyAddrSelectMask]                 ; ä¿è¯åœ¨å¤„ç†å™¨çš„æœ€å¤§ç‰©ç†åœ°å€èŒƒå›´å†…
         
         ;;
-        ;; ±£Áô page attribute ²ÎÊýÖÐµÄ [12] Î»£¬ÒÔ¼° [8:0]
-        ;; Éú³É×îÖÕ page frame µÄÊôÐÔ
+        ;; ä¿ç•™ page attribute å‚æ•°ä¸­çš„ [12] ä½ï¼Œä»¥åŠ [8:0]
+        ;; ç”Ÿæˆæœ€ç»ˆ page frame çš„å±žæ€§
         ;;
         mov r8, r12
         and r8, 11FFh
         or rax, r8
         
         ;;
-        ;; Éú³É XD ±êÖ¾Î»£ºÓÉÊôÐÔ²ÎÊý AND [fs: SDA.XdValue]
+        ;; ç”Ÿæˆ XD æ ‡å¿—ä½ï¼šç”±å±žæ€§å‚æ•° AND [fs: SDA.XdValue]
         ;;
-        and r12d, [fs: SDA.XdValue]                             ; È¡¾öÓÚÊÇ·ñ¿ªÆô XD ¹¦ÄÜ
-        shl r12, 32                                             ; Éú³É XD ±êÖ¾
-        or rax, r12                                             ; ¼ÓÉÏ XD ±êÖ¾Öµ
-        or rax, VALID_FLAGS                                     ; ¼ÓÉÏ VALAGS_FLAGS ±êÖ¾¡¡
+        and r12d, [fs: SDA.XdValue]                             ; å–å†³äºŽæ˜¯å¦å¼€å¯ XD åŠŸèƒ½
+        shl r12, 32                                             ; ç”Ÿæˆ XD æ ‡å¿—
+        or rax, r12                                             ; åŠ ä¸Š XD æ ‡å¿—å€¼
+        or rax, VALID_FLAGS                                     ; åŠ ä¸Š VALAGS_FLAGS æ ‡å¿—ã€€
         
         ;;
-        ;; Ð´Èë PDE£¬Íê³ÉÓ³Éä
+        ;; å†™å…¥ PDEï¼Œå®Œæˆæ˜ å°„
         ;;
         mov [rbp], rax
 
         ;;
-        ;; ·µ»Ø³É¹¦×´Ì¬Âë
+        ;; è¿”å›žæˆåŠŸçŠ¶æ€ç 
         ;;
         mov eax, MAPPING_SUCCESS
         
@@ -1029,17 +1029,17 @@ do_virtual_address_mapping64.write_pde.@1:
 
 do_virtual_address_mapping64.check_pte:
         ;;
-        ;; ¶ÁÈ¡ PTE Ïî
+        ;; è¯»å– PTE é¡¹
         ;;
         mov rsi, rbx
         call get_pte_index64
-        add rbp, rax                                            ; PTE µØÖ·
+        add rbp, rax                                            ; PTE åœ°å€
         mov rax, [rbp]
         
         ;;
-        ;; ¼ì²é PTE ÊÇ·ñÓÐÐ§
-        ;; 1) Èç¹ûÔ­À´µÄ PTE ÊÇÓÐÐ§µÄ£¬ÄÇÃ´ÐèÒª¼ì²éÓ³ÉäÊÇ·ñºÏ·¨
-        ;; 2) Èç¹û PTE ÎÞÐ§£¬ÔòÐ´Èë PTE Öµ
+        ;; æ£€æŸ¥ PTE æ˜¯å¦æœ‰æ•ˆ
+        ;; 1) å¦‚æžœåŽŸæ¥çš„ PTE æ˜¯æœ‰æ•ˆçš„ï¼Œé‚£ä¹ˆéœ€è¦æ£€æŸ¥æ˜ å°„æ˜¯å¦åˆæ³•
+        ;; 2) å¦‚æžœ PTE æ— æ•ˆï¼Œåˆ™å†™å…¥ PTE å€¼
         ;;
         and eax, VALID_FLAGS
         cmp eax, VALID_FLAGS
@@ -1048,34 +1048,34 @@ do_virtual_address_mapping64.check_pte:
 do_virtual_address_mapping64.write_pte:
         
         ;;
-        ;; ÎÞÐ§Ê±£¬Ð´Èë page frame µØÖ·Öµ
+        ;; æ— æ•ˆæ—¶ï¼Œå†™å…¥ page frame åœ°å€å€¼
         ;;
         mov rax, r15
-        and rax, ~0FFFh                                         ; ±£Ö¤ 4K page frame ±ß½ç
-        and rax, [gs: PCB.MaxPhyAddrSelectMask]                 ; ±£Ö¤ÔÚ´¦ÀíÆ÷µÄ×î´óÎïÀíµØÖ··¶Î§ÄÚ
+        and rax, ~0FFFh                                         ; ä¿è¯ 4K page frame è¾¹ç•Œ
+        and rax, [gs: PCB.MaxPhyAddrSelectMask]                 ; ä¿è¯åœ¨å¤„ç†å™¨çš„æœ€å¤§ç‰©ç†åœ°å€èŒƒå›´å†…
         
         ;;
-        ;; ±£Áô page attribute ²ÎÊýÖÐµÄ [8:0] Î»£¬²¢È¡ PAT ±êÖ¾£¨bit12)
-        ;; Éú³É×îÖÕ page frame µÄÊôÐÔ
+        ;; ä¿ç•™ page attribute å‚æ•°ä¸­çš„ [8:0] ä½ï¼Œå¹¶å– PAT æ ‡å¿—ï¼ˆbit12)
+        ;; ç”Ÿæˆæœ€ç»ˆ page frame çš„å±žæ€§
         ;;
         mov r8, r12
         mov rsi, r12
         and r8, 1FFh
-        and r12, PAT                                            ; È¡ PAT ±êÖ¾Öµ
-        shr r12, 5                                              ; Éú³É PTE µÄ PAT ±êÖ¾Öµ
+        and r12, PAT                                            ; å– PAT æ ‡å¿—å€¼
+        shr r12, 5                                              ; ç”Ÿæˆ PTE çš„ PAT æ ‡å¿—å€¼
         or r8, r12
         or rax, r8
 
         ;;
-        ;; Éú³É XD ±êÖ¾Î»£ºÓÉÊôÐÔ²ÎÊý AND [fs: SDA.XdValue]
+        ;; ç”Ÿæˆ XD æ ‡å¿—ä½ï¼šç”±å±žæ€§å‚æ•° AND [fs: SDA.XdValue]
         ;;
-        and esi, [fs: SDA.XdValue]                              ; È¡¾öÓÚÊÇ·ñ¿ªÆô XD ¹¦ÄÜ
-        shl rsi, 32                                             ; Éú³É XD ±êÖ¾
-        or rax, rsi                                             ; ¼ÓÉÏ XD ±êÖ¾Öµ
-        or rax, VALID_FLAGS                                     ; ¼ÓÉÏ VALAGS_FLAGS ±êÖ¾¡¡
+        and esi, [fs: SDA.XdValue]                              ; å–å†³äºŽæ˜¯å¦å¼€å¯ XD åŠŸèƒ½
+        shl rsi, 32                                             ; ç”Ÿæˆ XD æ ‡å¿—
+        or rax, rsi                                             ; åŠ ä¸Š XD æ ‡å¿—å€¼
+        or rax, VALID_FLAGS                                     ; åŠ ä¸Š VALAGS_FLAGS æ ‡å¿—ã€€
                        
         ;;
-        ;; Ð´Èë PTE Ïî
+        ;; å†™å…¥ PTE é¡¹
         ;;
         mov [rbp], rax
         
@@ -1084,18 +1084,18 @@ do_virtual_address_mapping64.write_pte:
 
 do_virtual_address_mapping64.check_mapping:
         ;;
-        ;; ¼ÙÈç PTE ÊÇÓÐÐ§µÄ£¬±íÃ÷ va ÒÑ¾­±»Ó³Éä
-        ;; 1) ¼ì²éÊÇ·ñÇ¿ÐÐÓ³Éä£¬Èç¹ûÊÇÇ¿ÐÐÓ³ÉäÔòÖ±½ÓÐ´ÈëÐÂµÄ PTE Öµ
-        ;; 2) ²»ÊÇµÄ»°£¬¼ì²éÓ³ÉäÊÇ·ñÓÐÐ§
+        ;; å‡å¦‚ PTE æ˜¯æœ‰æ•ˆçš„ï¼Œè¡¨æ˜Ž va å·²ç»è¢«æ˜ å°„
+        ;; 1) æ£€æŸ¥æ˜¯å¦å¼ºè¡Œæ˜ å°„ï¼Œå¦‚æžœæ˜¯å¼ºè¡Œæ˜ å°„åˆ™ç›´æŽ¥å†™å…¥æ–°çš„ PTE å€¼
+        ;; 2) ä¸æ˜¯çš„è¯ï¼Œæ£€æŸ¥æ˜ å°„æ˜¯å¦æœ‰æ•ˆ
         ;;
         mov r8, r12
         test r8d, FORCE
         jnz do_virtual_address_mapping64.write_pte
 
         ;;
-        ;; ¼ì²éÓ³ÉäÊÇ·ñÓÐÐ§£º
-        ;; 1) Èç¹û¼ì²éÄÜ¹ý£¬Ôò·µ»Ø MAPPING_USED£¬Ö¸Ê¾ÒÑ¾­±»Ê¹ÓÃ
-        ;; 2) ·ñÔò£¬·µ»ØÏàÓ¦µÄ´íÎóÂë
+        ;; æ£€æŸ¥æ˜ å°„æ˜¯å¦æœ‰æ•ˆï¼š
+        ;; 1) å¦‚æžœæ£€æŸ¥èƒ½è¿‡ï¼Œåˆ™è¿”å›ž MAPPING_USEDï¼ŒæŒ‡ç¤ºå·²ç»è¢«ä½¿ç”¨
+        ;; 2) å¦åˆ™ï¼Œè¿”å›žç›¸åº”çš„é”™è¯¯ç 
         ;;
         mov rsi, [rbp]
         mov rdi, r12
@@ -1104,12 +1104,12 @@ do_virtual_address_mapping64.check_mapping:
         jne do_virtual_address_mapping64.done
         
         ;;
-        ;; ·µ»Ø¡°ÒÑ¾­ÔÚÊ¹ÓÃ¡±×´Ì¬Âë
+        ;; è¿”å›žâ€œå·²ç»åœ¨ä½¿ç”¨â€çŠ¶æ€ç 
         ;;
         mov eax, MAPPING_USED          
         
         ;;
-        ;; ¼ÙÈç page attribute [27] = 1 Ê±£¬·µ»ØÎïÀíÒ³ frame
+        ;; å‡å¦‚ page attribute [27] = 1 æ—¶ï¼Œè¿”å›žç‰©ç†é¡µ frame
         ;;          
         test r12, GET_PHY_PAGE_FRAME
         jz do_virtual_address_mapping64.done
@@ -1136,8 +1136,8 @@ do_virtual_address_mapping64.done:
 ;       r9 - count of pages
 ; output:
 ;       rax - status code
-; ÃèÊö£º
-;       1) ½øÐÐ n ¸öÒ³ÃæµÄÓ³Éä
+; æè¿°ï¼š
+;       1) è¿›è¡Œ n ä¸ªé¡µé¢çš„æ˜ å°„
 ;---------------------------------------------------------------
 do_virtual_address_mapping64_n:
         push rcx
@@ -1150,7 +1150,7 @@ do_virtual_address_mapping64_n:
         mov rdx, rsi
         
         ;;
-        ;; ¼ì²éÓ³ÉäÒ³Ãæ size
+        ;; æ£€æŸ¥æ˜ å°„é¡µé¢ size
         ;;
         mov rcx, 200000h
         mov rbx, 1000h
@@ -1186,8 +1186,8 @@ do_virtual_address_mapping64_n.done:
 ;       rsi - virtual address
 ; output:
 ;       rax - physical address
-; ÃèÊö£º
-;       1) ·µ»ØÐéÄâµØÖ·Ó³ÉäµÄÎïÀíµØÖ·
+; æè¿°ï¼š
+;       1) è¿”å›žè™šæ‹Ÿåœ°å€æ˜ å°„çš„ç‰©ç†åœ°å€
 ;---------------------------------------------------------------
 get_physical_address_of_virtual_address:
         push rbx
@@ -1208,26 +1208,26 @@ get_physical_address_of_virtual_address:
 ;       rdi - page attribute
 ; output:
 ;       rax - status code
-; ÃèÊö:
-;       1) µ± PPE£¬PDE, PTE ÓÐÐ§Ê±£¬ËµÃ÷ÒÑ¾­±»Ó³Éä
-;       2) ÐèÒª¼ì²éÌá½»µÄÓ³ÉäÊÇ·ñÓÐÐ§
-;       3) º¯Êý·µ»Ø×´Ì¬Âë£¬Îª MAPPING_VALID Ê±£¬±íÃ÷Ó³ÉäÓÐÐ§
+; æè¿°:
+;       1) å½“ PPEï¼ŒPDE, PTE æœ‰æ•ˆæ—¶ï¼Œè¯´æ˜Žå·²ç»è¢«æ˜ å°„
+;       2) éœ€è¦æ£€æŸ¥æäº¤çš„æ˜ å°„æ˜¯å¦æœ‰æ•ˆ
+;       3) å‡½æ•°è¿”å›žçŠ¶æ€ç ï¼Œä¸º MAPPING_VALID æ—¶ï¼Œè¡¨æ˜Žæ˜ å°„æœ‰æ•ˆ
 ;---------------------------------------------------------------
 check_valid_for_mapping:
         push rcx
         ;;
-        ;; ¼ì²éÄÚÈÝËµÃ÷£º
-        ;; 1) Èç¹û entry µÄ PS = 1 Ê±£¬¶ø²ÎÊýÖÐµÄ PS Îª 0 Ê±£¬·µ»Ø³ö´íÂë£ºMAPPING_PS_MISMATCH
-        ;; 2) Èç¹û entry µÄ R/W = 0£¬¶ø²ÎÊýÖÐµÄ R/W = 1 Ê±£¬·µ»Ø³ö´íÂë£ºMAPPING_RW_MISMATCH
-        ;; 3) Èç¹û entry µÄ U/S = 0£¬¶ø²ÎÊýÖÐµÄ U/S = 1 Ê±£¬·µ»Ø³ö´íÂë£ºMAPPING_US_MISMATCH
-        ;; 4) Èç¹û entry µÄ XD = 1£¬¶ø²ÎÊýÖÐµÄ XD = 0 Ê±£¬·µ»Ø³ö´íÂë£ºMAPPING_XD_MISMATCH
-        ;; 5) PAT, G£¬PCD, PWT£¬A ÊôÐÔ½«ºöÂÔ£¡
+        ;; æ£€æŸ¥å†…å®¹è¯´æ˜Žï¼š
+        ;; 1) å¦‚æžœ entry çš„ PS = 1 æ—¶ï¼Œè€Œå‚æ•°ä¸­çš„ PS ä¸º 0 æ—¶ï¼Œè¿”å›žå‡ºé”™ç ï¼šMAPPING_PS_MISMATCH
+        ;; 2) å¦‚æžœ entry çš„ R/W = 0ï¼Œè€Œå‚æ•°ä¸­çš„ R/W = 1 æ—¶ï¼Œè¿”å›žå‡ºé”™ç ï¼šMAPPING_RW_MISMATCH
+        ;; 3) å¦‚æžœ entry çš„ U/S = 0ï¼Œè€Œå‚æ•°ä¸­çš„ U/S = 1 æ—¶ï¼Œè¿”å›žå‡ºé”™ç ï¼šMAPPING_US_MISMATCH
+        ;; 4) å¦‚æžœ entry çš„ XD = 1ï¼Œè€Œå‚æ•°ä¸­çš„ XD = 0 æ—¶ï¼Œè¿”å›žå‡ºé”™ç ï¼šMAPPING_XD_MISMATCH
+        ;; 5) PAT, Gï¼ŒPCD, PWTï¼ŒA å±žæ€§å°†å¿½ç•¥ï¼
         
         mov eax, esi
         
         ;;
-        ;; ¼ì²é PS ±êÖ¾
-        ;; 1) Èç¹û PS ±êÖ¾²»Í¬£¬Ôò·µ»Ø MAPPING_PS_MISMATCH
+        ;; æ£€æŸ¥ PS æ ‡å¿—
+        ;; 1) å¦‚æžœ PS æ ‡å¿—ä¸åŒï¼Œåˆ™è¿”å›ž MAPPING_PS_MISMATCH
         ;;
         xor eax, edi
         test eax, PS
@@ -1236,9 +1236,9 @@ check_valid_for_mapping:
         jnz check_valid_for_mapping.done
         
         ;;
-        ;; ¼ì²é R/W ±êÖ¾:
-        ;; 1) Èç¹û entry µÄ R/W = 1 Ê±£¬Í¨¹ý£¡¼ÌÐøÍùÏÂ¼ì²é
-        ;; 2) Èç¹û entry µÄ R/W = 0 ²¢ÇÒ²ÎÊýµÄ R/W = 1 Ê±£¬·µ»Ø MAPPING_RW_MISMATCH
+        ;; æ£€æŸ¥ R/W æ ‡å¿—:
+        ;; 1) å¦‚æžœ entry çš„ R/W = 1 æ—¶ï¼Œé€šè¿‡ï¼ç»§ç»­å¾€ä¸‹æ£€æŸ¥
+        ;; 2) å¦‚æžœ entry çš„ R/W = 0 å¹¶ä¸”å‚æ•°çš„ R/W = 1 æ—¶ï¼Œè¿”å›ž MAPPING_RW_MISMATCH
         ;;
         mov rax, rsi
         test eax, RW
@@ -1250,9 +1250,9 @@ check_valid_for_mapping:
 
 check_valid_for_mapping.check_us:
         ;;
-        ;; ¼ì²é U/S ±êÖ¾£º
-        ;; 1) Èç¹û entry µÄ U/S = 1 Ê±£¬Í¨¹ý£¡¼ÌÐøÍùÏÂ¼ì²é
-        ;; 2) Èç¹û entry µÄ U/S = 0 ²¢ÇÒ²ÎÊýµÄ U/S = 1 Ê±£¬·µ»Ø MAPPING_US_MISMATCH
+        ;; æ£€æŸ¥ U/S æ ‡å¿—ï¼š
+        ;; 1) å¦‚æžœ entry çš„ U/S = 1 æ—¶ï¼Œé€šè¿‡ï¼ç»§ç»­å¾€ä¸‹æ£€æŸ¥
+        ;; 2) å¦‚æžœ entry çš„ U/S = 0 å¹¶ä¸”å‚æ•°çš„ U/S = 1 æ—¶ï¼Œè¿”å›ž MAPPING_US_MISMATCH
         ;;
         test eax, US
         jnz check_valid_for_mapping.check_xd
@@ -1263,9 +1263,9 @@ check_valid_for_mapping.check_us:
 
 check_valid_for_mapping.check_xd:
         ;;
-        ;; ¼ì²é XD ±êÖ¾£º
-        ;; 1) Èç¹û entry µÄ XD = 0 Ê±£¬Í¨¹ý£¡¼ÌÐøÍùÏÂ¼ì²é
-        ;; 2) Èç¹û entry µÄ XD = 1 ²¢ÇÒ²ÎÊýµÄ U/S = 0 Ê±£¬·µ»Ø MAPPING_XD_MISMATCH
+        ;; æ£€æŸ¥ XD æ ‡å¿—ï¼š
+        ;; 1) å¦‚æžœ entry çš„ XD = 0 æ—¶ï¼Œé€šè¿‡ï¼ç»§ç»­å¾€ä¸‹æ£€æŸ¥
+        ;; 2) å¦‚æžœ entry çš„ XD = 1 å¹¶ä¸”å‚æ•°çš„ U/S = 0 æ—¶ï¼Œè¿”å›ž MAPPING_XD_MISMATCH
         ;;
         bt rax, 63
         mov eax, MAPPING_VALID
@@ -1288,14 +1288,14 @@ check_valid_for_mapping.done:
 ;       rsi - va
 ; output:
 ;       rax - offset
-; ÃèÊö£º
-;       µÃµ½ PXT entry µÄ offset Öµ
-; ×¢Òâ£º
-;       ÔÚ 64-bit ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       å¾—åˆ° PXT entry çš„ offset å€¼
+; æ³¨æ„ï¼š
+;       åœ¨ 64-bit ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 get_pxe_offset64:
         mov rax, rsi
-        shl rax, 16                                             ; Çå va ¸ß 16 Î»
+        shl rax, 16                                             ; æ¸… va é«˜ 16 ä½
         shr rax, (16 + 12 + 9 + 9 + 9)                          ; index = va >> 39
         shl rax, 3                                              ; offset = index << 3
         ret
@@ -1308,14 +1308,14 @@ get_pxe_offset64:
 ;       rsi - va
 ; output:
 ;       rax - offset
-; ÃèÊö£º
-;       µÃµ½ PPT entry µÄ offset Öµ
-; ×¢Òâ£º
-;       ÔÚ 64-bit ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       å¾—åˆ° PPT entry çš„ offset å€¼
+; æ³¨æ„ï¼š
+;       åœ¨ 64-bit ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 get_ppe_offset64:
         mov rax, rsi
-        shl rax, 16                                             ; Çå va ¸ß 16 Î»
+        shl rax, 16                                             ; æ¸… va é«˜ 16 ä½
         shr rax, (16 + 12 + 9 + 9)                              ; index = va >> 30
         shl rax, 3                                              ; offset = index << 3
         ret
@@ -1330,9 +1330,9 @@ get_ppe_offset64:
 ;       rsi - va
 ; output:
 ;       rax - index of PDE
-; ÃèÊö:
-;       1) µÃµ½ VA ÖÐ PDE µÄ index Öµ
-;       2) Õâ¸ö index Öµ»ùÓÚ PDT »ùÖ·
+; æè¿°:
+;       1) å¾—åˆ° VA ä¸­ PDE çš„ index å€¼
+;       2) è¿™ä¸ª index å€¼åŸºäºŽ PDT åŸºå€
 ;---------------------------------------------------------------
 get_pde_index64:
         mov rax, rsi
@@ -1349,9 +1349,9 @@ get_pde_index64:
 ;       rsi - va
 ; output:
 ;       rax - index of PTE
-; ÃèÊö£º
-;       1) µÃµ½ PTE µÄ index Öµ
-;       2) Õâ¸ö index Öµ»ùÓÚ PT »ùÖ·
+; æè¿°ï¼š
+;       1) å¾—åˆ° PTE çš„ index å€¼
+;       2) è¿™ä¸ª index å€¼åŸºäºŽ PT åŸºå€
 ;---------------------------------------------------------------
 get_pte_index64:
         mov rax, rsi
@@ -1370,10 +1370,10 @@ get_pte_index64:
 ; input:
 ;       none
 ; output:
-;       rax - 4K stack base£¨ÐéÄâµØÖ·£© 
-; ÃèÊö£º
-;       1)·ÖÅäÒ»¸ö4KÒ³Ãæ´óÐ¡µÄ kernel stack baseµÄ¿ÉÓÃÖµ         
-;       2)²¢¸üÐÂµ±Ç° kernel stack base ¼ÇÂ¼
+;       rax - 4K stack baseï¼ˆè™šæ‹Ÿåœ°å€ï¼‰ 
+; æè¿°ï¼š
+;       1)åˆ†é…ä¸€ä¸ª4Ké¡µé¢å¤§å°çš„ kernel stack baseçš„å¯ç”¨å€¼         
+;       2)å¹¶æ›´æ–°å½“å‰ kernel stack base è®°å½•
 ;-----------------------------------------------------------------------
 alloc_kernel_stack_4k_base64:
         mov eax, 4096

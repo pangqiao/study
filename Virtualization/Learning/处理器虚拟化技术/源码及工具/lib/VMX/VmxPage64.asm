@@ -1,6 +1,6 @@
 ;*************************************************
 ;* VmxPage64.asm                                 *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -13,10 +13,10 @@
 ;       rsi - guest physical address
 ; output:
 ;       eax - offset
-; ÃèÊö£º
-;       µÃµ½ PXT entry µÄ offset Öµ
-; ×¢Òâ£º
-;       ÔÚ legacy Ä£Ê½ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       å¾—åˆ° PXT entry çš„ offset å€¼
+; æ³¨æ„ï¼š
+;       åœ¨ legacy æ¨¡å¼ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 get_ept_pxe_offset64:
         shld rax, rsi, (32-4)                   
@@ -30,8 +30,8 @@ get_ept_pxe_offset64:
 ;       rsi - GPA
 ; output:
 ;       eax - offset
-; ÃèÊö£º
-;       1) µÃµ½ PPT entry µÄ offset Öµ
+; æè¿°ï¼š
+;       1) å¾—åˆ° PPT entry çš„ offset å€¼
 ;---------------------------------------------------------------        
 get_ept_ppe_offset64:
         shld rax, rsi, (32-4+9)                 
@@ -46,8 +46,8 @@ get_ept_ppe_offset64:
 ;       rsi - GPA
 ; output:
 ;       eax - offset
-; ÃèÊö£º
-;       1) µÃµ½ PDT entry µÄ offset Öµ
+; æè¿°ï¼š
+;       1) å¾—åˆ° PDT entry çš„ offset å€¼
 ;---------------------------------------------------------------
 get_ept_pde_offset64:
         shld rax, rsi, (32-4+9+9)
@@ -61,8 +61,8 @@ get_ept_pde_offset64:
 ;       rsi - GPA
 ; output:
 ;       eax - offset
-; ÃèÊö£º
-;       1) µÃµ½ PT entry µÄ offset Öµ
+; æè¿°ï¼š
+;       1) å¾—åˆ° PT entry çš„ offset å€¼
 ;---------------------------------------------------------------  
 get_ept_pte_offset64:
         shld rax, rsi, (32-4+9+9+9)
@@ -106,7 +106,7 @@ get_ept_entry_level_attribute.@3:
         jmp get_ept_entry_level_attribute.Done
         
 get_ept_entry_level_attribute.@4:
-        mov rsi, (EPT_PTE | EPT_MEM_WB)                         ;; PTE Ê¹ÓÃ WB ÄÚ´æÀàĞÍ
+        mov rsi, (EPT_PTE | EPT_MEM_WB)                         ;; PTE ä½¿ç”¨ WB å†…å­˜ç±»å‹
                                         
 get_ept_entry_level_attribute.Done:                
         ret
@@ -120,24 +120,24 @@ get_ept_entry_level_attribute.Done:
 ;       eax - page attribute
 ; output:
 ;       0 - successful, otherwise - error code
-; ÃèÊö£º
-;       1) Èç¹û½øĞĞÓ³Éä¹¤×÷£¬ÔòÓ³Éä guest-physical address µ½ physical addrss
-;       2) Èç¹û½øĞĞĞŞ¸´¹¤×÷£¬ÔòĞŞ¸´ EPT violation ¼° EPT misconfiguration
+; æè¿°ï¼š
+;       1) å¦‚æœè¿›è¡Œæ˜ å°„å·¥ä½œï¼Œåˆ™æ˜ å°„ guest-physical address åˆ° physical addrss
+;       2) å¦‚æœè¿›è¡Œä¿®å¤å·¥ä½œï¼Œåˆ™ä¿®å¤ EPT violation åŠ EPT misconfiguration
 ;
-; page attribute ËµÃ÷£º
-;       eax ´«µİ¹ıÀ´µÄ attribute ÓÉÏÂÃæ±êÖ¾Î»×é³É£º
+; page attribute è¯´æ˜ï¼š
+;       eax ä¼ é€’è¿‡æ¥çš„ attribute ç”±ä¸‹é¢æ ‡å¿—ä½ç»„æˆï¼š
 ;       [0]    - Read
 ;       [1]    - Write
 ;       [2]    - Execute
-;       [23:3] - ºöÂÔ
+;       [23:3] - å¿½ç•¥
 ;       [24]   - GET_PTE
 ;       [25]   - GET_PAGE_FRAME
-;       [26]   - FIX_ACCESS, ÖÃÎ»Ê±£¬½øĞĞ access right ĞŞ¸´¹¤×÷
-;       [27]   - FIX_MISCONF£¬ÖÃÎ»Ê±£¬½øĞĞ misconfiguration ĞŞ¸´¹¤×÷
-;       [28]   - EPT_FIXING£¬ÖÃÎ»Ê±£¬ĞèÒª½øĞĞĞŞ¸´¹¤×÷£¬¶ø²»ÊÇÓ³Éä¹¤×÷
-;              - EPT_FIXING ÇåÎ»Ê±£¬½øĞĞÓ³Éä¹¤×÷
-;       [29]   - EPT_FORCE£¬ÖÃÎ»Ê±£¬Ç¿ÖÆ½øĞĞÓ³Éä
-;       [31:30] - ºöÂÔ
+;       [26]   - FIX_ACCESS, ç½®ä½æ—¶ï¼Œè¿›è¡Œ access right ä¿®å¤å·¥ä½œ
+;       [27]   - FIX_MISCONFï¼Œç½®ä½æ—¶ï¼Œè¿›è¡Œ misconfiguration ä¿®å¤å·¥ä½œ
+;       [28]   - EPT_FIXINGï¼Œç½®ä½æ—¶ï¼Œéœ€è¦è¿›è¡Œä¿®å¤å·¥ä½œï¼Œè€Œä¸æ˜¯æ˜ å°„å·¥ä½œ
+;              - EPT_FIXING æ¸…ä½æ—¶ï¼Œè¿›è¡Œæ˜ å°„å·¥ä½œ
+;       [29]   - EPT_FORCEï¼Œç½®ä½æ—¶ï¼Œå¼ºåˆ¶è¿›è¡Œæ˜ å°„
+;       [31:30] - å¿½ç•¥
 ;----------------------------------------------------------
 do_guest_physical_address_mapping64:
         push rbp
@@ -150,119 +150,119 @@ do_guest_physical_address_mapping64:
         
         
         ;;
-        ;; EPT Ó³ÉäËµÃ÷£º
-        ;; 1) ËùÓĞÓ³Éä¾ùÊ¹ÓÃ 4K-page ½øĞĞ
-        ;; 2) ÔÚ PML4T(PXT)£¬PDPT(PPT) ÒÔ¼° PDT ±íÉÏ£¬·ÃÎÊÈ¨ÏŞ¶¼¾ßÓĞ Read/Write/Execute
-        ;; 3) ÔÚ×îºóÒ»¼¶ PT ±íÉÏ£¬·ÃÎÊÈ¨ÏŞÊÇÊäÈëµÄ ecx ²ÎÊı(page attribute)
-        ;; 4) ËùÓĞÒ³±íĞèÒªÊ¹ÓÃ get_ept_page ¶¯Ì¬·ÖÅä£¨´Ó Kernel pool ÄÚ·ÖÅä£©
+        ;; EPT æ˜ å°„è¯´æ˜ï¼š
+        ;; 1) æ‰€æœ‰æ˜ å°„å‡ä½¿ç”¨ 4K-page è¿›è¡Œ
+        ;; 2) åœ¨ PML4T(PXT)ï¼ŒPDPT(PPT) ä»¥åŠ PDT è¡¨ä¸Šï¼Œè®¿é—®æƒé™éƒ½å…·æœ‰ Read/Write/Execute
+        ;; 3) åœ¨æœ€åä¸€çº§ PT è¡¨ä¸Šï¼Œè®¿é—®æƒé™æ˜¯è¾“å…¥çš„ ecx å‚æ•°(page attribute)
+        ;; 4) æ‰€æœ‰é¡µè¡¨éœ€è¦ä½¿ç”¨ get_ept_page åŠ¨æ€åˆ†é…ï¼ˆä» Kernel pool å†…åˆ†é…ï¼‰
         ;;
         ;;
-        ;; page attribute Ê¹ÓÃËµÃ÷£º
-        ;; 1) FIX_MISCONF=1 Ê±£¬±íÃ÷ĞŞ¸´ EPT misconfiguration ´íÎó.
-        ;; 2) FIX_ACCESS=1 Ê±£¬±íÃ÷ĞŞ¸´ EPT violation ´íÎó
-        ;; 3) GET_PTE=1Ê±£¬±íÃ÷ĞèÒª·µ»Ø PTE Öµ
-        ;; 4) GET_PAGE_FRAME=1Ê±£¬±íÃ÷ĞèÒª·µ»Ø page frame
-        ;; 5) EPT_FORCE=1Ê±£¬½øĞĞÇ¿ÖÆÓ³Éä
+        ;; page attribute ä½¿ç”¨è¯´æ˜ï¼š
+        ;; 1) FIX_MISCONF=1 æ—¶ï¼Œè¡¨æ˜ä¿®å¤ EPT misconfiguration é”™è¯¯.
+        ;; 2) FIX_ACCESS=1 æ—¶ï¼Œè¡¨æ˜ä¿®å¤ EPT violation é”™è¯¯
+        ;; 3) GET_PTE=1æ—¶ï¼Œè¡¨æ˜éœ€è¦è¿”å› PTE å€¼
+        ;; 4) GET_PAGE_FRAME=1æ—¶ï¼Œè¡¨æ˜éœ€è¦è¿”å› page frame
+        ;; 5) EPT_FORCE=1æ—¶ï¼Œè¿›è¡Œå¼ºåˆ¶æ˜ å°„
         ;;
         
         
         mov r10, rsi                                    ; r10 = GPA
         mov r11, rdi                                    ; r11 = HPA
         mov ebx, eax                                    ; ebx = page attribute
-        mov ecx, (32 - 4)                               ; ecx = EPT ±íÏî index ×óÒÆÎ»Êı£¨shld£©
+        mov ecx, (32 - 4)                               ; ecx = EPT è¡¨é¡¹ index å·¦ç§»ä½æ•°ï¼ˆshldï¼‰
         
         ;;
-        ;; ¶ÁÈ¡µ±Ç° VMB µÄ EP4TA Öµ
+        ;; è¯»å–å½“å‰ VMB çš„ EP4TA å€¼
         ;;
         mov rbp, [gs: PCB.CurrentVmbPointer]
-        mov rbp, [rbp + VMB.Ep4taBase]                  ; rbp = EPT PML4T ĞéÄâ»ùÖ·
+        mov rbp, [rbp + VMB.Ep4taBase]                  ; rbp = EPT PML4T è™šæ‹ŸåŸºå€
 
 
 do_guest_physical_address_mapping64.Walk:
         ;;
-        ;; EPT paging structure walk ´¦Àí
+        ;; EPT paging structure walk å¤„ç†
         ;;
         shld rax, r10, cl
         and eax, 0FF8h
         
         ;;
-        ;; ¶ÁÈ¡ EPT ±íÏî
+        ;; è¯»å– EPT è¡¨é¡¹
         ;;
-        add rbp, rax                                    ; rbp Ö¸Ïò EPT ±íÏî
-        mov rsi, [rbp]                                  ; rsi = EPT ±íÏîÖµ
+        add rbp, rax                                    ; rbp æŒ‡å‘ EPT è¡¨é¡¹
+        mov rsi, [rbp]                                  ; rsi = EPT è¡¨é¡¹å€¼
         
         
         ;;
-        ;; ¼ì²é EPT ±íÏîÊÇ·ñÎª not present£¬°üÀ¨£º
-        ;; 1) access right ²»Îª 0
+        ;; æ£€æŸ¥ EPT è¡¨é¡¹æ˜¯å¦ä¸º not presentï¼ŒåŒ…æ‹¬ï¼š
+        ;; 1) access right ä¸ä¸º 0
         ;; 2) EPT_VALID_FLAG
         ;;
         test esi, 7                                             ; access right = 0 ?
         jz do_guest_physical_address_mapping64.NotPrsent
-        test esi, EPT_VALID_FLAG                                ; ÓĞĞ§±êÖ¾Î» = 0 ?
+        test esi, EPT_VALID_FLAG                                ; æœ‰æ•ˆæ ‡å¿—ä½ = 0 ?
         jz do_guest_physical_address_mapping64.NotPrsent
 
         ;;
-        ;; µ± EPT ±íÏîÎª Present Ê±
+        ;; å½“ EPT è¡¨é¡¹ä¸º Present æ—¶
         ;;
         test ebx, FIX_MISCONF
         jz do_guest_physical_address_mapping64.CheckFix
         
         ;;
-        ;; ½øĞĞĞŞ¸´ EPT misconfiguration ¹ÊÕÏ
+        ;; è¿›è¡Œä¿®å¤ EPT misconfiguration æ•…éšœ
         ;;        
         mov rax, ~EPT_LEVEL_MASK
-        and rax, rsi                                            ; Çåµô´íÎó level ÀàĞÍ
+        and rax, rsi                                            ; æ¸…æ‰é”™è¯¯ level ç±»å‹
         mov esi, ecx
         call get_ept_entry_level_attribute
-        or rsi, rax                                             ; ÉèÖÃ level ÊôĞÔ
+        or rsi, rax                                             ; è®¾ç½® level å±æ€§
         call do_ept_entry_misconf_fixing64
         cmp eax, MAPPING_SUCCESS
         jne do_guest_physical_address_mapping64.Done
-        mov [rbp], rsi                                          ; Ğ´»Ø±íÏîÖµ¡¡
+        mov [rbp], rsi                                          ; å†™å›è¡¨é¡¹å€¼ã€€
                 
 do_guest_physical_address_mapping64.CheckFix:        
         test ebx, FIX_ACCESS
         jz do_guest_physical_address_mapping64.CheckGetPageFrame
         
         ;;
-        ;; ½øĞĞĞŞ¸´ EPT violation ¹ÊÕÏ
+        ;; è¿›è¡Œä¿®å¤ EPT violation æ•…éšœ
         ;; 
-        mov edi, ebx                                            ; rsi = ±íÏî, ebx = page attribute
+        mov edi, ebx                                            ; rsi = è¡¨é¡¹, ebx = page attribute
         call do_ept_entry_violation_fixing64
         cmp eax, MAPPING_SUCCESS
         jne do_guest_physical_address_mapping64.Done
-        mov [rbp], rsi                                          ; Ğ´»Ø±íÏîÖµ
+        mov [rbp], rsi                                          ; å†™å›è¡¨é¡¹å€¼
         
 do_guest_physical_address_mapping64.CheckGetPageFrame:              
         ;;
-        ;; ¶ÁÈ¡±íÏîÄÚÈİ
+        ;; è¯»å–è¡¨é¡¹å†…å®¹
         ;;
-        and rsi, ~0FFFh                                         ; Çå bits 11:0
-        and rsi, [gs: PCB.MaxPhyAddrSelectMask]                 ; È¡µØÖ·Öµ
+        and rsi, ~0FFFh                                         ; æ¸… bits 11:0
+        and rsi, [gs: PCB.MaxPhyAddrSelectMask]                 ; å–åœ°å€å€¼
         
         ;;
-        ;; ¼ì²éÊÇ·ñÊôÓÚ PTE
+        ;; æ£€æŸ¥æ˜¯å¦å±äº PTE
         ;;
         cmp ecx, (32 - 4 + 9 + 9 + 9)
         jne do_guest_physical_address_mapping64.Next
         
         ;;
-        ;; Èç¹ûĞèÒª·µ»Ø PTE ±íÏîÄÚÈİ
+        ;; å¦‚æœéœ€è¦è¿”å› PTE è¡¨é¡¹å†…å®¹
         ;;
         test ebx, GET_PTE
         mov rax, [rbp]        
         jnz do_guest_physical_address_mapping64.Done
         
         ;;
-        ;; Èç¹ûĞèÒª·µ»Ø page frame Öµ 
+        ;; å¦‚æœéœ€è¦è¿”å› page frame å€¼ 
         ;;
         test ebx, GET_PAGE_FRAME
         mov rax, rsi
         jnz do_guest_physical_address_mapping64.Done
         
         ;;
-        ;; Èç¹ûÊôÓÚÇ¿ÖÆÓ³Éä
+        ;; å¦‚æœå±äºå¼ºåˆ¶æ˜ å°„
         ;;
         test ebx, EPT_FORCE
         jnz do_guest_physical_address_mapping64.BuildPte
@@ -273,19 +273,19 @@ do_guest_physical_address_mapping64.CheckGetPageFrame:
         
 do_guest_physical_address_mapping64.Next:
         ;;
-        ;; ¼ÌĞøÏòÏÂ walk 
+        ;; ç»§ç»­å‘ä¸‹ walk 
         ;;
         call get_ept_pt_virtual_address
-        mov rbp, rax                                            ; rbp = EPT Ò³±í»ùÖ·
+        mov rbp, rax                                            ; rbp = EPT é¡µè¡¨åŸºå€
         jmp do_guest_physical_address_mapping64.NextWalk
         
         
         
 do_guest_physical_address_mapping64.NotPrsent:     
         ;;
-        ;; µ± EPT ±íÏîÎª not present Ê±
-        ;; 1) ¼ì²é FIX_MISCONF ±êÖ¾Î»£¬Èç¹û³¢ÊÔĞŞ¸´ EPT misconfiguration Ê±£¬´íÎó·µ»Ø
-        ;; 2) Èç¹û³¢ÊÔ¶ÁÈ¡ page frame Öµ£¬´íÎó·µ»Ø
+        ;; å½“ EPT è¡¨é¡¹ä¸º not present æ—¶
+        ;; 1) æ£€æŸ¥ FIX_MISCONF æ ‡å¿—ä½ï¼Œå¦‚æœå°è¯•ä¿®å¤ EPT misconfiguration æ—¶ï¼Œé”™è¯¯è¿”å›
+        ;; 2) å¦‚æœå°è¯•è¯»å– page frame å€¼ï¼Œé”™è¯¯è¿”å›
         ;;
         test ebx, (FIX_MISCONF | GET_PAGE_FRAME)
         mov eax, MAPPING_UNSUCCESS
@@ -294,47 +294,47 @@ do_guest_physical_address_mapping64.NotPrsent:
 
 do_guest_physical_address_mapping64.BuildPte:
         ;;
-        ;; Éú³É PTE ±íÏîÖµ
+        ;; ç”Ÿæˆ PTE è¡¨é¡¹å€¼
         ;;
         mov edx, ebx
-        and edx, 07                                             ; Ìá¹©µÄ page frame ·ÃÎÊÈ¨ÏŞ
-        or edx, EPT_VALID_FLAG                                  ; ÓĞĞ§±êÖ¾Î»
-        or rdx, r11                                             ; Ìá¹©µÄ HPA 
+        and edx, 07                                             ; æä¾›çš„ page frame è®¿é—®æƒé™
+        or edx, EPT_VALID_FLAG                                  ; æœ‰æ•ˆæ ‡å¿—ä½
+        or rdx, r11                                             ; æä¾›çš„ HPA 
         
         ;;
-        ;; ¼ì²éÊÇ·ñÊôÓÚ PTE ²ã¼¶
-        ;; 1£©ÊÇ£ºĞ´ÈëÉú³ÉµÄ PTE Öµ
-        ;; 2£©·ñ£º·ÖÅä EPT Ò³Ãæ
+        ;; æ£€æŸ¥æ˜¯å¦å±äº PTE å±‚çº§
+        ;; 1ï¼‰æ˜¯ï¼šå†™å…¥ç”Ÿæˆçš„ PTE å€¼
+        ;; 2ï¼‰å¦ï¼šåˆ†é… EPT é¡µé¢
         ;;
         cmp ecx, (32 - 4 + 9 + 9 + 9)
         je do_guest_physical_address_mapping64.WriteEptEntry
 
         ;;
-        ;; ÏÂÃæ·ÖÅä EPT Ò³Ãæ£¬×÷ÎªÏÂÒ»¼¶Ò³±í
+        ;; ä¸‹é¢åˆ†é… EPT é¡µé¢ï¼Œä½œä¸ºä¸‹ä¸€çº§é¡µè¡¨
         ;;        
         call get_ept_page                                       ; rdx:rax = pa:va                
         or rdx, EPT_VALID_FLAG | EPT_READ | EPT_WRITE | EPT_EXECUTE
         
 do_guest_physical_address_mapping64.WriteEptEntry:
         ;;
-        ;; Éú³É±íÏîÖµ£¬Ğ´ÈëÒ³±í
+        ;; ç”Ÿæˆè¡¨é¡¹å€¼ï¼Œå†™å…¥é¡µè¡¨
         ;;
         mov esi, ecx
-        call get_ept_entry_level_attribute                      ; µÃµ½ EPT ±íÏî²ã¼¶ÊôĞÔ
+        call get_ept_entry_level_attribute                      ; å¾—åˆ° EPT è¡¨é¡¹å±‚çº§å±æ€§
         or rdx, rsi
                                 
         ;;
-        ;; Ğ´Èë EPT ±íÏîÄÚÈİ
+        ;; å†™å…¥ EPT è¡¨é¡¹å†…å®¹
         ;;
         mov [rbp], rdx
-        mov rbp, rax                                            ; rbp = EPT ±í»ùÖ·      
+        mov rbp, rax                                            ; rbp = EPT è¡¨åŸºå€      
 
 do_guest_physical_address_mapping64.NextWalk:
         ;;
-        ;; Ö´ĞĞ¼ÌĞø walk Á÷³Ì
+        ;; æ‰§è¡Œç»§ç»­ walk æµç¨‹
         ;;
         cmp ecx, (32 - 4 + 9 + 9 + 9)
-        lea rcx, [rcx + 9]                                      ; ÏÂÒ»¼¶Ò³±íµÄ shld count
+        lea rcx, [rcx + 9]                                      ; ä¸‹ä¸€çº§é¡µè¡¨çš„ shld count
         jne do_guest_physical_address_mapping64.Walk
         
         mov eax, MAPPING_SUCCESS
@@ -360,8 +360,8 @@ do_guest_physical_address_mapping64.Done:
 ;       ecx - count
 ; output:
 ;       0 - succssful, otherwise - error code
-; ÃèÊö:
-;       1) ½øĞĞ n Ò³µÄ guest physical address Ó³Éä
+; æè¿°:
+;       1) è¿›è¡Œ n é¡µçš„ guest physical address æ˜ å°„
 ;---------------------------------------------------------------
 do_guest_physical_address_mapping64_n:
         push rbx
@@ -404,57 +404,57 @@ do_guest_physical_address_mapping64_n.done:
 ;       none
 ; output:
 ;       0 - succssful, otherwise - error code
-; ÃèÊö:
-;       1) ÕâÊÇ EPT µÄ page fualt ´¦ÀíÀı³Ì
+; æè¿°:
+;       1) è¿™æ˜¯ EPT çš„ page fualt å¤„ç†ä¾‹ç¨‹
 ;---------------------------------------------------------------        
 do_ept_page_fault64:
         push rbx
         push rcx
         
         ;;
-        ;; EPT page fault ²úÉúÔ­ÒòÎª£º
-        ;; 1) EPT misconfiguration£¨EPT µÄ tage enties ÉèÖÃ²»ºÏ·¨£©
-        ;; 2) EPT violation£¨EPT µÄ·ÃÎÊÎ¥Àı£©
+        ;; EPT page fault äº§ç”ŸåŸå› ä¸ºï¼š
+        ;; 1) EPT misconfigurationï¼ˆEPT çš„ tage enties è®¾ç½®ä¸åˆæ³•ï¼‰
+        ;; 2) EPT violationï¼ˆEPT çš„è®¿é—®è¿ä¾‹ï¼‰
         ;;
         
         ;;
-        ;; ´Ó VM-exit information Àï¶Á guest physical address
+        ;; ä» VM-exit information é‡Œè¯» guest physical address
         ;;
         mov rsi, [gs: PCB.ExitInfoBuf + EXIT_INFO.GuestPhysicalAddress]
         
         
         ;;
-        ;; ¶Á exit reason£¬È·¶¨ÄÄÖÖÔ­Òò²úÉú VM-exit
+        ;; è¯» exit reasonï¼Œç¡®å®šå“ªç§åŸå› äº§ç”Ÿ VM-exit
         ;;
         mov eax, [gs: PCB.ExitInfoBuf + EXIT_INFO.ExitReason]
         cmp ax, EXIT_NUMBER_EPT_MISCONFIGURATION
         je do_ept_page_fault64.EptMisconf
         
         ;;
-        ;; Exit qualification ×Ö¶Î±£´æÃ÷Ï¸ĞÅÏ¢£º
-        ;; 1) bits 8:7 = 0 Ê±£¬Ö´ĞĞ MOV to CR3 Ö¸ÁîÒıÆğ EPT violation
-        ;; 2) bits 8:7 = 1 Ê±£¬ÔÚ·ÃÎÊ guest paging-structure Ê±ÒıÆğ EPT violation
-        ;; 3) bits 8:7 = 3 Ê±, ÓÉ guest-physical address ÒıÆğ EPT violation
+        ;; Exit qualification å­—æ®µä¿å­˜æ˜ç»†ä¿¡æ¯ï¼š
+        ;; 1) bits 8:7 = 0 æ—¶ï¼Œæ‰§è¡Œ MOV to CR3 æŒ‡ä»¤å¼•èµ· EPT violation
+        ;; 2) bits 8:7 = 1 æ—¶ï¼Œåœ¨è®¿é—® guest paging-structure æ—¶å¼•èµ· EPT violation
+        ;; 3) bits 8:7 = 3 æ—¶, ç”± guest-physical address å¼•èµ· EPT violation
         ;;
-        ;; ĞŞ¸´ EPT violation ËµÃ÷£º
-        ;; 1) ÓÉ¡°MOV to CR3¡± ¼° guest paging-structure ÒıÆğµÄ EPT violation£¬ĞŞ¸´Ê± GPA Óë HPA Ò»Ò»¶ÔÓ¦
-        ;; 2) ÓÉ guest-physical address ÒıÆğµÄ EPT violation£¬ĞŞ¸´Ê±¶¯Ì¬·ÖÅä EPT Ò³Ãæ
+        ;; ä¿®å¤ EPT violation è¯´æ˜ï¼š
+        ;; 1) ç”±â€œMOV to CR3â€ åŠ guest paging-structure å¼•èµ·çš„ EPT violationï¼Œä¿®å¤æ—¶ GPA ä¸ HPA ä¸€ä¸€å¯¹åº”
+        ;; 2) ç”± guest-physical address å¼•èµ·çš„ EPT violationï¼Œä¿®å¤æ—¶åŠ¨æ€åˆ†é… EPT é¡µé¢
         ;;       
         mov ebx, [gs: PCB.ExitInfoBuf + EXIT_INFO.ExitQualification]
         mov ecx, ebx
-        and ecx, 18h                                            ; È¡ bits 8:7
+        and ecx, 18h                                            ; å– bits 8:7
         jz do_ept_page_fault64.EptViolation1
         cmp ecx, 08h
         jz do_ept_page_fault64.EptViolation1
         
         ;;
-        ;; Ö´ĞĞÒ»°ãĞŞ¸´
+        ;; æ‰§è¡Œä¸€èˆ¬ä¿®å¤
         ;;
         mov eax, EPT_READ | EPT_WRITE | EPT_EXECUTE | EPT_FIXING | FIX_ACCESS
         
 do_ept_page_fault64.EptViolation1:
         ;;
-        ;; ÊµÏÖÒ»Ò»¶ÔÓ¦ÖØĞÂÓ³Éä
+        ;; å®ç°ä¸€ä¸€å¯¹åº”é‡æ–°æ˜ å°„
         ;;
         mov rdi, rsi
         mov eax, EPT_READ | EPT_WRITE | EPT_EXECUTE
@@ -479,30 +479,30 @@ do_ept_page_fault64.done:
 ; input:
 ;       rsi - table entry of EPT_MISCONFIGURATION
 ; output:
-;       eax - 0 = successful£¬ otherwise = error code
-; ÃèÊö£º
-;       1) ĞŞ¸´Ìá¹©µÄ EPT table entry Öµ
-; ²ÎÊı£º
-;       rsi - Ìá¹©·¢Éú EPT misconfiguration µÄ EPT ±íÏî£¬ĞŞ¸´ºó·µ»Ø EPT ±íÏî
-;       eax - Îª 0 Ê±±íÊ¾³É¹¦£¬·ñÔòÎª´íÎóÂë
+;       eax - 0 = successfulï¼Œ otherwise = error code
+; æè¿°ï¼š
+;       1) ä¿®å¤æä¾›çš„ EPT table entry å€¼
+; å‚æ•°ï¼š
+;       rsi - æä¾›å‘ç”Ÿ EPT misconfiguration çš„ EPT è¡¨é¡¹ï¼Œä¿®å¤åè¿”å› EPT è¡¨é¡¹
+;       eax - ä¸º 0 æ—¶è¡¨ç¤ºæˆåŠŸï¼Œå¦åˆ™ä¸ºé”™è¯¯ç 
 ;---------------------------------------------------------------
 do_ept_entry_misconf_fixing64:
         push rcx
 
         ;;
-        ;; EPT misconfigruation µÄ²úÉú£º
-        ;; 1) ±íÏîµÄ access right Îª 010B£¨write-only£©»òÕß 110B£¨write/execute£©
-        ;; 2) ±íÏîµÄ access right Îª 100B£¨execute-only£©£¬µ« VMX ²¢²»Ö§³Ö execute-only ÊôĞÔ
-        ;; 3) µ±±íÏîÊÇ present µÄ£¨access right ²»Îª 000B£©£º
-        ;;      3.1) ±£ÁôÎ»²»Îª 0£¬¼´£ºbits 51:M Îª±£ÁôÎ»£¬Õâ¸ö M ÖµµÈÓÚ MAXPHYADDR Öµ
-        ;;      3.2) page frame µÄ memory type ²»Ö§³Ö£¬Îª 2, 3 »òÕß 7
+        ;; EPT misconfigruation çš„äº§ç”Ÿï¼š
+        ;; 1) è¡¨é¡¹çš„ access right ä¸º 010Bï¼ˆwrite-onlyï¼‰æˆ–è€… 110Bï¼ˆwrite/executeï¼‰
+        ;; 2) è¡¨é¡¹çš„ access right ä¸º 100Bï¼ˆexecute-onlyï¼‰ï¼Œä½† VMX å¹¶ä¸æ”¯æŒ execute-only å±æ€§
+        ;; 3) å½“è¡¨é¡¹æ˜¯ present çš„ï¼ˆaccess right ä¸ä¸º 000Bï¼‰ï¼š
+        ;;      3.1) ä¿ç•™ä½ä¸ä¸º 0ï¼Œå³ï¼šbits 51:M ä¸ºä¿ç•™ä½ï¼Œè¿™ä¸ª M å€¼ç­‰äº MAXPHYADDR å€¼
+        ;;      3.2) page frame çš„ memory type ä¸æ”¯æŒï¼Œä¸º 2, 3 æˆ–è€… 7
         ;;
         
 
         mov eax, MAPPING_UNSUCCESS
                 
         ;;
-        ;; Èç¹ûÎª not present£¬ÔòÖ±½Ó·µ»Ø
+        ;; å¦‚æœä¸º not presentï¼Œåˆ™ç›´æ¥è¿”å›
         ;;
         test esi, 7
         jz do_ept_entry_misconf_fixing64.done
@@ -512,21 +512,21 @@ do_ept_entry_misconf_fixing64:
         and eax, 7
         
         ;;
-        ;; ### ¼ì²é1£ºaccess right ÊÇ·ñÎª 100B£¨execute-only£©
+        ;; ### æ£€æŸ¥1ï¼šaccess right æ˜¯å¦ä¸º 100Bï¼ˆexecute-onlyï¼‰
         ;;
         cmp eax, EPT_EXECUTE
         jne do_ept_entry_misconf_fixing64.@1
         
         ;;
-        ;; ¼ì²é VMX ÊÇ·ñÖ§³Ö execute-only
+        ;; æ£€æŸ¥ VMX æ˜¯å¦æ”¯æŒ execute-only
         ;;
         test DWORD [gs: PCB.EptVpidCap], 1
         jnz do_ept_entry_misconf_fixing64.@2
         
 do_ept_entry_misconf_fixing64.@1:
         ;;
-        ;; ÕâÀï²»¼ì²é access right ÊÇ·ñÎª 010B£¨write-only£© »òÕß 110B£¨write/execute£©
-        ;; ÎÒÃÇÖ±½ÓÌí¼Ó read È¨ÏŞ
+        ;; è¿™é‡Œä¸æ£€æŸ¥ access right æ˜¯å¦ä¸º 010Bï¼ˆwrite-onlyï¼‰ æˆ–è€… 110Bï¼ˆwrite/executeï¼‰
+        ;; æˆ‘ä»¬ç›´æ¥æ·»åŠ  read æƒé™
         ;;
         or rsi, EPT_READ                                
         
@@ -534,9 +534,9 @@ do_ept_entry_misconf_fixing64.@1:
 
 do_ept_entry_misconf_fixing64.@2:
         ;;
-        ;; ÕâÀï²»¼ì²é±£ÁôÎ»
-        ;; 1) ÎÒÃÇÖ±½Ó½« bits 51:M Î»Çå 0
-        ;; 2) ±£Áô bits 63:52£¨ºöÂÔÎ»£©µÄÖµ
+        ;; è¿™é‡Œä¸æ£€æŸ¥ä¿ç•™ä½
+        ;; 1) æˆ‘ä»¬ç›´æ¥å°† bits 51:M ä½æ¸… 0
+        ;; 2) ä¿ç•™ bits 63:52ï¼ˆå¿½ç•¥ä½ï¼‰çš„å€¼
         ;;
         mov rax, 0FFF0000000000000h                             ; bits 63:52
         or rax, [gs: PCB.MaxPhyAddrSelectMask]                  ; bits 63:52, bits M-1:0
@@ -545,12 +545,12 @@ do_ept_entry_misconf_fixing64.@2:
         
 do_ept_entry_misconf_fixing64.@3:
         ;;
-        ;; µ±ÊôÓÚ PML4E Ê±£¬Çå bits 7:3£¬·ñÔòÇå bits 6:3
+        ;; å½“å±äº PML4E æ—¶ï¼Œæ¸… bits 7:3ï¼Œå¦åˆ™æ¸… bits 6:3
         ;;
         mov rax, ~78h                                           ; ~ bits 6:3
         
         shld rcx, rsi, 12
-        and ecx, 7                                              ; È¡ bits 54:52£¬Ò³±í¼¶±ğ
+        and ecx, 7                                              ; å– bits 54:52ï¼Œé¡µè¡¨çº§åˆ«
         cmp ecx, 1
         jne do_ept_entry_misconf_fixing64.@31
         
@@ -559,13 +559,13 @@ do_ept_entry_misconf_fixing64.@3:
 do_ept_entry_misconf_fixing64.@31:        
 
         ;;
-        ;; Èç¹ûÊôÓÚ PTE Ê±£¬±£Áô bit6£¨IPATÎ»£©£¬²¢½« memory type ÖÃÎª PCB.EptMemoryType Öµ
+        ;; å¦‚æœå±äº PTE æ—¶ï¼Œä¿ç•™ bit6ï¼ˆIPATä½ï¼‰ï¼Œå¹¶å°† memory type ç½®ä¸º PCB.EptMemoryType å€¼
         ;;
         cmp ecx, 4
         jne do_ept_entry_misconf_fixing64.@32
 
         or rax, EPT_IPAT
-        and rsi, rax                                            ; È¥µô bits 5:3        
+        and rsi, rax                                            ; å»æ‰ bits 5:3        
         mov eax, [gs: PCB.EptMemoryType]
         shl eax, 3                                              ; ept memory type
         or rsi, rax
@@ -594,28 +594,28 @@ do_ept_entry_misconf_fixing64.done:
 ;       rsi - table entry
 ;       edi - attribute
 ; output:
-;       eax - 0 = successful£¬ otherwise = error code
-; ÃèÊö£º
-;       1) ĞŞ¸´±íÏîµÄ EPT violation ´íÎó
-; ²ÎÊıËµÃ÷£º
-;       1) rsi Ìá¹©ĞèÒªĞŞ¸´µÄ±íÏî
-;       2) edi Ìá¹©µÄÊôĞÔÖµ£º
+;       eax - 0 = successfulï¼Œ otherwise = error code
+; æè¿°ï¼š
+;       1) ä¿®å¤è¡¨é¡¹çš„ EPT violation é”™è¯¯
+; å‚æ•°è¯´æ˜ï¼š
+;       1) rsi æä¾›éœ€è¦ä¿®å¤çš„è¡¨é¡¹
+;       2) edi æä¾›çš„å±æ€§å€¼ï¼š
 ;       [0]    - read access
 ;       [1]    - write access
 ;       [2]    - execute access
 ;       [3]    - readable
 ;       [4]    - writeable
 ;       [5]    - excutable
-;       [6]    - ºöÂÔ
+;       [6]    - å¿½ç•¥
 ;       [7]    - valid of guest-linear address
 ;       [8]    - translation
-;       [27:9] - ºöÂÔ
-;       [26]   - FIX_ACCESS, ÖÃÎ»Ê±£¬½øĞĞ access right ĞŞ¸´¹¤×÷
-;       [27]   - FIX_MISCONF£¬ÖÃÎ»Ê±£¬½øĞĞ misconfiguration ĞŞ¸´¹¤×÷
-;       [28]   - EPT_FIXING£¬ÖÃÎ»Ê±£¬ĞèÒª½øĞĞĞŞ¸´¹¤×÷£¬¶ø²»ÊÇÓ³Éä¹¤×÷
-;              - EPT_FIXING ÇåÎ»Ê±£¬½øĞĞÓ³Éä¹¤×÷
-;       [29] - FORCE£¬ÖÃÎ»Ê±£¬Ç¿ÖÆ½øĞĞÓ³Éä
-;       [31:30] - ºöÂÔ
+;       [27:9] - å¿½ç•¥
+;       [26]   - FIX_ACCESS, ç½®ä½æ—¶ï¼Œè¿›è¡Œ access right ä¿®å¤å·¥ä½œ
+;       [27]   - FIX_MISCONFï¼Œç½®ä½æ—¶ï¼Œè¿›è¡Œ misconfiguration ä¿®å¤å·¥ä½œ
+;       [28]   - EPT_FIXINGï¼Œç½®ä½æ—¶ï¼Œéœ€è¦è¿›è¡Œä¿®å¤å·¥ä½œï¼Œè€Œä¸æ˜¯æ˜ å°„å·¥ä½œ
+;              - EPT_FIXING æ¸…ä½æ—¶ï¼Œè¿›è¡Œæ˜ å°„å·¥ä½œ
+;       [29] - FORCEï¼Œç½®ä½æ—¶ï¼Œå¼ºåˆ¶è¿›è¡Œæ˜ å°„
+;       [31:30] - å¿½ç•¥
 ;---------------------------------------------------------------        
 do_ept_entry_violation_fixing64:
         push rcx
@@ -623,13 +623,13 @@ do_ept_entry_violation_fixing64:
         
 
         ;;
-        ;; EPT violation µÄ²úÉú:
-        ;; 1) ·ÃÎÊ guest-physical address Ê±£¬³öÏÖ not-present
-        ;; 2) ¶Ô guest-physical address ½øĞĞ¶Á·ÃÎÊ£¬¶ø EPT paging-structure ±íÏîµÄ bit0 Îª 0
-        ;; 3) ¶Ô guest-physical address ½øĞĞĞ´·ÃÎÊ£¬¶ø EPT paging-structure ±íÏîµÄ bit1 Îª 0
-        ;; 4) EPTP[6] = 1 Ê±£¬ÔÚ¸üĞÂ guest paging-structure ±íÏîµÄ accessed »ò dirty Î»Ê±±»×÷Îª¡°Ğ´·ÃÎÊ¡±
-        ;;                    ´ËÊ± EPT paging-structure ±íÏîµÄ bit1 Îª 0
-        ;; 5) ¶Ô guest-physical address ½øĞĞ fetch²Ù×÷£¨execute£©£¬¶ø EPT paging-structure ±íÏîµÄ bit2 Îª 0
+        ;; EPT violation çš„äº§ç”Ÿ:
+        ;; 1) è®¿é—® guest-physical address æ—¶ï¼Œå‡ºç° not-present
+        ;; 2) å¯¹ guest-physical address è¿›è¡Œè¯»è®¿é—®ï¼Œè€Œ EPT paging-structure è¡¨é¡¹çš„ bit0 ä¸º 0
+        ;; 3) å¯¹ guest-physical address è¿›è¡Œå†™è®¿é—®ï¼Œè€Œ EPT paging-structure è¡¨é¡¹çš„ bit1 ä¸º 0
+        ;; 4) EPTP[6] = 1 æ—¶ï¼Œåœ¨æ›´æ–° guest paging-structure è¡¨é¡¹çš„ accessed æˆ– dirty ä½æ—¶è¢«ä½œä¸ºâ€œå†™è®¿é—®â€
+        ;;                    æ­¤æ—¶ EPT paging-structure è¡¨é¡¹çš„ bit1 ä¸º 0
+        ;; 5) å¯¹ guest-physical address è¿›è¡Œ fetchæ“ä½œï¼ˆexecuteï¼‰ï¼Œè€Œ EPT paging-structure è¡¨é¡¹çš„ bit2 ä¸º 0
         ;;
         
         mov eax, MAPPING_UNSUCCESS
@@ -638,9 +638,9 @@ do_ept_entry_violation_fixing64:
         jz do_ept_entry_violation_fixing64.done
         
         ;;
-        ;; ĞŞ¸´´¦Àí:
-        ;; 1) ÕâÀï²»ĞŞ¸´ not-present ÏÖÏó
-        ;; 2) Ìí¼ÓÏàÓ¦µÄ·ÃÎÊÈ¨ÏŞ£º½«±íÏîÖµ »òÉÏ attribute[2:0] Öµ
+        ;; ä¿®å¤å¤„ç†:
+        ;; 1) è¿™é‡Œä¸ä¿®å¤ not-present ç°è±¡
+        ;; 2) æ·»åŠ ç›¸åº”çš„è®¿é—®æƒé™ï¼šå°†è¡¨é¡¹å€¼ æˆ–ä¸Š attribute[2:0] å€¼
         ;;
         mov ecx, edi
         and ecx, 7
@@ -661,8 +661,8 @@ do_ept_entry_violation_fixing64.done:
 ;       rsi - guest-physical address
 ; output:
 ;       none
-; ÃèÊö£º¡¡
-;       1) ´òÓ¡ EPT paging structure ±íÏî
+; æè¿°ï¼šã€€
+;       1) æ‰“å° EPT paging structure è¡¨é¡¹
 ;---------------------------------------------------------------
 dump_ept_paging_structure64:
         push rbp
@@ -673,16 +673,16 @@ dump_ept_paging_structure64:
 
         
         mov r10, rsi                                    ; r10 = GPA
-        mov ecx, (32 - 4)                               ; ecx = EPT ±íÏî index ×óÒÆÎ»Êı£¨shld£©
+        mov ecx, (32 - 4)                               ; ecx = EPT è¡¨é¡¹ index å·¦ç§»ä½æ•°ï¼ˆshldï¼‰
         
         ;;
-        ;; ¶ÁÈ¡µ±Ç° VMB µÄ EP4TA Öµ
+        ;; è¯»å–å½“å‰ VMB çš„ EP4TA å€¼
         ;;
         mov rbp, [gs: PCB.CurrentVmbPointer]
-        mov rbp, [rbp + VMB.Ep4taBase]                  ; rbp = EPT PML4T ĞéÄâ»ùÖ·
+        mov rbp, [rbp + VMB.Ep4taBase]                  ; rbp = EPT PML4T è™šæ‹ŸåŸºå€
 
         ;;
-        ;; ¼ì²éÊÇ·ñÊôÓÚÇ¶Ì×´òÓ¡
+        ;; æ£€æŸ¥æ˜¯å¦å±äºåµŒå¥—æ‰“å°
         ;;
         mov edx, Ept.NestEntryMsg
         test DWORD [Ept.DumpPageFlag], DUMP_PAGE_NEST
@@ -698,16 +698,16 @@ dump_ept_paging_structure64:
 
 dump_ept_paging_structure64.Walk:
         ;;
-        ;; EPT paging structure walk ´¦Àí
+        ;; EPT paging structure walk å¤„ç†
         ;;
         shld rax, r10, cl
         and eax, 0FF8h
         
         ;;
-        ;; ¶ÁÈ¡ EPT ±íÏî
+        ;; è¯»å– EPT è¡¨é¡¹
         ;;
-        add rbp, rax                                    ; rbp Ö¸Ïò EPT ±íÏî
-        mov rbx, [rbp]                                  ; rbx = EPT ±íÏîÖµ
+        add rbp, rax                                    ; rbp æŒ‡å‘ EPT è¡¨é¡¹
+        mov rbx, [rbp]                                  ; rbx = EPT è¡¨é¡¹å€¼
 
         shld rax, rbx, 12
         and eax, 07h
@@ -718,30 +718,30 @@ dump_ept_paging_structure64.Walk:
         call println
         
         ;;
-        ;; ¼ì²é EPT ±íÏîÊÇ·ñÎª not present£¬°üÀ¨£º
-        ;; 1) access right ²»Îª 0
+        ;; æ£€æŸ¥ EPT è¡¨é¡¹æ˜¯å¦ä¸º not presentï¼ŒåŒ…æ‹¬ï¼š
+        ;; 1) access right ä¸ä¸º 0
         ;; 2) EPT_VALID_FLAG
         ;;
         test ebx, 7                                             ; access right = 0 ?
         jz dump_ept_paging_structure64.Done
-        test ebx, EPT_VALID_FLAG                                ; ÓĞĞ§±êÖ¾Î» = 0 ?
+        test ebx, EPT_VALID_FLAG                                ; æœ‰æ•ˆæ ‡å¿—ä½ = 0 ?
         jz dump_ept_paging_structure64.Done
      
         ;;
-        ;; ¶ÁÈ¡±íÏîÄÚÈİ
+        ;; è¯»å–è¡¨é¡¹å†…å®¹
         ;;
-        and rbx, ~0FFFh                                         ; Çå bits 11:0
-        and rbx, [gs: PCB.MaxPhyAddrSelectMask]                 ; È¡µØÖ·Öµ       
+        and rbx, ~0FFFh                                         ; æ¸… bits 11:0
+        and rbx, [gs: PCB.MaxPhyAddrSelectMask]                 ; å–åœ°å€å€¼       
 
         ;;
-        ;; ¼ÌĞøÏòÏÂ walk 
+        ;; ç»§ç»­å‘ä¸‹ walk 
         ;;
         mov rsi, rbx
         call get_ept_pt_virtual_address
-        mov rbp, rax                                            ; rbp = EPT Ò³±í»ùÖ·
+        mov rbp, rax                                            ; rbp = EPT é¡µè¡¨åŸºå€
 
         cmp ecx, (32 - 4 + 9 + 9 + 9)
-        lea rcx, [rcx + 9]                                      ; ÏÂÒ»¼¶Ò³±íµÄ shld count
+        lea rcx, [rcx + 9]                                      ; ä¸‹ä¸€çº§é¡µè¡¨çš„ shld count
         jne dump_ept_paging_structure64.Walk
 
 dump_ept_paging_structure64.Done:     
@@ -762,8 +762,8 @@ dump_ept_paging_structure64.Done:
 ;       rdi - dump page flag
 ; output:
 ;       none
-; ÃèÊö£º¡¡
-;       1) ´òÓ¡ EPT paging structure ±íÏî
+; æè¿°ï¼šã€€
+;       1) æ‰“å° EPT paging structure è¡¨é¡¹
 ;---------------------------------------------------------------
 dump_guest_longmode_paging_structure64:
         push rbp
@@ -773,12 +773,12 @@ dump_guest_longmode_paging_structure64:
 
         
         mov r10, rsi                                    ; r10 = GPA
-        mov ecx, (32 - 4)                               ; ecx = EPT ±íÏî index ×óÒÆÎ»Êı£¨shld£©
+        mov ecx, (32 - 4)                               ; ecx = EPT è¡¨é¡¹ index å·¦ç§»ä½æ•°ï¼ˆshldï¼‰
         
         mov [Ept.DumpPageFlag], edi
         
         ;;
-        ;; ¶ÁÈ¡µ±Ç° guest µÄ CR3 Öµ
+        ;; è¯»å–å½“å‰ guest çš„ CR3 å€¼
         ;;
         GetVmcsField    GUEST_CR3
         mov rsi, rax
@@ -797,16 +797,16 @@ dump_guest_longmode_paging_structure64:
 
 dump_guest_longmode_paging_structure64.Walk:
         ;;
-        ;; guest-paging structure walk ´¦Àí
+        ;; guest-paging structure walk å¤„ç†
         ;;
         shld rax, r10, cl
         and eax, 0FF8h
         
         ;;
-        ;; ¶ÁÈ¡ guest ±íÏî
+        ;; è¯»å– guest è¡¨é¡¹
         ;;
-        add rbp, rax                                    ; rbp Ö¸Ïò guest ±íÏî
-        mov rbx, [rbp]                                  ; rbx = guest ±íÏîÖµ
+        add rbp, rax                                    ; rbp æŒ‡å‘ guest è¡¨é¡¹
+        mov rbx, [rbp]                                  ; rbx = guest è¡¨é¡¹å€¼
 
         mov eax, ecx
         sub eax, (32 - 4)
@@ -818,7 +818,7 @@ dump_guest_longmode_paging_structure64.Walk:
         call println
         
         ;;
-        ;; ÊÇ·ñÎª PDE
+        ;; æ˜¯å¦ä¸º PDE
         ;;
         cmp ecx, (32 - 4 + 9 + 9)
         jne dump_guest_longmode_paging_structure64.Walk.@0
@@ -828,16 +828,16 @@ dump_guest_longmode_paging_structure64.Walk:
 
 dump_guest_longmode_paging_structure64.Walk.@0:        
         ;;
-        ;; ¼ì²é±íÏîÊÇ·ñÎª not present
+        ;; æ£€æŸ¥è¡¨é¡¹æ˜¯å¦ä¸º not present
         ;;
         test ebx, PAGE_P                                        ; access right = 0 ?
         jz dump_guest_longmode_paging_structure64.Done
 
         ;;
-        ;; ¶ÁÈ¡±íÏîÄÚÈİ
+        ;; è¯»å–è¡¨é¡¹å†…å®¹
         ;;
-        and rbx, ~0FFFh                                         ; Çå bits 11:0
-        and rbx, [gs: PCB.MaxPhyAddrSelectMask]                 ; È¡µØÖ·Öµ       
+        and rbx, ~0FFFh                                         ; æ¸… bits 11:0
+        and rbx, [gs: PCB.MaxPhyAddrSelectMask]                 ; å–åœ°å€å€¼       
 
         test DWORD [Ept.DumpPageFlag], DUMP_PAGE_NEST
         jz dump_guest_longmode_paging_structure64.Walk.@1
@@ -848,14 +848,14 @@ dump_guest_longmode_paging_structure64.Walk.@0:
 dump_guest_longmode_paging_structure64.Walk.@1:
 
         ;;
-        ;; ¼ÌĞøÏòÏÂ walk 
+        ;; ç»§ç»­å‘ä¸‹ walk 
         ;;
         mov rsi, rbx
         call get_system_va_of_guest_pa
-        mov rbp, rax                                            ; rbp = guest Ò³±í»ùÖ·
+        mov rbp, rax                                            ; rbp = guest é¡µè¡¨åŸºå€
 
         cmp ecx, (32 - 4 + 9 + 9 + 9)
-        lea rcx, [rcx + 9]                                      ; ÏÂÒ»¼¶Ò³±íµÄ shld count
+        lea rcx, [rcx + 9]                                      ; ä¸‹ä¸€çº§é¡µè¡¨çš„ shld count
         jne dump_guest_longmode_paging_structure64.Walk
 
 dump_guest_longmode_paging_structure64.Done:     

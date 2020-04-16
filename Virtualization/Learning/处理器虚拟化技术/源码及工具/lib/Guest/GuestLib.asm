@@ -1,6 +1,6 @@
 ;*************************************************
 ; GuestLib.asm                                   *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
@@ -14,8 +14,8 @@
 ; input:
 ;       esi - size
 ;       edi - buffer address
-; ÃèÊö£º
-;       ½«ÄÚ´æ¿éÇå 0
+; æè¿°ï¼š
+;       å°†å†…å­˜å—æ¸… 0
 ;-----------------------------------------
 ZeroMemory:
         push ecx
@@ -26,45 +26,45 @@ ZeroMemory:
         xor eax, eax
         
         ;;
-        ;; ¼ì²é count > 4 ?
+        ;; æ£€æŸ¥ count > 4 ?
         ;;
         cmp esi, 4
         jb ZeroMemory.@1
         
         ;;
-        ;; ÏÈÐ´ÈëÊ× 4 ×Ö½Ú
+        ;; å…ˆå†™å…¥é¦– 4 å­—èŠ‚
         ;;
         mov [edi], eax
         
         ;;
-        ;; ¼ÆËãµ÷Õûµ½ DWORD ±ß½çÉÏµÄ²î¶î£¬Ô­ÀíµÈÓÚ 4 - dest & 03
-        ;; 1) ÀýÈç£º[2:0] = 011B£¨3£©
-        ;; 2) È¡·´ºó = 100B£¨4£©
-        ;; 3) ¼Ó1ºó = 101B£¨5£©        
-        ;; 4) ÔÚ32Î»ÏÂÓë03ºó = 001B£¨1£©£¬¼´²î¶îÎª 1
+        ;; è®¡ç®—è°ƒæ•´åˆ° DWORD è¾¹ç•Œä¸Šçš„å·®é¢ï¼ŒåŽŸç†ç­‰äºŽ 4 - dest & 03
+        ;; 1) ä¾‹å¦‚ï¼š[2:0] = 011Bï¼ˆ3ï¼‰
+        ;; 2) å–ååŽ = 100Bï¼ˆ4ï¼‰
+        ;; 3) åŠ 1åŽ = 101Bï¼ˆ5ï¼‰        
+        ;; 4) åœ¨32ä½ä¸‹ä¸Ž03åŽ = 001Bï¼ˆ1ï¼‰ï¼Œå³å·®é¢ä¸º 1
         ;;
-        mov ecx, esi                                    ; Ô­ count        
-        mov esi, edi                                    ; Ô­ dest
+        mov ecx, esi                                    ; åŽŸ count        
+        mov esi, edi                                    ; åŽŸ dest
         not esi
         inc esi
-        and esi, 03                                     ; ÔÚ 32 Î»ÏÂÓë 03h
-        sub ecx, esi                                    ; count = Ô­ count - ²î¶î
+        and esi, 03                                     ; åœ¨ 32 ä½ä¸‹ä¸Ž 03h
+        sub ecx, esi                                    ; count = åŽŸ count - å·®é¢
 
         ;;
-        ;; dest ÏòÉÏµ÷Õûµ½ DWORD ±ß½ç
+        ;; dest å‘ä¸Šè°ƒæ•´åˆ° DWORD è¾¹ç•Œ
         ;;
-        add edi, esi                                    ; dest = dest + ²î¶î
+        add edi, esi                                    ; dest = dest + å·®é¢
         mov esi, ecx
            
         ;;
-        ;; ÔÚ 32 Î»ÏÂ£¬ÒÔ DWORD Îªµ¥Î»
+        ;; åœ¨ 32 ä½ä¸‹ï¼Œä»¥ DWORD ä¸ºå•ä½
         ;; 
         shr ecx, 2
         rep stosd
 
 ZeroMemory.@1:                     
         ;;
-        ;; Ò»´Î 1 ×Ö½Ú£¬Ð´ÈëÊ£Óà×Ö½ÚÊý
+        ;; ä¸€æ¬¡ 1 å­—èŠ‚ï¼Œå†™å…¥å‰©ä½™å­—èŠ‚æ•°
         ;;
         mov ecx, esi
         and ecx, 03h
@@ -87,14 +87,14 @@ AllocPhysicalPage:
         push ebx
         
         ;;
-        ;; ·ÖÅäµØÖ·
+        ;; åˆ†é…åœ°å€
         ;;
         imul eax, esi, 4096
         xadd [Guest.PoolPhysicalBase], eax
         mov ebx, eax
 
         ;;
-        ;; ÇåÒ³Ãæ
+        ;; æ¸…é¡µé¢
         ;;
         mov esi, 4096
         mov edi, eax       
@@ -119,8 +119,8 @@ AllocPhysicalPage:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÔÚÎ´·ÖÒ³ÏÂµ÷ÓÃ
+; æè¿°ï¼š
+;       1) åœ¨æœªåˆ†é¡µä¸‹è°ƒç”¨
 ;-----------------------------------------------------
 init_longmode_page:
         push ebx
@@ -129,24 +129,24 @@ init_longmode_page:
         push ebp
 
         ;;
-        ;;    --------------- ÐéÄâµØÖ· --------------              ------ ÎïÀíµØÖ· ------
-        ;; 1) FFFF8000_C0200000h - FFFF8000_C05FFFFFh     ==>     00200000h - 005FFFFFh £¨2MÒ³Ãæ£©
-        ;; 2) FFFF8000_80020000h - FFFF8000_8002FFFFh     ==>     00020000h - 0002FFFFh £¨4KÒ³Ãæ£©
-        ;; 3) 00020000h - 0002FFFFh                       ==>     00020000h - 0002FFFFh £¨4KÒ³Ãæ£©
-        ;; 4) FFFF8000_FFF00000h - FFFF8000_FFF00FFFh     ==>     AllocPhysicalPage()   £¨4KÒ³Ãæ£©
-        ;; 5) 000B8000h - 000B8FFFh                       ==>     000B8000h - 000B8FFFh £¨4KÒ³Ãæ£©
-        ;; 6) 00007000h - 00008FFFh                       ==>     00007000h - 00008FFFh £¨4KÒ³Ãæ£©
-        ;; 7) FFFF8000_81000000h - FFFF8000_81000FFFh     ==>     01000000h - 01000FFFh £¨4KÒ³Ãæ£©
+        ;;    --------------- è™šæ‹Ÿåœ°å€ --------------              ------ ç‰©ç†åœ°å€ ------
+        ;; 1) FFFF8000_C0200000h - FFFF8000_C05FFFFFh     ==>     00200000h - 005FFFFFh ï¼ˆ2Mé¡µé¢ï¼‰
+        ;; 2) FFFF8000_80020000h - FFFF8000_8002FFFFh     ==>     00020000h - 0002FFFFh ï¼ˆ4Ké¡µé¢ï¼‰
+        ;; 3) 00020000h - 0002FFFFh                       ==>     00020000h - 0002FFFFh ï¼ˆ4Ké¡µé¢ï¼‰
+        ;; 4) FFFF8000_FFF00000h - FFFF8000_FFF00FFFh     ==>     AllocPhysicalPage()   ï¼ˆ4Ké¡µé¢ï¼‰
+        ;; 5) 000B8000h - 000B8FFFh                       ==>     000B8000h - 000B8FFFh ï¼ˆ4Ké¡µé¢ï¼‰
+        ;; 6) 00007000h - 00008FFFh                       ==>     00007000h - 00008FFFh ï¼ˆ4Ké¡µé¢ï¼‰
+        ;; 7) FFFF8000_81000000h - FFFF8000_81000FFFh     ==>     01000000h - 01000FFFh ï¼ˆ4Ké¡µé¢ï¼‰
         ;;
         
         
                 
         ;;
-        ;; #### step 1: ÉèÖÃ PML4E ####
+        ;; #### step 1: è®¾ç½® PML4E ####
         ;;
         
         ;;
-        ;; ÉèÖÃ FFFF8000_xxxxxxxx µÄ PML4E
+        ;; è®¾ç½® FFFF8000_xxxxxxxx çš„ PML4E
         ;;
         mov esi, 1
         call AllocPhysicalPage
@@ -156,8 +156,8 @@ init_longmode_page:
         mov DWORD [GUEST_PML4T_BASE + 100h * 8 + 4], 0
         
         ;;
-        ;; ÉèÖÃ 00000000_xxxxxxxx µÄ PML4E
-        ;;¡¡
+        ;; è®¾ç½® 00000000_xxxxxxxx çš„ PML4E
+        ;;ã€€
         mov esi, 1
         call AllocPhysicalPage
         mov edx, eax                                                    ;; edx = PML4T[0]
@@ -167,13 +167,13 @@ init_longmode_page:
         
         
         ;;
-        ;; #### step 2: ÉèÖÃ PDPTE ####
+        ;; #### step 2: è®¾ç½® PDPTE ####
         ;;
         
         ;;
-        ;; ÉèÖÃ FFFF8000_Cxxxxxxx µÄ PDPTE
-        ;; ÉèÖÃ FFFF8000_8xxxxxxx µÄ PDPTE  
-        ;; ÉèÖÃ FFFF8000_Fxxxxxxx µÄ PDPTE
+        ;; è®¾ç½® FFFF8000_Cxxxxxxx çš„ PDPTE
+        ;; è®¾ç½® FFFF8000_8xxxxxxx çš„ PDPTE  
+        ;; è®¾ç½® FFFF8000_Fxxxxxxx çš„ PDPTE
         ;;
         mov esi, 1
         call AllocPhysicalPage
@@ -190,7 +190,7 @@ init_longmode_page:
         mov DWORD [ebx + 3 * 8 + 4], 0              
                 
         ;;
-        ;; ÉèÖÃ 00000000_0xxxxxxx µÄ PDPTE
+        ;; è®¾ç½® 00000000_0xxxxxxx çš„ PDPTE
         ;;
         mov esi, 1
         call AllocPhysicalPage
@@ -202,11 +202,11 @@ init_longmode_page:
         
         
         ;;
-        ;; #### step 3: ÉèÖÃ PDE ####
+        ;; #### step 3: è®¾ç½® PDE ####
         ;;
           
         ;;
-        ;; ÉèÖÃ FFFF8000_C02xxxxx µÄ PDE
+        ;; è®¾ç½® FFFF8000_C02xxxxx çš„ PDE
         ;;
         mov DWORD [ecx + 1 * 8], 200000h | PS | RW | P
         mov DWORD [ecx + 1 * 8 + 4], 0
@@ -214,7 +214,7 @@ init_longmode_page:
         mov DWORD [ecx + 2 * 8 + 4], 0
 
         ;;
-        ;; ÉèÖÃ FFFF8000_FFFxxxxx µÄ PDE
+        ;; è®¾ç½® FFFF8000_FFFxxxxx çš„ PDE
         ;;
         mov esi, 1
         call AllocPhysicalPage
@@ -226,7 +226,7 @@ init_longmode_page:
         
                 
         ;;
-        ;; ÉèÖÃ FFFF8000_8002xxxx µÄ PDE
+        ;; è®¾ç½® FFFF8000_8002xxxx çš„ PDE
         ;;
         mov esi, 1
         call AllocPhysicalPage
@@ -236,7 +236,7 @@ init_longmode_page:
         mov DWORD [ebp + 0 * 8 + 4], 0
         
         ;;
-        ;; ÉèÖÃ FFFF8000_810xxxxx µÄ PDE
+        ;; è®¾ç½® FFFF8000_810xxxxx çš„ PDE
         ;;
         mov esi, 1
         call AllocPhysicalPage
@@ -245,14 +245,14 @@ init_longmode_page:
         mov DWORD [ebp + 8 * 8 + 4], 0 
                
         ;;
-        ;; ÉèÖÃ FFFF8000_81000000h Ó³ÉäµÄ PTE
+        ;; è®¾ç½® FFFF8000_81000000h æ˜ å°„çš„ PTE
         ;;
         and eax, ~0FFFh
         mov DWORD [eax + 0 * 8], 01000000h | RW | P
         mov DWORD [eax + 0 * 8 + 4], 0
        
         ;;
-        ;; ÉèÖÃ 00000000_00020xxx µÄ PDE
+        ;; è®¾ç½® 00000000_00020xxx çš„ PDE
         ;;
         mov esi, 1
         call AllocPhysicalPage
@@ -265,11 +265,11 @@ init_longmode_page:
         
      
         ;;
-        ;; #### step 4: ÉèÖÃ PTE ####
+        ;; #### step 4: è®¾ç½® PTE ####
         ;;
         
         ;;
-        ;; ÉèÖÃ FFFF8000_FFF00000 µÄ PTE
+        ;; è®¾ç½® FFFF8000_FFF00000 çš„ PTE
         ;;
         mov esi, 1
         call AllocPhysicalPage
@@ -278,14 +278,14 @@ init_longmode_page:
         mov DWORD [ecx + 100h * 8 + 4], 0
         
         ;;
-        ;; ÉèÖÃ FFFF8000_80020000h£¬00020000h µÄ PTE
+        ;; è®¾ç½® FFFF8000_80020000hï¼Œ00020000h çš„ PTE
         ;;
         mov ecx, 20h
         mov esi, 20000h | RW | P
 init_longmode_page.loop:
         mov [ebp + ecx * 8], esi
         mov DWORD [ebp + ecx * 8 + 4], 0
-        or DWORD [ebp + ecx * 8], PAGE_USER                     ; 20000h ¾ßÓÐ USER È¨ÏÞ
+        or DWORD [ebp + ecx * 8], PAGE_USER                     ; 20000h å…·æœ‰ USER æƒé™
         mov [edx + ecx * 8], esi
         mov DWORD [edx + ecx * 8 + 4], 0
         add esi, 1000h
@@ -294,13 +294,13 @@ init_longmode_page.loop:
         jbe init_longmode_page.loop
         
         ;;
-        ;; ÉèÖÃ 0B8000h µÄ PTE
+        ;; è®¾ç½® 0B8000h çš„ PTE
         ;;
         mov DWORD [ebp + 0B8h * 8], 0B8000h | RW | US | P
         mov DWORD [ebp + 0B8h * 8 + 4], 0      
 
         ;;
-        ;; ÉèÖÃ 7000h - 8FFFh µÄ PTE
+        ;; è®¾ç½® 7000h - 8FFFh çš„ PTE
         ;;
         mov DWORD [ebp + 7 * 8], 7000h | RW | US | P
         mov DWORD [ebp + 7 * 8 + 4], 0     
@@ -322,8 +322,8 @@ init_longmode_page.loop:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¸üÐÂ TSS Îª 64-bit ÏÂµÄ TSS
+; æè¿°ï¼š
+;       1) æ›´æ–° TSS ä¸º 64-bit ä¸‹çš„ TSS
 ;----------------------------------------------------------
 update_tss_longmode:       
         ret
@@ -338,8 +338,8 @@ update_tss_longmode:
 ;       eax - page attribute
 ; output:
 ;       0 - successful, otherwise - error code
-; ÃèÊö£º
-;       1) ½«ÐéÄâµØÖ·Ó³Éäµ½ÎïÀíµØÖ·
+; æè¿°ï¼š
+;       1) å°†è™šæ‹Ÿåœ°å€æ˜ å°„åˆ°ç‰©ç†åœ°å€
 ;----------------------------------------------------------
 do_virtual_address_mapping:
         push rbp
@@ -354,26 +354,26 @@ do_virtual_address_mapping:
         mov r10, rsi                                    ; r10 = VA
         mov r11, rdi                                    ; r11 = PA
         mov ebx, eax                                    ; ebx = page attribute
-        mov ecx, (32 - 4)                               ; ecx = ±íÏî index ×óÒÆÎ»Êý£¨shld£©
-        mov rbp, PML4T_BASE                             ; rbp = PML4T ÐéÄâ»ùÖ·
+        mov ecx, (32 - 4)                               ; ecx = è¡¨é¡¹ index å·¦ç§»ä½æ•°ï¼ˆshldï¼‰
+        mov rbp, PML4T_BASE                             ; rbp = PML4T è™šæ‹ŸåŸºå€
 
 
 do_virtual_address_mapping.Walk:
         ;;
-        ;; paging structure walk ´¦Àí
+        ;; paging structure walk å¤„ç†
         ;;
         shld rax, r10, cl
         and eax, 0FF8h
         
         ;;
-        ;; ¶ÁÈ¡±íÏî
+        ;; è¯»å–è¡¨é¡¹
         ;;
-        add rbp, rax                                    ; rbp Ö¸Ïò±íÏî
-        mov rsi, [rbp]                                  ; rsi = ±íÏîÖµ
+        add rbp, rax                                    ; rbp æŒ‡å‘è¡¨é¡¹
+        mov rsi, [rbp]                                  ; rsi = è¡¨é¡¹å€¼
         
         
         ;;
-        ;; ¼ì²é±íÏîÊÇ·ñÎª not present
+        ;; æ£€æŸ¥è¡¨é¡¹æ˜¯å¦ä¸º not present
         ;;
         test esi, PAGE_P
         jnz do_virtual_address_mapping.NextWalk
@@ -381,7 +381,7 @@ do_virtual_address_mapping.Walk:
 
 do_virtual_address_mapping.NotPrsent:     
         ;;
-        ;; ¼ì²éÊÇ·ñÎª PDE
+        ;; æ£€æŸ¥æ˜¯å¦ä¸º PDE
         ;;
         cmp ecx, (32 - 4 + 9 + 9)
         jne do_virtual_address_mapping.CheckPte
@@ -390,7 +390,7 @@ do_virtual_address_mapping.NotPrsent:
         jz do_virtual_address_mapping.CheckPte
 
         ;;
-        ;; Ê¹ÓÃ 2M Ò³Ãæ
+        ;; ä½¿ç”¨ 2M é¡µé¢
         ;;
         mov eax, ebx
         and eax, 0FFh
@@ -402,13 +402,13 @@ do_virtual_address_mapping.NotPrsent:
 
 do_virtual_address_mapping.CheckPte:
         ;;
-        ;; ¼ì²éÊÇ·ñÎª PTE
+        ;; æ£€æŸ¥æ˜¯å¦ä¸º PTE
         ;;
         cmp ecx, (32 - 4 + 9 + 9 + 9)
         jne do_virtual_address_mapping.WriteEntry
 
         ;;
-        ;; Ê¹ÓÃ 4K Ò³Ãæ
+        ;; ä½¿ç”¨ 4K é¡µé¢
         ;;
         mov eax, ebx
         and eax, 07Fh
@@ -421,7 +421,7 @@ do_virtual_address_mapping.CheckPte:
         
 do_virtual_address_mapping.WriteEntry:             
         ;;
-        ;; ·ÖÅäÒ³Ãæ
+        ;; åˆ†é…é¡µé¢
         ;;
         mov esi, 1
         call AllocPhysicalPage
@@ -430,7 +430,7 @@ do_virtual_address_mapping.WriteEntry:
         or rax, PAGE_USER | PAGE_WRITE | PAGE_P          
         
         ;;
-        ;; Ð´Èë±íÏîÄÚÈÝ
+        ;; å†™å…¥è¡¨é¡¹å†…å®¹
         ;;
         mov [rbp], rax
 
@@ -441,7 +441,7 @@ do_virtual_address_mapping.NextWalk:
         add rbp, rsi
 
         ;;
-        ;; Ö´ÐÐ¼ÌÐø walk Á÷³Ì
+        ;; æ‰§è¡Œç»§ç»­ walk æµç¨‹
         ;;
         add ecx, 9
         jmp do_virtual_address_mapping.Walk
@@ -465,8 +465,8 @@ do_virtual_address_mapping.Done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÔÚÎ´·ÖÒ³ÏÂµ÷ÓÃ
+; æè¿°ï¼š
+;       1) åœ¨æœªåˆ†é¡µä¸‹è°ƒç”¨
 ;-----------------------------------------------------
 init_pae_page:
         push ebx
@@ -474,70 +474,70 @@ init_pae_page:
         push ecx
         
         ;;
-        ;;    ----- ÐéÄâµØÖ· ------              ----- ÎïÀíµØÖ· ------
-        ;; 1) C0200000h - C05FFFFFh     ==>     00200000h - 005FFFFFh £¨2MÒ³Ãæ£©
-        ;; 2) 80020000h - 8002FFFFh     ==>     00020000h - 0002FFFFh £¨4KÒ³Ãæ£©
-        ;; 3) 00020000h - 0002FFFFh     ==>     00020000h - 0002FFFFh £¨4KÒ³Ãæ£©
-        ;; 4) FFF00000h - FFF00FFFh     ==>     AllocPhysicalPage()   £¨4KÒ³Ãæ£©
-        ;; 5) 000B8000h - 000B8000h     ==>     000B8000h - 000B8000h £¨4KÒ³Ãæ£©
-        ;; 6) 00007000h - 00008FFFh     ==>     00007000h - 00008FFFh £¨4KÒ³Ãæ£©
-        ;; 7) 81000000h - 81000FFFh     ==>     01000000h - 01000FFFh £¨4KÒ³Ãæ£©        
+        ;;    ----- è™šæ‹Ÿåœ°å€ ------              ----- ç‰©ç†åœ°å€ ------
+        ;; 1) C0200000h - C05FFFFFh     ==>     00200000h - 005FFFFFh ï¼ˆ2Mé¡µé¢ï¼‰
+        ;; 2) 80020000h - 8002FFFFh     ==>     00020000h - 0002FFFFh ï¼ˆ4Ké¡µé¢ï¼‰
+        ;; 3) 00020000h - 0002FFFFh     ==>     00020000h - 0002FFFFh ï¼ˆ4Ké¡µé¢ï¼‰
+        ;; 4) FFF00000h - FFF00FFFh     ==>     AllocPhysicalPage()   ï¼ˆ4Ké¡µé¢ï¼‰
+        ;; 5) 000B8000h - 000B8000h     ==>     000B8000h - 000B8000h ï¼ˆ4Ké¡µé¢ï¼‰
+        ;; 6) 00007000h - 00008FFFh     ==>     00007000h - 00008FFFh ï¼ˆ4Ké¡µé¢ï¼‰
+        ;; 7) 81000000h - 81000FFFh     ==>     01000000h - 01000FFFh ï¼ˆ4Ké¡µé¢ï¼‰        
         ;;
         
         ;;
-        ;; ### step 0: PAE paging ·ÖÒ³Ä£Ê½ÏÂµÄ 4 ¸ö PDPTE ÒÑ¾­±»ÉèÖÃ ###
+        ;; ### step 0: PAE paging åˆ†é¡µæ¨¡å¼ä¸‹çš„ 4 ä¸ª PDPTE å·²ç»è¢«è®¾ç½® ###
         ;;
         
         
         ;;
-        ;; ### step 1: ÉèÖÃ PDE Öµ ###
+        ;; ### step 1: è®¾ç½® PDE å€¼ ###
         ;;
-        mov eax, 200000h | PS | RW | P                          ;; Ê¹ÓÃ 2M Ò³Ãæ
-        mov [GUEST_PDT3_BASE + 1 * 8], eax                      ;; Ó³Éä C0200000h ÐéÄâµØÖ·µ½ÎïÀíµØÖ· 200000h
+        mov eax, 200000h | PS | RW | P                          ;; ä½¿ç”¨ 2M é¡µé¢
+        mov [GUEST_PDT3_BASE + 1 * 8], eax                      ;; æ˜ å°„ C0200000h è™šæ‹Ÿåœ°å€åˆ°ç‰©ç†åœ°å€ 200000h
         mov DWORD [GUEST_PDT3_BASE + 1 * 8 + 4], 0
-        mov eax, 400000h | PS | RW | P                          ;; Ê¹ÓÃ 2M Ò³Ãæ
-        mov [GUEST_PDT3_BASE + 2 * 8], eax                      ;; Ó³Éä C0400000h ÐéÄâµØÖ·µ½ÎïÀíµØÖ· 400000h
+        mov eax, 400000h | PS | RW | P                          ;; ä½¿ç”¨ 2M é¡µé¢
+        mov [GUEST_PDT3_BASE + 2 * 8], eax                      ;; æ˜ å°„ C0400000h è™šæ‹Ÿåœ°å€åˆ°ç‰©ç†åœ°å€ 400000h
         mov DWORD [GUEST_PDT3_BASE + 2 * 8 + 4], 0
                 
         mov esi, 1
-        call AllocPhysicalPage                                  ;; ·ÖÅä 4K Ò³Ãæ×÷ÎªÏÂÒ»¼¶ PT »ùÖ·
+        call AllocPhysicalPage                                  ;; åˆ†é… 4K é¡µé¢ä½œä¸ºä¸‹ä¸€çº§ PT åŸºå€
         or eax, RW | P
-        mov [GUEST_PDT2_BASE + 0 * 8], eax                      ;; Ó³Éä 80020000h ÐéÄâµØÖ·
+        mov [GUEST_PDT2_BASE + 0 * 8], eax                      ;; æ˜ å°„ 80020000h è™šæ‹Ÿåœ°å€
         mov DWORD [GUEST_PDT2_BASE + 0 * 8 + 4], 0              
         
         mov esi, 1
-        call AllocPhysicalPage                                  ;; ·ÖÅä 4K Ò³Ãæ×÷ÎªÏÂÒ»¼¶ PT »ùÖ·
+        call AllocPhysicalPage                                  ;; åˆ†é… 4K é¡µé¢ä½œä¸ºä¸‹ä¸€çº§ PT åŸºå€
         or eax, RW | P
-        mov [GUEST_PDT2_BASE + 8 * 8], eax                      ;; Ó³Éä 81000000h ÐéÄâµØÖ·
+        mov [GUEST_PDT2_BASE + 8 * 8], eax                      ;; æ˜ å°„ 81000000h è™šæ‹Ÿåœ°å€
         mov DWORD [GUEST_PDT2_BASE + 8 * 8 + 4], 0            
         
         mov esi, 1
-        call AllocPhysicalPage                                  ;; ·ÖÅä 4K Ò³Ãæ×÷ÎªÏÂÒ»¼¶ PT »ùÖ·
+        call AllocPhysicalPage                                  ;; åˆ†é… 4K é¡µé¢ä½œä¸ºä¸‹ä¸€çº§ PT åŸºå€
         or eax, RW | P
-        mov [GUEST_PDT3_BASE + 01FFh * 8], eax                  ;; Ó³Éä FFF00000h ÐéÄâµØÖ·
+        mov [GUEST_PDT3_BASE + 01FFh * 8], eax                  ;; æ˜ å°„ FFF00000h è™šæ‹Ÿåœ°å€
         mov DWORD [GUEST_PDT3_BASE + 01FFh * 8 + 4], 0
         
         mov esi, 1
-        call AllocPhysicalPage                                  ;; ·ÖÅä 4K Ò³Ò³×÷ÎªÏÂÒ»¼¶ PT »ùÖ·
+        call AllocPhysicalPage                                  ;; åˆ†é… 4K é¡µé¡µä½œä¸ºä¸‹ä¸€çº§ PT åŸºå€
         or eax, RW | US | P
-        mov [GUEST_PDT0_BASE + 0 * 8], eax                      ;; Ó³Éä 00020000h ÐéÄâµØÖ·
+        mov [GUEST_PDT0_BASE + 0 * 8], eax                      ;; æ˜ å°„ 00020000h è™šæ‹Ÿåœ°å€
         mov DWORD [GUEST_PDT0_BASE + 0 * 8 + 4], 0
         
         ;;
-        ;; ### step 2: ÉèÖÃ PTE Öµ ###
+        ;; ### step 2: è®¾ç½® PTE å€¼ ###
         ;;
         mov ebx, [GUEST_PDT2_BASE + 0 * 8]
         mov edx, [GUEST_PDT0_BASE + 0 * 8]
-        and ebx, ~0FFFh                                         ; ¶ÁÈ¡ 80020000h ÐéÄâµØÖ·¶ÔÓ¦µÄ PT µØÖ·
-        and edx, ~0FFFh                                         ; ¶ÁÈ¡ 00020000h ÐéÄâµØÖ·¶ÔÓ¦µÄ PT µØÖ·
-        mov ecx, 20h                                            ; ÆðÊ¼ PTE index Îª 20h£¨¶ÔÓ¦ 80020 page frame)
-        mov eax, 20000h                                         ; ÆðÊ¼ÎïÀíµØÖ·Îª 20000h
+        and ebx, ~0FFFh                                         ; è¯»å– 80020000h è™šæ‹Ÿåœ°å€å¯¹åº”çš„ PT åœ°å€
+        and edx, ~0FFFh                                         ; è¯»å– 00020000h è™šæ‹Ÿåœ°å€å¯¹åº”çš„ PT åœ°å€
+        mov ecx, 20h                                            ; èµ·å§‹ PTE index ä¸º 20hï¼ˆå¯¹åº” 80020 page frame)
+        mov eax, 20000h                                         ; èµ·å§‹ç‰©ç†åœ°å€ä¸º 20000h
         or eax, RW | P
        
         ;;
-        ;; Ó³ÉäÐéÄâµØÖ·:
-        ;; 1) 80020000 - 8002FFFFh µ½ÎïÀíµØÖ· 00020000 - 0002FFFFh
-        ;; 2) 00020000 - 0002FFFFh µ½ÎïÀíµØÖ· 00020000 - 0002FFFFh
+        ;; æ˜ å°„è™šæ‹Ÿåœ°å€:
+        ;; 1) 80020000 - 8002FFFFh åˆ°ç‰©ç†åœ°å€ 00020000 - 0002FFFFh
+        ;; 2) 00020000 - 0002FFFFh åˆ°ç‰©ç†åœ°å€ 00020000 - 0002FFFFh
         ;;
 init_pae_page.loop1:
         mov [ebx + ecx * 8], eax
@@ -545,16 +545,16 @@ init_pae_page.loop1:
         mov [edx + ecx * 8], eax
         mov DWORD [edx + ecx * 8 + 4], 0
         or DWORD [edx + ecx * 8], PAGE_USER
-        add eax, 1000h                                          ; Ö¸ÏòÏÂÒ»Ò³Ãæ
+        add eax, 1000h                                          ; æŒ‡å‘ä¸‹ä¸€é¡µé¢
         inc ecx
-        cmp ecx, 2Fh                                            ; page frmae ´Ó 80020 µ½ 8002F£¨00020 µ½ 0002F£©
+        cmp ecx, 2Fh                                            ; page frmae ä»Ž 80020 åˆ° 8002Fï¼ˆ00020 åˆ° 0002Fï¼‰
         jbe init_pae_page.loop1
         
         ;;
-        ;; Ó³ÉäÐéÄâµØÖ· FFF00000 - FFF00FFFh µ½ÎïÀíµØÖ·ÓÉ AllocPhysicalPage() ·ÖÅä¶øÀ´
+        ;; æ˜ å°„è™šæ‹Ÿåœ°å€ FFF00000 - FFF00FFFh åˆ°ç‰©ç†åœ°å€ç”± AllocPhysicalPage() åˆ†é…è€Œæ¥
         ;;
         mov ebx, [GUEST_PDT3_BASE + 01FFh * 8]
-        and ebx, ~0FFFh                                         ; ¶ÁÈ¡ FFF00000h ÐéÄâµØÖ·¶ÔÓ¦µÄ PT »ùÖ·
+        and ebx, ~0FFFh                                         ; è¯»å– FFF00000h è™šæ‹Ÿåœ°å€å¯¹åº”çš„ PT åŸºå€
         mov esi, 1
         call AllocPhysicalPage
         or eax, RW | P
@@ -562,7 +562,7 @@ init_pae_page.loop1:
         mov DWORD [ebx + 100h * 8 + 4], 0
 
         ;;
-        ;; Ó³Éä 81000000h ÐéÄâµØÖ·
+        ;; æ˜ å°„ 81000000h è™šæ‹Ÿåœ°å€
         ;;
         mov esi, [GUEST_PDT2_BASE + 8 * 8]
         and esi, ~0FFFh
@@ -571,7 +571,7 @@ init_pae_page.loop1:
         
                 
         ;;
-        ;; Ó³ÉäÐéÄâµØÖ· 000B8000h - 000B8000h µ½ÎïÀíµØÖ· 000B8000h - 000B8000h
+        ;; æ˜ å°„è™šæ‹Ÿåœ°å€ 000B8000h - 000B8000h åˆ°ç‰©ç†åœ°å€ 000B8000h - 000B8000h
         ;;
         mov ebx, [GUEST_PDT0_BASE + 0 * 8]
         and ebx, ~0FFFh
@@ -579,7 +579,7 @@ init_pae_page.loop1:
         mov DWORD [ebx + 0B8h * 8 + 4], 0
         
         ;;
-        ;; Ó³ÉäÐéÄâµØÖ· 00007000h - 00008FFFh  µ½ÎïÀíµØÖ· 00007000h - 00008FFFh 
+        ;; æ˜ å°„è™šæ‹Ÿåœ°å€ 00007000h - 00008FFFh  åˆ°ç‰©ç†åœ°å€ 00007000h - 00008FFFh 
         ;; 
         mov DWORD [ebx + 7 * 8], 7000h | RW | US | P
         mov DWORD [ebx + 7 * 8 + 4], 0

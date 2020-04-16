@@ -1,6 +1,6 @@
 ;*************************************************
 ;* DeubgRecord.inc                               *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -11,7 +11,7 @@
 
 
 ;;
-;; DRS ÇøÓòÄ¬ÈÏÎª 32K
+;; DRS åŒºåŸŸé»˜è®¤ä¸º 32K
 ;;
 %ifdef DEBUG_RECORD_ENABLE
 DRS_AREA_SIZE                   EQU     8000h
@@ -21,7 +21,7 @@ DRS_AREA_SIZE                   EQU     0
 
 
 ;;
-;; DES£¨DEBUG_RECORD_STRUCTURE£©½á¹¹ÓÃÀ´±£´æ debug ĞÅÏ¢£¬¸ú×ÙÖ´ĞĞ
+;; DESï¼ˆDEBUG_RECORD_STRUCTUREï¼‰ç»“æ„ç”¨æ¥ä¿å­˜ debug ä¿¡æ¯ï¼Œè·Ÿè¸ªæ‰§è¡Œ
 ;;
 struc DRS
         .ProcessorIndex         RESD            1
@@ -50,18 +50,18 @@ struc DRS
         .Rip                    RESQ            1
 
         ;;
-        ;; debug µã¼ÇÂ¼ĞÅÏ¢
+        ;; debug ç‚¹è®°å½•ä¿¡æ¯
         ;;
         .Line                   RESD            1
         .FileName               RESQ            1
         
         ;;
-        ;; ¸½¼ÓĞÅÏ¢
+        ;; é™„åŠ ä¿¡æ¯
         ;;
         .AppendMsg              RESQ            1
 
         ;;
-        ;; Ç°×ºÓëºó×ºĞÅÏ¢
+        ;; å‰ç¼€ä¸åç¼€ä¿¡æ¯
         ;;
         .PrefixMsg              RESQ            1
         .PostfixMsg             RESQ            1
@@ -69,7 +69,7 @@ struc DRS
         
         ALIGNB 8
         ;;
-        ;; Á´±íÖ¸Õë
+        ;; é“¾è¡¨æŒ‡é’ˆ
         ;;
         .PrevDrs                RESQ            1
         .NextDrs                RESQ            1
@@ -90,13 +90,13 @@ endstruc
 ;-----------------------------------------------------
 ; DEBUG_RECORD
 ; input:
-;       msg - ¸½×¢ĞÅÏ¢
+;       msg - é™„æ³¨ä¿¡æ¯
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ²åÈëÒ»Ìõ debug ¼ÇÂ¼µ½ DRS ÇøÓò
-;       2) %1 ²ÎÊıÊÇ¸½×¢ĞÅÏ¢
-; Ê¹ÓÃÊ¾Àı£º
+; æè¿°ï¼š
+;       1) æ’å…¥ä¸€æ¡ debug è®°å½•åˆ° DRS åŒºåŸŸ
+;       2) %1 å‚æ•°æ˜¯é™„æ³¨ä¿¡æ¯
+; ä½¿ç”¨ç¤ºä¾‹ï¼š
 ;       DEBUG_RECORD "hello, world"
 ;-----------------------------------------------------
 %macro DEBUG_RECORD  1
@@ -104,7 +104,7 @@ endstruc
         %%Line          EQU     __LINE__
 
         ;;
-        ;; ÏÂÃæÔÚ 64 Î»ÏÂ±àÒë
+        ;; ä¸‹é¢åœ¨ 64 ä½ä¸‹ç¼–è¯‘
         ;;
 %if __BITS__ == 64
         pushf
@@ -114,54 +114,54 @@ endstruc
         push rcx
         mov rbp, [fs: SDA.Base]                         ; rbp = SDA
 
-        mov rbx, [rbp + SDA.DrsTailPtr]                 ; rbx Ö¸Ïò DRS Á´±íÎ²
-        mov rax, [rbp + SDA.DrsIndex]                   ; rax Ö¸Ïò DRS ÇøÓòÄÚµÄÏÂÒ»¸ö½áµã
+        mov rbx, [rbp + SDA.DrsTailPtr]                 ; rbx æŒ‡å‘ DRS é“¾è¡¨å°¾
+        mov rax, [rbp + SDA.DrsIndex]                   ; rax æŒ‡å‘ DRS åŒºåŸŸå†…çš„ä¸‹ä¸€ä¸ªç»“ç‚¹
 
 
         ;;
-        ;; index ³¬³öÁË DRS ÇøÓò¶¥²¿£¬Ôò²»¼ÇÂ¼
+        ;; index è¶…å‡ºäº† DRS åŒºåŸŸé¡¶éƒ¨ï¼Œåˆ™ä¸è®°å½•
         ;;
         cmp rax, [rbp + SDA.DrsTop]
         jae %%done
 
         ;;
-        ;; ¸üĞÂ¼ÇÂ¼ºÅ
+        ;; æ›´æ–°è®°å½•å·
         ;;
         mov ecx, [rbx + DRS.RecordNumber]
         inc ecx
         mov [rax + DRS.RecordNumber], ecx
 
         ;;
-        ;; ¸üĞÂ DRS Á´±í½áµã
+        ;; æ›´æ–° DRS é“¾è¡¨ç»“ç‚¹
         ;;
         mov [rax + DRS.PrevDrs], rbx                    ; DrsIndex->PrevDrs = DRsTailPtr
         mov [rbx + DRS.NextDrs], rax                    ; DrsTailPtr->NextDrs = DrsIndex
-        mov rbx, rax                                    ; rbx Ö¸ÏòÏÂÒ»Ìõ DRS ¼ÇÂ¼
+        mov rbx, rax                                    ; rbx æŒ‡å‘ä¸‹ä¸€æ¡ DRS è®°å½•
 
         ;;
-        ;; ¸üĞÂ DrsIndex
+        ;; æ›´æ–° DrsIndex
         ;;
         mov eax, DRS_SIZE
         lock xadd [rbp + SDA.DrsIndex], rax
 
 
         ;;
-        ;; ¿ªÊ¼¼ÇÂ¼ debug record ĞÅÏ¢
+        ;; å¼€å§‹è®°å½• debug record ä¿¡æ¯
         ;;
         mov eax, [gs: PCB.ProcessorIndex]
-        mov [rbx + DRS.ProcessorIndex], eax             ; ¼ÇÂ¼ processor index
-        mov QWORD [rbx + DRS.Rip], %%IP                 ; ¼ÇÂ¼ RIP
-        mov rax, [rsp + 32]                             ; ¶Á rflags
-        mov [rbx + DRS.Rflags], rax                     ; ¼ÇÂ¼ Rflags
+        mov [rbx + DRS.ProcessorIndex], eax             ; è®°å½• processor index
+        mov QWORD [rbx + DRS.Rip], %%IP                 ; è®°å½• RIP
+        mov rax, [rsp + 32]                             ; è¯» rflags
+        mov [rbx + DRS.Rflags], rax                     ; è®°å½• Rflags
 
         ;;
-        ;; ¼ÇÂ¼ÎÄ¼şÃûºÍĞĞÊı
+        ;; è®°å½•æ–‡ä»¶åå’Œè¡Œæ•°
         ;;
         mov DWORD [rbx + DRS.Line], %%Line
         mov QWORD [rbx + DRS.FileName], %%File
 
         ;;
-        ;; ¸½¼ÓĞÅÏ¢
+        ;; é™„åŠ ä¿¡æ¯
         ;;
         mov QWORD [rbx + DRS.AppendMsg], %%Msg
         mov QWORD [rbx + DRS.PrefixMsg], 0
@@ -171,21 +171,21 @@ endstruc
         
         jmp %%1
 
-%%File  DB      __FILE__, 0                             ; ±£´æÎÄ¼şÃû
-%%Msg   DB      %1, 0                                   ; ±£´æ¸½×¢ĞÅÏ¢
+%%File  DB      __FILE__, 0                             ; ä¿å­˜æ–‡ä»¶å
+%%Msg   DB      %1, 0                                   ; ä¿å­˜é™„æ³¨ä¿¡æ¯
 
 %%1:
 
 
         ;;
-        ;; ¸üĞÂ DRS count
+        ;; æ›´æ–° DRS count
         ;;
         lock inc DWORD [rbp + SDA.DrsCount]
 
 
 %else
         ;;
-        ;; ÔÚ 32 Î»ÏÂ±àÒë
+        ;; åœ¨ 32 ä½ä¸‹ç¼–è¯‘
         ;;
 
         pushf
@@ -201,9 +201,9 @@ endstruc
 %endif
 
         REX.Wrxb
-        mov ebx, [ebp + SDA.DrsTailPtr]                 ; ebx Ö¸Ïò DRS Á´±íÎ²
+        mov ebx, [ebp + SDA.DrsTailPtr]                 ; ebx æŒ‡å‘ DRS é“¾è¡¨å°¾
         REX.Wrxb
-        mov eax, [ebp + SDA.DrsIndex]                   ; eax Ö¸ÏòÏÂÒ»¸ö DRS ½áµã
+        mov eax, [ebp + SDA.DrsIndex]                   ; eax æŒ‡å‘ä¸‹ä¸€ä¸ª DRS ç»“ç‚¹
 
 
         REX.Wrxb
@@ -211,24 +211,24 @@ endstruc
         jae %%done
 
         ;;
-        ;; ¸üĞÂ¼ÇÂ¼ºÅ
+        ;; æ›´æ–°è®°å½•å·
         ;;
         mov ecx, [ebx + DRS.RecordNumber]
         INCv ecx
         mov [eax + DRS.RecordNumber], ecx
 
         ;;
-        ;; ¸üĞÂ PrevDrs
+        ;; æ›´æ–° PrevDrs
         ;;
         REX.Wrxb
         mov [eax + DRS.PrevDrs], ebx                    ; DrsIndex->PrevDrs = DrsTailPtr
         REX.Wrxb
         mov [ebx + DRS.NextDrs], eax                    ; DrsTailPtr->NextDrs = DrsIndex
         REX.Wrxb
-        mov ebx, eax                                    ; rbx Ö¸ÏòÏÂÒ»Ìõ DRS ¼ÇÂ¼
+        mov ebx, eax                                    ; rbx æŒ‡å‘ä¸‹ä¸€æ¡ DRS è®°å½•
 
         ;;
-        ;; ¸üĞÂ DrsIndex
+        ;; æ›´æ–° DrsIndex
         ;;
         mov eax, DRS_SIZE
         PREFIX_LOCK
@@ -237,34 +237,34 @@ endstruc
 
 
         ;;
-        ;; ¿ªÊ¼¼ÇÂ¼ debug record ĞÅÏ¢
+        ;; å¼€å§‹è®°å½• debug record ä¿¡æ¯
         ;;
         mov eax, PCB.ProcessorIndex
         mov eax, [gs: eax]
-        mov [ebx + DRS.ProcessorIndex], eax             ; ¼ÇÂ¼ processor index
+        mov [ebx + DRS.ProcessorIndex], eax             ; è®°å½• processor index
         mov eax, %%IP        
         REX.Wrxb
-        mov [ebx + DRS.Rip], eax                        ; ¼ÇÂ¼ RIP
+        mov [ebx + DRS.Rip], eax                        ; è®°å½• RIP
 
 %ifdef __X64
         REX.Wrxb
-        mov eax, [esp + 32]                             ; ¶Á rflags
+        mov eax, [esp + 32]                             ; è¯» rflags
 %else
-        mov eax, [esp + 16]                             ; ¶Á eflags
+        mov eax, [esp + 16]                             ; è¯» eflags
 %endif
         REX.Wrxb
-        mov [ebx + DRS.Rflags], eax                     ; ¼ÇÂ¼ Rflags
+        mov [ebx + DRS.Rflags], eax                     ; è®°å½• Rflags
 
 
         ;;
-        ;; ¼ÇÂ¼ÎÄ¼şÃûºÍĞĞÊı
+        ;; è®°å½•æ–‡ä»¶åå’Œè¡Œæ•°
         ;;
         mov DWORD [ebx + DRS.Line], %%Line
         REX.Wrxb
         mov DWORD [ebx + DRS.FileName], %%file
 
         ;;
-        ;; ¸½¼ÓĞÅÏ¢
+        ;; é™„åŠ ä¿¡æ¯
         ;;
         REX.Wrxb
         mov DWORD [ebx + DRS.AppendMsg], %%msg
@@ -276,12 +276,12 @@ endstruc
 
         jmp %%1
 
-%%file  DB      __FILE__, 0                             ; ±£´æÎÄ¼şÃû
-%%msg   DB      %1, 0                                   ; ±£´æ¸½×¢ĞÅÏ¢
+%%file  DB      __FILE__, 0                             ; ä¿å­˜æ–‡ä»¶å
+%%msg   DB      %1, 0                                   ; ä¿å­˜é™„æ³¨ä¿¡æ¯
 
 %%1:
         ;;
-        ;; ¼ÇÂ¼ count
+        ;; è®°å½• count
         ;;
         lock inc DWORD [ebp + SDA.DrsCount]
 %endif
@@ -289,7 +289,7 @@ endstruc
         
 
         ;;
-        ;; ¼ÇÂ¼ context
+        ;; è®°å½• context
         ;;
 
 %if __BITS__ == 64
@@ -382,7 +382,7 @@ endstruc
 
 %%done:
         ;;
-        ;; ¸üĞÂ SDA.DrsTailPtr ¼ÇÂ¼ºÍ DRS.NextDrs Ö¸Õë
+        ;; æ›´æ–° SDA.DrsTailPtr è®°å½•å’Œ DRS.NextDrs æŒ‡é’ˆ
         ;;
 
 %if __BITS__ == 64
@@ -397,7 +397,7 @@ endstruc
 
           
         ;;
-        ;; »Ö¸´ context
+        ;; æ¢å¤ context
         ;;
 
 %if __BITS__ == 64
@@ -425,8 +425,8 @@ endstruc
 
 
 ;; *+-----------------------------------------
-;; * DEBUG_RECORD_S ºê´æÔÚ bug !
-;; * ²»ÒªÊ¹ÓÃ DEBUG_RECORD_S ²åÈëDebugRecord µã
+;; * DEBUG_RECORD_S å®å­˜åœ¨ bug !
+;; * ä¸è¦ä½¿ç”¨ DEBUG_RECORD_S æ’å…¥DebugRecord ç‚¹
 ;; *------------------------------------------+
 
 
@@ -434,13 +434,13 @@ endstruc
 ;-----------------------------------------------------
 ; DEBUG_RECORD_S
 ; input:
-;       msg - ¸½×¢ĞÅÏ¢
+;       msg - é™„æ³¨ä¿¡æ¯
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ²åÈëÒ»Ìõ debug ¼ÇÂ¼µ½ DRS ÇøÓò
-;       2) DEBUG_RECORD µÄ stack °æ±¾£¬DRS ¼ÇÂ¼±£´æÔÚµ±Ç°Õ»Àï
-; Ê¹ÓÃÊ¾Àı£º
+; æè¿°ï¼š
+;       1) æ’å…¥ä¸€æ¡ debug è®°å½•åˆ° DRS åŒºåŸŸ
+;       2) DEBUG_RECORD çš„ stack ç‰ˆæœ¬ï¼ŒDRS è®°å½•ä¿å­˜åœ¨å½“å‰æ ˆé‡Œ
+; ä½¿ç”¨ç¤ºä¾‹ï¼š
 ;       DEBUG_RECORD_S "hello, world"
 ;-----------------------------------------------------
 %macro DEBUG_RECORD_S  1
@@ -454,7 +454,7 @@ endstruc
 
         lea rsp, [rsp - DRS_STACK_SIZE]
         ;;
-        ;; ±£´æ context
+        ;; ä¿å­˜ context
         ;;
         mov [rsp + DRS.Rax], rax
         mov [rsp + DRS.Rcx], rcx
@@ -491,44 +491,44 @@ endstruc
         jne %%0
 
         ;;
-        ;; µ±Ç°½áµãÊôÓÚ head
+        ;; å½“å‰ç»“ç‚¹å±äº head
         ;;
         mov [rbp + SDA.DrsHeadPtr], rsp
         mov [rbp + SDA.DrsTailPtr], rsp
 %%0:
 
         ;;
-        ;; ¹Ò½Ó DRS Á´
+        ;; æŒ‚æ¥ DRS é“¾
         ;;        
-        mov rbx, [rbp + SDA.DrsTailPtr]                 ; DRS Á´±íÎ²²¿
+        mov rbx, [rbp + SDA.DrsTailPtr]                 ; DRS é“¾è¡¨å°¾éƒ¨
         mov [rbx + DRS.NextDrs], rsp
         mov [rsp + DRS.PrevDrs], rbx
         mov QWORD [rsp + DRS.NextDrs], 0
 
         ;;
-        ;; ¸üĞÂ¼ÇÂ¼ºÅ
+        ;; æ›´æ–°è®°å½•å·
         ;;
         mov ecx, [rbx + DRS.RecordNumber]
         inc ecx
         mov [rsp + DRS.RecordNumber], ecx
 
         ;;
-        ;; ¸üĞÂ count ¼° DrsTailPtr
+        ;; æ›´æ–° count åŠ DrsTailPtr
         ;;
         lock inc DWORD [rbp + SDA.DrsCount]
         mov [rbp + SDA.DrsTailPtr], rsp
         jmp %%done
 
 
-%%File  DB      __FILE__, 0                             ; ±£´æÎÄ¼şÃû
-%%Msg   DB      %1, 0                                   ; ±£´æ¸½×¢ĞÅÏ¢
+%%File  DB      __FILE__, 0                             ; ä¿å­˜æ–‡ä»¶å
+%%Msg   DB      %1, 0                                   ; ä¿å­˜é™„æ³¨ä¿¡æ¯
 
 
 
 %else
 
         ;;
-        ;; ÔÚ 32 Î»ÏÂ±àÒë
+        ;; åœ¨ 32 ä½ä¸‹ç¼–è¯‘
         ;;
 %ifdef __X64
         REX.Wrxb
@@ -612,7 +612,7 @@ endstruc
         jne %%0
 
         ;;
-        ;; µ±Ç°½áµãÊôÓÚ head
+        ;; å½“å‰ç»“ç‚¹å±äº head
         ;;
         REX.Wrxb
         mov [ebp + SDA.DrsHeadPtr], esp
@@ -622,10 +622,10 @@ endstruc
 
 
         ;;
-        ;; ¹Ò½Ó DRS Á´
+        ;; æŒ‚æ¥ DRS é“¾
         ;;
         REX.Wrxb
-        mov ebx, [ebp + SDA.DrsTailPtr]                         ; DRS Á´±íÎ²²¿
+        mov ebx, [ebp + SDA.DrsTailPtr]                         ; DRS é“¾è¡¨å°¾éƒ¨
         REX.Wrxb
         mov [ebx + DRS.NextDrs], esp
         REX.Wrxb
@@ -634,14 +634,14 @@ endstruc
         mov DWORD [esp + DRS.NextDrs], 0
 
         ;;
-        ;; ¸üĞÂ¼ÇÂ¼ºÅ
+        ;; æ›´æ–°è®°å½•å·
         ;;
         mov ecx, [ebx + DRS.RecordNumber]
         INCv ecx
         mov [esp + DRS.RecordNumber], ecx
 
         ;;
-        ;; ¸üĞÂ count
+        ;; æ›´æ–° count
         ;;
         lock inc DWORD [ebp + SDA.DrsCount]
         REX.Wrxb
@@ -649,8 +649,8 @@ endstruc
 
         jmp %%done        
 
-%%file  DB      __FILE__, 0                             ; ±£´æÎÄ¼şÃû
-%%msg   DB      %1, 0                                   ; ±£´æ¸½×¢ĞÅÏ¢
+%%file  DB      __FILE__, 0                             ; ä¿å­˜æ–‡ä»¶å
+%%msg   DB      %1, 0                                   ; ä¿å­˜é™„æ³¨ä¿¡æ¯
 
 
 %endif          ;; // __BITS__
@@ -659,7 +659,7 @@ endstruc
 
 %%done:
         ;;
-        ;; »Ö¸´ context
+        ;; æ¢å¤ context
         ;;
 
 %if __BITS__ == 64
@@ -694,13 +694,13 @@ endstruc
 ;-----------------------------------------------------
 ; DEBUG_RECORD_USER_S
 ; input:
-;       msg - ¸½×¢ĞÅÏ¢
+;       msg - é™„æ³¨ä¿¡æ¯
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ²åÈëÒ»Ìõ debug ¼ÇÂ¼µ½ DRS ÇøÓò
-;       2) DEBUG_RECORD_S µÄ User °æ±¾£¬¹© USER È¨ÏŞÏÂÊ¹ÓÃ
-; Ê¹ÓÃÊ¾Àı£º
+; æè¿°ï¼š
+;       1) æ’å…¥ä¸€æ¡ debug è®°å½•åˆ° DRS åŒºåŸŸ
+;       2) DEBUG_RECORD_S çš„ User ç‰ˆæœ¬ï¼Œä¾› USER æƒé™ä¸‹ä½¿ç”¨
+; ä½¿ç”¨ç¤ºä¾‹ï¼š
 ;       DEBUG_RECORD_USER_S "hello, world"
 ;-----------------------------------------------------
 %macro DEBUG_RECORD_USER_S      1
@@ -714,7 +714,7 @@ endstruc
 
         lea rsp, [rsp - DRS_STACK_SIZE]
         ;;
-        ;; ±£´æ context
+        ;; ä¿å­˜ context
         ;;
         mov [rsp + DRS.Rax], rax
         mov [rsp + DRS.Rcx], rcx
@@ -739,7 +739,7 @@ endstruc
         mov [rsp + DRS.Rflags], rax
 
         ;;
-        ;; ¶Á PCB.ProcessorIndex
+        ;; è¯» PCB.ProcessorIndex
         ;;        
         UserReadPcbData         PCB.ProcessorIndex, 4
         mov [rsp + DRS.ProcessorIndex], eax
@@ -750,21 +750,21 @@ endstruc
 
 
         ;;
-        ;; ÊÇ·ñÎª Head
+        ;; æ˜¯å¦ä¸º Head
         ;;
-        UserReadSdaData         SDA.DrsCount, 4                 ; ¶Á SDA.DrsCount
+        UserReadSdaData         SDA.DrsCount, 4                 ; è¯» SDA.DrsCount
         test eax, eax
         jnz %%0
 
         ;;
-        ;; µ±Ç°½áµãÊôÓÚ head
+        ;; å½“å‰ç»“ç‚¹å±äº head
         ;;
         UserWriteSdaData        SDA.DrsHeadPtr, 8, rsp
         UserWriteSdaData        SDA.DrsTailPtr, 8, rsp
 %%0:
 
         ;;
-        ;; ¹Ò½Ó DRS Á´
+        ;; æŒ‚æ¥ DRS é“¾
         ;;        
         UserReadSdaData         SDA.DrsTailPtr, 8
         mov [rsp + DRS.PrevDrs], rax
@@ -773,7 +773,7 @@ endstruc
         mov QWORD [rsp + DRS.NextDrs], 0
 
         ;;
-        ;; ¸üĞÂ count ¼° DrsTailPtr
+        ;; æ›´æ–° count åŠ DrsTailPtr
         ;;
         UserReadSdaData         SDA.DrsCount, 4
         inc eax
@@ -783,15 +783,15 @@ endstruc
         jmp %%done
 
 
-%%File  DB      __FILE__, 0                             ; ±£´æÎÄ¼şÃû
-%%Msg   DB      %1, 0                                   ; ±£´æ¸½×¢ĞÅÏ¢
+%%File  DB      __FILE__, 0                             ; ä¿å­˜æ–‡ä»¶å
+%%Msg   DB      %1, 0                                   ; ä¿å­˜é™„æ³¨ä¿¡æ¯
 
 
 
 %else
 
         ;;
-        ;; ÔÚ 32 Î»ÏÂ±àÒë
+        ;; åœ¨ 32 ä½ä¸‹ç¼–è¯‘
         ;;
 %ifdef __X64
         REX.Wrxb
@@ -862,19 +862,19 @@ endstruc
 
 
 
-        UserReadSdaData         SDA.DrsCount, 4                 ; ¶Á SDA.DrsCount
+        UserReadSdaData         SDA.DrsCount, 4                 ; è¯» SDA.DrsCount
         test eax, eax
         jnz %%0
 
         ;;
-        ;; µ±Ç°½áµãÊôÓÚ head
+        ;; å½“å‰ç»“ç‚¹å±äº head
         ;;
         UserWriteSdaData        SDA.DrsHeadPtr, 0, esp
         UserWriteSdaData        SDA.DrsTailPtr, 0, esp
 %%0:
 
         ;;
-        ;; ¹Ò½Ó DRS Á´
+        ;; æŒ‚æ¥ DRS é“¾
         ;;        
         UserReadSdaData         SDA.DrsTailPtr, 0
         REX.Wrxb
@@ -886,7 +886,7 @@ endstruc
         mov DWORD [esp + DRS.NextDrs], 0
 
         ;;
-        ;; ¸üĞÂ count ¼° DrsTailPtr
+        ;; æ›´æ–° count åŠ DrsTailPtr
         ;;
         UserReadSdaData         SDA.DrsCount, 4
         inc eax
@@ -897,8 +897,8 @@ endstruc
 
         jmp %%done        
 
-%%file  DB      __FILE__, 0                             ; ±£´æÎÄ¼şÃû
-%%msg   DB      %1, 0                                   ; ±£´æ¸½×¢ĞÅÏ¢
+%%file  DB      __FILE__, 0                             ; ä¿å­˜æ–‡ä»¶å
+%%msg   DB      %1, 0                                   ; ä¿å­˜é™„æ³¨ä¿¡æ¯
 
 
 %endif          ;; // __BITS__
@@ -907,7 +907,7 @@ endstruc
 
 %%done:
         ;;
-        ;; »Ö¸´ context
+        ;; æ¢å¤ context
         ;;
 
 %if __BITS__ == 64
