@@ -7,19 +7,19 @@
 %define PAGE_INC
 
 
-;*** 32-bit paging ÏÂ ***
+;*** 32-bit paging ä¸‹ ***
 %define PDT32_BASE              100000h
 
-;*** PAE paging ÏÂ ***
+;*** PAE paging ä¸‹ ***
 %define PDPT_BASE               100000h
 
 
-; IA-32e paging ÏÂ
+; IA-32e paging ä¸‹
 %define PML4T_BASE              200000h
 %define INIT_SEG                0FFFFFFF800000000h
 
 
-;; ¶¨Òå table entry Î»
+;; å®šä¹‰ table entry ä½
 
 %define P                       1
 %define RW                      2
@@ -34,27 +34,27 @@
 %define XD                      80000000h
 
 
-;; Î´¿ªÆô·ÖÒ³Ê± user stack
+;; æœªå¼€å¯åˆ†é¡µæ—¶ user stack
 %define USER_ESP                08FF0h
 
-;; ÎªÃ¿¸ö logical processor ¶¨Òå×Ô¼ºµÄ stack pointer
+;; ä¸ºæ¯ä¸ª logical processor å®šä¹‰è‡ªå·±çš„ stack pointer
 PROCESSOR0_ESP                        equ        0x3ff000
 PROCESSOR1_ESP                        equ        0x3fe000
 PROCESSOR2_ESP                        equ        0x3fd000
 PROCESSOR3_ESP                        equ        0x3fc000
 
 
-;* Ã¿¸ö´¦ÀíÆ÷Ê¹ÓÃµÄ stack È±Ê¡Îª 2K ´óĞ¡
+;* æ¯ä¸ªå¤„ç†å™¨ä½¿ç”¨çš„ stack ç¼ºçœä¸º 2K å¤§å°
 %define PROCESSOR_STACK_SIZE            800h
 
 
-;** ¿ªÆô·ÖÒ³ºó ***
-; 32Î»±£»¤Ä£Ê½ÏÂµÄ kernel stack
+;** å¼€å¯åˆ†é¡µå ***
+; 32ä½ä¿æŠ¤æ¨¡å¼ä¸‹çš„ kernel stack
 
 ;--------------------------------------------------------------------------------------------------------
-; ÎªÃ¿¸ö logical ´¦ÀíÆ÷¶¨Òå¸÷×Ô kernel stack  pointer
-; ·ÖÅä·½·¨£º¸ù¾İ´¦ÀíÆ÷ index ÖµÀ´·ÖÅä£¬Ã¿¸ö´¦ÀíÆ÷È±Ê¡Ê¹ÓÃ 2K stack
-; ÀıÈç£º
+; ä¸ºæ¯ä¸ª logical å¤„ç†å™¨å®šä¹‰å„è‡ª kernel stack  pointer
+; åˆ†é…æ–¹æ³•ï¼šæ ¹æ®å¤„ç†å™¨ index å€¼æ¥åˆ†é…ï¼Œæ¯ä¸ªå¤„ç†å™¨ç¼ºçœä½¿ç”¨ 2K stack
+; ä¾‹å¦‚ï¼š
 ;      processor #0 = PROCESSOR_KERNEL_ESP + PROCESSOR_STACK_SIZE + (PROCESSOR_STACK_SIZE * 0)
 ;      processor #1 = PROCESSOR_KERNEL_ESP + PROCESSOR_STACK_SIZE + (PROCESSOR_STACK_SIZE * 1)
 ;      processor #2 = PROCESSOR_KERNEL_ESP + PROCESSOR_STACK_SIZE + (PROCESSOR_STACK_SIZE * 2)
@@ -62,7 +62,7 @@ PROCESSOR3_ESP                        equ        0x3fc000
 ;------------------------------------------------------------------------------------------------------------
 %define PROCESSOR_KERNEL_ESP            0FFE00800h
 
-; ÓÃÓÚÖĞ¶Ï handler µÄ RSP
+; ç”¨äºä¸­æ–­ handler çš„ RSP
 %define PROCESSOR_IDT_ESP               0FFE04800h
 
 ; user stack
@@ -79,38 +79,38 @@ PROCESSOR3_ESP                        equ        0x3fc000
 
 
 
-; 64-bit Ä£Ê½ÏÂµÄ
+; 64-bit æ¨¡å¼ä¸‹çš„
 %define SYSTEM_DATA64_BASE              0FFFFFFF800000000h
 
-; ÏÂÃæÊ¹ÓÃÓÚ compatibility Ä£Ê½ÏÂ
+; ä¸‹é¢ä½¿ç”¨äº compatibility æ¨¡å¼ä¸‹
 %define COMPATIBILITY_USER_ESP          018FF0h
 %define COMPATIBILITY_KERNEL_ESP        0FFE003F0h
 %define LIB32_ESP                       0FFE01FF0h
 
 
-; 64-bit Ä£Ê½ÏÂµÄ kernel stack
+; 64-bit æ¨¡å¼ä¸‹çš„ kernel stack
 ;
 %define PROCESSOR_KERNEL_RSP            0FFFFFFFFFFE00800h
 %define PROCESSOR0_KERNEL_RSP           0FFFFFFFFFFE00800h
 
-; ÓÃÓÚÖĞ¶Ï handler µÄ RSP
+; ç”¨äºä¸­æ–­ handler çš„ RSP
 %define PROCESSOR_IDT_RSP               0FFFFFFFFFFE04800h
 %define PROCESSOR0_IDT_RSP              0FFFFFFFFFFE04800h
 
-; ÓÃÓÚ sysenter Ö¸Áî RSP
+; ç”¨äº sysenter æŒ‡ä»¤ RSP
 %define PROCESSOR_SYSENTER_RSP          0FFFFFFFFFFE08800h
 
 
-; ÓÃÓÚ syscall Ö¸Áî RSP
+; ç”¨äº syscall æŒ‡ä»¤ RSP
 %define PROCESSOR_SYSCALL_RSP           0FFFFFFFFFFE0C800h
 
 
-; ÓÃÓÚ IST ±í RSP Öµ
+; ç”¨äº IST è¡¨ RSP å€¼
 %define PROCESSOR_IST1_RSP              0FFFFFFFFFFE10800h
 %define PROCESSOR0_IST1_RSP             0FFFFFFFFFFE10800h
 
 
-; 64-bit Ä£Ê½ÏÂµÄ user stack
+; 64-bit æ¨¡å¼ä¸‹çš„ user stack
 %define PROCESSOR_USER_RSP              00007FFFFFE00800h
 
 

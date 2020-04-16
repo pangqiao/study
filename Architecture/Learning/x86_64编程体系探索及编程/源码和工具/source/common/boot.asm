@@ -4,12 +4,12 @@
 
 
 ;
-; ±àÒëÃüÁîÊÇ: nasm boot.asm -o boot (ÓÃfloppyÆô¶¯)
-;             nasm boot.asm -o boot -d UBOOT (ÓÃUÅÌÆô¶¯)
-; ×¢Òâ£º
-;      µ±Ê¹ÓÃ UÅÌ»òÓ²ÅÌÆô¶¯Ê±£¬ÇëÎñ±ØÊ¹ÓÃ -d UBOOT Ñ¡ÏîÖØĞÂ±àÒë boot.asm Ä£¿é !!!
+; ç¼–è¯‘å‘½ä»¤æ˜¯: nasm boot.asm -o boot (ç”¨floppyå¯åŠ¨)
+;             nasm boot.asm -o boot -d UBOOT (ç”¨Uç›˜å¯åŠ¨)
+; æ³¨æ„ï¼š
+;      å½“ä½¿ç”¨ Uç›˜æˆ–ç¡¬ç›˜å¯åŠ¨æ—¶ï¼Œè¯·åŠ¡å¿…ä½¿ç”¨ -d UBOOT é€‰é¡¹é‡æ–°ç¼–è¯‘ boot.asm æ¨¡å— !!!
 ;
-; Éú³É boot Ä£¿éÈ»ºó£¬Ğ´Èë demo.img£¨´ÅÅÌÓ³Ïñ£©µÄµÚ 0 ÉÈÇø(MBR)
+; ç”Ÿæˆ boot æ¨¡å—ç„¶åï¼Œå†™å…¥ demo.imgï¼ˆç£ç›˜æ˜ åƒï¼‰çš„ç¬¬ 0 æ‰‡åŒº(MBR)
 ;
 
 
@@ -22,7 +22,7 @@
 ; now, the processor is real mode
 ;--------------------------------------        
         
-; Int 19h ¼ÓÔØ sector 0 (MBR) ½øÈë BOOT_SEG ¶Î, BOOT_SEG ¶¨ÒåÎª 0x7c00
+; Int 19h åŠ è½½ sector 0 (MBR) è¿›å…¥ BOOT_SEG æ®µ, BOOT_SEG å®šä¹‰ä¸º 0x7c00
          
         org BOOT_SEG
         
@@ -40,19 +40,19 @@ start:
         mov ds, ax
         mov ss, ax
         mov es, ax
-        mov sp, BOOT_SEG                ; Éè stack µ×Îª BOOT_SEG
+        mov sp, BOOT_SEG                ; è®¾ stack åº•ä¸º BOOT_SEG
         
         call clear_screen
         
         mov esi, SETUP_SECTOR
         mov di, SETUP_SEG - 2
-        call load_module                ; ¼ÓÔØ setup Ä£¿é
+        call load_module                ; åŠ è½½ setup æ¨¡å—
         
         mov esi, LIB16_SECTOR
         mov di, LIB16_SEG - 2
-        call load_module                ; ¼ÓÔØ lib16 Ä£¿é
+        call load_module                ; åŠ è½½ lib16 æ¨¡å—
         
-        mov esi, LONG_SECTOR            ; ¼ÓÔØ long Ä£¿é
+        mov esi, LONG_SECTOR            ; åŠ è½½ long æ¨¡å—
         mov di, 0x9000 - 2
         call load_module
         
@@ -66,15 +66,15 @@ start:
         
         mov esi, PROTECTED_SECTOR        
         mov di, PROTECTED_SEG - 2
-        call load_module                  ; ¼ÓÔØ protected Ä£¿é
+        call load_module                  ; åŠ è½½ protected æ¨¡å—
         
         mov esi, LIB32_SECTOR
         mov di, LIB32_SEG - 2
-        call load_module                  ; ¼ÓÔØ lib32 Ä£¿é
+        call load_module                  ; åŠ è½½ lib32 æ¨¡å—
                 
 
                 
-        jmp SETUP_SEG                     ; ×ªµ½ SETUP_SEG
+        jmp SETUP_SEG                     ; è½¬åˆ° SETUP_SEG
                         
 next:        
         jmp $
@@ -124,7 +124,7 @@ do_print_message_done:
         ret
 
 ;--------------------------
-; dot(): ´òÓ¡µã
+; dot(): æ‰“å°ç‚¹
 ;--------------------------
 dot:        
         push ax
@@ -163,7 +163,7 @@ LBA_to_CHS:
 
 
 ;--------------------------------------------------------
-; check_int13h_extension(): ²âÊÔÊÇ·ñÖ§³Ö int13h À©Õ¹¹¦ÄÜ
+; check_int13h_extension(): æµ‹è¯•æ˜¯å¦æ”¯æŒ int13h æ‰©å±•åŠŸèƒ½
 ; ouput:
 ;                0 - support, 1 - not support
 ;--------------------------------------------------------
@@ -175,20 +175,20 @@ check_int13h_extension:
 %endif        
         mov ah, 0x41
         int 0x13
-        setc al                                ; Ê§°Ü
+        setc al                                ; å¤±è´¥
         jc do_check_int13h_extension_done
         cmp bx, 0xaa55
-        setnz al                                ; ²»Ö§³Ö
+        setnz al                                ; ä¸æ”¯æŒ
         jnz do_check_int13h_extension_done
         test cx, 1
-        setz al                                 ; ²»Ö§³ÖÀ©Õ¹¹¦ÄÜºÅ£ºAH=42h-44h,47h,48h
+        setz al                                 ; ä¸æ”¯æŒæ‰©å±•åŠŸèƒ½å·ï¼šAH=42h-44h,47h,48h
 do_check_int13h_extension_done:        
         pop bx
         movzx ax, al
         ret
         
 ;--------------------------------------------------------------
-; read_sector_extension(): Ê¹ÓÃÀ©Õ¹¹¦ÄÜ¶ÁÉÈÇø        
+; read_sector_extension(): ä½¿ç”¨æ‰©å±•åŠŸèƒ½è¯»æ‰‡åŒº        
 ; input:
 ;                esi - sector
 ;                di - buf (es:di)
@@ -196,19 +196,19 @@ do_check_int13h_extension_done:
 read_sector_extension:
         xor eax, eax
         push eax
-        push esi                                ; Òª¶ÁµÄÉÈÇøºÅ (LBA) - 64 Î»Öµ
+        push esi                                ; è¦è¯»çš„æ‰‡åŒºå· (LBA) - 64 ä½å€¼
         push es
-        push di                                  ; buf »º³åÇø es:di - 32 Î»Öµ
-        push word 0x01                          ; ÉÈÇøÊı, word
-        push word 0x10                          ; ½á¹¹Ìå size, 16 bytes
+        push di                                  ; buf ç¼“å†²åŒº es:di - 32 ä½å€¼
+        push word 0x01                          ; æ‰‡åŒºæ•°, word
+        push word 0x10                          ; ç»“æ„ä½“ size, 16 bytes
         
-        mov ah, 0x42                            ; À©Õ¹¹¦ÄÜºÅ
+        mov ah, 0x42                            ; æ‰©å±•åŠŸèƒ½å·
 %ifdef UBOOT
         mov dl, 0x80
 %else
         mov dl, 0
 %endif                
-        mov si, sp                              ; ÊäÈë½á¹¹ÌåµØÖ·
+        mov si, sp                              ; è¾“å…¥ç»“æ„ä½“åœ°å€
         int 0x13        
         add sp, 0x10
         ret
@@ -226,10 +226,10 @@ read_sector:
         push ds
         pop es
 
-; ²âÊÔÊÇ·ñÖ§³Ö int 13h À©Õ¹¹¦ÄÜ
+; æµ‹è¯•æ˜¯å¦æ”¯æŒ int 13h æ‰©å±•åŠŸèƒ½
         call check_int13h_extension
         test ax, ax
-        jz do_read_sector_extension             ; Ö§³Ö
+        jz do_read_sector_extension             ; æ”¯æŒ
 
         mov bx, di                              ; data buffer
         mov ax, si                              ; disk sector number
@@ -237,7 +237,7 @@ read_sector:
         call LBA_to_CHS
 ; now: read sector        
 %ifdef UBOOT
-        mov dl, 0x80                            ; for U ÅÌ»òÕßÓ²ÅÌ
+        mov dl, 0x80                            ; for U ç›˜æˆ–è€…ç¡¬ç›˜
 %else        
         mov dl, 0                               ; for floppy
 %endif
@@ -246,7 +246,7 @@ read_sector:
         setc al                                 ; 0: success  1: failure        
         jmp do_read_sector_done
 
-; Ê¹ÓÃÀ©Õ¹¹¦ÄÜ¶ÁÉÈÇø
+; ä½¿ç”¨æ‰©å±•åŠŸèƒ½è¯»æ‰‡åŒº
 do_read_sector_extension:
         call read_sector_extension
         mov al, 0
@@ -259,10 +259,10 @@ do_read_sector_done:
         
 
 ;-------------------------------------------------------------------
-; load_module(int module_sector, char *buf):  ¼ÓÔØÄ£¿éµ½ buf »º³åÇø
+; load_module(int module_sector, char *buf):  åŠ è½½æ¨¡å—åˆ° buf ç¼“å†²åŒº
 ; input:
-;                esi: module_sector Ä£¿éµÄÉÈÇø
-;                di: buf »º³åÇø
+;                esi: module_sector æ¨¡å—çš„æ‰‡åŒº
+;                di: buf ç¼“å†²åŒº
 ; example:
 ;                load_module(SETUP_SEG, SETUP_SECTOR);
 ;-------------------------------------------------------------------
@@ -271,12 +271,12 @@ load_module:
         test ax, ax
         jnz do_load_module_done
         
-        mov cx, [di]                              ; ¶ÁÈ¡Ä£¿é size
+        mov cx, [di]                              ; è¯»å–æ¨¡å— size
         test cx, cx
         setz al
         jz do_load_module_done
         add cx, 512 - 1
-        shr cx, 9                                 ; ¼ÆËã block£¨sectors£©
+        shr cx, 9                                 ; è®¡ç®— blockï¼ˆsectorsï¼‰
   
 do_load_module_loop:  
 ;        call dot

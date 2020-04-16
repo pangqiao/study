@@ -4,8 +4,8 @@
 
 
 ;*
-;* ÕâÊÇ protected Ä£Ê½ÏÂµÄ interrupt/exception handler ´úÂë
-;* ÓÉ¸÷¸öÊµÑéÀı×ÓµÄ protected.asm Ä£¿éÀ´ include ½øÈ¥
+;* è¿™æ˜¯ protected æ¨¡å¼ä¸‹çš„ interrupt/exception handler ä»£ç 
+;* ç”±å„ä¸ªå®éªŒä¾‹å­çš„ protected.asm æ¨¡å—æ¥ include è¿›å»
 ;*
 
 
@@ -15,7 +15,7 @@
 
 ;----------------------------------------
 ; DB_handler():  #DB handler
-; ÃèÊö£º
+; æè¿°ï¼š
 ;       
 ;----------------------------------------
 DB_handler:
@@ -23,36 +23,36 @@ DB_handler:
 db_msg1         db '-----< Single-Debug information >-----', 10, 0        
 db_msg2         db '>>>>> END <<<<<', 10, 0
 
-;* ÕâĞ©×Ö·û´®µØÖ·¶¨ÒåÔÚ debug.asm ÎÄ¼ş
+;* è¿™äº›å­—ç¬¦ä¸²åœ°å€å®šä¹‰åœ¨ debug.asm æ–‡ä»¶
 register_message_table: 
         dd eax_msg, ecx_msg, edx_msg, ebx_msg, esp_msg, ebp_msg, esi_msg, edi_msg, 0
 
 do_DB_handler:        
-        ;; µÃµ½¼Ä´æÆ÷Öµ
+        ;; å¾—åˆ°å¯„å­˜å™¨å€¼
         STORE_CONTEXT
         
         mov esi, db_msg1
         call puts
         
-        ;; Í£Ö¹Ìõ¼ş        
-        mov eax, [db_stop_address]              ; ¶Á #DB Í£Ö¹µØÖ·
-        cmp eax, [esp]                          ; ÊÇ·ñÓöµ½Í£Ö¹Ìõ¼ş
+        ;; åœæ­¢æ¡ä»¶        
+        mov eax, [db_stop_address]              ; è¯» #DB åœæ­¢åœ°å€
+        cmp eax, [esp]                          ; æ˜¯å¦é‡åˆ°åœæ­¢æ¡ä»¶
         je stop_debug
 
         mov ebx, CONTEXT_POINTER
 do_DB_handler_loop:        
      
         mov esi, [register_message_table + ecx * 4]
-        call puts                               ; ´òÓ¡×Ö·û´®
+        call puts                               ; æ‰“å°å­—ç¬¦ä¸²
         mov esi, [ebx + ecx * 4]
-        call print_dword_value                  ; ´òÓ¡¼Ä´æÆ÷Öµ
+        call print_dword_value                  ; æ‰“å°å¯„å­˜å™¨å€¼
 
         mov eax, ecx
         and eax, 3
         cmp eax, 3
-        mov esi, printblank                     ; ¿Õ¸ñ
-        mov edi, println                        ; »»ĞĞ
-        cmove esi, edi                          ; ´òÓ¡ 4 ¸öºó£¬»»ĞĞ
+        mov esi, printblank                     ; ç©ºæ ¼
+        mov edi, println                        ; æ¢è¡Œ
+        cmove esi, edi                          ; æ‰“å° 4 ä¸ªåï¼Œæ¢è¡Œ
         call esi
 
         inc ecx        
@@ -68,11 +68,11 @@ do_DB_handler_next:
         jmp do_DB_handler_done
 
 stop_debug:
-        btr DWORD [esp + 8], 8                  ; Çå TF ±êÖ¾
+        btr DWORD [esp + 8], 8                  ; æ¸… TF æ ‡å¿—
         mov esi, db_msg2
         call puts
 do_DB_handler_done:        
-        bts DWORD [esp + 8], 16                 ; ÉèÖÃ eflags.RF Îª 1£¬ÒÔ±ãÖĞ¶Ï·µ»ØÊ±£¬¼ÌĞøÖ´ĞĞ
+        bts DWORD [esp + 8], 16                 ; è®¾ç½® eflags.RF ä¸º 1ï¼Œä»¥ä¾¿ä¸­æ–­è¿”å›æ—¶ï¼Œç»§ç»­æ‰§è¡Œ
 
         RESTORE_CONTEXT
         iret
@@ -81,8 +81,8 @@ do_DB_handler_done:
 %ifdef DEBUG
 ;--------------------------------------------
 ; #DB handler
-; ÃèÊö£º
-;       Õâ¸ö°æ±¾µÄ #DB handler ÓÃÓÚ
+; æè¿°ï¼š
+;       è¿™ä¸ªç‰ˆæœ¬çš„ #DB handler ç”¨äº
 ;-------------------------------------------
 debug_handler:
         jmp do_debug_handler
@@ -95,9 +95,9 @@ do_debug_handler:
         call dump_dr6
         call dump_dr7
         mov eax, [esp]
-        cmp WORD [eax], 0xfeeb              ; ²âÊÔ jmp $ Ö¸Áî
+        cmp WORD [eax], 0xfeeb              ; æµ‹è¯• jmp $ æŒ‡ä»¤
         jne do_debug_handler_done
-        btr DWORD [esp+8], 8                ; Çå TF
+        btr DWORD [esp+8], 8                ; æ¸… TF
 do_debug_handler_done:        
         bts DWORD [esp+8], 16               ; RF=1
         mov esi, dh_msg2
@@ -147,13 +147,13 @@ pf_msg  db 10, '---> now, enter #PF handler', 10
         db 'occur at: 0x', 0
 pf_msg2 db 10, 'fixed the error', 10, 0                
 do_pf_handler:        
-        add esp, 4                              ; ºöÂÔ Error code
+        add esp, 4                              ; å¿½ç•¥ Error code
         push ecx
         push edx
         mov esi, pf_msg
         call puts
         
-        mov ecx, cr2                            ; ·¢Éú#PFÒì³£µÄvirtual address
+        mov ecx, cr2                            ; å‘ç”Ÿ#PFå¼‚å¸¸çš„virtual address
         mov esi, ecx
         call print_dword_value
 
@@ -162,7 +162,7 @@ do_pf_handler:
         mov esi, pf_msg2
         call puts
 
-;; ÏÂÃæĞŞÕı´íÎó
+;; ä¸‹é¢ä¿®æ­£é”™è¯¯
         mov eax, ecx
         shr eax, 30
         and eax, 0x3                        ; PDPTE index
@@ -172,14 +172,14 @@ do_pf_handler:
         shr esi, 21
         and esi, 0x1ff                        ; PDE index
         mov eax, [eax + esi * 8]
-        btr DWORD [eax + esi * 8 + 4], 31                ; Çå PDE.XD
+        btr DWORD [eax + esi * 8 + 4], 31                ; æ¸… PDE.XD
         bt eax, 7                                ; PDE.PS=1 ?
         jc do_pf_handler_done
         mov esi, ecx
         shr esi, 12
         and esi, 0x1ff                        ; PTE index
         and eax, 0xfffff000
-        btr DWORD [eax + esi * 8 + 4], 31                ; Çå PTE.XD
+        btr DWORD [eax + esi * 8 + 4], 31                ; æ¸… PTE.XD
 do_pf_handler_done:        
         pop edx
         pop ecx
@@ -195,10 +195,10 @@ ud_msg1         db '>>> Now, enter the #UD handler, occur at: 0x', 0
 do_UD_handler:
         mov esi, ud_msg1
         call puts
-        mov eax, [esp+12]               ; µÃµ½ user esp
+        mov eax, [esp+12]               ; å¾—åˆ° user esp
         mov eax, [eax]
-        mov [esp], eax                  ; Ìø¹ı²úÉú#UDµÄÖ¸Áî
-        add DWORD [esp+12], 4           ; pop ÓÃ»§ stack
+        mov [esp], eax                  ; è·³è¿‡äº§ç”Ÿ#UDçš„æŒ‡ä»¤
+        add DWORD [esp+12], 4           ; pop ç”¨æˆ· stack
         iret
         
 ;----------------------------------------------
@@ -210,10 +210,10 @@ nm_msg1         db '---> Now, enter the #NM handler', 10, 0
 do_NM_handler:        
         mov esi, nm_msg1
         call puts
-        mov eax, [esp+12]               ; µÃµ½ user esp
+        mov eax, [esp+12]               ; å¾—åˆ° user esp
         mov eax, [eax]
-        mov [esp], eax                  ; Ìø¹ı²úÉú#NMµÄÖ¸Áî
-        add DWORD [esp+12], 4           ; pop ÓÃ»§ stack
+        mov [esp], eax                  ; è·³è¿‡äº§ç”Ÿ#NMçš„æŒ‡ä»¤
+        add DWORD [esp+12], 4           ; pop ç”¨æˆ· stack
         iret        
 
 ;-----------------------------------------------
@@ -232,10 +232,10 @@ do_AC_handler:
         mov esi, ac_msg1
         call puts
         call println
-;; ÏÖÔÚ disable AC ¹¦ÄÜ
-        btr DWORD [esp+12+4*8], 18      ; Çåelfags imageÖĞµÄAC±êÖ¾        
+;; ç°åœ¨ disable AC åŠŸèƒ½
+        btr DWORD [esp+12+4*8], 18      ; æ¸…elfags imageä¸­çš„ACæ ‡å¿—        
         popa
-        add esp, 4                      ; ºöÂÔ error code        
+        add esp, 4                      ; å¿½ç•¥ error code        
         iret
 
 
@@ -275,7 +275,7 @@ brmsg1        db 10, 10, '---> Now, enter #BR handler', 10, 0
 do_BR_handler:        
         mov esi, brmsg1
         call puts
-;        mov eax, [bound_rang]                ; ĞŞ¸´´íÎó
+;        mov eax, [bound_rang]                ; ä¿®å¤é”™è¯¯
         iret
         
 ;--------------------------------------
@@ -289,10 +289,10 @@ do_BP_handler:
         mov bl, al
         mov esi, bmsg1
         call puts
-        mov esi, [esp + 4]                        ;  ·µ»ØÖµ
-        dec esi                                   ;  breakpoint Î»ÖÃ
-        mov [esp + 4], esi                        ; ĞŞÕı·µ»ØÖµ
-        mov BYTE [esi], bl                        ; ĞŞ¸´ breakpoint Êı¾İ
+        mov esi, [esp + 4]                        ;  è¿”å›å€¼
+        dec esi                                   ;  breakpoint ä½ç½®
+        mov [esp + 4], esi                        ; ä¿®æ­£è¿”å›å€¼
+        mov BYTE [esi], bl                        ; ä¿®å¤ breakpoint æ•°æ®
         call print_value
         pop ebx
         iret
@@ -306,7 +306,7 @@ omsg1   db '---> Now, enter #OF handler',10, 10,0
 
 do_OF_handler:
         push ebx
-        mov ebx, [esp + 12]             ; ¶Á eflags Öµ
+        mov ebx, [esp + 12]             ; è¯» eflags å€¼
         mov esi, omsg1
         call puts
         mov esi, ebx
@@ -321,8 +321,8 @@ do_OF_handler:
 
 ;-------------------------------
 ; system timer handler
-; ÃèÊö£º
-;       Ê¹ÓÃÓÚ 8259 IRQ0 handler
+; æè¿°ï¼š
+;       ä½¿ç”¨äº 8259 IRQ0 handler
 ;-------------------------------
 timer_handler:                
         jmp do_timer_handler
@@ -339,7 +339,7 @@ do_timer_handler:
         call dump_8259_isr
 
 test_lock:        
-        bt DWORD [spin_lock], 0                        ; ²âÊÔËø
+        bt DWORD [spin_lock], 0                        ; æµ‹è¯•é”
         jnc get_lock
         pause
         jmp test_lock
@@ -347,7 +347,7 @@ get_lock:
         lock bts DWORD [spin_lock], 0
         jc test_lock
         
-;·¢ËÍ special mask mode ÃüÁî
+;å‘é€ special mask mode å‘½ä»¤
         call enable_keyboard
         call send_smm_command
         call disable_timer
@@ -361,7 +361,7 @@ delay:
         loop delay
         bt DWORD [keyboard_done], 0
         jnc wait_for_keyboard        
-        btr DWORD [spin_lock], 0                ; ÊÍ·ÅËø              
+        btr DWORD [spin_lock], 0                ; é‡Šæ”¾é”              
         mov esi, t_msg1
         call puts
         call write_master_EOI
@@ -372,8 +372,8 @@ delay:
         
 ;----------------------------
 ; keyboard_handler:
-; ÃèÊö£º
-;       Ê¹ÓÃÓÚ 8259 IRQ1 handler
+; æè¿°ï¼š
+;       ä½¿ç”¨äº 8259 IRQ1 handler
 ;----------------------------        
 keyboard_handler:
         jmp do_keyboard_handler
@@ -385,7 +385,7 @@ do_keyboard_handler:
         call dump_8259_imr
         call dump_8259_irr
         call dump_8259_isr
-        bts DWORD [keyboard_done], 0                ; Íê³É
+        bts DWORD [keyboard_done], 0                ; å®Œæˆ
         mov esi, k_msg1
         call puts        
         call write_master_EOI
@@ -394,7 +394,7 @@ do_keyboard_handler:
 
 %ifdef APIC_TIMER_HANDLER        
 ;---------------------------------------------
-; apic_timer_handler()£ºÕâÊÇ APIC TIMER µÄ ISR
+; apic_timer_handler()ï¼šè¿™æ˜¯ APIC TIMER çš„ ISR
 ;---------------------------------------------
 apic_timer_handler:
         jmp do_apic_timer_handler
@@ -403,7 +403,7 @@ at_msg1 db 10, 'exit ther APIC timer handler <<<', 10, 0
 do_apic_timer_handler:        
         mov esi, at_msg
         call puts
-        call dump_apic                        ; ´òÓ¡ apic ¼Ä´æÆ÷ĞÅÏ¢
+        call dump_apic                        ; æ‰“å° apic å¯„å­˜å™¨ä¿¡æ¯
         mov esi, at_msg1
         call puts
         mov DWORD [APIC_BASE + EOI], 0
@@ -414,10 +414,10 @@ do_apic_timer_handler:
 
 
 ;*
-;* Èç¹û¶¨ÒåÁË APIC_PERFMON_HANDLER
-;* ÔòÊ¹ÓÃ handler32.asm ÎÄ¼şÀïµÄ apic_perfmon_handler
-;* ×÷Îª PMI ÖĞ¶Ï handler
-;* ·ñÔò£ºÔÚ protected.asm ÎÄ¼şÀïÌá¹© PMI handler
+;* å¦‚æœå®šä¹‰äº† APIC_PERFMON_HANDLER
+;* åˆ™ä½¿ç”¨ handler32.asm æ–‡ä»¶é‡Œçš„ apic_perfmon_handler
+;* ä½œä¸º PMI ä¸­æ–­ handler
+;* å¦åˆ™ï¼šåœ¨ protected.asm æ–‡ä»¶é‡Œæä¾› PMI handler
 ;*
 
 %ifdef APIC_PERFMON_HANDLER
@@ -434,21 +434,21 @@ ph_msg4 db '****** PMI interrupt occur *******', 10, 0
 ph_msg5 db '****** DS interrupt occur with PEBS buffer full! *******', 10, 0
 ph_msg6 db '****** PEBS interrupt occur *******', 10, 0
 do_apic_perfmon_handler:
-        ;; ±£´æ´¦ÀíÆ÷ÉÏÏÂÎÄ
+        ;; ä¿å­˜å¤„ç†å™¨ä¸Šä¸‹æ–‡
         STORE_CONTEXT
 
 ;*
-;* ÏÂÃæÔÚ handler Àï¹Ø±Õ¹¦ÄÜ
+;* ä¸‹é¢åœ¨ handler é‡Œå…³é—­åŠŸèƒ½
 ;*
-        ;; µ± TR ¿ªÆôÊ±£¬¾Í¹Ø±Õ TR
+        ;; å½“ TR å¼€å¯æ—¶ï¼Œå°±å…³é—­ TR
         mov ecx, IA32_DEBUGCTL
         rdmsr
-        mov [debugctl_value], eax        ; ±£´æÔ­ IA32_DEBUGCTL ¼Ä´æÆ÷Öµ£¬ÒÔ±ã»Ö¸´
+        mov [debugctl_value], eax        ; ä¿å­˜åŸ IA32_DEBUGCTL å¯„å­˜å™¨å€¼ï¼Œä»¥ä¾¿æ¢å¤
         mov [debugctl_value + 4], edx
         mov eax, 0
         mov edx, 0
         wrmsr
-        ;; ¹Ø±Õ pebs enable
+        ;; å…³é—­ pebs enable
         mov ecx, IA32_PEBS_ENABLE
         rdmsr
         mov [pebs_enable_value], eax
@@ -456,7 +456,7 @@ do_apic_perfmon_handler:
         mov eax, 0
         mov edx, 0
         wrmsr
-        ; ¹Ø±Õ performance counter
+        ; å…³é—­ performance counter
         mov ecx, IA32_PERF_GLOBAL_CTRL
         rdmsr
         mov [perf_global_ctrl_value], eax
@@ -472,92 +472,92 @@ do_apic_perfmon_handler:
         call println
 
 ;*
-;* ½ÓÏÂÀ´ÅĞ¶Ï PMI ÖĞ¶ÏÒı·¢Ô­Òò
+;* æ¥ä¸‹æ¥åˆ¤æ–­ PMI ä¸­æ–­å¼•å‘åŸå› 
 ;*
 
 check_pebs_interrupt:
-        ; ÊÇ·ñ PEBS ÖĞ¶Ï
+        ; æ˜¯å¦ PEBS ä¸­æ–­
         call test_pebs_interrupt
         test eax, eax
         jz check_counter_overflow
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg6
         call puts
         call dump_ds_management
-        call update_pebs_index_track            ; ¸üĞÂ PEBS index µÄ¹ì¼££¬±£³Ö¶Ô PEBS ÖĞ¶ÏµÄ¼ì²â
+        call update_pebs_index_track            ; æ›´æ–° PEBS index çš„è½¨è¿¹ï¼Œä¿æŒå¯¹ PEBS ä¸­æ–­çš„æ£€æµ‹
 
 
 check_counter_overflow:
-        ; ¼ì²âÊÇ·ñ·¢Éú PMI ÖĞ¶Ï
+        ; æ£€æµ‹æ˜¯å¦å‘ç”Ÿ PMI ä¸­æ–­
         call test_counter_overflow
         test eax, eax
         jz check_pebs_buffer_overflow
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg4
         call puts
         call dump_perf_global_status
         call dump_pmc
-        RESET_COUNTER_OVERFLOW                  ; ÇåÒç³ö±êÖ¾
+        RESET_COUNTER_OVERFLOW                  ; æ¸…æº¢å‡ºæ ‡å¿—
 
 
 check_pebs_buffer_overflow:
-        ; ¼ì²âÊÇ·ñ·¢Éú PEBS buffer Òç³öÖĞ¶Ï
+        ; æ£€æµ‹æ˜¯å¦å‘ç”Ÿ PEBS buffer æº¢å‡ºä¸­æ–­
         call test_pebs_buffer_overflow
         test eax, eax
         jz check_bts_buffer_overflow
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg5
         call puts
         call dump_perf_global_status
-        RESET_PEBS_BUFFER_OVERFLOW              ; Çå OvfBuffer Òç³ö±êÖ¾
-        call reset_pebs_index                   ; ÖØÖÃ PEBS Öµ
+        RESET_PEBS_BUFFER_OVERFLOW              ; æ¸… OvfBuffer æº¢å‡ºæ ‡å¿—
+        call reset_pebs_index                   ; é‡ç½® PEBS å€¼
 
 check_bts_buffer_overflow:
-        ; ¼ìÔòÊÇ·ñ·¢Éú BTS buffer Òç³öÖĞ¶Ï
+        ; æ£€åˆ™æ˜¯å¦å‘ç”Ÿ BTS buffer æº¢å‡ºä¸­æ–­
         call test_bts_buffer_overflow
         test eax, eax
         jz apic_perfmon_handler_done
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg3
         call puts
-        call reset_bts_index                    ; ÖØÖÃ BTS index Öµ
+        call reset_bts_index                    ; é‡ç½® BTS index å€¼
 
 apic_perfmon_handler_done:
         mov esi, ph_msg2
         call puts
 ;*
-;* ÏÂÃæ»Ö¸´¹¦ÄÜÔ­ÉèÖÃ!
+;* ä¸‹é¢æ¢å¤åŠŸèƒ½åŸè®¾ç½®!
 ;* 
-        ; »Ö¸´Ô­ IA32_PERF_GLOBAL_CTRL ¼Ä´æÆ÷Öµ
+        ; æ¢å¤åŸ IA32_PERF_GLOBAL_CTRL å¯„å­˜å™¨å€¼
         mov ecx, IA32_PERF_GLOBAL_CTRL
         mov eax, [perf_global_ctrl_value]
         mov edx, [perf_global_ctrl_value + 4]
         wrmsr
-        ; »Ö¸´Ô­ IA32_DEBUGCTL ÉèÖÃ¡¡
+        ; æ¢å¤åŸ IA32_DEBUGCTL è®¾ç½®ã€€
         mov ecx, IA32_DEBUGCTL
         mov eax, [debugctl_value]
         mov edx, [debugctl_value + 4]
         wrmsr
-        ;; »Ö¸´ IA32_PEBS_ENABLE ¼Ä´æÆ÷
+        ;; æ¢å¤ IA32_PEBS_ENABLE å¯„å­˜å™¨
         mov ecx, IA32_PEBS_ENABLE
         mov eax, [pebs_enable_value]
         mov edx, [pebs_enable_value + 4]
         wrmsr
-        RESTORE_CONTEXT                                 ; »Ö¸´ context
-        btr DWORD [APIC_BASE + LVT_PERFMON], 16         ; Çå LVT_PERFMON ¼Ä´æÆ÷ mask Î»
-        mov DWORD [APIC_BASE + EOI], 0                  ; Ğ´ EOI ÃüÁî
+        RESTORE_CONTEXT                                 ; æ¢å¤ context
+        btr DWORD [APIC_BASE + LVT_PERFMON], 16         ; æ¸… LVT_PERFMON å¯„å­˜å™¨ mask ä½
+        mov DWORD [APIC_BASE + EOI], 0                  ; å†™ EOI å‘½ä»¤
         iret
         
 %endif
 ;*
-;* ½áÊø
+;* ç»“æŸ
 ;*
 
 
 %ifdef AP_IPI_HANDLER
 
 ;---------------------------------------------
-; ap_ipi_handler()£ºÕâÊÇ AP IPI handler
+; ap_ipi_handler()ï¼šè¿™æ˜¯ AP IPI handler
 ;---------------------------------------------
 ap_ipi_handler:
 	jmp do_ap_ipi_handler
@@ -565,14 +565,14 @@ at_msg2 db 10, 10, '>>>>>>> This is processor ID: ', 0
 at_msg3 db '---------- extract APIC ID -----------', 10, 0
 do_ap_ipi_handler:	
         
-        ; ²âÊÔ lock
+        ; æµ‹è¯• lock
 test_handler_lock:
         lock bts DWORD [vacant], 0
         jc get_handler_lock
 
         mov esi, at_msg2
         call puts
-        mov edx, [APIC_BASE + APIC_ID]        ; ¶Á APIC ID
+        mov edx, [APIC_BASE + APIC_ID]        ; è¯» APIC ID
         shr edx, 24
         mov esi, edx
         call print_dword_value
@@ -580,17 +580,17 @@ test_handler_lock:
         mov esi, at_msg3
         call puts
 
-        mov esi, msg2                        ; ´òÓ¡ package ID
+        mov esi, msg2                        ; æ‰“å° package ID
         call puts
         mov esi, [x2apic_package_id + edx * 4]
         call print_dword_value
         call printblank        
-        mov esi, msg3                        ; ´òÓ¡ core ID
+        mov esi, msg3                        ; æ‰“å° core ID
         call puts
         mov esi, [x2apic_core_id + edx * 4]
         call print_dword_value
         call printblank        
-        mov esi, msg4                        ; ´òÓ¡ smt ID
+        mov esi, msg4                        ; æ‰“å° smt ID
         call puts
         mov esi, [x2apic_smt_id + edx * 4]
         call print_dword_value
@@ -598,7 +598,7 @@ test_handler_lock:
 
         mov DWORD [APIC_BASE + EOI], 0
 
-        ; ÊÍ·Ålock
+        ; é‡Šæ”¾lock
         lock btr DWORD [vacant], 0        
         iret
 
@@ -612,7 +612,7 @@ get_handler_lock:
 %ifdef APIC_ERROR_HANDLER
 
 ;-----------------------------------------
-; apic_error_handler() ÕâÊÇ APIC error ´¦Àí
+; apic_error_handler() è¿™æ˜¯ APIC error å¤„ç†
 ;------------------------------------------
 apic_error_handler:
         jmp do_apic_error_handler
@@ -643,7 +643,7 @@ test_error_handler_lock:
         mov esi, ae_msg1
         call puts
         mov DWORD [APIC_BASE + EOI], 0
-        lock btr DWORD [vacant], 0                ; ÊÍ·Å lock
+        lock btr DWORD [vacant], 0                ; é‡Šæ”¾ lock
         iret
 get_error_handler_lock:
         jmp test_error_handler_lock
@@ -651,7 +651,7 @@ get_error_handler_lock:
 
 
 ;----------------------------------------------------
-; ap_init_done_handler(): APÍê³É³õÊ¼»¯ºó»Ø¸´BSP
+; ap_init_done_handler(): APå®Œæˆåˆå§‹åŒ–åå›å¤BSP
 ;----------------------------------------------------
 ap_init_done_handler:
         cmp DWORD [20100h], 0

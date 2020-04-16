@@ -4,8 +4,8 @@
 
 
 ;*
-;* ÕâÊÇ long-mode Ä£Ê½ÏÂµÄ interrupt/exception handler ´úÂë
-;* ÓÉ¸÷¸öÊµÑéÀı×ÓµÄ long.asm Ä£¿éÀ´ include ½øÈ¥
+;* è¿™æ˜¯ long-mode æ¨¡å¼ä¸‹çš„ interrupt/exception handler ä»£ç 
+;* ç”±å„ä¸ªå®éªŒä¾‹å­çš„ long.asm æ¨¡å—æ¥ include è¿›å»
 ;*
 
 
@@ -92,7 +92,7 @@ do_db_handler:
         mov esi, db_msg1
         LIB32_PUTS_CALL
         
-; ¹Øµô L0 enable Î»
+; å…³æ‰ L0 enable ä½
         mov rax, dr7
         btr rax, 0
         mov dr7, rax
@@ -125,12 +125,12 @@ ph_msg5 db '****** PEBS buffer full! *******', 10, 0
 ph_msg6 db '****** PEBS interrupt occur *******', 10, 0
 
 do_apic_perfmon_handler:
-        ;; ±£´æ´¦ÀíÆ÷ÉÏÏÂÎÄ
+        ;; ä¿å­˜å¤„ç†å™¨ä¸Šä¸‹æ–‡
         STORE_CONTEXT64
 
 ;*
-;* ÏÂÃæÔÚ handler Àï¹Ø±ÕÏà¹ØµÄ¹¦ÄÜ
-;* ÔÚ¹Ø±Õ¹¦ÄÜÖ®Ç°£¬ÏÈ±£´æÔ­Öµ£¬ÒÔ±ã·µ»ØÇ°»Ö¸´
+;* ä¸‹é¢åœ¨ handler é‡Œå…³é—­ç›¸å…³çš„åŠŸèƒ½
+;* åœ¨å…³é—­åŠŸèƒ½ä¹‹å‰ï¼Œå…ˆä¿å­˜åŸå€¼ï¼Œä»¥ä¾¿è¿”å›å‰æ¢å¤
 ;*
         mov ecx, IA32_DEBUGCTL
         rdmsr
@@ -138,23 +138,23 @@ do_apic_perfmon_handler:
         mov [debugctl_value + 4], edx
         mov eax, 0 
         mov edx, 0
-        wrmsr                                   ; ¹Ø±ÕËùÓĞ debug ¹¦ÄÜ
+        wrmsr                                   ; å…³é—­æ‰€æœ‰ debug åŠŸèƒ½
         mov ecx, IA32_PEBS_ENABLE
         rdmsr
         mov [pebs_enable_value], eax
         mov [pebs_enable_value + 4], edx
         mov eax, 0
         mov edx, 0
-        wrmsr                                   ; ¹Ø±ÕËùÓĞ PEBS ÖĞ¶ÏĞí¿É
+        wrmsr                                   ; å…³é—­æ‰€æœ‰ PEBS ä¸­æ–­è®¸å¯
         mov ecx, IA32_PERF_GLOBAL_CTRL
         rdmsr
         mov [perf_global_ctrl_value], eax
         mov [perf_global_ctrl_value + 4], edx
         mov eax, 0
         mov edx, 0
-        wrmsr                                   ; ¹Ø±ÕËùÓĞ performace counter
+        wrmsr                                   ; å…³é—­æ‰€æœ‰ performace counter
 
-        ;; ´òÓ¡ĞÅÏ¢
+        ;; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg1
         LIB32_PUTS_CALL
         mov esi, [rsp]
@@ -163,76 +163,76 @@ do_apic_perfmon_handler:
         LIB32_PRINTLN_CALL
 
 ;*
-;* ½ÓÏÂÀ´ÅĞ¶Ï APIC performon monitor ÖĞ¶Ï´¥·¢µÄÔ­Òò
-;* 1. PMI ÖĞ¶Ï
-;* 2. PEBS ÖĞ¶Ï
-;* 3. BTS buffer Òç³öÖĞ¶Ï
-;* 4. PEBS buffer Òç³öÖĞ¶Ï
+;* æ¥ä¸‹æ¥åˆ¤æ–­ APIC performon monitor ä¸­æ–­è§¦å‘çš„åŸå› 
+;* 1. PMI ä¸­æ–­
+;* 2. PEBS ä¸­æ–­
+;* 3. BTS buffer æº¢å‡ºä¸­æ–­
+;* 4. PEBS buffer æº¢å‡ºä¸­æ–­
 ;*
 
 check_counter_overflow:
         ;*
-        ;* ¼ì²âÊÇ·ñ·¢Éú PMI ÖĞ¶Ï
+        ;* æ£€æµ‹æ˜¯å¦å‘ç”Ÿ PMI ä¸­æ–­
         ;*
         call test_counter_overflow
         test eax, eax
         jz check_pebs_interrupt
 
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg4
         LIB32_PUTS_CALL
         call dump_perfmon_global_status       
         
-        ;* ĞŞ¸´ÖĞ¶ÏÌõ¼ş *
-        RESET_COUNTER_OVERFLOW                  ; ÇåËùÓĞÒç³öÎ»
+        ;* ä¿®å¤ä¸­æ–­æ¡ä»¶ *
+        RESET_COUNTER_OVERFLOW                  ; æ¸…æ‰€æœ‰æº¢å‡ºä½
 
 check_pebs_interrupt:
         ;*
-        ;* ¼ì²âÊÇ·ñ·¢Éú PEBS ÖĞ¶Ï
+        ;* æ£€æµ‹æ˜¯å¦å‘ç”Ÿ PEBS ä¸­æ–­
         ;*
         call test_pebs_interrupt
         test eax, eax
         jz check_bts_buffer_overflow
 
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg6
         LIB32_PUTS_CALL
 
         call dump_pebs_record
 
-        ;* ĞŞ¸´ÖĞ¶ÏÌõ¼ş *
-        call update_pebs_index_track            ; ¸üĞÂ pebs index ¼à¿Ø¹ì¼£
+        ;* ä¿®å¤ä¸­æ–­æ¡ä»¶ *
+        call update_pebs_index_track            ; æ›´æ–° pebs index ç›‘æ§è½¨è¿¹
 
 
 
 check_bts_buffer_overflow:
         ;*
-        ;* ¼ì²âÊÇ·ñ·¢Éú BTS buffer Òç³öÖĞ¶Ï
+        ;* æ£€æµ‹æ˜¯å¦å‘ç”Ÿ BTS buffer æº¢å‡ºä¸­æ–­
         ;*
         call test_bts_buffer_overflow
         test eax, eax
         jz check_pebs_buffer_overflow
 
-        ;* ĞŞ¸´ÖĞ¶ÏÌõ¼ş */
-        call reset_bts_index                    ; ÖØÖÃ BTS index Öµ        
+        ;* ä¿®å¤ä¸­æ–­æ¡ä»¶ */
+        call reset_bts_index                    ; é‡ç½® BTS index å€¼        
 
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg3
         LIB32_PUTS_CALL
 
 check_pebs_buffer_overflow:
         ;*
-        ;* ¼ì²âÊÇ·ñ·¢Éú PEBS buffer Òç³öÖĞ¶Ï
+        ;* æ£€æµ‹æ˜¯å¦å‘ç”Ÿ PEBS buffer æº¢å‡ºä¸­æ–­
         ;*
         call test_pebs_buffer_overflow
         test eax, eax
         jz apic_perfmon_handler_done
 
-        ;* ĞŞ¸´ÖĞ¶ÏÌõ¼ş */
-        RESET_PEBS_BUFFER_OVERFLOW              ; Çå OvfBuffer Î»
-        call reset_pebs_index                   ; ÖØÖÃ PEBS index Öµ
+        ;* ä¿®å¤ä¸­æ–­æ¡ä»¶ */
+        RESET_PEBS_BUFFER_OVERFLOW              ; æ¸… OvfBuffer ä½
+        call reset_pebs_index                   ; é‡ç½® PEBS index å€¼
 
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg5
         LIB32_PUTS_CALL
 
@@ -242,37 +242,37 @@ apic_perfmon_handler_done:
         LIB32_PUTS_CALL
 
 ;*
-;* ÏÂÃæ»Ö¸´¹¦ÄÜÔ­ÉèÖÃ!
+;* ä¸‹é¢æ¢å¤åŠŸèƒ½åŸè®¾ç½®!
 ;* 
-        ; »Ö¸´Ô­ IA32_PERF_GLOBAL_CTRL ¼Ä´æÆ÷Öµ
+        ; æ¢å¤åŸ IA32_PERF_GLOBAL_CTRL å¯„å­˜å™¨å€¼
         mov ecx, IA32_PERF_GLOBAL_CTRL
         mov eax, [perf_global_ctrl_value]
         mov edx, [perf_global_ctrl_value + 4]
         wrmsr
-        ; »Ö¸´Ô­ IA32_DEBUGCTL ÉèÖÃ¡¡
+        ; æ¢å¤åŸ IA32_DEBUGCTL è®¾ç½®ã€€
         mov ecx, IA32_DEBUGCTL
         mov eax, [debugctl_value]
         mov edx, [debugctl_value + 4]
         wrmsr
-        ;; »Ö¸´ IA32_PEBS_ENABLE ¼Ä´æÆ÷
+        ;; æ¢å¤ IA32_PEBS_ENABLE å¯„å­˜å™¨
         mov ecx, IA32_PEBS_ENABLE
         mov eax, [pebs_enable_value]
         mov edx, [pebs_enable_value + 4]
         wrmsr
 
 ;*
-;* apic performon handler ·µ»ØÇ°
+;* apic performon handler è¿”å›å‰
 ;*
-        RESTORE_CONTEXT64                                       ; »Ö¸´ context
-        btr DWORD [APIC_BASE + LVT_PERFMON], 16                 ; Çå LVT_PERFMON ¼Ä´æÆ÷ mask Î»
-        mov DWORD [APIC_BASE + EOI], 0                          ; Ğ´ EOI ÃüÁî
+        RESTORE_CONTEXT64                                       ; æ¢å¤ context
+        btr DWORD [APIC_BASE + LVT_PERFMON], 16                 ; æ¸… LVT_PERFMON å¯„å­˜å™¨ mask ä½
+        mov DWORD [APIC_BASE + EOI], 0                          ; å†™ EOI å‘½ä»¤
         iret64              
 %endif
         
         
 
 ;---------------------------------------------
-; apic_timer_handler()£ºÕâÊÇ APIC TIMER µÄ ISR
+; apic_timer_handler()ï¼šè¿™æ˜¯ APIC TIMER çš„ ISR
 ;---------------------------------------------
 apic_timer_handler:
         jmp do_apic_timer_handler
@@ -281,7 +281,7 @@ at_msg1 db 10, 'exit ther APIC timer handler <<<', 10, 0
 do_apic_timer_handler:        
         mov esi, at_msg
         LIB32_PUTS_CALL
-        call dump_apic                        ; ´òÓ¡ apic ¼Ä´æÆ÷ĞÅÏ¢
+        call dump_apic                        ; æ‰“å° apic å¯„å­˜å™¨ä¿¡æ¯
         mov esi, at_msg1
         LIB32_PUTS_CALL
         mov DWORD [APIC_BASE + EOI], 0

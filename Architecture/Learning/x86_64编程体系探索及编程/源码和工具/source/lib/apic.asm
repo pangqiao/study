@@ -1,12 +1,12 @@
 ; apic.asm
-; Copyright (c) 2009-2012 µËÖ¾
+; Copyright (c) 2009-2012 é‚“å¿—
 ; All rights reserved.
 
 %include "..\inc\apic.inc"
 
 
 ;-----------------------------------------------------
-; support_apic()£º¼ì²âÊÇ·ñÖ§³Ö APIC on ChipµÄ local APIC
+; support_apic()ï¼šæ£€æµ‹æ˜¯å¦æ”¯æŒ APIC on Chipçš„ local APIC
 ;----------------------------------------------------
 support_apic:
 	mov eax, 1
@@ -17,7 +17,7 @@ support_apic:
 	ret
 
 ;--------------------------------------------
-; support_x2apic(): ¼ìÔòÊÇ·ñÖ§³Ö x2apic
+; support_x2apic(): æ£€åˆ™æ˜¯å¦æ”¯æŒ x2apic
 ;--------------------------------------------
 support_x2apic:
 	mov eax, 1
@@ -28,7 +28,7 @@ support_x2apic:
 	ret	
 
 ;-------------------------------------
-; enable_apic(): ¿ªÆô apic
+; enable_apic(): å¼€å¯ apic
 ; output:
 ;       0 - failure, other - success
 ;------------------------------------
@@ -67,7 +67,7 @@ enable_xapic:
 enable_x2apic:
 	mov ecx, IA32_APIC_BASE
 	rdmsr
-	or eax, 0xc00						; bit 10, bit 11 ÖÃÎ»
+	or eax, 0xc00						; bit 10, bit 11 ç½®ä½
 	wrmsr
 	ret
 	
@@ -77,13 +77,13 @@ enable_x2apic:
 disable_x2apic:
 	mov ecx, IA32_APIC_BASE
 	rdmsr
-	and eax, 0xfffff3ff					; bit 10, bit 11 ÇåÎ»
+	and eax, 0xfffff3ff					; bit 10, bit 11 æ¸…ä½
 	wrmsr
 	ret	
 
 
 ;------------------------------
-; reset_apic(): Çåµô local apic
+; reset_apic(): æ¸…æ‰ local apic
 ;------------------------------
 reset_apic:
 	mov ecx, IA32_APIC_BASE
@@ -93,7 +93,7 @@ reset_apic:
 	ret
 
 ;---------------------------------
-; set_apic(): ¿ªÆô apic
+; set_apic(): å¼€å¯ apic
 ;---------------------------------
 set_apic:
 	mov ecx, IA32_APIC_BASE
@@ -103,21 +103,21 @@ set_apic:
 	ret
 	
 ;------------------------------------
-; set_apic_base(): ÉèÖÃ APIC baseµØÖ·
+; set_apic_base(): è®¾ç½® APIC baseåœ°å€
 ; input:
-;		esi: µÍ 32 Î»£¬ edi: ¸ß°ë²¿·Ö
+;		esi: ä½ 32 ä½ï¼Œ edi: é«˜åŠéƒ¨åˆ†
 ;------------------------------------
 set_apic_base:
-	call get_MAXPHYADDR						; µÃµ½ MAXPHYADDR Öµ
+	call get_MAXPHYADDR						; å¾—åˆ° MAXPHYADDR å€¼
 	mov ecx, 64
 	sub ecx, eax
 	shl edi, cl
-	shr edi, cl							; È¥µô MAXPHYADDR ÒÔÉÏµÄÎ»
+	shr edi, cl							; å»æ‰ MAXPHYADDR ä»¥ä¸Šçš„ä½
 	mov ecx, IA32_APIC_BASE
 	rdmsr
 	mov edx, edi
 	and esi, 0xfffff000
-	and eax, 0x00000fff						; ±£³ÖÔ­À´µÄ IA32_APIC_BASE ¼Ä´æÆ÷µÍ 12 Î»
+	and eax, 0x00000fff						; ä¿æŒåŸæ¥çš„ IA32_APIC_BASE å¯„å­˜å™¨ä½ 12 ä½
 	or eax, esi
 	wrmsr
 	ret
@@ -125,7 +125,7 @@ set_apic_base:
 ;--------------------------------------
 ; get_apic_base(): 
 ; output:
-;		edx: ¸ß°ë²¿·Ö£¬¡¡eax£ºµÍ32Î»
+;		edx: é«˜åŠéƒ¨åˆ†ï¼Œã€€eaxï¼šä½32ä½
 ;--------------------------------------	
 get_apic_base:
 	mov ecx, IA32_APIC_BASE
@@ -135,7 +135,7 @@ get_apic_base:
 
 
 ;-----------------------------------------------------------------------------
-; get_logical_processor_count(): »ñµÃ package£¨´¦ÀíÆ÷£©ÖĞµÄÂß¼­ processor ÊıÁ¿
+; get_logical_processor_count(): è·å¾— packageï¼ˆå¤„ç†å™¨ï¼‰ä¸­çš„é€»è¾‘ processor æ•°é‡
 ;-----------------------------------------------------------------------------
 get_logical_processor_count:
 	mov eax, 1
@@ -155,7 +155,7 @@ get_processor_core_count:
 		
 
 ;-------------------------------------
-; get_apic_id(): µÃµ½ initial apic id
+; get_apic_id(): å¾—åˆ° initial apic id
 ;-------------------------------------
 get_apic_id:
 	mov eax, 1
@@ -165,16 +165,16 @@ get_apic_id:
 	ret
 
 ;---------------------------------------
-; get_x2apic_id(): µÃµ½ x2APIC ID
+; get_x2apic_id(): å¾—åˆ° x2APIC ID
 ;---------------------------------------
 get_x2apic_id:
 	mov eax, 11
 	cpuid
-	mov eax, edx			; ·µ»Ø x2APIC ID
+	mov eax, edx			; è¿”å› x2APIC ID
 	ret
 
 ;-------------------------------------------------
-; get_x2apic_id_level(): µÃµ½ x2APIC ID µÄ leve Êı
+; get_x2apic_id_level(): å¾—åˆ° x2APIC ID çš„ leve æ•°
 ;-------------------------------------------------
 get_x2apic_id_level:
 	mov esi, 0
@@ -185,25 +185,25 @@ enumerate_loop:
 	inc esi
 	movzx eax, cl			; ECX[7:0]
 	shr ecx, 8
-	and ecx, 0xff			; ²âÊÔ ECX[15:8]
-	jnz enumerate_loop		; ECX[15:8] != 0 Ê±£¬ÖØ¸´µü´ú
+	and ecx, 0xff			; æµ‹è¯• ECX[15:8]
+	jnz enumerate_loop		; ECX[15:8] != 0 æ—¶ï¼Œé‡å¤è¿­ä»£
 	ret
 	
 ;-----------------------------------------------------
-; get_mask_width(): µÃµ½ mask width£¬Ê¹ÓÃÓÚ xAPIC IDÖĞ
+; get_mask_width(): å¾—åˆ° mask widthï¼Œä½¿ç”¨äº xAPIC IDä¸­
 ; input:
-;		esi: maximum count£¨SMT »ò core µÄ×î´ó count Öµ£©
+;		esi: maximum countï¼ˆSMT æˆ– core çš„æœ€å¤§ count å€¼ï¼‰
 ; output:
 ;		eax: mask width
 ;-------------------------------------------------------
 get_mask_width:
-	xor eax, eax			; ÇåÄ¿±ê¼Ä´æÆ÷£¬ÓÃÓÚMSB²»Îª1Ê±
-	bsr eax, esi			; ²éÕÒ count ÖĞµÄ MSB Î»
+	xor eax, eax			; æ¸…ç›®æ ‡å¯„å­˜å™¨ï¼Œç”¨äºMSBä¸ä¸º1æ—¶
+	bsr eax, esi			; æŸ¥æ‰¾ count ä¸­çš„ MSB ä½
 	ret
 	
 	
 ;------------------------------------------------------------------
-; extrac_xapic_id(): ´Ó 8 Î»µÄ xAPIC ID ÀïÌáÈ¡ package, core, smt Öµ
+; extrac_xapic_id(): ä» 8 ä½çš„ xAPIC ID é‡Œæå– package, core, smt å€¼
 ;-------------------------------------------------------------------	
 extrac_xapic_id:
 	jmp do_extrac_xapic_id
@@ -213,41 +213,41 @@ do_extrac_xapic_id:
 	push edx
 	push ebx
 
-	call get_apic_id						; µÃµ½ xAPIC ID Öµ
-	mov [current_apic_id], eax				; ±£´æ xAPIC ID
+	call get_apic_id						; å¾—åˆ° xAPIC ID å€¼
+	mov [current_apic_id], eax				; ä¿å­˜ xAPIC ID
 
-;; ¼ÆËã SMT_MASK_WIDTH ºÍ SMT_SELECT_MASK	
-	call get_logical_processor_count		; µÃµ½ logical processor ×î´ó¼ÆÊıÖµ
+;; è®¡ç®— SMT_MASK_WIDTH å’Œ SMT_SELECT_MASK	
+	call get_logical_processor_count		; å¾—åˆ° logical processor æœ€å¤§è®¡æ•°å€¼
 	mov esi, eax
-	call get_mask_width						; µÃµ½ SMT_MASK_WIDTH
+	call get_mask_width						; å¾—åˆ° SMT_MASK_WIDTH
 	mov edx, [current_apic_id]
 	mov [xapic_smt_mask_width + edx * 4], eax
 	mov ecx, eax
 	mov ebx, 0xFFFFFFFF
-	shl ebx, cl								; µÃµ½ SMT_SELECT_MASK
+	shl ebx, cl								; å¾—åˆ° SMT_SELECT_MASK
 	not ebx
 	mov [xapic_smt_select_mask + edx * 4], ebx
 	
-;; ¼ÆËã CORE_MASK_WIDTH ºÍ CORE_SELECT_MASK 
+;; è®¡ç®— CORE_MASK_WIDTH å’Œ CORE_SELECT_MASK 
 	call get_processor_core_count
 	mov esi, eax
-	call get_mask_width						; µÃµ½ CORE_MASK_WIDTH
+	call get_mask_width						; å¾—åˆ° CORE_MASK_WIDTH
 	mov edx, [current_apic_id]	
 	mov [xapic_core_mask_width + edx * 4], eax
 	mov ecx, [xapic_smt_mask_width + edx * 4]
 	add ecx, eax							; CORE_MASK_WIDTH + SMT_MASK_WIDTH
 	mov eax, 32
 	sub eax, ecx
-	mov [xapic_package_mask_width + edx * 4], eax		; ±£´æ PACKAGE_MASK_WIDTH
+	mov [xapic_package_mask_width + edx * 4], eax		; ä¿å­˜ PACKAGE_MASK_WIDTH
 	mov ebx, 0xFFFFFFFF
 	shl ebx, cl
-	mov [xapic_package_select_mask + edx * 4], ebx		; ±£´æ PACKAGE_SELECT_MASK
+	mov [xapic_package_select_mask + edx * 4], ebx		; ä¿å­˜ PACKAGE_SELECT_MASK
 	not ebx									; ~(-1 << (CORE_MASK_WIDTH + SMT_MASK_WIDTH))
 	mov eax, [xapic_smt_select_mask + edx * 4]
 	xor ebx, eax							; ~(-1 << (CORE_MASK_WIDTH + SMT_MASK_WIDTH)) ^ SMT_SELECT_MASK
 	mov [xapic_core_select_mask + edx * 4], ebx
 	
-;; ÌáÈ¡ SMT_ID, CORE_ID, PACKAGE_ID
+;; æå– SMT_ID, CORE_ID, PACKAGE_ID
 	mov ebx, edx							; apic id
 	mov eax, [xapic_smt_select_mask]
 	and eax, edx							; APIC_ID & SMT_SELECT_MASK
@@ -270,14 +270,14 @@ do_extrac_xapic_id:
 	
 		
 ;-------------------------------------------------------------
-; extrac_x2apic_id(): ´Ó x2APIC_ID ÀïÌáÈ¡ package, core, smt Öµ
+; extrac_x2apic_id(): ä» x2APIC_ID é‡Œæå– package, core, smt å€¼
 ;-------------------------------------------------------------
 extrac_x2apic_id:
 	push ecx
 	push edx
 	push ebx
 
-; ²âÊÔÊÇ·ñÖ§³Ö leaf 11
+; æµ‹è¯•æ˜¯å¦æ”¯æŒ leaf 11
 	mov eax, 0
 	cpuid
 	cmp eax, 11
@@ -289,9 +289,9 @@ do_extrac_loop:
 	mov ecx, esi
 	mov eax, 11
 	cpuid	
-	mov [x2apic_id + edx * 4], edx				; ±£´æ x2apic id
+	mov [x2apic_id + edx * 4], edx				; ä¿å­˜ x2apic id
 	shr ecx, 8
-	and ecx, 0xff								; level ÀàĞÍ
+	and ecx, 0xff								; level ç±»å‹
 	jz do_extrac_subid
 	
 	cmp ecx, 1									; SMT level
@@ -299,36 +299,36 @@ do_extrac_loop:
 	cmp ecx, 2									; core level
 	jne do_extrac_loop_next
 
-;; ¼ÆËã core mask	
+;; è®¡ç®— core mask	
 	and eax, 0x1f
-	mov [x2apic_core_mask_width + edx * 4], eax	; ±£´æ CORE_MASK_WIDTH
+	mov [x2apic_core_mask_width + edx * 4], eax	; ä¿å­˜ CORE_MASK_WIDTH
 	mov ebx, 32
 	sub ebx, eax
-	mov [x2apic_package_mask_width + edx * 4], ebx	; ±£´æ package_mask_width
+	mov [x2apic_package_mask_width + edx * 4], ebx	; ä¿å­˜ package_mask_width
 	mov cl, al
 	mov ebx, 0xFFFFFFFF							;
 	shl ebx, cl									; -1 << CORE_MASK_WIDTH
-	mov [x2apic_package_select_mask + edx * 4], ebx		; ±£´æ package_select_mask
+	mov [x2apic_package_select_mask + edx * 4], ebx		; ä¿å­˜ package_select_mask
 	not ebx										; ~(-1 << CORE_MASK_WIDTH)
 	xor ebx, [x2apic_smt_select_mask + edx * 4]					; ~(-1 << CORE_MASK_WIDTH) ^ SMT_SELECT_MASK
-	mov [x2apic_core_select_mask + edx * 4], ebx					; ±£´æ CORE_SELECT_MASK
+	mov [x2apic_core_select_mask + edx * 4], ebx					; ä¿å­˜ CORE_SELECT_MASK
 	jmp do_extrac_loop_next
 
-;; ¼ÆËã smt mask	
+;; è®¡ç®— smt mask	
 extrac_smt:
 	and eax, 0x1f
-	mov [x2apic_smt_mask_width + edx * 4], eax					; ±£´æ SMT_MASK_WIDTH
+	mov [x2apic_smt_mask_width + edx * 4], eax					; ä¿å­˜ SMT_MASK_WIDTH
 	mov cl, al
 	mov ebx, 0xFFFFFFFF
 	shl ebx, cl									; (-1) << SMT_MASK_WIDTH
 	not ebx										; ~(-1 << SMT_MASK_WIDTH)
-	mov [x2apic_smt_select_mask + edx * 4], ebx					; ±£´æ SMT_SELECT_MASK
+	mov [x2apic_smt_select_mask + edx * 4], ebx					; ä¿å­˜ SMT_SELECT_MASK
 
 do_extrac_loop_next:
 	inc esi
 	jmp do_extrac_loop
 	
-;; ÌáÈ¡ SMT_ID, CORE_ID ÒÔ¼° PACKAGE_ID
+;; æå– SMT_ID, CORE_ID ä»¥åŠ PACKAGE_ID
 do_extrac_subid:
 	mov eax, [x2apic_id + edx * 4]
 	mov ebx, [x2apic_smt_select_mask]
@@ -354,16 +354,16 @@ extrac_x2apic_id_done:
 	
 		
 ;-----------------------------------
-; read_esr(): ¶Á ESR ¼Ä´æÆ÷
+; read_esr(): è¯» ESR å¯„å­˜å™¨
 ;-----------------------------------
 read_esr:
-	mov DWORD [APIC_BASE + ESR], 0		; Ğ´ ESR ¼Ä´æÆ÷
+	mov DWORD [APIC_BASE + ESR], 0		; å†™ ESR å¯„å­˜å™¨
 	mov eax, [APIC_BASE + ESR]
 	ret
 
 
 ;-------------------------------------
-; ´òÓ¡ ISR
+; æ‰“å° ISR
 ;-------------------------------------
 dump_isr:
 	mov esi, inr
@@ -402,7 +402,7 @@ dump_isr:
 	ret
 	
 ;-----------------------------
-; ´òÓ¡ IRR
+; æ‰“å° IRR
 ;-----------------------------	
 dump_irr:
 	mov esi, irr
@@ -441,7 +441,7 @@ dump_irr:
 	ret
 		
 ;--------------------------
-; ´òÓ¡ TMR
+; æ‰“å° TMR
 ;-------------------------		
 dump_tmr:
 	mov esi, tmr
@@ -480,7 +480,7 @@ dump_tmr:
 	ret		
 	
 ;--------------------------------
-; ´òÓ¡ LVT ±í¼Ä´æÆ÷
+; æ‰“å° LVT è¡¨å¯„å­˜å™¨
 ;--------------------------------
 dump_lvt:
 	mov esi, lvt_msg
@@ -520,7 +520,7 @@ dump_lvt:
 
 
 ;------------------------------
-; dump_apic()£º´òÓ¡ apic¼Ä´æÆ÷ĞÅÏ¢
+; dump_apic()ï¼šæ‰“å° apicå¯„å­˜å™¨ä¿¡æ¯
 ;--------------------------------
 dump_apic:
 	mov esi, apicid
@@ -568,18 +568,18 @@ dump_apic:
 	call print_dword_value	
 	call println
 
-; ´òÓ¡ Interrupt Request Register
+; æ‰“å° Interrupt Request Register
 	call dump_irr
 		
-;; ´òÓ¡ In-service register	
+;; æ‰“å° In-service register	
 	call dump_isr
 
-; ´òÓ¡ tigger mode rigister
+; æ‰“å° tigger mode rigister
 	call dump_tmr
 
 	mov esi, esr
 	call puts
-	call read_esr		; ¶Á ESR ¼Ä´æÆ÷
+	call read_esr		; è¯» ESR å¯„å­˜å™¨
 	mov esi, eax
 	call print_dword_value
 	mov esi, icr
@@ -589,10 +589,10 @@ dump_apic:
 	call print_qword_value
 	call println
 	
-; ´òÓ¡ LVT ±í¼Ä´æÆ÷
+; æ‰“å° LVT è¡¨å¯„å­˜å™¨
 	call dump_lvt
 
-; ´òÓ¡ APIC timer ¼Ä´æÆ÷
+; æ‰“å° APIC timer å¯„å­˜å™¨
 	mov esi, init_count
 	call puts
 	mov esi, [APIC_BASE + TIMER_ICR]
@@ -610,16 +610,16 @@ dump_apic:
 	
 
 ;*
-;* ¶¨Òå¶à´¦ÀíÆ÷»·¾³
+;* å®šä¹‰å¤šå¤„ç†å™¨ç¯å¢ƒ
 ;*
 
-; ´¦ÀíÆ÷ index Öµ¼° logical processor ÊıÁ¿
+; å¤„ç†å™¨ index å€¼åŠ logical processor æ•°é‡
 processor_index                 dd      -1
 processor_count                 dd      0
 
 ;*
-;* ´¦ÀíÆ÷ ID Êı×é
-;* ¶¨ÒåÖ§³Ö×î¶à8¸ö´¦ÀíÆ÷
+;* å¤„ç†å™¨ ID æ•°ç»„
+;* å®šä¹‰æ”¯æŒæœ€å¤š8ä¸ªå¤„ç†å™¨
 ;*
 apic_id                         dd      0, 0, 0, 0, 0, 0, 0, 0
 vacant                          dd      0        
@@ -627,7 +627,7 @@ ap_init_done                    dd      0
 
 
 
-; ¶¨Òå x2APIC ID Ïà¹Ø±äÁ¿
+; å®šä¹‰ x2APIC ID ç›¸å…³å˜é‡
 x2apic_smt_mask_width		dd	0, 0, 0, 0, 0, 0, 0, 0
 x2apic_smt_select_mask		dd	0, 0, 0, 0, 0, 0, 0, 0
 x2apic_core_mask_width		dd	0, 0, 0, 0, 0, 0, 0, 0
@@ -641,7 +641,7 @@ x2apic_core_id			dd 	0, 0, 0, 0, 0, 0, 0, 0
 x2apic_smt_id			dd	0, 0, 0, 0, 0, 0, 0, 0
 
 
-;;; ¶¨Òå xAPIC ID Ïà¹Ø±äÁ¿
+;;; å®šä¹‰ xAPIC ID ç›¸å…³å˜é‡
 xapic_smt_mask_width		dd	0, 0, 0, 0, 0, 0, 0, 0
 xapic_smt_select_mask		dd	0, 0, 0, 0, 0, 0, 0, 0
 xapic_core_mask_width		dd	0, 0, 0, 0, 0, 0, 0, 0
@@ -656,7 +656,7 @@ xapic_smt_id			dd 	0, 0, 0, 0, 0, 0, 0, 0
 
 
 
-;**** Êı¾İ *****
+;**** æ•°æ® *****
 apicid				db	'apic ID: 0x', 0
 apicver				db	'    apic version: 0x', 0
 tpr					db	'TPR: 0x', 0
