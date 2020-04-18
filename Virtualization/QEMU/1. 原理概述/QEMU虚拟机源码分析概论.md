@@ -111,6 +111,4 @@ pkg\-config、zlib1g\-dev、libglib2.0\-dev、libpixman\-1\-dev、make等
 
 # 5. 参考
 
-- QEMU官网: https://www.qemu.org/
-
-- https://blog.csdn.net/u011364612/article/details/53470925
+https://blog.csdn.net/u011364612/article/details/53470925
