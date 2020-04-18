@@ -54,7 +54,7 @@ PIT_COUNTER2_PORT                       equ     0x42
 PIT_CONTROL_PORT                        equ     0x43
 
 
-; PCI≈‰÷√∂Àø⁄
+; PCIÈÖçÁΩÆÁ´ØÂè£
 CONFIG_ADDRESS                          equ     0xcf8
 CONFIG_DATA                             equ     0xcfc
 
@@ -62,7 +62,7 @@ CONFIG_DATA                             equ     0xcfc
 RESET_CONTROL_REGISTER                  equ     0xcf9
 FAST_A20_INIT_REGISTER                  equ     0x92
 
-; APM øÿ÷∆∂Àø⁄        
+; APM ÊéßÂà∂Á´ØÂè£        
 APM_CONTROL_PORT_REGISTER               equ     0xb2
 APM_CNT                                 equ     0xb2
 APM_STS                                 equ     0xb3

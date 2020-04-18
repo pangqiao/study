@@ -6,43 +6,43 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #DB handler
+;; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ TSS µÄ ESP0        
+;; è®¾ç½® TSS çš„ ESP0        
         mov esi, tss32_sel
         call get_tss_base
         mov DWORD [eax + 4], KERNEL_ESP
 
-;; ÎªÁËÍê³ÉÊµÑé£¬¹Ø±ÕÊ±¼äÖĞ¶ÏºÍ¼üÅÌÖĞ¶Ï
+;; ä¸ºäº†å®Œæˆå®éªŒï¼Œå…³é—­æ—¶é—´ä¸­æ–­å’Œé”®ç›˜ä¸­æ–­
         call disable_timer
 
 
-;; ÉèÖÃ TSS µÄ IOBITMAP
+;; è®¾ç½® TSS çš„ IOBITMAP
         mov esi, MASTER_OCW1_PORT
-        mov edi, 1                                                ; ²»ÔÊĞí·ÃÎÊ
+        mov edi, 1                                                ; ä¸å…è®¸è®¿é—®
         call set_IO_bitmap
         
                 
-; ½øÈë ring 3 Íê³ÉÊµÑé
+; è¿›å…¥ ring 3 å®Œæˆå®éªŒ
         push user_data32_sel | 0x3
         push esp
         push user_code32_sel | 0x3
@@ -67,15 +67,15 @@ user_entry:
         mov esi, msg5
         call puts
         
-;; ²âÊÔ1: ¶Á port 0x21        
-        in al, MASTER_OCW1_PORT                        ; ³¢ÊÔ¶Á port 0x21
+;; æµ‹è¯•1: è¯» port 0x21        
+        in al, MASTER_OCW1_PORT                        ; å°è¯•è¯» port 0x21
 
         mov esi, msg6
         call puts        
         
-;; ²âÊÔ2: Ğ´ port 0x21        
+;; æµ‹è¯•2: å†™ port 0x21        
         mov al, 0x0f
-        out MASTER_OCW1_PORT, al                        ; ³¢ÊÔĞ´ port 0x21
+        out MASTER_OCW1_PORT, al                        ; å°è¯•å†™ port 0x21
         
         mov esi, msg7
         call puts
@@ -126,7 +126,7 @@ do_print_flags_value:
         push ecx
         push edx
         pushfd                                
-        pop edx                                ; µÃµ½ eflags
+        pop edx                                ; å¾—åˆ° eflags
         
         mov esi, pfv_msg1
         call puts
@@ -141,7 +141,7 @@ do_print_flags_value_loop:
         call puts
         
         cmp ecx, 12
-        jz print_iopl                        ; IOPL Óò
+        jz print_iopl                        ; IOPL åŸŸ
         bt edx, ecx
         setc bl
         movzx ebx, bl
@@ -186,7 +186,7 @@ init_8253:
 
 
 ;-------------------------------------------
-; disable_timer(): ¹Ø±ÕÊ±¼äºÍ¼üÅÌÖĞ¶Ï
+; disable_timer(): å…³é—­æ—¶é—´å’Œé”®ç›˜ä¸­æ–­
 ;-------------------------------------------
 disable_timer:
         in al, MASTER_OCW1_PORT
@@ -213,7 +213,7 @@ do_DB_handler:
         mov esi, db_msg2
         call puts
         call println
-        bts DWORD [esp+8], 16                                        ; ÉèÖÃ eflags.RF Îª 1£¬ÒÔ±ãÖĞ¶Ï·µ»ØÊ±£¬¼ÌĞøÖ´ĞĞ
+        bts DWORD [esp+8], 16                                        ; è®¾ç½® eflags.RF ä¸º 1ï¼Œä»¥ä¾¿ä¸­æ–­è¿”å›æ—¶ï¼Œç»§ç»­æ‰§è¡Œ
         iret
 
 ;-------------------------------------------
@@ -224,7 +224,7 @@ GP_handler:
 gp_msg1                db '---> Now, enter the #GP handler. return address: 0x', 0
 gp_msg3                db '<<< Now, set port 0x21 IOBITMAP to 0', 10, 0
 do_GP_handler:        
-        pop eax                                                        ;  ºöÂÔ´íÎóÂë
+        pop eax                                                        ;  å¿½ç•¥é”™è¯¯ç 
         mov esi, gp_msg1
         call puts
         mov esi, [esp]
@@ -232,7 +232,7 @@ do_GP_handler:
         call println        
         mov esi, gp_msg3
         call puts
-;; ÏÖÔÚÖØĞÂ¿ªÆôI/O¿É·ÃÎÊÈ¨ÏŞ
+;; ç°åœ¨é‡æ–°å¼€å¯I/Oå¯è®¿é—®æƒé™
         mov esi, MASTER_OCW1_PORT
         mov edi, 0                                                ; set port 0x21 IOBITMAP to 0
         call set_IO_bitmap
@@ -262,9 +262,9 @@ do_set_interrupt_handler:
 
 
 ;--------------------------------------------------------
-; set_IO_bitmap(int port, int value): ÉèÖÃ IOBITMAP ÖĞµÄÖµ
+; set_IO_bitmap(int port, int value): è®¾ç½® IOBITMAP ä¸­çš„å€¼
 ; input:
-;                esi - port£¨¶Ë¿ÚÖµ£©£¬edi - value ÉèÖÃµÄÖµ
+;                esi - portï¼ˆç«¯å£å€¼ï¼‰ï¼Œedi - value è®¾ç½®çš„å€¼
 ;---------------------------------------------------------
 set_IO_bitmap:
         jmp do_set_IO_bitmap
@@ -273,8 +273,8 @@ gdt_pointer dw 0
 do_set_IO_bitmap:        
         push ebx
         push ecx
-        str eax                                 ; µÃµ½ TSS selector
-        sgdt [gdt_pointer]                      ; µÃµ½ GDT base
+        str eax                                 ; å¾—åˆ° TSS selector
+        sgdt [gdt_pointer]                      ; å¾—åˆ° GDT base
         and eax, 0xfffffff8
         add eax, [gdt_pointer + 2]              
         mov ebx, [eax+4]        
@@ -283,20 +283,20 @@ do_set_IO_bitmap:
         mov ecx, [eax+4]
         and ecx, 0xff000000 
         or ebx, ecx
-        mov eax, [eax]                          ; µÃµ½ TSS descriptor
+        mov eax, [eax]                          ; å¾—åˆ° TSS descriptor
         shr eax, 16
         or eax, ebx
         movzx ebx, WORD [eax+102]
-        add eax, ebx                            ; µÃµ½ IOBITMAP
+        add eax, ebx                            ; å¾—åˆ° IOBITMAP
         mov ebx, esi
         shr ebx, 3
         and esi, 7
         bt edi, 0
         jc set_bitmap
-        btr DWORD [eax+ebx], esi                 ; ÇåÎ»
+        btr DWORD [eax+ebx], esi                 ; æ¸…ä½
         jmp do_set_IO_bitmap_done
 set_bitmap:
-        bts DWORD [eax+ebx], esi                ; ÖÃÎ»
+        bts DWORD [eax+ebx], esi                ; ç½®ä½
 do_set_IO_bitmap_done:        
         pop ecx
         pop ebx
@@ -304,7 +304,7 @@ do_set_IO_bitmap_done:
 
 
 
-;; º¯Êıµ¼Èë±í
+;; å‡½æ•°å¯¼å…¥è¡¨
 
 putc:                   jmp LIB32_SEG + LIB32_PUTC * 5
 puts:                   jmp LIB32_SEG + LIB32_PUTS * 5

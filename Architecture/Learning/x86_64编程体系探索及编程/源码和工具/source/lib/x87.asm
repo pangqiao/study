@@ -1,10 +1,10 @@
 ; x87.asm
-; Copyright (c) 2009-2012 µËÖ¾
+; Copyright (c) 2009-2012 é‚“å¿—
 ; All rights reserved.
 
 
 ;
-; x87 FPU »·¾³¿â
+; x87 FPU ç¯å¢ƒåº“
 
 clear_mask:
 	fstcw WORD [control_word]
@@ -13,17 +13,17 @@ clear_mask:
         ret
 
 ;-----------------------------------
-; ´òÓ¡ x87 FPU ĞÅÏ¢
+; æ‰“å° x87 FPU ä¿¡æ¯
 ;-----------------------------------
 dump_x87fpu:
-	call dump_x87env		; ´òÓ¡»·¾³ĞÅÏ¢
-	call dump_data_register		; ´òÓ¡ stack ĞÅÏ¢
+	call dump_x87env		; æ‰“å°ç¯å¢ƒä¿¡æ¯
+	call dump_data_register		; æ‰“å° stack ä¿¡æ¯
 	ret
 
 ;------------------------------------------------
-; dump_x87env()£º´òÓ¡ x87 FPU »·¾³Öµ
-; ÃèÊö£º
-;	Ê¹ÓÃ protected Ä£Ê½ 32Î» operand size ĞÎÊ½
+; dump_x87env()ï¼šæ‰“å° x87 FPU ç¯å¢ƒå€¼
+; æè¿°ï¼š
+;	ä½¿ç”¨ protected æ¨¡å¼ 32ä½ operand size å½¢å¼
 ;-------------------------------------------------
 dump_x87env:
 	fnstenv [x87env32]
@@ -79,7 +79,7 @@ dump_x87env:
 
 
 ;-------------------------------
-; ´òÓ¡ x87 FPU ¸¡µãÊı¾İ¼Ä´æÆ÷
+; æ‰“å° x87 FPU æµ®ç‚¹æ•°æ®å¯„å­˜å™¨
 ;-------------------------------
 dump_data_register:
 	jmp do_dump_data_register
@@ -93,11 +93,11 @@ do_dump_data_register:
 	mov esi, ddr_msg1
 	call puts
 
-	call get_top					; µÃµ½µ±Ç° TOP Öµ
+	call get_top					; å¾—åˆ°å½“å‰ TOP å€¼
 	mov [top_value], eax
-	call get_data_register_value			; ¶Á stack Öµ
+	call get_data_register_value			; è¯» stack å€¼
 
-;; ÏÂÃæ´úÂë´òÓ¡ stack ĞÅÏ¢
+;; ä¸‹é¢ä»£ç æ‰“å° stack ä¿¡æ¯
 	xor ebx, ebx
 dump_data_register_loop:
 	mov esi, [r_msg_set + ebx * 4]
@@ -115,29 +115,29 @@ dump_data_register_loop:
 	mov esi, ddr_msg
 	call puts
 
-;; ´òÓ¡ ST(i) ×´Ì¬ĞÅÏ¢
+;; æ‰“å° ST(i) çŠ¶æ€ä¿¡æ¯
 	mov edx, [data_register_status_set + ebx * 4]
 	mov eax, [edx]
 	mov esi, [status_msg_set + eax * 4]
 	call puts
 
 
-; *** ÏÂÃæ´úÂë¼ÆËã stack ¼Ä´æÆ÷Ö¸ÕëĞÅÏ¢ ***
+; *** ä¸‹é¢ä»£ç è®¡ç®— stack å¯„å­˜å™¨æŒ‡é’ˆä¿¡æ¯ ***
 ;;  
-;; ¼ÆÊı·½Ê½ÊÇ£ºoffset = TOP - ÎïÀí¼Ä´æÆ÷±àºÅ
-;              ST(i) = |8 - offset| £¨8-offsetµÄ¾ø¶ÔÖµ£©
+;; è®¡æ•°æ–¹å¼æ˜¯ï¼šoffset = TOP - ç‰©ç†å¯„å­˜å™¨ç¼–å·
+;              ST(i) = |8 - offset| ï¼ˆ8-offsetçš„ç»å¯¹å€¼ï¼‰
 ;
-; Ê¾Àı£ºµ± TOP = 3 Ê±£¬ÄÇÃ´ R7¼Ä´æÆ÷µÄ ST(i)ÖµÊÇ£º
+; ç¤ºä¾‹ï¼šå½“ TOP = 3 æ—¶ï¼Œé‚£ä¹ˆ R7å¯„å­˜å™¨çš„ ST(i)å€¼æ˜¯ï¼š
 ;	offset = 3 - 7 = -4
 ;	8 - (-4) = 12 = 00001100B
-;	12 & 7 = 4£¨¼´£ºR7 ¼Ä´æÆ÷Îª ST(4)
+;	12 & 7 = 4ï¼ˆå³ï¼šR7 å¯„å­˜å™¨ä¸º ST(4)
 ;	
 	mov ecx, 8
 	mov eax, [top_value]
-	sub eax, ebx			; offset = TOP - R µÄ±àºÅ
+	sub eax, ebx			; offset = TOP - R çš„ç¼–å·
 	sub ecx, eax			; 8 - offset
-	and ecx, 0x7			; Çó 8 - offset µÄ¾ø¶ÔÖµ£¨¼´È¥µô·ûºÅÎ»£©
-	mov esi, [st_msg_set + ecx * 4] ; µÃµ½ÕıÈ·µÄ ST(i) ĞÅÏ¢
+	and ecx, 0x7			; æ±‚ 8 - offset çš„ç»å¯¹å€¼ï¼ˆå³å»æ‰ç¬¦å·ä½ï¼‰
+	mov esi, [st_msg_set + ecx * 4] ; å¾—åˆ°æ­£ç¡®çš„ ST(i) ä¿¡æ¯
 	call puts
 
 	inc ebx
@@ -155,14 +155,14 @@ dump_data_register_done:
 ;	eax: Top Of Stack
 ;---------------------------------
 get_top:
-        ; Ê¹ÓÃ no-wait °æ±¾
+        ; ä½¿ç”¨ no-wait ç‰ˆæœ¬
 	fnstsw ax
 	shr eax, 11
 	and eax, 7
 	ret
 
 ;--------------------------
-; µÃµ½ËùÓĞ data ¼Ä´æÆ÷µÄÖµ
+; å¾—åˆ°æ‰€æœ‰ data å¯„å­˜å™¨çš„å€¼
 ;--------------------------
 get_data_register_value:
 	jmp do_get_data_register_value
@@ -170,13 +170,13 @@ qnan_index dd 7
 do_get_data_register_value:
 	push edx
 	push ecx
-	call get_top		; µÃµ½ TOP Ö¸ÕëÖµ
+	call get_top		; å¾—åˆ° TOP æŒ‡é’ˆå€¼
 	mov edx, eax
 	mov ecx, 8
 
-; Ê¹ÓÃ no-wait °æ±¾£¬ÔÚ x87 FPU Òì³£ handler Àï¿ÉÒÔÊ¹ÓÃ
-	fnstenv [x87env32]			; ±£´æÔ­»·¾³ĞÅÏ¢
-        fnclex                                  ; ÇåÒì³£±êÖ¾Î»
+; ä½¿ç”¨ no-wait ç‰ˆæœ¬ï¼Œåœ¨ x87 FPU å¼‚å¸¸ handler é‡Œå¯ä»¥ä½¿ç”¨
+	fnstenv [x87env32]			; ä¿å­˜åŸç¯å¢ƒä¿¡æ¯
+        fnclex                                  ; æ¸…å¼‚å¸¸æ ‡å¿—ä½
 get_data_register_value_loop:
 	fxam
 	fstsw ax
@@ -189,16 +189,16 @@ get_data_register_value_loop:
 	bt esi, 8		; C0
 	rcl edi, 1		
 
-; ¶Á stack Öµ
+; è¯» stack å€¼
 	mov eax, [data_register_file + edx * 4]	
-	fstp TWORD [eax]	; ±£´æÔÚÏàÓ¦µÄÄÚ´æÖĞ
+	fstp TWORD [eax]	; ä¿å­˜åœ¨ç›¸åº”çš„å†…å­˜ä¸­
 
-; ²âÊÔÊÇ·ñÎª NaN
+; æµ‹è¯•æ˜¯å¦ä¸º NaN
 	cmp edi, 1
 	jnz get_data_register_value_next
 
-	; ²â¶ÏÊÇ SNaN »¹ÊÇ QNaN
-	bt DWORD [eax + 4], 30		; ¶Á bit 62 ÅĞ¶Ï
+	; æµ‹æ–­æ˜¯ SNaN è¿˜æ˜¯ QNaN
+	bt DWORD [eax + 4], 30		; è¯» bit 62 åˆ¤æ–­
 	cmovc edi, [qnan_index]
 
 get_data_register_value_next:
@@ -206,11 +206,11 @@ get_data_register_value_next:
 	mov [eax], edi
 
 	inc edx
-	and edx, 7		; ¼ÆËã¶ÔÓ¦µÄÎïÀí¼Ä´æÆ÷
+	and edx, 7		; è®¡ç®—å¯¹åº”çš„ç‰©ç†å¯„å­˜å™¨
 	dec ecx
 	jnz get_data_register_value_loop
 
-;; »Ö¸´ x87 FPU ĞÅÏ¢
+;; æ¢å¤ x87 FPU ä¿¡æ¯
 	fldenv [x87env32]
 
 	pop ecx
@@ -218,7 +218,7 @@ get_data_register_value_next:
 	ret
 
 ;----------------------------------------------
-; dump_x87_status(): ´òÓ¡ status¼Ä´æÆ÷×´Ì¬ĞÅÏ¢
+; dump_x87_status(): æ‰“å° statuså¯„å­˜å™¨çŠ¶æ€ä¿¡æ¯
 ;----------------------------------------------
 dump_x87_status:
 	jmp do_dump_x87_status
@@ -227,7 +227,7 @@ top_msg		db 'TOP:', 0
 condition_msg	db ' condition:', 0
 status_value	dd 0
 do_dump_x87_status:
-;;; ×¢Òâ£ºÊ¹ÓÃ no-wait °æ±¾µÄ FSTSW Ö¸Áî£¬ÔÊĞíÔÚ floating-point excepiton handler ÀïÊ¹ÓÃ
+;;; æ³¨æ„ï¼šä½¿ç”¨ no-wait ç‰ˆæœ¬çš„ FSTSW æŒ‡ä»¤ï¼Œå…è®¸åœ¨ floating-point excepiton handler é‡Œä½¿ç”¨
 ;;;
 	fnstsw WORD [status_value]
 	mov esi, status_msg
@@ -242,7 +242,7 @@ do_dump_x87_status:
 	mov esi, condition_msg
 	call puts
 
-;; ´òÓ¡Ìõ¼şÂë
+;; æ‰“å°æ¡ä»¶ç 
 	mov eax, 0
 	bt DWORD [status_value], 14
 	setc al
@@ -262,7 +262,7 @@ do_dump_x87_status:
 	call print_dword_decimal
 	call printblank
 	call printblank
-; ´òÓ¡ÆäËü±êÖ¾Î»
+; æ‰“å°å…¶å®ƒæ ‡å¿—ä½
 	mov si, [status_value]
 	shld ax, si, 1
 	shl esi, 24
@@ -275,10 +275,10 @@ do_dump_x87_status:
 	ret
 
 
-;****** x87 FPU Êı¾İÇø ************
+;****** x87 FPU æ•°æ®åŒº ************
 
-;; protected Ä£Ê½»ò realÄ£Ê½ÏÂµÄ 32 Î» x87 environment ±£´æÇø
-;; ¹² 28 ¸ö×Ö½Ú
+;; protected æ¨¡å¼æˆ– realæ¨¡å¼ä¸‹çš„ 32 ä½ x87 environment ä¿å­˜åŒº
+;; å…± 28 ä¸ªå­—èŠ‚
 x87env32:
 control_word	dd 0
 status_word	dd 0
@@ -289,8 +289,8 @@ opcode		dw 0
 op_offset	dd 0
 op_selector	dd 0
 
-;; FSAVE/FNSAVE£¬FRSTOR Ö¸ÁîµÄ¸½¼ÓÓ³Ïñ
-;; ¶¨Òå 8 ¸ö 80 Î»µÄÄÚ´æµØÖ·±£´æ data ¼Ä´æÆ÷Öµ
+;; FSAVE/FNSAVEï¼ŒFRSTOR æŒ‡ä»¤çš„é™„åŠ æ˜ åƒ
+;; å®šä¹‰ 8 ä¸ª 80 ä½çš„å†…å­˜åœ°å€ä¿å­˜ data å¯„å­˜å™¨å€¼
 r0_value	dt 0.0
 r1_value	dt 0.0
 r2_value	dt 0.0
@@ -309,10 +309,10 @@ r5_status_value	dd 0
 r6_status_value	dd 0
 r7_status_value	dd 0
 
-; ±£´æ TOP Öµ
+; ä¿å­˜ TOP å€¼
 top_value	dd 0
 
-; x87 FPU ¼Ä´æÆ÷×éÄÚ´æµØÖ·¼¯
+; x87 FPU å¯„å­˜å™¨ç»„å†…å­˜åœ°å€é›†
 data_register_file	dd r0_value, r1_value, r2_value, r3_value
 			dd r4_value, r5_value, r6_value, r7_value, 0
 data_register_status_set	dd r0_status_value, r1_status_value, r2_status_value, r3_status_value

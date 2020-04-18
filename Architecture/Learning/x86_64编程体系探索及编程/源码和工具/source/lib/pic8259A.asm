@@ -1,5 +1,5 @@
 ; pic8259A.asm
-; Copyright (c) 2009-2012 ╣кж╬
+; Copyright (c) 2009-2012 И┌⌠Е©≈
 ; All rights reserved.
 
 %include "..\inc\ports.inc"
@@ -22,55 +22,55 @@ init_8253:
         
         
 ;----------------------------
-; ЁУй╪╩╞ 8259A
+; Е┬²Е╖▀Е▄√ 8259A
 ;----------------------------
 init_8259A:
-;;; ЁУй╪╩╞ master 8259A п╬ф╛
-; 1) охп╢ ICW1
+;;; Е┬²Е╖▀Е▄√ master 8259A Х┼╞Г┴┤
+; 1) Е┘┬Е├≥ ICW1
 	mov al, 0x11					; ICW = 1, ICW4-write required
 	out MASTER_ICW1_PORT, al
 	jmp m1
 m1:
 	nop
-; 2) ╫свеп╢ ICW2
+; 2) Ф▌╔Г²─Е├≥ ICW2
 	mov al, 0x20					; interrupt vector = 0x20
 	out MASTER_ICW2_PORT, al
 	jmp m2
 m2:
 	nop
-; 3) ╫свеп╢ ICW3				
+; 3) Ф▌╔Г²─Е├≥ ICW3				
 	mov al, 0x04					; bit2 must be 1
 	out MASTER_ICW3_PORT, al
 	jmp m3
 m3:
 	nop
-; 4) ╫свеп╢ ICW4
+; 4) Ф▌╔Г²─Е├≥ ICW4
 	mov al, 0x01					; for Intel Architecture
 	out MASTER_ICW4_PORT, al
 	jmp slave
 		
 slave:
 	nop
-;; ЁУй╪╩╞ slave 8259A п╬ф╛
-; 1) охп╢ ICW1
+;; Е┬²Е╖▀Е▄√ slave 8259A Х┼╞Г┴┤
+; 1) Е┘┬Е├≥ ICW1
 	mov al, 0x11					; ICW = 1, ICW4-write required
 	out SLAVE_ICW1_PORT, al
 	jmp s1
 s1:
 	nop
-; 2) ╫свеп╢ ICW2
+; 2) Ф▌╔Г²─Е├≥ ICW2
 	mov al, 0x28					; interrupt vector = 0x28
 	out SLAVE_ICW2_PORT, al
 	jmp s2
 s2:
 	nop
-; 3) ╫свеп╢ ICW3				
+; 3) Ф▌╔Г²─Е├≥ ICW3				
 	mov al, 0x02					; bit2 must be 1
 	out SLAVE_ICW3_PORT, al
 	jmp s3
 s3:
 	nop
-; 4) ╫свеп╢ ICW4
+; 4) Ф▌╔Г²─Е├≥ ICW4
 	mov al, 0x01					; for Intel Architecture
 	out SLAVE_ICW4_PORT, al		
 	ret
@@ -91,7 +91,7 @@ write_slave_EOI:
 	
 
 ;----------------------------
-; фа╠нкЫсп 8259 жп╤о
+; Е╠▐Х■╫Ф┴─Ф°┴ 8259 Д╦╜Ф√╜
 ;----------------------------
 disable_8259:
         mov al, 0FFh
@@ -114,7 +114,7 @@ enable_timer:
 	ret	
 		
 ;--------------------------
-; mask ╪Эел
+; mask И■╝Г⌡≤
 ;--------------------------
 disable_keyboard:
 	in al, MASTER_MASK_PORT

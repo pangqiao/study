@@ -6,31 +6,31 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw      PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw      PROTECTED_END - PROTECTED_BEGIN       ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #DB handler
+;; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
-;; ÎªÁËÍê³ÉÊµÑé£¬¹Ø±ÕÊ±¼äÖĞ¶ÏºÍ¼üÅÌÖĞ¶Ï
+;; ä¸ºäº†å®Œæˆå®éªŒï¼Œå…³é—­æ—¶é—´ä¸­æ–­å’Œé”®ç›˜ä¸­æ–­
         call disable_timer
 
-;; ²âÊÔ1£ºÔÚ CPL=0 µÄÇé¿öÏÂ¸Ä±ä IOPLÖµ£¬´Ó 0 ¸Ä±äÎª 3
+;; æµ‹è¯•1ï¼šåœ¨ CPL=0 çš„æƒ…å†µä¸‹æ”¹å˜ IOPLå€¼ï¼Œä» 0 æ”¹å˜ä¸º 3
         mov esi, msg1
         call puts
         call println
@@ -41,7 +41,7 @@ entry:
         call println
         
         pushfd                                                  ; get eflags
-        or DWORD [esp], 0x3000                                  ; ½« IOPL = 3
+        or DWORD [esp], 0x3000                                  ; å°† IOPL = 3
         popfd                                                   ; modify the IOPL
         
         call print_flags_value
@@ -49,7 +49,7 @@ entry:
         call println
         
         
-; ½øÈë ring 3 Íê³ÉÊµÑé
+; è¿›å…¥ ring 3 å®Œæˆå®éªŒ
         push user_data32_sel | 0x3
         push esp
         push user_code32_sel | 0x3
@@ -62,15 +62,15 @@ entry:
         call println
         call println
         
-; ¿ªÆô single debug
+; å¼€å¯ single debug
         pushfd
         bts dword [esp], 8                                ; set eflags.TF
         popfd
         
-        mov eax, 1                                                ;²âÊÔ1
-        mov eax, 2                                                ;²âÊÔ2
-        mov eax, 3                                                ;²âÊÔ3
-        mov eax, 4                                                ;²âÊÔ4
+        mov eax, 1                                                ;æµ‹è¯•1
+        mov eax, 2                                                ;æµ‹è¯•2
+        mov eax, 3                                                ;æµ‹è¯•3
+        mov eax, 4                                                ;æµ‹è¯•4
         mov eax, 5
 
         jmp $
@@ -91,8 +91,8 @@ user_entry:
         call puts
         call println
         pushfd                                        ; get eflags
-        or DWORD [esp], 0x3200                        ; ³¢ÊÔ½« IOPL ¸ÄÎª 0£¬IF ¸Ä±ä 1
-        popfd                                         ; ĞŞ¸Ä eflags
+        or DWORD [esp], 0x3200                        ; å°è¯•å°† IOPL æ”¹ä¸º 0ï¼ŒIF æ”¹å˜ 1
+        popfd                                         ; ä¿®æ”¹ eflags
         
         call print_flags_value
         
@@ -140,7 +140,7 @@ do_print_flags_value:
         push ecx
         push edx
         pushfd                                
-        pop edx                                ; µÃµ½ eflags
+        pop edx                                ; å¾—åˆ° eflags
         
         mov esi, pfv_msg1
         call puts
@@ -155,7 +155,7 @@ do_print_flags_value_loop:
         call puts
         
         cmp ecx, 12
-        jz print_iopl                        ; IOPL Óò
+        jz print_iopl                        ; IOPL åŸŸ
         bt edx, ecx
         setc bl
         movzx ebx, bl
@@ -200,7 +200,7 @@ init_8253:
 
 
 ;-------------------------------------------
-; disable_timer(): ¹Ø±ÕÊ±¼äºÍ¼üÅÌÖĞ¶Ï
+; disable_timer(): å…³é—­æ—¶é—´å’Œé”®ç›˜ä¸­æ–­
 ;-------------------------------------------
 disable_timer:
         in al, MASTER_OCW1_PORT
@@ -227,7 +227,7 @@ do_DB_handler:
         mov esi, db_msg2
         call puts
         call println
-        bts DWORD [esp+8], 16                             ; ÉèÖÃ eflags.RF Îª 1£¬ÒÔ±ãÖĞ¶Ï·µ»ØÊ±£¬¼ÌĞøÖ´ĞĞ
+        bts DWORD [esp+8], 16                             ; è®¾ç½® eflags.RF ä¸º 1ï¼Œä»¥ä¾¿ä¸­æ–­è¿”å›æ—¶ï¼Œç»§ç»­æ‰§è¡Œ
         iret
 
 ;-------------------------------------------
@@ -270,7 +270,7 @@ do_set_interrupt_handler:
 
 
 
-;; º¯Êıµ¼Èë±í
+;; å‡½æ•°å¯¼å…¥è¡¨
 
 putc:                   jmp LIB32_SEG + LIB32_PUTC * 5
 puts:                   jmp LIB32_SEG + LIB32_PUTS * 5
