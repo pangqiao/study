@@ -5,7 +5,7 @@
 %ifndef LIB_INC
 %define LIB_INC
 
-; ¶¨Òå¿â lib16 ÀïµÄº¯ÊıÌø×ª±íÆ«ÒÆÁ¿
+; å®šä¹‰åº“ lib16 é‡Œçš„å‡½æ•°è·³è½¬è¡¨åç§»é‡
 
 %define LIB16_PUTC			0
 %define LIB16_PUTS			1
@@ -19,7 +19,7 @@
 
 
 
-; ¶¨Òå¿â lib32 ÀïµÄº¯ÊıÌø×ª±íÆ«ÒÆÁ¿
+; å®šä¹‰åº“ lib32 é‡Œçš„å‡½æ•°è·³è½¬è¡¨åç§»é‡
 %define	LIB32_PUTC			0
 %define LIB32_PRINTLN			1
 %define LIB32_PUTS			2
@@ -38,7 +38,7 @@
 %define LIB32_PRINT_VALUE		15
 %define LIB32_PRINTBLANK		16
 %define LIB32_PIRNT_HALF_BYTE_VALUE	17
-;* ÏÂÃæÁ½¸öÊÇ±£Áô
+;* ä¸‹é¢ä¸¤ä¸ªæ˜¯ä¿ç•™
 %define LIB32_XXXX_0                    18
 %define LIB32_XXXX_1                    19
 %define LIB32_SET_INTERRUPT_HANDLER	20
@@ -74,10 +74,10 @@
 
 
 
-;******** long-mode ÏÂµÄ lib32 ¿âµ÷ÓÃºê ************
+;******** long-mode ä¸‹çš„ lib32 åº“è°ƒç”¨å® ************
 
 ;*
-;* ¶¨Òå¼Ä´æÆ÷µÄ offset Öµ
+;* å®šä¹‰å¯„å­˜å™¨çš„ offset å€¼
 ;*
 %define EAX_OFFSET              0
 %define ECX_OFFSET              4
@@ -110,8 +110,8 @@
 %define CONTEXT_POINTER64		(debug_context64)
 
 
-;* ±£´æ context
-;* CONTEXT_POINTER ÊÇ±£´æ context ĞÅÏ¢µÄ»ùÖ·
+;* ä¿å­˜ context
+;* CONTEXT_POINTER æ˜¯ä¿å­˜ context ä¿¡æ¯çš„åŸºå€
 ;*
 %macro STORE_CONTEXT    0
         mov [CONTEXT_POINTER + 0], eax
@@ -124,7 +124,7 @@
         mov [CONTEXT_POINTER + 28], edi
 %endmacro
 
-; »Ö¸´ context
+; æ¢å¤ context
 %macro RESTORE_CONTEXT    0
         mov eax, [CONTEXT_POINTER + 0]
         mov ecx, [CONTEXT_POINTER + 4]
@@ -137,7 +137,7 @@
 %endmacro
 
 ;*
-;* ±£´æ 64 Î»µÄ context 
+;* ä¿å­˜ 64 ä½çš„ context 
 ;*
 %macro STORE_CONTEXT64 0
         mov [CONTEXT_POINTER64 + 0], rax
@@ -158,7 +158,7 @@
 	mov [CONTEXT_POINTER64 + 120], r15
 %endmacro
 
-; »Ö¸´ 64 Î» context
+; æ¢å¤ 64 ä½ context
 %macro RESTORE_CONTEXT64  0
         mov rax, [CONTEXT_POINTER64 + 0]
         mov rcx, [CONTEXT_POINTER64 + 8]
@@ -184,74 +184,74 @@
 
 
 ;****************************************************
-; ÏÂÃæµÄºê¶¨ÒåÔÚ 64-bit Ä£Ê½ÏÂµ÷ÓÃ 32 Î» lib32 ¿âº¯Êı
+; ä¸‹é¢çš„å®å®šä¹‰åœ¨ 64-bit æ¨¡å¼ä¸‹è°ƒç”¨ 32 ä½ lib32 åº“å‡½æ•°
 ;****************************************************
 
-; putc() º¯Êı
+; putc() å‡½æ•°
 %macro LIB32_PUTC_CALL	0
 	mov eax, LIB32_PUTC
 	call lib32_service
 %endmacro
 
-; puts() º¯Êı
+; puts() å‡½æ•°
 %macro LIB32_PUTS_CALL	0
 	mov eax, LIB32_PUTS
 	call lib32_service
 %endmacro
 
-; print_dword_value()º¯Êı
+; print_dword_value()å‡½æ•°
 %macro LIB32_PRINT_DWORD_VALUE_CALL	0
 	mov eax, LIB32_PRINT_DWORD_VALUE
 	call lib32_service
 %endmacro
 
-; print_dword_decimal()º¯Êı
+; print_dword_decimal()å‡½æ•°
 %macro LIB32_PRINT_DWORD_DECIMAL_CALL	0
 	mov eax, LIB32_PRINT_DWORD_DECIMAL
 	call lib32_service
 %endmacro
 
 
-; print_qword_value() º¯Êı
+; print_qword_value() å‡½æ•°
 %macro LIB32_PRINT_QWORD_VALUE_CALL	0
 	mov eax, LIB32_PRINT_QWORD_VALUE
 	call lib32_service
 %endmacro
 
-; println()º¯Êı
+; println()å‡½æ•°
 %macro LIB32_PRINTLN_CALL	0
 	mov eax, LIB32_PRINTLN
 	call lib32_service
 %endmacro
 
-; printblank()º¯Êı
+; printblank()å‡½æ•°
 %macro LIB32_PRINTBLANK_CALL	0
 	mov eax, LIB32_PRINTBLANK
 	call lib32_service
 %endmacro
 
 
-; reverse() º¯Êı
+; reverse() å‡½æ•°
 %macro LIB32_REVERSE_CALL	0
 	mov eax, LIB32_REVERSE
 	call lib32_service
 %endmacro
 
-; dump_flags() º¯Êı
+; dump_flags() å‡½æ•°
 %macro LIB32_DUMP_FLAGS_CALL	0
 	mov eax, LIB32_DUMP_FLAGS
 	call lib32_service
 %endmacro
 
 
-; print_byte_value() º¯Êı
+; print_byte_value() å‡½æ•°
 %macro LIB32_PRINT_BYTE_VALUE_CALL	0
 	mov eax, LIB32_PRINT_BYTE_VALUE
 	call lib32_service
 %endmacro
 
 
-; get_MAXPHYADDR() º¯Êı
+; get_MAXPHYADDR() å‡½æ•°
 %macro LIB32_GET_MAXPHYADDR_CALL	0
 	mov eax, LIB32_GET_MAXPHYADDR
 	call lib32_service
