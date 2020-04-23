@@ -3,22 +3,22 @@
 
 <!-- code_chunk_output -->
 
-* [1 Linux整体机制](#1-linux整体机制)
-	* [1.1 中断初始化](#11-中断初始化)
-		* [1.1.1 中断处理接口interrupt数组](#111-中断处理接口interrupt数组)
-	* [1.2 硬件中断号和软件中断号映射](#12-硬件中断号和软件中断号映射)
-	* [1.3 注册中断](#13-注册中断)
-	* [1.4 底层中断处理](#14-底层中断处理)
-	* [1.5 高层中断处理](#15-高层中断处理)
-	* [1.6 中断线程执行过程](#16-中断线程执行过程)
-* [2 软中断和tasklet](#2-软中断和tasklet)
-	* [2.1 SoftIRQ软中断](#21-softirq软中断)
-	* [2.2 tasklet](#22-tasklet)
-	* [2.3 local\_bh\_disable/local\_bh\_enable下半部临界区](#23-local_bh_disablelocal_bh_enable下半部临界区)
-	* [2.4 中断上下文](#24-中断上下文)
-* [3 workqueue](#3-workqueue)
-	* [3.1 背景和原理](#31-背景和原理)
-	* [3.2 数据结构](#32-数据结构)
+- [1 Linux整体机制](#1-linux整体机制)
+  - [1.1 中断初始化](#11-中断初始化)
+    - [1.1.1 中断处理接口interrupt数组](#111-中断处理接口interrupt数组)
+  - [1.2 硬件中断号和软件中断号映射](#12-硬件中断号和软件中断号映射)
+  - [1.3 注册中断](#13-注册中断)
+  - [1.4 底层中断处理](#14-底层中断处理)
+  - [1.5 高层中断处理](#15-高层中断处理)
+  - [1.6 中断线程执行过程](#16-中断线程执行过程)
+- [2 软中断和tasklet](#2-软中断和tasklet)
+  - [2.1 SoftIRQ软中断](#21-softirq软中断)
+  - [2.2 tasklet](#22-tasklet)
+  - [2.3 local_bh_disable/local_bh_enable下半部临界区](#23-local_bh_disablelocal_bh_enable下半部临界区)
+  - [2.4 中断上下文](#24-中断上下文)
+- [3 workqueue](#3-workqueue)
+  - [3.1 背景和原理](#31-背景和原理)
+  - [3.2 数据结构](#32-数据结构)
 
 <!-- /code_chunk_output -->
 
@@ -92,7 +92,7 @@ start_kernel
 
 ### 1.1.1 中断处理接口interrupt数组 
 
-interrupt数组是内核中外设中断对应的IDT entry，其在arch/x86/entry/entry\_64.S中定义，定义如下：
+interrupt数组是内核中外设中断对应的IDT entry，其在`arch/x86/entry/entry_64.S`中定义，定义如下：
 
 ```assembly
 [arch/x86/include/asm/irq_vectors.h]
@@ -120,9 +120,11 @@ ENTRY(irq_entries_start)
 END(irq_entries_start)
 ```
 
-这段汇编的效果是：在**代码段**，生成了一个**符号irq\_entries\_start**，该符号对应的内容是一组可执行代码.
+这段汇编的效果是：在**代码段**，生成了一个**符号`irq_entries_start`**，该符号对应的内容是一组可执行代码.
 
-X86 CPU在准备好了中断执行环境后，会调用中断描述符定义的中断处理入口；对于**用户自定义中断**，中断处理入口都是(对系统预留的，就直接执行定义的接口了)common\_interrupt
+X86 CPU在准备好了中断执行环境后，会调用**中断描述符定义的中断处理入口**；
+
+对于**用户自定义中断**，中断处理入口都是(对系统预留的，就直接执行定义的接口了)`common_interrupt`
 
 ## 1.2 硬件中断号和软件中断号映射
 
@@ -403,7 +405,7 @@ tasklet的执行: 基于软中断机制, 当循环到TASKLET\_SOFTIRQ类型软�
 
 目前Linux内核中有大量的驱动程序使用tasklet机制来实现下半部操作，任何一个tasklet回调函数执行时间过长，都会影响系统实时性，可以预见在不久的将来**tasklet机制**有可能会被Linux内核社区**舍弃**。
 
-## 2.3 local\_bh\_disable/local\_bh\_enable下半部临界区
+## 2.3 local_bh_disable/local_bh_enable下半部临界区
 
 内核中提供的关闭软中断的锁机制，它们组成的临界区**禁止本地CPU**在**中断返回前(！！！**)夕**执行软中断**，这个临界区简称BH临界区(bottom half critical region).
 
