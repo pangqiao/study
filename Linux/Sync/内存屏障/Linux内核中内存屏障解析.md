@@ -47,8 +47,71 @@
 
 
 因为会锁内存总线，所以带lock前缀指令执行前，也会先将未完成的读写操作完成，也起到内存屏障的功能。
-     现在多处理器间线程的同步，上用自旋锁，下用这种带了lock前缀的读修改写指令。当然，实际的同步还有加上禁止本处理器任务调度的，有加上任务关中断的，还会在外面加上信号量的外衣。linux中对这种自旋锁的实现，已历经四代发展，变得愈发高效强大。
 
+现在多处理器间线程的同步，上用自旋锁，下用这种带了lock前缀的读修改写指令。当然，实际的同步还有加上禁止本处理器任务调度的，有加上任务关中断的，还会在外面加上信号量的外衣。linux中对这种自旋锁的实现，已历经四代发展，变得愈发高效强大。
+
+内存屏障的实现
+
+```cpp
+#ifdef CONFIG_SMP   
+#define smp_mb()    mb()   
+#define smp_rmb()   rmb()   
+#define smp_wmb()   wmb()   
+#else   
+#define smp_mb()    barrier()   
+#define smp_rmb()   barrier()   
+#define smp_wmb()   barrier()   
+#endif
+```
+
+`CONFIG_SMP`就是用来**支持多处理器**的。如果是UP(uniprocessor)系统，就会翻译成barrier()。
+
+```cpp
+#define barrier() __asm__ __volatile__("": : :"memory")  
+```
+
+barrier()的作用，就是告诉编译器，内存的变量值都改变了，之前存在寄存器里的变量副本无效，要访问变量还需再访问内存。这样做足以满足UP中所有的内存屏障。
+
+```cpp
+#ifdef CONFIG_X86_32   
+/* 
+ * Some non-Intel clones support out of order store. wmb() ceases to be a 
+ * nop for these. 
+ */  
+#define mb() alternative("lock; addl $0,0(%%esp)", "mfence", X86_FEATURE_XMM2)   
+#define rmb() alternative("lock; addl $0,0(%%esp)", "lfence", X86_FEATURE_XMM2)   
+#define wmb() alternative("lock; addl $0,0(%%esp)", "sfence", X86_FEATURE_XMM)   
+#else   
+#define mb()    asm volatile("mfence":::"memory")   
+#define rmb()   asm volatile("lfence":::"memory")   
+#define wmb()   asm volatile("sfence" ::: "memory")   
+#endif
+```
+
+如果是SMP系统，内存屏障就会翻译成对应的mb()、rmb()和wmb()。这里CONFIG_X86_32的意思是说这是一个32位x86系统，否则就是64位的x86系统。现在的linux内核将32位x86和64位x86融合在同一个x86目录，所以需要增加这个配置选项。
+可以看到，如果是64位x86，肯定有mfence、lfence和sfence三条指令，而32位的x86系统则不一定，所以需要进一步查看cpu是否支持这三条新的指令，不行则用加锁的方式来增加内存屏障。
+
+
+SFENCE,LFENCE,MFENCE指令提供了高效的方式来保证读写内存的排序,这种操作发生在产生弱排序数据的程序和读取这个数据的程序之间。 
+
+- SFENCE——串行化发生在SFENCE指令之前的写操作但是不影响读操作。 
+- LFENCE——串行化发生在SFENCE指令之前的读操作但是不影响写操作。 
+- MFENCE——串行化发生在MFENCE指令之前的读写操作。 
+
+- sfence:在sfence指令前的写操作当必须在sfence指令后的写操作前完成。 
+- lfence：在lfence指令前的读操作当必须在lfence指令后的读操作前完成。 
+- mfence：在mfence指令前的读写操作当必须在mfence指令后的读写操作前完成。 
+
+
+
+
+至于带lock的内存操作，会在锁内存总线之前，就把之前的读写操作结束，功能相当于mfence，当然执行效率上要差一些。
+
+
+说起来，现在写点底层代码真不容易，既要注意SMP问题，又要注意cpu乱序读写问题，还要注意cache问题，还有设备DMA问题，等等。
+————————————————
+版权声明：本文为CSDN博主「hustyangju」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/hustyangju/article/details/40394003
 
 # 参考
 
