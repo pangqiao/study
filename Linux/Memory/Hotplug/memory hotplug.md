@@ -13,6 +13,8 @@
 
 ## offline
 
+### 整体流程
+
 ```cpp
 memory_subsys_offline()
  ├─ struct memory_block mem= to_memory_block(dev);          // memory dev转换成 memory_block
@@ -35,27 +37,23 @@ memory_subsys_offline()
  |               ├─ pfn = scan_movable_pages(pfn, end_pfn);  // 扫描找到第一个movable的page, 找不到返回0
  |               ├─ do_migrate(pfn, end_pfn);  // 如果找到movable的page, 则迁移
  |               ├─ }    // 
+ |               ├─ dissolve_free_huge_pages(start_pfn, end_pfn);    // 
+ |               ├─ walk_system_ram_range();    // memory blocks有hole(空洞)则不允许offline
  |               ├─ while(ret);    // 
+ |               ├─ walk_system_ram_range();    // memory blocks有hole(空洞)则不允许offline
  |               └─ mem_hotplug_done();
- ├─ module_call_init(MODULE_INIT_MACHINE)
- ├─ switch(popt->index) case QEMU_OPTION_XXX // 解析 QEMU 参数
- ├─ socket_init()
- ├─ os_daemonize()
- ├─ configure_accelerator()                  // 启用 KVM 加速支持
- |   └─ kvm_init()                           // 【1】创建 KVM 虚拟机并获取对应的 fd
- |       ├─ kvm_ioctl(KVM_GET_API_VERSION)   // 检查 KVM API 版本
- |       ├─ kvm_ioctl(KVM_CREATE_VM)         // 创建虚拟机，并获取 vmfd
- |       ├─ kvm_check_extension()            // 与kvm交互, 检查特性支持
- |       ├─ kvm_arch_init()
- |       |   ├─ kvm_check_extension()        // 与kvm交互, 架构相关特性检查
- |       |   ├─ kvm_vm_ioctl(s, KVM_SET_IDENTITY_MAP_ADDR, &identity_base);        // 与kvm交互, 架构相关特性检查
- |       |   ├─ kvm_vm_ioctl(s, KVM_SET_TSS_ADDR, identity_base + 0x1000);        // 与kvm交互, 架构相关特性检查
- |       |   ├─ e820_add_entry(identity_base, 0x4000, E820_RESERVED);        // 
- |       ├─ kvm_irqchip_create()             // 创建中断管理
- |       |   ├─ kvm_check_extension(s, KVM_CAP_IRQCHIP)        // 检查irqchip功能
- |       |   ├─ kvm_vm_ioctl(s, KVM_CREATE_IRQCHIP);        // 与kvm交互, 架构相关特性检查
- |       └─ memory_listener_register(&kvm_memory_listener) // 注册 kvm_memory_listener
 ```
+
+### 代码分析
+
+```cpp
+
+```
+
+## remove
+
+
+# 参考
 
 `Documentation/admin-guide/mm/memory-hotplug.rst`
 
