@@ -47,8 +47,15 @@ memory_subsys_offline()
 ### 代码分析
 
 ```cpp
-
+static struct bus_type memory_subsys = {
+        .name = MEMORY_CLASS_NAME,
+        .dev_name = MEMORY_CLASS_NAME,
+        .online = memory_subsys_online,
+        .offline = memory_subsys_offline,
+};
 ```
+
+
 
 ## remove
 
