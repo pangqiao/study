@@ -18,7 +18,8 @@ memory_subsys_offline()
  ├─ struct memory_block mem= to_memory_block(dev);          // memory dev转换成 memory_block
  ├─ memory_block_change_state(mem, MEM_OFFLINE, MEM_ONLINE);   // 从online转换成offline
  |   └─ memory_block_action();
- ├─ init_clocks()                            // 初始化时钟源
+ |       ├─ start_pfn = section_nr_to_pfn()                // 获取起始pfn  
+ |       └─ memory_block_action();
  ├─ module_call_init(MODULE_INIT_MACHINE)
  ├─ switch(popt->index) case QEMU_OPTION_XXX // 解析 QEMU 参数
  ├─ socket_init()
