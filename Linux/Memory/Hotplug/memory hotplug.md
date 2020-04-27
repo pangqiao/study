@@ -18,9 +18,14 @@ memory_subsys_offline()
  ├─ struct memory_block mem= to_memory_block(dev);          // memory dev转换成 memory_block
  ├─ memory_block_change_state(mem, MEM_OFFLINE, MEM_ONLINE);   // 从online转换成offline
  |   └─ memory_block_action();
- |       ├─ nr_pages = PAGES_PER_SECTION * sections_per_block;  // 获取起始pfn  
- |       ├─ start_pfn = section_nr_to_pfn()                // 获取起始pfn  
- |       └─ offline_pages();
+ |       ├─ nr_pages = PAGES_PER_SECTION * sections_per_block;  // 获取这个block包含的页数
+ |       ├─ start_pfn = section_nr_to_pfn();                   // 获取起始pfn  
+ |       └─ offline_pages(start_pfn, nr_pages);
+ |           └─ __offline_pages(start_pfn, start_pfn + nr_pages);
+ |               ├─ mem_hotplug_begin();
+ |               ├─ walk_system_ram_range();    // memory blocks有hole(空洞)则不允许offline
+ |               ├─ test_pages_in_a_zone(start_pfn, end_pfn);    // 所有页面必须在同一个zone
+ |               └─ mem_hotplug_done();
  ├─ module_call_init(MODULE_INIT_MACHINE)
  ├─ switch(popt->index) case QEMU_OPTION_XXX // 解析 QEMU 参数
  ├─ socket_init()
