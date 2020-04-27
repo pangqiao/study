@@ -32,6 +32,8 @@ memory_subsys_offline()
  |               ├─ notify_to_errno();    // 
  |               ├─ do {    //  循环处理
  |               ├─ for (pfn = start_pfn; pfn;) {    // 遍历
+ |               ├─ pfn = scan_movable_pages(pfn, end_pfn);  // 扫描找到第一个movable的page, 找不到返回0
+ |               ├─ do_migrate(pfn, end_pfn);  // 如果找到movable的page, 则迁移
  |               ├─ }    // 
  |               ├─ while(ret);    // 
  |               └─ mem_hotplug_done();
