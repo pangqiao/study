@@ -15,9 +15,9 @@
 
 ```cpp
 memory_subsys_offline()
- ├─ struct memory_block mem= to_memory_block(dev)          // memory dev转换成 memory_block
- ├─ memory_block_change_state(mem,)        // 初始化 QOM
- ├─ runstate_init()
+ ├─ struct memory_block mem= to_memory_block(dev);          // memory dev转换成 memory_block
+ ├─ memory_block_change_state(mem, MEM_OFFLINE, MEM_ONLINE);   // 从online转换成offline
+ |   └─ memory_block_action();
  ├─ init_clocks()                            // 初始化时钟源
  ├─ module_call_init(MODULE_INIT_MACHINE)
  ├─ switch(popt->index) case QEMU_OPTION_XXX // 解析 QEMU 参数
