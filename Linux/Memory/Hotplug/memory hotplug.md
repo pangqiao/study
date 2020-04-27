@@ -25,6 +25,13 @@ memory_subsys_offline()
  |               ├─ mem_hotplug_begin();
  |               ├─ walk_system_ram_range();    // memory blocks有hole(空洞)则不允许offline
  |               ├─ test_pages_in_a_zone(start_pfn, end_pfn);    // 所有页面必须在同一个zone
+ |               ├─ node = zone_to_nid(zone);    // 获取node id
+ |               ├─ start_isolate_page_range();    // 
+ |               ├─ node_states_check_changes_offline();    // 
+ |               ├─ memory_notify(MEM_GOING_OFFLINE, &arg);    // 
+ |               ├─ notify_to_errno();    // 
+ |               ├─ do {    // 
+ |               ├─ while(ret);    // 
  |               └─ mem_hotplug_done();
  ├─ module_call_init(MODULE_INIT_MACHINE)
  ├─ switch(popt->index) case QEMU_OPTION_XXX // 解析 QEMU 参数
