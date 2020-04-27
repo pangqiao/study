@@ -30,7 +30,9 @@ memory_subsys_offline()
  |               ├─ node_states_check_changes_offline();    // 
  |               ├─ memory_notify(MEM_GOING_OFFLINE, &arg);    // 
  |               ├─ notify_to_errno();    // 
- |               ├─ do {    // 
+ |               ├─ do {    //  循环处理
+ |               ├─ for (pfn = start_pfn; pfn;) {    // 遍历
+ |               ├─ }    // 
  |               ├─ while(ret);    // 
  |               └─ mem_hotplug_done();
  ├─ module_call_init(MODULE_INIT_MACHINE)
