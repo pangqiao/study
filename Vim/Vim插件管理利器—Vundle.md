@@ -3,24 +3,17 @@
 
 <!-- code_chunk_output -->
 
-* [1. 简介](#1-简介)
-* [2. Vundle的安装和使用](#2-vundle的安装和使用)
-	* [1. Vundle的安装](#1-vundle的安装)
-	* [2. 配置说明](#2-配置说明)
-	* [3. 配置vundle插件](#3-配置vundle插件)
-	* [4. 安装需要的插件](#4-安装需要的插件)
-	* [5. 卸载插件](#5-卸载插件)
-* [3. Vundle常用命令](#3-vundle常用命令)
-* [4. 参考](#4-参考)
+- [1. 简介](#1-简介)
+- [2. Vundle的安装和使用](#2-vundle的安装和使用)
+  - [1. Vundle的安装](#1-vundle的安装)
+  - [2. 配置说明](#2-配置说明)
+  - [3. 配置vundle插件](#3-配置vundle插件)
+  - [4. 安装需要的插件](#4-安装需要的插件)
+  - [5. 卸载插件](#5-卸载插件)
+- [3. Vundle常用命令](#3-vundle常用命令)
+- [4. 参考](#4-参考)
 
 <!-- /code_chunk_output -->
-
-参考：
-
-http://blog.csdn.net/jiaolongdy/article/details/17889787/
-
-http://blog.csdn.net/zhangpower1993/article/details/52184581
-
 ## 1. 简介
 
 Vundle是基于Git仓库的插件管理软件。Vundle将插件的安装简化为类似yum软件安装的过程，只要:BundleInstall插件就安装完了，:BundleClean之后插件就卸载了。
@@ -149,3 +142,7 @@ $ vim
 [Vundle项目](https://github.com/gmarik/vundle)
 
 [vim-scripts](http://vim-scripts.org/)维护的[GitHub repo](https://github.com/vim-scripts)
+
+http://blog.csdn.net/jiaolongdy/article/details/17889787/
+
+http://blog.csdn.net/zhangpower1993/article/details/52184581

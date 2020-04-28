@@ -33,4 +33,5 @@ Windows下面输入“:version”查看结果
 ```
 :echo $MYVIMRC
 ```
+
 查看当前vim配置文件路径
