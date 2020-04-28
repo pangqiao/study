@@ -59,7 +59,10 @@ static struct bus_type memory_subsys = {
 reset_init()
  ├─ kernel_thread(kernel_init, NULL, CLONE_FS | CLONE_SIGHAND);   // 调用kernel_init
  |   └─ kernel_init_freeable()
- |       ├─ nr_pages = PAGES_PER_SECTION * sections_per_block;  // 获取这个block包含的页数
+ |       └─ do_basic_setup();  // 获取这个block包含的页数
+ |           └─ driver_init();
+ |              └─ memory_dev_init();
+ |                  └─ subsys_system_register(&memory_subsys, memory_root_attr_groups);
  |       ├─ start_pfn = section_nr_to_pfn();                   // 获取起始pfn  
  |       └─ offline_pages(start_pfn, nr_pages);
  |           └─ __offline_pages(start_pfn, start_pfn + nr_pages);
