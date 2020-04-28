@@ -56,7 +56,32 @@ static struct bus_type memory_subsys = {
 ```
 
 ```cpp
-reset_init() -> 
+reset_init()
+ ├─ kernel_thread(kernel_init, NULL, CLONE_FS | CLONE_SIGHAND);   // 调用kernel_init
+ |   └─ kernel_init_freeable()
+ |       ├─ nr_pages = PAGES_PER_SECTION * sections_per_block;  // 获取这个block包含的页数
+ |       ├─ start_pfn = section_nr_to_pfn();                   // 获取起始pfn  
+ |       └─ offline_pages(start_pfn, nr_pages);
+ |           └─ __offline_pages(start_pfn, start_pfn + nr_pages);
+ |               ├─ mem_hotplug_begin();
+ |               ├─ walk_system_ram_range();    // memory blocks有hole(空洞)则不允许offline
+ |               ├─ test_pages_in_a_zone(start_pfn, end_pfn);    // 所有页面必须在同一个zone
+ |               ├─ node = zone_to_nid(zone);    // 获取node id
+ |               ├─ start_isolate_page_range();    // 
+ |               ├─ node_states_check_changes_offline();    // 
+ |               ├─ memory_notify(MEM_GOING_OFFLINE, &arg);    // 
+ |               ├─ notify_to_errno();    // 
+ |               ├─ do {    //  循环处理
+ |               ├─ for (pfn = start_pfn; pfn;) {    // 遍历
+ |               ├─ pfn = scan_movable_pages(pfn, end_pfn);  // 扫描找到第一个movable的page, 找不到返回0
+ |               ├─ do_migrate(pfn, end_pfn);  // 如果找到movable的page, 则迁移
+ |               ├─ }    // 
+ |               ├─ dissolve_free_huge_pages(start_pfn, end_pfn);    // 
+ |               ├─ walk_system_ram_range();    // memory blocks有hole(空洞)则不允许offline
+ |               ├─ while(ret);    // 
+ |               ├─ walk_system_ram_range();    // memory blocks有hole(空洞)则不允许offline
+ |               └─ mem_hotplug_done();
+reset_init()
 ```
 
 
