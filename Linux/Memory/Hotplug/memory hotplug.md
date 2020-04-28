@@ -46,13 +46,7 @@ memory_subsys_offline()
 
 ### 代码分析
 
-```cpp
-static struct bus_type memory_subsys = {
-        .name = MEMORY_CLASS_NAME,
-        .dev_name = MEMORY_CLASS_NAME,
-        .online = memory_subsys_online,
-        .offline = memory_subsys_offline,
-};
+```
 ```
 
 ```cpp
@@ -85,6 +79,39 @@ reset_init()
  |               ├─ walk_system_ram_range();    // memory blocks有hole(空洞)则不允许offline
  |               └─ mem_hotplug_done();
 reset_init()
+```
+
+```cpp
+static struct bus_type memory_subsys = {
+        .name = MEMORY_CLASS_NAME,
+        .dev_name = MEMORY_CLASS_NAME,
+        .online = memory_subsys_online,
+        .offline = memory_subsys_offline,
+};
+
+static struct attribute *memory_root_attrs[] = {
+#ifdef CONFIG_ARCH_MEMORY_PROBE
+        &dev_attr_probe.attr,
+#endif
+
+#ifdef CONFIG_MEMORY_FAILURE
+        &dev_attr_soft_offline_page.attr,
+        &dev_attr_hard_offline_page.attr,
+#endif
+
+        &dev_attr_block_size_bytes.attr,
+        &dev_attr_auto_online_blocks.attr,
+        NULL
+};
+
+static struct attribute_group memory_root_attr_group = {
+        .attrs = memory_root_attrs,
+};
+
+static const struct attribute_group *memory_root_attr_groups[] = {
+        &memory_root_attr_group,
+        NULL,
+};
 ```
 
 
