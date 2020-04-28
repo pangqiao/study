@@ -55,6 +55,10 @@ static struct bus_type memory_subsys = {
 };
 ```
 
+```cpp
+reset_init() -> 
+```
+
 
 
 ## remove
