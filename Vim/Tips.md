@@ -1,14 +1,31 @@
 
-```
-1. 跳转相关
-2. 文件相关
-3. 编辑相关
-    3.1 缩进
-    3.2. 空格和tab
-4. 显示相关
-    4. 高亮
-5. 文件目录查找字符串
-```
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+  - [1. 跳转相关](#1-跳转相关)
+  - [2. 文件相关](#2-文件相关)
+  - [3. 编辑相关](#3-编辑相关)
+    - [3.1 缩进](#31-缩进)
+      - [normal 模式下](#normal-模式下)
+      - [Visual 模式下](#visual-模式下)
+      - [INSERT 模式下](#insert-模式下)
+      - [自动缩进](#自动缩进)
+    - [3.2. 空格和tab](#32-空格和tab)
+      - [3.2..1 默认设置tab为4个空格](#321-默认设置tab为4个空格)
+      - [3.2.2 修改已经保存的文件](#322-修改已经保存的文件)
+      - [tab替换为空格](#tab替换为空格)
+      - [空格替换为TAB](#空格替换为tab)
+  - [4. 显示相关](#4-显示相关)
+    - [4.1 高亮显示](#41-高亮显示)
+      - [方法一：单高亮](#方法一单高亮)
+      - [方法二：多高亮](#方法二多高亮)
+      - [方法三：插件mark.vim](#方法三插件markvim)
+  - [5. 文件目录查找字符串](#5-文件目录查找字符串)
+- [乱码](#乱码)
+
+<!-- /code_chunk_output -->
+
 
 ## 1. 跳转相关
 
@@ -222,4 +239,21 @@ copen                              打开quickfix
 cw                                 打开quickfix
 cclose                             关闭qucikfix
 help vimgrep                       查看vimgrep帮助
+```
+
+# 乱码
+
+```
+set encoding=utf-8
+set fileencodings=utf-8,chinese,latin-1
+if has("win32")
+set fileencoding=chinese
+else
+set fileencoding=utf-8
+endif
+"解决菜单乱码
+source $VIMRUNTIME/delmenu.vim
+source $VIMRUNTIME/menu.vim
+"解决consle输出乱码
+language messages zh_CN.utf-8
 ```
