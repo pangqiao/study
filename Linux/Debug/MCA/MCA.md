@@ -6,6 +6,7 @@
 - [1 概述](#1-概述)
 - [Machine Check MSR](#machine-check-msr)
   - [IA32_MCG_CAP MSR](#ia32_mcg_cap-msr)
+  - [IA32_MCG_STATUS MSR](#ia32_mcg_status-msr)
 - [参考](#参考)
 
 <!-- /code_chunk_output -->
@@ -40,18 +41,38 @@ MCA通过若干Bank的MSR寄存器来表示各种类型的MCE。
 
 这个MSR描述了当前CPU处理MCA的能力，具体每个位的作用如下所示：
 
+![2020-04-29-10-13-18.png](./images/2020-04-29-10-13-18.png)
 
+* BIT0-7：表示的是CPU支持的Bank的个数；
 
+* BIT8：1表示IA32_MCG_CTL有效，如果是0的话表示无效，读取该IA32_MCG_CTL这个MSR可能发生Exception（至少在UEFI下是这样）；
 
+* BIT9：1表示IA32_MCG_EXT_CTL有效，反之无效，这个与BIT8的作用类似；
 
-`IA32_MCG_STATUS MSR`描述了发生Machine Check exception后处理器的当前状态.
+* BIT10：1表示支持CMCI，但是CMCI是否能用还需要通过IA32_MCi_CTL2这个MSR的BIT30来使能；
+
+* BIT11：1表示IA32_MCi_STATUS这个MSR的BIT56-55是保留的，BIT54-53是用来上报Threshold-based Error状态的；
+
+* BIT16-23：表示存在的Extended Machine Check State寄存器的个数；
+
+* BIT24：1表示CPU支持Software Error Recovery；
+
+* BIT25：1表示CPU支持增强版的MCA；
+
+* BIT26：1表示支持更多的错误记录（需要UEFI、ACPI的支持）；
+
+* BIT27：1表示支持Local Machine Check Exception；
+
+## IA32_MCG_STATUS MSR
+
+该MSR记录了**MCE发生时CPU的状态**，主要的BIT位介绍如下：
 
 ![](./images/2019-04-28-11-53-49.png)
 
 - bit 0: 设置后说明在生成机器检查异常时，可以在堆栈上按下的指令指针指向的指令处可靠地重新启动程序执行。 清零时，程序无法在推送的指令指针处可靠地重新启动。
 - bit 1: 设置后说明生成机器检查异常时指令指针指向的指令与错误直接关联。 清除此标志时，指向的指令可能与错误无关。
 - bit 2: 设置后说明生成机器检查异常。 软件可以设置或清除此标志。 设置MCIP时发生第二次机器检查事件将导致处理器进入关闭状态。 
-- bit 3: 设置后说明生成本地machine\-check exception. 这表示当前的机器检查事件仅传递给此逻辑处理器。
+- bit 3: 设置后说明生成本地`machine-check exception`. 这表示当前的机器检查事件仅传递给此逻辑处理器。
 
 ![](./images/2019-04-28-12-14-19.png)
 
