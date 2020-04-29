@@ -3,37 +3,37 @@
 
 <!-- code_chunk_output -->
 
-* [1 概述](#1-概述)
-	* [1.1 不可纠正的MCE(uncorrected machine\-check error)](#11-不可纠正的mceuncorrected-machine-check-error)
-	* [1.2 可纠正的MCE(corrected machine\-check error)](#12-可纠正的mcecorrected-machine-check-error)
-	* [1.3 额外功能](#13-额外功能)
-* [2 Machine Check MSR](#2-machine-check-msr)
-	* [2.1 Machine\-Check Global Control MSRs](#21-machine-check-global-control-msrs)
-		* [2.1.1 IA32\_MCG\_CAP MSR](#211-ia32_mcg_cap-msr)
-		* [2.1.2 IA32\_MCG\_STATUS MSR](#212-ia32_mcg_status-msr)
-		* [2.1.3 IA32\_MCG\_CTL MSR](#213-ia32_mcg_ctl-msr)
-		* [2.1.4 IA32\_MCG\_EXT\_CTL MSR](#214-ia32_mcg_ext_ctl-msr)
-		* [2.1.5 Enabling Local Machine Check](#215-enabling-local-machine-check)
-	* [2.2 错误报告寄存器组(Error\-Reporting Register Banks)](#22-错误报告寄存器组error-reporting-register-banks)
-		* [2.2.1 IA32\_MCi\_CTL MSRs](#221-ia32_mci_ctl-msrs)
-		* [2.2.2 IA32\_MCi\_STATUS MSRS](#222-ia32_mci_status-msrs)
-		* [2.2.3 IA32\_MCi\_ADDR MSRs](#223-ia32_mci_addr-msrs)
-		* [2.2.4 IA32\_MCi\_MISC MSRs](#224-ia32_mci_misc-msrs)
-		* [2.2.5 IA32\_MCi\_CTL2 MSRs](#225-ia32_mci_ctl2-msrs)
-* [3 CMCI](#3-cmci)
-* [4 MCA的初始化](#4-mca的初始化)
-* [5 MSR的读写](#5-msr的读写)
-* [参考](#参考)
+- [概述](#概述)
+  - [不可纠正的MCE(uncorrected machine-check error)](#不可纠正的mceuncorrected-machine-check-error)
+  - [可纠正的MCE(corrected machine-check error)](#可纠正的mcecorrected-machine-check-error)
+  - [1.3 额外功能](#13-额外功能)
+- [2 Machine Check MSR](#2-machine-check-msr)
+  - [2.1 Machine\-Check Global Control MSRs](#21-machine-check-global-control-msrs)
+    - [2.1.1 IA32\_MCG\_CAP MSR](#211-ia32_mcg_cap-msr)
+    - [2.1.2 IA32\_MCG\_STATUS MSR](#212-ia32_mcg_status-msr)
+    - [2.1.3 IA32\_MCG\_CTL MSR](#213-ia32_mcg_ctl-msr)
+    - [2.1.4 IA32\_MCG\_EXT\_CTL MSR](#214-ia32_mcg_ext_ctl-msr)
+    - [2.1.5 Enabling Local Machine Check](#215-enabling-local-machine-check)
+  - [2.2 错误报告寄存器组(Error\-Reporting Register Banks)](#22-错误报告寄存器组error-reporting-register-banks)
+    - [2.2.1 IA32\_MCi\_CTL MSRs](#221-ia32_mci_ctl-msrs)
+    - [2.2.2 IA32\_MCi\_STATUS MSRS](#222-ia32_mci_status-msrs)
+    - [2.2.3 IA32\_MCi\_ADDR MSRs](#223-ia32_mci_addr-msrs)
+    - [2.2.4 IA32\_MCi\_MISC MSRs](#224-ia32_mci_misc-msrs)
+    - [2.2.5 IA32\_MCi\_CTL2 MSRs](#225-ia32_mci_ctl2-msrs)
+- [3 CMCI](#3-cmci)
+- [4 MCA的初始化](#4-mca的初始化)
+- [5 MSR的读写](#5-msr的读写)
+- [参考](#参考)
 
 <!-- /code_chunk_output -->
 
-# 1 概述
+# 概述
 
 Intel从奔腾4开始的CPU中增加了一种机制，称为MCA——Machine Check Architecture，它用来**检测硬件**（这里的Machine表示的就是硬件）错误，比如系统总线错误、ECC错误、奇偶校验错误、缓存错误、TLB错误等等。不仅硬件故障会引起MCE，不恰当的BIOS配置、firmware bug、软件bug也有可能引起MCE。
 
 这套系统通过**一定数量的MSR**（Model Specific Register）来实现，这些MSR分为两个部分，一部分用来**进行设置**，另一部分用来**描述发生的硬件错误**。
 
-## 1.1 不可纠正的MCE(uncorrected machine\-check error)
+## 不可纠正的MCE(uncorrected machine-check error)
 
 当CPU检测到**不可纠正的MCE（Machine Check Error**）时，就会触发\#**MC**（**Machine Check Exception**, 中断号是十进制18），通常**软件**会**注册相关的函数**来处理\#MC，在这个函数中会通过读取MSR来收集MCE的错误信息，但是不被允许重启处理器。
 
@@ -43,7 +43,7 @@ Intel从奔腾4开始的CPU中增加了一种机制，称为MCA——Machine Che
 
 ![](./images/2019-04-28-15-02-46.png)
 
-## 1.2 可纠正的MCE(corrected machine\-check error)
+## 可纠正的MCE(corrected machine-check error)
 
 从CPUID的DisplayFamily\_DisplayModel为06H\_1AH开始, CPU可以报告可纠正的机器检查错误信息, 并为软件提供可编程中断来响应MC错误, 称为可纠正机器检查错误中断(CMCI). 
 

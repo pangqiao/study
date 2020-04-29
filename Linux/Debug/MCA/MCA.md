@@ -116,6 +116,29 @@ MCA通过若干Bank的MSR寄存器来表示各种类型的MCE。
 
 ![](./images/2019-04-28-12-14-19.png)
 
+注意只有当VAL这个BIT位（BIT63）为1时才表示发生了对应这个Bank的MCE。当MCE发生了，软件需要给这个VAL位写0来清零（如果有可能的话，因为对于不可纠正的MCE可能软件会 来不及写），不能往这位写1，会出现Exception。
+
+BIT0-15，BIT16-31：这个两个部分都表示MCE的错误类型，前者是通用的，后者是跟CPU有关的；
+
+BIT58：1表示IA32_MCi_ADDR这个MSR是有效的，反之无效；
+
+BIT59：1表示IA32_MCi_MISC这个MSR是有效的，反之无效；这两个BIT是因为不同MCE错误并不是都需要ADDR和MSIC这样的MSR；
+
+BIT60：这个位于IA32_MCi_CTL中的位是对应的，那边使能了，这里就是1；
+
+BIT61：表示MCE是不可纠正的；
+
+BIT62：表示发生了二次的MCE，这个时候到底这个Bank表示的是哪一次的MCE信息，需要根据一定的规则来确定：
+
+![2020-04-29-10-33-12.png](./images/2020-04-29-10-33-12.png)
+
+这个可以先不关注。
+
+另外还有一些寄存器在这里不介绍，具体还是看手册。
+
+IA32_MCi_ADDR MSRs
+这个MSR并没有特别好介绍的：
+
 bd80000000100134的二进制如下:
 
 ```
@@ -232,4 +255,4 @@ CPUID Vendor Intel Family 6 Model 85
 
 # 参考
 
-- x86架构——MCA: https://blog.csdn.net/jiangwei0512/article/details/62456226
+- x86架构——MCA: https://blog.csdn.net/jiangwei0512/article/details/62456226 (未完)
