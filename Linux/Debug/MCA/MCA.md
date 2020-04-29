@@ -5,6 +5,7 @@
 
 - [1 概述](#1-概述)
 - [Machine Check MSR](#machine-check-msr)
+  - [IA32_MCG_CAP MSR](#ia32_mcg_cap-msr)
 - [参考](#参考)
 
 <!-- /code_chunk_output -->
@@ -35,11 +36,15 @@ MCA通过若干Bank的MSR寄存器来表示各种类型的MCE。
 
 下面简单介绍一下这些寄存器。
 
+## IA32_MCG_CAP MSR
+
+这个MSR描述了当前CPU处理MCA的能力，具体每个位的作用如下所示：
 
 
 
 
-IA32\_MCG\_STATUS MSR描述了发生Machine Check exception后处理器的当前状态.
+
+`IA32_MCG_STATUS MSR`描述了发生Machine Check exception后处理器的当前状态.
 
 ![](./images/2019-04-28-11-53-49.png)
 
@@ -64,8 +69,8 @@ Bit 59: MISCV. 表示MCi_MISC寄存器中含有对该错误的补充信息
 Bit 58: ADDRV. 表示MCi_ADDR寄存器含有发生错误的内存地址
 Bit 56: 发出未校正的可恢复（UCR）错误信号
 Bit 55: UCR错误所需的恢复操作
-Bit[16: 31]: 特定CPU型号相关的扩展错误码. 本例中是0x0010.
-Bit[0: 15]: MCE错误码, 该错误码是所有CPU型号通用的，分为两类：simple error codes（简单错误码） 和 compound error codes（复合错误码），本例中0x0134表示Memory errors in the cache hierarchy(缓存层次结构中的内存错误)：
+`Bit[16: 31]`: 特定CPU型号相关的扩展错误码. 本例中是0x0010.
+`Bit[0: 15]`: MCE错误码, 该错误码是所有CPU型号通用的，分为两类：simple error codes（简单错误码） 和 compound error codes（复合错误码），本例中0x0134表示Memory errors in the cache hierarchy(缓存层次结构中的内存错误)：
 
 - Simple Error Codes:
 
