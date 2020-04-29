@@ -7,6 +7,10 @@
 - [Machine Check MSR](#machine-check-msr)
   - [IA32_MCG_CAP MSR](#ia32_mcg_cap-msr)
   - [IA32_MCG_STATUS MSR](#ia32_mcg_status-msr)
+  - [IA32_MCG_CTL MSR](#ia32_mcg_ctl-msr)
+  - [IA32_MCG_EXT_CTL MSR](#ia32_mcg_ext_ctl-msr)
+  - [IA32_MCi_CTL MSRs](#ia32_mci_ctl-msrs)
+  - [IA32_MCi_STATUS MSRS](#ia32_mci_status-msrs)
 - [参考](#参考)
 
 <!-- /code_chunk_output -->
@@ -69,10 +73,46 @@ MCA通过若干Bank的MSR寄存器来表示各种类型的MCE。
 
 ![](./images/2019-04-28-11-53-49.png)
 
-- bit 0: 设置后说明在生成机器检查异常时，可以在堆栈上按下的指令指针指向的指令处可靠地重新启动程序执行。 清零时，程序无法在推送的指令指针处可靠地重新启动。
+- 这里的IP指的是Instruction Pointer，指向当前的CPU指令；
+
+- EIPV为1时表示当前的指令与导致MCE的原因相关；
+
+- RIPV为1表示当前CPU从当前指令继续执行并不会有什么问题；
+
+- bit 0: 设置后说明在生成机器检查异常时，可以在堆栈上按下的指令指针指向的指令处可靠地**重新启动程序执行**。 清零时，程序无法在推送的指令指针处可靠地重新启动。
 - bit 1: 设置后说明生成机器检查异常时指令指针指向的指令与错误直接关联。 清除此标志时，指向的指令可能与错误无关。
 - bit 2: 设置后说明生成机器检查异常。 软件可以设置或清除此标志。 设置MCIP时发生第二次机器检查事件将导致处理器进入关闭状态。 
 - bit 3: 设置后说明生成本地`machine-check exception`. 这表示当前的机器检查事件仅传递给此逻辑处理器。
+
+## IA32_MCG_CTL MSR
+
+这个寄存器的存在依赖于`IA32_MCG_CAP`这个MSR的`BIT8`。
+
+这个寄存器主要用来Disable（写1）或者Enable（写全0）**MCA功能**。
+
+## IA32_MCG_EXT_CTL MSR
+
+这个寄存器同样依赖于IA32_MCA_CAP这个MSR，这次依赖的是BIT9。该MSR的BIT位说明如下图所示：
+
+![2020-04-29-10-31-13.png](./images/2020-04-29-10-31-13.png)
+
+目前有就BIT0有用，用来Disable（写1）或者Enable（写0）LMCE，这个LMCE的功能就是使硬件能够将某些MCE发送给单个的逻辑处理器，为什么要这样做目前还不是很 清楚。
+
+以上都是全局的MSR，下面介绍**每个Bank对应的MSR**，
+
+这些寄存器的第一个是IA32_MC0_CTL，它的地址一般都是400H。之后接着的是IA32_MC0_STATUS，IA32_MC0_ADDR，IA32_MC0_MISC，但是在之后并不是IA32_MC0_CTL2，而是IA32_MC1_CTL；对于IA32_MCi_CTL2来说，它的地址跟上面的这些不在一起，第一个IA32_MC0_CTL2是在280H，之后是IA32_MC1_CTL2在281H，以此类推。
+
+## IA32_MCi_CTL MSRs
+
+每个Bank的CTL的作用是用来控制在发生哪些MCA的时候来触发#MC：
+
+![2020-04-29-10-32-01.png](./images/2020-04-29-10-32-01.png)
+
+这里的64个BIT位，设置某个BIT位就会使对应BIT位的MCA类型在发生时触发#MC。
+
+## IA32_MCi_STATUS MSRS
+
+这类MSR的作用就是显示MCE信息：
 
 ![](./images/2019-04-28-12-14-19.png)
 
