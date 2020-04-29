@@ -6,10 +6,10 @@
 - [概述](#概述)
   - [不可纠正的MCE(uncorrected machine-check error)](#不可纠正的mceuncorrected-machine-check-error)
   - [可纠正的MCE(corrected machine-check error)](#可纠正的mcecorrected-machine-check-error)
-  - [1.3 额外功能](#13-额外功能)
-- [2 Machine Check MSR](#2-machine-check-msr)
-  - [2.1 Machine\-Check Global Control MSRs](#21-machine-check-global-control-msrs)
-    - [2.1.1 IA32\_MCG\_CAP MSR](#211-ia32_mcg_cap-msr)
+  - [额外功能](#额外功能)
+- [Machine Check MSR](#machine-check-msr)
+  - [Machine-Check Global Control MSRs](#machine-check-global-control-msrs)
+    - [IA32_MCG_CAP MSR](#ia32_mcg_cap-msr)
     - [2.1.2 IA32\_MCG\_STATUS MSR](#212-ia32_mcg_status-msr)
     - [2.1.3 IA32\_MCG\_CTL MSR](#213-ia32_mcg_ctl-msr)
     - [2.1.4 IA32\_MCG\_EXT\_CTL MSR](#214-ia32_mcg_ext_ctl-msr)
@@ -35,9 +35,11 @@ Intel从奔腾4开始的CPU中增加了一种机制，称为MCA——Machine Che
 
 ## 不可纠正的MCE(uncorrected machine-check error)
 
-当CPU检测到**不可纠正的MCE（Machine Check Error**）时，就会触发\#**MC**（**Machine Check Exception**, 中断号是十进制18），通常**软件**会**注册相关的函数**来处理\#MC，在这个函数中会通过读取MSR来收集MCE的错误信息，但是不被允许重启处理器。
+当CPU检测到**不可纠正的MCE（Machine Check Error**）时，就会触发`#MC`（**Machine Check Exception**, 中断号是十进制18），通常**软件**会**注册相关的函数**来处理\#MC，在这个函数中会通过读取MSR来收集MCE的错误信息，但是**不被允许重启处理器**。
 
-当然由于发生的**MCE**可能是**非常致命**的，**CPU直接重启**了，没有办法完成MCE处理函数；甚至有可能在MCE处理函数中又触发了不可纠正的MCE，也会导致系统直接重启。
+- 当然由于发生的**MCE**可能是**非常致命**的，**CPU直接重启**了，**没有办法完成MCE处理函数**；
+
+- 甚至有可能在**MCE处理函数**中又触发了**不可纠正的MCE**，也会导致**系统直接重启**。
 
 发现硬件错误时触发的异常(exception)，中断号是18，异常的类型是abort：
 
@@ -45,19 +47,21 @@ Intel从奔腾4开始的CPU中增加了一种机制，称为MCA——Machine Che
 
 ## 可纠正的MCE(corrected machine-check error)
 
-从CPUID的DisplayFamily\_DisplayModel为06H\_1AH开始, CPU可以报告可纠正的机器检查错误信息, 并为软件提供可编程中断来响应MC错误, 称为可纠正机器检查错误中断(CMCI). 
+从CPUID的`DisplayFamily_DisplayModel`为`06H_1AH`开始, CPU可以报告可纠正的机器检查错误信息, 并为软件提供可编程中断来响应MC错误, 称为可纠正机器检查错误中断(CMCI). 
 
 CPU检测到**可纠正的MCE**，当可纠正的MCE数量**超过一定的阈值**时，会触发**CMCI（Corrected Machine Check Error Interrupt**），此时软件可以捕捉到该中断并进行相应的处理。
 
 CMCI是在**MCA之后才加入**的，算是对MCA的一个增强，在此之前**软件只能通过轮询可纠正MCE相关的MSR**才能实现相关的操作。
 
-Corrected machine-check error interrupt (CMCI) 是MCA的增强特性。在原来的芯片里面，都是使用一种叫做threshold-based error reporting的机制来处理corrected error. 但是threshold-based error reporting需要系统软件周期性的轮询检测硬件的corrected MC errors，造成CPU的浪费。 CMCI 提供了一种机制，当corrected error发生侧次数到达阀值的时候，就会发送一个信号给本地的CPU来通知系统软件。当然，系统软件可以通过IA32\_MCi\_CTL2 MSRs来控制该特性的开关
+Corrected machine-check error interrupt (CMCI) 是MCA的增强特性。在原来的芯片里面，都是使用一种叫做threshold-based error reporting的机制来处理corrected error. 但是threshold-based error reporting需要系统软件周期性的轮询检测硬件的corrected MC errors，造成CPU的浪费。 CMCI 提供了一种机制，当corrected error发生侧次数**到达阀值**的时候，就会**发送一个信号给本地的CPU**来通知系统软件。
 
-## 1.3 额外功能
+当然，系统软件可以通过`IA32_MCi_CTL2 MSRs`来控制该特性的开关
+
+## 额外功能
 
 支持**机器检查架构**和**CMCI**的**英特尔64处理器**还可以支持**额外的增强功能**，即支持从**某些不可纠正**的**可恢复机器检查错误**中进行**软件恢复**。
 
-# 2 Machine Check MSR
+# Machine Check MSR
 
 ![](./images/2019-04-28-14-30-05.png)
 
@@ -71,11 +75,11 @@ MCA通过若干Bank的MSR寄存器来表示各种类型的MCE。
 
 下面简单介绍一下这些寄存器。
 
-## 2.1 Machine\-Check Global Control MSRs
+## Machine-Check Global Control MSRs
 
-机器检查全局控制MSR包括IA32\_MCG\_CAP，IA32\_MCG\_STATUS，以及可选的IA32\_MCG\_CTL和IA32\_MCG\_EXT\_CTL。
+机器检查**全局控制MSR**包括`IA32_MCG_CAP`，`IA32_MCG_STATUS`，以及可选的`IA32_MCG_CTL`和`IA32_MCG_EXT_CTL`。
 
-### 2.1.1 IA32\_MCG\_CAP MSR
+### IA32_MCG_CAP MSR
 
 这个MSR描述了**当前CPU处理MCA的能力**，机器检查体系结构的信息, 具体每个位的作用如下所示：
 
