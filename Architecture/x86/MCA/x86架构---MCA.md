@@ -3,37 +3,37 @@
 
 <!-- code_chunk_output -->
 
-- [概述](#概述)
-  - [不可纠正的MCE(uncorrected machine-check error)](#不可纠正的mceuncorrected-machine-check-error)
-  - [可纠正的MCE(corrected machine-check error)](#可纠正的mcecorrected-machine-check-error)
-  - [额外功能](#额外功能)
-- [Machine Check MSR](#machine-check-msr)
-  - [Machine-Check Global Control MSRs](#machine-check-global-control-msrs)
-    - [IA32_MCG_CAP MSR](#ia32_mcg_cap-msr)
-    - [2.1.2 IA32\_MCG\_STATUS MSR](#212-ia32_mcg_status-msr)
-    - [2.1.3 IA32\_MCG\_CTL MSR](#213-ia32_mcg_ctl-msr)
-    - [2.1.4 IA32\_MCG\_EXT\_CTL MSR](#214-ia32_mcg_ext_ctl-msr)
-    - [2.1.5 Enabling Local Machine Check](#215-enabling-local-machine-check)
-  - [2.2 错误报告寄存器组(Error\-Reporting Register Banks)](#22-错误报告寄存器组error-reporting-register-banks)
-    - [2.2.1 IA32\_MCi\_CTL MSRs](#221-ia32_mci_ctl-msrs)
-    - [2.2.2 IA32\_MCi\_STATUS MSRS](#222-ia32_mci_status-msrs)
-    - [2.2.3 IA32\_MCi\_ADDR MSRs](#223-ia32_mci_addr-msrs)
-    - [2.2.4 IA32\_MCi\_MISC MSRs](#224-ia32_mci_misc-msrs)
-    - [2.2.5 IA32\_MCi\_CTL2 MSRs](#225-ia32_mci_ctl2-msrs)
-- [3 CMCI](#3-cmci)
-- [4 MCA的初始化](#4-mca的初始化)
-- [5 MSR的读写](#5-msr的读写)
-- [参考](#参考)
+- [1. 概述](#1-概述)
+  - [1.1. 不可纠正的MCE(uncorrected machine-check error)](#11-不可纠正的mceuncorrected-machine-check-error)
+  - [1.2. 可纠正的MCE(corrected machine-check error)](#12-可纠正的mcecorrected-machine-check-error)
+  - [1.3. 额外功能](#13-额外功能)
+- [2. Machine Check MSR](#2-machine-check-msr)
+  - [2.1. Machine-Check Global Control MSRs](#21-machine-check-global-control-msrs)
+    - [2.1.1. IA32_MCG_CAP MSR](#211-ia32_mcg_cap-msr)
+    - [2.1.2. IA32_MCG_STATUS MSR](#212-ia32_mcg_status-msr)
+    - [2.1.3. IA32_MCG_CTL MSR](#213-ia32_mcg_ctl-msr)
+    - [2.1.4. IA32_MCG_EXT_CTL MSR](#214-ia32_mcg_ext_ctl-msr)
+    - [2.1.5. Enabling Local Machine Check](#215-enabling-local-machine-check)
+  - [2.2. 错误报告寄存器组(Error-Reporting Register Banks)](#22-错误报告寄存器组error-reporting-register-banks)
+    - [2.2.1. IA32_MCi_CTL MSRs](#221-ia32_mci_ctl-msrs)
+    - [2.2.2. IA32_MCi_STATUS MSRS](#222-ia32_mci_status-msrs)
+    - [2.2.3. IA32_MCi_ADDR MSRs](#223-ia32_mci_addr-msrs)
+    - [2.2.4. IA32_MCi_MISC MSRs](#224-ia32_mci_misc-msrs)
+    - [2.2.5. IA32_MCi_CTL2 MSRs](#225-ia32_mci_ctl2-msrs)
+- [3. CMCI](#3-cmci)
+- [4. MCA的初始化](#4-mca的初始化)
+- [5. MSR的读写](#5-msr的读写)
+- [6. 参考](#6-参考)
 
 <!-- /code_chunk_output -->
 
-# 概述
+# 1. 概述
 
 Intel从奔腾4开始的CPU中增加了一种机制，称为MCA——Machine Check Architecture，它用来**检测硬件**（这里的Machine表示的就是硬件）错误，比如系统总线错误、ECC错误、奇偶校验错误、缓存错误、TLB错误等等。不仅硬件故障会引起MCE，不恰当的BIOS配置、firmware bug、软件bug也有可能引起MCE。
 
 这套系统通过**一定数量的MSR**（Model Specific Register）来实现，这些MSR分为两个部分，一部分用来**进行设置**，另一部分用来**描述发生的硬件错误**。
 
-## 不可纠正的MCE(uncorrected machine-check error)
+## 1.1. 不可纠正的MCE(uncorrected machine-check error)
 
 当CPU检测到**不可纠正的MCE（Machine Check Error**）时，就会触发`#MC`（**Machine Check Exception**, 中断号是十进制18），通常**软件**会**注册相关的函数**来处理\#MC，在这个函数中会通过读取MSR来收集MCE的错误信息，但是**不被允许重启处理器**。
 
@@ -45,7 +45,7 @@ Intel从奔腾4开始的CPU中增加了一种机制，称为MCA——Machine Che
 
 ![](./images/2019-04-28-15-02-46.png)
 
-## 可纠正的MCE(corrected machine-check error)
+## 1.2. 可纠正的MCE(corrected machine-check error)
 
 从CPUID的`DisplayFamily_DisplayModel`为`06H_1AH`开始, CPU可以报告可纠正的机器检查错误信息, 并为软件提供可编程中断来响应MC错误, 称为可纠正机器检查错误中断(CMCI). 
 
@@ -57,11 +57,11 @@ Corrected machine-check error interrupt (CMCI) 是MCA的增强特性。在原来
 
 当然，系统软件可以通过`IA32_MCi_CTL2 MSRs`来控制该特性的开关
 
-## 额外功能
+## 1.3. 额外功能
 
 支持**机器检查架构**和**CMCI**的**英特尔64处理器**还可以支持**额外的增强功能**，即支持从**某些不可纠正**的**可恢复机器检查错误**中进行**软件恢复**。
 
-# Machine Check MSR
+# 2. Machine Check MSR
 
 ![](./images/2019-04-28-14-30-05.png)
 
@@ -75,11 +75,11 @@ MCA通过若干Bank的MSR寄存器来表示各种类型的MCE。
 
 下面简单介绍一下这些寄存器。
 
-## Machine-Check Global Control MSRs
+## 2.1. Machine-Check Global Control MSRs
 
 机器检查**全局控制MSR**包括`IA32_MCG_CAP`，`IA32_MCG_STATUS`，以及可选的`IA32_MCG_CTL`和`IA32_MCG_EXT_CTL`。
 
-### IA32_MCG_CAP MSR
+### 2.1.1. IA32_MCG_CAP MSR
 
 这个MSR描述了**当前CPU处理MCA的能力**，机器检查体系结构的信息, 具体每个位的作用如下所示：
 
@@ -105,7 +105,7 @@ BIT26：1表示支持更多的错误记录（需要UEFI、ACPI的支持）；
 
 BIT27：1表示支持Local Machine Check Exception；
 
-### 2.1.2 IA32\_MCG\_STATUS MSR
+### 2.1.2. IA32_MCG_STATUS MSR
 
 该MSR记录了**MCE发生时CPU的状态**，主要的BIT位介绍如下：
 
@@ -116,13 +116,13 @@ BIT27：1表示支持Local Machine Check Exception；
 - Bit 2: Machine Check In Progress. 表示 machine check 正在进行中。
 - bit 3: 设置后说明生成本地machine\-check exception. 这表示当前的机器检查事件仅传递给此逻辑处理器。
 
-### 2.1.3 IA32\_MCG\_CTL MSR
+### 2.1.3. IA32_MCG_CTL MSR
 
 这个寄存器的存在依赖于IA32_MCG_CAP这个MSR的BIT8。
 
 这个寄存器主要用来Disable（写1）或者Enable（写全0）**MCA功能**。
 
-### 2.1.4 IA32\_MCG\_EXT\_CTL MSR
+### 2.1.4. IA32_MCG_EXT_CTL MSR
 
 这个寄存器同样依赖于IA32\_MCA\_CAP这个MSR，这次依赖的是BIT9。
 
@@ -132,7 +132,7 @@ BIT27：1表示支持Local Machine Check Exception；
 
 目前有就BIT0有用，用来Disable（写1）或者Enable（写0）**LMCE**，这个LMCE的功能就是使**硬件**能够将**某些MCE**发送给**单个的逻辑处理器**。
 
-### 2.1.5 Enabling Local Machine Check
+### 2.1.5. Enabling Local Machine Check
 
 LMCE的预期用途需要平台软件和系统软件的正确配置。 平台软件可以通过设置IA32\_FEATURE\_CONTROL MSR（MSR地址3AH）中的位20（LMCE\_ON）来打开LMCE。
 
@@ -140,7 +140,7 @@ LMCE的预期用途需要平台软件和系统软件的正确配置。 平台软
 
 当系统软件**启用LMCE**时，**硬件**将确定**是否只能将特定错误**传递给**单个逻辑处理器**。 软件不应假设硬件可以选择作为LMCE提供的错误类型。
 
-## 2.2 错误报告寄存器组(Error\-Reporting Register Banks)
+## 2.2. 错误报告寄存器组(Error-Reporting Register Banks)
 
 以上都是全局的MSR.
 
@@ -152,7 +152,7 @@ LMCE的预期用途需要平台软件和系统软件的正确配置。 平台软
 
 之后接着的是IA32\_MC0\_STATUS，IA32\_MC0\_ADDR，IA32\_MC0\_MISC，但是在之后并不是IA32\_MC0\_CTL2，而是IA32\_MC1\_CTL；对于IA32\_MCi\_CTL2来说，它的地址跟上面的这些不在一起，第一个IA32\_MC0\_CTL2是在280H，之后是IA32\_MC1\_CTL2在281H，以此类推。
 
-### 2.2.1 IA32\_MCi\_CTL MSRs
+### 2.2.1. IA32_MCi_CTL MSRs
 
 IA32\_MCi\_CTL MSR控制\#MC的信号，以发现由特定硬件单元（或硬件单元组）产生的错误。
 
@@ -162,7 +162,7 @@ IA32\_MCi\_CTL MSR控制\#MC的信号，以发现由特定硬件单元（或硬�
 
 这里的64个BIT位，设置某个BIT位就会使对应BIT位的**MCA类型在发生**时**触发\#MC**。
 
-### 2.2.2 IA32\_MCi\_STATUS MSRS
+### 2.2.2. IA32_MCi_STATUS MSRS
 
 这类MSR的作用就是显示MCE信息：
 
@@ -186,7 +186,7 @@ BIT62：表示发生了二次的MCE，这个时候到底这个Bank表示的是�
 
 其它寄存器不介绍了, 详细看手册
 
-### 2.2.3 IA32\_MCi\_ADDR MSRs
+### 2.2.3. IA32_MCi_ADDR MSRs
 
 ![](./images/2019-04-28-20-10-20.png)
 
@@ -196,7 +196,7 @@ BIT62：表示发生了二次的MCE，这个时候到底这个Bank表示的是�
 
 这个MSR也可以手动清零，写1会出错。
 
-### 2.2.4 IA32\_MCi\_MISC MSRs
+### 2.2.4. IA32_MCi_MISC MSRs
 
 这个寄存器的BIT位说明如下：
 
@@ -206,7 +206,7 @@ BIT62：表示发生了二次的MCE，这个时候到底这个Bank表示的是�
 
 ![](./images/2019-04-28-20-11-35.png)
 
-### 2.2.5 IA32\_MCi\_CTL2 MSRs
+### 2.2.5. IA32_MCi_CTL2 MSRs
 
 这个寄存器就是为CMCI使用的，BIT位说明如下：
 
@@ -226,7 +226,7 @@ BIT62：表示发生了二次的MCE，这个时候到底这个Bank表示的是�
 
 另外在Intel的开发者手册中有专门的一个章节解析MCE错误：《CHAPTER 16 INTERPRETING MACHINE-CHECK ERROR CODES》。
 
-# 3 CMCI
+# 3. CMCI
 
 前面以及提到，CMCI是后期加入到MCA的一种机制，它将**错误上报的阈值操作**从原始的**软件轮询**变成了**硬件中断触发**。
 
@@ -254,7 +254,7 @@ BIT17：Interrupt Mask，0表示接收中断，1表示屏蔽中断；
 
 关于CMCI的初始化和CMCI处理函数的实现，手册上有部分的介绍，不过没有什么源代码可以借鉴，这个不展开了。
 
-# 4 MCA的初始化
+# 4. MCA的初始化
 
 手册上有一个伪代码可供参考
 
@@ -312,7 +312,7 @@ THEN
 FI
 ```
 
-# 5 MSR的读写
+# 5. MSR的读写
 
 x86平台读写MSR有专门的指令，分别是rdmsr和wrmsr。下面是MSR读写的一个基本实现：
 
@@ -417,7 +417,7 @@ AsmWriteMsr64   PROC
 AsmWriteMsr64   ENDP
 ```
 
-# 参考
+# 6. 参考
 
 - x86架构——MCA: https://blog.csdn.net/jiangwei0512/article/details/62456226
 - Intel手册卷3第15章(CHAPTER 15 MACHINE-CHECK ARCHITECTURE)、16章(CHAPTER 16 INTERPRETING MACHINE-CHECK ERROR CODES)
