@@ -10,7 +10,6 @@
 
 # 1 概述
 
-
 IA32\_MCG\_STATUS MSR描述了发生Machine Check exception后处理器的当前状态.
 
 ![](./images/2019-04-28-11-53-49.png)
