@@ -21,6 +21,24 @@ Intel从奔腾4开始的CPU中增加了一种机制，称为MCA——Machine Che
 
 # Machine Check MSR
 
+MCA是通过一系列的MSR来实现，这里介绍下这些MSR寄存器，首先看下面的图：
+
+![2020-04-29-09-59-23.png](./images/2020-04-29-09-59-23.png)
+
+上图基本包含了MCA相关的所有MSR。
+
+它分为左右两个部分，左边的是全局的寄存器，右边表示的是多组寄存器。
+
+i表示的是各个组的Index。这里的组有一个称呼是Error Reporting Register Bank。
+
+MCA通过若干Bank的MSR寄存器来表示各种类型的MCE。
+
+下面简单介绍一下这些寄存器。
+
+
+
+
+
 IA32\_MCG\_STATUS MSR描述了发生Machine Check exception后处理器的当前状态.
 
 ![](./images/2019-04-28-11-53-49.png)
