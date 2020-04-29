@@ -3,8 +3,8 @@
 
 <!-- code_chunk_output -->
 
-- [1 Linux整体机制](#1-linux整体机制)
-  - [1.1 中断初始化](#11-中断初始化)
+- [Linux整体机制](#linux整体机制)
+  - [中断初始化](#中断初始化)
     - [1.1.1 中断处理接口interrupt数组](#111-中断处理接口interrupt数组)
   - [1.2 硬件中断号和软件中断号映射](#12-硬件中断号和软件中断号映射)
   - [1.3 注册中断](#13-注册中断)
@@ -22,7 +22,7 @@
 
 <!-- /code_chunk_output -->
 
-# 1 Linux整体机制
+# Linux整体机制
 
 中断在那个CPU上执行，取决于在**那个CPU上申请了vector**并**配置了对应的中断控制器(比如local APIC**)。如果想要**改变一个中断的执行CPU**，必须**重新申请vector并配置中断控制器**。一般通过**echo xxx > /proc/irq/xxx/affinity**来完成调整，同时irq\_balance一类软件可以用于完成中断的均衡。
 
@@ -40,12 +40,12 @@
 
 6、具体CPU architecture相关的模块会进行现场恢复。
 
-## 1.1 中断初始化
+## 中断初始化
 
 对X86 CPU，Linux内核使用全局idt\_table来表达当前的IDT，该变量定义在traps.c
 
-```c
-[arch/x86/kernel/traps.c]
+```cpp
+//[arch/x86/kernel/traps.c]
 gate_desc idt_table[NR_VECTORS] __page_aligned_bss;
 ```
 
@@ -65,7 +65,7 @@ gate_desc idt_table[NR_VECTORS] __page_aligned_bss;
 
 以上工作主要在以下函数中完成：
 
-```c
+```cpp
 start_kernel
     trap_init 
         使用set_intr_gate等接口初始化保留vector
