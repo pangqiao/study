@@ -1,6 +1,6 @@
 ;************************************************
 ;* vmcs.inc                                     *
-;* Copyright (c) 2009-2013 µËÖ¾                 *
+;* Copyright (c) 2009-2013 é‚“å¿—                 *
 ;* All rights reserved.                         *
 ;************************************************
 
@@ -18,20 +18,20 @@
 
 
 ;;
-;; ####### VMB(VM Manage Block£©½á¹¹ #######
+;; ####### VMB(VM Manage Blockï¼‰ç»“æ„ #######
 ;;
 
 struc VMB
-        .PhysicalBase           RESQ    1               ; VMCS region ÎïÀíµØÖ·
-        .Base                   RESQ    1               ; VMCS region ĞéÄâµØÖ·
-        .VsbBase                RESQ    1               ; VSB »ùÖ·
-        .VsbPhysicalBase        RESQ    1               ; VSB ÎïÀí»ùÖ·
-        .DomainBase             RESQ    1               ; domain ĞéÄâ»ùÖ·
-        .DomainPhysicalBase     RESQ    1               ; domain ÎïÀí»ùÖ·
-        .DomainPhysicalTop      RESQ    1               ; domain ÎïÀíµØÖ·¶¥²¿
+        .PhysicalBase           RESQ    1               ; VMCS region ç‰©ç†åœ°å€
+        .Base                   RESQ    1               ; VMCS region è™šæ‹Ÿåœ°å€
+        .VsbBase                RESQ    1               ; VSB åŸºå€
+        .VsbPhysicalBase        RESQ    1               ; VSB ç‰©ç†åŸºå€
+        .DomainBase             RESQ    1               ; domain è™šæ‹ŸåŸºå€
+        .DomainPhysicalBase     RESQ    1               ; domain ç‰©ç†åŸºå€
+        .DomainPhysicalTop      RESQ    1               ; domain ç‰©ç†åœ°å€é¡¶éƒ¨
 
         ;;
-        ;; Guest ×´Ì¬
+        ;; Guest çŠ¶æ€
         ;;
         .GuestStatus            RESD    1
 
@@ -39,31 +39,31 @@ struc VMB
         ALIGNB 8
 
         ;;
-        ;; guest »·¾³Èë¿Úµã
+        ;; guest ç¯å¢ƒå…¥å£ç‚¹
         ;;
         .GuestEntry             RESQ    1
-        .GuestStack             RESQ    1               ; guest Ê¹ÓÃµÄÕ»
+        .GuestStack             RESQ    1               ; guest ä½¿ç”¨çš„æ ˆ
 
         ;;
-        ;; VMM Èë¿Ú
+        ;; VMM å…¥å£
         ;;
         .HostEntry              RESQ    1
         .HostStack              RESQ    1
 
         ;;
-        ;; Ã¿¸ö VM µÄ EP4TA
+        ;; æ¯ä¸ª VM çš„ EP4TA
         ;;
-        .Ep4taBase              RESQ    1               ; Ö¸Ïò EPT PML4T ĞéÄâµØÖ·
-        .Ep4taPhysicalBase      RESQ    1               ; Ö¸Ïò EPT PML4T ÎïÀíµØÖ·
+        .Ep4taBase              RESQ    1               ; æŒ‡å‘ EPT PML4T è™šæ‹Ÿåœ°å€
+        .Ep4taPhysicalBase      RESQ    1               ; æŒ‡å‘ EPT PML4T ç‰©ç†åœ°å€
 
         
         ;;
-        ;; Ã¿¸ö VM ÓĞ×Ô¼ºµÄ VMX-preemption timer value Öµ
+        ;; æ¯ä¸ª VM æœ‰è‡ªå·±çš„ VMX-preemption timer value å€¼
         ;;
         .VmxTimerValue          RESD    1
 
         ;;
-        ;; Ã¿¸ö logical processor µÄÃ¿¸öVMCSµÄ VPID
+        ;; æ¯ä¸ª logical processor çš„æ¯ä¸ªVMCSçš„ VPID
         ;;
         .Vpid                   RESW    1
         
@@ -74,7 +74,7 @@ struc VMB
         .GuestFlags             RESD    1
 
         ;;
-        ;; Ä³Ğ©Çé¿öÏÂ£¬´«¸ø VMM do_xxxº¯ÊıµÄ²ÎÊı£¡
+        ;; æŸäº›æƒ…å†µä¸‹ï¼Œä¼ ç»™ VMM do_xxxå‡½æ•°çš„å‚æ•°ï¼
         ;;
         .DoProcessParam         RESD    1
         .VmmDumpVmcsMask        RESQ    1
@@ -86,7 +86,7 @@ struc VMB
         .ApicAccessPhyAddress   RESQ    1
 
         ;;
-        ;; #### ÏÂÃæµÄÇøÓòĞèÒªÔÚ³õÊ¼»¯Ê±·ÖÅäÒ³Ãæ ####
+        ;; #### ä¸‹é¢çš„åŒºåŸŸéœ€è¦åœ¨åˆå§‹åŒ–æ—¶åˆ†é…é¡µé¢ ####
         ;; 1) IoBitmap A page
         ;; 2) IoBitmap B page
         ;; 3) Virtual-access page
@@ -134,26 +134,26 @@ struc VMB
         .VmExitMsrLoadPhyAddress        RESQ    1
 
         ;;
-        ;; IO ÖµÁĞ±í buffer£¬ÓÃÀ´¼ÇÂ¼ guest Ïò IO ¶ËĞ´ÈëµÄÖµ 
+        ;; IO å€¼åˆ—è¡¨ bufferï¼Œç”¨æ¥è®°å½• guest å‘ IO ç«¯å†™å…¥çš„å€¼ 
         ;;
         .IoVteBuffer                    RESQ    1
         .IoVteBufferPhyAddr             RESQ    1
 
         ;;
-        ;; MSR ÖµÁĞ±í buffer£¬ÓÃÀ´¼ÇÂ¼ guest Ïò MSR Ğ´µÄÖµ
+        ;; MSR å€¼åˆ—è¡¨ bufferï¼Œç”¨æ¥è®°å½• guest å‘ MSR å†™çš„å€¼
         ;;
         .MsrVteBuffer                   RESQ    1
         .MsrVteBufferPhyAddr            RESQ    1
 
         ;;
-        ;; EPT page-fault ´¦ÀíÀı³Ì±í buffer£¬ÓÃÀ´¼ÇÂ¼ GPA µÄÌØÊâ´¦Àí
+        ;; EPT page-fault å¤„ç†ä¾‹ç¨‹è¡¨ bufferï¼Œç”¨æ¥è®°å½• GPA çš„ç‰¹æ®Šå¤„ç†
         ;;
         .GpaHteBuffer                   RESQ    1
         .GpaHteBufferPhyAddr            RESQ    1
 
 
         ;;
-        ;; IO & MSR VTE ¹ÜÀí¼ÇÂ¼
+        ;; IO & MSR VTE ç®¡ç†è®°å½•
         ;;
         .IoVteCount                     RESD    1
         .MsrVteCount                    RESD    1
@@ -169,31 +169,31 @@ struc VMB
 
 
         ;;
-        ;; IO ²Ù×÷±êÖ¾Î»
+        ;; IO æ“ä½œæ ‡å¿—ä½
         ;;
         .IoOperationFlags               RESD    1
 
 
         ;;
-        ;; guest-GDT ¹ÜÀí¿é
+        ;; guest-GDT ç®¡ç†å—
         ;;       
         .GuestGmb                       RESB    GGMB_SIZE
 
         
         ALIGNB 4
         ;;
-        ;;guest-IDT ¹ÜÀí¿é
+        ;;guest-IDT ç®¡ç†å—
         ;;
         .GuestImb                       RESB    GIMB_SIZE
 
         ;;
-        ;; guest-TSS ¹ÜÀí¿é
+        ;; guest-TSS ç®¡ç†å—
         ;;
         .GuestTmb                       RESB    GTMB_SIZE
 
 
         ;;
-        ;; guest-status ¹ÜÀí¿é
+        ;; guest-status ç®¡ç†å—
         ;; 
         .GuestSmb                       RESB    GSMB_SIZE
 
@@ -221,14 +221,14 @@ endstruc
 
 
 ;;
-;; VSB£¨VM Storage Block£¬ĞéÄâ»ú´æ´¢¿é£©
+;; VSBï¼ˆVM Storage Blockï¼Œè™šæ‹Ÿæœºå­˜å‚¨å—ï¼‰
 ;;
 struc VSB
         .Base                   RESQ            1
         .PhysicalBase           RESQ            1
 
         ;;
-        ;; VM video buffer ¹ÜÀí¼ÇÂ¼
+        ;; VM video buffer ç®¡ç†è®°å½•
         ;;
         .VmVideoBufferHead      RESQ            1
         .VmVideoBufferPtr       RESQ            1
@@ -236,7 +236,7 @@ struc VSB
         .VmVideoBufferSize      RESD            1
         
         ;;
-        ;; VM keyboard buffer ¹ÜÀí¼ÇÂ¼
+        ;; VM keyboard buffer ç®¡ç†è®°å½•
         ;;        
         ALIGNB 8
         .VmKeyBufferHead        RESQ            1
@@ -245,7 +245,7 @@ struc VSB
         
 
         ;;
-        ;; guest µÄ context ĞÅÏ¢
+        ;; guest çš„ context ä¿¡æ¯
         ;;
         .Context:
         .Rax                    RESQ            1
@@ -268,7 +268,7 @@ struc VSB
         .Rflags                 RESQ            1 
 
         ;;
-        ;; FPU µ¥Ôª context
+        ;; FPU å•å…ƒ context
         ;;
         ALIGNB 16
         .FpuStateImage:
@@ -276,22 +276,22 @@ struc VSB
         .FpuStackImage:         RESB            80
 
         ;;
-        ;; XMM image ÇøÓò£¬Ê¹ÓÃÓÚ FXSAVE/FXRSTOR Ö¸Áî£¨512×Ö½Ú£©
+        ;; XMM image åŒºåŸŸï¼Œä½¿ç”¨äº FXSAVE/FXRSTOR æŒ‡ä»¤ï¼ˆ512å­—èŠ‚ï¼‰
         ;;
         ALIGNB 16
         .XMMStateImage:         RESB            512
 
 
         ;;
-        ;; VM keyboard buffer ÇøÓò£¬¹² 256 ¸ö×Ö½Ú£¬±£´æ°´¼üÉ¨ÃèÂë
+        ;; VM keyboard buffer åŒºåŸŸï¼Œå…± 256 ä¸ªå­—èŠ‚ï¼Œä¿å­˜æŒ‰é”®æ‰«æç 
         ;;
         .VmKeyBuffer            RESB            256
         .Reserve                RESB            4096 - $
 
 
         ;;
-        ;; VM video buffer ÇøÓò£¬´æ·Å´¦ÀíÆ÷µÄÆÁÄ»ĞÅÏ¢
-        ;; 4K£¬´æ·ÅÔ¼ 25 * 80 * 2 ĞÅÏ¢
+        ;; VM video buffer åŒºåŸŸï¼Œå­˜æ”¾å¤„ç†å™¨çš„å±å¹•ä¿¡æ¯
+        ;; 4Kï¼Œå­˜æ”¾çº¦ 25 * 80 * 2 ä¿¡æ¯
         ;;
         .VmVideoBuffer          RESB            (4096 * 2 - $)
 
@@ -303,7 +303,7 @@ endstruc
 
 
 ;;
-;; I/O ÖµÁĞ±íÏî½á¹¹
+;; I/O å€¼åˆ—è¡¨é¡¹ç»“æ„
 ;;
 struc IO_VTE
         .IoPort                         RESD    1
@@ -314,7 +314,7 @@ endstruc
 
 
 ;;
-;; MSR ÖµÁĞ±íÏî½á¹¹
+;; MSR å€¼åˆ—è¡¨é¡¹ç»“æ„
 ;;
 struc MSR_VTE
         .MsrIndex                       RESD    1
@@ -325,7 +325,7 @@ endstruc
 
 
 ;;
-;; GPA handle table entry ½á¹¹
+;; GPA handle table entry ç»“æ„
 ;;
 struc GPA_HTE
         .GuestPhysicalAddress           RESQ    1
@@ -336,7 +336,7 @@ endstruc
 
 
 ;;
-;; Íâ²¿ÖĞ¶Ï route tabel entry
+;; å¤–éƒ¨ä¸­æ–­ route tabel entry
 ;;
 struc EXTINT_RTE
         .ProcessorIndex                 RESD    1
@@ -421,7 +421,7 @@ endstruc
 
 
 ;;
-;; posted-interrupt ÃèÊö·û½á¹¹
+;; posted-interrupt æè¿°ç¬¦ç»“æ„
 ;;
 struc PI_DESC
         .Pir                            RESB    16
@@ -448,7 +448,7 @@ struc GUEST_STATE
         .Rflags                         RESQ            1
 
         ;;
-        ;; 16 Î» selector Öµ£¨CS, SS, DS, ES, FS, GS, LDTR ºÍ TR£©
+        ;; 16 ä½ selector å€¼ï¼ˆCS, SS, DS, ES, FS, GS, LDTR å’Œ TRï¼‰
         ;;
         .CsSelector                     RESW            1
         .SsSelector                     RESW            1
@@ -460,7 +460,7 @@ struc GUEST_STATE
         .TrSelector                     RESW            1
         
         ;;
-        ;; base Öµ£¨64 Î»Öµ£©
+        ;; base å€¼ï¼ˆ64 ä½å€¼ï¼‰
         ;;
         .CsBase                         RESQ            1
         .SsBase                         RESQ            1
@@ -472,7 +472,7 @@ struc GUEST_STATE
         .TrBase                         RESQ            1
 
         ;;
-        ;; 32 Î» Segment limit
+        ;; 32 ä½ Segment limit
         ;;
         .CsLimit                        RESD            1
         .SsLimit                        RESD            1
@@ -484,7 +484,7 @@ struc GUEST_STATE
         .TrLimit                        RESD            1
 
         ;;
-        ;; 32 Î» Access right
+        ;; 32 ä½ Access right
         ;;
         .CsAccessRight                  RESD            1
         .SsAccessRight                  RESD            1
@@ -496,7 +496,7 @@ struc GUEST_STATE
         .TrAccessRight                  RESD            1
 
         ;;
-        ;; GDTR/IDTR base£¨64Î»£© ºÍ limit£¨32Î»£©
+        ;; GDTR/IDTR baseï¼ˆ64ä½ï¼‰ å’Œ limitï¼ˆ32ä½ï¼‰
         ;;
         .GdtrBase                       RESQ            1
         .IdtrBase                       RESQ            1
@@ -505,7 +505,7 @@ struc GUEST_STATE
 
 
         ;;
-        ;; 64 Î» MSR
+        ;; 64 ä½ MSR
         ;; 
         .DebugCtlMsr                    RESQ            1
         .SysenterCsMsr                  RESQ            1
@@ -516,7 +516,7 @@ struc GUEST_STATE
         .EferMsr                        RESQ            1
 
         ;;
-        ;; SMBASE ¼Ä´æÆ÷
+        ;; SMBASE å¯„å­˜å™¨
         ;;
         .SmBase                         RESQ            1
 
@@ -554,7 +554,7 @@ endstruc
 
 struc HOST_STATE
         ;;
-        ;; 64 Î» control registers
+        ;; 64 ä½ control registers
         ;;
         .Cr0                            RESQ            1
         .Cr3                            RESQ            1
@@ -563,7 +563,7 @@ struc HOST_STATE
         .Rip                            RESQ            1
 
         ;;
-        ;; 16 Î» selector Öµ£¨CS, SS, DS, ES, FS, GS ºÍ TR£©
+        ;; 16 ä½ selector å€¼ï¼ˆCS, SS, DS, ES, FS, GS å’Œ TRï¼‰
         ;;
         .CsSelector                     RESW            1
         .SsSelector                     RESW            1
@@ -574,7 +574,7 @@ struc HOST_STATE
         .TrSelector                     RESW            1
         
         ;;
-        ;; 64 Î» base Öµ£¨FS, GS ºÍ TR)
+        ;; 64 ä½ base å€¼ï¼ˆFS, GS å’Œ TR)
         ;;
         .FsBase                         RESQ            1
         .GsBase                         RESQ            1
@@ -582,14 +582,14 @@ struc HOST_STATE
 
 
         ;;
-        ;; GDTR/IDTR base£¨64Î»£©
+        ;; GDTR/IDTR baseï¼ˆ64ä½ï¼‰
         ;;
         .GdtrBase                       RESQ            1
         .IdtrBase                       RESQ            1
 
 
         ;;
-        ;; 64 Î» MSR
+        ;; 64 ä½ MSR
         ;; 
         .SysenterCsMsr                  RESQ            1
         .SysenterEspMsr                 RESQ            1
@@ -629,7 +629,7 @@ struc EXECUTION_CONTROL
         .Cr3Target3                     RESQ            1
         
         ;;
-        ;; APIC virtualization ÓĞ¹ØÓò
+        ;; APIC virtualization æœ‰å…³åŸŸ
         ;;
         .ApicAccessAddress              RESQ            1
         .VirtualApicAddress             RESQ            1
@@ -686,10 +686,10 @@ struc ENTRY_CONTROL
         .InstructionLength              RESD            1
         
         ;;
-        ;; vmware ÉÏµÄÒ»¸ö bug:
-        ;; 1) VM-entry instruction length ÊÇ32Î»×Ö¶Î
-        ;; 2) ÔÚ vmware ÉÏÈ´¶ÁĞ´ 64 Î»!
-        ;; 3) ÕâÀï¶îÍâ±£ÁôÒ»¸ö dword Öµ
+        ;; vmware ä¸Šçš„ä¸€ä¸ª bug:
+        ;; 1) VM-entry instruction length æ˜¯32ä½å­—æ®µ
+        ;; 2) åœ¨ vmware ä¸Šå´è¯»å†™ 64 ä½!
+        ;; 3) è¿™é‡Œé¢å¤–ä¿ç•™ä¸€ä¸ª dword å€¼
         ;;  
                                         RESD            1
 
@@ -703,7 +703,7 @@ endstruc
 ;;
 struc EXIT_INFO
         ;;
-        ;; »ù±¾ĞÅÏ¢
+        ;; åŸºæœ¬ä¿¡æ¯
         ;;
         .ExitReason                     RESD            1
         .ExitQualification              RESQ            1
@@ -711,19 +711,19 @@ struc EXIT_INFO
         .GuestPhysicalAddress           RESQ            1
 
         ;;
-        ;; ÓÉ event Òı·¢ VM exit µÄĞÅÏ¢
+        ;; ç”± event å¼•å‘ VM exit çš„ä¿¡æ¯
         ;;
         .InterruptionInfo               RESD            1
         .InterruptionErrorCode          RESD            1        
 
         ;;
-        ;; ÔÚ event delivery ÆÚ¼äÒı·¢ VM exit µÄĞÅÏ¢
+        ;; åœ¨ event delivery æœŸé—´å¼•å‘ VM exit çš„ä¿¡æ¯
         ;;
         .IdtVectoringInfo               RESD            1
         .IdtVectoringErrorCode          RESD            1
 
         ;;
-        ;; ÓÉÖ¸ÁîÖ´ĞĞ¶øÒı·¢ VM exit µÄĞÅÏ¢
+        ;; ç”±æŒ‡ä»¤æ‰§è¡Œè€Œå¼•å‘ VM exit çš„ä¿¡æ¯
         ;;
         .InstructionLength              RESD            1  
         .InstructionInfo                RESD            1
@@ -734,7 +734,7 @@ struc EXIT_INFO
         .IoRip                          RESQ            1
 
         ;;
-        ;; VMX Ö¸Áî´íÎóĞÅÏ¢
+        ;; VMX æŒ‡ä»¤é”™è¯¯ä¿¡æ¯
         ;;
         .InstructionError               RESD            1
 
@@ -752,8 +752,8 @@ endstruc
 ; SET_PINBASED_CTLS
 ; input:
 ;       %1 - control bit
-; ÃèÊö:
-;       1£©ÖÃ Pinbased VM-execution control Î»
+; æè¿°:
+;       1ï¼‰ç½® Pinbased VM-execution control ä½
 ;-------------------------------------------------------
 %macro SET_PINBASED_CTLS 1
         GetVmcsField    CONTROL_PINBASED
@@ -776,8 +776,8 @@ endstruc
 ; CLEAR_PINBASED_CTLS
 ; input:
 ;       %1 - control bit
-; ÃèÊö:
-;       1£©Çå Pinbased VM-execution control Î»
+; æè¿°:
+;       1ï¼‰æ¸… Pinbased VM-execution control ä½
 ;-------------------------------------------------------
 %macro CLEAR_PINBASED_CTLS 1
         GetVmcsField    CONTROL_PINBASED
@@ -800,8 +800,8 @@ endstruc
 ; SET_PRIMARAY_PROCBASED_CTLS
 ; input:
 ;       %1 - control bit
-; ÃèÊö:
-;       1£©ÖÃ primary processor-based VM-execution control Î»
+; æè¿°:
+;       1ï¼‰ç½® primary processor-based VM-execution control ä½
 ;-------------------------------------------------------
 %macro SET_PRIMARY_PROCBASED_CTLS 1
         GetVmcsField    CONTROL_PROCBASED_PRIMARY
@@ -824,8 +824,8 @@ endstruc
 ; CLEAR_PRIMARY_PROCBASED_CTLS
 ; input:
 ;       %1 - control bit
-; ÃèÊö:
-;       1£©Çå primary processor-based VM-execution control Î»
+; æè¿°:
+;       1ï¼‰æ¸… primary processor-based VM-execution control ä½
 ;-------------------------------------------------------
 %macro CLEAR_PRIMARY_PROCBASED_CTLS 1
         GetVmcsField    CONTROL_PROCBASED_PRIMARY
@@ -848,8 +848,8 @@ endstruc
 ; SET_SECONDARY_PROCBASED_CTLS
 ; input:
 ;       %1 - control bit
-; ÃèÊö:
-;       1£©ÖÃ secondary processor-based VM-execution control Î»
+; æè¿°:
+;       1ï¼‰ç½® secondary processor-based VM-execution control ä½
 ;-------------------------------------------------------
 %macro SET_SECONDARY_PROCBASED_CTLS 1
         GetVmcsField    CONTROL_PROCBASED_SECONDARY
@@ -871,8 +871,8 @@ endstruc
 ; CLEAR_SECONDARY_PROCBASED_CTLS
 ; input:
 ;       %1 - control bit
-; ÃèÊö:
-;       1£©Çå secondary processor-based VM-execution control Î»
+; æè¿°:
+;       1ï¼‰æ¸… secondary processor-based VM-execution control ä½
 ;-------------------------------------------------------
 %macro CLEAR_SECONDARY_PROCBASED_CTLS 1
         GetVmcsField    CONTROL_PROCBASED_SECONDARY
@@ -894,8 +894,8 @@ endstruc
 ; SET_VM_EXIT_CTLS
 ; input:
 ;       %1 - control bit
-; ÃèÊö:
-;       1£©ÖÃ VM-exit control Î»
+; æè¿°:
+;       1ï¼‰ç½® VM-exit control ä½
 ;-------------------------------------------------------
 %macro SET_VM_EXIT_CTLS 1
         GetVmcsField    VMEXIT_CONTROL
@@ -917,8 +917,8 @@ endstruc
 ; CLEAR_VM_EXIT_CTLS
 ; input:
 ;       %1 - control bit
-; ÃèÊö:
-;       1£©Çå VM-exit control Î»
+; æè¿°:
+;       1ï¼‰æ¸… VM-exit control ä½
 ;-------------------------------------------------------
 %macro CLEAR_VM_EXIT_CTLS 1
         GetVmcsField    VMEXIT_CONTROL
@@ -940,8 +940,8 @@ endstruc
 ; SET_VM_ENTRY_CTLS
 ; input:
 ;       %1 - control bit
-; ÃèÊö:
-;       1£©ÖÃ VM-entry control Î»
+; æè¿°:
+;       1ï¼‰ç½® VM-entry control ä½
 ;-------------------------------------------------------
 %macro SET_VM_ENTRY_CTLS 1
         GetVmcsField    VMENTRY_CONTROL
@@ -964,8 +964,8 @@ endstruc
 ; CLEAR_VM_ENTRY_CTLS
 ; input:
 ;       %1 - control bit
-; ÃèÊö:
-;       1£©Çå VM-entry control Î»
+; æè¿°:
+;       1ï¼‰æ¸… VM-entry control ä½
 ;-------------------------------------------------------
 %macro CLEAR_VM_ENTRY_CTLS 1
         GetVmcsField    VMENTRY_CONTROL
@@ -989,8 +989,8 @@ endstruc
 ; SET_EXCEPTION_BITMAP
 ; input:
 ;       %1 - vector
-; ÃèÊö£º
-;       1) ÉèÖÃ Exception Bitmap Î»
+; æè¿°ï¼š
+;       1) è®¾ç½® Exception Bitmap ä½
 ;-------------------------------------------------------
 %macro SET_EXCEPTION_BITMAP 1
         GetVmcsField    CONTROL_EXCEPTION_BITMAP
@@ -1003,8 +1003,8 @@ endstruc
 ; CLEAR_EXCEPTION_BITMAP
 ; input:
 ;       %1 - vector
-; ÃèÊö£º
-;       1) Çå Exception Bitmap Î»
+; æè¿°ï¼š
+;       1) æ¸… Exception Bitmap ä½
 ;-------------------------------------------------------
 %macro CLEAR_EXCEPTION_BITMAP 1
         GetVmcsField    CONTROL_EXCEPTION_BITMAP
@@ -1018,8 +1018,8 @@ endstruc
 ; MAKE_SEGMENT_UNUSABLE
 ; input:
 ;       %1 - vector
-; ÃèÊö£º
-;       1) Çå Exception Bitmap Î»
+; æè¿°ï¼š
+;       1) æ¸… Exception Bitmap ä½
 ;-------------------------------------------------------
 %macro MAKE_SEGMENT_UNUSABLE    1
         GetVmcsField    %1

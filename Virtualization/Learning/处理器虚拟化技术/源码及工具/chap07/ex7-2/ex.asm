@@ -1,29 +1,29 @@
 ;*************************************************
 ; ex.asm                                         *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
 %include "..\..\lib\Guest\Guest.inc"
 
 ;;
-;; ex.asm ËµÃ÷£º
-;; 1) ex.asm ÊÇÊµÑéÀı×ÓµÄÔ´´úÂëÎÄ¼ş£¬ËüÇ¶ÈëÔÚ protected.asm ºÍ long.asm ÎÄ¼şÄÚ
-;; 2) ex.asm ÊÇÍ¨ÓÃÄ£¿é£¬ÄÜÔÚ stage2 ºÍ stage3 ½×¶ÎÔËĞĞ
+;; ex.asm è¯´æ˜ï¼š
+;; 1) ex.asm æ˜¯å®éªŒä¾‹å­çš„æºä»£ç æ–‡ä»¶ï¼Œå®ƒåµŒå…¥åœ¨ protected.asm å’Œ long.asm æ–‡ä»¶å†…
+;; 2) ex.asm æ˜¯é€šç”¨æ¨¡å—ï¼Œèƒ½åœ¨ stage2 å’Œ stage3 é˜¶æ®µè¿è¡Œ
 ;;
 
         ;;
-        ;; ¼ÓÈë ex.asm Ä£¿éÊ¹ÓÃµÄÍ·ÎÄ¼ş
+        ;; åŠ å…¥ ex.asm æ¨¡å—ä½¿ç”¨çš„å¤´æ–‡ä»¶
         ;;
         %include "ex.inc"
 
         ;;
-        ;; Ê¾Àı7-2£ºÊµÏÖguestµÄÈÎÎñÇĞ»»
+        ;; ç¤ºä¾‹7-2ï¼šå®ç°guestçš„ä»»åŠ¡åˆ‡æ¢
         ;;
 
 
 ;;
-;; ¶¨ÒåÒ»¸ö SYSENTER_EIP hook Ç©Ãû
+;; å®šä¹‰ä¸€ä¸ª SYSENTER_EIP hook ç­¾å
 ;;
 %define SYSENTER_HOOK_SIGN                      'HOOK'
 
@@ -31,13 +31,13 @@
 
 Ex.Start:
         ;;
-        ;; ¼ì²é CPU ¸öÊı
+        ;; æ£€æŸ¥ CPU ä¸ªæ•°
         ;;
         cmp DWORD [fs: SDA.ProcessorCount], 2
         je Ex.Next
         
         ;;
-        ;; µ÷¶È CPU3 Ö´ĞĞ dump_debug_record() º¯Êı
+        ;; è°ƒåº¦ CPU3 æ‰§è¡Œ dump_debug_record() å‡½æ•°
         ;;                
         mov esi, 3
         mov edi, dump_debug_record
@@ -45,38 +45,38 @@ Ex.Start:
 
        
         ;;
-        ;; µÈ´ıÓÃ»§Ñ¡ÔñÃüÁî
+        ;; ç­‰å¾…ç”¨æˆ·é€‰æ‹©å‘½ä»¤
         ;;
         call do_command        
 
         
 Ex.Next:
         ;;
-        ;; ×¢²áÁíÒ»¸ö external interrupt ´¦ÀíÀı³Ì
+        ;; æ³¨å†Œå¦ä¸€ä¸ª external interrupt å¤„ç†ä¾‹ç¨‹
         ;;
         mov esi, Ex.DoExternalInterrupt
         mov [DoVmExitRoutineTable + EXIT_NUMBER_EXTERNAL_INTERRUPT * 4], esi
           
         ;;
-        ;; ÉèÖÃ host ¶Ô external interrupt ¿ØÖÆÈ¨
+        ;; è®¾ç½® host å¯¹ external interrupt æ§åˆ¶æƒ
         ;;          
         mov DWORD [Ex.ExtIntHold], 1
                        
         ;;
-        ;; µ÷¶Èµ½ CPU1 Ö´ĞĞ dump_debug_record()
+        ;; è°ƒåº¦åˆ° CPU1 æ‰§è¡Œ dump_debug_record()
         ;;
         mov esi, 1
         mov edi, dump_debug_record
         call dispatch_to_processor
         
         ;;
-        ;; ·¢Æğ VM-entry
+        ;; å‘èµ· VM-entry
         ;;
         call TargetCpuVmentry
 
 
         ;;
-        ;; µÈ´ıÖØÆô
+        ;; ç­‰å¾…é‡å¯
         ;;
         call wait_esc_for_reset
 
@@ -93,35 +93,35 @@ Ex.Next:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) µ÷¶ÈÖ´ĞĞµÄÄ¿±ê´úÂë
+; æè¿°ï¼š
+;       1) è°ƒåº¦æ‰§è¡Œçš„ç›®æ ‡ä»£ç 
 ;----------------------------------------------
 TargetCpuVmentry: 
 
         mov R5, [gs: PCB.Base]
 
         ;;
-        ;; ³õÊ¼»¯ GUEST A Óë B
+        ;; åˆå§‹åŒ– GUEST A ä¸ B
         ;;
         call init_guest_a
         call init_guest_b
         
         ;;
-        ;; ´Ó ready ¶ÓÁĞÈ¡³ö
+        ;; ä» ready é˜Ÿåˆ—å–å‡º
         ;;
         call out_ready_queue
         mov ecx, eax
         mov R3, [R5 + PCB.VmcsA + R0 * 8]
   
         ;;
-        ;; ¼ÓÔØ VMCS pointer
+        ;; åŠ è½½ VMCS pointer
         ;;
         vmptrld [R3 + VMB.PhysicalBase]
         jc TargetCpuVmentry.Failure
         jz TargetCpuVmentry.Failure
 
         ;;
-        ;; ¸üĞÂµ±Ç° VMB Ö¸Õë
+        ;; æ›´æ–°å½“å‰ VMB æŒ‡é’ˆ
         ;;
         mov [R5 + PCB.CurrentVmbPointer], R3
         call update_system_status
@@ -129,7 +129,7 @@ TargetCpuVmentry:
         mov edi, ecx
         
         ;;
-        ;; ÅäÖÃ VMM MSR-load
+        ;; é…ç½® VMM MSR-load
         ;;                         
         mov ecx, IA32_TIME_STAMP_COUNTER
         rdtsc
@@ -138,26 +138,26 @@ TargetCpuVmentry:
         call append_vmexit_msr_load_entry      
 
         ;;
-        ;; ×¢²áÁíÒ»¸ö VMX preemption timer ´¦ÀíÀı³Ì
+        ;; æ³¨å†Œå¦ä¸€ä¸ª VMX preemption timer å¤„ç†ä¾‹ç¨‹
         ;;
         mov esi, Ex.DoVmxPreemptionTimer
         mov [DoVmExitRoutineTable + EXIT_NUMBER_VMX_PREEMPTION_TIMER * 4], esi
 
         ;;
-        ;; ×¢²áÁíÒ»¸ö WRMSR Ö¸Áî´¦ÀíÀı³Ì
+        ;; æ³¨å†Œå¦ä¸€ä¸ª WRMSR æŒ‡ä»¤å¤„ç†ä¾‹ç¨‹
         ;;
         mov esi, Ex.DoWRMSR
         mov [DoVmExitRoutineTable + EXIT_NUMBER_WRMSR * 4], esi
         
         ;;
-        ;; ×¢²áÁíÒ»¸ö VMM µÄ page fault ´¦ÀíÀı³Ì
+        ;; æ³¨å†Œå¦ä¸€ä¸ª VMM çš„ page fault å¤„ç†ä¾‹ç¨‹
         ;;                
         mov esi, Ex.DoPageFault
         mov [DoExceptionTable + 14 * 4], esi
 
         
         ;;
-        ;; ´òÓ¡ĞÅÏ¢
+        ;; æ‰“å°ä¿¡æ¯
         ;;
         mov esi, Ex.Msg1
         call puts
@@ -172,14 +172,14 @@ TargetCpuVmentry:
         call puts   
 
         ;;
-        ;; ²åÈë running ¶ÓÁĞ
+        ;; æ’å…¥ running é˜Ÿåˆ—
         ;;        
         mov esi, ecx
         call in_running_queue
         mov DWORD [R3 + VMB.GuestStatus], GUEST_RUNNING
         
         ;;
-        ;; ½øÈë guest »·¾³
+        ;; è¿›å…¥ guest ç¯å¢ƒ
         ;;  
         call reset_guest_context
         vmlaunch
@@ -199,7 +199,7 @@ TargetCpuVmentry.Failure:
 
 
 ;----------------------------------------------
-; Ex Ä£¿éµÄ WRMSR ´¦ÀíÀı³Ì¡¡
+; Ex æ¨¡å—çš„ WRMSR å¤„ç†ä¾‹ç¨‹ã€€
 ;----------------------------------------------
 Ex.DoWRMSR:
         push R5
@@ -209,25 +209,25 @@ Ex.DoWRMSR:
         mov R5, [gs: PCB.Base]
         
         ;;
-        ;; µ±Ç° VM store block
+        ;; å½“å‰ VM store block
         ;;
         mov R3, [R5 + PCB.CurrentVmbPointer]
         mov R3, [R3 + VMB.VsbBase]
         
         ;;
-        ;; ¼ì²éÊÇ·ñÊôÓÚ IA32_SYSENTER_EIP
+        ;; æ£€æŸ¥æ˜¯å¦å±äº IA32_SYSENTER_EIP
         ;;
         mov eax, [R3 + VSB.Rcx]
         cmp eax, IA32_SYSENTER_EIP
         jne Ex.DoWRMSR.@1
         
         ;;
-        ;; ÉèÖÃ IA32_SYSENTER_EIP ÖµÎª SYSENTER_HOOK_SIGN£¬ÓÃÓÚÑéÖ¤
+        ;; è®¾ç½® IA32_SYSENTER_EIP å€¼ä¸º SYSENTER_HOOK_SIGNï¼Œç”¨äºéªŒè¯
         ;;
         SetVmcsField    GUEST_IA32_SYSENTER_EIP, SYSENTER_HOOK_SIGN
         
         ;;
-        ;; ±£´æÔ­ IA32_SYSENTER_EIP 
+        ;; ä¿å­˜åŸ IA32_SYSENTER_EIP 
         ;;
         mov eax, [R3 + VSB.Rax]
         mov edx, [R3 + VSB.Rdx]
@@ -240,7 +240,7 @@ Ex.DoWRMSR:
         
 Ex.DoWRMSR.@1:       
         ;;
-        ;; ÅäÖÃ VM-entry/VM-exit MSR-load/MSR-store
+        ;; é…ç½® VM-entry/VM-exit MSR-load/MSR-store
         ;;                         
         mov esi, eax
         mov eax, [R3 + VSB.Rax]
@@ -249,7 +249,7 @@ Ex.DoWRMSR.@1:
         
 Ex.DoWRMSR.@2:
         ;;
-        ;; ¸üĞÂ guest-RIP
+        ;; æ›´æ–° guest-RIP
         ;;
         call update_guest_rip        
         
@@ -264,7 +264,7 @@ Ex.DoWRMSR.@2:
 
 
 ;----------------------------------------------
-; Ex Ä£¿éµÄ page fault ´¦ÀíÀı³Ì¡¡
+; Ex æ¨¡å—çš„ page fault å¤„ç†ä¾‹ç¨‹ã€€
 ;----------------------------------------------
 Ex.DoPageFault:
         push R5
@@ -272,26 +272,26 @@ Ex.DoPageFault:
         mov R5, [gs: PCB.Base]
 
         ;;
-        ;; ¶ÁÈ¡Òı·¢ #PF µÄÏßĞÔµØÖ·
+        ;; è¯»å–å¼•å‘ #PF çš„çº¿æ€§åœ°å€
         ;;
         mov R0, [R5 + PCB.ExitInfoBuf + EXIT_INFO.ExitQualification]
                 
         ;;
-        ;; ¼ì²éÏßĞÔµØÖ·ÊÇ·ñÓÉ VMM ÉèÖÃµÄµØÖ·Öµ        
+        ;; æ£€æŸ¥çº¿æ€§åœ°å€æ˜¯å¦ç”± VMM è®¾ç½®çš„åœ°å€å€¼        
         ;;
         cmp R0, SYSENTER_HOOK_SIGN
         mov eax, VMM_PROCESS_DUMP_VMCS
         jne Ex.DoPageFault.Reflect
 
         ;;
-        ;; ¶ÁÈ¡Ô­ IA32_SYSENTER_EIP Öµ
+        ;; è¯»å–åŸ IA32_SYSENTER_EIP å€¼
         ;;                
         mov R0, [Ex.SysenterEip]
         
         DEBUG_RECORD    "[Ex.DoPageFault]: call SysRoutine !"
         
         ;;
-        ;; ¸üĞÂ guest-RIP
+        ;; æ›´æ–° guest-RIP
         ;;
         SetVmcsField    GUEST_RIP, R0
         
@@ -299,7 +299,7 @@ Ex.DoPageFault:
 
 Ex.DoPageFault.Reflect:
         ;;
-        ;; ·´Éä #PF Òì³£¸ø»Ø guest
+        ;; åå°„ #PF å¼‚å¸¸ç»™å› guest
         ;;
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_PF
         mov eax, [R5 + PCB.ExitInfoBuf + EXIT_INFO.InterruptionErrorCode]
@@ -316,7 +316,7 @@ Ex.DoPageFault.Done:
 
 
 ;----------------------------------------------
-; Ex Ä£¿éµÄ VMX-preemption timer ´¦ÀíÀı³Ì¡¡
+; Ex æ¨¡å—çš„ VMX-preemption timer å¤„ç†ä¾‹ç¨‹ã€€
 ;----------------------------------------------
 Ex.DoVmxPreemptionTimer:
         push R5
@@ -327,7 +327,7 @@ Ex.DoVmxPreemptionTimer:
         DEBUG_RECORD    "[Ex.DoPreemptionTimer]: switch guest !"
         
         ;;
-        ;; ÒÆ³ıµ±Ç°ÔËĞĞµÄ guest£¬·ÅÈëµ½ ready ¶ÓÁĞ
+        ;; ç§»é™¤å½“å‰è¿è¡Œçš„ guestï¼Œæ”¾å…¥åˆ° ready é˜Ÿåˆ—
         ;;
         call out_running_queue
         mov R3, [gs: PCB.VmcsA + R0 * 8]        
@@ -336,7 +336,7 @@ Ex.DoVmxPreemptionTimer:
         mov DWORD [R3 + VMB.GuestStatus], GUEST_SUSPENDED
      
         ;;
-        ;; ´Ó ready ¶ÓÁĞÀïÈ¡³öĞèÒªÔËĞĞµÄ guest,·ÅÈëµ½ running ¶ÓÁĞ
+        ;; ä» ready é˜Ÿåˆ—é‡Œå–å‡ºéœ€è¦è¿è¡Œçš„ guest,æ”¾å…¥åˆ° running é˜Ÿåˆ—
         ;;
         call out_ready_queue
         mov R3, [gs: PCB.VmcsA + R0 * 8]
@@ -346,7 +346,7 @@ Ex.DoVmxPreemptionTimer:
         call puts
         
         ;;
-        ;; ÔËĞĞ guest
+        ;; è¿è¡Œ guest
         ;;
         vmptrld [R3 + VMB.PhysicalBase]
         jc Ex.DoPreemptionTimer.failure
@@ -355,7 +355,7 @@ Ex.DoVmxPreemptionTimer:
         mov [gs: PCB.CurrentVmbPointer], R3
 
         ;;
-        ;; guest ÔËĞĞÊ±¼äÎª 50us
+        ;; guest è¿è¡Œæ—¶é—´ä¸º 50us
         ;;
         mov esi, 50
         call set_vmx_preemption_timer_value                
@@ -367,7 +367,7 @@ Ex.DoVmxPreemptionTimer:
         jne Ex.DoPreemptionTimer.done
         
         ;;
-        ;; guest Ä¿Ç°´¦ÓÚ suspended ×´Ì¬
+        ;; guest ç›®å‰å¤„äº suspended çŠ¶æ€
         ;;        
         mov DWORD [R3 + VMB.GuestStatus], GUEST_RUNNING
         mov esi, ecx
@@ -378,7 +378,7 @@ Ex.DoVmxPreemptionTimer:
         
 Ex.DoPreemptionTimer.ready:        
         ;;
-        ;; guest Ä¿Ç°´¦ÓÚ ready ×´Ì¬
+        ;; guest ç›®å‰å¤„äº ready çŠ¶æ€
         ;;        
         mov DWORD [R3 + VMB.GuestStatus], GUEST_RUNNING
         mov esi, ecx
@@ -400,11 +400,11 @@ Ex.DoPreemptionTimer.done:
 
 
 ;----------------------------------------------
-; Ex Ä£¿éµÄ external interrupt ´¦ÀíÀı³Ì¡¡
+; Ex æ¨¡å—çš„ external interrupt å¤„ç†ä¾‹ç¨‹ã€€
 ;----------------------------------------------
 Ex.DoExternalInterrupt:
         ;;
-        ;; ´ò¿ªÖĞ¶Ï window£¬ÓÉ host Ö´ĞĞÖĞ¶Ï´¦Àí
+        ;; æ‰“å¼€ä¸­æ–­ windowï¼Œç”± host æ‰§è¡Œä¸­æ–­å¤„ç†
         ;;
         sti
         mov eax, VMM_PROCESS_RESUME
@@ -421,8 +421,8 @@ Ex.DoExternalInterrupt:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ³õÊ¼»¯ GUEST A
+; æè¿°ï¼š
+;       1) åˆå§‹åŒ– GUEST A
 ;----------------------------------------------
 init_guest_a:
         push R5
@@ -433,40 +433,40 @@ init_guest_a:
         mov R5, [gs: PCB.Base]        
         
         ;;
-        ;; guest ÆôÓÃ "unrestricted guest" ÒÔ¼° "enable EPT"
+        ;; guest å¯ç”¨ "unrestricted guest" ä»¥åŠ "enable EPT"
         ;;          
         mov eax, GUEST_FLAG_UNRESTRICTED | GUEST_FLAG_EPT
         mov [R5 + PCB.GuestA + VMB.GuestFlags], eax
 
 
         ;;
-        ;; ÉèÖÃ guest RIP ÒÔ¼° host-RIP
+        ;; è®¾ç½® guest RIP ä»¥åŠ host-RIP
         ;;
         mov DWORD [R5 + PCB.GuestA + VMB.GuestEntry], GUEST_BOOT_ENTRY + 4
         mov DWORD [R5 + PCB.GuestA + VMB.HostEntry], VmmEntry
 
         ;;
-        ;; ³õÊ¼»¯ VMCS buffer
+        ;; åˆå§‹åŒ– VMCS buffer
         ;;
         mov R6, [R5 + PCB.VmcsA]
         call initialize_vmcs_buffer
         
         ;;
-        ;; Ö´ĞĞ VMCLEAR ²Ù×÷
+        ;; æ‰§è¡Œ VMCLEAR æ“ä½œ
         ;;
         vmclear [R5 + PCB.GuestA]
         jc TargetCpuVmentry.Failure
         jz TargetCpuVmentry.Failure  
         
         ;;
-        ;; ¼ÓÔØ VMCS pointer
+        ;; åŠ è½½ VMCS pointer
         ;;
         vmptrld [R5 + PCB.GuestA]
         jc TargetCpuVmentry.Failure
         jz TargetCpuVmentry.Failure
 
         ;;
-        ;; ¸üĞÂµ±Ç° VMB Ö¸Õë
+        ;; æ›´æ–°å½“å‰ VMB æŒ‡é’ˆ
         ;;
         mov R0, [R5 + PCB.VmcsA]
         mov [R5 + PCB.CurrentVmbPointer], R0
@@ -475,31 +475,31 @@ init_guest_a:
 
 
         ;;
-        ;; °²×° Guest ´úÂë
+        ;; å®‰è£… Guest ä»£ç 
         ;;
 %if __BITS__ == 64        
         ;;
-        ;; step 1£º½« GuestBoot Ä£¿é°²×°µ½ domain
+        ;; step 1ï¼šå°† GuestBoot æ¨¡å—å®‰è£…åˆ° domain
         ;;
         mov ecx, [GUEST_BOOT_SEGMENT]
         add ecx, 0C00h + 0FFFh
         shr ecx, 12
         mov esi, ecx
-        call vm_alloc_pool_physical_page                ;; ·ÖÅä n ¸ö 4K domain Ò³Ãæ¸ø GuestBoot Ä£¿é
+        call vm_alloc_pool_physical_page                ;; åˆ†é… n ä¸ª 4K domain é¡µé¢ç»™ GuestBoot æ¨¡å—
         mov rdx, rax
 
         ;;
-        ;; ½« GuestBoot Ä£¿éÈë¿ÚÓ³Éäµ½ VM domain
+        ;; å°† GuestBoot æ¨¡å—å…¥å£æ˜ å°„åˆ° VM domain
         ;;
         mov esi, GUEST_BOOT_ENTRY                       ;; rsi - guest physical address
         mov rdi, rdx                                    ;; rdi - host phsyical address
         mov eax, EPT_READ | EPT_WRITE | EPT_EXECUTE     ;; eax - page attribute
                                                         ;; ecx - count of page
-        call do_guest_physical_address_mapping_n        ;; ½« GuestBoot Ä£¿éÈë¿ÚÓ³Éäµ½ domain
+        call do_guest_physical_address_mapping_n        ;; å°† GuestBoot æ¨¡å—å…¥å£æ˜ å°„åˆ° domain
         
 
         ;;
-        ;; ½« GuestBoot Ä£¿é¸´ÖÆµ½ VM domain
+        ;; å°† GuestBoot æ¨¡å—å¤åˆ¶åˆ° VM domain
         ;;
         mov esi, GUEST_BOOT_SEGMENT                     ;; GuestBoot
         mov rdi, SYSTEM_DATA_SPACE_BASE
@@ -510,25 +510,25 @@ init_guest_a:
         
 
         ;;
-        ;; step 2: ½« GuestKernel Ä£¿é°²×°µ½ domain ÖĞ
+        ;; step 2: å°† GuestKernel æ¨¡å—å®‰è£…åˆ° domain ä¸­
         ;;
         mov ecx, [GUEST_KERNEL_SEGMENT]
         add ecx, 0FFFh
         shr ecx, 12
         mov esi, ecx
-        call vm_alloc_pool_physical_page                        ; ·ÖÅä domain ÄÚ´æÓÃÀ´ÈİÄÉ GuestKernel Ä£¿é
+        call vm_alloc_pool_physical_page                        ; åˆ†é… domain å†…å­˜ç”¨æ¥å®¹çº³ GuestKernel æ¨¡å—
         mov rdx, rax        
 
         ;;
-        ;; ½« GuestKernel Ä£¿éÈë¿ÚÓ³Éäµ½ VM domain
+        ;; å°† GuestKernel æ¨¡å—å…¥å£æ˜ å°„åˆ° VM domain
         ;;
         mov esi, GUEST_KERNEL_ENTRY
         mov rdi, rdx
         mov eax, EPT_READ | EPT_WRITE | EPT_EXECUTE    
-        call do_guest_physical_address_mapping_n                ; ½« GuestKernel Ä£¿éÈë¿ÚÓ³Éäµ½ domain ÄÚ´æ
+        call do_guest_physical_address_mapping_n                ; å°† GuestKernel æ¨¡å—å…¥å£æ˜ å°„åˆ° domain å†…å­˜
         
         ;;
-        ;; ½« GuestKernel Ä£¿é¸´ÖÆµ½ VM domain
+        ;; å°† GuestKernel æ¨¡å—å¤åˆ¶åˆ° VM domain
         ;;
         mov esi, GUEST_KERNEL_SEGMENT                           ;; GuestKernel
         mov rdi, SYSTEM_DATA_SPACE_BASE                         ;; VM domain
@@ -537,7 +537,7 @@ init_guest_a:
         call memcpy
         
         ;;
-        ;; step 3: ½« B8000h Ó³Éäµ½ VM video buffer
+        ;; step 3: å°† B8000h æ˜ å°„åˆ° VM video buffer
         ;;
         mov esi, 0B8000h
         mov rdi, [gs: PCB.CurrentVmbPointer]
@@ -549,28 +549,28 @@ init_guest_a:
         
 %else       
         ;;
-        ;; step 1£º½« GuestBoot Ä£¿é°²×°µ½ domain
+        ;; step 1ï¼šå°† GuestBoot æ¨¡å—å®‰è£…åˆ° domain
         ;;
         mov ecx, [GUEST_BOOT_SEGMENT]
         add ecx, 0C00h + 0FFFh
         shr ecx, 12
         mov esi, ecx
-        call vm_alloc_pool_physical_page                        ;; ·ÖÅä domain ÄÚ´æ
+        call vm_alloc_pool_physical_page                        ;; åˆ†é… domain å†…å­˜
         mov ebx, eax
         
         ;;
-        ;; ½« GuestBoot Ä£¿éÈë¿ÚÓ³Éäµ½ VM domain
+        ;; å°† GuestBoot æ¨¡å—å…¥å£æ˜ å°„åˆ° VM domain
         ;;        
         xor edi, edi
         xor edx, edx
-        mov esi, GUEST_BOOT_ENTRY                               ; edi:esi = GuestBoot Ä£¿éÈë¿Ú
-        mov eax, ebx                                            ; edx:eax = domain ÄÚ´æ
+        mov esi, GUEST_BOOT_ENTRY                               ; edi:esi = GuestBoot æ¨¡å—å…¥å£
+        mov eax, ebx                                            ; edx:eax = domain å†…å­˜
         mov ecx, EPT_READ | EPT_WRITE | EPT_EXECUTE
         push ecx                                                ; count of page
-        call do_guest_physical_address_mapping_n                ; Ó³Éä GuestBoot Ä£¿éÈë¿Úµ½ domain
+        call do_guest_physical_address_mapping_n                ; æ˜ å°„ GuestBoot æ¨¡å—å…¥å£åˆ° domain
                
         ;;
-        ;; ½« GuestBoot Ä£¿é¸´ÖÆµ½ VM domain
+        ;; å°† GuestBoot æ¨¡å—å¤åˆ¶åˆ° VM domain
         ;;
         mov esi, GUEST_BOOT_SEGMENT                             ;; GuestBoot
         mov edi, SYSTEM_DATA_SPACE_BASE
@@ -580,28 +580,28 @@ init_guest_a:
         call memcpy
         
         ;;
-        ;; step 2£º½« GuestKernel Ä£¿é°²×°µ½ domain
+        ;; step 2ï¼šå°† GuestKernel æ¨¡å—å®‰è£…åˆ° domain
         ;;
         mov ecx, [GUEST_KERNEL_SEGMENT]
         add ecx, 0FFFh
         shr ecx, 12
         mov esi, ecx
-        call vm_alloc_pool_physical_page                        ;; ·ÖÅä domain ÄÚ´æ
+        call vm_alloc_pool_physical_page                        ;; åˆ†é… domain å†…å­˜
         mov ebx, eax
         
         ;;
-        ;; ½« GuestKernel Ä£¿éÈë¿ÚÓ³Éäµ½ VM domain
+        ;; å°† GuestKernel æ¨¡å—å…¥å£æ˜ å°„åˆ° VM domain
         ;;
-        push ecx                                                ; n Ò³
+        push ecx                                                ; n é¡µ
         xor edi, edi
         xor edx, edx
-        mov esi, GUEST_KERNEL_ENTRY                             ; edi:esi = GuestKernel Ä£¿éÈë¿Ú
-        mov eax, ebx                                            ; edx:eax = domain ÄÚ´æ
+        mov esi, GUEST_KERNEL_ENTRY                             ; edi:esi = GuestKernel æ¨¡å—å…¥å£
+        mov eax, ebx                                            ; edx:eax = domain å†…å­˜
         mov ecx, EPT_READ | EPT_WRITE | EPT_EXECUTE             ; ecx = paga attribute
-        call do_guest_physical_address_mapping_n                ; Ó³Éä GuestKernel Ä£¿éÈë¿Úµ½ domain
+        call do_guest_physical_address_mapping_n                ; æ˜ å°„ GuestKernel æ¨¡å—å…¥å£åˆ° domain
                
         ;;
-        ;; ½« GuestKernel Ä£¿é¸´ÖÆµ½ VM domain
+        ;; å°† GuestKernel æ¨¡å—å¤åˆ¶åˆ° VM domain
         ;;
         mov esi, GUEST_KERNEL_SEGMENT                           ;; GuestKernel
         mov edi, SYSTEM_DATA_SPACE_BASE
@@ -611,7 +611,7 @@ init_guest_a:
 
 
         ;;
-        ;; step 3: ½« B8000h Ó³Éäµ½ VM video buffer
+        ;; step 3: å°† B8000h æ˜ å°„åˆ° VM video buffer
         ;;
         xor edi, edi
         xor edx, edx
@@ -625,7 +625,7 @@ init_guest_a:
 %endif
 
         ;;
-        ;; ÆÁ±Î guest ¶Ô NMI_EN_PORT£¨70h£©Óë SYSTEM_CONTROL_PORTA£¨92h£©¶Ë¿ÚµÄ·ÃÎÊ
+        ;; å±è”½ guest å¯¹ NMI_EN_PORTï¼ˆ70hï¼‰ä¸ SYSTEM_CONTROL_PORTAï¼ˆ92hï¼‰ç«¯å£çš„è®¿é—®
         ;;
         mov R6, [R5 + PCB.VmcsA]
         mov edi, NMI_EN_PORT
@@ -636,7 +636,7 @@ init_guest_a:
         call set_vmcs_iomap_bit
 
         ;;
-        ;; ÅäÖÃ VM-entry/VM-exit MSR-load/MSR-store
+        ;; é…ç½® VM-entry/VM-exit MSR-load/MSR-store
         ;;                         
         mov esi, IA32_TIME_STAMP_COUNTER
         xor eax, eax
@@ -644,7 +644,7 @@ init_guest_a:
         call append_vmentry_msr_load_entry
 
         ;;
-        ;; ÉèÖÃÀ¹½Ø¶Ô IA32_SYSENTER_EIP µÄĞ´²Ù×÷
+        ;; è®¾ç½®æ‹¦æˆªå¯¹ IA32_SYSENTER_EIP çš„å†™æ“ä½œ
         ;;
         mov esi, IA32_SYSENTER_EIP
         call set_msr_write_bitmap
@@ -652,7 +652,7 @@ init_guest_a:
         
         
         ;;
-        ;; ÆôÓÃ VMX-preemption timer£¬guestA ÔËĞĞÊ±¼äÎª 50us
+        ;; å¯ç”¨ VMX-preemption timerï¼ŒguestA è¿è¡Œæ—¶é—´ä¸º 50us
         ;;
         SET_PINBASED_CTLS       ACTIVATE_VMX_PREEMPTION_TIMER      
         SET_VM_EXIT_CTLS        SAVE_VMX_PREEMPTION_TIMER_VALUE
@@ -660,24 +660,24 @@ init_guest_a:
         call set_vmx_preemption_timer_value
         
         ;;
-        ;; ¼ì²é host ÊÇ·ñĞèÒª¶Ô external interrupt ½øĞĞ¿ØÖÆ
+        ;; æ£€æŸ¥ host æ˜¯å¦éœ€è¦å¯¹ external interrupt è¿›è¡Œæ§åˆ¶
         ;;        
         cmp DWORD [Ex.ExtIntHold], 1
         jne init_guest_a.@1        
         ;;
-        ;; ¹Ø±Õ "acknowledge interrupt on exit" Î»
+        ;; å…³é—­ "acknowledge interrupt on exit" ä½
         ;;
         CLEAR_VM_EXIT_CTLS      ACKNOWLEDGE_INTERRUPT_ON_EXIT
 
 init_guest_a.@1:        
         
         ;;
-        ;; ¸üĞÂ guest ×´Ì¬
+        ;; æ›´æ–° guest çŠ¶æ€
         ;;                
         mov DWORD [R5 + PCB.GuestA + VMB.GuestStatus], GUEST_READY
                     
         ;;
-        ;; ½« guestA ²åÈë ready ¶ÓÁĞ
+        ;; å°† guestA æ’å…¥ ready é˜Ÿåˆ—
         ;;
         mov esi, 0
         call in_ready_queue
@@ -697,8 +697,8 @@ init_guest_a.@1:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ³õÊ¼»¯ GUEST B
+; æè¿°ï¼š
+;       1) åˆå§‹åŒ– GUEST B
 ;----------------------------------------------
 init_guest_b:
         push R5
@@ -709,41 +709,41 @@ init_guest_b:
         mov R5, [gs: PCB.Base]        
               
         ;;
-        ;; guest ÆôÓÃ "unrestricted guest" ÒÔ¼° "enable EPT"
+        ;; guest å¯ç”¨ "unrestricted guest" ä»¥åŠ "enable EPT"
         ;;          
         mov eax, GUEST_FLAG_UNRESTRICTED | GUEST_FLAG_EPT
         mov [R5 + PCB.GuestB + VMB.GuestFlags], eax
 
 
         ;;
-        ;; ÉèÖÃ guest RIP ÒÔ¼° host-RIP
+        ;; è®¾ç½® guest RIP ä»¥åŠ host-RIP
         ;;
         mov DWORD [R5 + PCB.GuestB + VMB.GuestEntry], GUEST_BOOT_ENTRY + 4
         mov DWORD [R5 + PCB.GuestB + VMB.HostEntry], VmmEntry
 
        
         ;;
-        ;; ³õÊ¼»¯ VMCS buffer
+        ;; åˆå§‹åŒ– VMCS buffer
         ;;
         mov R6, [R5 + PCB.VmcsB]
         call initialize_vmcs_buffer
         
         ;;
-        ;; Ö´ĞĞ VMCLEAR ²Ù×÷
+        ;; æ‰§è¡Œ VMCLEAR æ“ä½œ
         ;;
         vmclear [R5 + PCB.GuestB]
         jc TargetCpuVmentry.Failure
         jz TargetCpuVmentry.Failure  
         
         ;;
-        ;; ¼ÓÔØ VMCS pointer
+        ;; åŠ è½½ VMCS pointer
         ;;
         vmptrld [R5 + PCB.GuestB]
         jc TargetCpuVmentry.Failure
         jz TargetCpuVmentry.Failure
 
         ;;
-        ;; ¸üĞÂµ±Ç° VMB Ö¸Õë
+        ;; æ›´æ–°å½“å‰ VMB æŒ‡é’ˆ
         ;;
         mov R0, [R5 + PCB.VmcsB]
         mov [R5 + PCB.CurrentVmbPointer], R0
@@ -751,32 +751,32 @@ init_guest_b:
         call setup_vmcs_region
         
         ;;
-        ;; °²×° Guest ´úÂë
+        ;; å®‰è£… Guest ä»£ç 
         ;;        
 %if __BITS__ == 64                
 
         ;;
-        ;; step 1£º½« GuestBoot Ä£¿é°²×°µ½ domain
+        ;; step 1ï¼šå°† GuestBoot æ¨¡å—å®‰è£…åˆ° domain
         ;;
         mov ecx, [GUEST_BOOT_SEGMENT]
         add ecx, 0C00h + 0FFFh
         shr ecx, 12
         mov esi, ecx
-        call vm_alloc_pool_physical_page                ;; ·ÖÅä n ¸ö 4K domain Ò³Ãæ¸ø GuestBoot Ä£¿é
+        call vm_alloc_pool_physical_page                ;; åˆ†é… n ä¸ª 4K domain é¡µé¢ç»™ GuestBoot æ¨¡å—
         mov rdx, rax
 
         ;;
-        ;; ½« GuestBoot Ä£¿éÈë¿ÚÓ³Éäµ½ VM domain
+        ;; å°† GuestBoot æ¨¡å—å…¥å£æ˜ å°„åˆ° VM domain
         ;;
         mov esi, GUEST_BOOT_ENTRY                       ;; rsi - guest physical address
         mov rdi, rdx                                    ;; rdi - host phsyical address
         mov eax, EPT_READ | EPT_WRITE | EPT_EXECUTE     ;; eax - page attribute
                                                         ;; ecx - count of page
-        call do_guest_physical_address_mapping_n        ;; ½« GuestBoot Ä£¿éÈë¿ÚÓ³Éäµ½ domain
+        call do_guest_physical_address_mapping_n        ;; å°† GuestBoot æ¨¡å—å…¥å£æ˜ å°„åˆ° domain
         
 
         ;;
-        ;; ½« GuestBoot Ä£¿é¸´ÖÆµ½ VM domain
+        ;; å°† GuestBoot æ¨¡å—å¤åˆ¶åˆ° VM domain
         ;;
         mov esi, GUEST_BOOT_SEGMENT                     ;; GuestBoot
         mov rdi, SYSTEM_DATA_SPACE_BASE
@@ -787,25 +787,25 @@ init_guest_b:
         
 
         ;;
-        ;; step 2: ½« GuestKernel Ä£¿é°²×°µ½ domain ÖĞ
+        ;; step 2: å°† GuestKernel æ¨¡å—å®‰è£…åˆ° domain ä¸­
         ;;
         mov ecx, [GUEST_KERNEL_SEGMENT]
         add ecx, 0FFFh
         shr ecx, 12
         mov esi, ecx
-        call vm_alloc_pool_physical_page                        ; ·ÖÅä domain ÄÚ´æÓÃÀ´ÈİÄÉ GuestKernel Ä£¿é
+        call vm_alloc_pool_physical_page                        ; åˆ†é… domain å†…å­˜ç”¨æ¥å®¹çº³ GuestKernel æ¨¡å—
         mov rdx, rax        
 
         ;;
-        ;; ½« GuestKernel Ä£¿éÈë¿ÚÓ³Éäµ½ VM domain
+        ;; å°† GuestKernel æ¨¡å—å…¥å£æ˜ å°„åˆ° VM domain
         ;;
         mov esi, GUEST_KERNEL_ENTRY
         mov rdi, rdx
         mov eax, EPT_READ | EPT_WRITE | EPT_EXECUTE    
-        call do_guest_physical_address_mapping_n                ; ½« GuestKernel Ä£¿éÈë¿ÚÓ³Éäµ½ domain ÄÚ´æ
+        call do_guest_physical_address_mapping_n                ; å°† GuestKernel æ¨¡å—å…¥å£æ˜ å°„åˆ° domain å†…å­˜
         
         ;;
-        ;; ½« GuestKernel Ä£¿é¸´ÖÆµ½ VM domain
+        ;; å°† GuestKernel æ¨¡å—å¤åˆ¶åˆ° VM domain
         ;;
         mov esi, GUEST_KERNEL_SEGMENT                           ;; GuestKernel
         mov rdi, SYSTEM_DATA_SPACE_BASE                         ;; VM domain
@@ -814,7 +814,7 @@ init_guest_b:
         call memcpy
         
         ;;
-        ;; step 3: ½« B8000h Ó³Éäµ½ VM video buffer
+        ;; step 3: å°† B8000h æ˜ å°„åˆ° VM video buffer
         ;;
         mov esi, 0B8000h
         mov rdi, [gs: PCB.CurrentVmbPointer]
@@ -826,28 +826,28 @@ init_guest_b:
         
 %else       
         ;;
-        ;; step 1£º½« GuestBoot Ä£¿é°²×°µ½ domain
+        ;; step 1ï¼šå°† GuestBoot æ¨¡å—å®‰è£…åˆ° domain
         ;;
         mov ecx, [GUEST_BOOT_SEGMENT]
         add ecx, 0C00h + 0FFFh
         shr ecx, 12
         mov esi, ecx
-        call vm_alloc_pool_physical_page                        ;; ·ÖÅä domain ÄÚ´æ
+        call vm_alloc_pool_physical_page                        ;; åˆ†é… domain å†…å­˜
         mov ebx, eax
         
         ;;
-        ;; ½« GuestBoot Ä£¿éÈë¿ÚÓ³Éäµ½ VM domain
+        ;; å°† GuestBoot æ¨¡å—å…¥å£æ˜ å°„åˆ° VM domain
         ;;        
         xor edi, edi
         xor edx, edx
-        mov esi, GUEST_BOOT_ENTRY                               ; edi:esi = GuestBoot Ä£¿éÈë¿Ú
-        mov eax, ebx                                            ; edx:eax = domain ÄÚ´æ
+        mov esi, GUEST_BOOT_ENTRY                               ; edi:esi = GuestBoot æ¨¡å—å…¥å£
+        mov eax, ebx                                            ; edx:eax = domain å†…å­˜
         mov ecx, EPT_READ | EPT_WRITE | EPT_EXECUTE
         push ecx                                                ; count of page
-        call do_guest_physical_address_mapping_n                ; Ó³Éä GuestBoot Ä£¿éÈë¿Úµ½ domain
+        call do_guest_physical_address_mapping_n                ; æ˜ å°„ GuestBoot æ¨¡å—å…¥å£åˆ° domain
                
         ;;
-        ;; ½« GuestBoot Ä£¿é¸´ÖÆµ½ VM domain
+        ;; å°† GuestBoot æ¨¡å—å¤åˆ¶åˆ° VM domain
         ;;
         mov esi, GUEST_BOOT_SEGMENT                             ;; GuestBoot
         mov edi, SYSTEM_DATA_SPACE_BASE
@@ -857,28 +857,28 @@ init_guest_b:
         call memcpy
         
         ;;
-        ;; step 2£º½« GuestKernel Ä£¿é°²×°µ½ domain
+        ;; step 2ï¼šå°† GuestKernel æ¨¡å—å®‰è£…åˆ° domain
         ;;
         mov ecx, [GUEST_KERNEL_SEGMENT]
         add ecx, 0FFFh
         shr ecx, 12
         mov esi, ecx
-        call vm_alloc_pool_physical_page                        ;; ·ÖÅä domain ÄÚ´æ
+        call vm_alloc_pool_physical_page                        ;; åˆ†é… domain å†…å­˜
         mov ebx, eax
         
         ;;
-        ;; ½« GuestKernel Ä£¿éÈë¿ÚÓ³Éäµ½ VM domain
+        ;; å°† GuestKernel æ¨¡å—å…¥å£æ˜ å°„åˆ° VM domain
         ;;
-        push ecx                                                ; n Ò³
+        push ecx                                                ; n é¡µ
         xor edi, edi
         xor edx, edx
-        mov esi, GUEST_KERNEL_ENTRY                             ; edi:esi = GuestKernel Ä£¿éÈë¿Ú
-        mov eax, ebx                                            ; edx:eax = domain ÄÚ´æ
+        mov esi, GUEST_KERNEL_ENTRY                             ; edi:esi = GuestKernel æ¨¡å—å…¥å£
+        mov eax, ebx                                            ; edx:eax = domain å†…å­˜
         mov ecx, EPT_READ | EPT_WRITE | EPT_EXECUTE             ; ecx = paga attribute
-        call do_guest_physical_address_mapping_n                ; Ó³Éä GuestKernel Ä£¿éÈë¿Úµ½ domain
+        call do_guest_physical_address_mapping_n                ; æ˜ å°„ GuestKernel æ¨¡å—å…¥å£åˆ° domain
                
         ;;
-        ;; ½« GuestKernel Ä£¿é¸´ÖÆµ½ VM domain
+        ;; å°† GuestKernel æ¨¡å—å¤åˆ¶åˆ° VM domain
         ;;
         mov esi, GUEST_KERNEL_SEGMENT                           ;; GuestKernel
         mov edi, SYSTEM_DATA_SPACE_BASE
@@ -888,7 +888,7 @@ init_guest_b:
 
 
         ;;
-        ;; step 3: ½« B8000h Ó³Éäµ½ VM video buffer
+        ;; step 3: å°† B8000h æ˜ å°„åˆ° VM video buffer
         ;;
         xor edi, edi
         xor edx, edx
@@ -902,7 +902,7 @@ init_guest_b:
 %endif
         
         ;;
-        ;; ÆÁ±Î guest ¶Ô NMI_EN_PORT£¨70h£©Óë SYSTEM_CONTROL_PORTA£¨92h£©¶Ë¿ÚµÄ·ÃÎÊ
+        ;; å±è”½ guest å¯¹ NMI_EN_PORTï¼ˆ70hï¼‰ä¸ SYSTEM_CONTROL_PORTAï¼ˆ92hï¼‰ç«¯å£çš„è®¿é—®
         ;;
         mov R6, [R5 + PCB.VmcsB]
         mov edi, NMI_EN_PORT
@@ -913,7 +913,7 @@ init_guest_b:
         call set_vmcs_iomap_bit
         
         ;;
-        ;; ÅäÖÃ VM-entry/VM-exit MSR-load/MSR-store
+        ;; é…ç½® VM-entry/VM-exit MSR-load/MSR-store
         ;;                         
         mov esi, IA32_TIME_STAMP_COUNTER
         xor eax, eax
@@ -922,14 +922,14 @@ init_guest_b:
                 
 
         ;;
-        ;; ÉèÖÃÀ¹½Ø¶Ô IA32_SYSENTER_EIP µÄĞ´²Ù×÷
+        ;; è®¾ç½®æ‹¦æˆªå¯¹ IA32_SYSENTER_EIP çš„å†™æ“ä½œ
         ;;
         mov esi, IA32_SYSENTER_EIP
         call set_msr_write_bitmap
         
         
         ;;
-        ;; ÆôÓÃ VMX-preemption timer£¬guestB ÔËĞĞÊ±¼äÎª 50us
+        ;; å¯ç”¨ VMX-preemption timerï¼ŒguestB è¿è¡Œæ—¶é—´ä¸º 50us
         ;;
         SET_PINBASED_CTLS       ACTIVATE_VMX_PREEMPTION_TIMER        
         SET_VM_EXIT_CTLS        SAVE_VMX_PREEMPTION_TIMER_VALUE
@@ -937,24 +937,24 @@ init_guest_b:
         call set_vmx_preemption_timer_value
         
         ;;
-        ;; ¼ì²é host ÊÇ·ñĞèÒª¶Ô external interrupt ½øĞĞ¿ØÖÆ
+        ;; æ£€æŸ¥ host æ˜¯å¦éœ€è¦å¯¹ external interrupt è¿›è¡Œæ§åˆ¶
         ;;
         cmp DWORD [Ex.ExtIntHold], 1
         jne init_guest_b.@1        
         ;;
-        ;; ¹Ø±Õ "acknowledge interrupt on exit" Î»
+        ;; å…³é—­ "acknowledge interrupt on exit" ä½
         ;;
         CLEAR_VM_EXIT_CTLS      ACKNOWLEDGE_INTERRUPT_ON_EXIT
 
 init_guest_b.@1:  
 
         ;;
-        ;; ¸üĞÂ guest ×´Ì¬
+        ;; æ›´æ–° guest çŠ¶æ€
         ;;                
         mov DWORD [R5 + PCB.GuestB + VMB.GuestStatus], GUEST_READY       
         
         ;;
-        ;; ½« guestB ²åÈë ready ¶ÓÁĞ
+        ;; å°† guestB æ’å…¥ ready é˜Ÿåˆ—
         ;;
         mov esi, 1
         call in_ready_queue
@@ -990,13 +990,13 @@ do_command.loop:
         call puts
         
         ;;
-        ;; µÈ´ı°´¼ü
+        ;; ç­‰å¾…æŒ‰é”®
         ;;
         call wait_a_key
         
-        cmp al, SC_ESC                                          ; ÊÇ·ñÎª <ESC>
+        cmp al, SC_ESC                                          ; æ˜¯å¦ä¸º <ESC>
         je do_esc
-        cmp al, SC_Q                                            ; ÊÇ·ñÎª <Q>
+        cmp al, SC_Q                                            ; æ˜¯å¦ä¸º <Q>
         je do_command.done
         
         cmp al, SC_1
@@ -1007,7 +1007,7 @@ do_command.loop:
         
 do_command.@0:
         ;;
-        ;; ÊÇ·ñ·¢ËÍ interrupt
+        ;; æ˜¯å¦å‘é€ interrupt
         ;;
         cmp al, SC_I
         jne do_command.@1
@@ -1017,7 +1017,7 @@ do_command.@0:
         
 do_command.@1:
         ;;
-        ;; ÊÇ·ñ·¢ËÍ NMI
+        ;; æ˜¯å¦å‘é€ NMI
         ;;            
         cmp al, SC_N
         jne do_command.@2
@@ -1031,13 +1031,13 @@ do_command.@1:
         
 do_command.@2:
         ;;
-        ;; ÊÇ·ñ·¢ËÍ INIT
+        ;; æ˜¯å¦å‘é€ INIT
         ;;
         cmp al, SC_T
         jne do_command.@3
         
         ;;
-        ;; ¶¨Ê± 500us ·¢ËÍÒ»¸ö INIT 
+        ;; å®šæ—¶ 500us å‘é€ä¸€ä¸ª INIT 
         ;;
         mov esi, 153
         mov edi, LAPIC_TIMER_PERIODIC
@@ -1049,7 +1049,7 @@ do_command.@2:
 
 do_command.@3:
         ;;
-        ;; ÊÇ·ñ·¢ËÍ SIPI
+        ;; æ˜¯å¦å‘é€ SIPI
         ;;
         cmp al, SC_S
         jne do_command.loop
