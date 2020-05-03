@@ -10,7 +10,7 @@
 
         
 ;-----------------------------------------
-; void clear_4K_page()£ºÇå4KÒ³Ãæ
+; void clear_4K_page()ï¼šæ¸…4Ké¡µé¢
 ; input:  
 ;                esi: address
 ;------------------------------------------        
@@ -32,7 +32,7 @@ clear_4K_page_loop:
         ret
 
 ;------------------------------------------
-; pag_enable(): ³õÊ¼»¯ PAE paging Ä£Ê½Ê¹ÓÃ»·¾³
+; pag_enable(): åˆå§‹åŒ– PAE paging æ¨¡å¼ä½¿ç”¨ç¯å¢ƒ
 ;---------------------------------------------
 pae_enable:
         mov eax, 1
@@ -60,12 +60,12 @@ execution_disable_enable:
         wrmsr        
         mov eax, 80000000h
 execution_disalbe_enable_done:        
-        mov DWORD [xd_bit], eax                         ; Ğ´ XD ±êÖ¾Î»
+        mov DWORD [xd_bit], eax                         ; å†™ XD æ ‡å¿—ä½
         ret
 
 
 ;------------------------------------------------
-; execution disable_disalbe(): ¹Ø±Õ XD
+; execution disable_disalbe(): å…³é—­ XD
 ;------------------------------------------------
 execution_disable_disable:
         mov ecx, IA32_EFER
@@ -75,7 +75,7 @@ execution_disable_disable:
         ret
 
 ;----------------------------------------------
-; semp_enable(): ¿ªÆô SEMP ¹¦ÄÜ
+; semp_enable(): å¼€å¯ SEMP åŠŸèƒ½
 ;----------------------------------------------
 smep_enable:
         mov eax, 07
@@ -92,17 +92,17 @@ smep_enable_done:
 
 
 ;-----------------------------------------------------------
-; init_pae_paging(): ³õÊ¼»¯ PAE paging ·ÖÒ³Ä£Ê½
+; init_pae_paging(): åˆå§‹åŒ– PAE paging åˆ†é¡µæ¨¡å¼
 ;-----------------------------------------------------------
 init_pae_paging:
-; 1) 0x000000-0x3fffff Ó³Éäµ½ 000000h page frame, Ê¹ÓÃ 2¸ö 2M Ò³Ãæ
-; 2) 0x400000-0x400fff Ó³Éäµ½ 400000h page frame Ê¹ÓÃ 4K Ò³Ãæ
-; 3) 0x600000-0x7fffff Ó³Éäµ½ 0FEC00000h ÎïÀíµØÖ·ÉÏ£¬Ê¹ÓÃ 2M Ò³Ãæ
-; 4) 0x800000-0x9fffff Ó³Éäµ½ 0FEE00000h ÎïÀíµØÖ·ÉÏ£¬Ê¹ÓÃ 2M Ò³Ãæ
+; 1) 0x000000-0x3fffff æ˜ å°„åˆ° 000000h page frame, ä½¿ç”¨ 2ä¸ª 2M é¡µé¢
+; 2) 0x400000-0x400fff æ˜ å°„åˆ° 400000h page frame ä½¿ç”¨ 4K é¡µé¢
+; 3) 0x600000-0x7fffff æ˜ å°„åˆ° 0FEC00000h ç‰©ç†åœ°å€ä¸Šï¼Œä½¿ç”¨ 2M é¡µé¢
+; 4) 0x800000-0x9fffff æ˜ å°„åˆ° 0FEE00000h ç‰©ç†åœ°å€ä¸Šï¼Œä½¿ç”¨ 2M é¡µé¢
 ;
-;** 400000h Ê¹ÓÃÓÚ DS save ÇøÓò
-;** 600000h Ê¹ÓÃÓÚ LPC ¿ØÖÆÆ÷
-;** 800000h Ê¹ÓÃÓÚ local APIC ÇøÓò
+;** 400000h ä½¿ç”¨äº DS save åŒºåŸŸ
+;** 600000h ä½¿ç”¨äº LPC æ§åˆ¶å™¨
+;** 800000h ä½¿ç”¨äº local APIC åŒºåŸŸ
 ;
 
 PDT_BASE        equ                PDPT_BASE + 0x1000
@@ -111,7 +111,7 @@ PT2_BASE        equ                PDT_BASE + 0x2000
 PT3_BASE        equ                PDT_BASE + 0x3000
 
 
-;; ÇåÄÚ´æÒ³Ãæ£¨½â¾öÒ»¸öºÜÄÑ²éµÄ bug£©
+;; æ¸…å†…å­˜é¡µé¢ï¼ˆè§£å†³ä¸€ä¸ªå¾ˆéš¾æŸ¥çš„ bugï¼‰
         mov esi, PDPT_BASE
         call clear_4K_page
         mov esi, PDT_BASE
@@ -129,7 +129,7 @@ PT3_BASE        equ                PDT_BASE + 0x3000
         
         mov DWORD [pdpt_base], PDPT_BASE
 
-;; 1) ÉèÖÃ PDPTE[0] 
+;; 1) è®¾ç½® PDPTE[0] 
         mov DWORD [PDPT_BASE + 0 * 8], PDT_BASE | P                                ; base=0x201000, P=1
         mov DWORD [PDPT_BASE + 0 * 8 + 4], 0
 
@@ -139,10 +139,10 @@ PT3_BASE        equ                PDT_BASE + 0x3000
         mov DWORD [PDPT_BASE + 3 * 8], 111000h | P
         mov DWORD [PDPT_BASE + 3 * 8 + 4], 0
 
-;; 2) ÉèÖÃ PDE[0], PDE[1] ÒÔ¼° PDE[2]
-        ; PDE[0] ¶ÔÓ¦ virtual address: 0x0 µ½ 0x1fffff (2MÒ³)
-        ; PDE[1] ¶ÔÓ¦ virtual address: 0x200000 µ½ 0x3fffff (2MÒ³£©
-        ; PDE[2] ¶ÔÓ¦ virtual address: 0x400000 µ½ 0x400fff (4KÒ³£©
+;; 2) è®¾ç½® PDE[0], PDE[1] ä»¥åŠ PDE[2]
+        ; PDE[0] å¯¹åº” virtual address: 0x0 åˆ° 0x1fffff (2Mé¡µ)
+        ; PDE[1] å¯¹åº” virtual address: 0x200000 åˆ° 0x3fffff (2Mé¡µï¼‰
+        ; PDE[2] å¯¹åº” virtual address: 0x400000 åˆ° 0x400fff (4Ké¡µï¼‰
         mov DWORD [PDT_BASE + 0 * 8], PS | RW | US | P                                ; base=0, PS=1
         mov DWORD [PDT_BASE + 0 * 8 + 4], 0
         mov DWORD [PDT_BASE + 1 * 8], 200000h | PS | P                                ; base=0x200000
@@ -150,75 +150,75 @@ PT3_BASE        equ                PDT_BASE + 0x3000
         mov DWORD [PDT_BASE + 2 * 8], PT1_BASE | RW | US | P                        ; base=PT_BASE, PS=0
         mov DWORD [PDT_BASE + 2 * 8 + 4], 0
         
-; 0x800000 Ó³Éäµ½ 0xFEE00000(Local APIC ÇøÓò)        
+; 0x800000 æ˜ å°„åˆ° 0xFEE00000(Local APIC åŒºåŸŸ)        
         mov DWORD [PDT_BASE + 4 * 8], 0xFEE00000 | PS | PCD | PWT | RW | P        ; PCD=1,PWT=1
         mov eax, [xd_bit]
-        mov DWORD [PDT_BASE + 4 * 8 + 4], eax                                        ; XDÎ»
+        mov DWORD [PDT_BASE + 4 * 8 + 4], eax                                        ; XDä½
         
-; 0x600000 Ó³Éäµ½ 0xFEC00000(LPC¿ØÖÆÆ÷£©
+; 0x600000 æ˜ å°„åˆ° 0xFEC00000(LPCæ§åˆ¶å™¨ï¼‰
         mov DWORD [PDT_BASE + 3 * 8], 0xFEC00000 | PCD | PWT | PS | RW | P        ; PCD=1,PWT=1
-        mov DWORD [PDT_BASE + 3 * 8 + 4], eax                                        ; XDÎ»        
+        mov DWORD [PDT_BASE + 3 * 8 + 4], eax                                        ; XDä½        
 
         mov DWORD [110000h + 1FFh * 8], 112000h | RW | US | P
         mov DWORD [110000h + 1FFh * 8 + 4], eax
 
-        ; virutal address 0FEC00000h Ó³Éäµ½ÎïÀíµØÖ· 0FEC00000h ÉÏ£¨2M£©
+        ; virutal address 0FEC00000h æ˜ å°„åˆ°ç‰©ç†åœ°å€ 0FEC00000h ä¸Šï¼ˆ2Mï¼‰
         mov DWORD [111000h + 1F6h * 8], 0FEC00000h | PS | PCD | PWT | RW | P
         mov DWORD [111000h + 1F6h * 8 + 4], eax
 
         mov DWORD [111000h + 1FFh * 8], 113000h | RW | P
         mov DWORD [111000h + 1FFh * 8 + 4], eax
 
-;; 3) ÉèÖÃ PTE[0]
-        ; PTE[0] ¶ÔÓ¦ virtual address: 0x400000 µ½ 0x400fff (4KÒ³£©
+;; 3) è®¾ç½® PTE[0]
+        ; PTE[0] å¯¹åº” virtual address: 0x400000 åˆ° 0x400fff (4Ké¡µï¼‰
         mov DWORD [PT1_BASE + 0 * 8], 400000h | RW | P                                ; base=0x400000, P=1, R/W=1
         mov eax, [xd_bit]
-        mov DWORD [PT1_BASE + 0 * 8 + 4], eax                                        ; ÉèÖÃ XD¡¡Î»
+        mov DWORD [PT1_BASE + 0 * 8 + 4], eax                                        ; è®¾ç½® XDã€€ä½
         
         ; virutal address 7FE00000h - 7FE03FFFh
-        ; Ó³Éäµ½ 500000h - 503FFFh
-        ; ÓÃÓÚ User stack ÇøÓò
-        mov DWORD [112000h], 500000h | RW | US | P                                ; ´¦ÀíÆ÷ 0
+        ; æ˜ å°„åˆ° 500000h - 503FFFh
+        ; ç”¨äº User stack åŒºåŸŸ
+        mov DWORD [112000h], 500000h | RW | US | P                                ; å¤„ç†å™¨ 0
         mov DWORD [112000h + 4], 0
-        mov DWORD [112000h + 1 * 8], 501000h | RW | US | P                        ; ´¦ÀíÆ÷ 1
+        mov DWORD [112000h + 1 * 8], 501000h | RW | US | P                        ; å¤„ç†å™¨ 1
         mov DWORD [112000h + 1 * 8 + 4], 0
-        mov DWORD [112000h + 2 * 8], 502000h | RW | US | P                        ; ´¦ÀíÆ÷ 2
+        mov DWORD [112000h + 2 * 8], 502000h | RW | US | P                        ; å¤„ç†å™¨ 2
         mov DWORD [112000h + 2 * 8 + 4], 0
-        mov DWORD [112000h + 3 * 8], 503000h | RW | US | P                        ; ´¦ÀíÆ÷ 3
+        mov DWORD [112000h + 3 * 8], 503000h | RW | US | P                        ; å¤„ç†å™¨ 3
         mov DWORD [112000h + 3 * 8 + 4], 0
         mov DWORD [112000h + 4 * 8], 510000h | RW | US | P
         mov DWORD [112000h + 4 * 8 + 4], 0
         
         ; virtual address 0FFE0000h - 0FFE07FFFh
-        ; Ó³Éäµ½ 504000h -
-        ; ÓÃ×÷ kernel stack Óë ÖĞ¶Ï stack
-        mov DWORD [113000h], 504000h | RW | P                                        ; ´¦ÀíÆ÷ 0
+        ; æ˜ å°„åˆ° 504000h -
+        ; ç”¨ä½œ kernel stack ä¸ ä¸­æ–­ stack
+        mov DWORD [113000h], 504000h | RW | P                                        ; å¤„ç†å™¨ 0
         mov DWORD [113000h + 4], 0
-        mov DWORD [113000h + 1 * 8], 505000h | RW | P                                ; ´¦ÀíÆ÷ 1
+        mov DWORD [113000h + 1 * 8], 505000h | RW | P                                ; å¤„ç†å™¨ 1
         mov DWORD [113000h + 1 * 8 + 4], 0
-        mov DWORD [113000h + 2 * 8], 506000h | RW | P                                ; ´¦ÀíÆ÷ 2
+        mov DWORD [113000h + 2 * 8], 506000h | RW | P                                ; å¤„ç†å™¨ 2
         mov DWORD [113000h + 2 * 8 + 4], 0
-        mov DWORD [113000h + 3 * 8], 507000h | RW | P                                ; ´¦ÀíÆ÷ 3
+        mov DWORD [113000h + 3 * 8], 507000h | RW | P                                ; å¤„ç†å™¨ 3
         mov DWORD [113000h + 3 * 8 + 4], 0
 
-        ; ÖĞ¶Ï stack
-        mov DWORD [113000h + 4 * 8], 508000h | RW | P                                ; ´¦ÀíÆ÷ 0
+        ; ä¸­æ–­ stack
+        mov DWORD [113000h + 4 * 8], 508000h | RW | P                                ; å¤„ç†å™¨ 0
         mov DWORD [113000h + 4 * 8 + 4], 0
-        mov DWORD [113000h + 5 * 8], 509000h | RW | P                                ; ´¦ÀíÆ÷ 1
+        mov DWORD [113000h + 5 * 8], 509000h | RW | P                                ; å¤„ç†å™¨ 1
         mov DWORD [113000h + 5 * 8 + 4], 0
-        mov DWORD [113000h + 6 * 8], 50A000h | RW | P                                ; ´¦ÀíÆ÷ 2
+        mov DWORD [113000h + 6 * 8], 50A000h | RW | P                                ; å¤„ç†å™¨ 2
         mov DWORD [113000h + 6 * 8 + 4], 0
-        mov DWORD [113000h + 7 * 8], 50B000h | RW | P                                ; ´¦ÀíÆ÷ 3
+        mov DWORD [113000h + 7 * 8], 50B000h | RW | P                                ; å¤„ç†å™¨ 3
         mov DWORD [113000h + 7 * 8 + 4], 0
         ret
 
 
 ;-------------------------------------------
-; dump_pae_page(): ´òÓ¡ PAE paging Ä£Ê½Ò³×ª»»±íĞÅÏ¢
+; dump_pae_page(): æ‰“å° PAE paging æ¨¡å¼é¡µè½¬æ¢è¡¨ä¿¡æ¯
 ; input:
 ;                esi: virtual address(linear address)
-; ×¢Òâ£º
-;                Õâ¸öº¯ÊıÊÇÔÚÒ»¶ÔÒ»Ó³ÉäµÄÇé¿öÏÂ£¨virtual addressºÍphysical address Ò»ÖÂ£©
+; æ³¨æ„ï¼š
+;                è¿™ä¸ªå‡½æ•°æ˜¯åœ¨ä¸€å¯¹ä¸€æ˜ å°„çš„æƒ…å†µä¸‹ï¼ˆvirtual addresså’Œphysical address ä¸€è‡´ï¼‰
 ;-------------------------------------------
 dump_pae_page:
         push ecx
@@ -227,7 +227,7 @@ dump_pae_page:
         mov DWORD [pdpt_base], PDPT_BASE
         call get_maxphyaddr_select_mask
         mov ecx, esi
-; Êä³ö PDPTE
+; è¾“å‡º PDPTE
         mov esi, pdpte_msg
         call puts
         mov eax, ecx
@@ -260,18 +260,18 @@ pdpte_next:
         mov edi, pdpte_pae_flags
         call dump_flags
         call println
-        mov eax, [maxphyaddr_select_mask + 4]   ; select mask ¸ßÎ»
+        mov eax, [maxphyaddr_select_mask + 4]   ; select mask é«˜ä½
         not eax
-        test ebx, eax                           ; ¼ì²â¸ß32Î»±£ÁôÎ»ÊÇ·ñÎª 0
+        test ebx, eax                           ; æ£€æµ‹é«˜32ä½ä¿ç•™ä½æ˜¯å¦ä¸º 0
         jnz print_reserved_error
-        test edx, 1E6h                          ; ¼ì²âµÍ32Î»±£ÁôÎ»ÊÇ·ñÎª 0 
+        test edx, 1E6h                          ; æ£€æµ‹ä½32ä½ä¿ç•™ä½æ˜¯å¦ä¸º 0 
 print_reserved_error:
         mov esi, 0
         mov edi, reserved_error
         cmovnz esi, edi
         call puts
 
-; Êä³ö PDE        
+; è¾“å‡º PDE        
         mov esi, pde_msg
         call puts
         mov eax, ecx
@@ -294,14 +294,14 @@ pde_next:
         and esi, [maxphyaddr_select_mask]
         and esi, 0xffe00000
         and edi, [maxphyaddr_select_mask + 4]
-;        and edi, 0x7fffffff                                ; ÇåXDÎ»
+;        and edi, 0x7fffffff                                ; æ¸…XDä½
         call print_qword_value
         call printblank
         mov esi, attr_msg
         call puts
         mov esi, edx
 ;        shl esi, 19
-        ;; ĞÂ¼ÓÈë xd ±êÖ¾
+        ;; æ–°åŠ å…¥ xd æ ‡å¿—
         shl esi, 18
         btr esi, 31
         and ebx, 0x80000000
@@ -311,7 +311,7 @@ pde_next:
         mov edi, pde_pae_2m_flags
         call dump_flags
         call println
-        test edx, 0FE000h                       ; ¼ì²â±£ÁôÎ»ÊÇ·ñÎª 0
+        test edx, 0FE000h                       ; æ£€æµ‹ä¿ç•™ä½æ˜¯å¦ä¸º 0
         mov esi, 0
         mov edi, reserved_error
         cmovnz esi, edi
@@ -328,7 +328,7 @@ dump_pae_4k_pde:
         call puts
         mov esi, edx
 ;        shl esi, 19        
-        ;ĞÂ¼ÓÈëxd±êÖ¾
+        ;æ–°åŠ å…¥xdæ ‡å¿—
         shl esi, 18
         btr esi, 31
         and ebx, 0x80000000
@@ -339,7 +339,7 @@ dump_pae_4k_pde:
         mov edi, pde_pae_4k_flags
         call dump_flags
         call println
-;; Êä³ö pte        
+;; è¾“å‡º pte        
         mov esi, pte_msg
         call puts
         mov eax, ecx
@@ -365,7 +365,7 @@ pte_next:
         call puts
         mov esi, edx
 ;        shl esi, 19        
-        ; ĞÂ¼ÓÈë xd ±êÖ¾
+        ; æ–°åŠ å…¥ xd æ ‡å¿—
         shl esi, 18
         btr esi, 31
         and ebx, 0x80000000
@@ -383,11 +383,11 @@ dump_pae_page_done:
         ret
 
 ;-------------------------------------------
-; dump_page(): ´òÓ¡Ò³×ª»»±íĞÅÏ¢
+; dump_page(): æ‰“å°é¡µè½¬æ¢è¡¨ä¿¡æ¯
 ; input:
 ;                esi: virtual address(linear address)
-; ×¢Òâ£º
-;                Õâ¸öº¯ÊıÊÇÔÚÒ»¶ÔÒ»Ó³ÉäµÄÇé¿öÏÂ£¨virtual addressºÍphysical address Ò»ÖÂ£©
+; æ³¨æ„ï¼š
+;                è¿™ä¸ªå‡½æ•°æ˜¯åœ¨ä¸€å¯¹ä¸€æ˜ å°„çš„æƒ…å†µä¸‹ï¼ˆvirtual addresså’Œphysical address ä¸€è‡´ï¼‰
 ;-------------------------------------------        
 dump_page:
         push ecx
@@ -401,7 +401,7 @@ dump_page:
         mov edx, eax
         bt eax, 7                                        ; PS = ?
         jnc dump_4k_page
-;; Êä³ö 4M Ò³ÃæµÄ PDE
+;; è¾“å‡º 4M é¡µé¢çš„ PDE
         mov edi, eax
         mov esi, eax
         and esi, 0xffc00000                        ; 4M page frame
@@ -421,7 +421,7 @@ dump_page:
         jmp do_dump_page_done
 
 dump_4k_page:        
-;; 4KÒ³Ãæ
+;; 4Ké¡µé¢
 
 ; 1) PDE
         mov esi, edx
@@ -467,7 +467,7 @@ do_dump_page_done:
         ret        
 
 ;---------------------------------------------------------------------
-; get_32bit_paging_pte_index(): µÃµ½32-bit pagingÄ£Ê½ÏÂµÄ pte index Öµ
+; get_32bit_paging_pte_index(): å¾—åˆ°32-bit pagingæ¨¡å¼ä¸‹çš„ pte index å€¼
 ; input:
 ;                esi: virtual address
 ; output:
@@ -480,7 +480,7 @@ __get_32bit_paging_pte_index:
         ret
 
 ;---------------------------------------------------------------------
-; get_32bit_paging_pde_index(): µÃµ½32-bit pagingÄ£Ê½ÏÂµÄ pde index Öµ
+; get_32bit_paging_pde_index(): å¾—åˆ°32-bit pagingæ¨¡å¼ä¸‹çš„ pde index å€¼
 ; input:
 ;                esi: virtual address
 ; output:
@@ -495,28 +495,28 @@ __get_32bit_paging_pde_index:
 
 
 ;-----------------------------------------------------------------
-; get_maxphyaddr_select_mask(): ¼ÆÊı³ö MAXPHYADDR ÖµµÄ SELECT MASK
+; get_maxphyaddr_select_mask(): è®¡æ•°å‡º MAXPHYADDR å€¼çš„ SELECT MASK
 ; output:
 ;       rax-maxphyaddr select mask
-; ÃèÊö£º
-;       select mask ÖµÓÃÓÚÈ¡µÃ MAXPHYADDR ¶ÔÓ¦µÄÎïÀíµØÖ·Öµ
-; ÀıÈç£º
-;       MAXPHYADDR = 36 Ê±: select mask = 0000000F_FFFFFFFFh
-;       MAXPHYADDR = 40 Ê±: select mask = 000000FF_FFFFFFFFh
-;       MAXPHYADDR = 52 Ê±£ºselect mask = 000FFFFF_FFFFFFFFh
+; æè¿°ï¼š
+;       select mask å€¼ç”¨äºå–å¾— MAXPHYADDR å¯¹åº”çš„ç‰©ç†åœ°å€å€¼
+; ä¾‹å¦‚ï¼š
+;       MAXPHYADDR = 36 æ—¶: select mask = 0000000F_FFFFFFFFh
+;       MAXPHYADDR = 40 æ—¶: select mask = 000000FF_FFFFFFFFh
+;       MAXPHYADDR = 52 æ—¶ï¼šselect mask = 000FFFFF_FFFFFFFFh
 ;-----------------------------------------------------------------
 get_maxphyaddr_select_mask:
         push ecx
         push edx
-        call get_maxphyaddr                     ; µÃµ½ MAXPHYADDR Öµ
+        call get_maxphyaddr                     ; å¾—åˆ° MAXPHYADDR å€¼
         lea ecx, [eax - 64]
         neg ecx
         mov eax, 0
         mov edx, -1
-        cmp ecx, 32                             ; ¼ÙÈçÎª 32 Î»
+        cmp ecx, 32                             ; å‡å¦‚ä¸º 32 ä½
         cmove edx, eax
         shl edx, cl
-        shr edx, cl                            ; È¥³ı¸ßÎ»
+        shr edx, cl                            ; å»é™¤é«˜ä½
         mov eax, -1
         mov [maxphyaddr_select_mask], eax
         mov [maxphyaddr_select_mask + 4], edx
@@ -526,9 +526,9 @@ get_maxphyaddr_select_mask:
 
 
 
-;------------ Êı¾İÇø ------------
+;------------ æ•°æ®åŒº ------------
 
-;; XDÒÑ¾­¿ªÆô±êÖ¾Î»
+;; XDå·²ç»å¼€å¯æ ‡å¿—ä½
 xd_bit  dd 0
 
 maxphyaddr_select_mask  dq 0
