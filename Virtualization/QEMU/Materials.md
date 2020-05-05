@@ -33,3 +33,5 @@ qemu 各个模块: https://richardweiyang.gitbooks.io/understanding_qemu/address
 qemu 2019: https://www.shangmayuan.com/a/b5d230757e6c49aa8868099d.html
 
 重要: https://www.cnblogs.com/ck1020/category/905469.html
+
+重要: https://luohao-brian.gitbooks.io/interrupt-virtualization/qemu-kvm-zhong-duan-xu-ni-hua-kuang-jia-fen-679028-4e0a29.html
