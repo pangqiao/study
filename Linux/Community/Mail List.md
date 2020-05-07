@@ -13,7 +13,9 @@
 
 # 1. LKML
 
-Linux最大的一个优势就是它有一个紧密团结了众多使用者和开发者的社区，它的目标就是提供尽善尽美的内核。内核社区的中心是内核邮件列表(Linux Kernel Mailing List，LKML)，我们可以在 http://vger.kernel.org/vger-lists.html 上面看到订阅这个邮件列表的细节。
+内核社区的中心是内核邮件列表(Linux Kernel Mailing List，LKML)，我们可以在 http://vger.kernel.org/vger-lists.html 上面看到订阅这个邮件列表的细节。
+
+注: https://lore.kernel.org/lists.html 也可以在这里看到.
 
 大家知道，Linux kernel是由分布在世界各地的大牛们共同开发、维护的，这就需要一种交流工具，这种工具就是LKML。因而LKML主要有如下功能：
 
