@@ -41,9 +41,6 @@ Intel从奔腾4开始的CPU中增加了一种机制，称为MCA——Machine Che
 
 - 甚至有可能在**MCE处理函数**中又触发了**不可纠正的MCE**，也会导致**系统直接重启**。
 
-发现硬件错误时触发的异常(exception)，中断号是18，异常的类型是abort：
-
-![](./images/2019-04-28-15-02-46.png)
 
 ## 1.2. 可纠正的MCE(corrected machine-check error)
 
@@ -56,6 +53,11 @@ CMCI是在**MCA之后才加入**的，算是对MCA的一个增强，在此之前
 Corrected machine-check error interrupt (CMCI) 是MCA的增强特性。在原来的芯片里面，都是使用一种叫做threshold-based error reporting的机制来处理corrected error. 但是threshold-based error reporting需要系统软件周期性的轮询检测硬件的corrected MC errors，造成CPU的浪费。 CMCI 提供了一种机制，当corrected error发生侧次数**到达阀值**的时候，就会**发送一个信号给本地的CPU**来通知系统软件。
 
 当然，系统软件可以通过`IA32_MCi_CTL2 MSRs`来控制该特性的开关
+
+发现硬件错误时触发的异常(exception)，中断号是18，异常的类型是abort：
+
+![](./images/2019-04-28-15-02-46.png)
+
 
 ## 1.3. 额外功能
 

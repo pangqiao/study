@@ -56,4 +56,6 @@ mce 结构如下：
 
 # 参考
 
-https://blog.csdn.net/xiaocainiaoshangxiao/article/details/38046239
+https://blog.csdn.net/xiaocainiaoshangxiao/article/details/38046239 (未完)
+
+http://linuxperf.com/?p=105 (未)
