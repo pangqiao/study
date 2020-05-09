@@ -1,50 +1,50 @@
 ; protected.asm
-; Copyright (c) 2009-2012 µËÖ¾
+; Copyright (c) 2009-2012 é‚“å¿—
 ; All rights reserved.
 
 
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length dw     PROTECTED_END - PROTECTED_BEGIN         ; protected Ä£¿é³¤¶È
+protected_length dw     PROTECTED_END - PROTECTED_BEGIN         ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÎªÁËÍê³ÉÊµÑé£¬¹Ø±ÕÊ±¼äÖĞ¶ÏºÍ¼üÅÌÖĞ¶Ï
+;; ä¸ºäº†å®Œæˆå®éªŒï¼Œå…³é—­æ—¶é—´ä¸­æ–­å’Œé”®ç›˜ä¸­æ–­
         ;call disable_timer
         ;sti
-;; ÉèÖÃ #PF handler
+;; è®¾ç½® #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, pf_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, gp_handler
         call set_interrupt_handler        
         
-;; ÉèÖÃ #DB handler
+;; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, db_handler
         call set_interrupt_handler        
 
         
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; è®¾ç½® sysenter/sysexit ä½¿ç”¨ç¯å¢ƒ
         call set_sysenter
 
-;; ÉèÖÃ system_service handler
+;; è®¾ç½® system_service handler
         mov esi, 0x40
         mov edi, system_service
         call set_interrupt_handler                
 
-; ÔÊĞíÖ´ĞĞ SSE Ö¸Áî        
+; å…è®¸æ‰§è¡Œ SSE æŒ‡ä»¤        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
@@ -57,26 +57,26 @@ entry:
         mov ax, ldt_sel
         lldt ax
         
-;ÉèÖÃ CR4.PAE
+;è®¾ç½® CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; å¼€å¯ XD åŠŸèƒ½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; åˆå§‹åŒ– paging ç¯å¢ƒ
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
+;è®¾ç½® PDPT è¡¨åœ°å€        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; ´ò¿ª¡¡paging
+; æ‰“å¼€ã€€paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax                
 
 
-;; ÉèÖÃ 8259 µÄ»·¾³
+;; è®¾ç½® 8259 çš„ç¯å¢ƒ
         mov esi, PIC8259A_TIMER_VECTOR
         mov edi, timer_handler
         call set_interrupt_handler        
@@ -93,15 +93,15 @@ entry:
 
 
 ;
-;** ÊµÑé 20-3£º´òÓ¡ statusĞÅÏ¢¼° stack
+;** å®éªŒ 20-3ï¼šæ‰“å° statusä¿¡æ¯åŠ stack
 ;
 
-        finit                                ; ³õÊ¼»¯ x87 FPU
-        fld TWORD [qnan]                     ; ¼ÓÔØ QNaN Êı
-        fld TWORD [snan]                     ; ¼ÓÔØ SNaN Êı
-        fld TWORD [denormal]                 ; ¼ÓÔØ denormal Êı
-        fld TWORD [infinity]                 ; ¼ÓÔØ infinity Êı
-        fld TWORD [unsupported]              ; ¼ÓÔØ unsupported Êı
+        finit                                ; åˆå§‹åŒ– x87 FPU
+        fld TWORD [qnan]                     ; åŠ è½½ QNaN æ•°
+        fld TWORD [snan]                     ; åŠ è½½ SNaN æ•°
+        fld TWORD [denormal]                 ; åŠ è½½ denormal æ•°
+        fld TWORD [infinity]                 ; åŠ è½½ infinity æ•°
+        fld TWORD [unsupported]              ; åŠ è½½ unsupported æ•°
         fldz
         fld1
         call dump_data_register                
@@ -110,18 +110,18 @@ entry:
         
 
 
-snan    dd 0                                        ; SNaN Êı±àÂë
+snan    dd 0                                        ; SNaN æ•°ç¼–ç 
         dd 0xb0000000
         dw 0x7fff
 
-qnan    dd 0                                        ; QNaN Êı±àÂë
+qnan    dd 0                                        ; QNaN æ•°ç¼–ç 
         dd 0xe0000000
         dw 0x7fff
 
-denormal        dq 1                                ; denormal ±àÂë
+denormal        dq 1                                ; denormal ç¼–ç 
                 dw 0         
                          
-infinity        dd 0                                ; infinity ±àÂë
+infinity        dd 0                                ; infinity ç¼–ç 
                 dd 0x80000000
                 dd 0x7fff
 
@@ -130,11 +130,11 @@ unsupported     dq 0                                ; unsupported
                         
                                                  
 
-; ×ªµ½ long Ä£¿é
+; è½¬åˆ° long æ¨¡å—
         jmp LONG_SEG
                                 
                                 
-; ½øÈë ring 3 ´úÂë
+; è¿›å…¥ ring 3 ä»£ç 
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -142,7 +142,7 @@ unsupported     dq 0                                ; unsupported
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ç”¨æˆ·ä»£ç 
 
 user_entry:
         mov ax, user_data32_sel
@@ -182,7 +182,7 @@ do_timer_handler:
         call dump_8259_isr
 
 test_lock:        
-        bt DWORD [spin_lock], 0                 ; ²âÊÔËø
+        bt DWORD [spin_lock], 0                 ; æµ‹è¯•é”
         jnc get_lock
         pause
         jmp test_lock
@@ -190,7 +190,7 @@ get_lock:
         lock bts DWORD [spin_lock], 0
         jc test_lock
         
-;·¢ËÍ special mask mode ÃüÁî
+;å‘é€ special mask mode å‘½ä»¤
         call enable_keyboard
         call send_smm_command
 
@@ -207,7 +207,7 @@ delay:
         bt DWORD [keyboard_done], 0
         jnc wait_for_keyboard
         
-        btr DWORD [spin_lock], 0                ; ÊÍ·ÅËø        
+        btr DWORD [spin_lock], 0                ; é‡Šæ”¾é”        
         
         mov esi, t_msg1
         call puts
@@ -230,7 +230,7 @@ do_keyboard_handler:
         call dump_8259_isr
 
 
-        bts DWORD [keyboard_done], 0                ; Íê³É
+        bts DWORD [keyboard_done], 0                ; å®Œæˆ
 
         mov esi, k_msg1
         call puts        
@@ -238,7 +238,7 @@ do_keyboard_handler:
         iret        
         
 ;---------------------------------------------
-; apic_timer_handler()£ºÕâÊÇ APIC TIMER µÄ ISR
+; apic_timer_handler()ï¼šè¿™æ˜¯ APIC TIMER çš„ ISR
 ;---------------------------------------------
 apic_timer_handler:
         jmp do_apic_timer_handler
@@ -247,7 +247,7 @@ at_msg1 db 10, 'exit ther APIC timer handler <<<', 10, 0
 do_apic_timer_handler:        
         mov esi, at_msg
         call puts
-        call dump_apic                        ; ´òÓ¡ apic ¼Ä´æÆ÷ĞÅÏ¢
+        call dump_apic                        ; æ‰“å° apic å¯„å­˜å™¨ä¿¡æ¯
         mov esi, at_msg1
         call puts
         mov DWORD [APIC_BASE + EOI], 0
@@ -276,7 +276,7 @@ do_db_handler:
         call print_dword_value
         call println
 
-; ÖØÉè BTF        
+; é‡è®¾ BTF        
         mov ecx, IA32_DEBUGCTL
         mov edx, 0
         mov eax, 2                           ; BTF = 1
@@ -306,14 +306,14 @@ pf_msg  db '---> now, enter #PF handler', 10
         db 'occur at: 0x', 0
 pf_msg2 db 10, 'fixed the error', 10, 0                
 do_pf_handler:        
-        add esp, 4                                ; ºöÂÔ Error code
+        add esp, 4                                ; å¿½ç•¥ Error code
         mov [esp], ebp
         push ecx
         push edx
         mov esi, pf_msg
         call puts
         
-        mov ecx, cr2                              ; ·¢Éú#PFÒì³£µÄvirtual address
+        mov ecx, cr2                              ; å‘ç”Ÿ#PFå¼‚å¸¸çš„virtual address
         mov esi, ecx
         call print_dword_value
         
@@ -328,7 +328,7 @@ do_pf_handler_done:
         
 
         
-;*********** Êı¾İ ******************        
+;*********** æ•°æ® ******************        
 LDT:
         times 5 dq 0
 LDT_END:
@@ -337,7 +337,7 @@ LDT_END:
 
 
 
-;********* include Ä£¿é ********************
+;********* include æ¨¡å— ********************
 ;; %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 ;%include "..\lib\msr.asm"
@@ -349,7 +349,7 @@ LDT_END:
 %include "..\lib\x87.asm"
 
 
-;;************* º¯Êıµ¼Èë±í  *****************
+;;************* å‡½æ•°å¯¼å…¥è¡¨  *****************
 
 putc:                           jmp LIB32_SEG + LIB32_PUTC * 5
 puts:                           jmp LIB32_SEG + LIB32_PUTS * 5

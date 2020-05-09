@@ -5,55 +5,55 @@
 
 
 ;------------------------------------
-; enable_hpet(): ¿ªÆô HPET£¨¸ß¾«¶È¶¨Ê±Æ÷£©
+; enable_hpet(): å¼€å¯ HPETï¼ˆé«˜ç²¾åº¦å®šæ—¶å™¨ï¼‰
 ;------------------------------------
 enable_hpet:
       
 ;* 
-;* ¶ÁÈ¡ HPET ÅäÖÃ¼Ä´æÆ÷
-;* Address Enable Î»ÖÃÎ»£¬¿ªÆô HPET µØÖ·
-;* Address Select ÓòÉèÖÃÎª 00B£¬HPET »ùÖ·Î»ÓÚ 0FED00000h
+;* è¯»å– HPET é…ç½®å¯„å­˜å™¨
+;* Address Enable ä½ç½®ä½ï¼Œå¼€å¯ HPET åœ°å€
+;* Address Select åŸŸè®¾ç½®ä¸º 00Bï¼ŒHPET åŸºå€ä½äº 0FED00000h
 ;
         call get_root_complex_base_address
         mov esi, [eax + 3404h]
-        bts esi, 7                      ; address enable Î»
+        bts esi, 7                      ; address enable ä½
         and esi, 0FFFFFFFCh             ; address select = 00B
         mov [eax + 3404h], esi
 ;*
-;* ÉèÖÃ HPET µÄÅäÖÃ¼Ä´æÆ÷
+;* è®¾ç½® HPET çš„é…ç½®å¯„å­˜å™¨
 ;*
-;* legacy replacement rout = 1 Ê±:
-;*      1. timer0 ×ª·¢µ½ IOAPIC IRQ2
-;*      2. timer1 ×ª·¢µ½ IOAPIC IRQ8
+;* legacy replacement rout = 1 æ—¶:
+;*      1. timer0 è½¬å‘åˆ° IOAPIC IRQ2
+;*      2. timer1 è½¬å‘åˆ° IOAPIC IRQ8
 ;*
-;* overall enable ±ØĞëÉèÎª 1
+;* overall enable å¿…é¡»è®¾ä¸º 1
 ;*
         mov eax, 3                      ; Overall Enable = 1, legacy replacement rout = 1
         mov [HPET_BASE + 10h], eax
 
 ;*
-;* ³õÊ¼»¯ HPET timer ÅäÖÃ
+;* åˆå§‹åŒ– HPET timer é…ç½®
 ;*
         call init_hpet_timer
         ret
 
 
 ;------------------------------------------
-; init_hpet_timer(): ³õÊ¼»¯ 8 ¸ö timer
+; init_hpet_timer(): åˆå§‹åŒ– 8 ä¸ª timer
 ;------------------------------------------
 init_hpet_timer:
 ;*
-;* HPET ÅäÖÃËµÃ÷:
+;* HPET é…ç½®è¯´æ˜:
 ;*
-;* 1). timer 0 ÅäÖÃ routed µ½ IO APIC µÄ IRQ2 ÉÏ
-;* 2). timer 1 ÅäÖÃ routed µ½ IO APIC µÄ IRQ8 ÉÏ
-;* 3). timer 2, 3 ÅäÖÃ routed µ½ IO APIC µÄ IRQ20 ÉÏ
-;* 4). timer 4, 5, 6, 7 ±ØĞëÊ¹ÓÃ direct processor message ·½Ê½
-;*    ¶ø²»ÊÇ routed µ½ 8259 »ò IO APIC µÄ IRQ
+;* 1). timer 0 é…ç½® routed åˆ° IO APIC çš„ IRQ2 ä¸Š
+;* 2). timer 1 é…ç½® routed åˆ° IO APIC çš„ IRQ8 ä¸Š
+;* 3). timer 2, 3 é…ç½® routed åˆ° IO APIC çš„ IRQ20 ä¸Š
+;* 4). timer 4, 5, 6, 7 å¿…é¡»ä½¿ç”¨ direct processor message æ–¹å¼
+;*    è€Œä¸æ˜¯ routed åˆ° 8259 æˆ– IO APIC çš„ IRQ
 ;*
 
         ;*
-        ;* timer 0 ÅäÖÃÎª£ºÖÜÆÚĞÔÖĞ¶Ï, 64 Î»µÄ comparator Öµ
+        ;* timer 0 é…ç½®ä¸ºï¼šå‘¨æœŸæ€§ä¸­æ–­, 64 ä½çš„ comparator å€¼
         ;*
         mov DWORD [HPET_TIMER0_CONFIG], 0000004Ch
         mov DWORD [HPET_TIMER0_CONFIG + 4], 0
@@ -68,7 +68,7 @@ init_hpet_timer:
 
 
 ;--------------------------------------------
-; dump_hpet_capabilities(): Êä³ö HPET ÄÜÁ¦ĞÅÏ¢
+; dump_hpet_capabilities(): è¾“å‡º HPET èƒ½åŠ›ä¿¡æ¯
 ;--------------------------------------------
 dump_hpet_capabilities:
         push ebx

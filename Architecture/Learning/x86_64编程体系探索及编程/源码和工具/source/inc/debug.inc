@@ -1,5 +1,5 @@
 ; debug.inc
-; Copyright (c) 2009-2012 µËÖ¾
+; Copyright (c) 2009-2012 é‚“å¿—
 ; All rights reserved.
 
 %ifndef DEBUG_INC
@@ -13,7 +13,7 @@
 %define BTINT_BIT				8
 
 
-;; ¶¨Òå IA32_DEBUGCTL ¼Ä´æÆ÷µÄ¹¦ÄÜÎ»Î»
+;; å®šä¹‰ IA32_DEBUGCTL å¯„å­˜å™¨çš„åŠŸèƒ½ä½ä½
 %define LBR                             01h
 %define BTF                             02h
 %define TR                              40h
@@ -28,16 +28,16 @@
 
 
 ;*
-;* ¶¨Òå DS save ÇøÓò»ùµØÖ·
-;* È±Ê¡Çé¿öÏÂÊÇÊ¹ÓÃ 400000h ÇøÓò
+;* å®šä¹‰ DS save åŒºåŸŸåŸºåœ°å€
+;* ç¼ºçœæƒ…å†µä¸‹æ˜¯ä½¿ç”¨ 400000h åŒºåŸŸ
 ;*
 %define DS_SAVE_BASE			0x400000
 %define BTS_BUFFER_BASE			0x400100
 %define PEBS_BUFFER_BASE		0x400400
 
 ;* 
-;* ¶¨Òå BTS Óë PEBS ×î´ó¼ÇÂ¼Êý(maximum Óë thresholdÖµ£©
-;* È±Ê¡Çé¿öÏÂ£¬×î¶à¿ÉÈÝÄÉ 10 Ìõ¼ÇÂ¼
+;* å®šä¹‰ BTS ä¸Ž PEBS æœ€å¤§è®°å½•æ•°(maximum ä¸Ž thresholdå€¼ï¼‰
+;* ç¼ºçœæƒ…å†µä¸‹ï¼Œæœ€å¤šå¯å®¹çº³ 10 æ¡è®°å½•
 ;*
 %define BTS_RECORD_MAXIMUM			10
 %define BTS_RECORD_INT_THRESHOLD		(BTS_RECORD_MAXIMUM)
@@ -47,26 +47,26 @@
 
 
 ;* 
-;* ¶¨Òå 32 Î»¸ñÊ½ÏÂµÄ¼ÇÂ¼ size
+;* å®šä¹‰ 32 ä½æ ¼å¼ä¸‹çš„è®°å½• size
 ;* 
 %define BTS_RECORD_SIZE                 12
 %define PEBS_RECORD_SIZE                40
 
 ;*
-;* ¶¨Òå 64 Î»¸ñÊ½ÏÂµÄ¼ÇÂ¼ size
+;* å®šä¹‰ 64 ä½æ ¼å¼ä¸‹çš„è®°å½• size
 ;*
 %define BTS_RECORD64_SIZE               24
 %define PEBS_RECORD64_SIZE              144
 
 ;*
-;* ¶¨ÒåÔöÇ¿¸ñÊ½ÏÂµÄ PEBS ¼ÇÂ¼ size
+;* å®šä¹‰å¢žå¼ºæ ¼å¼ä¸‹çš„ PEBS è®°å½• size
 ;*
 %define PEBS_ENHANCEMENT_RECORD64_SIZE  176
 
 
 
 ;*
-;* ¶¨Òå 32 Î»¸ñÊ½µÄ BTS ¹ÜÀíÇø¼ÇÂ¼ offset Î»ÖÃ
+;* å®šä¹‰ 32 ä½æ ¼å¼çš„ BTS ç®¡ç†åŒºè®°å½• offset ä½ç½®
 ;*
 %define	BTS_BASE                        0
 %define BTS_INDEX                       4
@@ -74,7 +74,7 @@
 %define BTS_THRESHOLD                   0CH
 
 ;*
-;* ¶¨Òå 64 Î»¸ñÊ½ BTS ¹ÜÀíÇø
+;* å®šä¹‰ 64 ä½æ ¼å¼ BTS ç®¡ç†åŒº
 ;*
 %define	BTS64_BASE                      0
 %define BTS64_INDEX                     8
@@ -82,7 +82,7 @@
 %define BTS64_THRESHOLD                 18H
 
 ;*
-;* ¶¨Òå 32 Î»¸ñÊ½µÄ PEBS ¹ÜÀíÇø¼ÇÂ¼ offset Î»ÖÃ
+;* å®šä¹‰ 32 ä½æ ¼å¼çš„ PEBS ç®¡ç†åŒºè®°å½• offset ä½ç½®
 ;*
 %define PEBS_BASE                       10H
 %define PEBS_INDEX                      14H
@@ -94,7 +94,7 @@
 %define PEBS_COUNTER3                   2CH
 
 ;*
-;* ¶¨Òå 64 Î»¸ñÊ½µÄ PEBS ¹ÜÀíÇø
+;* å®šä¹‰ 64 ä½æ ¼å¼çš„ PEBS ç®¡ç†åŒº
 ;*
 %define PEBS64_BASE                     20H
 %define PEBS64_INDEX                    28H
@@ -108,26 +108,26 @@
 
 
 ;-----------------------------------------------------------
-; ENABLE_DEBUGCTL ºê£º¿ªÆô IA32_DEBUGCTL ¼Ä´æÆ÷µÄ¹¦ÄÜ
+; ENABLE_DEBUGCTL å®ï¼šå¼€å¯ IA32_DEBUGCTL å¯„å­˜å™¨çš„åŠŸèƒ½
 ; input:
-;       ²ÎÊýÊÇ¹¦ÄÜÎ»
-; Ê¾Àý:
-;       ENABLE_DEBUGCTL (TR | BTS | BTINT)£º¿ªÆô BTS Óë BTINT ¹¦ÄÜ
+;       å‚æ•°æ˜¯åŠŸèƒ½ä½
+; ç¤ºä¾‹:
+;       ENABLE_DEBUGCTL (TR | BTS | BTINT)ï¼šå¼€å¯ BTS ä¸Ž BTINT åŠŸèƒ½
 ;------------------------------------------------------------
 %macro ENABLE_DEBUGCTL 1
         mov ecx, IA32_DEBUGCTL
         rdmsr
-        or eax, %1              ; ²ÎÊýÖµ
+        or eax, %1              ; å‚æ•°å€¼
         wrmsr
 %endmacro
 
 
 ;-------------------------------------------------------------
-; DISABLE_DEBUGCTL ºê£º¹Ø±Õ IA32_DEBUGCTL ¹¦ÄÜ
+; DISABLE_DEBUGCTL å®ï¼šå…³é—­ IA32_DEBUGCTL åŠŸèƒ½
 ; input:
-;       ²ÎÊýÊÇ¹¦ÄÜÎ»
-; Ê¾Àý:
-;       DISABLE_DEBUGCTL (TR | BTINT): ¹Ø±Õ TR Óë BTINT ¹¦ÄÜ
+;       å‚æ•°æ˜¯åŠŸèƒ½ä½
+; ç¤ºä¾‹:
+;       DISABLE_DEBUGCTL (TR | BTINT): å…³é—­ TR ä¸Ž BTINT åŠŸèƒ½
 ;-------------------------------------------------------------
 %macro DISABLE_DEBUGCTL 1
         mov ecx, IA32_DEBUGCTL
@@ -139,7 +139,7 @@
 
 
 ;-----------------------------------------
-; ENABLE_LBR() ºê£º¿ªÆô LBR
+; ENABLE_LBR() å®ï¼šå¼€å¯ LBR
 ;-----------------------------------------
 %macro ENABLE_LBR 0
         ENABLE_DEBUGCTL (LBR)
@@ -147,16 +147,16 @@
 
 
 ;-----------------------------------
-; ENABLE_BTS() ºê£º¿ªÆô bts, »·×´»ØÂ· 
+; ENABLE_BTS() å®ï¼šå¼€å¯ bts, çŽ¯çŠ¶å›žè·¯ 
 ;-----------------------------------
 %macro ENABLE_BTS 0
         ENABLE_DEBUGCTL (TR | BTS)	
 %endmacro
 
 ;-------------------------------------------------
-; ENABLE_BTS_FREEZE_PERFMON_ON_PMI ºê
-; ÃèÊö:
-;       ¿ªÆô BTS ²¢Ê¹ÓÃ freeze_perfmon_on_pmi ¹¦ÄÜ
+; ENABLE_BTS_FREEZE_PERFMON_ON_PMI å®
+; æè¿°:
+;       å¼€å¯ BTS å¹¶ä½¿ç”¨ freeze_perfmon_on_pmi åŠŸèƒ½
 ;--------------------------------------------------
 %macro ENABLE_BTS_FREEZE_PERFMON_ON_PMI 0
         ENABLE_DEBUGCTL (TR | BTS | FREEZE_PERFMON_ON_PMI)
@@ -164,7 +164,7 @@
 
 
 ;--------------------------------------------
-; ENABLE_BTS_BTINT() ºê£º¿ªÆô bts, ²¢ÇÒÊ¹ÓÃ BTINT
+; ENABLE_BTS_BTINT() å®ï¼šå¼€å¯ bts, å¹¶ä¸”ä½¿ç”¨ BTINT
 ;--------------------------------------------
 %macro ENABLE_BTS_BTINT 0
         ENABLE_DEBUGCTL (TR | BTS | BTINT)
@@ -180,20 +180,20 @@
 
 
 ;-----------------------------------------
-; DISABLE_LBR() ºê£º¹Ø±Õ LBR
+; DISABLE_LBR() å®ï¼šå…³é—­ LBR
 ;-----------------------------------------
 %macro DISABLE_LBR 0
         DISABLE_DEBUGCTL (LBR)
 %endmacro
 
 
-;-------------------------------£­£­£­£­£­£­£­£­------------
-; DISABLE_TR(): Èç¹û TR ÊÇ¿ªÆô¾Í¹Ø±Õ TR£¬Í¬Ê± BTS ¹¦ÄÜÒ²ÎÞÐ§
+;-------------------------------ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼------------
+; DISABLE_TR(): å¦‚æžœ TR æ˜¯å¼€å¯å°±å…³é—­ TRï¼ŒåŒæ—¶ BTS åŠŸèƒ½ä¹Ÿæ— æ•ˆ
 ;----------------------------------------------------------
 %macro DISABLE_TR 0
 	mov ecx, IA32_DEBUGCTL
 	rdmsr
-	bt eax, 6			; TR Î»
+	bt eax, 6			; TR ä½
 	mov edi, eax,
 	mov esi, 0FFBFh			; TR = 0
 	cmovc edi, esi
@@ -204,7 +204,7 @@
 
 
 ;--------------------------
-; DISABLE_BTS() ºê£º¹Ø±Õ bts
+; DISABLE_BTS() å®ï¼šå…³é—­ bts
 ;---------------------------
 %macro DISABLE_BTS 0
         DISABLE_DEBUGCTL (TR | BTS)
@@ -219,7 +219,7 @@
 %endmacro
 
 ;--------------------------------------------
-; DISABLE_BTS_BTINT() ºê£º¹Ø±Õ bts
+; DISABLE_BTS_BTINT() å®ï¼šå…³é—­ bts
 ;--------------------------------------------
 %macro DISABLE_BTS_BTINT 0
         DISABLE_DEBUGCTL (TR | BTS | BTINT)
@@ -235,83 +235,83 @@
 
 
 ;------------------------------------------
-; ºê SET_DS_MANAGEMENT() ÓÃÀ´ÉèÖÃ DS ¹ÜÀíÇø
+; å® SET_DS_MANAGEMENT() ç”¨æ¥è®¾ç½® DS ç®¡ç†åŒº
 ;------------------------------------------
 %macro SET_DS_MANAGEMENT 0
-	mov esi, BTS_BUFFER_BASE		; BTS buffer »ùÖ·
-	mov edi, PEBS_BUFFER_BASE		; PEBS buffer »ùÖ·
+	mov esi, BTS_BUFFER_BASE		; BTS buffer åŸºå€
+	mov edi, PEBS_BUFFER_BASE		; PEBS buffer åŸºå€
 	call set_ds_management_record
 %endmacro
 
 
 ;---------------------------------------------------
-; ºê SET_DS_AREA() 
-; ÃèÊö£º
-;	ÓÃÀ´ÉèÖÃÍêÕûµÄ DS ÇøÓò£¨»·ÐÎ»ØÂ· buffer ÀàÐÍ£©
+; å® SET_DS_AREA() 
+; æè¿°ï¼š
+;	ç”¨æ¥è®¾ç½®å®Œæ•´çš„ DS åŒºåŸŸï¼ˆçŽ¯å½¢å›žè·¯ buffer ç±»åž‹ï¼‰
 ;----------------------------------------------------
 %macro SET_DS_AREA 0
-	;;; ÉèÖÃ IA32_DS_AERA ¼Ä´æÆ÷
+	;;; è®¾ç½® IA32_DS_AERA å¯„å­˜å™¨
 	call set_debug_store_area	
 
-	;;; ÉèÖÃ DS ¹ÜÀíÇøÓò
+	;;; è®¾ç½® DS ç®¡ç†åŒºåŸŸ
 	SET_DS_MANAGEMENT
 %endmacro
 
 
 ;------------------------------------------------
-; ºê SET_INT_DS_AREA()
-; ÃèÊö£º
-;	ÓÃÀ´ÉèÖÃµ± buffer ÂúÊ±²úÉú DS buffer ÖÐ¶Ï
+; å® SET_INT_DS_AREA()
+; æè¿°ï¼š
+;	ç”¨æ¥è®¾ç½®å½“ buffer æ»¡æ—¶äº§ç”Ÿ DS buffer ä¸­æ–­
 ;------------------------------------------------
 %macro SET_INT_DS_AREA 0
-	SET_DS_AREA				; ÏÈÉèÖÃÎª»·ÐÎ»ØÂ· buffer ÀàÐÍ
+	SET_DS_AREA				; å…ˆè®¾ç½®ä¸ºçŽ¯å½¢å›žè·¯ buffer ç±»åž‹
 
-	; ½ÓÏÂÀ´ÉèÖÃ threshold ÖµµÈÓÚ maximum Öµ
-	; À´´ïµ½ buffer ÂúÊ±²úÉú DS ÖÐ¶Ï
-	mov esi, [bts_maximum_pointer]		; ¶Á BTS maximum µØÖ·
-	mov esi, [esi]				; ¶Á BTS maximum Öµ
-	mov edi, [bts_threshold_pointer]	; ¶Á BTS threshold µØÖ·
-	mov [edi], esi				; Éè BTS threshold µÈÓÚ BTS maximum Öµ
+	; æŽ¥ä¸‹æ¥è®¾ç½® threshold å€¼ç­‰äºŽ maximum å€¼
+	; æ¥è¾¾åˆ° buffer æ»¡æ—¶äº§ç”Ÿ DS ä¸­æ–­
+	mov esi, [bts_maximum_pointer]		; è¯» BTS maximum åœ°å€
+	mov esi, [esi]				; è¯» BTS maximum å€¼
+	mov edi, [bts_threshold_pointer]	; è¯» BTS threshold åœ°å€
+	mov [edi], esi				; è®¾ BTS threshold ç­‰äºŽ BTS maximum å€¼
 %endmacro
 
 
 
 
 ;---------------------------------------------------
-; ºê SET_DS_AREA64() 
-; ÃèÊö£º
-;	ÓÃÀ´ÉèÖÃÍêÕûµÄ DS ÇøÓò£¨»·ÐÎ»ØÂ· buffer ÀàÐÍ£©
+; å® SET_DS_AREA64() 
+; æè¿°ï¼š
+;	ç”¨æ¥è®¾ç½®å®Œæ•´çš„ DS åŒºåŸŸï¼ˆçŽ¯å½¢å›žè·¯ buffer ç±»åž‹ï¼‰
 ;----------------------------------------------------
 %macro SET_DS_AREA64 0
-	;;; ÉèÖÃ IA32_DS_AERA ¼Ä´æÆ÷
+	;;; è®¾ç½® IA32_DS_AERA å¯„å­˜å™¨
 	call set_debug_store_area	
 
-	;;; ÉèÖÃ DS ¹ÜÀíÇøÓò
+	;;; è®¾ç½® DS ç®¡ç†åŒºåŸŸ
 	mov rsi, BTS_BUFFER_BASE
 	mov rdi, PEBS_BUFFER_BASE
 	call set_ds_management_record
 %endmacro
 
 ;------------------------------------------------
-; ºê SET_INT_DS_AREA64()
-; ÃèÊö£º
-;	ÓÃÀ´ÉèÖÃµ± buffer ÂúÊ±²úÉú DS buffer ÖÐ¶Ï
+; å® SET_INT_DS_AREA64()
+; æè¿°ï¼š
+;	ç”¨æ¥è®¾ç½®å½“ buffer æ»¡æ—¶äº§ç”Ÿ DS buffer ä¸­æ–­
 ;------------------------------------------------
 %macro SET_INT_DS_AREA64 0
-	SET_DS_AREA64				; ÏÈÉèÖÃÎª»·ÐÎ»ØÂ· buffer ÀàÐÍ
+	SET_DS_AREA64				; å…ˆè®¾ç½®ä¸ºçŽ¯å½¢å›žè·¯ buffer ç±»åž‹
 
-	; ½ÓÏÂÀ´ÉèÖÃ threshold ÖµµÈÓÚ maximum Öµ
-	; À´´ïµ½ buffer ÂúÊ±²úÉú DS ÖÐ¶Ï
-	mov rsi, [bts_maximum_pointer]		; ¶Á BTS maximum µØÖ·
-	mov rsi, [rsi]				; ¶Á BTS maximum Öµ
-	mov rdi, [bts_threshold_pointer]	; ¶Á BTS threshold µØÖ·
-	mov [rdi], rsi				; Éè BTS threshold µÈÓÚ BTS maximum Öµ
+	; æŽ¥ä¸‹æ¥è®¾ç½® threshold å€¼ç­‰äºŽ maximum å€¼
+	; æ¥è¾¾åˆ° buffer æ»¡æ—¶äº§ç”Ÿ DS ä¸­æ–­
+	mov rsi, [bts_maximum_pointer]		; è¯» BTS maximum åœ°å€
+	mov rsi, [rsi]				; è¯» BTS maximum å€¼
+	mov rdi, [bts_threshold_pointer]	; è¯» BTS threshold åœ°å€
+	mov [rdi], rsi				; è®¾ BTS threshold ç­‰äºŽ BTS maximum å€¼
 %endmacro
 
 
 ;------------------------------------------------------------
-; ºê DUMP_DS_MANAGEMENT() ÓÃÀ´´òÓ¡ BTS ¹ÜÀíÇø
-; Ê¹ÓÃÕâ¸öºêÏÈ¹Ø±Õ BTS ±ÜÃâ¼ÇÂ¼ dump_ds_managment()º¯Êý·ÖÖ§
+; å® DUMP_DS_MANAGEMENT() ç”¨æ¥æ‰“å° BTS ç®¡ç†åŒº
+; ä½¿ç”¨è¿™ä¸ªå®å…ˆå…³é—­ BTS é¿å…è®°å½• dump_ds_managment()å‡½æ•°åˆ†æ”¯
 ;------------------------------------------------------------
 %macro DUMP_DS_MANAGEMENT 0
 	mov ecx, IA32_DEBUGCTL
@@ -319,12 +319,12 @@
 	mov esi, 0FF3Fh			; BTS=0, TR=0
 	mov edi, eax
 	push eax
-	bt eax, 7			; ²âÊÔ BTS Î»
+	bt eax, 7			; æµ‹è¯• BTS ä½
 	cmovc edi, esi
 	and eax, edi
 	wrmsr
 	call dump_ds_management
-	; »Ö¸´Ô­ÉèÖÃ
+	; æ¢å¤åŽŸè®¾ç½®
 	pop eax
 	mov edx, 0
 	mov ecx, IA32_DEBUGCTL
@@ -332,8 +332,8 @@
 %endmacro
 
 ;------------------------------------------------------------
-; ºê DUMP_BTS_RECORD() ÓÃÀ´´òÓ¡ BTS buffer ¼ÇÂ¼
-; Ê¹ÓÃÕâ¸öºêÏÈ¹Ø±Õ BTS ±ÜÃâ¼ÇÂ¼ dump_bts_record() º¯Êý·ÖÖ§
+; å® DUMP_BTS_RECORD() ç”¨æ¥æ‰“å° BTS buffer è®°å½•
+; ä½¿ç”¨è¿™ä¸ªå®å…ˆå…³é—­ BTS é¿å…è®°å½• dump_bts_record() å‡½æ•°åˆ†æ”¯
 ;------------------------------------------------------------
 %macro DUMP_BTS_RECORD 0
 	mov ecx, IA32_DEBUGCTL
@@ -341,12 +341,12 @@
 	mov esi, 0FF3Fh			; BTS=0, TR=0
 	mov edi, eax
 	push eax
-	bt eax, 7			; ²âÊÔ BTS Î»
+	bt eax, 7			; æµ‹è¯• BTS ä½
 	cmovc edi, esi
 	and eax, edi
 	wrmsr
 	call dump_bts_record
-	; »Ö¸´Ô­ÉèÖÃ
+	; æ¢å¤åŽŸè®¾ç½®
 	pop eax
 	mov edx, 0
 	mov ecx, IA32_DEBUGCTL
@@ -354,8 +354,8 @@
 %endmacro
 
 ;------------------------------------------------------------
-; ºê DUMP_BTS() ÓÃÀ´´òÓ¡ DS ¹ÜÀíÇøÓë BTS buffer ¼ÇÂ¼
-; Ê¹ÓÃÕâ¸öºêÏÈ¹Ø±Õ BTS ±ÜÃâ¼ÇÂ¼º¯Êý·ÖÖ§
+; å® DUMP_BTS() ç”¨æ¥æ‰“å° DS ç®¡ç†åŒºä¸Ž BTS buffer è®°å½•
+; ä½¿ç”¨è¿™ä¸ªå®å…ˆå…³é—­ BTS é¿å…è®°å½•å‡½æ•°åˆ†æ”¯
 ;------------------------------------------------------------
 %macro DUMP_BTS 0
 	mov ecx, IA32_DEBUGCTL
@@ -363,13 +363,13 @@
 	mov esi, 0FF3Fh			; BTS=0, TR=0
 	mov edi, eax
 	push eax
-	bt eax, 7			; ²âÊÔ BTS Î», BTS »úÖÆÊÇ·ñ¿ªÆô
-	cmovc edi, esi			; Èç¹û¿ªÆô¾Í¹Ø±ÕËü
+	bt eax, 7			; æµ‹è¯• BTS ä½, BTS æœºåˆ¶æ˜¯å¦å¼€å¯
+	cmovc edi, esi			; å¦‚æžœå¼€å¯å°±å…³é—­å®ƒ
 	and eax, edi
 	wrmsr
 	call dump_ds_management
 	call dump_bts_record
-	; »Ö¸´Ô­ÉèÖÃ
+	; æ¢å¤åŽŸè®¾ç½®
 	pop eax
 	mov edx, 0
 	mov ecx, IA32_DEBUGCTL
@@ -377,7 +377,7 @@
 %endmacro
 
 ;------------------------------------------------------------
-; ºê DUMP_BTS64() ÓÃÀ´´òÓ¡ DS ¹ÜÀíÇøÓë BTS buffer ¼ÇÂ¼
+; å® DUMP_BTS64() ç”¨æ¥æ‰“å° DS ç®¡ç†åŒºä¸Ž BTS buffer è®°å½•
 ;------------------------------------------------------------
 %macro DUMP_BTS64 0
 	call dump_ds_management
@@ -386,8 +386,8 @@
 
 
 ;------------------------------------------------------------
-; ºê DUMP_PEBS() ÓÃÀ´´òÓ¡ PEBS ¹ÜÀíÇøÓë buffer ¼ÇÂ¼
-; Ê¹ÓÃÕâ¸öºêÏÈ¹Ø±Õ BTS ±ÜÃâ¼ÇÂ¼º¯Êý·ÖÖ§
+; å® DUMP_PEBS() ç”¨æ¥æ‰“å° PEBS ç®¡ç†åŒºä¸Ž buffer è®°å½•
+; ä½¿ç”¨è¿™ä¸ªå®å…ˆå…³é—­ BTS é¿å…è®°å½•å‡½æ•°åˆ†æ”¯
 ;------------------------------------------------------------
 %macro DUMP_PEBS 0
 	mov ecx, IA32_DEBUGCTL
@@ -395,13 +395,13 @@
 	mov esi, 0FF3Fh			; BTS=0, TR=0
 	mov edi, eax
 	push eax
-	bt eax, 7			; ²âÊÔ BTS Î»
+	bt eax, 7			; æµ‹è¯• BTS ä½
 	cmovc edi, esi
 	and eax, edi
 	wrmsr
 	call dump_ds_management
 	call dump_pebs_record
-	; »Ö¸´Ô­ÉèÖÃ
+	; æ¢å¤åŽŸè®¾ç½®
 	pop eax
 	mov edx, 0
 	mov ecx, IA32_DEBUGCTL

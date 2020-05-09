@@ -6,10 +6,10 @@
 %ifndef PROTECTED_INC
 %define PROTECTED_INC
 
-;; ¶¨Òå±£»¤Ä£Ê½Ê¹ÓÃµ½µÄ³£Á¿Öµ
+;; å®šä¹‰ä¿æŠ¤æ¨¡å¼ä½¿ç”¨åˆ°çš„å¸¸é‡å€¼
 
 
-; ¶¨Òå selector ³£Á¿
+; å®šä¹‰ selector å¸¸é‡
 code16_se                       equ     0x08
 data16_sel                      equ     0x10
 kernel_code32_sel               equ     0x18
@@ -23,7 +23,7 @@ tss_sel                         equ     0x50
 taskgate_sel                    equ     0x58
 ldt_sel                         equ     0x60
 
-;; ¶¨Òå
+;; å®šä¹‰
 LDT_SEGMENT                     equ     0x2
 TASK_GATE                       equ     0x5
 TSS32                           equ     0x9
@@ -34,14 +34,14 @@ TRAP_GATE32                     equ     0xf
 
 
 
-;; kernelÊý¾Ý
+;; kernelæ•°æ®
 KERNEL_CS                       equ     kernel_code32_sel
 KERNEL_SS                       equ	kernel_data32_sel
 USER_CS                         equ     user_code32_sel
 USER_SS                         equ     user_data32_sel
 
 
-;; ¶¨Òå interrupt vector
+;; å®šä¹‰ interrupt vector
 DE_HANDLER_VECTOR               equ     0
 DB_HANDLER_VECTOR               equ     1
 NMI_HANDLER_VECTOR              equ     2
@@ -63,11 +63,11 @@ XM_HANDLER_VECTOR               equ     19
 SX_HANDLER_VECTOR               equ     31
 
 
-; ×Ô¶¨ÒåÖÐ¶Ï·þÎñÀý³ÌÏòÁ¿Öµ
+; è‡ªå®šä¹‰ä¸­æ–­æœåŠ¡ä¾‹ç¨‹å‘é‡å€¼
 SYSTEM_SERVICE_VECTOR           equ     0x40
 
 
-;** 8259 ÖÐ¶Ï vector ***
+;** 8259 ä¸­æ–­ vector ***
 PIC8259A_TIMER_VECTOR           equ     0x20
 KEYBOARD_VECTOR                 equ     0x21
 FPU_VECTOR                      equ     0x2d
@@ -83,7 +83,7 @@ APIC_THERMAL_VECTOR             equ     0x35
 APIC_CMCI_VECTOR                equ     0x36
 
 
-;*** ÏÂÃæÃ¿ 4 ¸ölogical processor ¶¨Òå×ÔÒÑµÄ IPI ÏûÏ¢µÄÖÐ¶ÏÏòÁ¿
+;*** ä¸‹é¢æ¯ 4 ä¸ªlogical processor å®šä¹‰è‡ªå·²çš„ IPI æ¶ˆæ¯çš„ä¸­æ–­å‘é‡
 PROCESSOR0_IPI_VECTOR           equ     0x38
 PROCESSOR1_IPI_VECTOR           equ     0x39
 PROCESSOR2_IPI_VECTOR           equ     0x3a
@@ -91,7 +91,7 @@ PROCESSOR3_IPI_VECTOR           equ     0x3b
 BP_IPI_VECTOR                   equ     PROCESSOR0_IPI_VECTOR
 
 
-;*** ¶¨Òå IOAPIC ÖÐ¶Ï vector
+;*** å®šä¹‰ IOAPIC ä¸­æ–­ vector
 IOAPIC_IRQ0_VECTOR              equ     50h
 IOAPIC_IRQ1_VECTOR              equ     51h
 IOAPIC_IRQ2_VECTOR              equ     52h
@@ -119,21 +119,21 @@ IOAPIC_IRQ23_VECTOR             equ     67h
 
 
 
-; ÏµÍ³·þÎñÀý³ÌºÅ
+; ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å·
 %define SYS_PUTS                        0
 %define SYS_READ_GDT_DESCRIPTOR         1
 %define SYS_WRITE_GDT_DESCRIPTOR	2
 
 
-; ÓÃ»§×Ô¶¨Òå·þÎñÀý³ÌºÅ
+; ç”¨æˆ·è‡ªå®šä¹‰æœåŠ¡ä¾‹ç¨‹å·
 SYSTEM_SERVICE_USER             equ     3
  SYSTEM_SERVICE_USER0           equ     SYSTEM_SERVICE_USER
 SYSTEM_SERVICE_USER1            equ     (SYSTEM_SERVICE_USER0 + 1)
 SYSTEM_SERVICE_USER2            equ     (SYSTEM_SERVICE_USER0 + 2)
 
 
-;Õâ¸öºêÉú³ÉÒ»¸öÃèÊö·û
-;3¸ö²ÎÊý£ºbase, limit, attribute
+;è¿™ä¸ªå®ç”Ÿæˆä¸€ä¸ªæè¿°ç¬¦
+;3ä¸ªå‚æ•°ï¼šbase, limit, attribute
 %macro MAKE_SEGMENT_DESCRIPTOR        3
         dd        (%2 & 0x0000ffff) | ((%1 & 0x0000ffff) << 16)
         dd  ((%1 & 0x00ff0000) >> 16) | (%2 & 0x000f0000) | (%3 << 8) | (%1 & 0xff000000)
