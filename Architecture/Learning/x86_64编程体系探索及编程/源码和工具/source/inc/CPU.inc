@@ -8,7 +8,7 @@
 %include "..\inc\ports.inc"
 
 ;*
-;* ¶¨Òå opcode
+;* å®šä¹‰ opcode
 ;*
 %define REX_W                   DB 48h
 %define O16                     DB 66h
@@ -23,13 +23,13 @@
 %define sysret64                DB 48h, 0Fh, 07h
 
 
-;* ¶¨Òå lea rax, [rip] Ö¸ÁîµÄ encode
-;* ÒòÎª: nasm ÓïÑÔ²ãÉÏ²»Ö§³Ö [rip] Ñ°Ö·
+;* å®šä¹‰ lea rax, [rip] æŒ‡ä»¤çš„ encode
+;* å› ä¸º: nasm è¯­è¨€å±‚ä¸Šä¸æ”¯æŒ [rip] å¯»å€
 %define GET_RIP                 DB 48h, 8Dh, 05h, 00h, 00h, 00h, 00h
 
 
 
-; CR0 ¼Ä´æÆ÷¿ØÖÆÎ»
+; CR0 å¯„å­˜å™¨æ§åˆ¶ä½
 %define PE_BIT                  0
 %define MP_BIT                  1
 %define EM_BIT                  2
@@ -42,7 +42,7 @@
 %define CD_BIT                  30
 %define PG_BIT                  31
 
-;CR4 ¼Ä´æÆ÷¿ØÖÆÎ»
+;CR4 å¯„å­˜å™¨æ§åˆ¶ä½
 %define WME_BIT                 0
 %define PVI_BIT                 1
 %define TSD_BIT                 2
@@ -60,7 +60,7 @@
 %define OSXSAVE_BIT             18
 %define SMEP_BIT                20
 
-; SMM Ä£Ê½µÄ»ùµØÖ·
+; SMM æ¨¡å¼çš„åŸºåœ°å€
 %define SMBASE                  30000H
 
 
@@ -74,9 +74,9 @@
 %define IA32_TSC_COUNTER                10H
 
 
-;***** ¶¨Òå MTRR ¼Ä´æÆ÷µÄµØÖ· ******
+;***** å®šä¹‰ MTRR å¯„å­˜å™¨çš„åœ°å€ ******
 
-;ÏÂÃæÊÇ Fixed-rang MTRR ¼Ä´æÆ÷µÄ¶¨Òå¡¡
+;ä¸‹é¢æ˜¯ Fixed-rang MTRR å¯„å­˜å™¨çš„å®šä¹‰ã€€
 %define IA32_MTRR_FIX64K_00000                                       250H
 %define IA32_MTRR_FIX16K_80000                                       258H
 %define IA32_MTRR_FIX16K_A0000                                       259H
@@ -89,11 +89,11 @@
 %define IA32_MTRR_FIX4K_F0000                                        26EH
 %define IA32_MTRR_FIX4K_F8000                                        26FH
 
-; ÏÂÃæÊÇ MTRR µÄ¹¦ÄÜ¼Ä´æÆ÷¶¨Òå
+; ä¸‹é¢æ˜¯ MTRR çš„åŠŸèƒ½å¯„å­˜å™¨å®šä¹‰
 %define IA32_MTRRCAP                                                 0FEH
 %define IA32_MTRR_DEF_TYPE                                           2FFH
 
-; ÏÂÃæ¶¨Òå MTRR µÄ PHYSBASE/PHYSMASK ¼Ä´æÆ÷
+; ä¸‹é¢å®šä¹‰ MTRR çš„ PHYSBASE/PHYSMASK å¯„å­˜å™¨
 %define IA32_MTRR_PHYSBASE0                                        200H
 %define IA32_MTRR_PHYSMASK0                                        201H
 %define IA32_MTRR_PHYSBASE1                                        202H
@@ -115,21 +115,21 @@
 %define IA32_MTRR_PHYSBASE9                                        212H
 %define IA32_MTRR_PHYSMASK9                                        213H
 
-; ÏÂÃæÊÇ SMRR ¼Ä´æÆ÷
+; ä¸‹é¢æ˜¯ SMRR å¯„å­˜å™¨
 %define IA32_SMRR_PHYSBASE                                         1F2H
 %define IA32_SMRR_PHYSMASK                                         1F3H
 
-; ÏÂÃæÊÇ PAT ¼Ä´æÆ÷
+; ä¸‹é¢æ˜¯ PAT å¯„å­˜å™¨
 %define IA32_PAT                                                   277H
 
 
-; ÏÂÃæÊÇ¶ÔÌØÊâÖ¸ÁîÌá¹©Ö§³ÖµÄ MSR ¼Ä´æÆ÷¶¨Òå
+; ä¸‹é¢æ˜¯å¯¹ç‰¹æ®ŠæŒ‡ä»¤æä¾›æ”¯æŒçš„ MSR å¯„å­˜å™¨å®šä¹‰
 %define IA32_SYSENTER_CS                                           174H
 %define IA32_SYSENTER_ESP                                          175H
 %define IA32_SYSENTER_EIP                                          176H
 
 
-;; ÏÂÃæÊÇ x64 ÌåÏµµÄÖ§³Ö
+;; ä¸‹é¢æ˜¯ x64 ä½“ç³»çš„æ”¯æŒ
 %define IA32_EFER                                                  0C0000080H
 %define IA32_STAR                                                  0C0000081H
 %define IA32_LSTAR                                                 0C0000082H
@@ -140,7 +140,7 @@
 
 
 
-; ##### Îª AMD »úÆ÷¶¨Òå #######
+; ##### ä¸º AMD æœºå™¨å®šä¹‰ #######
 %define MSR_SMI_ON_IO_TRAP0                                        0C0010050H
 %define MSR_SMI_ON_IO_TRAP1                                        0C0010051H
 %define MSR_SMI_ON_IO_TRAP2                                        0C0010052H
@@ -148,10 +148,10 @@
 %define MSR_SMI_ON_IO_TRAP_CTL_STS                                 0C0010054H
 
 
-;; Óë dubug/performance monitoring Ïà¹ØµÄ MSRs
+;; ä¸ dubug/performance monitoring ç›¸å…³çš„ MSRs
 
 %define IA32_PEBS_ENABLE                                           3F1H
-;; general-purpose counter ¼Ä´æÆ÷
+;; general-purpose counter å¯„å­˜å™¨
 %define IA32_PERFEVTSEL0                                           186H
 %define IA32_PERFEVTSEL1                                           187H
 %define IA32_PERFEVTSEL2                                           188H
@@ -161,7 +161,7 @@
 %define IA32_PMC2                                                  0C3H
 %define IA32_PMC3                                                  0C4H
 
-;; fixed-counter ¼Ä´æÆ÷
+;; fixed-counter å¯„å­˜å™¨
 %define IA32_FIXED_CTR0                                            309H
 %define MSR_PERF_FIXED_CTR0                                        309H
 %define IA32_FIXED_CTR1                                            30AH
@@ -189,7 +189,7 @@
 %define IA32_TSC_DEADLINE                                          6E0H
 
 
-;;; ÏÂÃæÊÇ 06_25H(DisplayFamily_DisplayModel) ´¦ÀíÆ÷µÄ MSRs£¬ ÊÊÓÃÓÚ Nehalem/Westmere Î¢¼Ü¹¹
+;;; ä¸‹é¢æ˜¯ 06_25H(DisplayFamily_DisplayModel) å¤„ç†å™¨çš„ MSRsï¼Œ é€‚ç”¨äº Nehalem/Westmere å¾®æ¶æ„
 
 %define MSR_LBR_SELECT                                             1C8H
 %define MSR_LASTBRANCH_TOS                                         1C9H
@@ -231,7 +231,7 @@
 %define MSR_LASTBRANCH_15_TO_IP                                    6CFH
 
 
-; Nehalem Î¢¼Ü¹¹µÄ¸¨Öú TSC ¼Ä´æÆ÷
+; Nehalem å¾®æ¶æ„çš„è¾…åŠ© TSC å¯„å­˜å™¨
 %define IA32_TSC_AUX                                                0C0000103H
 
 
@@ -244,7 +244,7 @@
 
 
 ;
-; ÏÂÃæÊÇ¹ØÓÚ VMX µÄ MSR 
+; ä¸‹é¢æ˜¯å…³äº VMX çš„ MSR 
 ;
 %define IA32_VMX_BASIC                                          480H
 %define IA32_VMX_PINBASED_CTS                                   481H
@@ -262,7 +262,7 @@
 
 
 
-;; ########## ¹ØÓÚ CPU µÄÒ»Ğ©ºê¶¨Òå ##############
+;; ########## å…³äº CPU çš„ä¸€äº›å®å®šä¹‰ ##############
 
 
 ; ---------------------------------------------
@@ -280,7 +280,7 @@
 ;------------------------------------------------
 ; macro: NMI_DISABLE
 ; description:
-;                ÉèÖÃ NMI_EN ¼Ä´æÆ÷µÄ bit 7 Îª 1
+;                è®¾ç½® NMI_EN å¯„å­˜å™¨çš„ bit 7 ä¸º 1
 ;------------------------------------------------
 %macro NMI_DISABLE 0
         in al, NMI_EN_PORT                                        ; port 0x70
@@ -303,12 +303,12 @@
 ;-----------------------------------------------
 ; macro: RESET_CPU
 ; description:
-;                Òı·¢´¦ÀíÆ÷²úÉú RESET# ĞÅºÅ
+;                å¼•å‘å¤„ç†å™¨äº§ç”Ÿ RESET# ä¿¡å·
 ;-----------------------------------------------
 %macro RESET_CPU 0
-        mov dx, RESET_CONTROL_REGISTER                         ; reset ¿ØÖÆ¼Ä´æÆ÷ÔÚ¶Ë¿Ú 0CF9H
+        mov dx, RESET_CONTROL_REGISTER                         ; reset æ§åˆ¶å¯„å­˜å™¨åœ¨ç«¯å£ 0CF9H
         in al, dx
-        or al, 3                                                ; Ö´ĞĞÓ²¼ş RESET ¶¯×÷
+        or al, 3                                                ; æ‰§è¡Œç¡¬ä»¶ RESET åŠ¨ä½œ
         out dx, al
 %endmacro
 
@@ -316,7 +316,7 @@
 ;---------------------------------------------
 ; macro INIT_CPU
 ; description:
-;                Òı·¢´¦ÀíÆ÷²úÉú INIT# ĞÅºÅ
+;                å¼•å‘å¤„ç†å™¨äº§ç”Ÿ INIT# ä¿¡å·
 ;----------------------------------------------
 %macro INIT_CPU 0
         mov dx, FAST_A20_INIT_REGISTER                        ; port 92

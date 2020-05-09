@@ -3,13 +3,13 @@
 ; All rights reserved.
 
 
-; Õâ¸öÄ£¿é¸ºÔğ´òÓ¡ cpuid ·µ»ØµÄĞÅÏ¢
+; è¿™ä¸ªæ¨¡å—è´Ÿè´£æ‰“å° cpuid è¿”å›çš„ä¿¡æ¯
 
         bits 32
 
 
 ;--------------------------------------------
-; dump_tsc_support(): ÊÇ·ñÖ§³ÖºãÂÊµÄ TSC
+; dump_tsc_support(): æ˜¯å¦æ”¯æŒæ’ç‡çš„ TSC
 ;--------------------------------------------
 dump_tsc_support:
         jmp do_dump_tsc_support
@@ -21,7 +21,7 @@ do_dump_tsc_support:
         call puts
         mov eax, 1
         cpuid 
-        bt edx, 4                       ; TSC Î»
+        bt edx, 4                       ; TSC ä½
         mov esi, yes
         mov edi, no
         cmovnc esi, edi
@@ -35,7 +35,7 @@ do_dump_tsc_support:
         jnc dump_tsc_support_next
         mov eax, 80000007h
         cpuid
-        bt edx, 8               ; Invarint TSC Î»
+        bt edx, 8               ; Invarint TSC ä½
 dump_tsc_support_next:
         mov esi, yes
         mov edi, no
@@ -45,7 +45,7 @@ dump_tsc_support_next:
         call puts
         mov eax, 80000001h
         cpuid
-        bt edx, 27              ; RDTSCP Î»
+        bt edx, 27              ; RDTSCP ä½
         mov esi, yes
         mov edi, no
         cmovnc esi, edi
@@ -57,7 +57,7 @@ dump_tsc_support_next:
 
 
 ;--------------------------------------
-; dump_sse_support(): ´òÓ¡ SSE »·¾³Ö§³Ö
+; dump_sse_support(): æ‰“å° SSE ç¯å¢ƒæ”¯æŒ
 ;--------------------------------------
 dump_sse_support:
         jmp do_dump_sse
@@ -113,18 +113,18 @@ dump_sse_done:
         
 
 ;-----------------------------------------------------
-; support_multi_threading(): ²éÑ¯ÊÇ·ñÖ§³Ö¶àÏß³Ì»ò¶àcore
+; support_multi_threading(): æŸ¥è¯¢æ˜¯å¦æ”¯æŒå¤šçº¿ç¨‹æˆ–å¤šcore
 ;-----------------------------------------------------
 support_multi_threading:
         mov eax, 1
         cpuid
-        bt edx, 28                                        ; HTT Î»
+        bt edx, 28                                        ; HTT ä½
         setc al
         movzx eax, al
         ret
 
 ;------------------------------------------------------------
-; dump_CPUID_leaf_01_edx(): ´òÓ¡ CPUID.01H ·µ»ØµÄ EDXÖµ
+; dump_CPUID_leaf_01_edx(): æ‰“å° CPUID.01H è¿”å›çš„ EDXå€¼
 ;------------------------------------------------------------
 dump_CPUID_leaf_01_edx:
         jmp do_dump_CPUID_leaf_01_edx        
@@ -450,4 +450,4 @@ dump_CPUID_leaf_0a_done:
         
 
 
-;***** cpuid Ä£¿éµÄÊı¾İ *********
+;***** cpuid æ¨¡å—çš„æ•°æ® *********
