@@ -3,48 +3,48 @@
 
 <!-- code_chunk_output -->
 
-- [时钟实现概述](#时钟实现概述)
-  - [时钟中断计数](#时钟中断计数)
-  - [模拟时钟](#模拟时钟)
-  - [半虚拟化时钟kvmclock](#半虚拟化时钟kvmclock)
-- [kvm clock 时钟](#kvm-clock-时钟)
-  - [kvmclock 原理](#kvmclock-原理)
-  - [时钟源 kvm_clock 的定义](#时钟源-kvm_clock-的定义)
-    - [1.2. KVM clock 在 Guest 中](#12-kvm-clock-在-guest-中)
-      - [函数 kvm_register_clock](#函数-kvm_register_clock)
-      - [函数 kvm_sched_clock_init](#函数-kvm_sched_clock_init)
-      - [函数 clocksource_register_hz：时钟资源注册](#函数-clocksource_register_hz时钟资源注册)
-      - [a. 函数 kvm_get_tsc_khz](#a-函数-kvm_get_tsc_khz)
-      - [b. 函数 kvm_get_wallclock](#b-函数-kvm_get_wallclock)
-      - [函数pvclock_read_wallclock的访问](#函数pvclock_read_wallclock的访问)
-    - [1.2. KVM clock 在host中](#12-kvm-clock-在host中)
-      - [（1） MSR_KVM_WALL_CLOCK](#1-msr_kvm_wall_clock)
-      - [（2） MSR_KVM_SYSTEM_TIME](#2-msr_kvm_system_time)
-  - [2. kvm_guest_time_update分析](#2-kvm_guest_time_update分析)
-  - [3. 关于use_master_clock](#3-关于use_master_clock)
-  - [4. KVMCLOCK的优点](#4-kvmclock的优点)
-  - [5. Cpu Steal time](#5-cpu-steal-time)
-- [参考](#参考)
+- [1. 时钟实现概述](#1-时钟实现概述)
+  - [1.1. 时钟中断计数](#11-时钟中断计数)
+  - [1.2. 模拟时钟](#12-模拟时钟)
+  - [1.3. 半虚拟化时钟kvmclock](#13-半虚拟化时钟kvmclock)
+- [2. kvm clock 时钟](#2-kvm-clock-时钟)
+  - [2.1. kvmclock 原理](#21-kvmclock-原理)
+  - [2.2. 时钟源 kvm_clock 的定义](#22-时钟源-kvm_clock-的定义)
+    - [2.2.1. KVM clock 在 Guest 中](#221-kvm-clock-在-guest-中)
+      - [2.2.1.1. 函数 kvm_register_clock](#2211-函数-kvm_register_clock)
+      - [2.2.1.2. 函数 kvm_sched_clock_init](#2212-函数-kvm_sched_clock_init)
+      - [2.2.1.3. 函数 clocksource_register_hz：时钟资源注册](#2213-函数-clocksource_register_hz时钟资源注册)
+      - [2.2.1.4. a. 函数 kvm_get_tsc_khz](#2214-a-函数-kvm_get_tsc_khz)
+      - [2.2.1.5. b. 函数 kvm_get_wallclock](#2215-b-函数-kvm_get_wallclock)
+      - [2.2.1.6. 函数pvclock_read_wallclock的访问](#2216-函数pvclock_read_wallclock的访问)
+    - [2.2.2. KVM clock 在host中](#222-kvm-clock-在host中)
+      - [2.2.2.1. （1） MSR_KVM_WALL_CLOCK](#2221-1-msr_kvm_wall_clock)
+      - [2.2.2.2. （2） MSR_KVM_SYSTEM_TIME](#2222-2-msr_kvm_system_time)
+  - [2.3. kvm_guest_time_update分析](#23-kvm_guest_time_update分析)
+  - [2.4. 关于use_master_clock](#24-关于use_master_clock)
+  - [2.5. KVMCLOCK的优点](#25-kvmclock的优点)
+  - [2.6. Cpu Steal time](#26-cpu-steal-time)
+- [3. 参考](#3-参考)
 
 <!-- /code_chunk_output -->
 
-# 时钟实现概述
+# 1. 时钟实现概述
 
-## 时钟中断计数
+## 1.1. 时钟中断计数
 
 时间的一种保持方式是通过**时钟中断计数**，进而换算得到，这种方式在**虚拟机**里有问题，因为有时**运行vpcu的cpu被调度**出来使时钟**中断不能准时**到达guest os。
 
-## 模拟时钟
+## 1.2. 模拟时钟
 
 另外一种方式，如**模拟HPET**，guest os当需要的时候会去**读当前的时间**，这种方式会使得**虚拟机频繁的退出**(`VM-exit`)，严重影响性能。
 
-## 半虚拟化时钟kvmclock
+## 1.3. 半虚拟化时钟kvmclock
 
 为此kvm引入了基于半虚拟化的时钟kvmclock, 这种方式需要在guest上实现一个kvmclock驱动，建立guest os 到VMM的通道，这样通过这个通道 guest os 向 vmm 查询时间。`kvmclock`是一个**半虚拟化的时钟**，guest感知。guest向hypervisor询问时间，同时保证时钟的稳定和准确。默认情况下guest os会使用kvmclock，如fedora17
 
-# kvm clock 时钟
+# 2. kvm clock 时钟
 
-## kvmclock 原理
+## 2.1. kvmclock 原理
 
 guest注册内存页，里面包含**kvmclock数据**，该页在guest整个生命周期内存在，hypervisor会持续写这个页。
 
@@ -79,7 +79,7 @@ struct pvclock_wall_clock {
 } __attribute__((__packed__));
 ```
 
-## 时钟源 kvm_clock 的定义
+## 2.2. 时钟源 kvm_clock 的定义
 
 ```cpp
 static struct clocksource kvm_clock = {
@@ -95,7 +95,7 @@ static struct clocksource kvm_clock = {
 };
 ```
 
-### 1.2. KVM clock 在 Guest 中
+### 2.2.1. KVM clock 在 Guest 中
 
 源码路径： arch\x86\kernel\kvmclock.c pvclock.c.
 
@@ -146,7 +146,7 @@ void __init kvmclock_init(void)
 }
 ```
 
-#### 函数 kvm_register_clock
+#### 2.2.1.1. 函数 kvm_register_clock
 
 ```
 int kvm_register_clock(char *txt)
@@ -174,7 +174,7 @@ int kvm_register_clock(char *txt)
 
 关键函数**native_write_msr_safe**：计算出来pvit的物理地址（这个“物理地址”，其实是Guest Physical Address，即GPA），写MSR寄存器，通过msr_kvm_system_time（MSR_KVM_SYSTEM_TIME），告诉Host它的pvit地址。
 
-#### 函数 kvm_sched_clock_init
+#### 2.2.1.2. 函数 kvm_sched_clock_init
 
 ```
 static inline void kvm_sched_clock_init(bool stable)
@@ -196,7 +196,7 @@ static inline void kvm_sched_clock_init(bool stable)
 }
 ```
 
-#### 函数 clocksource_register_hz：时钟资源注册
+#### 2.2.1.3. 函数 clocksource_register_hz：时钟资源注册
 
 ```
 static inline int clocksource_register_hz(struct clocksource *cs, u32 hz)
@@ -224,7 +224,7 @@ int __clocksource_register_scale(struct clocksource *cs, u32 scale, u32 freq)
 
 下面详细看上面复写的四个函数
 
-#### a. 函数 kvm_get_tsc_khz
+#### 2.2.1.4. a. 函数 kvm_get_tsc_khz
 
 ```
 //获取pv clock信息转换成hz
@@ -242,7 +242,7 @@ static unsigned long kvm_get_tsc_khz(void)
 }
 ```
 
-#### b. 函数 kvm_get_wallclock
+#### 2.2.1.5. b. 函数 kvm_get_wallclock
 
 ```
 static void kvm_get_wallclock(struct timespec *now)
@@ -269,7 +269,7 @@ static void kvm_get_wallclock(struct timespec *now)
 }
 ```
 
-#### 函数pvclock_read_wallclock的访问
+#### 2.2.1.6. 函数pvclock_read_wallclock的访问
 
 ```
 void pvclock_read_wallclock(struct pvclock_wall_clock *wall_clock,
@@ -354,13 +354,13 @@ u64 pvclock_clocksource_read(struct pvclock_vcpu_time_info *src)
 }
 ```
 
-### 1.2. KVM clock 在host中
+### 2.2.2. KVM clock 在host中
 
 VMM 中 kvmclock实现
 
 Guest中使用了wrmsr指令，Host会感知，然后进入到kvm_set_msr_common 中处理。
 
-#### （1） MSR_KVM_WALL_CLOCK
+#### 2.2.2.1. （1） MSR_KVM_WALL_CLOCK
 
 msr的实现：
 
@@ -461,7 +461,7 @@ static int __kvm_read_guest_page(struct kvm_memory_slot *slot, gfn_t gfn,
 }
 ```
 
-#### （2） MSR_KVM_SYSTEM_TIME
+#### 2.2.2.2. （2） MSR_KVM_SYSTEM_TIME
 
 ```
 case MSR_KVM_SYSTEM_TIME: {
@@ -531,7 +531,7 @@ kvm_guest_time_update会将时间更新到vcpu->pv_time
 
 下面详细讲解下函数kvm_guest_time_update
 
-## 2. kvm_guest_time_update分析
+## 2.3. kvm_guest_time_update分析
 
 ```
 static int kvm_guest_time_update(struct kvm_vcpu *v)
@@ -648,7 +648,7 @@ arch/x86/include/asm/pvclock.h文件中的__pvclock_read_cycles函数中：
 
 计算Host中读取到Tsc和Guest中读取到的Tsc的差值，再计算出来delta，最后再计算出来Guest中的“kvmclock”。这里把Host和Guest中前后两次的Tsc微小差值都计算进去了，可见精度确实很高。
 
-## 3. 关于use_master_clock
+## 2.4. 关于use_master_clock
 
 在kvm_write_tsc中，本次tsc写和上次的tsc写比较，得到elapsed和usdiff
 
@@ -676,7 +676,7 @@ kvm->arch.nr_vcpus_matched_tsc++;
 }
 ```
 
-## 4. KVMCLOCK的优点
+## 2.5. KVMCLOCK的优点
 
 kvm_get_wallclock替代mach_get_cmos_time获取rtc时间，mach_get_cmos_time函数在guest中执行需要多个pio vmexit才能完成，而kvm_get_wallclock只需要一个msr write即可，简便了操作，也不要在QEMU RTC的支持。
 
@@ -775,7 +775,7 @@ CLOCK_SOURCE_MUST_VERIFY,
 
 和TSC相比，kvmclock优势并不明显，除非TSC进行了迁移。
 
-## 5. Cpu Steal time
+## 2.6. Cpu Steal time
 
 Cpu Steal time指的是vcpu 等待 real cpu 的时间, 因为vcpu会发生vm-exit而进入vmm;进入vmm 后到重新vm-entry的时间就是一次cpu steal time. 该指标是衡量vm性能的重要指标。 通过半虚拟化技术guest os能得到cpu steal time. VMM与guest通讯机制与上一节类似，本节就不讨论了。
 
@@ -855,7 +855,7 @@ static void record_steal_time(struct kvm_vcpu *vcpu)
 }
 ```
 
-# 参考
+# 3. 参考
 
 http://oenhan.com/kvm-pv-kvmclock-tsc
 
