@@ -59,3 +59,5 @@ mce 结构如下：
 https://blog.csdn.net/xiaocainiaoshangxiao/article/details/38046239 (未完)
 
 http://linuxperf.com/?p=105 (未)
+
+https://www.kernel.org/doc/html/latest/firmware-guide/acpi/apei/einj.html
