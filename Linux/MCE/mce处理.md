@@ -61,3 +61,5 @@ https://blog.csdn.net/xiaocainiaoshangxiao/article/details/38046239 (未完)
 http://linuxperf.com/?p=105 (未)
 
 https://www.kernel.org/doc/html/latest/firmware-guide/acpi/apei/einj.html
+
+https://mp.weixin.qq.com/s/N5x7gG-YGusJgVMmKDTjwQ
