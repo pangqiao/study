@@ -25,4 +25,4 @@ https://www.cnblogs.com/muahao/p/6003910.html
 
 https://www.oracle.com/technetwork/cn/articles/servers-storage-admin/fault-management-linux-2005816-zhs.html
 
-
+https://stackoverflow.com/questions/38496643/how-can-we-generate-mcemachine-check-errors
