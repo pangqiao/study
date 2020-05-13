@@ -3,9 +3,10 @@
 
 <!-- code_chunk_output -->
 
-* [1. PIO](#1-pio)
-* [2. PIO在KVM中](#2-pio在kvm中)
-* [3. PIO运行在QEMU](#3-pio运行在qemu)
+  - [1. PIO](#1-pio)
+  - [2. PIO在KVM中](#2-pio在kvm中)
+  - [3. PIO运行在QEMU](#3-pio运行在qemu)
+- [参考](#参考)
 
 <!-- /code_chunk_output -->
 
@@ -97,7 +98,7 @@ cat /proc/ioports查看当前OS的所有的ioports：
 
 Guest在使用in、out指令的时候，Host会感知。Host中会在arch/x86/kvm/emulate.c中处理：
 
-```
+```cpp
 static int em_in(struct x86_emulate_ctxt *ctxt)
 {   
     if (!pio_in_emulated(ctxt, ctxt->dst.bytes, ctxt->src.val,
@@ -163,3 +164,7 @@ static long kvm_vm_ioctl(struct file *filp,
 
 ## 3. PIO运行在QEMU
 
+
+# 参考
+
+http://liujunming.top/2017/06/26/QEMU-KVM-I-O-%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B/ (未)
