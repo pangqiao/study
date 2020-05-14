@@ -7,6 +7,7 @@ CONFIG_ACPI_APEI
 CONFIG_ACPI_APEI_EINJ
 
 
+modprobe mce_inject
 modprobe einj
 
 echo 0x69000000 > param1
