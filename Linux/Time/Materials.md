@@ -14,6 +14,9 @@ Linux Time: http://kernel.meizu.com/linux-time.html
 
 使用: https://blog.csdn.net/qq_37858386/article/details/85784994
 
+https://www.cnblogs.com/suzhou/archive/2013/06/04/3638986.html
+
+
 虚拟机设置定时(使用local apic timer), 写寄存器, 处理在`kvm_lapic_reg_write()`(arch/x86/kvm/lapic.c)的`case APIC_IMICT`, 可以参见APIC内容.
 
 
