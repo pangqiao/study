@@ -5,7 +5,7 @@ This blog is writen in markdown with vscode. How to configure? See `Tools/Visual
 I am interested in Kernel/KVM/Virtualization and much more fields. We can get communication by email or wechat. 
 
 - Name: Haiwei Li
-- Email: haiwei.lee@hotmail.com
+- Email: haiwei-li@outlook.com
 - WeChat: LHWXJTU
 
 You can scan the QR code below to add friends by using wechat.
