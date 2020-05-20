@@ -3,16 +3,16 @@
 
 <!-- code_chunk_output -->
 
-* [0 概要](#0-概要)
-* [1 测试方法准备](#1-测试方法准备)
-* [2 链表、双向链表、无锁链表](#2-链表-双向链表-无锁链表)
-	* [2.1 Simple doubly linked list](#21-simple-doubly-linked-list)
-	* [2.2 Doubly linked list with a single pointer list head](#22-doubly-linked-list-with-a-single-pointer-list-head)
-	* [2.3 Lock-less NULL terminated single linked list](#23-lock-less-null-terminated-single-linked-list)
-* [3 B\+树](#3-b树)
-* [4 优先排序列表](#4-优先排序列表)
-* [5 红黑树](#5-红黑树)
-* [6 参考](#6-参考)
+- [0 概要](#0-概要)
+- [1 测试方法准备](#1-测试方法准备)
+- [2 链表、双向链表、无锁链表](#2-链表-双向链表-无锁链表)
+  - [2.1 Simple doubly linked list](#21-simple-doubly-linked-list)
+  - [2.2 Doubly linked list with a single pointer list head](#22-doubly-linked-list-with-a-single-pointer-list-head)
+  - [2.3 Lock-less NULL terminated single linked list](#23-lock-less-null-terminated-single-linked-list)
+- [3 B\+树](#3-b树)
+- [4 优先排序列表](#4-优先排序列表)
+- [5 红黑树](#5-红黑树)
+- [6 参考](#6-参考)
 
 <!-- /code_chunk_output -->
 
@@ -140,7 +140,7 @@ static inline void INIT_LIST_HEAD(struct list_head *list)
 
 在表头插入和在表尾插入：
 
-```
+```cpp
 static inline void list_add(struct list_head *new, struct list_head *head)
 
 static inline void list_add_tail(struct list_head *entry, struct list_head *head)
@@ -148,7 +148,7 @@ static inline void list_add_tail(struct list_head *entry, struct list_head *head
 
 删除，被删除的节点prev、next分别被设为LIST\_POISON2、LIST\_POISON1，当访问此节点时会引起叶故障。保证不在链表中的节点项不可访问。
 
-```
+```cpp
 static inline void list_del(struct list_head *entry)
 
 static inline void list_del_init(struct list_head *entry)  将entry从链表解下来，重新初始化，就可以访问节点。
@@ -156,7 +156,7 @@ static inline void list_del_init(struct list_head *entry)  将entry从链表解�
 
 将节点从一个链表搬移到另一个链表，根据插入表头和表位分两种：
 
-```
+```cpp
 static inline void list_move(struct list_head *list, struct list_head *head)
 
 static inline void list_move_tail(struct list_head *list, struct list_head *head)
