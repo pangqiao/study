@@ -6109,7 +6109,7 @@ enum x86_pf_error_code {
 
 \_\_do\_page\_fault()实现:
 
-```c
+```cpp
 [arch/x86/mm/fault.c]
 static noinline void
 __do_page_fault(struct pt_regs *regs, unsigned long error_code,
@@ -6131,7 +6131,7 @@ __do_page_fault(struct pt_regs *regs, unsigned long error_code,
 
 	if (unlikely(kmmio_fault(regs, address)))
 		return;
-    // 判断address是否处于内核线性地址空间
+	// 判断address是否处于内核线性地址空间
 	if (unlikely(fault_in_kernel_space(address))) {
 	    // 判断是否处于内核态
 		if (!(error_code & (PF_RSVD | PF_USER | PF_PROT))) {
