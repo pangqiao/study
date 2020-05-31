@@ -5759,7 +5759,7 @@ struct mm_struct {
 
 VMA数据结构定义在mm\_types.h文件中。
 
-```c
+```cpp
 [include/linux/mm_types.h]
 struct vm_area_struct {
 	unsigned long vm_start;
