@@ -20,12 +20,11 @@ Preemption Timer在VMCS中有三个域需要设置：
 
 和Preemption Timer相关的文档参见Intel Manual，以及全文搜索"Preemption Timer"得到的相关内容。
 
-在使用时，需要首先设置`Activate VMX preemption timer`和`VMX-preemption timer value`，如果需要VMEXIT时保存preemption value的话，需要设置Save VMX preemption timer value，这样在VM因为其他原因退出的时候不会重置preemption value。
+在使用时，需要首先设置`Activate VMX preemption timer`和`VMX-preemption timer value`，如果需要**VMEXIT**时**保存preemption value**的话，需要设置`Save VMX preemption timer value`，这样在VM因为**其他原因退出**的时候**不会重置preemption value**。
 
 Preemption Timer一个可能的使用环境是：需要让**VM定期的产生VMEXIT**，那么上述三个域都需要设置。注意：在由`Preemption Timer Time-out`产生的VMEXIT中，是需要重置VMX preemption timer value的。
 
-Preemption Timer相关的的VMEXIT reason号是52，参考Intel Manual 3C Table C-1 [1]，"VMX-preemption timer expired. The preemption timer counted down to zero"。
-
+Preemption Timer相关的的`VMEXIT reason`号是**52**，参考`Intel Manual 3C Table C-1 [1]，"VMX-preemption timer expired. The preemption timer counted down to zero"`。
 
 三、Preemption Timer count down频率的计算
 
@@ -37,7 +36,7 @@ PTV（Preemption Timer Value）：在VMCS的VMX-preemption timer value域中设�
 
 CPI（Cycle Per Instruction）：**每个CPU指令**需要消耗的**CPU周期**。在Intel架构中的Ideal CPI大约是0.25 [2]，但是在一般的应用中都会比这个值大一些。（注：CPI小于1的原因是多发射和超流水线结构）。
 
-IPP（Instructions per Preemption）：Preemption Timer从开始设置到产生相关的VMEXIT时，VCPU执行了多少条CPU指令。
+IPP（Instructions per Preemption）：Preemption Timer从**开始设置**到产生**相关的VMEXIT**时，VCPU执行了**多少条CPU指令**。
 
 在这里我给出一个简单的计算方法：
 
