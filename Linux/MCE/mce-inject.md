@@ -14,7 +14,7 @@ CONFIG_X86_MCE_INJECT
 
 ```
 $ git clone https://github.com/andikleen/mce-inject.git
-$ sudo apt-get install flex bison
+$ sudo yum install flex bison
 $ cd mce-inject
 $ make
 ```
