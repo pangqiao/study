@@ -19,6 +19,27 @@ $ cd mce-inject
 $ make
 ```
 
+在mce-inject目录下, 添加文件, 注意修改address即可
+
+```
+#correct
+CPU 0
+BANK 18
+STATUS 0x8c000000001000c0
+#ADDR 0x40001000
+ADDR 0x100003000
+#ADDR 0x100002001
+MISC 0x80
+```
+
+然后执行
+
+```
+./mce-inject ./correct
+```
+
+
+
 # 参考
 
 https://www.cnblogs.com/muahao/p/6003910.html
