@@ -4909,6 +4909,16 @@ void update_process_times(int user_tick)
 
 在**内核2.6版本**以后，**定时器中断处理**采用了**软中断机制**而**不是下半部机制**。
 
+```
+# ps -eLo ruser,pid,ppid,lwp,psr,args | awk '{if($5==6) print $0}'
+root         40      2     40   6 [cpuhp/6]
+root         41      2     41   6 [migration/6]
+root         42      2     42   6 [ksoftirqd/6]
+root         43      2     43   6 [kworker/6:0-mm_]
+root         44      2     44   6 [kworker/6:0H]
+root        989      2    989   6 [kworker/6:1-mm_]
+```
+
 **时钟中断处理函数**仍然为**timer\_interrupt**()\-> do\_timer\_interrupt()\-> do\_timer\_interrupt\_hook()\-> do\_timer()。
 
 不过do\_timer()函数的实现有所不同
@@ -4924,7 +4934,7 @@ void do_timer(struct pt_regs *regs)
 
 # 30 主调度器schedule()
 
-在内核中的许多地方, 如果要将CPU分配给与当前活动进程不同的另一个进程,都会**直接调用主调度器函数schedule**(); 
+在内核中的许多地方, 如果要**将CPU分配**给与**当前活动进程不同的另一个进程**,都会**直接调用主调度器函数schedule**(); 
 
 从**系统调用返回**后, 内核也会检查当前进程是否设置了**重调度标志TLF\_NEDD\_RESCHED**
 
