@@ -16,9 +16,6 @@ Linux Time: http://kernel.meizu.com/linux-time.html
 
 https://www.cnblogs.com/suzhou/archive/2013/06/04/3638986.html
 
+硬件方面，x86 主流平台，计时靠tsc，定时靠local apic timer。
 
-虚拟机设置定时(使用local apic timer), 写寄存器, 处理在`kvm_lapic_reg_write()`(arch/x86/kvm/lapic.c)的`case APIC_IMICT`, 可以参见APIC内容.
-
-
-
-start_sw_timer: 使用hrtimer
+软件方面，linux, 低精度，高精度，先低精度然后切换到高精度。
