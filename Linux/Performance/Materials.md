@@ -11,3 +11,7 @@
 5. 相关命令可以在Tools目录下查看
 
 https://blog.csdn.net/qq_36357820/article/details/79959445
+
+https://blog.csdn.net/longfeey/article/details/53304027
+
+https://github.com/linux-test-project/ltp
