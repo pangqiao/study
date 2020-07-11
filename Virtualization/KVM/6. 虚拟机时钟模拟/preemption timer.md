@@ -46,6 +46,10 @@ IPP = PTV * PTTR / CPI
 
 根据上述公式，可以简单的计算PTV和IPP之间的关系，根据每个Preemption中执行的指令数目来决定设置多大的Preemption Timer Value。
 
+引用：
+[1] http://www.intel.com/content/www/us/en/processors/architectures-software-developer-manuals.html
+[2] http://www.intel.com/content/www/us/en/architecture-and-technology/64-ia-32-architectures-optimization-manual.html
+
 ————————————————
 版权声明：本文为CSDN博主「yzt356」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。
 原文链接：https://blog.csdn.net/xelatex_kvm/article/details/17761415
