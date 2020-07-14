@@ -34,7 +34,7 @@ echo love > /dev/ttyS0
 cat /dev/pts/4
 
 
-3. 通过串口工具访问
+3. 通过串口工具访问虚拟机
 
 minicom
 
