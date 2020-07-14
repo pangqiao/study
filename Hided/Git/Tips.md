@@ -186,7 +186,9 @@ git log --pretty='%aN' | sort | uniq -c | sort -k1 -n -r | head -n 5
 
 这个统计可能不会太准，因为很多人有不同的邮箱，但会使用相同的名字
 
+```
 git log --pretty=format:%ae | gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
+```
 
 ## 13.9. 贡献人数统计
 
