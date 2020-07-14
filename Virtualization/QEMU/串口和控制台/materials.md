@@ -27,3 +27,10 @@ echo love > /dev/ttyS0
 在host中查看
 
 cat /dev/pts/4
+
+
+3. 通过串口工具访问
+
+minicom
+
+https://blog.csdn.net/IOT_SONG/article/details/79767254
