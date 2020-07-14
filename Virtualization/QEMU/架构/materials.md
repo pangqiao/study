@@ -1,0 +1,1 @@
+https://remimin.github.io/2019/07/09/qemu_machine_type/
