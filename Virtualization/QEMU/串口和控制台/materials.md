@@ -1,5 +1,4 @@
 
-char device redirected to /dev/pts/4 (label charserial0)
 
 https://cloud.tencent.com/developer/article/1162147
 
@@ -13,7 +12,9 @@ https://blog.csdn.net/defeattroy/article/details/8849057
 ```
 -chardev pty,id=charserial0 -device isa-serial,chardev=charserial0,id=serial0
 ```
+启动虚拟机会有
 
+char device redirected to /dev/pts/4 (label charserial0)
 
 1. host发, 查看guest
 host写guest:
@@ -39,3 +40,5 @@ cat /dev/pts/4
 minicom
 
 https://blog.csdn.net/IOT_SONG/article/details/79767254
+
+串口设备不可同时使用
