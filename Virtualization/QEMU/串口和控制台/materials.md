@@ -11,7 +11,7 @@ https://blog.csdn.net/defeattroy/article/details/8849057
 虚拟机加上串口
 
 ```
--chardev pty,id=charserial0 -device isa-serial,chardev=charserial0,id=serial0 -daemonize
+-chardev pty,id=charserial0 -device isa-serial,chardev=charserial0,id=serial0
 ```
 
 
