@@ -8,7 +8,12 @@ https://blog.csdn.net/silvervi/article/details/77528916
 https://blog.csdn.net/defeattroy/article/details/8849057
 
 
--chardev pty,id=charserial0 -device isa-serial,chardev=charserial0,id=serial0
+虚拟机加上串口
+
+```
+-chardev pty,id=charserial0 -device isa-serial,chardev=charserial0,id=serial0 -daemonize
+```
+
 
 1. host发, 查看guest
 host写guest:
