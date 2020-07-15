@@ -1,0 +1,1 @@
+https://consen.github.io/2016/09/11/Anti-VM-via-CPUID/
