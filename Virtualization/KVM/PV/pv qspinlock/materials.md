@@ -1,2 +1,1 @@
-https://lore.kernel.org/patchwork/patch/558516/
-
+https://lore.kernel.org/lkml/556B5316.6010201@hp.com/t/
