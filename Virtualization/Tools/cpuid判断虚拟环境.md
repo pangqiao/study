@@ -7,6 +7,8 @@ https://consen.github.io/2016/09/11/Anti-VM-via-CPUID/
 
 2.
 
+https://pypi.org/project/x86cpu/
+
 python: https://github.com/matthew-brett/x86cpu
 
 x86cpulib: https://github.com/matthew-brett/libx86cpu/tree/master
