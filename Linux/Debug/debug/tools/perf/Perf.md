@@ -42,19 +42,19 @@
 ## 测试
 
 ```
-[root@centos7 linux-3.10.0-693]# make -C tools/perf -f tests/make
+[root@centos7 linux]# make -C tools/perf -f tests/make
 ```
 
 ## 编译
 
 ```
-[root@centos7 linux-3.10.0-693]# make -C tools/perf
+[root@centos7 linux]# make -C tools/perf
 ```
 
 ## 安装
 
 ```
-[root@centos7 linux-3.10.0-693]# make -C tools/perf install
+[root@centos7 linux]# make -C tools/perf install
 ```
 
 ## 帮助文档
