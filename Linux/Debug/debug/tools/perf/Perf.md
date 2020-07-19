@@ -17,9 +17,9 @@
     - [特定功能分析](#特定功能分析)
     - [perf record](#perf-record)
     - [可视化工具perf timechart](#可视化工具perf-timechart)
-- [Perf工具和性能事件](#perf工具和性能事件)
-  - [三种性能事件](#三种性能事件)
-  - [perf list简介](#perf-list简介)
+- [性能事件](#性能事件)
+  - [三种类型性能事件](#三种类型性能事件)
+  - [perf list查看所有性能事件](#perf-list查看所有性能事件)
   - [性能事件与属性](#性能事件与属性)
     - [PMI中断和PEBS中断](#pmi中断和pebs中断)
     - [性能事件的精度级别](#性能事件的精度级别)
@@ -130,7 +130,9 @@ int main(void)
 ```
 编译pi程序
 
-> \$\> gcc pi.c \-lm \-o pi
+```
+gcc pi.c -lm -o pi
+```
 
 运行pi程序
 
@@ -141,7 +143,7 @@ int main(void)
 根据程序显示的pid在命令行中执行
 
 ```
-perf top \-p \$pid
+perf top -p $pid
 ```
 
 该命令利用默认的性能事件"cycles"对`[pi]`进行热点分析。"cycles"是处理器周期事件。这条命令能够分析出消耗处理器周期最多的代码，在处理器频率稳定的前提下，我们可以认为perf给出的热点代码就是消耗时间最多的代码。
@@ -234,9 +236,9 @@ perf trace记录系统调用轨迹；
 perf timechart record记录事件；
 perf timechart生成output.svg文档；
 
-# Perf工具和性能事件
+# 性能事件
 
-## 三种性能事件
+## 三种类型性能事件
 
 利用perf剖析程序性能时，需要指定**当前测试**的**性能事件**。性能事件是指在**处理器**或**操作系统**中发生的，可能影响到程序性能的硬件事件或软件事件。比如Cache丢失，流水线停顿，页面交换等。这些事件会对程序的执行时间造成较大的负面影响。在优化代码时，应尽可能减少此类事件发生。
 
@@ -248,9 +250,11 @@ perf定义的性能事件分为3类，分别是硬件性能事件、软件性能
 - Software Event是**内核产生的事件**，分布在各个功能模块中，统计和操作系统相关性能事件。比如进程切换，tick数等。
 - Tracepoint Event是内核中**静态tracepoint所触发的事件**，这些tracepoint用来判断程序运行期间内核的行为细节（这些tracepint的对应的sysfs节点在`/sys/kernel/debug/tracing/events`目录下）。比如slab分配器的分配次数等。
 
-## perf list简介
+## perf list查看所有性能事件
 
-因此，perf提供了list工具以查看当前软硬件平台支持的性能事件列表。list工具使用方法如下：
+因此，perf提供了list工具以查看当前软硬件平台支持的性能事件列表。
+
+使用方法如下：
 
 ```
 perf list
@@ -277,7 +281,6 @@ perf list
 在默认条件下，perf**不使用PEBS机制**。用户如果想要使用高精度采样，需要在指定性能事件时，在事件后调价后缀"`:p`"或"`:pp`"。
 
 例如：
-
 
 ```
 perf top -e cycles:pp
@@ -393,25 +396,29 @@ top工具的界面具有4列信息。
 
 Perf top的参数较多，本文只介绍几个常用的参数的使用方法。
 
-`'-e'` or `'--event' <event>`: 该参数用于**指定分析的性能事件**。具体可以参考perf list。
+* `'-e'` or `'--event' <event>`: 该参数用于**指定分析的性能事件**。默认情况下, cycles（CPU周期数）
 
-例如：我们希望利用top工具剖析系统中Cache丢失次数，可以采用以下命名：
+具体可以参考**perf list**。
 
-> $> perf top -e cache-misses
+例如：我们希望利用top工具剖析系统中**Cache丢失次数**，可以采用以下命名：
 
-'\-c' or '\-\-count' <n>: 该参数用于指定性能计数器的采样周期。默认情况下，每秒采样4000次。
+```
+perf top -e cache-misses
+```
 
-'-p' or '--pid' <pid>: 该参数用于指定分析进程的pid。指定pid后，perf top仅分析目标进程以及目标进程创建的线程。
+* `'-c'` or `'--count' <n>`: 该参数用于指定性能计数器的**采样周期**。默认情况下，**每秒采样4000次**。
 
-&nbsp;&nbsp;&nbsp;&nbsp; '-t' or '--tid' <tid>: 该参数用于指定分析线程的tid。指定tid后，perf top仅分析目标线程，不包括此线程创建的其他线程。
+* `'-p'` or `'--pid' <pid>`: 该参数用于指定分析**进程的pid**。指定pid后，perf top仅分析**目标进程**以及**目标进程创建的线程**。
 
-&nbsp;&nbsp;&nbsp;&nbsp; '-a' or '--all-cpus': 采集系统中所有CPU产生的性能事件。这就是perf top的默认情况。
+* `'-t'` or `'--tid' <tid>`: 该参数用于指定分析**线程的tid**。指定tid后，perf top仅分析目标线程，不包括此线程创建的其他线程。
 
-&nbsp;&nbsp;&nbsp;&nbsp; '-C' or '--cpu' <cpu>: 指定待分析的CPU列表。如果系统中有4个CPU，如果仅需采集CPU0与CPU3的数据，可通过如下方法调用perf top：
+* `'-a'` or `'--all-cpus'`: 采集系统中所有CPU产生的性能事件。这就是perf top的默认情况。
+
+* `'-C'` or `'--cpu' <cpu>`: 指定待分析的CPU列表。如果系统中有4个CPU，如果仅需采集CPU0与CPU3的数据，可通过如下方法调用perf top：
 
 > $> perf top -C 0,3
 
-&nbsp;&nbsp;&nbsp;&nbsp; '-k' or '--vmlinux' <file>: 指定带符号表的内核映像所在的路径。与GDB类似，perf只有在DSO存在符号表的情况下才能解析出IP对应的具体符号。Perf通常采用以下顺序加载内核符号：
+'-k' or '--vmlinux' <file>: 指定带符号表的内核映像所在的路径。与GDB类似，perf只有在DSO存在符号表的情况下才能解析出IP对应的具体符号。Perf通常采用以下顺序加载内核符号：
 
 1. /proc/kallsyms
 2. 用户通过'-k'参数指定的路径
@@ -421,7 +428,7 @@ Perf top的参数较多，本文只介绍几个常用的参数的使用方法。
 6. /lib/modules/$(uts.release)/build/vmlinux
 7. /usr/lib/debug/lib/modules/$(uts.release)/build/vmlinux
 
-&nbsp;&nbsp;&nbsp;&nbsp; '-K' or '--hide_kernel_symbols' :不显示属于内核的符号。对于只想分析应用程序的用户而言，使用此参数后，perf top的界面会清爽很多。
+'-K' or '--hide_kernel_symbols' :不显示属于内核的符号。对于只想分析应用程序的用户而言，使用此参数后，perf top的界面会清爽很多。
 
 &nbsp;&nbsp;&nbsp;&nbsp; '-m' or '--mmap-pages' <n> :指定perf开辟的mmap页面的数量。mmap缓存主要用于用户空间与内核空间的数据通信。perf在内核中驱动将采集到的性能数据存入ring buffer，用户空间的分析程序则通过mmap机制从ring buffer中读取数据。
 
