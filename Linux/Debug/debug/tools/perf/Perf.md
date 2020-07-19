@@ -36,6 +36,8 @@
 
 而在**性能剖析阶段**，则需要借助于现有的**profiling工具**。
 
+相关文档: https://elixir.bootlin.com/linux/latest/source/tools/perf/Documentation
+
 # Perf 编译安装
 
 在Linux源码根目录下
