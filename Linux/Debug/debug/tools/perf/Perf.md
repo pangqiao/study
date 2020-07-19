@@ -12,11 +12,12 @@
 - [Perf简介](#perf简介)
   - [Perf的基本原理](#perf的基本原理)
   - [Perf的功能概述](#perf的功能概述)
+  - [全局性概况](#全局性概况)
 - [Perf工具和性能事件](#perf工具和性能事件)
   - [三种性能事件](#三种性能事件)
   - [perf list简介](#perf-list简介)
   - [性能事件与属性](#性能事件与属性)
-    - [PMU和PEBS](#pmu和pebs)
+    - [PMI中断和PEBS中断](#pmi中断和pebs中断)
     - [性能事件的精度级别](#性能事件的精度级别)
     - [4.2.2 性能事件的属性](#422-性能事件的属性)
 - [5 Perf top工具](#5-perf-top工具)
@@ -183,6 +184,14 @@ No.|sub-commands|comment
 26 | probe         |用于定义动态检查点。
 27 | trace         |类似strace功能。
 
+## 全局性概况
+
+perf list查看当前系统支持的性能事件；
+perf bench对系统性能进行摸底；
+perf test对系统进行健全性测试；
+perf stat对全局性能进行统计；
+
+
 # Perf工具和性能事件
 
 ## 三种性能事件
@@ -215,7 +224,7 @@ perf list
 
 ## 性能事件与属性
 
-### PMU和PEBS
+### PMI中断和PEBS中断
 
 **硬件性能事件**由处理器的PMU提供支持。
 
@@ -253,11 +262,15 @@ G | 在KVM虚拟机中，仅攻击Guest系统触发的性能事件。
 H | 仅统计Host系统触发的性能事件。
 p | 精度级别。
 
-另外需要补充的是，perf list工具仅列出了具有字符描述的硬件性能事件。而那些没有预定义字符描述的性能事件，也可以通过特殊方式使用。这时，就需要我们根据CPU的手册，通过性能事件的标号配置PMU的性能计数器。可以采用如下方式：
+另外需要补充的是，perf list工具仅列出了具有字符描述的**硬件性能事件**。而那些**没有预定义字符描述的性能事件**，也可以通过特殊方式使用。
 
-> \$\> perf top \-e r\[UMask\+EventSelect]
+这时，就需要我们**根据CPU的手册**，通过性能事件的标号配置PMU的性能计数器。可以采用如下方式：
 
-举个例子，我们现在想统计所有从内存中读过数据的指令的个数，perf list中并为预定义此事件的字符描述。通过查找intel的处理器手册，我们找了此事件编码：
+```
+perf top -e r[UMask+EventSelect]
+```
+
+举个例子，我们现在想统计所有从内存中**读过数据的指令的个数**，perf list中并为预定义此事件的字符描述。通过查找intel的处理器手册，我们找了此事件编码：
 
 Table 19-19. Performance Events in the Processor Core for Intel Core i7 Processor and Intel Xeon Process 5500 Series
 
@@ -267,7 +280,9 @@ Event Num. | Umask Value | Event Mask Mnemonic | Description
 
 便可以通过以下方式使用此事件：
 
-> \$\> perf stat \-e r010b ls
+```
+perf stat \-e r010b ls
+```
 
 # 5 Perf top工具
 
