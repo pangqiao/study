@@ -10,7 +10,7 @@
   - [安装](#安装)
   - [帮助文档](#帮助文档)
 - [Perf简介](#perf简介)
-  - [3.1 Perf的基本原理](#31-perf的基本原理)
+  - [Perf的基本原理](#perf的基本原理)
   - [3.2 Perf的功能概述](#32-perf的功能概述)
 - [4 Perf工具和性能事件](#4-perf工具和性能事件)
   - [4.1 perf list简介](#41-perf-list简介)
@@ -73,7 +73,7 @@ man 1 perf-list
 
 # Perf简介
 
-## 3.1 Perf的基本原理
+## Perf的基本原理
 
 Perf是内置于Linux源代码树中的性能剖析(profiling)工具。它基于事件采样原理，以性能事件为基础，支持针对处理器相关性能指标与操作系统相关性能指标的性能剖析。可用于性能瓶颈的查找与热点代码的定位。
 
@@ -138,11 +138,11 @@ int main(void)
 
 那么Perf是怎么做到的呢？
 
-首先，perf会通过系统调用sys\_perf\_event\_open在内核中注册一个检测"cycles"事件的性能计数器。内核根据perf提供的信息在PMU上初始化一个硬件性能计数器（PMC：Performance Monitoring Counter）。PMC随着CPU周期的增加而自动累加。
+首先，perf会通过系统调用`sys_perf_event_open`在内核中注册一个检测"**cycles**"**事件**的性能计数器。内核根据perf提供的信息在**PMU**上初始化一个**硬件性能计数器**（PMC：Performance Monitoring Counter）。PMC随着CPU周期的增加而自动累加。
 
-在PMU溢出时，PMU触发一个PMI（Performance Monitoring Interrupt）中断。内核在PMI中断处理函数中保存PMC的计数值，触发中断时的指令地址（Register IP：Instruction Pointer），当前时间戳以及当前进程的PID，TID，comm等信息。我们把这些信息统称为一个采样（sample）。
+在PMU溢出时，PMU触发一个PMI（Performance Monitoring Interrupt）中断。内核在PMI中断处理函数中保存**PMC的计数值**，触发中断时的**指令地址**（Register IP：Instruction Pointer），**当前时间戳**以及**当前进程**的**PID**，**TID**，**comm**等信息。我们把这些信息统称为一个采样（sample）。
 
-内核会将收集到的sample放入用于跟用户空间通信的Ring Buffer。用于空间的perf分析程序采用mmap机制从ring buffer中读入采样，并对其解析。perf根据pid, comm等信息可以找到对应的进程。根据IP与ELF文件中的符号表可以查找到触发PMI中断的指令所在的函数。为了能够使perf读到函数名，我们的目标程序必须具备符号表。如果perf在分析结果中只看到一串地址，而没有对应的函数名时，通常是由于在编译时利用strip删除了ELF文件中的符号信息。建议在性能剖析阶段，保留程序中的sysbol table与debug info等信息。
+内核会将收集到的sample放入用于跟**用户空间**通信的Ring Buffer。**用于空间**的perf分析程序采用**mmap机制**从ring buffer中读入采样，并对其解析。perf根据**pid**, comm等信息可以找到对应的进程。根据**IP**与**ELF文件**中的符号表可以查找到触发PMI中断的指令所在的函数。为了能够使perf读到函数名，我们的目标程序必须具备符号表。如果perf在分析结果中只看到一串地址，而没有对应的函数名时，通常是由于在编译时利用strip删除了ELF文件中的符号信息。建议在性能剖析阶段，保留程序中的sysbol table与debug info等信息。
 
 根据上述的perf采样原理可以得知，perf假设两次采样之间，即两次相邻的PMI中断之间系统执行的是同一个进程的同一个函数。这种假设会带来一定的误差，当感觉perf给出的结果不准时，不妨提高采样频率，perf会给出更加精确的结果。
 
