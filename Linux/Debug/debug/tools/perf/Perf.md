@@ -25,16 +25,13 @@
 
 # 概述
 
-系统级性能优化是指为了提高应用程序对操作系统资源与硬件资源的使用效率，或者为了提高操作系统对硬件资源的使用效率而进行的代码优化。
+**系统级性能优化**包含**2个阶段**：
 
-系统级性能优化包含2个阶段：
-
-1. 性能剖析：**寻找性能瓶颈**，查找引发性能问题的原因及热点代码。
+1. 性能剖析（**performance profiling**）：**寻找性能瓶颈**，查找引发性能问题的原因及热点代码。
 2. 代码优化：针对具体的性能问题而**优化代码与编译选项**，以改善软件性能。
 
-在优化阶段往往需要凭借开发者的经验，编写简洁高效的代码，甚至在汇编级别合理使用各种指令，合理安排各种指令的执行顺序。
+而在**性能剖析阶段**，则需要借助于现有的**profiling工具**。本篇主要讲性能分析中常用的工具——perf。
 
-而在**性能剖析阶段**，则需要借助于现有的**profiling工具**。
 
 相关文档: https://elixir.bootlin.com/linux/latest/source/tools/perf/Documentation
 
@@ -72,6 +69,10 @@ man 1 perf-list
 ```
 
 # Perf简介
+
+perf是一款Linux性能分析工具。Linux性能计数器是一个新的基于内核的子系统，它提供一个性能分析框架，比如硬件（CPU、PMU(Performance Monitoring Unit)）功能和软件(软件计数器、tracepoint)功能。通过perf，应用程序可以利用PMU、tracepoint和内核中的计数器来进行性能统计。它不但可以分析制定应用程序的性能问题（per thread），也可以用来分析内核的性能问题。
+
+总之perf是一款很牛逼的综合性分析工具，大到系统全局性性能，再小到进程线程级别，甚至到函数及汇编级别。
 
 ## Perf的基本原理
 
@@ -181,6 +182,14 @@ No.|sub-commands|comment
 27 | trace         |类似strace功能。
 
 # Perf工具和性能事件
+
+调优方向
+
+可以从以下三种事件为调优方向：
+
+- Hardware Event由PMU部件产生，在特定的条件下探测性能事件是否发生以及发生的次数。比如cache命中。
+- Software Event是**内核产生的事件**，分布在各个功能模块中，统计和操作系统相关性能事件。比如进程切换，tick数等。
+- Tracepoint Event是内核中静态tracepoint所触发的事件，这些tracepoint用来判断程序运行期间内核的行为细节（这些tracepint的对应的sysfs节点在/sys/kernel/debug/tracing/events目录下）。比如slab分配器的分配次数等。
 
 ## perf list简介
 
