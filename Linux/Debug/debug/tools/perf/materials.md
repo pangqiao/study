@@ -9,3 +9,5 @@ http://www.ibm.com/developerworks/cn/linux/l-cn-systemtap3/
 3. perf文档: linux tree/tools/perf/Documentation/ 
 
 https://www.cnblogs.com/jiayy/p/3722222.html
+
+http://www.brendangregg.com/perf.html
