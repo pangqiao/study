@@ -13,13 +13,13 @@
   - [原理概述](#原理概述)
     - [简单例子](#简单例子)
     - [基本原理](#基本原理)
-  - [功能概述](#功能概述)
-    - [全局性概况](#全局性概况)
-    - [全局细节](#全局细节)
-    - [特定功能分析](#特定功能分析)
-    - [perf record](#perf-record)
-    - [可视化工具perf timechart](#可视化工具perf-timechart)
-- [性能事件](#性能事件)
+- [Perf功能概述](#perf功能概述)
+  - [全局性概况](#全局性概况)
+  - [全局细节](#全局细节)
+  - [特定功能分析](#特定功能分析)
+  - [perf record](#perf-record)
+  - [可视化工具perf timechart](#可视化工具perf-timechart)
+- [Perf性能事件](#perf性能事件)
   - [三种类型性能事件](#三种类型性能事件)
   - [perf list查看所有性能事件](#perf-list查看所有性能事件)
   - [性能事件的属性](#性能事件的属性)
@@ -176,7 +176,7 @@ perf top -p $pid
 
 根据上述的perf采样原理可以得知，perf假设两次采样之间，即两次相邻的PMI中断之间系统执行的是同一个进程的同一个函数。这种假设会带来**一定的误差**，当感觉perf给出的**结果不准**时，不妨提高**采样频率**，perf会给出更加精确的结果。
 
-## 功能概述
+# Perf功能概述
 
 ![2020-07-20-08-26-42.png](./images/2020-07-20-08-26-42.png)
 
@@ -212,19 +212,19 @@ No.|sub-commands|comment
 26 | probe         |用于定义动态检查点。
 27 | trace         |类似strace功能。
 
-### 全局性概况
+## 全局性概况
 
 * perf list查看当前系统支持的性能事件；
 * perf bench对系统性能进行摸底；
 * perf test对系统进行健全性测试；
 * perf stat对全局性能进行统计；
 
-### 全局细节
+## 全局细节
 
 * perf top可以实时查看当前系统进程函数占用率情况；
 * perf probe可以自定义动态事件；
 
-### 特定功能分析
+## 特定功能分析
 
 perf kmem针对slab子系统性能分析；
 perf kvm针对kvm虚拟化分析；
@@ -233,7 +233,7 @@ perf mem分析内存slab性能；
 perf sched分析内核调度器性能；
 perf trace记录系统调用轨迹；
 
-### perf record
+## perf record
 
 最常用功能perf record，可以系统全局，也可以具体到**某个进程**，更甚具体到**某一进程某一事件**；可宏观，也可以很微观。
 
@@ -245,12 +245,14 @@ perf trace记录系统调用轨迹；
 * perf archive将相关符号打包，方便在其它机器进行分析；
 * perf script将perf.data输出可读性文本；
 
-### 可视化工具perf timechart
+## 可视化工具perf timechart
 
 perf timechart record记录事件；
 perf timechart生成output.svg文档；
 
-# 性能事件
+# Perf性能事件
+
+完整的性能事件列表见Intel手册`Performance Monitoring Events`
 
 ## 三种类型性能事件
 
@@ -350,11 +352,11 @@ perf stat -e r010b ls
 
 # Perf top工具
 
-## 基本使用方法
-
-top工具主要用于实时剖析各个函数在某个性能事件上的热度。利用perf top，能够直观地观察到当前的热点函数，并利用工具中内置的annotate功能，进一步查找特点指令。
+top工具主要用于**实时剖析各个函数**在**某个性能事件**上的热度。利用perf top，能够直观地观察到当前的热点函数，并利用工具中内置的annotate功能，进一步查找特点指令。
 
 ![2020-07-19-23-19-20.png](./images/2020-07-19-23-19-20.png)
+
+## 基本使用方法
 
 perf top的基本使用方法为：
 
@@ -367,6 +369,10 @@ perf top
 ## 3种用户页面
 
 perf提供了**3种用户页面**，分别是**tui**、**gtk**以及**tty**。其中可操作性最强，功能最丰富的界面是**tui**。
+
+本文主要基于此界面讲解 perf。top 工具仅支持 tui 与 tty，默认界面为 tui。上图中展示的就是 tui 界面。
+
+需要提一下的是，必须在系统安装 newt 软件包，perf 才能使能 tui 界面。
 
 ## 4列信息
 
