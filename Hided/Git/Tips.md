@@ -208,6 +208,9 @@ git log --author=yourname --since="2019-11-01" --before="2020-02-28" --no-merges
 
 git log --pretty=format:%ae --since="2019-11-01" --before="2020-02-28" --no-merges | gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
 
+2018-11-01到2019-11-01的腾讯邮箱提交
+
+git log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %C(bold blue)<%ae>%Creset' --abbrev-commit --date-order --since="2018-11-01" --until="2019-11-01" | grep tencent
 
 git log --pretty=format:%ae --since="2019-11-01" --before="2020-02-28" --no-merges -- Documentation/virt/kvm/ include/trace/events/kvm.h include/uapi/asm-generic/kvm* include/uapi/linux/kvm* include/asm-generic/kvm* include/linux/kvm* include/kvm/iodev.h virt/kvm/* tools/kvm/ tools/testing/selftests/kvm/ | gawk -- '{ ++c[$0]; } END { for(cc in c) printf "%5d %s\n",c[cc],cc; }' | sort -u -n -r | head -n 5
 
