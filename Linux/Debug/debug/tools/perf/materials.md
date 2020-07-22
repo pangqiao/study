@@ -13,3 +13,5 @@ http://www.brendangregg.com/perf.html
 https://github.com/brendangregg/perf-tools
 
 http://abcdxyzk.github.io/blog/2015/07/27/debug-perf/
+
+详细有例: https://www.cntofu.com/book/46/linux_tools/linuxxia_de_nei_he_ce_shi_gong_ju_2014_2014_perf_s.md
