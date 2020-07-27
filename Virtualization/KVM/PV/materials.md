@@ -26,3 +26,7 @@ pv的feature大多数给超卖用的, 会有大量kick, 让出cpu或抢占cpu, �
 通过cpuid判断feature
 
 Documentation/virtual/kvm/cpuid.rst
+
+qemu-system-x86_64 -cpu ?
+
+

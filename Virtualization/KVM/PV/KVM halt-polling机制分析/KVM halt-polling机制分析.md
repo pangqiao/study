@@ -1,7 +1,7 @@
 
 简介
 
-在实际业务中，guest执行HLT指令是导致虚拟化overhead的一个重要原因。如[1].
+在实际业务中，guest执行**HLT指令**是导致虚拟化overhead的一个重要原因。如[1].
 
 KVM halt polling特性就是为了解决这一个问题被引入的，它在Linux 4.3-rc1被合入主干内核，其基本原理是当guest idle发生vm-exit时，host 继续polling一段时间，用于减少guest的业务时延。进一步讲，在vcpu进入idle之后，guest内核默认处理是执行HLT指令，就会发生vm-exit，host kernel并不马上让出物理核给调度器，而是poll一段时间，若guest在这段时间内被唤醒，便可以马上调度回该vcpu线程继续运行。
 
