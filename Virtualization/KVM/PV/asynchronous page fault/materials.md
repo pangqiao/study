@@ -14,3 +14,13 @@ v6: https://linux.kernel.narkive.com/7AbMVEwr/patch-v6-11-12-let-host-know-wheth
 
 启动参数: 
 no-kvmapf: `[X86,KVM] Disable paravirtualized asynchronous page fault handling.`
+
+dmesg | grep async
+
+[    1.822108] KVM setup async PF for cpu 81
+[    1.825874] KVM setup async PF for cpu 82
+[    1.829800] KVM setup async PF for cpu 83
+[    1.833828] KVM setup async PF for cpu 84
+[    1.838012] KVM setup async PF for cpu 85
+[    1.844895] KVM setup async PF for cpu 86
+[    1.849222] KVM setup async PF for cpu 87
