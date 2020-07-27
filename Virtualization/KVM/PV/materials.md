@@ -30,3 +30,4 @@ Documentation/virtual/kvm/cpuid.rst
 qemu-system-x86_64 -cpu ?
 
 
+PV很多都是可以通过启动参数控制的

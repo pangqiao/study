@@ -11,3 +11,6 @@ https://terenceli.github.io/%E6%8A%80%E6%9C%AF/2019/03/24/kvm-async-page-fault
 2010 kvm forum: https://www.linux-kvm.org/images/a/ac/2010-forum-Async-page-faults.pdf
 
 v6: https://linux.kernel.narkive.com/7AbMVEwr/patch-v6-11-12-let-host-know-whether-the-guest-can-handle-async-pf-in-non-userspace-context#post1
+
+启动参数: 
+no-kvmapf: `[X86,KVM] Disable paravirtualized asynchronous page fault handling.`
