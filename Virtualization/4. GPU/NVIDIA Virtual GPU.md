@@ -3,38 +3,38 @@
 
 <!-- code_chunk_output -->
 
-* [1 基本介绍](#1-基本介绍)
-	* [1.1 NVIDIA vGPU Software使用方式](#11-nvidia-vgpu-software使用方式)
-	* [1.2 架构](#12-架构)
-	* [1.3 支持的GPU](#13-支持的gpu)
-		* [1.3.1 Virtual GPU Types](#131-virtual-gpu-types)
-	* [1.4 Guest VM支持](#14-guest-vm支持)
-		* [1.4.1 Windows虚拟机](#141-windows虚拟机)
-		* [1.4.2 Linux虚拟机](#142-linux虚拟机)
-	* [1.5 NVIDIA vGPU软件功能](#15-nvidia-vgpu软件功能)
-* [2 安装和配置NVIDIA Virtual GPU Manager](#2-安装和配置nvidia-virtual-gpu-manager)
-	* [2.1 准备工作](#21-准备工作)
-	* [2.2 给KVM安装NVIDIA Virtual GPU Manager](#22-给kvm安装nvidia-virtual-gpu-manager)
-	* [2.3 确定vGPU type](#23-确定vgpu-type)
-* [3 使用vGPU](#3-使用vgpu)
-	* [3.1 Virsh命令](#31-virsh命令)
-	* [3.2 QEMU命令](#32-qemu命令)
-	* [3.3 OpenStack使用](#33-openstack使用)
-		* [3.3.1 创建flavor](#331-创建flavor)
-		* [3.3.2 创建虚拟机](#332-创建虚拟机)
-	* [3.4 确认vGPU已经创建](#34-确认vgpu已经创建)
-	* [3.5 设置vGPU的参数](#35-设置vgpu的参数)
-	* [3.6 删除vGPU](#36-删除vgpu)
-* [4 给虚拟机安装驱动](#4-给虚拟机安装驱动)
-* [5 License这个vGPU](#5-license这个vgpu)
+- [基本介绍](#基本介绍)
+  - [NVIDIA vGPU Software使用方式](#nvidia-vgpu-software使用方式)
+  - [架构](#架构)
+  - [1.3 支持的GPU](#13-支持的gpu)
+    - [1.3.1 Virtual GPU Types](#131-virtual-gpu-types)
+  - [1.4 Guest VM支持](#14-guest-vm支持)
+    - [1.4.1 Windows虚拟机](#141-windows虚拟机)
+    - [1.4.2 Linux虚拟机](#142-linux虚拟机)
+  - [1.5 NVIDIA vGPU软件功能](#15-nvidia-vgpu软件功能)
+- [2 安装和配置NVIDIA Virtual GPU Manager](#2-安装和配置nvidia-virtual-gpu-manager)
+  - [2.1 准备工作](#21-准备工作)
+  - [2.2 给KVM安装NVIDIA Virtual GPU Manager](#22-给kvm安装nvidia-virtual-gpu-manager)
+  - [2.3 确定vGPU type](#23-确定vgpu-type)
+- [3 使用vGPU](#3-使用vgpu)
+  - [3.1 Virsh命令](#31-virsh命令)
+  - [3.2 QEMU命令](#32-qemu命令)
+  - [3.3 OpenStack使用](#33-openstack使用)
+    - [3.3.1 创建flavor](#331-创建flavor)
+    - [3.3.2 创建虚拟机](#332-创建虚拟机)
+  - [3.4 确认vGPU已经创建](#34-确认vgpu已经创建)
+  - [3.5 设置vGPU的参数](#35-设置vgpu的参数)
+  - [3.6 删除vGPU](#36-删除vgpu)
+- [4 给虚拟机安装驱动](#4-给虚拟机安装驱动)
+- [5 License这个vGPU](#5-license这个vgpu)
+- [参考](#参考)
 
 <!-- /code_chunk_output -->
 
-https://docs.nvidia.com/grid/latest/grid-vgpu-user-guide/index.html
 
-# 1 基本介绍
+# 基本介绍
 
-## 1.1 NVIDIA vGPU Software使用方式
+## NVIDIA vGPU Software使用方式
 
 NVIDIA vGPU有三种使用方式
 
@@ -44,7 +44,7 @@ NVIDIA vGPU有三种使用方式
 
 这里介绍vGPU方式.
 
-## 1.2 架构
+## 架构
 
 NVIDIA vGPU系统架构:
 
@@ -524,3 +524,7 @@ FeatureType=1
 Apr  9 16:23:56 localhost nvidia-gridd: Calling load_byte_array(tra)
 Apr  9 16:23:58 localhost nvidia-gridd: License acquired successfully. (Info: http://10.5.8.208:7070/request; Quadro-Virtual-DWS,5.0)
 ```
+
+# 参考
+
+https://docs.nvidia.com/grid/latest/grid-vgpu-user-guide/index.html
