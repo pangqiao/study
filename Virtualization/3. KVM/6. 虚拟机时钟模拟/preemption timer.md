@@ -1,6 +1,5 @@
-cat /sys/module/kvm_intel/parameters/preemption_timer
 
-一、什么是Preemption Timer
+# 什么是Preemption Timer
 
 Preemption Timer是一种可以周期性使VM触发VMEXIT的一种机制。即设置了Preemption Timer之后，可以使得虚拟机在指定的TSC cycle之后产生一次VMEXIT并设置对应的exit_reason，trap到VMM中。该机制很少被社区的开发者使用，甚至连Linux KVM部分代码中连该部分的处理函数都没有，只是定义了相关的宏（这些宏还是在nested virtualization中使用的）。
 
@@ -8,7 +7,11 @@ Preemption Timer是一种可以周期性使VM触发VMEXIT的一种机制。即�
 在旧版本的Intel CPU中Preemption Timer是不精确的。在Intel的设计中，Preemption Timer应该是严格和TSC保持一致，但是在Haswell之前的处理器并不能严格保持一致。
 Preemption Timer只有在VCPU进入到Guest时（即进入non-root mode）才会开始工作，在VCPU进入VMM时或者VCPU被调度出CPU时，其值都不会有变化。
 
-二、如何使用Preemption Timer
+```
+cat /sys/module/kvm_intel/parameters/preemption_timer
+```
+
+# 如何使用Preemption Timer
 
 Preemption Timer在VMCS中有三个域需要设置：
 
@@ -26,11 +29,11 @@ Preemption Timer一个可能的使用环境是：需要让**VM定期的产生VME
 
 Preemption Timer相关的的`VMEXIT reason`号是**52**，参考`Intel Manual 3C Table C-1 [1]，"VMX-preemption timer expired. The preemption timer counted down to zero"`。
 
-三、Preemption Timer count down频率的计算
+# Preemption Timer count down频率的计算
 
-Preemption Timer频率的计算可以参考Intel Manual 3C [1]的"25.5.1 VMX-Preemption Timer"，在这里我给出一个简单的算法，首先明确如下几个名词：
+Preemption Timer频率的计算可以参考`Intel Manual 3C [1]的"25.5.1 VMX-Preemption Timer`"，在这里我给出一个简单的算法，首先明确如下几个名词：
 
-PTTR（Preemption Timer TSC Rate）：在MSR IA32_VMX_MISC的后五位中，存储着一个5 bit的数据，代表着Preemption Timer TSC Rate。该rate表示TSC count down多少次会导致Preemption Timer Value count down一次，所以我成为“Rate”。
+**PTTR**（Preemption Timer TSC Rate）：在MSR IA32_VMX_MISC的后五位中，存储着一个5 bit的数据，代表着Preemption Timer TSC Rate。该rate表示TSC count down多少次会导致Preemption Timer Value count down一次，所以我成为“Rate”。
 
 PTV（Preemption Timer Value）：在VMCS的VMX-preemption timer value域中设置的值
 
