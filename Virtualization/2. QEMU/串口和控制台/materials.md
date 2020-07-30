@@ -41,4 +41,6 @@ minicom
 
 https://blog.csdn.net/IOT_SONG/article/details/79767254
 
+https://www.cnblogs.com/xiaofengkang/archive/2012/09/20/2695590.html
+
 串口设备不可同时使用
