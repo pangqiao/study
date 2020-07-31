@@ -1,6 +1,22 @@
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
-# 背景
+<!-- code_chunk_output -->
+
+- [1. 背景](#1-背景)
+- [2. 第一步: 新建分支](#2-第一步-新建分支)
+- [3. 第二步：提交分支commit](#3-第二步提交分支commit)
+- [4. 第三步：撰写提交信息](#4-第三步撰写提交信息)
+- [5. 第四步：与主干同步](#5-第四步与主干同步)
+- [6. 第五步：合并commit](#6-第五步合并commit)
+- [7. 第六步：推送到远程仓库](#7-第六步推送到远程仓库)
+- [8. 第七步：发出Pull Request](#8-第七步发出pull-request)
+- [9. 参考](#9-参考)
+
+<!-- /code_chunk_output -->
+
+
+# 1. 背景
 
 下面是 ThoughtBot 的Git使用规范流程。我从中学到了很多，推荐你也这样使用Git。
 
@@ -8,7 +24,7 @@ ThoughtBot: https://github.com/thoughtbot/guides/tree/master/protocol/git
 
 ![2020-05-08-11-26-24.png](./images/2020-05-08-11-26-24.png)
 
-# 第一步: 新建分支
+# 2. 第一步: 新建分支
 
 首先，每次开发新功能，都应该新建一个单独的分支
 
@@ -21,7 +37,7 @@ $ git pull
 $ git checkout -b myfeature
 ```
 
-# 第二步：提交分支commit
+# 3. 第二步：提交分支commit
 
 分支修改后，就可以提交commit了。
 
@@ -37,7 +53,7 @@ git status 命令，用来查看发生变动的文件。
 
 git commit 命令的verbose参数，会列出 diff 的结果。
 
-# 第三步：撰写提交信息
+# 4. 第三步：撰写提交信息
 
 提交commit时，必须给出完整扼要的提交信息，下面是一个范本。
 
@@ -52,7 +68,7 @@ http://project.management-system.com/ticket/123
 
 第一行是不超过50个字的提要，然后空一行，罗列出改动原因、主要变动、以及需要注意的问题。最后，提供对应的网址（比如Bug ticket）。
 
-# 第四步：与主干同步
+# 5. 第四步：与主干同步
 
 分支的开发过程中，要经常与主干保持同步。
 
@@ -61,7 +77,7 @@ $ git fetch origin
 $ git rebase origin/master
 ```
 
-# 第五步：合并commit
+# 6. 第五步：合并commit
 
 分支开发完成后，很可能有一堆commit，但是合并到主干的时候，往往希望只有一个（或最多两三个）commit，这样不仅清晰，也容易管理。
 
@@ -179,7 +195,7 @@ $ git rebase -i --autosquash
 
 这个用法请参考这篇文章，这里就不解释了。
 
-# 第六步：推送到远程仓库
+# 7. 第六步：推送到远程仓库
 
 合并commit后，就可以推送当前分支到远程仓库了。
 
@@ -189,10 +205,10 @@ $ git push --force origin myfeature
 
 git push命令要加上force参数，因为rebase以后，分支历史改变了，跟远程分支不一定兼容，有可能要强行推送（参见这里）。
 
-# 第七步：发出Pull Request
+# 8. 第七步：发出Pull Request
 
 提交到远程仓库以后，就可以发出 Pull Request 到master分支，然后请求别人进行代码review，确认可以合并到master。
 
-# 参考
+# 9. 参考
 
 http://www.ruanyifeng.com/blog/2015/08/git-use-process.html
