@@ -18,7 +18,7 @@
 
 # 1. 背景
 
-下面是 ThoughtBot 的Git使用规范流程。我从中学到了很多，推荐你也这样使用Git。
+下面是 ThoughtBot 的Git使用规范流程。
 
 ThoughtBot: https://github.com/thoughtbot/guides/tree/master/protocol/git
 
