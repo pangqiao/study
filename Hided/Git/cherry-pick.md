@@ -3,14 +3,17 @@
 
 <!-- code_chunk_output -->
 
-- [作用](#作用)
-- [基本用法](#基本用法)
-- [转移多个提交](#转移多个提交)
-- [配置项](#配置项)
+- [1. 作用](#1-作用)
+- [2. 基本用法](#2-基本用法)
+- [3. 转移多个提交](#3-转移多个提交)
+- [4. 配置项](#4-配置项)
+- [5. 代码冲突](#5-代码冲突)
+- [6. 转移到另一个代码库](#6-转移到另一个代码库)
+- [7. 参考](#7-参考)
 
 <!-- /code_chunk_output -->
 
-# 作用
+# 1. 作用
 
 对于**多分支**的**代码库**，将代码从**一个分支**转移到**另一个分支**是常见需求。
 
@@ -21,7 +24,9 @@
 
 将指定的提交（commit）应用于其他分支, 但是会**产生新的commit**.
 
-# 基本用法
+本质上和rebase是相同的
+
+# 2. 基本用法
 
 ```
 git cherry-pick <commitHash>
@@ -50,12 +55,12 @@ $ git cherry-pick f
 上面的操作完成以后，代码库就变成了下面的样子。
 
 ```
-    a - b - c - d - f   Master
+    a - b - c - d - f'   Master
          \
            e - f - g Feature
 ```
 
-从上面可以看到，master分支的末尾增加了一个提交f。
+从上面可以看到，master分支的末尾增加了一个提交f', 这个是一个新的commit。
 
 `git cherry-pick`命令的**参数**，不一定是提交的哈希值，**分支名**也是可以的，表示转移**该分支的最新提交**。
 
@@ -65,7 +70,7 @@ $ git cherry-pick feature
 
 上面代码表示将feature分支的**最近一次提交**，转移到当前分支。
 
-# 转移多个提交
+# 3. 转移多个提交
 
 Cherry pick 支持一次转移多个提交。
 
@@ -90,7 +95,7 @@ $ git cherry-pick A..B
 $ git cherry-pick A^..B
 ```
 
-# 配置项
+# 4. 配置项
 
 git cherry-pick命令的常用配置项如下。
 
@@ -114,37 +119,66 @@ git cherry-pick命令的常用配置项如下。
 
 如果**原始提交**是一个**合并节点**，来自于两个分支的合并，那么 Cherry pick 默认将失败，因为它不知道应该采用哪个分支的代码变动。
 
-`-m` 配置项告诉 Git，应该采用哪个分支的变动。它的参数parent-number是一个从1开始的整数，代表原始提交的父分支编号。
+`-m` 配置项告诉 Git，应该采用哪个分支的变动。它的参数`parent-number`是一个从1开始的整数，代表原始提交的父分支编号。
 
+```
 $ git cherry-pick -m 1 <commitHash>
+```
+
 上面命令表示，Cherry pick 采用提交commitHash来自编号1的父分支的变动。
+
 一般来说，1号父分支是接受变动的分支（the branch being merged into），2号父分支是作为变动来源的分支（the branch being merged from）。
-四、代码冲突
+
+# 5. 代码冲突
+
 如果操作过程中发生代码冲突，Cherry pick 会停下来，让用户决定如何继续操作。
-（1）--continue
+
+（1）`--continue`
+
 用户解决代码冲突后，第一步将修改的文件重新加入暂存区（git add .），第二步使用下面的命令，让 Cherry pick 过程继续执行。
 
+```
 $ git cherry-pick --continue
-（2）--abort
+```
+
+（2）`--abort`
+
 发生代码冲突后，放弃合并，回到操作前的样子。
-（3）--quit
+
+（3）`--quit`
+
 发生代码冲突后，退出 Cherry pick，但是不回到操作前的样子。
-五、转移到另一个代码库
+
+# 6. 转移到另一个代码库
+
 Cherry pick 也支持转移另一个代码库的提交，方法是先将该库加为远程仓库。
 
+```
 $ git remote add target git://gitUrl
+```
+
 上面命令添加了一个远程仓库target。
+
 然后，将远程代码抓取到本地。
 
+```
 $ git fetch target
+```
+
 上面命令将远程代码仓库抓取到本地。
+
 接着，检查一下要从远程仓库转移的提交，获取它的哈希值。
 
+```
 $ git log target/master
+```
+
 最后，使用git cherry-pick命令转移提交。
 
+```
 $ git cherry-pick <commitHash>
+```
 
-
+# 7. 参考
 
 http://www.ruanyifeng.com/blog/2020/04/git-cherry-pick.html
