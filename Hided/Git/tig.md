@@ -1,11 +1,21 @@
 
-# 安装
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. 安装](#1-安装)
+- [2. 使用](#2-使用)
+- [3. 参考](#3-参考)
+
+<!-- /code_chunk_output -->
+
+# 1. 安装
 
 ```
 yum install tig
 ```
 
-# 使用
+# 2. 使用
 
 在 Repo 文件夹下，输入 【 tig 】+ 【 Enter 】即可进入 tig 模式。此时展现在面前的将会是本地所有的 commit 记录以及分支的演化。
 
@@ -36,7 +46,7 @@ main view 可以认为是主页。
 tig 可以设置作用域，如果只想关注某个文件夹的修改记录，可使用 【 tig 文件夹名】。
 
 
-# 参考
+# 3. 参考
 
 https://juejin.im/post/5afabcb1f265da0b886d92b6
 

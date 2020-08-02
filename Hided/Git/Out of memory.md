@@ -1,12 +1,24 @@
-### 1. 错误信息
+
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. 错误信息](#1-错误信息)
+- [2. 解决办法](#2-解决办法)
+  - [2.1. 网上解决办法](#21-网上解决办法)
+  - [2.2. 最终解决办法](#22-最终解决办法)
+
+<!-- /code_chunk_output -->
+
+# 1. 错误信息
 
 ```
 fatal: Out of memory, malloc failed (tried to allocate 364974473 bytes)
 ```
 
-### 2. 解决办法
+# 2. 解决办法
 
-#### 2.1 网上解决办法
+## 2.1. 网上解决办法
 
 第一步，调内存
 
@@ -20,7 +32,7 @@ git config --global pack.windowMemory 50m
 
 但是再一次失败了
 
-#### 2.2 最终解决办法
+## 2.2. 最终解决办法
 
 原理：调节swap
 
