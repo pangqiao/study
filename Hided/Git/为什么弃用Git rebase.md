@@ -6,23 +6,8 @@
 
 我们首先来思考一下通过merge的话，我们创建了一个新的提交g表示两个分支的合并。提交图清晰的展现了发生了什么，我们可以从更大的 Git-repos 中看到熟悉的“火车轨道”轮廓。
 
-merge 的案例：
 
-![config](images/3.gif)
 
-同样地，我们可以在merge之前选择rebase。提交会被移除，并且feature分支被重置到master分支，feature分支上的提交被重新应用到master。差别在于这些重新应用的提交通常是原始的副本，它们的 SHA-1 值和原来的提交不一样。
-
-rebase 的案例：
-
-![config](images/4.gif)
-
-我们现在将 feature 的基础提交从 b 变为了 c，这就是 rebase 的意思。将 feature 合并到 master 是一个快进合并，因为在 feature 上的所有提交都是 master 的直接子代。
-
-快进合并的案例：
-
-![config](images/5.gif)
-
-和 merge 的方法比较起来，rebase 导致分支的历史都是线性的。我以前更喜欢在合并之前 rebase 分支的原因在于提高了可读性，我认为其他的开发者应该也是这种情况。
 
 但是，这种方式带来了一些不是很明显的挑战。
 
