@@ -1,14 +1,14 @@
 ;*************************************************
 ; guest_ex.asm                                   *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
         
         ;;
-        ;; Àı×Ó ex7-2£ºÄ£Äâ guest ÈÎÎñÇĞ»»
-        ;; ×¢Òâ£º±ØĞë±àÒëÎª guest Ê¹ÓÃ legacy ±£»¤Ä£Ê½
-        ;; ±àÒëÃüÁî¿ÉÒÔÎª£º
+        ;; ä¾‹å­ ex7-2ï¼šæ¨¡æ‹Ÿ guest ä»»åŠ¡åˆ‡æ¢
+        ;; æ³¨æ„ï¼šå¿…é¡»ç¼–è¯‘ä¸º guest ä½¿ç”¨ legacy ä¿æŠ¤æ¨¡å¼
+        ;; ç¼–è¯‘å‘½ä»¤å¯ä»¥ä¸ºï¼š
         ;;      1) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE -D__X64
         ;;      2) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE
         ;;
@@ -16,14 +16,14 @@
 
 %ifndef GUEST_X64
         ;;
-        ;; ĞÂÈÎÎñËùÊ¹ÓÃµÄ TSS selector
+        ;; æ–°ä»»åŠ¡æ‰€ä½¿ç”¨çš„ TSS selector
         ;;
         NewTssSelector          EQU     GuestReservedSel0    
         TargetTaskSelector      EQU     GuestReservedSel0    
 
 
         ;;
-        ;; ¹¹ÔìÒ»¸ö TSS ÃèÊö·û
+        ;; æ„é€ ä¸€ä¸ª TSS æè¿°ç¬¦
         ;;
         sgdt [GuestEx.GdtPointer]
         mov ebx, [GuestEx.GdtBase]
@@ -33,7 +33,7 @@
         mov WORD [ebx + NewTssSelector + 5], 89h
 
         ;;
-        ;; ¹¹ÔìÒ»¸ö task-gate ÃèÊö·û
+        ;; æ„é€ ä¸€ä¸ª task-gate æè¿°ç¬¦
         ;;
         sidt [GuestEx.IdtPointer]
         mov ebx, [GuestEx.IdtBase]
@@ -42,7 +42,7 @@
         
 
         ;;
-        ;; ÉèÖÃĞÂÈÎÎñµÄ TSS ¿éÄÚÈİ
+        ;; è®¾ç½®æ–°ä»»åŠ¡çš„ TSS å—å†…å®¹
         ;;
         mov ebx, GuestEx.Tss
         mov DWORD [ebx + TSS32.Esp], 7F00h
@@ -56,15 +56,15 @@
         
        
         ;;
-        ;; ### ÏÂÃæ½øĞĞÈÎÎñÇĞ»»²Ù×÷¡£###
-        ;; ×¢Òâ£º²»ÒªÊ¹ÓÃ INT Ö¸Áî£¡
-        ;;       ÒòÎª£¬ÔÚÀı×Ó ex7-4 ÀïÀ¹½ØÁËÖ´ĞĞ INT Ö¸Áî£¬²¢Ã»ÓĞ¶ÔÖĞ¶ÏµÄÈÎÎñÇĞ»»½øĞĞ´¦Àí £¡£¡
-        ;;       ËùÒÔ£¬ÕâÀïÊ¹ÓÃ CALL Ö¸Áî½øĞĞÈÎÎñÇĞ»» £¡£¡
+        ;; ### ä¸‹é¢è¿›è¡Œä»»åŠ¡åˆ‡æ¢æ“ä½œã€‚###
+        ;; æ³¨æ„ï¼šä¸è¦ä½¿ç”¨ INT æŒ‡ä»¤ï¼
+        ;;       å› ä¸ºï¼Œåœ¨ä¾‹å­ ex7-4 é‡Œæ‹¦æˆªäº†æ‰§è¡Œ INT æŒ‡ä»¤ï¼Œå¹¶æ²¡æœ‰å¯¹ä¸­æ–­çš„ä»»åŠ¡åˆ‡æ¢è¿›è¡Œå¤„ç† ï¼ï¼
+        ;;       æ‰€ä»¥ï¼Œè¿™é‡Œä½¿ç”¨ CALL æŒ‡ä»¤è¿›è¡Œä»»åŠ¡åˆ‡æ¢ ï¼ï¼
         ;;     
         call    TargetTaskSelector : 0
         
         ;;
-        ;; ´òÓ¡ÇĞ»»»ØÀ´µÄĞÅÏ¢
+        ;; æ‰“å°åˆ‡æ¢å›æ¥çš„ä¿¡æ¯
         ;;
         mov esi, GuestEx.Msg2
         call PutStr
@@ -74,7 +74,7 @@
    
         
 ;; 
-;; #### Ä¿±êÈÎÎñ ####
+;; #### ç›®æ ‡ä»»åŠ¡ ####
 ;;     
 GuestEx.NewTask:
         mov esi, GuestEx.Msg1
@@ -87,7 +87,7 @@ GuestEx.NewTask:
 
 
 ;;
-;; GDT ±íÖ¸Õë
+;; GDT è¡¨æŒ‡é’ˆ
 ;;
 GuestEx.GdtPointer:
         GuestEx.GdtLimit        dw      0
@@ -100,7 +100,7 @@ GuestEx.IdtPointer:
         
         
 ;;
-;; TSS ÇøÓò
+;; TSS åŒºåŸŸ
 ;;
 ALIGNB 4
 GuestEx.Tss:    times 104       db      0
