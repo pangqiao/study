@@ -190,6 +190,7 @@ static int __init init_bench_ipi(void)
 		       name, times, sum, sum_output, avg_output);
 
 	}
+	kfree(result);
 
 	/*
 	ret = bench_ipi(NTIMES, DRY_RUN, &ipi, &total);
