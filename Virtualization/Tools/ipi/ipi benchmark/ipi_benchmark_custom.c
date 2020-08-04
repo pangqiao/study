@@ -136,7 +136,7 @@ static int __init init_bench_ipi(void)
 	int i,j = 0;
 	int i_case;
 	char *name;
-	char *result = kzalloc(times*12, GFP_KERNEL);
+	char *result = kvalloc(times*12, GFP_KERNEL);
 	unsigned long long sum;
 	unsigned long long offset;
 	unsigned long long max;
