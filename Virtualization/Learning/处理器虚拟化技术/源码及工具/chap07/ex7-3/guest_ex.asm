@@ -1,18 +1,18 @@
 ;*************************************************
 ; guest_ex.asm                                   *
-; Copyright (c) 2009-2013 ��־                   *
+; Copyright (c) 2009-2013 邓志                   *
 ; All rights reserved.                           *
 ;*************************************************
 
         ;;
-        ;; ���� ex.asm ģ��ʹ�õ�ͷ�ļ�
+        ;; 加入 ex.asm 模块使用的头文件
         ;;
         %include "ex.inc"
         
         
         ;;
-        ;; ���� ex7-3��ʵ�� local APIC ���⻯
-        ;; �����������Ϊ��
+        ;; 例子 ex7-3：实现 local APIC 虚拟化
+        ;; 编译命令可以为：
         ;;      1) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE -D__X64 -DGUEST_X64
         ;;      2) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE -D__X64
         ;;      3) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE
@@ -20,7 +20,7 @@
         
 
         ;;
-        ;; ���� local APIC base ֵΪ 01000000h
+        ;; 设置 local APIC base 值为 01000000h
         ;;
         mov ecx, IA32_APIC_BASE
         mov eax, 01000000h | APIC_BASE_BSP | APIC_BASE_ENABLE
