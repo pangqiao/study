@@ -19,3 +19,5 @@ http://abcdxyzk.github.io/blog/2015/07/27/debug-perf/
 https://blog.gmem.cc/perf
 
 https://www.cnblogs.com/arnoldlu/p/6241297.html
+
+动态追踪: https://blog.arstercz.com/introduction_to_linux_dynamic_tracing/

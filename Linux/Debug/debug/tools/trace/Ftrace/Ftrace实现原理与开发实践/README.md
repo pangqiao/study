@@ -7,3 +7,6 @@
 >Ftrace 实现原理与开发实践
 >吴章金, MIPS Ftrace Author, http://kernel.meizu.com
 >2016.10.21
+
+
+ftrace的一个例子: https://www.lagou.com/lgeduarticle/12750.html
