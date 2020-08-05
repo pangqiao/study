@@ -1,12 +1,12 @@
 ;*************************************************
 ;* VmxMsr.asm                                    *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
 
 ;;
-;; ´¦Àí·ÃÎÊ MSR Àı³Ì
+;; å¤„ç†è®¿é—® MSR ä¾‹ç¨‹
 ;;
 
   
@@ -16,10 +16,10 @@
 ; input:
 ;       esi - MSR index
 ; output:
-;       eax - MSR VTE£¨value table entry£©µØÖ·
-; ÃèÊö£º
-;       1) ·µ»Ø MSR ¶ÔÓ¦µÄ VTE ±íÏîµØÖ·
-;       2) ²»´æÔÚ MSR Ê±£¬·µ»Ø 0 Öµ¡¡
+;       eax - MSR VTEï¼ˆvalue table entryï¼‰åœ°å€
+; æè¿°ï¼š
+;       1) è¿”å› MSR å¯¹åº”çš„ VTE è¡¨é¡¹åœ°å€
+;       2) ä¸å­˜åœ¨ MSR æ—¶ï¼Œè¿”å› 0 å€¼ã€€
 ;-----------------------------------------------------------------------
 GetMsrVte:
         push ebp
@@ -40,10 +40,10 @@ GetMsrVte:
         mov eax, [ebx + VMB.MsrVteBuffer]               
         
 GetMsrVte.@1:                
-        cmp esi, [eax]                                  ; ¼ì²é MSR index Öµ
+        cmp esi, [eax]                                  ; æ£€æŸ¥ MSR index å€¼
         je GetMsrVte.Done
         REX.Wrxb
-        add eax, MSR_VTE_SIZE                           ; Ö¸ÏòÏÂÒ»Ìõ entry
+        add eax, MSR_VTE_SIZE                           ; æŒ‡å‘ä¸‹ä¸€æ¡ entry
         REX.Wrxb
         cmp eax, [ebx + VMB.MsrVteIndex]
         jb GetMsrVte.@1
@@ -63,9 +63,9 @@ GetMsrVte.Done:
 ;       eax - MSR low32
 ;       edx - MSR hi32
 ; output:
-;       eax - VTE µØÖ·
-; ÃèÊö£º
-;       1) Ïò MSR VTE buffer ÀïĞ´Èë MSR VTE ĞÅÏ¢
+;       eax - VTE åœ°å€
+; æè¿°ï¼š
+;       1) å‘ MSR VTE buffer é‡Œå†™å…¥ MSR VTE ä¿¡æ¯
 ;-----------------------------------------------------------------------
 AppendMsrVte:
         push ebp
@@ -92,7 +92,7 @@ AppendMsrVte:
                 
 AppendMsrVte.WriteVte:
         ;;
-        ;; Ğ´Èë MSR VTE ÄÚÈİ
+        ;; å†™å…¥ MSR VTE å†…å®¹
         ;;
         mov [eax + MSR_VTE.MsrIndex], esi
         mov [eax + MSR_VTE.Value], ebx
@@ -110,8 +110,8 @@ AppendMsrVte.WriteVte:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí guest ·ÃÎÊ IA32_APIC_BASE ¼Ä´æÆ÷
+; æè¿°ï¼š
+;       1) å¤„ç† guest è®¿é—® IA32_APIC_BASE å¯„å­˜å™¨
 ;-----------------------------------------------------------------------
 DoWriteMsrForApicBase:
         push ebp
@@ -130,7 +130,7 @@ DoWriteMsrForApicBase:
         mov ebx, [ebx + VMB.VsbBase]
                
         ;;
-        ;; ¶ÁÈ¡ guest Ğ´ÈëµÄ MSR Öµ
+        ;; è¯»å– guest å†™å…¥çš„ MSR å€¼
         ;;
         mov eax, [ebx + VSB.Rax]
         mov edx, [ebx + VSB.Rdx]
@@ -138,17 +138,17 @@ DoWriteMsrForApicBase:
         DEBUG_RECORD    "[DoWriteMsrForApicBase]: write to IA32_APIC_BASE"
                 
         ;;
-        ;; ### ¼ì²éĞ´ÈëÖµÊÇ·ñºÏ·¨ ###
-        ;; 1) ±£ÁôÎ»£¨bits 7:0, bit 9£¬bits 63:N£©ĞèÎª 0
-        ;; 2) ¼ì²é bit 11 Óë bit 10 µÄÉèÖÃ
-        ;;      a) µ± bit 11 = 1, bit 10 = 0 Ê±£¬ÉèÖÃ bit 11 = 1£¬ bit 10 = 1 ¿ªÆô x2APIC Ä£Ê½
-        ;;      b) µ± bit 11 = 0, bit 10 = 1 Ê±£¬ÎŞĞ§
-        ;;      c) µ± bit 11 = 0, bit 10 = 0 Ê±£¬¹Ø±Õ local APIC
-        ;;      d) µ± bit 11 = 1, bit 10 = 1 Ê±£¬ÉèÖÃ bit 11 = 1, bit 10 = 0 Ê±£¬²úÉú #GP Òì³£ 
+        ;; ### æ£€æŸ¥å†™å…¥å€¼æ˜¯å¦åˆæ³• ###
+        ;; 1) ä¿ç•™ä½ï¼ˆbits 7:0, bit 9ï¼Œbits 63:Nï¼‰éœ€ä¸º 0
+        ;; 2) æ£€æŸ¥ bit 11 ä¸ bit 10 çš„è®¾ç½®
+        ;;      a) å½“ bit 11 = 1, bit 10 = 0 æ—¶ï¼Œè®¾ç½® bit 11 = 1ï¼Œ bit 10 = 1 å¼€å¯ x2APIC æ¨¡å¼
+        ;;      b) å½“ bit 11 = 0, bit 10 = 1 æ—¶ï¼Œæ— æ•ˆ
+        ;;      c) å½“ bit 11 = 0, bit 10 = 0 æ—¶ï¼Œå…³é—­ local APIC
+        ;;      d) å½“ bit 11 = 1, bit 10 = 1 æ—¶ï¼Œè®¾ç½® bit 11 = 1, bit 10 = 0 æ—¶ï¼Œäº§ç”Ÿ #GP å¼‚å¸¸ 
         ;;
         
         ;;
-        ;; ¼ì²é±£ÁôÎ»£¬²»Îª 0 Ê±×¢Èë #GP Òì³£
+        ;; æ£€æŸ¥ä¿ç•™ä½ï¼Œä¸ä¸º 0 æ—¶æ³¨å…¥ #GP å¼‚å¸¸
         ;;
         test eax, 2FFh
         jnz DoWriteMsrForApicBase.Error
@@ -158,20 +158,20 @@ DoWriteMsrForApicBase:
         jnz DoWriteMsrForApicBase.Error
         
         ;;
-        ;; ¼ì²é xAPIC enable£¨bit 11£©Óë x2APIC enable£¨bit 10£©
+        ;; æ£€æŸ¥ xAPIC enableï¼ˆbit 11ï¼‰ä¸ x2APIC enableï¼ˆbit 10ï¼‰
         ;;
         test eax, APIC_BASE_X2APIC
         jz DoWriteMsrForApicBase.Check.@1
 
         ;;
-        ;; µ± bit 10 = 1 Ê±£¬¼ì²é CPUID.01H:ECX[21].x2APIC Î»
-        ;; 1) Îª 0 Ê±±íÃ÷²»Ö§³Ö x2APIC Ä£Ê½£¬×¢Èë #GP(0) Òì³£
+        ;; å½“ bit 10 = 1 æ—¶ï¼Œæ£€æŸ¥ CPUID.01H:ECX[21].x2APIC ä½
+        ;; 1) ä¸º 0 æ—¶è¡¨æ˜ä¸æ”¯æŒ x2APIC æ¨¡å¼ï¼Œæ³¨å…¥ #GP(0) å¼‚å¸¸
         ;; 
         test DWORD [ebp + PCB.CpuidLeaf01Ecx], (1 << 21)
         jz DoWriteMsrForApicBase.Error
 
         ;;
-        ;; µ± bit 10 = 1 Ê±£¬bit 11 = 0£¬ÎŞĞ§ÉèÖÃÔò×¢Èë #GP(0) Òì³£
+        ;; å½“ bit 10 = 1 æ—¶ï¼Œbit 11 = 0ï¼Œæ— æ•ˆè®¾ç½®åˆ™æ³¨å…¥ #GP(0) å¼‚å¸¸
         ;;
         test eax, APIC_BASE_ENABLE
         jz DoWriteMsrForApicBase.Error
@@ -179,24 +179,24 @@ DoWriteMsrForApicBase:
 
 DoWriteMsrForApicBase.x2APIC:
         ;;
-        ;; ÏÖÔÚ bit 10 = 1, bit 11 = 1
-        ;; 1) Ê¹ÓÃ x2APIC Ä£Ê½µÄĞéÄâ»¯ÉèÖÃ
+        ;; ç°åœ¨ bit 10 = 1, bit 11 = 1
+        ;; 1) ä½¿ç”¨ x2APIC æ¨¡å¼çš„è™šæ‹ŸåŒ–è®¾ç½®
         ;;       
         mov esi, IA32_APIC_BASE
-        call AppendMsrVte                                ;; ±£´æ guest Ğ´ÈëÔ­Öµ
+        call AppendMsrVte                                ;; ä¿å­˜ guest å†™å…¥åŸå€¼
         
 
         ;;
-        ;; ¼ì²é secondary prcessor-based VM-execution control ×Ö¶Î¡°virtualize x2APIC mode¡±Î»
-        ;; 1) Îª 1 Ê±£¬Ê¹ÓÃ VMX Ô­ÉúµÄ x2APIC ĞéÄâ»¯£¬Ö±½Ó·µ»Ø
-        ;; 2) Îª 0 Ê±£¬¼à¿Ø 800H - 8FFH MSR µÄ¶ÁĞ´
+        ;; æ£€æŸ¥ secondary prcessor-based VM-execution control å­—æ®µâ€œvirtualize x2APIC modeâ€ä½
+        ;; 1) ä¸º 1 æ—¶ï¼Œä½¿ç”¨ VMX åŸç”Ÿçš„ x2APIC è™šæ‹ŸåŒ–ï¼Œç›´æ¥è¿”å›
+        ;; 2) ä¸º 0 æ—¶ï¼Œç›‘æ§ 800H - 8FFH MSR çš„è¯»å†™
         ;;
         GetVmcsField    CONTROL_PROCBASED_SECONDARY
         test eax, VIRTUALIZE_X2APIC_MODE
         jnz DoWriteMsrForApicBase.Done
         
         ;;
-        ;; ÏÖÔÚ¼à¿Ø x2APIC MSR µÄ¶ÁĞ´£¬·¶Î§´Ó 800H µ½ 8FFH
+        ;; ç°åœ¨ç›‘æ§ x2APIC MSR çš„è¯»å†™ï¼ŒèŒƒå›´ä» 800H åˆ° 8FFH
         ;;
         call set_msr_read_bitmap_for_x2apic
         call set_msr_write_bitmap_for_x2apic
@@ -204,17 +204,17 @@ DoWriteMsrForApicBase.x2APIC:
                 
 DoWriteMsrForApicBase.Check.@1:
         ;;
-        ;; bit 10 = 0, bit 11 = 0£¬¹Ø±Õ local APIC£¬²»½øĞĞĞéÄâ»¯´¦Àí
-        ;; 1£©Ğ´Èë IA32_APIC_BASE ¼Ä´æÆ÷
-        ;; 2£©»Ö¸´Ó³Éä
+        ;; bit 10 = 0, bit 11 = 0ï¼Œå…³é—­ local APICï¼Œä¸è¿›è¡Œè™šæ‹ŸåŒ–å¤„ç†
+        ;; 1ï¼‰å†™å…¥ IA32_APIC_BASE å¯„å­˜å™¨
+        ;; 2ï¼‰æ¢å¤æ˜ å°„
         ;;
         test eax, APIC_BASE_ENABLE
         jnz DoWriteMsrForApicBase.Check.@2
         
         ;;
-        ;; guest ³¢ÊÔ¹Ø±Õ local APIC
-        ;; 1) »Ö¸´ guest ¶Ô IA32_APIC_BASE ¼Ä´æÆ÷µÄĞ´Èë
-        ;; 2) »Ö¸´ EPT Ó³Éä
+        ;; guest å°è¯•å…³é—­ local APIC
+        ;; 1) æ¢å¤ guest å¯¹ IA32_APIC_BASE å¯„å­˜å™¨çš„å†™å…¥
+        ;; 2) æ¢å¤ EPT æ˜ å°„
         ;;
         mov esi, IA32_APIC_BASE
         mov eax, [ebx + VSB.Rax]
@@ -240,8 +240,8 @@ DoWriteMsrForApicBase.Check.@1:
         
 DoWriteMsrForApicBase.Check.@2:
         ;;
-        ;; ¶ÁÈ¡Ô­ guest ÉèÖÃµÄ APIC_APIC_BASE Öµ
-        ;; 1) ¼ÙÈç·µ»Ø 0 Öµ£¬Ôò±íÃ÷ guest µÚ 1 ´ÎĞ´ IA32_APIC_BASE
+        ;; è¯»å–åŸ guest è®¾ç½®çš„ APIC_APIC_BASE å€¼
+        ;; 1) å‡å¦‚è¿”å› 0 å€¼ï¼Œåˆ™è¡¨æ˜ guest ç¬¬ 1 æ¬¡å†™ IA32_APIC_BASE
         ;;
         mov esi, IA32_APIC_BASE
         call GetMsrVte
@@ -249,7 +249,7 @@ DoWriteMsrForApicBase.Check.@2:
         jz DoWriteMsrForApicBase.xAPIC
                 
         ;;
-        ;; Èç¹ûÔ­Öµ bit 11 = 1, bit 10 = 1 Ê±£¬µ±ÉèÖÃ bit 11 = 1, bit 10 = 0 Ê±£¬½«²úÉú #GP Òì³£
+        ;; å¦‚æœåŸå€¼ bit 11 = 1, bit 10 = 1 æ—¶ï¼Œå½“è®¾ç½® bit 11 = 1, bit 10 = 0 æ—¶ï¼Œå°†äº§ç”Ÿ #GP å¼‚å¸¸
         ;;
         test DWORD [eax + MSR_VTE.Value], APIC_BASE_X2APIC
         jnz DoWriteMsrForApicBase.Error
@@ -257,23 +257,23 @@ DoWriteMsrForApicBase.Check.@2:
         
 DoWriteMsrForApicBase.xAPIC:
         ;;
-        ;; ### ÏÂÃæĞéÄâ»¯ local APIC µÄ xAPIC Ä£Ê½ ###
+        ;; ### ä¸‹é¢è™šæ‹ŸåŒ– local APIC çš„ xAPIC æ¨¡å¼ ###
         ;;                
         mov esi, IA32_APIC_BASE
         mov eax, [ebx + VSB.Rax]
         mov edx, [ebx + VSB.Rdx]
-        call AppendMsrVte                               ; ±£´æ guest Ğ´ÈëÖµ
+        call AppendMsrVte                               ; ä¿å­˜ guest å†™å…¥å€¼
         
         REX.Wrxb
         mov edx, eax
         
         ;;
-        ;; 1£©¼ì²éÊÇ·ñ¿ªÆôÁË¡°virtualize APIC access ¡±
-        ;;     a) ÊÇ£¬ÔòÉèÖÃ APIC-access page Ò³Ãæ
-        ;;     b) ·ñ£¬ÔòÌá¹© GPA Àı³Ì´¦Àí local APIC ·ÃÎÊ
-        ;; 2£©¼ì²éÊÇ·ñ¿ªÆôÁË¡°enable EPT¡±
-        ;;     a£©ÊÇ£¬ÔòÓ³Éä IA32_APIC_BASE[N-1:12]£¬½« APIC-access page ÉèÖÃÎª¸Ã HPA Öµ
-        ;;     b£©·ñ£¬ÔòÖ±½Ó½« IA32_APIC_BASE[N-1:12] ÉèÎª APIC-access page
+        ;; 1ï¼‰æ£€æŸ¥æ˜¯å¦å¼€å¯äº†â€œvirtualize APIC access â€
+        ;;     a) æ˜¯ï¼Œåˆ™è®¾ç½® APIC-access page é¡µé¢
+        ;;     b) å¦ï¼Œåˆ™æä¾› GPA ä¾‹ç¨‹å¤„ç† local APIC è®¿é—®
+        ;; 2ï¼‰æ£€æŸ¥æ˜¯å¦å¼€å¯äº†â€œenable EPTâ€
+        ;;     aï¼‰æ˜¯ï¼Œåˆ™æ˜ å°„ IA32_APIC_BASE[N-1:12]ï¼Œå°† APIC-access page è®¾ç½®ä¸ºè¯¥ HPA å€¼
+        ;;     bï¼‰å¦ï¼Œåˆ™ç›´æ¥å°† IA32_APIC_BASE[N-1:12] è®¾ä¸º APIC-access page
         ;;
         
         GetVmcsField    CONTROL_PROCBASED_SECONDARY
@@ -284,7 +284,7 @@ DoWriteMsrForApicBase.xAPIC:
         jz DoWriteMsrForApicBase.EptDisable
         
         ;;
-        ;; Ö´ĞĞ EPT Ó³Éäµ½ 0FEE00000H
+        ;; æ‰§è¡Œ EPT æ˜ å°„åˆ° 0FEE00000H
         ;;
 %ifdef __X64        
         REX.Wrxb
@@ -325,13 +325,13 @@ DoWriteMsrForApicBase.SetApicAccessPage:
         
 DoWriteMsrForApicBase.SetForEptViolation:
         ;;
-        ;; ´¦Àí guest Ğ´Èë IA32_APIC_BASE ¼Ä´æÆ÷µÄÖµ£º
-        ;; 1£©½« IA32_APIC_BASE[N-1:12] Ó³Éäµ½ host µÄ IA32_APIC_BASE Öµ£¬µ«ÊÇÎª not-present
-        ;; 2£©GPA ²»½øĞĞÈÎºÎÓ³Éä
+        ;; å¤„ç† guest å†™å…¥ IA32_APIC_BASE å¯„å­˜å™¨çš„å€¼ï¼š
+        ;; 1ï¼‰å°† IA32_APIC_BASE[N-1:12] æ˜ å°„åˆ° host çš„ IA32_APIC_BASE å€¼ï¼Œä½†æ˜¯ä¸º not-present
+        ;; 2ï¼‰GPA ä¸è¿›è¡Œä»»ä½•æ˜ å°„
         ;;        
         
         ;;
-        ;; Îª GPA Ìá¹©´¦ÀíÀı³Ì
+        ;; ä¸º GPA æä¾›å¤„ç†ä¾‹ç¨‹
         ;;
         REX.Wrxb
         mov esi, [edx + MSR_VTE.Value]
@@ -346,7 +346,7 @@ DoWriteMsrForApicBase.SetForEptViolation:
         
 DoWriteMsrForApicBase.Error:
         ;;
-        ;; ·´Éä #GP(0) ¸ø guest ´¦Àí
+        ;; åå°„ #GP(0) ç»™ guest å¤„ç†
         ;;
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_GP
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, 0
@@ -366,8 +366,8 @@ DoWriteMsrForApicBase.Done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí guest ¶Á IA32_APIC_BASE ¼Ä´æÆ÷
+; æè¿°ï¼š
+;       1) å¤„ç† guest è¯» IA32_APIC_BASE å¯„å­˜å™¨
 ;-----------------------------------------------------------------------
 DoReadMsrForApicBase:
         push ebp
@@ -633,8 +633,8 @@ clear_msr_write_bitmap_for_x2apic:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦Àí guest ·ÃÎÊ IA32_EFER ¼Ä´æÆ÷
+; æè¿°ï¼š
+;       1) å¤„ç† guest è®¿é—® IA32_EFER å¯„å­˜å™¨
 ;-----------------------------------------------------------------------
 DoWriteMsrEfer:
         push ebp
@@ -653,7 +653,7 @@ DoWriteMsrEfer:
         mov ebx, [ebx + VMB.VsbBase]
         
         ;;
-        ;; ¼ì²é±£ÁôÎ»
+        ;; æ£€æŸ¥ä¿ç•™ä½
         ;;
         mov eax, [ebx + VSB.Rax]
         mov edx, [ebx + VSB.Rdx]
@@ -663,18 +663,18 @@ DoWriteMsrEfer:
         jnz DoWriteMsrEfer.Gp
         
         ;;
-        ;; ¼ì²éÊÇ·ñ¿ªÆô long-mode Ä£Ê½
+        ;; æ£€æŸ¥æ˜¯å¦å¼€å¯ long-mode æ¨¡å¼
         ;;
         test eax, EFER_LME
         jz DoWriteMsrEfer.Write
         
         ;;
-        ;; ÔÚ long-mode Ä£Ê½ÏÂ£¬¸üĞÂ IDT µÄ limit Îª 1FFh
+        ;; åœ¨ long-mode æ¨¡å¼ä¸‹ï¼Œæ›´æ–° IDT çš„ limit ä¸º 1FFh
         ;;
         SetVmcsField    GUEST_IDTR_LIMIT, 1FFh
         
         ;;
-        ;; ¸üĞÂ VMM ÉèÖÃµÄ IDTR.limit 
+        ;; æ›´æ–° VMM è®¾ç½®çš„ IDTR.limit 
         ;;
         REX.Wrxb
         mov ebx, [ebp + PCB.CurrentVmbPointer]
@@ -682,7 +682,7 @@ DoWriteMsrEfer:
         
 DoWriteMsrEfer.Write:
         ;;
-        ;; Ğ´Èë IA32_EFER ¼Ä´æÆ÷
+        ;; å†™å…¥ IA32_EFER å¯„å­˜å™¨
         ;;
         SetVmcsField    GUEST_IA32_EFER_FULL, eax
         SetVmcsField    GUEST_IA32_EFER_HIGH, edx
@@ -690,7 +690,7 @@ DoWriteMsrEfer.Write:
         
 DoWriteMsrEfer.Gp:
         ;;
-        ;; ×¢Èë #GP(0) Òì³£
+        ;; æ³¨å…¥ #GP(0) å¼‚å¸¸
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, 0
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_GP
