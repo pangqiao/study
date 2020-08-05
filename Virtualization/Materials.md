@@ -45,3 +45,7 @@ KVM是一个开源软件。KVM的核心组件被包含在Linux的主线版本中
 活跃在KVM相关虚拟化发展的人们的博客被组织在 http://planet.virt-tools.org/ 这个网站。
 
 1. 先学习关于KVM实践相关的, 比如 <任永杰>的相关的书, 目前2019年最新的是<KVM实战：原理、进阶与性能调优>
+
+
+
+以kvm unit test/简单benchmark为例, 通过ftrace查看流程
