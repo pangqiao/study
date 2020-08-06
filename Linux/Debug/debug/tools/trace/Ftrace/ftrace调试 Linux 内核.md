@@ -1263,11 +1263,11 @@ module_exit(ftrace_demo_exit);
 ```
 [root@linux tracing]# pwd 
 /sys/kernel/debug/tracing 
-[root@linux tracing]# echo 0 > tracing_enabled 
+[root@linux tracing]# echo 0 > tracing_on
 [root@linux tracing]# echo 1 > /proc/sys/kernel/ftrace_enabled 
 [root@linux tracing]# echo 1 > tracing_on 
 [root@linux tracing]# echo function > current_tracer 
-[root@linux tracing]# echo 1 > tracing_enabled 
+[root@linux tracing]# echo 1 > tracing_on
 
 # 加载模块 ftrace_demo，模块初始化函数 ftrace_demo_init 被调用
 
