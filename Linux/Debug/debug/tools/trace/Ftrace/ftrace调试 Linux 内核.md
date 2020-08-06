@@ -940,7 +940,11 @@ hrtimer_init_sleeper
 
 ## 14.1. 指定模块
 
-另外，在参数前面加上`:mod:`，可以仅追踪指定模块中包含的函数（注意，**模块必须已经加载**）。例如：
+另外，在参数前面加上`:mod:`，可以仅追踪指定模块中包含的函数（注意，**模块必须已经加载**）。
+
+可以参照下面 `20.1 trace_printk` 中操作流程
+
+例如：
 
 ```
 root@thinker:/sys/kernel/debug/tracing# echo 'write*:mod:ext3' > set_ftrace_filter
@@ -1199,6 +1203,15 @@ ftrace_demo_exit
 在这个例子中，使用 mod 指令显式指定跟踪模块 `ftrace_demo` 中的函数，这需要**提前加载该模块！！！**，否则在写文件 `set_ftrace_filter` 时会因为找不到该模块报错。这样在第一次加载模块时，其初始化函数 `ftrace_demo_init` 中调用 `trace_printk` 打印的语句就跟踪不到了。因此这里会将其卸载，然后激活跟踪，再重新进行模块 `ftrace_demo` 的加载与卸载操作。最终可以从文件 trace 中看到模块在初始化和退出时调用 `trace_printk()` 输出的信息。
 
 这里仅仅是为了以简单的模块进行演示，故只定义了模块的 init/exit 函数，重复加载模块也只是为了获取初始化函数输出的跟踪信息。实践中，可以在模块的功能函数中加入对 trace_printk 的调用，这样可以记录模块的运作情况，然后对其特定功能进行调试优化。还可以将对 `trace_printk()` 的调用通过宏来控制编译，这样可以在调试时将其开启，在最终发布时将其关闭。
+
+注: 要追踪耗时的话, 可以自己加上`ktime_get`
+
+```cpp
+time_start=ktime_get();
+msleep(1);
+elapsed_ns = ktime_to_ns(ktime_sub(ktime_get(), time_start)); 
+printk("%lld ns\n",elapsed_ns);
+```
 
 ## 20.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录
 
