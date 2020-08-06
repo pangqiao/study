@@ -1207,10 +1207,17 @@ ftrace_demo_exit
 注: 要追踪耗时的话, 可以自己加上`ktime_get`
 
 ```cpp
+#include<linux/ktime.h>
+#include<linux/delay.h>  
+
+ktime_t time_start;
+struct timeval tstart,tend;
+s64 elapsed_ns=0;  
 time_start=ktime_get();
 msleep(1);
 elapsed_ns = ktime_to_ns(ktime_sub(ktime_get(), time_start)); 
-printk("%lld ns\n",elapsed_ns);
+printk("elapsed %lld ns\n", elapsed_ns);
+trace_printk("elapsed %lld ns\n", elapsed_ns);
 ```
 
 ## 20.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录
