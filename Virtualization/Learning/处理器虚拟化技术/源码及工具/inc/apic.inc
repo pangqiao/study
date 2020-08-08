@@ -1,6 +1,6 @@
 ;*************************************************
 ; apic.inc                                       *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
@@ -9,7 +9,7 @@
 %define APIC_INC
 
 ;;
-;; ¶¨Òå APIC base ĞéÄâµØÖ·
+;; å®šä¹‰ APIC base è™šæ‹Ÿåœ°å€
 ;;
 %define LAPIC_BASE                                      800000h
 %define APIC_BASE_BSP                                   (1 << 8)
@@ -117,12 +117,12 @@
 
 
 
-; APIC timer Öµ¶¨Òå
+; APIC timer å€¼å®šä¹‰
 %define	TIMER_ONE_SHOT				00000h
 %define TIMER_PERIODIC				20000h
 %define TIMER_TSC				40000h
 
-; ¶¨Òå delivery mode Öµ
+; å®šä¹‰ delivery mode å€¼
 %define FIXED                                   0000h
 %define LOWEST                                  0100h
 %define SMI                                     0200h
@@ -151,7 +151,7 @@
 %define ALL_EX_SELF				0C0000h
 
 
-; IPI ÏûÏ¢·¢ËÍÄ£Ê½
+; IPI æ¶ˆæ¯å‘é€æ¨¡å¼
 
 %define STARTUP_IPI                             000C4600H
 %define INIT_IPI                                000C4500H
@@ -165,7 +165,7 @@
 
 
 ;;
-;; ¶¨Òå lapic timer request mask Öµ
+;; å®šä¹‰ lapic timer request mask å€¼
 ;;
 %define LAPIC_TIMER_ONE_SHOT                    0
 %define LAPIC_TIMER_PERIODIC                    1
@@ -180,22 +180,22 @@
 ;       none
 ; output:
 ;       eax - Lapic base
-; ÃèÊö£º
-;       1) ¶ÁÈ¡ lapic base Öµ
+; æè¿°ï¼š
+;       1) è¯»å– lapic base å€¼
 ;---------------------------------------------
 %macro GET_LAPIC_BASE   0
         mov eax, PCB.LapicBase
 
 %if __BITS__ == 64
         ;;
-        ;; Èç¹ûÔÚ 64 Î»ÏÂ±àÒë£¬ÔòÊ¹ÓÃ native ·½Ê½
+        ;; å¦‚æœåœ¨ 64 ä½ä¸‹ç¼–è¯‘ï¼Œåˆ™ä½¿ç”¨ native æ–¹å¼
         ;;
         mov rax, [gs: rax]
 %else
         ;;
-        ;; Èç¹ûÔÚ 32 Î»ÏÂ±àÒë£¬ÔòÊ¹ÓÃÓ²±àÂë·½Ê½¡£
-        ;; 1) ¶¨ÒåÁË __X64 ·ûºÅÔòÊÇ£ºmov rax, [gs: rax]
-        ;; 2) ·ñÔòÎª£ºmov eax, [gs: eax]
+        ;; å¦‚æœåœ¨ 32 ä½ä¸‹ç¼–è¯‘ï¼Œåˆ™ä½¿ç”¨ç¡¬ç¼–ç æ–¹å¼ã€‚
+        ;; 1) å®šä¹‰äº† __X64 ç¬¦å·åˆ™æ˜¯ï¼šmov rax, [gs: rax]
+        ;; 2) å¦åˆ™ä¸ºï¼šmov eax, [gs: eax]
         ;;
         PREFIX_GS
         REX.Wrxb
@@ -208,10 +208,10 @@
 ;---------------------------------------------
 ; SEND_IPI_TO_PROCESSOR
 ; input:
-;       %1 - Ä¿±ê´¦ÀíÆ÷
-;       %2 - ÄÚÈİ
-; ÃèÊö£º
-;       1) ¸øÄ¿±ê´¦ÀíÆ÷·¢ËÍ IPI
+;       %1 - ç›®æ ‡å¤„ç†å™¨
+;       %2 - å†…å®¹
+; æè¿°ï¼š
+;       1) ç»™ç›®æ ‡å¤„ç†å™¨å‘é€ IPI
 ;---------------------------------------------
 %macro SEND_IPI_TO_PROCESSOR 2
         GET_LAPIC_BASE
@@ -230,11 +230,11 @@
 ;---------------------------------------------
 ; BROADCASE_MESSAGE
 ; input:
-;       %1 - ÄÚÈİ
+;       %1 - å†…å®¹
 ; output:
 ;       none
-; ÃèÊö:
-;       1) ¹ã²¥ IPI ÏûÏ¢
+; æè¿°:
+;       1) å¹¿æ’­ IPI æ¶ˆæ¯
 ;---------------------------------------------
 %macro BROADCASE_MESSAGE        1
         GET_LAPIC_BASE
@@ -255,8 +255,8 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1) ¹ã²¥ IPI ÏûÏ¢£¬²»°üÀ¨×Ô¼º        
+; æè¿°:
+;       1) å¹¿æ’­ IPI æ¶ˆæ¯ï¼Œä¸åŒ…æ‹¬è‡ªå·±        
 ;---------------------------------------------
 %macro BROADCASE_MESSAGE_EXCLUDE_SELF   0
         GET_LAPIC_BASE
@@ -276,8 +276,8 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1) ¹ã²¥ IPI ÏûÏ¢£¬°üÀ¨×Ô¼º        
+; æè¿°:
+;       1) å¹¿æ’­ IPI æ¶ˆæ¯ï¼ŒåŒ…æ‹¬è‡ªå·±        
 ;---------------------------------------------
 %macro BROADCASE_MESSAGE_INCLUDE_SELF   0
         GET_LAPIC_BASE
@@ -299,8 +299,8 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ·¢ËÍ EOI ÃüÁî
+; æè¿°ï¼š
+;       1) å‘é€ EOI å‘½ä»¤
 ;---------------------------------------------
 %macro LAPIC_EOI_COMMAND 0
         GET_LAPIC_BASE

@@ -1,6 +1,6 @@
 ;*************************************************
 ; cpu.inc                                        *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
@@ -13,7 +13,7 @@
 
 
 ;*
-;* ¶¨Òå prefix
+;* å®šä¹‰ prefix
 ;*
 %define REX_W                   DB 48h
 %define O16                     DB 66h
@@ -45,8 +45,8 @@
 
 
 
-;* ¶¨Òå lea rax, [rip] Ö¸ÁîµÄ encode
-;* ÒòÎª: nasm ÓïÑÔ²ãÉÏ²»Ö§³Ö [rip] Ñ°Ö·
+;* å®šä¹‰ lea rax, [rip] æŒ‡ä»¤çš„ encode
+;* å› ä¸º: nasm è¯­è¨€å±‚ä¸Šä¸æ”¯æŒ [rip] å¯»å€
 %define GET_RIP                 DB 48h, 8Dh, 05h, 00h, 00h, 00h, 00h
 %define GetRip                  GET_RIP
 %define LoadRipToRax            GET_RIP
@@ -58,7 +58,7 @@
 
 
 ;;
-;; rflags ±êÖ¾Î»
+;; rflags æ ‡å¿—ä½
 ;;
 %define FLAGS_CF                1
 %define FLAGS_PF                4
@@ -79,7 +79,7 @@
 
 
 ;;
-;; CR0 ¼Ä´æÆ÷¿ØÖÆÎ»
+;; CR0 å¯„å­˜å™¨æŽ§åˆ¶ä½
 ;;
 %define CR0_PE                  1
 %define CR0_MP                  2
@@ -94,7 +94,7 @@
 %define CR0_PG                  80000000h
 
 ;;
-;;CR4 ¼Ä´æÆ÷¿ØÖÆÎ»
+;;CR4 å¯„å­˜å™¨æŽ§åˆ¶ä½
 ;;
 %define CR4_VME                 1
 %define CR4_PVI                 2
@@ -121,7 +121,7 @@
 
 
 
-; SMM Ä£Ê½µÄ»ùµØÖ·
+; SMM æ¨¡å¼çš„åŸºåœ°å€
 %define SMBASE                  30000H
 
 
@@ -136,9 +136,9 @@
 %define IA32_TSC_COUNTER                10H
 
 
-;***** ¶¨Òå MTRR ¼Ä´æÆ÷µÄµØÖ· ******
+;***** å®šä¹‰ MTRR å¯„å­˜å™¨çš„åœ°å€ ******
 
-;ÏÂÃæÊÇ Fixed-rang MTRR ¼Ä´æÆ÷µÄ¶¨Òå¡¡
+;ä¸‹é¢æ˜¯ Fixed-rang MTRR å¯„å­˜å™¨çš„å®šä¹‰ã€€
 %define IA32_MTRR_FIX64K_00000                                       250H
 %define IA32_MTRR_FIX16K_80000                                       258H
 %define IA32_MTRR_FIX16K_A0000                                       259H
@@ -151,11 +151,11 @@
 %define IA32_MTRR_FIX4K_F0000                                        26EH
 %define IA32_MTRR_FIX4K_F8000                                        26FH
 
-; ÏÂÃæÊÇ MTRR µÄ¹¦ÄÜ¼Ä´æÆ÷¶¨Òå
+; ä¸‹é¢æ˜¯ MTRR çš„åŠŸèƒ½å¯„å­˜å™¨å®šä¹‰
 %define IA32_MTRRCAP                                                 0FEH
 %define IA32_MTRR_DEF_TYPE                                           2FFH
 
-; ÏÂÃæ¶¨Òå MTRR µÄ PHYSBASE/PHYSMASK ¼Ä´æÆ÷
+; ä¸‹é¢å®šä¹‰ MTRR çš„ PHYSBASE/PHYSMASK å¯„å­˜å™¨
 %define IA32_MTRR_PHYSBASE0                                        200H
 %define IA32_MTRR_PHYSMASK0                                        201H
 %define IA32_MTRR_PHYSBASE1                                        202H
@@ -177,21 +177,21 @@
 %define IA32_MTRR_PHYSBASE9                                        212H
 %define IA32_MTRR_PHYSMASK9                                        213H
 
-; ÏÂÃæÊÇ SMRR ¼Ä´æÆ÷
+; ä¸‹é¢æ˜¯ SMRR å¯„å­˜å™¨
 %define IA32_SMRR_PHYSBASE                                         1F2H
 %define IA32_SMRR_PHYSMASK                                         1F3H
 
-; ÏÂÃæÊÇ PAT ¼Ä´æÆ÷
+; ä¸‹é¢æ˜¯ PAT å¯„å­˜å™¨
 %define IA32_PAT                                                   277H
 
 
-; ÏÂÃæÊÇ¶ÔÌØÊâÖ¸ÁîÌá¹©Ö§³ÖµÄ MSR ¼Ä´æÆ÷¶¨Òå
+; ä¸‹é¢æ˜¯å¯¹ç‰¹æ®ŠæŒ‡ä»¤æä¾›æ”¯æŒçš„ MSR å¯„å­˜å™¨å®šä¹‰
 %define IA32_SYSENTER_CS                                           174H
 %define IA32_SYSENTER_ESP                                          175H
 %define IA32_SYSENTER_EIP                                          176H
 
 
-;; ÏÂÃæÊÇ x64 ÌåÏµµÄÖ§³Ö
+;; ä¸‹é¢æ˜¯ x64 ä½“ç³»çš„æ”¯æŒ
 %define IA32_EFER                                                  0C0000080H
 %define IA32_STAR                                                  0C0000081H
 %define IA32_LSTAR                                                 0C0000082H
@@ -202,7 +202,7 @@
 
 
 
-; ##### Îª AMD »úÆ÷¶¨Òå #######
+; ##### ä¸º AMD æœºå™¨å®šä¹‰ #######
 %define MSR_SMI_ON_IO_TRAP0                                        0C0010050H
 %define MSR_SMI_ON_IO_TRAP1                                        0C0010051H
 %define MSR_SMI_ON_IO_TRAP2                                        0C0010052H
@@ -210,10 +210,10 @@
 %define MSR_SMI_ON_IO_TRAP_CTL_STS                                 0C0010054H
 
 
-;; Óë dubug/performance monitoring Ïà¹ØµÄ MSRs
+;; ä¸Ž dubug/performance monitoring ç›¸å…³çš„ MSRs
 
 %define IA32_PEBS_ENABLE                                           3F1H
-;; general-purpose counter ¼Ä´æÆ÷
+;; general-purpose counter å¯„å­˜å™¨
 %define IA32_PERFEVTSEL0                                           186H
 %define IA32_PERFEVTSEL1                                           187H
 %define IA32_PERFEVTSEL2                                           188H
@@ -227,7 +227,7 @@
 %define IA32_A_PMC2                                                4C3H
 %define IA32_A_PMC3                                                4C4H
 
-;; fixed-counter ¼Ä´æÆ÷
+;; fixed-counter å¯„å­˜å™¨
 %define IA32_FIXED_CTR0                                            309H
 %define MSR_PERF_FIXED_CTR0                                        309H
 %define IA32_FIXED_CTR1                                            30AH
@@ -255,7 +255,7 @@
 %define IA32_TSC_DEADLINE                                          6E0H
 
 
-;;; ÏÂÃæÊÇ 06_25H(DisplayFamily_DisplayModel) ´¦ÀíÆ÷µÄ MSRs£¬ ÊÊÓÃÓÚ Nehalem/Westmere Î¢¼Ü¹¹
+;;; ä¸‹é¢æ˜¯ 06_25H(DisplayFamily_DisplayModel) å¤„ç†å™¨çš„ MSRsï¼Œ é€‚ç”¨äºŽ Nehalem/Westmere å¾®æž¶æž„
 
 %define MSR_LBR_SELECT                                             1C8H
 %define MSR_LASTBRANCH_TOS                                         1C9H
@@ -297,7 +297,7 @@
 %define MSR_LASTBRANCH_15_TO_IP                                    6CFH
 
 
-; Nehalem Î¢¼Ü¹¹µÄ¸¨Öú TSC ¼Ä´æÆ÷
+; Nehalem å¾®æž¶æž„çš„è¾…åŠ© TSC å¯„å­˜å™¨
 %define IA32_TSC_AUX                                                0C0000103H
 
 
@@ -310,7 +310,7 @@
 
 
 ;
-; ÏÂÃæÊÇ¹ØÓÚ VMX µÄ MSR 
+; ä¸‹é¢æ˜¯å…³äºŽ VMX çš„ MSR 
 ;
 %define IA32_VMX_BASIC                                          480H
 %define IA32_VMX_PINBASED_CTLS                                  481H
@@ -333,7 +333,7 @@
 
 
 ;;
-;; x2APIC local APIC ¼Ä´æÆ÷
+;; x2APIC local APIC å¯„å­˜å™¨
 ;;
 %define IA32_X2APIC_APICID                                      802H
 %define IA32_X2APIC_VERSION                                     803H
@@ -384,7 +384,7 @@
 
 
 
-;; ########## ¹ØÓÚ CPU µÄÒ»Ð©ºê¶¨Òå ##############
+;; ########## å…³äºŽ CPU çš„ä¸€äº›å®å®šä¹‰ ##############
 
 
 ; ---------------------------------------------
@@ -393,8 +393,8 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) 64Î»operand µÄ retf
+; æè¿°ï¼š
+;       1) 64ä½operand çš„ retf
 ; ---------------------------------------------
 %macro retf64   0
         DB 48h, 0CBh
@@ -407,8 +407,8 @@
 ;       %1 - bytes
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) 64Î»operand µÄ retf
+; æè¿°ï¼š
+;       1) 64ä½operand çš„ retf
 ; ---------------------------------------------
 %macro retfn64   1
         DB 48h, 0CAh
@@ -420,8 +420,8 @@
 
 ; ---------------------------------------------
 ; JMP_RIP_OFFSET32:
-; ÃèÊö£º
-;       1) Õâ¸öºêÖ´ÐÐ jmp [rip + offset32] Ö¸Áî
+; æè¿°ï¼š
+;       1) è¿™ä¸ªå®æ‰§è¡Œ jmp [rip + offset32] æŒ‡ä»¤
 ; ---------------------------------------------
 %macro JMP_RIP_OFFSET32 1
         DW 25FFh                         ; jmp [rip + offset32] opcode
@@ -431,8 +431,8 @@
 
 ; ---------------------------------------------
 ; DECv:
-; ÃèÊö£º
-;       1) Õâ¸öºêÊ¹ÓÃ FF /1 opcode µÄ dec Ö¸Áî
+; æè¿°ï¼š
+;       1) è¿™ä¸ªå®ä½¿ç”¨ FF /1 opcode çš„ dec æŒ‡ä»¤
 ; ---------------------------------------------
 %macro DECv 1
 %if %1==eax
@@ -457,8 +457,8 @@
 
 ; ---------------------------------------------
 ; INCv:
-; ÃèÊö£º
-;       1) Õâ¸öºêÊ¹ÓÃ FF /1 opcode µÄ dec Ö¸Áî
+; æè¿°ï¼š
+;       1) è¿™ä¸ªå®ä½¿ç”¨ FF /1 opcode çš„ dec æŒ‡ä»¤
 ; ---------------------------------------------
 %macro INCv 1
 %if %1==eax
@@ -486,8 +486,8 @@
 ;       %1 - register
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¶¨Òå push [mem] Ö¸Áî
+; æè¿°ï¼š
+;       1) å®šä¹‰ push [mem] æŒ‡ä»¤
 ; ---------------------------------------------
 %macro PUSHr    1
 %if %1==eax
@@ -532,8 +532,8 @@
 ;       %1 - register
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¶¨Òå push [mem] Ö¸Áî
+; æè¿°ï¼š
+;       1) å®šä¹‰ push [mem] æŒ‡ä»¤
 ; ---------------------------------------------
 %macro POPr    1
 %if %1==eax
@@ -627,8 +627,8 @@
 ;       %1 - address
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¶¨Òå push [mem] Ö¸Áî
+; æè¿°ï¼š
+;       1) å®šä¹‰ push [mem] æŒ‡ä»¤
 ; ---------------------------------------------
 %macro PUSH_MEM 1
         DB 0FFh, 34h, 25h
@@ -644,8 +644,8 @@
 ;       %1 - address
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¶¨Òå pop [mem] Ö¸Áî
+; æè¿°ï¼š
+;       1) å®šä¹‰ pop [mem] æŒ‡ä»¤
 ; ---------------------------------------------
 %macro POP_MEM 1
         DB 8Fh, 04h, 25h
@@ -657,9 +657,9 @@
 
 
 ; ---------------------------------------------
-; ºê£ºREX.W
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.W
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.W 0
 %ifndef __STAGE1
@@ -672,9 +672,9 @@
 
 
 ; ---------------------------------------------
-; ºê£ºREX.wrxb
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.wrxb
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.wrxb 0
 %ifndef __STATE1
@@ -685,9 +685,9 @@
 %endmacro
 
 ; ---------------------------------------------
-; ºê£ºREX.wrxB
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.wrxB
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.wrxB 0
 %ifndef __STAGE1
@@ -698,9 +698,9 @@
 %endmacro
 
 ; ---------------------------------------------
-; ºê£ºREX.wrXb
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.wrXb
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.wrXb 0
 %ifndef __STAGE1
@@ -712,9 +712,9 @@
 
 
 ; ---------------------------------------------
-; ºê£ºREX.wrXB
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.wrXB
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.wrXB 0
 %ifndef __STAGE1
@@ -725,9 +725,9 @@
 %endmacro
 
 ; ---------------------------------------------
-; ºê£ºREX.wRxb
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.wRxb
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.wRxb 0
 %ifndef __STAGE1
@@ -738,9 +738,9 @@
 %endmacro
 
 ; ---------------------------------------------
-; ºê£ºREX.wRxB
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.wRxB
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.wRxB 0
 %ifndef __STAGE1
@@ -752,9 +752,9 @@
 
 
 ; ---------------------------------------------
-; ºê£ºREX.wRXb
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.wRXb
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.wRXb 0
 %ifndef __STAGE1
@@ -766,9 +766,9 @@
 
 
 ; ---------------------------------------------
-; ºê£ºREX.wRXB
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.wRXB
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.wRXB 0
 %ifndef __STAGE1
@@ -779,9 +779,9 @@
 %endmacro
 
 ; ---------------------------------------------
-; ºê£ºREX.Wrxb
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.Wrxb
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.Wrxb 0
 %ifndef __STAGE1
@@ -792,9 +792,9 @@
 %endmacro
 
 ; ---------------------------------------------
-; ºê£ºREX.WrxB
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.WrxB
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.WrxB 0
 %ifndef __STAGE1
@@ -806,9 +806,9 @@
 
 
 ; ---------------------------------------------
-; ºê£ºREX.WrXb
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.WrXb
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.WrXb 0
 %ifndef __STAGE1
@@ -820,9 +820,9 @@
 
 
 ; ---------------------------------------------
-; ºê£ºREX.WrXB
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.WrXB
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.WrXB 0
 %ifndef __STAGE1
@@ -833,9 +833,9 @@
 %endmacro
 
 ; ---------------------------------------------
-; ºê£ºREX.WRxb
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.WRxb
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.WRxb 0
 %ifndef __STAGE1
@@ -846,9 +846,9 @@
 %endmacro
 
 ; ---------------------------------------------
-; ºê£ºREX.WRxB
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.WRxB
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.WRxB 0
 %ifndef __STAGE1
@@ -860,9 +860,9 @@
 
 
 ; ---------------------------------------------
-; ºê£ºREX.WrxB
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.WrxB
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.WRXb 0
 %ifndef __STAGE1
@@ -874,9 +874,9 @@
 
 
 ; ---------------------------------------------
-; ºê£ºREX.WRXB
-; ÃèÊö£º
-;       1) ¶¨Òå REX prefix
+; å®ï¼šREX.WRXB
+; æè¿°ï¼š
+;       1) å®šä¹‰ REX prefix
 ; ---------------------------------------------
 %macro REX.WRXB 0
 %ifndef __STAGE1
@@ -892,16 +892,16 @@
 ;----------------------------------------------------------
 ; StoreToPcb:
 ; input:
-;       %1 - offset£¨»ùÓÚPCB)
+;       %1 - offsetï¼ˆåŸºäºŽPCB)
 ;       %2 - value
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÔÚ 32 Î»ÏÂ±àÒë£¬Ä¿±êÆ½Ì¨Îª x64£¬±£´æ PCB Êý¾Ý
+; æè¿°ï¼š
+;       1) åœ¨ 32 ä½ä¸‹ç¼–è¯‘ï¼Œç›®æ ‡å¹³å°ä¸º x64ï¼Œä¿å­˜ PCB æ•°æ®
 ;----------------------------------------------------------
 %macro StoreToPcb 2
         ;;
-        ;; Ö´ÐÐ mov [gs: PCB.xxx], Reg Ö¸Áî
+        ;; æ‰§è¡Œ mov [gs: PCB.xxx], Reg æŒ‡ä»¤
         ;;
         PREFIX_GS                       ; GS
 
@@ -1004,15 +1004,15 @@
 ; LoadFromPcb:
 ; input:
 ;       %1 - reg
-;       %2 - offset£¨»ùÓÚPCB)
+;       %2 - offsetï¼ˆåŸºäºŽPCB)
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÔÚ 32 Î»ÏÂ±àÒë£¬Ä¿±êÆ½Ì¨Îª x64£¬¶ÁÈ¡ PCB Êý¾Ý
+; æè¿°ï¼š
+;       1) åœ¨ 32 ä½ä¸‹ç¼–è¯‘ï¼Œç›®æ ‡å¹³å°ä¸º x64ï¼Œè¯»å– PCB æ•°æ®
 ;----------------------------------------------------------
 %macro LoadFromPcb 2
         ;;
-        ;; Ö´ÐÐ mov Reg, [gs: PCB.xxx] Ö¸Áî
+        ;; æ‰§è¡Œ mov Reg, [gs: PCB.xxx] æŒ‡ä»¤
         ;;
         PREFIX_GS                       ; GS
 
@@ -1115,16 +1115,16 @@
 ;----------------------------------------------------------
 ; StoreToSda:
 ; input:
-;       %1 - offset£¨»ùÓÚSDA)
+;       %1 - offsetï¼ˆåŸºäºŽSDA)
 ;       %2 - value
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÔÚ 32 Î»ÏÂ±àÒë£¬Ä¿±êÆ½Ì¨Îª x64£¬±£´æ SDA Êý¾Ý
+; æè¿°ï¼š
+;       1) åœ¨ 32 ä½ä¸‹ç¼–è¯‘ï¼Œç›®æ ‡å¹³å°ä¸º x64ï¼Œä¿å­˜ SDA æ•°æ®
 ;----------------------------------------------------------
 %macro StoreToSda 2
         ;;
-        ;; Ö´ÐÐ mov [fs: SDA.xxx], Reg Ö¸Áî
+        ;; æ‰§è¡Œ mov [fs: SDA.xxx], Reg æŒ‡ä»¤
         ;;
         PREFIX_FS                       ; FS
 
@@ -1227,15 +1227,15 @@
 ; LoadFromSda:
 ; input:
 ;       %1 - reg
-;       %2 - offset£¨»ùÓÚSDA)
+;       %2 - offsetï¼ˆåŸºäºŽSDA)
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÔÚ 32 Î»ÏÂ±àÒë£¬Ä¿±êÆ½Ì¨Îª x64£¬¶ÁÈ¡ SDA Êý¾Ý
+; æè¿°ï¼š
+;       1) åœ¨ 32 ä½ä¸‹ç¼–è¯‘ï¼Œç›®æ ‡å¹³å°ä¸º x64ï¼Œè¯»å– SDA æ•°æ®
 ;----------------------------------------------------------
 %macro LoadFromSda 2
         ;;
-        ;; Ö´ÐÐ mov Reg, [fs: SDA.xxx] Ö¸Áî
+        ;; æ‰§è¡Œ mov Reg, [fs: SDA.xxx] æŒ‡ä»¤
         ;;
         PREFIX_FS                       ; FS
 
@@ -1366,7 +1366,7 @@
 ;------------------------------------------------
 ; macro: NMI_DISABLE
 ; description:
-;       ÉèÖÃ NMI_EN ¼Ä´æÆ÷µÄ bit 7 Îª 1
+;       è®¾ç½® NMI_EN å¯„å­˜å™¨çš„ bit 7 ä¸º 1
 ;------------------------------------------------
 %macro NMI_DISABLE 0
         in al, NMI_EN_PORT                                        ; port 0x70
@@ -1402,10 +1402,10 @@
 ;-----------------------------------------------
 ; macro: RESET_CPU
 ; description:
-;       Ö´ÐÐ´¦ÀíÆ÷Ó²¼þ RESET
+;       æ‰§è¡Œå¤„ç†å™¨ç¡¬ä»¶ RESET
 ;-----------------------------------------------
 %macro RESET_CPU 0
-        mov dx, RESET_CONTROL_REGISTER                         ; reset ¿ØÖÆ¼Ä´æÆ÷ÔÚ¶Ë¿Ú 0CF9H
+        mov dx, RESET_CONTROL_REGISTER                         ; reset æŽ§åˆ¶å¯„å­˜å™¨åœ¨ç«¯å£ 0CF9H
         mov al, 06h
         out dx, al
         hlt
@@ -1416,7 +1416,7 @@
 ;---------------------------------------------
 ; macro INIT_CPU
 ; description:
-;       Òý·¢´¦ÀíÆ÷²úÉú INIT# ÐÅºÅ
+;       å¼•å‘å¤„ç†å™¨äº§ç”Ÿ INIT# ä¿¡å·
 ;----------------------------------------------
 %macro INIT_CPU 0
         mov dx, FAST_A20_INIT_REGISTER                        ; port 92
@@ -1433,12 +1433,12 @@
 ;---------------------------------------------
 ; WAIT_UNTIL_EQU
 ; input:
-;       %1 - Ô´Öµ
-;       %2 - Ä¿±êÖµ
+;       %1 - æºå€¼
+;       %2 - ç›®æ ‡å€¼
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) µÈ´ýÖ±µ½ %1 == %2
+; æè¿°ï¼š
+;       1) ç­‰å¾…ç›´åˆ° %1 == %2
 ;---------------------------------------------
 %macro WAIT_UNTIL_EQU 2
 %%0:
@@ -1458,12 +1458,12 @@
 ;---------------------------------------------
 ; WAIT_UNTIL_EQU32
 ; input:
-;       %1 - ÄÚ´æ±äÁ¿
-;       %2 - Ä¿±êÖµ
+;       %1 - å†…å­˜å˜é‡
+;       %2 - ç›®æ ‡å€¼
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) µÈ´ýÖ±µ½ %1 == %2
+; æè¿°ï¼š
+;       1) ç­‰å¾…ç›´åˆ° %1 == %2
 ;---------------------------------------------
 %macro WAIT_UNTIL_EQU32 2
 %%0:
@@ -1480,12 +1480,12 @@
 ;---------------------------------------------
 ; WAIT_UNTIL_NEQ
 ; input:
-;       %1 - ÄÚ´æ±äÁ¿
-;       %2 - Ä¿±êÖµ
+;       %1 - å†…å­˜å˜é‡
+;       %2 - ç›®æ ‡å€¼
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) µÈ´ýÖ±µ½ %1 != %2
+; æè¿°ï¼š
+;       1) ç­‰å¾…ç›´åˆ° %1 != %2
 ;---------------------------------------------
 %macro WAIT_UNTIL_NEQ 2
 %%0:
@@ -1504,12 +1504,12 @@
 ;---------------------------------------------
 ; WAIT_UNTIL_NEQ32
 ; input:
-;       %1 - Ô´Öµ
-;       %2 - Ä¿±êÖµ
+;       %1 - æºå€¼
+;       %2 - ç›®æ ‡å€¼
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) µÈ´ýÖ±µ½ %1 != %2
+; æè¿°ï¼š
+;       1) ç­‰å¾…ç›´åˆ° %1 != %2
 ;---------------------------------------------
 %macro WAIT_UNTIL_NEQ32 2
 %%0:
@@ -1526,38 +1526,38 @@
 ;---------------------------------------------
 ; MWAIT_IDLE_WITH_NEQ
 ; input:
-;       %1 - Ô´ÄÚ´æµØÖ·
-;       %2 - Ä¿±êÖµ
+;       %1 - æºå†…å­˜åœ°å€
+;       %2 - ç›®æ ‡å€¼
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Ê¹ÓÃ MONITOR/MWAIT ÓÅ»¯ idle
+; æè¿°ï¼š
+;       1) ä½¿ç”¨ MONITOR/MWAIT ä¼˜åŒ– idle
 ;---------------------------------------------
 %macro MWAIT_IDLE_WITH_NEQ 2
 ;;
-;; ËµÃ÷£º
-;;      1) ²ÎÊý1 Ìá¹©Ò»¸öÄÚ´æ²Ù×÷Êý£¬²ÎÊý2ÊÇÒ»¸öÄ¿±êÖµ
-;;      2) ±È½ÏÄÚ´æ²Ù×÷ÊýµÄÖµÊÇ·ñµÈÓÚÄ¿±êÖµ£¬²»µÈÓÚµÄ»°½øÈë mwait idle
+;; è¯´æ˜Žï¼š
+;;      1) å‚æ•°1 æä¾›ä¸€ä¸ªå†…å­˜æ“ä½œæ•°ï¼Œå‚æ•°2æ˜¯ä¸€ä¸ªç›®æ ‡å€¼
+;;      2) æ¯”è¾ƒå†…å­˜æ“ä½œæ•°çš„å€¼æ˜¯å¦ç­‰äºŽç›®æ ‡å€¼ï¼Œä¸ç­‰äºŽçš„è¯è¿›å…¥ mwait idle
 ;;
-;; Ê¾Àý£º
-;;      MWAIT_IDLE_WITH_NEQ [eax], 1            ; µ± [eax] != 1 Ê±£¬½øÈë mwait idle
+;; ç¤ºä¾‹ï¼š
+;;      MWAIT_IDLE_WITH_NEQ [eax], 1            ; å½“ [eax] != 1 æ—¶ï¼Œè¿›å…¥ mwait idle
 ;;
 
         ;;
-        ;; ÏÂÃæÊ¹ÓÃ monitor ½øÐÐ¼à¿ØÄÚ´æ²Ù×÷Êý
+        ;; ä¸‹é¢ä½¿ç”¨ monitor è¿›è¡Œç›‘æŽ§å†…å­˜æ“ä½œæ•°
         ;;
         REX.Wrxb
-        lea eax, %1                             ; eax = ¼à¿ØÔ´ÄÚ´æµØÖ·
+        lea eax, %1                             ; eax = ç›‘æŽ§æºå†…å­˜åœ°å€
         xor ecx, ecx                            ; ecx = 0
         xor edx, edx                            ; edx = 0
         monitor
 
         ;;
-        ;; ¼ì²éÄÚ´æ²Ù×÷ÊýÊÇ·ñ¸Ä±ä
+        ;; æ£€æŸ¥å†…å­˜æ“ä½œæ•°æ˜¯å¦æ”¹å˜
         ;;
         REX.Wrxb
         cmp DWORD %1, %2
-        je %%0                                  ; ±È½ÏÁ½¸öÖµ£¬ÏàµÈÊ±Ö±½Ó·µ»Ø
+        je %%0                                  ; æ¯”è¾ƒä¸¤ä¸ªå€¼ï¼Œç›¸ç­‰æ—¶ç›´æŽ¥è¿”å›ž
         sti                                     ; C1-state mwait
         xor eax, eax
         xor ecx, ecx
@@ -1573,37 +1573,37 @@
 ;---------------------------------------------
 ; MWAIT_IDLE_WITH_NEQ32
 ; input:
-;       %1 - Ô´ÄÚ´æ±äÁ¿
-;       %2 - Ä¿±êÖµ
+;       %1 - æºå†…å­˜å˜é‡
+;       %2 - ç›®æ ‡å€¼
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Ê¹ÓÃ MONITOR/MWAIT ÓÅ»¯ idle
+; æè¿°ï¼š
+;       1) ä½¿ç”¨ MONITOR/MWAIT ä¼˜åŒ– idle
 ;---------------------------------------------
 %macro MWAIT_IDLE_WITH_NEQ32 2
 ;;
-;; ËµÃ÷£º
-;;      1) ²ÎÊý1 Ìá¹©Ò»¸öÄÚ´æ²Ù×÷Êý£¬²ÎÊý2ÊÇÒ»¸öÄ¿±êÖµ
-;;      2) ±È½ÏÄÚ´æ²Ù×÷ÊýµÄÖµÊÇ·ñµÈÓÚÄ¿±êÖµ£¬²»µÈÓÚµÄ»°½øÈë mwait idle
+;; è¯´æ˜Žï¼š
+;;      1) å‚æ•°1 æä¾›ä¸€ä¸ªå†…å­˜æ“ä½œæ•°ï¼Œå‚æ•°2æ˜¯ä¸€ä¸ªç›®æ ‡å€¼
+;;      2) æ¯”è¾ƒå†…å­˜æ“ä½œæ•°çš„å€¼æ˜¯å¦ç­‰äºŽç›®æ ‡å€¼ï¼Œä¸ç­‰äºŽçš„è¯è¿›å…¥ mwait idle
 ;;
-;; Ê¾Àý£º
-;;      MWAIT_IDLE_WITH_NEQ32 [eax], 1          ; µ± [eax] != 1 Ê±£¬½øÈë idle loop£¬Ö±µ½ [eax] == 1 ÎªÖ¹
+;; ç¤ºä¾‹ï¼š
+;;      MWAIT_IDLE_WITH_NEQ32 [eax], 1          ; å½“ [eax] != 1 æ—¶ï¼Œè¿›å…¥ idle loopï¼Œç›´åˆ° [eax] == 1 ä¸ºæ­¢
 ;;
 
         ;;
-        ;; ÏÂÃæÊ¹ÓÃ monitor ½øÐÐ¼à¿ØÄÚ´æ²Ù×÷Êý
+        ;; ä¸‹é¢ä½¿ç”¨ monitor è¿›è¡Œç›‘æŽ§å†…å­˜æ“ä½œæ•°
         ;;
         REX.Wrxb
-        lea eax, %1                             ; ¼à¿ØÔ´ÄÚ´æµØÖ·
+        lea eax, %1                             ; ç›‘æŽ§æºå†…å­˜åœ°å€
         xor ecx, ecx                            ; ecx = edx = 0
         xor edx, edx
         monitor
 
         ;;
-        ;; ¼ì²éÄÚ´æ²Ù×÷ÊýÊÇ·ñ¸Ä±ä
+        ;; æ£€æŸ¥å†…å­˜æ“ä½œæ•°æ˜¯å¦æ”¹å˜
         ;;
         cmp DWORD %1, %2
-        je %%0                                  ; ±È½ÏÁ½¸öÖµ£¬²»ÏàµÈÊ±½øÈë mwait idle
+        je %%0                                  ; æ¯”è¾ƒä¸¤ä¸ªå€¼ï¼Œä¸ç›¸ç­‰æ—¶è¿›å…¥ mwait idle
         sti                                     ; C1-state
         xor eax, eax
         xor ecx, ecx
@@ -1616,38 +1616,38 @@
 ;---------------------------------------------
 ; MWAIT_IDLE_WITH_EQU
 ; input:
-;       %1 - ÄÚ´æ±äÁ¿
-;       %2 - Ä¿±êÖµ
+;       %1 - å†…å­˜å˜é‡
+;       %2 - ç›®æ ‡å€¼
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Ê¹ÓÃ MONITOR/MWAIT ÓÅ»¯ idle
+; æè¿°ï¼š
+;       1) ä½¿ç”¨ MONITOR/MWAIT ä¼˜åŒ– idle
 ;---------------------------------------------
 %macro MWAIT_IDLE_WITH_EQU 2
 ;;
-;; ËµÃ÷£º
-;;      1) ²ÎÊý1 Ìá¹©Ò»¸öÄÚ´æ²Ù×÷Êý£¬²ÎÊý2ÊÇÒ»¸öÄ¿±êÖµ
-;;      2) ±È½ÏÄÚ´æ²Ù×÷ÊýµÄÖµÊÇ·ñµÈÓÚÄ¿±êÖµ£¬µÈÓÚµÄ»°½øÈë idle
+;; è¯´æ˜Žï¼š
+;;      1) å‚æ•°1 æä¾›ä¸€ä¸ªå†…å­˜æ“ä½œæ•°ï¼Œå‚æ•°2æ˜¯ä¸€ä¸ªç›®æ ‡å€¼
+;;      2) æ¯”è¾ƒå†…å­˜æ“ä½œæ•°çš„å€¼æ˜¯å¦ç­‰äºŽç›®æ ‡å€¼ï¼Œç­‰äºŽçš„è¯è¿›å…¥ idle
 ;;
-;; Ê¾Àý£º
-;;      MWAIT_IDLE_WITH_EQU [eax], 0            ; µ± [eax] == 0 Ê±£¬½øÈë mwait idle
+;; ç¤ºä¾‹ï¼š
+;;      MWAIT_IDLE_WITH_EQU [eax], 0            ; å½“ [eax] == 0 æ—¶ï¼Œè¿›å…¥ mwait idle
 ;;
 
         ;;
-        ;; ÏÂÃæÊ¹ÓÃ monitor ½øÐÐ¼à¿ØÄÚ´æ²Ù×÷Êý
+        ;; ä¸‹é¢ä½¿ç”¨ monitor è¿›è¡Œç›‘æŽ§å†…å­˜æ“ä½œæ•°
         ;;
         REX.Wrxb
-        lea eax, %1                             ; ¼à¿ØÔ´ÄÚ´æµØÖ·
+        lea eax, %1                             ; ç›‘æŽ§æºå†…å­˜åœ°å€
         xor ecx, ecx                            ; ecx = edx = 0
         xor edx, edx
         monitor
 
         ;;
-        ;; ¼ì²éÄÚ´æ²Ù×÷ÊýÊÇ·ñ¸Ä±ä
+        ;; æ£€æŸ¥å†…å­˜æ“ä½œæ•°æ˜¯å¦æ”¹å˜
         ;;
         REX.Wrxb
         cmp DWORD %1, %2
-        jne %%0                                 ; ±È½ÏÁ½¸öÖµ£¬²»ÏàµÈÊ±ÍË³ö
+        jne %%0                                 ; æ¯”è¾ƒä¸¤ä¸ªå€¼ï¼Œä¸ç›¸ç­‰æ—¶é€€å‡º
         sti
         xor eax, eax
         xor ecx, ecx
@@ -1662,37 +1662,37 @@
 ;---------------------------------------------
 ; MWAIT_IDLE_WITH_EQU32
 ; input:
-;       %1 - ÄÚ´æ±äÁ¿
-;       %2 - Ä¿±êÖµ
+;       %1 - å†…å­˜å˜é‡
+;       %2 - ç›®æ ‡å€¼
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Ê¹ÓÃ MONITOR/MWAIT ÓÅ»¯ idle
+; æè¿°ï¼š
+;       1) ä½¿ç”¨ MONITOR/MWAIT ä¼˜åŒ– idle
 ;---------------------------------------------
 %macro MWAIT_IDLE_WITH_EQU32 2
 ;;
-;; ËµÃ÷£º
-;;      1) ²ÎÊý1 Ìá¹©Ò»¸öÄÚ´æ²Ù×÷Êý£¬²ÎÊý2ÊÇÒ»¸öÄ¿±êÖµ
-;;      2) ±È½ÏÄÚ´æ²Ù×÷ÊýµÄÖµÊÇ·ñµÈÓÚÄ¿±êÖµ£¬µÈÓÚµÄ»°½øÈë idle
+;; è¯´æ˜Žï¼š
+;;      1) å‚æ•°1 æä¾›ä¸€ä¸ªå†…å­˜æ“ä½œæ•°ï¼Œå‚æ•°2æ˜¯ä¸€ä¸ªç›®æ ‡å€¼
+;;      2) æ¯”è¾ƒå†…å­˜æ“ä½œæ•°çš„å€¼æ˜¯å¦ç­‰äºŽç›®æ ‡å€¼ï¼Œç­‰äºŽçš„è¯è¿›å…¥ idle
 ;;
-;; Ê¾Àý£º
-;;      MWAIT_IDLE_WITH_EQU32 [eax], 0          ; µ± [eax] == 0 Ê±£¬½øÈë mwait idle
+;; ç¤ºä¾‹ï¼š
+;;      MWAIT_IDLE_WITH_EQU32 [eax], 0          ; å½“ [eax] == 0 æ—¶ï¼Œè¿›å…¥ mwait idle
 ;;
 
         ;;
-        ;; ÏÂÃæÊ¹ÓÃ monitor ½øÐÐ¼à¿ØÄÚ´æ²Ù×÷Êý
+        ;; ä¸‹é¢ä½¿ç”¨ monitor è¿›è¡Œç›‘æŽ§å†…å­˜æ“ä½œæ•°
         ;;
         REX.Wrxb
-        lea eax, %1                             ; ¼à¿ØÔ´ÄÚ´æµØÖ·
+        lea eax, %1                             ; ç›‘æŽ§æºå†…å­˜åœ°å€
         xor ecx, ecx                            ; ecx = edx = 0
         xor edx, edx
         monitor
 
         ;;
-        ;; ¼ì²éÄÚ´æ²Ù×÷ÊýÊÇ·ñ¸Ä±ä
+        ;; æ£€æŸ¥å†…å­˜æ“ä½œæ•°æ˜¯å¦æ”¹å˜
         ;;
         cmp DWORD %1, %2
-        jne %%0                                 ; ±È½ÏÁ½¸öÖµ£¬²»ÏàµÈÊ±ÍË³ö
+        jne %%0                                 ; æ¯”è¾ƒä¸¤ä¸ªå€¼ï¼Œä¸ç›¸ç­‰æ—¶é€€å‡º
         sti
         xor eax, eax
         xor ecx, ecx
