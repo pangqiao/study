@@ -1,6 +1,6 @@
 ;*************************************************
 ;* VmxPage.inc                                   *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -11,20 +11,20 @@
 
 
 ;;
-;; EPT£¨Extended Page Table£©ËµÃ÷£º
-;; 1) PXT ±íÇøÓò£ºSDA.EptPxt
-;; 2) PPT ±íÇøÓò£ºC0A0_0000h ~ C0BF_FFFFh ¹² 2M ¿Õ¼ä£¬¶ÔÓ¦ÎïÀíµØÖ· A0_0000h ~ BF_FFFFh
-;; 3) PDT ±íÓÉ get_ept_page() º¯Êý¶¯Ì¬·ÖÅä
-;; 4) PT ±íÓÉ get_ept_page() º¯Êý¶¯Ì¬·ÖÅä
+;; EPTï¼ˆExtended Page Tableï¼‰è¯´æ˜Žï¼š
+;; 1) PXT è¡¨åŒºåŸŸï¼šSDA.EptPxt
+;; 2) PPT è¡¨åŒºåŸŸï¼šC0A0_0000h ~ C0BF_FFFFh å…± 2M ç©ºé—´ï¼Œå¯¹åº”ç‰©ç†åœ°å€ A0_0000h ~ BF_FFFFh
+;; 3) PDT è¡¨ç”± get_ept_page() å‡½æ•°åŠ¨æ€åˆ†é…
+;; 4) PT è¡¨ç”± get_ept_page() å‡½æ•°åŠ¨æ€åˆ†é…
 ;;
 
-EPT_PPT_BASE                    EQU     0C0A00000h              ;; EPT PPT ±íÐéÄâµØÖ·
-EPT_PPT_PHYSICAL_BASE           EQU     0A00000h                ;; EPT PPT ±íÎïÀíµØÖ·
+EPT_PPT_BASE                    EQU     0C0A00000h              ;; EPT PPT è¡¨è™šæ‹Ÿåœ°å€
+EPT_PPT_PHYSICAL_BASE           EQU     0A00000h                ;; EPT PPT è¡¨ç‰©ç†åœ°å€
 
 ;;
-;; ÔÚ longmode ÏÂ£º
-;; 1) PXT ±íÇøÓò£ºSDA.EptPxt
-;; 2) PPT ±íÇøÓò£ºFFFF_F800_C0A0_0000h - FFFF_F800_C0BF_FFFFh
+;; åœ¨ longmode ä¸‹ï¼š
+;; 1) PXT è¡¨åŒºåŸŸï¼šSDA.EptPxt
+;; 2) PPT è¡¨åŒºåŸŸï¼šFFFF_F800_C0A0_0000h - FFFF_F800_C0BF_FFFFh
 ;;
 
 EPT_READ                        EQU     1
@@ -36,7 +36,7 @@ EPT_IPAT                        EQU     40h
 EPT_VALID_FLAG                  EQU     800h
 
 ;;
-;; ¶¨Òå EPT table entry Àà±ð
+;; å®šä¹‰ EPT table entry ç±»åˆ«
 ;;
 EPT_PML4E                       EQU     0010000000000000h
 EPT_PDPTE                       EQU     0020000000000000h
@@ -59,19 +59,19 @@ GET_PAGE_FRAME                  EQU     1 << 25
 
 
 ;;
-;; ¶¨Òå EPT violation Ïà¹ØµÄ³£Á¿
+;; å®šä¹‰ EPT violation ç›¸å…³çš„å¸¸é‡
 ;;
-EPT_VIOLATION_TRANSLATION       EQU     100h                    ;; translation Î»£¬Ö¸Ê¾ÊÇ·ñÔÚ guest paging-structureÄÚ·¢Éú EPT violation
+EPT_VIOLATION_TRANSLATION       EQU     100h                    ;; translation ä½ï¼ŒæŒ‡ç¤ºæ˜¯å¦åœ¨ guest paging-structureå†…å‘ç”Ÿ EPT violation
 
 
 
 ;;
-;; ¶¨Òå EPT misconfiguration µÄ¶¨ÒåÂë
+;; å®šä¹‰ EPT misconfiguration çš„å®šä¹‰ç 
 ;;
-EPT_MISCONF_NONREADABLE         EQU     10001h                  ;; ÓÉÓÚ²»¿É¶ÁÒýÆð
-EPT_MISCONF_ONLYEXECUTE         EQU     10002h                  ;; ÓÉÓÚ only-execute£¬µ«VMX²»Ö§³Ö¶øÒýÆð
-EPT_MISCONF_RESERVED            EQU     10004h                  ;; ÓÉÓÚ±£ÁôÎ»²»Îª0ÒýÆð
-EPT_MISCONF_MEMTYPE             EQU     10008h                  ;; ÓÉÓÚ memory type ¶øÒýÆð
+EPT_MISCONF_NONREADABLE         EQU     10001h                  ;; ç”±äºŽä¸å¯è¯»å¼•èµ·
+EPT_MISCONF_ONLYEXECUTE         EQU     10002h                  ;; ç”±äºŽ only-executeï¼Œä½†VMXä¸æ”¯æŒè€Œå¼•èµ·
+EPT_MISCONF_RESERVED            EQU     10004h                  ;; ç”±äºŽä¿ç•™ä½ä¸ä¸º0å¼•èµ·
+EPT_MISCONF_MEMTYPE             EQU     10008h                  ;; ç”±äºŽ memory type è€Œå¼•èµ·
 
 
 
@@ -80,13 +80,13 @@ DUMP_PAGE_NEST                  EQU     1
 
 
 ;;
-;; ¶¨Òå guest-physical address Ó³ÉäÁÐ±í½á¹¹
+;; å®šä¹‰ guest-physical address æ˜ å°„åˆ—è¡¨ç»“æž„
 ;;
 struc GML
-        .GuestPhysicalAddress   RESQ    1                       ;; ÐèÒªÓ³ÉäµÄ GPA
-        .HostPhysicalAddress    RESQ    1                       ;; Ä¿±ê HPA
-        .EptPageCount           RESD    1                       ;; Ò³ÃæÊýÁ¿
-        .EptPageAttribute       RESD    1                       ;; Ò³ÃæÊôÐÔ
+        .GuestPhysicalAddress   RESQ    1                       ;; éœ€è¦æ˜ å°„çš„ GPA
+        .HostPhysicalAddress    RESQ    1                       ;; ç›®æ ‡ HPA
+        .EptPageCount           RESD    1                       ;; é¡µé¢æ•°é‡
+        .EptPageAttribute       RESD    1                       ;; é¡µé¢å±žæ€§
 endstruc
 
 
