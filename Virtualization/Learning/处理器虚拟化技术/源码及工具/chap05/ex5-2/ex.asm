@@ -1,28 +1,28 @@
 ;*************************************************
 ; ex.asm                                         *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
 
 ;;
-;; ex.asm ËµÃ÷£º
-;; 1) ex.asm ÊÇÊµÑéÀı×ÓµÄÔ´´úÂëÎÄ¼ş£¬ËüÇ¶ÈëÔÚ protected.asm ºÍ long.asm ÎÄ¼şÄÚ
-;; 2) ex.asm ÊÇÍ¨ÓÃÄ£¿é£¬ÄÜÔÚ stage2 ºÍ stage3 ½×¶ÎÔËĞĞ
+;; ex.asm è¯´æ˜ï¼š
+;; 1) ex.asm æ˜¯å®éªŒä¾‹å­çš„æºä»£ç æ–‡ä»¶ï¼Œå®ƒåµŒå…¥åœ¨ protected.asm å’Œ long.asm æ–‡ä»¶å†…
+;; 2) ex.asm æ˜¯é€šç”¨æ¨¡å—ï¼Œèƒ½åœ¨ stage2 å’Œ stage3 é˜¶æ®µè¿è¡Œ
 ;;
 
 
         ;;
-        ;; ¼ÓÈë ex.asm Ä£¿éÊ¹ÓÃµÄÍ·ÎÄ¼ş
+        ;; åŠ å…¥ ex.asm æ¨¡å—ä½¿ç”¨çš„å¤´æ–‡ä»¶
         ;;
         %include "ex.inc"
 
         ;;
-        ;; Ê¾Àı5-2£º²âÊÔÓÅÏÈ¼¶¸ßÓÚVM-exitµÄÒì³£
+        ;; ç¤ºä¾‹5-2ï¼šæµ‹è¯•ä¼˜å…ˆçº§é«˜äºVM-exitçš„å¼‚å¸¸
         ;;
        
         ;;
-        ;; µ÷¶È CPU3 Ö´ĞĞ dump_debug_record() º¯Êı
+        ;; è°ƒåº¦ CPU3 æ‰§è¡Œ dump_debug_record() å‡½æ•°
         ;;                
         mov esi, 3
         mov edi, dump_debug_record
@@ -30,13 +30,13 @@
 
         
         ;;
-        ;; µÈ´ıÓÃ»§Ñ¡ÔñÃüÁî
+        ;; ç­‰å¾…ç”¨æˆ·é€‰æ‹©å‘½ä»¤
         ;;
         call do_command        
         
 
         ;;
-        ;; µÈ´ıÖØÆô
+        ;; ç­‰å¾…é‡å¯
         ;;
         call wait_esc_for_reset
 
@@ -53,9 +53,9 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) µ÷¶ÈÖ´ĞĞµÄÄ¿±ê´úÂë
-;       2) ´Ëº¯ÊıÈÃ´¦ÀíÆ÷Ö´ĞĞ VM-entry ²Ù×÷
+; æè¿°ï¼š
+;       1) è°ƒåº¦æ‰§è¡Œçš„ç›®æ ‡ä»£ç 
+;       2) æ­¤å‡½æ•°è®©å¤„ç†å™¨æ‰§è¡Œ VM-entry æ“ä½œ
 ;----------------------------------------------
 TargetCpuVmentry1:
         push R5
@@ -73,13 +73,13 @@ TargetCpuVmentry1:
         mov [R5 + PCB.GuestA + VMB.GuestFlags], eax
 
         ;;
-        ;; ³õÊ¼»¯ VMCS region
+        ;; åˆå§‹åŒ– VMCS region
         ;;
         mov DWORD [R5 + PCB.GuestA + VMB.GuestEntry], guest_entry1
         mov DWORD [R5 + PCB.GuestA + VMB.HostEntry], VmmEntry
 
         ;;
-        ;; ·ÖÅä guest stack
+        ;; åˆ†é… guest stack
         ;;
         mov edi, get_user_stack_pointer
         mov esi, get_kernel_stack_pointer
@@ -89,34 +89,34 @@ TargetCpuVmentry1:
         mov [R5 + PCB.GuestA + VMB.GuestStack], R0
         
         ;;
-        ;; ³õÊ¼»¯ VMCS buffer
+        ;; åˆå§‹åŒ– VMCS buffer
         ;;
         mov R6, [R5 + PCB.VmcsA]
         call initialize_vmcs_buffer
         
                                 
         ;;
-        ;; Ö´ĞĞ VMCLEAR ²Ù×÷
+        ;; æ‰§è¡Œ VMCLEAR æ“ä½œ
         ;;
         vmclear [R5 + PCB.GuestA]
         jc @1
         jz @1         
         
         ;;
-        ;; ¼ÓÔØ VMCS pointer
+        ;; åŠ è½½ VMCS pointer
         ;;
         vmptrld [R5 + PCB.GuestA]
         jc @1
         jz @1  
 
         ;;
-        ;; ¸üĞÂµ±Ç° VMB Ö¸Õë
+        ;; æ›´æ–°å½“å‰ VMB æŒ‡é’ˆ
         ;;
         mov R0, [R5 + PCB.VmcsA]
         mov [R5 + PCB.CurrentVmbPointer], R0
 
         ;;
-        ;; ÅäÖÃ VMCS
+        ;; é…ç½® VMCS
         ;;
         call setup_vmcs_region
         call update_system_status
@@ -125,7 +125,7 @@ TargetCpuVmentry1:
         CLEAR_EXCEPTION_BITMAP  UD_VECTOR  
         
         ;;
-        ;; ½øÈë guest »·¾³
+        ;; è¿›å…¥ guest ç¯å¢ƒ
         ;;  
         call reset_guest_context
         or DWORD [gs: PCB.ProcessorStatus], CPU_STATUS_GUEST   
@@ -147,8 +147,8 @@ TargetCpuVmentry1:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) µ÷¶ÈÖ´ĞĞµÄÄ¿±ê´úÂë
+; æè¿°ï¼š
+;       1) è°ƒåº¦æ‰§è¡Œçš„ç›®æ ‡ä»£ç 
 ;----------------------------------------------
 TargetCpuVmentry2:       
         push R5
@@ -164,13 +164,13 @@ TargetCpuVmentry2:
 
 
         ;;
-        ;; ³õÊ¼»¯ VMCS region
+        ;; åˆå§‹åŒ– VMCS region
         ;;
         mov DWORD [R5 + PCB.GuestB + VMB.GuestEntry], guest_entry2
         mov DWORD [R5 + PCB.GuestB + VMB.HostEntry], VmmEntry
         
         ;;
-        ;; ·ÖÅä guest stack
+        ;; åˆ†é… guest stack
         ;;
         mov edi, get_user_stack_pointer
         mov esi, get_kernel_stack_pointer
@@ -181,34 +181,34 @@ TargetCpuVmentry2:
        
 
         ;;
-        ;; ³õÊ¼»¯ VMCS buffer
+        ;; åˆå§‹åŒ– VMCS buffer
         ;;
         mov R6, [R5 + PCB.VmcsB]
         call initialize_vmcs_buffer
         
                                 
         ;;
-        ;; Ö´ĞĞ VMCLEAR ²Ù×÷
+        ;; æ‰§è¡Œ VMCLEAR æ“ä½œ
         ;;
         vmclear [R5 + PCB.GuestB]
         jc @1
         jz @1         
         
         ;;
-        ;; ¼ÓÔØ VMCS pointer
+        ;; åŠ è½½ VMCS pointer
         ;;
         vmptrld [R5 + PCB.GuestB]
         jc TargetCpuVmentry2.@1
         jz TargetCpuVmentry2.@1  
 
         ;;
-        ;; ¸üĞÂµ±Ç° VMB Ö¸Õë
+        ;; æ›´æ–°å½“å‰ VMB æŒ‡é’ˆ
         ;;
         mov R0, [R5 + PCB.VmcsB]
         mov [R5 + PCB.CurrentVmbPointer], R0
 
         ;;
-        ;; ÅäÖÃ VMCS
+        ;; é…ç½® VMCS
         ;;
         call setup_vmcs_region
         call update_system_status
@@ -220,7 +220,7 @@ TargetCpuVmentry2:
         
        
         ;;
-        ;; ½øÈë guest »·¾³
+        ;; è¿›å…¥ guest ç¯å¢ƒ
         ;;  
         call reset_guest_context
         or DWORD [gs: PCB.ProcessorStatus], CPU_STATUS_GUEST       
@@ -242,12 +242,12 @@ TargetCpuVmentry2.@1:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÕâÊÇ guest 1 µÄÈë¿Úµã
+; æè¿°ï¼š
+;       1) è¿™æ˜¯ guest 1 çš„å…¥å£ç‚¹
 ;-----------------------------------------------------------------------
 guest_entry1:
 
-        DEBUG_RECORD    "[VM-entry]: switch to guest0 !"        ; ²åÈë debug ¼ÇÂ¼µã       
+        DEBUG_RECORD    "[VM-entry]: switch to guest0 !"        ; æ’å…¥ debug è®°å½•ç‚¹       
         DEBUG_RECORD    "[guest]: LOCK CPUID !"
         
         lock cpuid
@@ -261,12 +261,12 @@ guest_entry1:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÕâÊÇ guest 2 µÄÈë¿Úµã
+; æè¿°ï¼š
+;       1) è¿™æ˜¯ guest 2 çš„å…¥å£ç‚¹
 ;-----------------------------------------------------------------------
 guest_entry2:
 
-        DEBUG_RECORD_USER_S     "[VM-entry]: switch to guest1 !"         ; ²åÈë debug ¼ÇÂ¼µã
+        DEBUG_RECORD_USER_S     "[VM-entry]: switch to guest1 !"         ; æ’å…¥ debug è®°å½•ç‚¹
         DEBUG_RECORD_USER_S     "[guest]: MOV RAX, CR3 !"
         
 
@@ -300,13 +300,13 @@ do_command.loop:
         call puts
         
         ;;
-        ;; µÈ´ı°´¼ü
+        ;; ç­‰å¾…æŒ‰é”®
         ;;
         call wait_a_key
         
-        cmp al, SC_ESC                                          ; ÊÇ·ñÎª <ESC>
+        cmp al, SC_ESC                                          ; æ˜¯å¦ä¸º <ESC>
         je do_esc
-        cmp al, SC_Q                                            ; ÊÇ·ñÎª <Q>
+        cmp al, SC_Q                                            ; æ˜¯å¦ä¸º <Q>
         je do_command.done
         
         cmp al, SC_1
@@ -316,7 +316,7 @@ do_command.loop:
         
 do_command.@0:
         ;;
-        ;; ÊÇ·ñ·¢ËÍ interrupt
+        ;; æ˜¯å¦å‘é€ interrupt
         ;;
         cmp al, SC_I
         jne do_command.@1
@@ -326,7 +326,7 @@ do_command.@0:
         
 do_command.@1:
         ;;
-        ;; ÊÇ·ñ·¢ËÍ NMI
+        ;; æ˜¯å¦å‘é€ NMI
         ;;
         DEBUG_RECORD         "[command]: you press a N key !"
         
@@ -338,7 +338,7 @@ do_command.@1:
         
 do_command.@2:
         ;;
-        ;; ÊÇ·ñ·¢ËÍ INIT
+        ;; æ˜¯å¦å‘é€ INIT
         ;;
         cmp al, SC_T
         jne do_command.@3
@@ -347,7 +347,7 @@ do_command.@2:
 
 do_command.@3:
         ;;
-        ;; ÊÇ·ñ·¢ËÍ SIPI
+        ;; æ˜¯å¦å‘é€ SIPI
         ;;
         cmp al, SC_S
         jne do_command.loop

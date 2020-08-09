@@ -1,6 +1,6 @@
 ;************************************************
 ;* vmx.inc                                      *
-;* Copyright (c) 2009-2013 ��־                 *
+;* Copyright (c) 2009-2013 邓志                 *
 ;* All rights reserved.                         *
 ;************************************************
 
@@ -10,20 +10,20 @@
 
 
 ;;******************************************************
-;; VMX �� VMCS region ��ַ
+;; VMX 的 VMCS region 地址
 ;;******************************************************
 
 %define VMX_REGION_PHYSICAL_BASE                        1100000h
 %define VMX_REGION_VIRTUAL_BASE                         0B0000000h
 
 ;;
-;; Ĭ���£�ÿ�� VM ӵ�� 8M �ڴ�����
+;; 默认下，每个 VM 拥有 8M 内存区域
 ;;
 %define VM_MEMORY_SIZE                                  800000h
 
 
 ;;
-;; VMM ��������
+;; VMM 处理代码
 ;;
 %define VMM_PROCESS_DUMP_VMCS                           0
 %define VMM_PROCESS_RESUME                              1
@@ -37,13 +37,13 @@
 
 
 ;;
-;; ����ʹ�õ��¼� vector 
+;; 测试使用的事件 vector 
 ;;
 %define EVENT_INJECT_TEST_VECTOR                        0F0h
 
 
 ;;
-;; �ж�����ֵ
+;; 中断类型值
 ;;
 
 %define INTERRUPT_TYPE_EXTERNAL_INTERRUPT               000h
@@ -67,7 +67,7 @@
 
 
 ;;
-;; ע���Ӳ���쳣
+;; 注入的硬件异常
 ;;
 %define INJECT_EXCEPTION_DF                             (INJECT_HARDWARE_EXCEPTION | ERROR_CODE_FLAG | 8)
 %define INJECT_EXCEPTION_TS                             (INJECT_HARDWARE_EXCEPTION | ERROR_CODE_FLAG | 10)
@@ -82,14 +82,14 @@
 %define INJECT_EXCEPTION_DB                             (INJECT_HARDWARE_EXCEPTION | 1)
 
 ;;
-;; ע��������쳣
+;; 注入的软件异常
 ;;
 %define INJECT_EXCEPTION_BP                             (INJECT_SOFTWARE_EXCEPTION | 3)
 %define INJECT_EXCEPTION_OF                             (INJECT_SOFTWARE_EXCEPTION | 4)
 
 
 ;;
-;; ע���ϵͳ�������̡�
+;; 注入的系统服务例程　
 ;;
 %define INJECT_SYSTEM_SERVICE                           (INJECT_SOFTWARE_INTERRUPT | SYSTEM_SERVICE_VECTOR)
 
@@ -380,9 +380,9 @@
 
 
 ;;
-;; �ڴ����ͣ�
-;; 1) Uncacheable��UC��
-;; 2) WriteBack��WB��
+;; 内存类型：
+;; 1) Uncacheable（UC）
+;; 2) WriteBack（WB）
 ;;
 
 %define MEM_TYPE_UC                                     0
@@ -392,7 +392,7 @@
 %define MEM_TYPE_WC                                     1
 
 ;;
-;; EPT ҳ�ṹ�ڴ�����
+;; EPT 页结构内存类型
 ;;
 %define EPT_MEM_WB                                      (MEM_TYPE_WB << 3)
 %define EPT_MEM_UC                                      (MEM_TYPE_UC << 3)
@@ -402,7 +402,7 @@
 
 
 ;;
-;; segment �е� access rights ֵ
+;; segment 中的 access rights 值
 ;;
 %define TYPE_cewa                                       0               ; expand-up data
 %define TYPE_cewA                                       1               ; expand-up/accessed data
@@ -455,7 +455,7 @@
 
 
 ;;
-;; access rights ��־λ
+;; access rights 标志位
 ;;
 %define ACCESS_RIGHT_S                                  (1 << 4)
 %define ACCESS_RIGHT_P                                  (1 << 7)
@@ -467,7 +467,7 @@
 
 
 ;;
-;; PFEC ֵ����
+;; PFEC 值定义
 ;;
 %define PFEC_iruwp                                      0h              ; I=R=U=W=P=0
 %define PFEC_iruWP                                      3h              ; I=R=U=0, W=P=1
@@ -485,13 +485,13 @@
 %define PFEC_IRUwP                                      1Dh             ; R=U=W=0, I=P=1
 %define PFEC_IRUWP                                      1Fh             ; R=U=W=0, I=P=1
 
-%define PFEC_MASK                                       0FFFFFFFFh      ; ���� U/S λ (bit 2)
+%define PFEC_MASK                                       0FFFFFFFFh      ; 忽略 U/S 位 (bit 2)
 
 
 
 
 ;;
-;; ####### guest activity state ֵ ######
+;; ####### guest activity state 值 ######
 ;;
 
 %define GUEST_STATE_ACTIVE                              0
@@ -502,7 +502,7 @@
 
 
 ;;
-;; ####### guest interruptibility state ֵ ######
+;; ####### guest interruptibility state 值 ######
 ;;
 
 %define GUEST_BLOCKING_BY_STI                           01h
@@ -512,7 +512,7 @@
 
 
 ;;
-;; ####### guest pending debug exception ֵ ######
+;; ####### guest pending debug exception 值 ######
 ;;
 %define GUEST_PENDING_DEBUG_B0                          01h
 %define GUEST_PENDING_DEBUG_B1                          02h
@@ -527,7 +527,7 @@
 
 
 ;;
-;; ####### exception control fields ���� ######
+;; ####### exception control fields 常量 ######
 ;;
 %define EXTERNAL_INTERRUPT_EXITING                      01h
 %define NMI_EXITING                                     08h
@@ -573,7 +573,7 @@
 %define ENABLE_VM_FUNCTION                              2000h
 
 ;;
-;; ####### vm exit control fields ���� ######
+;; ####### vm exit control fields 常量 ######
 ;;
 %define SAVE_DEBUG_CONTROL                              10h
 %define HOST_ADDRESS_SPACE_SIZE                         200h
@@ -587,7 +587,7 @@
 
 
 ;;
-;; ####### vm entry control fields ���� ######
+;; ####### vm entry control fields 常量 ######
 ;;
 %define VMENTRY_LOAD_DEBUG_CONTROL                      10h
 %define IA32E_MODE_GUEST                                200h
@@ -608,7 +608,7 @@
 
 
 ;;
-;; ####### VM-exit ԭ���� ######
+;; ####### VM-exit 原因码 ######
 ;;
 %define EXIT_REASON_MTF                                 37
 
@@ -748,7 +748,7 @@
 
 %else
         ;;
-        ;; 32 λ�±���
+        ;; 32 位下编译
         ;;
         mov esi, %1
 
@@ -794,25 +794,25 @@
 
 
 ;----------------------------------------------
-; �� MakeControlBits
+; 宏 MakeControlBits
 ; input:
-;       %1 - ������õ� control ֵ
-;       %2 - Ctls MSR �ĵ�ַ
+;       %1 - 最初设置的 control 值
+;       %2 - Ctls MSR 的地址
 ; output:
-;       %1 - ���յ� control ֵ
+;       %1 - 最终的 control 值
 ;
-; ʹ��ʾ����
-;       mov eax, 0EE04h                                 ; �û����� VM-entrt control ��ֵ���� eax 
-;       MakeControlBits eax, ebp + VGA.EnterCtls        ; �ϳ����յ� VM-entry control ֵ������ eax
+; 使用示例：
+;       mov eax, 0EE04h                                 ; 用户设置 VM-entrt control 域值放在 eax 
+;       MakeControlBits eax, ebp + VGA.EnterCtls        ; 合成最终的 VM-entry control 值返回在 eax
 ;----------------------------------------------
 %macro MakeControlBits 2
         ;;
-        ;; ˵��:
-        ;; 1) ���� allowed 0-setting ֵ
-        ;; 2) ���� allowed 1-setting ֵ
+        ;; 说明:
+        ;; 1) 或上 allowed 0-setting 值
+        ;; 2) 与上 allowed 1-setting 值
         ;;
-        or %1, [%2]                     ; �� 32 λΪ allowed 0-setting 
-        and %1, [%2 + 4]                ; �� 32 λΪ allowed 1-setting
+        or %1, [%2]                     ; 低 32 位为 allowed 0-setting 
+        and %1, [%2 + 4]                ; 高 32 位为 allowed 1-setting
 %endmacro
         
 
@@ -825,14 +825,14 @@
 ;       none
 ; output:
 ;       none
-; ������
-;       1) ���� guest context
+; 描述：
+;       1) 保存 guest context
 ;----------------------------------------------
 %macro STORE_GUEST_CONTEXT 0
 
 %if __BITS__ == 64
         ;;
-        ;; �� 64 λ�±���
+        ;; 在 64 位下编译
         ;;
         mov [gs: PCB.Rax], rax
         mov [gs: PCB.Rcx], rcx
@@ -855,7 +855,7 @@
         vmread [gs: PCB.Rip], rax
 %else
         ;;
-        ;; �� 32 λ�±���
+        ;; 在 32 位下编译
         ;;
         %ifdef __X64
                 StoreToPcb        PCB.Rax, rax
@@ -884,7 +884,7 @@
         %endif
 
         ;;
-        ;; ���� guest �� RSP �� RIP ֵ
+        ;; 保存 guest 的 RSP 及 RIP 值
         ;;
         mov eax, GUEST_RSP
         mov esi, PCB.Esp
@@ -904,14 +904,14 @@
 ;       none
 ; output:
 ;       none
-; ������
-;       1) �ָ� guest context
+; 描述：
+;       1) 恢复 guest context
 ;----------------------------------------------
 %macro RESTORE_GUEST_CONTEXT 0
 
 %if __BITS__ == 64
         ;;
-        ;; �� 64 λ�±���
+        ;; 在 64 位下编译
         ;;
         mov rax, [gs: PCB.Rax]
         mov rcx, [gs: PCB.Rcx]
@@ -930,7 +930,7 @@
         mov r15, [gs: PCB.R15]
 %else
         ;;
-        ;; �� 32 λ�±���
+        ;; 在 32 位下编译
         ;;
         %ifdef __X64
                 LoadFromPcb     rax, PCB.Rax
