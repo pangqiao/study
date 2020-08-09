@@ -6,78 +6,78 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ¹Ø±Õ8259
+;; å…³é—­8259
         call disable_8259
 
-;; ÉèÖÃ #PF handler
+;; è®¾ç½® #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ÉèÖÃ #DB handler
+; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, debug_handler
         call set_interrupt_handler
 
 
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; è®¾ç½® sysenter/sysexit ä½¿ç”¨ç¯å¢ƒ
         call set_sysenter
 
-; ÔÊĞíÖ´ĞĞ SSE Ö¸Áî        
+; å…è®¸æ‰§è¡Œ SSE æŒ‡ä»¤        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         
         
-;ÉèÖÃ CR4.PAE
+;è®¾ç½® CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; å¼€å¯ XD åŠŸèƒ½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; åˆå§‹åŒ– paging ç¯å¢ƒ
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
+;è®¾ç½® PDPT è¡¨åœ°å€        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; ´ò¿ª¡¡paging
+; æ‰“å¼€ã€€paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax               
                   
                 
         
-;; ÊµÑé 13-8£º²âÊÔrep movsbÖĞµÄÊı¾İ¶Ïµã
+;; å®éªŒ 13-8ï¼šæµ‹è¯•rep movsbä¸­çš„æ•°æ®æ–­ç‚¹
 
-;1) ÉèÖÃÊı¾İ¶Ïµã enable Î»
+;1) è®¾ç½®æ•°æ®æ–­ç‚¹ enable ä½
         mov eax, dr7
         or eax, 0xF0001                                        ; L0=1, R/W0=11B, LEN0=11B
         mov dr7, eax
 
-;2) ÉèÖÃ¶ÏµãµØÖ·¼à¿Ø 0x400000 
+;2) è®¾ç½®æ–­ç‚¹åœ°å€ç›‘æ§ 0x400000 
         mov eax, 0x400000
         mov dr0, eax
 
         
-; 3) ²âÊÔ rep movsb
+; 3) æµ‹è¯• rep movsb
         mov esi, func
         mov edi, 0x400000
         mov ecx, func_end - func
@@ -87,11 +87,11 @@ entry:
 
 
         
-; ×ªµ½ long Ä£¿é
+; è½¬åˆ° long æ¨¡å—
         ;jmp LONG_SEG
                                 
                                 
-; ½øÈë ring 3 ´úÂë
+; è¿›å…¥ ring 3 ä»£ç 
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -99,7 +99,7 @@ entry:
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ç”¨æˆ·ä»£ç 
 
 user_entry:
         mov ax, user_data32_sel
@@ -111,7 +111,7 @@ user_start:
         jmp $
 
 
-;; ²âÊÔº¯Êı
+;; æµ‹è¯•å‡½æ•°
 func:
         mov edx, puts
         mov ebx, dump_pae_page        
@@ -150,11 +150,11 @@ do_debug_handler:
 
 
         
-;******** include ÖĞ¶Ï handler ´úÂë ********
+;******** include ä¸­æ–­ handler ä»£ç  ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include æ¨¡å— ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -165,10 +165,10 @@ do_debug_handler:
 %include "..\lib\pic8259A.asm"
 
 
-;;************* º¯Êıµ¼Èë±í  *****************
+;;************* å‡½æ•°å¯¼å…¥è¡¨  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓĞÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; è¿™ä¸ª lib32 åº“å¯¼å…¥è¡¨æ”¾åœ¨ common\ ç›®å½•ä¸‹ï¼Œ
+; ä¾›æ‰€æœ‰å®éªŒçš„ protected.asm æ¨¡å—ä½¿ç”¨
 
 %include "..\common\lib32_import_table.imt"
 
