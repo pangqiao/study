@@ -1,6 +1,6 @@
 ;************************************************
 ;* VmxExit.inc                                  *
-;* Copyright (c) 2009-2013 µËÖ¾                 *
+;* Copyright (c) 2009-2013 é‚“å¿—                 *
 ;* All rights reserved.                         *
 ;************************************************
 
@@ -11,7 +11,7 @@
 
 
 ;;
-;; ÓÉÏÂÁĞÖ¸ÁîÒı·¢ VM-exit µÄÃ÷Ï¸ĞÅÏ¢£º
+;; ç”±ä¸‹åˆ—æŒ‡ä»¤å¼•å‘ VM-exit çš„æ˜ç»†ä¿¡æ¯ï¼š
 ;; 1) INVEPT, INVPCID, INVVPID, VMCLEAR, VMPTRLD, VMPTRST
 ;;    VMREAD, VMWRITE, VMXON
 ;; 2) LGDT, SGDT, LIDT, SIDT, LLDT, SLDT, LTR, STR
@@ -19,12 +19,12 @@
 ;;
 struc INSTRUCTION_INFO
         ;;
-        ;; INVLPG Ö¸ÁîµÄ¼ÇÂ¼µÄÏßĞÔµØÖ·
+        ;; INVLPG æŒ‡ä»¤çš„è®°å½•çš„çº¿æ€§åœ°å€
         ;;
         .LinearAddress:
         
         ;;
-        ;; ÓÉÏÂÁĞÖ¸Áî¼ÇÂ¼µÄ displacement Öµ
+        ;; ç”±ä¸‹åˆ—æŒ‡ä»¤è®°å½•çš„ displacement å€¼
         ;; 1) INVEPT, INVPCID, INVVPID, VMCLEAR, VMPTRLD, VMPTRST
         ;;    VMREAD, VMWRITE, VMXON
         ;; 2) LGDT, SGDT, LIDT, SIDT, LLDT, SLDT, LTR, STR
@@ -34,8 +34,8 @@ struc INSTRUCTION_INFO
 
 
         ;;
-        ;; ÓÉÏÂÁĞÖ¸Áî¼ÇÂ¼µÄ instruciton length Öµ
-        ;; 1) CPUID, GETSEC, INVD, XSETBV, ËùÓĞ VMX Ö¸Áî
+        ;; ç”±ä¸‹åˆ—æŒ‡ä»¤è®°å½•çš„ instruciton length å€¼
+        ;; 1) CPUID, GETSEC, INVD, XSETBV, æ‰€æœ‰ VMX æŒ‡ä»¤
         ;; 2) HLT, INVLPG, INVPICD, RDPMC, RDTSC, RDTSCP, RSM
         ;;    MOV-CR3, MOV-CR8, MOV-to-CR0, MOV-to-CR4, MOV-DR
         ;;    CLTS, LMSW, IN/OUT, INS/OUTS, RDMSR, WRMSR, MWAIT
@@ -45,7 +45,7 @@ struc INSTRUCTION_INFO
         .InstructionLength      RESD            1
 
         ;;
-        ;; ¼ÇÂ¼ÏÂÃæÖ¸ÁîÏêÏ¸ĞÅÏ¢
+        ;; è®°å½•ä¸‹é¢æŒ‡ä»¤è¯¦ç»†ä¿¡æ¯
         ;; 1) INVEPT, INVPCID, INVVPID
         ;; 2) LGDT, LIDT, SGDT, SIDT
         ;; 3) LLDT, SLDT, LTR, STR
@@ -54,14 +54,14 @@ struc INSTRUCTION_INFO
         ;;
         .Flags                  RESD            1
         .Scale                  RESD            1
-        .OperandSize            RESD            1       ;; RDRAND Ö¸Áî¼ÇÂ¼²Ù×÷Êı
+        .OperandSize            RESD            1       ;; RDRAND æŒ‡ä»¤è®°å½•æ“ä½œæ•°
         .AddressSize            RESD            1
-        .Reg1:                                          ;; VMREAD, VMWRITE Ö¸ÁîµÄ operand 1
-        .Register               RESD            1       ;; LLDT, SLDT, LTR, STR ¼ÇÂ¼¼Ä´æÆ÷
+        .Reg1:                                          ;; VMREAD, VMWRITE æŒ‡ä»¤çš„ operand 1
+        .Register               RESD            1       ;; LLDT, SLDT, LTR, STR è®°å½•å¯„å­˜å™¨
         .Segment                RESD            1
         .Index                  RESD            1
         .Base                   RESD            1
-        .Reg2:                                          ;; VMREAD, VMWRITE Ö¸ÁîµÄ operand 2
+        .Reg2:                                          ;; VMREAD, VMWRITE æŒ‡ä»¤çš„ operand 2
         .Type                   RESD            1
 endstruc
 
@@ -94,11 +94,11 @@ endstruc
 
 
 ;;
-;; Òì³£»ò NMI Òı·¢ VM-exit Ã÷Ï¸ĞÅÏ¢
+;; å¼‚å¸¸æˆ– NMI å¼•å‘ VM-exit æ˜ç»†ä¿¡æ¯
 ;;
 struc EXCEPTION_INFO
         ;;
-        ;; Ö±½ÓÒì³£/ÖĞ¶ÏĞÅÏ¢ 
+        ;; ç›´æ¥å¼‚å¸¸/ä¸­æ–­ä¿¡æ¯ 
         ;;
         .DirectVectorInfo:
         .ExceptionInfo          RESD            1
@@ -106,7 +106,7 @@ struc EXCEPTION_INFO
         .ExceptionErrorCode     RESD            1
         
         ;;
-        ;; Ô­Ê¼Òì³£/ÖĞ¶ÏĞÅÏ¢
+        ;; åŸå§‹å¼‚å¸¸/ä¸­æ–­ä¿¡æ¯
         ;;
         .OriginalVectorInfo:
         .IdtVectorInfo          RESD            1
@@ -115,17 +115,17 @@ struc EXCEPTION_INFO
 
 
         ;;
-        ;; ÓÉ INT3, INTO Ö¸Áî¼ÇÂ¼µÄ instruction length
+        ;; ç”± INT3, INTO æŒ‡ä»¤è®°å½•çš„ instruction length
         ;;
         .InstructionLength:
 
         ;;
-        ;; ÓÉ #PF ¼ÇÂ¼µÄÏßĞÔµØÖ·
+        ;; ç”± #PF è®°å½•çš„çº¿æ€§åœ°å€
         ;;
         .LinearAddress:
 
         ;;
-        ;; #DB Òì³£Ôò¼ÇÂ¼ BP£¬ BD£¬ BS
+        ;; #DB å¼‚å¸¸åˆ™è®°å½• BPï¼Œ BDï¼Œ BS
         ;;
         .BreakPoint             RESD            1
         .DebugFlags             RESD            1
@@ -139,7 +139,7 @@ endstruc
 
 
 ;;
-;; ÓÉ SIPI Òı·¢ VM-exit µÄÃ÷Ï¸ĞÅÏ¢
+;; ç”± SIPI å¼•å‘ VM-exit çš„æ˜ç»†ä¿¡æ¯
 ;;
 struc SIPI_INFO
         .Vector                 RESD            1
@@ -147,12 +147,12 @@ endstruc
 
 
 ;;
-;; ÓÉ SMI Òı·¢ VM-exit µÄÃ÷Ï¸ĞÅÏ¢
+;; ç”± SMI å¼•å‘ VM-exit çš„æ˜ç»†ä¿¡æ¯
 ;;
 struc SMI_INFO
-        .OperandSize            RESD            1               ;; ¼ÇÂ¼ operand size
-        .IoPort                 RESD            1               ;; ¼ÇÂ¼¶Ë¿Ú
-        .IoFlags                RESD            1               ;; IO Ö¸Áî±êÖ¾Î»
+        .OperandSize            RESD            1               ;; è®°å½• operand size
+        .IoPort                 RESD            1               ;; è®°å½•ç«¯å£
+        .IoFlags                RESD            1               ;; IO æŒ‡ä»¤æ ‡å¿—ä½
         
         .Rcx                    RESQ            1
         .Rsi                    RESQ            1
@@ -164,11 +164,11 @@ endstruc
 
 
 ;;
-;; ÓÉÈÎÎñÇĞ»»Òı·¢ VM-exit µÄÃ÷Ï¸ĞÅÏ¢
+;; ç”±ä»»åŠ¡åˆ‡æ¢å¼•å‘ VM-exit çš„æ˜ç»†ä¿¡æ¯
 ;;
 struc TASK_SWITCH_INFO
         ;;
-        ;; µ±Ç° TSS selector ÓëÄ¿±ê TSS selector
+        ;; å½“å‰ TSS selector ä¸ç›®æ ‡ TSS selector
         ;;
         .NewTrSelector          RESD            1
         .CurrentTrSelector      RESD            1
@@ -176,15 +176,15 @@ struc TASK_SWITCH_INFO
 
 
         ;;
-        ;; ÓÉÏÂÁĞÒıÆğÈÎÎñÇĞ»»Ê±¼ÇÂ¼Ö¸Áî³¤¶È:
-        ;; 1) CALL, JMP, IRET Ö¸Áî
-        ;; 2) Èí¼şÖĞ¶Ï/Èí¼şÒì³£ delivery ÆÚ¼ä
+        ;; ç”±ä¸‹åˆ—å¼•èµ·ä»»åŠ¡åˆ‡æ¢æ—¶è®°å½•æŒ‡ä»¤é•¿åº¦:
+        ;; 1) CALL, JMP, IRET æŒ‡ä»¤
+        ;; 2) è½¯ä»¶ä¸­æ–­/è½¯ä»¶å¼‚å¸¸ delivery æœŸé—´
         ;;
         .InstructionLength      RESD            1
 
         ALIGNB 8
         ;;
-        ;; ¼ÇÂ¼Ïà¹ØµØÖ·ĞÅÏ¢
+        ;; è®°å½•ç›¸å…³åœ°å€ä¿¡æ¯
         ;;
         .GuestGdtBase           RESQ            1
         .GuestLdtBase           RESQ            1
@@ -198,7 +198,7 @@ struc TASK_SWITCH_INFO
         .GuestIdtLimit          RESD            1
 
         ;;
-        ;; NewTask TSS µÄµØÖ·Öµ£¨ÏßĞÔµØÖ·£©
+        ;; NewTask TSS çš„åœ°å€å€¼ï¼ˆçº¿æ€§åœ°å€ï¼‰
         ;;
         .NewTaskTssBase         RESD            1
 endstruc
@@ -213,7 +213,7 @@ endstruc
 
 
 ;;
-;; ÖĞ¶Ï´¦ÀíĞÅÏ¢
+;; ä¸­æ–­å¤„ç†ä¿¡æ¯
 ;;
 struc INTERRUPT_INFO
         .Vector                 RESB            1
@@ -268,14 +268,14 @@ endstruc
 
 
 ;;
-;; ÓÉ¿ØÖÆÆ÷·ÃÎÊÒı·¢ VM-exit µÄÃ÷Ï¸ĞÅÏ¢
+;; ç”±æ§åˆ¶å™¨è®¿é—®å¼•å‘ VM-exit çš„æ˜ç»†ä¿¡æ¯
 ;;
 struc MOV_CR_INFO
         .Type                   RESD            1
         .LmswSource             RESD            1
 
         ;;
-        ;; ¼Ä´æÆ÷Öµ
+        ;; å¯„å­˜å™¨å€¼
         ;;
         .ControlRegisterID:
         .ControlRegister        RESQ            1
@@ -284,12 +284,12 @@ struc MOV_CR_INFO
 
      
         ;;
-        ;; Ö¸ÁîµØÖ·
+        ;; æŒ‡ä»¤åœ°å€
         ;;
         .InstructionLength      RESD            1  
 
         ;;
-        ;; Èç¹ûÓÉ LMSW Ö¸ÁîÒı·¢ VM-exit£¬¼ÇÂ¼ÏßĞÔµØÖ·
+        ;; å¦‚æœç”± LMSW æŒ‡ä»¤å¼•å‘ VM-exitï¼Œè®°å½•çº¿æ€§åœ°å€
         ;;
         .LinearAddress          RESQ            1
 endstruc
@@ -301,7 +301,7 @@ endstruc
 
 
 ;;
-;; ÓÉ MOV-DR Òı·¢ VM-exit µÄÃ÷Ï¸ĞÅÏ¢
+;; ç”± MOV-DR å¼•å‘ VM-exit çš„æ˜ç»†ä¿¡æ¯
 ;;
 struc MOV_DR_INFO
         .DebugRegister          RESD            1
@@ -316,21 +316,21 @@ endstruc
 
 
 ;;
-;; ÓÉ I/O Ö¸ÁîÒı·¢ VM-exit µÄÃ÷Ï¸ĞÅÏ¢
+;; ç”± I/O æŒ‡ä»¤å¼•å‘ VM-exit çš„æ˜ç»†ä¿¡æ¯
 ;;
 struc IO_INSTRUCTION_INFO
-        .OperandSize            RESD            1               ;; ¼ÇÂ¼ operand size
-        .IoPort                 RESD            1               ;; ¼ÇÂ¼¶Ë¿Ú
-        .IoFlags                RESD            1               ;; IO Ö¸Áî±êÖ¾Î»
+        .OperandSize            RESD            1               ;; è®°å½• operand size
+        .IoPort                 RESD            1               ;; è®°å½•ç«¯å£
+        .IoFlags                RESD            1               ;; IO æŒ‡ä»¤æ ‡å¿—ä½
 
-        .InstructionLength      RESD            1               ;; Ö¸Áî³¤¶È
+        .InstructionLength      RESD            1               ;; æŒ‡ä»¤é•¿åº¦
 
         ;;
-        ;; Èç¹ûÓÉ INS/OUTS Òı·¢ VM-exit Ê±£º
-        ;; 1) ¼ÇÂ¼ ES:EDI »òÕß DS:ESI ÏßĞÔµØÖ·£¡
-        ;; 2) ¼ÇÂ¼ address size
-        ;; 3) ¼ÇÂ¼ segment
-        ;; 4) ¼ÇÂ¼ count£¨´æÔÚÊ±£©
+        ;; å¦‚æœç”± INS/OUTS å¼•å‘ VM-exit æ—¶ï¼š
+        ;; 1) è®°å½• ES:EDI æˆ–è€… DS:ESI çº¿æ€§åœ°å€ï¼
+        ;; 2) è®°å½• address size
+        ;; 3) è®°å½• segment
+        ;; 4) è®°å½• countï¼ˆå­˜åœ¨æ—¶ï¼‰
         ;;
         .LinearAddress          RESQ            1
         .AddressSize            RESD            1
@@ -338,7 +338,7 @@ struc IO_INSTRUCTION_INFO
         .Count                  RESQ            1
 
         ;;
-        ;; ¼ÇÂ¼ guest ³¢ÊÔĞ´ÈëµÄÖµ
+        ;; è®°å½• guest å°è¯•å†™å…¥çš„å€¼
         ;;
         .Value                  RESD            1
 endstruc
@@ -364,7 +364,7 @@ endstruc
 
 
 ;;
-;; APIC-access VM-exit Ã÷Ï¸ĞÅÏ¢
+;; APIC-access VM-exit æ˜ç»†ä¿¡æ¯
 ;;
 struc APIC_ACCESS_INFO
         .Offset                 RESD            1
@@ -381,7 +381,7 @@ endstruc
 
 
 ;;
-;; EPT violation VM-exit Ã÷Ï¸ĞÅÏ¢
+;; EPT violation VM-exit æ˜ç»†ä¿¡æ¯
 ;;
 struc EPT_VIOLAITON_INFO
         .Flags                  RESD            1
@@ -401,7 +401,7 @@ endstruc
 
 
 ;;
-;; EPT misconfiguration VM-exit Ã÷Ï¸ĞÅÏ¢
+;; EPT misconfiguration VM-exit æ˜ç»†ä¿¡æ¯
 ;;
 struc EPT_MISCONF_INFO
         .GuestPhysicalAddress   RESQ            1
@@ -410,7 +410,7 @@ endstruc
 
 
 ;;
-;; EOI ĞéÄâ»¯ VM-exit Ã÷Ï¸ĞÅÏ¢
+;; EOI è™šæ‹ŸåŒ– VM-exit æ˜ç»†ä¿¡æ¯
 ;;
 struc EOI_VIRTUALIZATION_INFO
         .Vector                 RESD            1
@@ -419,7 +419,7 @@ endstruc
 
 
 ;;
-;; APIC-write VM-exit Ã÷Ï¸ĞÅÏ¢
+;; APIC-write VM-exit æ˜ç»†ä¿¡æ¯
 ;;
 struc APIC_WRITE_INFO
         .Offset                 RESD            1
