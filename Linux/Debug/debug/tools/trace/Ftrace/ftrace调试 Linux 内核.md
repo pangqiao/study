@@ -29,7 +29,7 @@
   - [14.2. 跟踪模块初始化](#142-跟踪模块初始化)
 - [15. trace选项(启用或禁用)](#15-trace选项启用或禁用)
 - [16. Max Stack Tracer 的使用](#16-max-stack-tracer-的使用)
-- [17. 事件追踪](#17-事件追踪)
+- [17. trace event](#17-trace-event)
 - [18. trace-cmd and KernelShark](#18-trace-cmd-and-kernelshark)
 - [19. trace marker](#19-trace-marker)
 - [20. 相关代码以及使用](#20-相关代码以及使用)
@@ -1041,7 +1041,7 @@ echo 1 > /proc/sys/kernel/stack_tracer_enabled
 
 从上例中可以看到内核堆栈最满的情况如下，有 43 层函数调用，堆栈使用大小为 3088 字节。此外还可以在 Location 这列中看到整个的 calling stack 情况。这在某些情况下，可以提供额外的 debug 信息，帮助开发人员定位问题。
 
-# 17. 事件追踪
+# 17. trace event
 
 ftrace里的**跟踪机制**主要有**两种**，分别是**函数**和**tracepoint**。前者属于“傻瓜式”操作，后者tracepoint可以理解为一个Linux内核中的**占位符函数**，内核子系统的开发者通常喜欢利用它来调试。
 
