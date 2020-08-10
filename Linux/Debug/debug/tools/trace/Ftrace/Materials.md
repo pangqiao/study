@@ -11,3 +11,5 @@ https://www.cnblogs.com/jefree/p/4439007.html
 ftrace系列: https://www.cnblogs.com/jefree/p/4439022.html
 
 Linux Ftrace: https://blog.csdn.net/pwl999/article/details/80701963
+
+Linux ftrace框架介绍及运用: https://www.cnblogs.com/arnoldlu/p/7211249.html
