@@ -1,5 +1,7 @@
 #!/bin/bash
 
+## Usage: ./traceprocess.sh ls
+
 DPATH="/sys/kernel/debug/tracing"
 
 ## shell pid

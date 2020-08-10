@@ -554,9 +554,11 @@ echo 0 > tracing_on
 [root@linux tracing]# echo > set_graph_function
 ```
 
-在文件 trace 的输出信息中，首先给出的也是当前跟踪器的名字，这里是 `function_graph` 。接下来是详细的跟踪信息，可以看到，函数的调用关系以类似 C 代码的形式组织。
+在文件 trace 的输出信息中，首先给出的也是当前跟踪器的名字，这里是 `function_graph` 。
 
-`CPU` 字段给出了**执行函数的 CPU 号**，本例中都为 1 号 CPU。
+接下来是详细的跟踪信息，可以看到，函数的调用关系以类似 C 代码的形式组织。
+
+* `CPU` 字段给出了**执行函数的 CPU 号**，本例中都为 1 号 CPU。
 
 `DURATION` 字段给出了**函数执行的时间长度**，以 `us` 为单位。
 
