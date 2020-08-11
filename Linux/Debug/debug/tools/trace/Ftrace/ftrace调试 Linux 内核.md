@@ -332,6 +332,8 @@ cd /sys/kernel/debug/tracing
 echo 0 > tracing_on
 ```
 
+建议使用 `echo nop > current_tracer`, 这才真正关闭, 上面的只是不让打印而已
+
 4. **激活 ftrace\_enabled**，否则 function 跟踪器的行为类似于 nop；另外，激活该选项还可以让一些跟踪器比如 irqsoff 获取更丰富的信息。
 
 建议使用 ftrace 时将其激活。要激活 `ftrace_enabled` ，可以通过 `proc` 文件系统接口来设置：
