@@ -601,6 +601,18 @@ echo 0 > tracing_on
 
 清单 2 中最后通过 echo 命令重置了文件 `set_graph_function` 。
 
+注: 如果想要追踪某个模块的所有函数的function_graph, 使用`set_ftrace_filter`, 即参照下面的指定模块部分内容
+
+```
+echo nop > /sys/kernel/debug/tracing/current_tracer
+echo > /sys/kernel/debug/tracing/trace
+echo ':mod:kvm' > set_ftrace_filter
+echo ':mod:kvm_amd' >> set_ftrace_filter
+echo ':mod:kvm_intel' >> set_ftrace_filter
+echo 1 > /sys/kernel/debug/tracing/tracing_on
+echo function_graph > /sys/kernel/debug/tracing/current_tracer
+```
+
 # 10. sched_switch 跟踪器
 
 `sched_switch` 跟踪器可以对**进程的调度切换**以及**之间的唤醒操作**进行跟踪，如清单 3 所示。
