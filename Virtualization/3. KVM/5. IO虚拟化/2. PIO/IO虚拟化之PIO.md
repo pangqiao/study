@@ -98,6 +98,7 @@ cat /proc/ioports查看当前OS的所有的ioports：
 
 `handle_io() -> kvm_fast_pio_out() -> emulator_pio_out_emulated() -> emulator_pio_in_out() -> kernel_pio() -> kvm_io_bus_write() -> __kvm_io_bus_write() -> kvm_iodevice_write() -> dev->ops->write()`
 
+fast是指硬件解码, 不用软件, 所以叫fast
 
 Guest在使用in、out指令的时候，Host会感知。Host中会在arch/x86/kvm/emulate.c中处理：
 
