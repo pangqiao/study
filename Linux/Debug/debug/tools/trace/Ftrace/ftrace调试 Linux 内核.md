@@ -476,8 +476,6 @@ PID=$$
 mount | grep -i debugfs &> /dev/null
 [ $? -ne 0 ] && { echo "debugfs not mounted, mount it first"; exit 1; } #checks for debugfs mount
 
-echo > $DPATH/trace
-
 # flush existing trace data
 echo nop > $DPATH/current_tracer
 
