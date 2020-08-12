@@ -496,9 +496,9 @@ exec $*
 
 # stop the tracing
 echo 0 > tracing_on
+```
 
-
-
+```sh
 #!/bin/bash
 
 DPATH="/sys/kernel/debug/tracing"
