@@ -1,21 +1,21 @@
 ;*************************************************
 ;* crt.asm                                       *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
 
 
 ;-----------------------------------------
-; clear_4k_page32()£ºÇå4KÒ³Ãæ
+; clear_4k_page32()ï¼šæ¸…4Ké¡µé¢
 ; input:  
 ;       esi: address
 ; output;
 ;       none
-; ÃèÊö£º
-;       1) Ò»´ÎÇå 4K Ò³Ãæ
-;       2) µØÖ·ÔÚ 4K ±ß½çÉÏ
-;       3) Ğè¿ªÆô SSE Ö¸ÁîÖ§³Ö    
+; æè¿°ï¼š
+;       1) ä¸€æ¬¡æ¸… 4K é¡µé¢
+;       2) åœ°å€åœ¨ 4K è¾¹ç•Œä¸Š
+;       3) éœ€å¼€å¯ SSE æŒ‡ä»¤æ”¯æŒ    
 ;------------------------------------------        
 clear_4k_page32:
         push esi
@@ -45,15 +45,15 @@ clear_4k_page32.done:
 
 
 ;-----------------------------------------
-; clear_4k_buffer32()£ºÇå 4K ÄÚ´æ
+; clear_4k_buffer32()ï¼šæ¸… 4K å†…å­˜
 ; input:  
 ;       esi: address
 ; output;
 ;       none
-; ÃèÊö£º
-;       1) Ò»´ÎÇå 4K Ò³Ãæ
-;       2) µØÖ·ÔÚ 4K ±ß½çÉÏ
-;       3) Ê¹ÓÃ GPI Ö¸Áî´¦Àí
+; æè¿°ï¼š
+;       1) ä¸€æ¬¡æ¸… 4K é¡µé¢
+;       2) åœ°å€åœ¨ 4K è¾¹ç•Œä¸Š
+;       3) ä½¿ç”¨ GPI æŒ‡ä»¤å¤„ç†
 ;-----------------------------------------
 clear_4k_buffer32:
         push esi
@@ -68,7 +68,7 @@ clear_4k_buffer32:
 
 
 ;-----------------------------------------
-; clear_4k_page_n32()£ºÇå n¸ö 4KÒ³Ãæ
+; clear_4k_page_n32()ï¼šæ¸… nä¸ª 4Ké¡µé¢
 ; input:  
 ;       esi - address
 ;       edi - count
@@ -84,7 +84,7 @@ clear_4k_page_n32:
 
 
 ;-----------------------------------------
-; clear_4k_buffer_n32()£ºÇå n¸ö 4K ÄÚ´æ¿é
+; clear_4k_buffer_n32()ï¼šæ¸… nä¸ª 4K å†…å­˜å—
 ; input:  
 ;       esi - address
 ;       edi - count
@@ -104,8 +104,8 @@ clear_4k_buffer_n32:
 ; input:
 ;       esi - size
 ;       edi - buffer address
-; ÃèÊö£º
-;       ½«ÄÚ´æ¿éÇå 0
+; æè¿°ï¼š
+;       å°†å†…å­˜å—æ¸… 0
 ;-----------------------------------------
 zero_memory32:
         push ecx
@@ -116,45 +116,45 @@ zero_memory32:
         xor eax, eax
         
         ;;
-        ;; ¼ì²é count > 4 ?
+        ;; æ£€æŸ¥ count > 4 ?
         ;;
         cmp esi, 4
         jb zero_memory32.@1
         
         ;;
-        ;; ÏÈĞ´ÈëÊ× 4 ×Ö½Ú
+        ;; å…ˆå†™å…¥é¦– 4 å­—èŠ‚
         ;;
         mov [edi], eax
         
         ;;
-        ;; ¼ÆËãµ÷Õûµ½ DWORD ±ß½çÉÏµÄ²î¶î£¬Ô­ÀíµÈÓÚ 4 - dest & 03
-        ;; 1) ÀıÈç£º[2:0] = 011B£¨3£©
-        ;; 2) È¡·´ºó = 100B£¨4£©
-        ;; 3) ¼Ó1ºó = 101B£¨5£©        
-        ;; 4) ÔÚ32Î»ÏÂÓë03ºó = 001B£¨1£©£¬¼´²î¶îÎª 1
+        ;; è®¡ç®—è°ƒæ•´åˆ° DWORD è¾¹ç•Œä¸Šçš„å·®é¢ï¼ŒåŸç†ç­‰äº 4 - dest & 03
+        ;; 1) ä¾‹å¦‚ï¼š[2:0] = 011Bï¼ˆ3ï¼‰
+        ;; 2) å–åå = 100Bï¼ˆ4ï¼‰
+        ;; 3) åŠ 1å = 101Bï¼ˆ5ï¼‰        
+        ;; 4) åœ¨32ä½ä¸‹ä¸03å = 001Bï¼ˆ1ï¼‰ï¼Œå³å·®é¢ä¸º 1
         ;;
-        mov ecx, esi                                    ; Ô­ count
-        mov esi, edi                                    ; Ô­ dest
+        mov ecx, esi                                    ; åŸ count
+        mov esi, edi                                    ; åŸ dest
         not esi
         inc esi
-        and esi, 03                                     ; ÔÚ 32 Î»ÏÂÓë 03h
-        sub ecx, esi                                    ; count = Ô­ count - ²î¶î
+        and esi, 03                                     ; åœ¨ 32 ä½ä¸‹ä¸ 03h
+        sub ecx, esi                                    ; count = åŸ count - å·®é¢
 
         ;;
-        ;; dest ÏòÉÏµ÷Õûµ½ DWORD ±ß½ç
+        ;; dest å‘ä¸Šè°ƒæ•´åˆ° DWORD è¾¹ç•Œ
         ;;
-        add edi, esi                                    ; dest = dest + ²î¶î
+        add edi, esi                                    ; dest = dest + å·®é¢
         mov esi, ecx
            
         ;;
-        ;; ÔÚ 32 Î»ÏÂ£¬ÒÔ DWORD Îªµ¥Î»
+        ;; åœ¨ 32 ä½ä¸‹ï¼Œä»¥ DWORD ä¸ºå•ä½
         ;; 
         shr ecx, 2
         rep stosd
 
 zero_memory32.@1:                     
         ;;
-        ;; Ò»´Î 1 ×Ö½Ú£¬Ğ´ÈëÊ£Óà×Ö½ÚÊı
+        ;; ä¸€æ¬¡ 1 å­—èŠ‚ï¼Œå†™å…¥å‰©ä½™å­—èŠ‚æ•°
         ;;
         mov ecx, esi
         and ecx, 03h
@@ -167,7 +167,7 @@ zero_memory32.done:
 
 
 ;-------------------------------------------------
-; strlen32(): µÃÈ¡×Ö·û´®³¤¶È
+; strlen32(): å¾—å–å­—ç¬¦ä¸²é•¿åº¦
 ; input:
 ;       esi - string
 ; output:
@@ -177,30 +177,30 @@ strlen32:
         push ecx
         xor eax, eax
         ;;
-        ;; ÊäÈëµÄ string = NULL Ê±£¬·µ»Ø 0 Öµ
+        ;; è¾“å…¥çš„ string = NULL æ—¶ï¼Œè¿”å› 0 å€¼
         ;;
         test esi, esi
         jz strlen32.done
         
         ;;
-        ;; ²âÊÔÊÇ·ñÖ§³Ö SSE4.2 Ö¸Áî£¬ÒÔ¼°ÊÇ·ñ¿ªÆô SSE Ö¸ÁîÖ´ĞĞ
-        ;; Ñ¡ÔñÊ¹ÓÃ SSE4.2 °æ±¾µÄ strlen Ö¸Áî
+        ;; æµ‹è¯•æ˜¯å¦æ”¯æŒ SSE4.2 æŒ‡ä»¤ï¼Œä»¥åŠæ˜¯å¦å¼€å¯ SSE æŒ‡ä»¤æ‰§è¡Œ
+        ;; é€‰æ‹©ä½¿ç”¨ SSE4.2 ç‰ˆæœ¬çš„ strlen æŒ‡ä»¤
         ;;
         cmp DWORD [gs: PCB.SSELevel], SSE4_2
         jb strlen32.legacy
         test DWORD [gs: PCB.InstructionStatus], INST_STATUS_SSE
-        jnz sse4_strlen + 1                             ; ×ªÈëÖ´ĞĞ sse4_strlen() 
+        jnz sse4_strlen + 1                             ; è½¬å…¥æ‰§è¡Œ sse4_strlen() 
 
 
 strlen32.legacy:
 
         ;;
-        ;; Ê¹ÓÃ legacy ·½Ê½
+        ;; ä½¿ç”¨ legacy æ–¹å¼
         ;;
         xor ecx, ecx
         mov edi, esi
         dec ecx                                         ; ecx = 0FFFFFFFFh
-        repne scasb                                     ; Ñ­»·²éÕÒ 0 Öµ
+        repne scasb                                     ; å¾ªç¯æŸ¥æ‰¾ 0 å€¼
         sub eax, ecx                                    ; 0 - ecx
         dec eax
 strlen32.done:
@@ -211,7 +211,7 @@ strlen32.done:
 
 
 ;-------------------------------------------------
-; memcpy32(): ¸´ÖÆÄÚ´æ¿é
+; memcpy32(): å¤åˆ¶å†…å­˜å—
 ; input:
 ;       esi - source
 ;       edi - dest 
@@ -262,12 +262,12 @@ strcpy.done:
 
 
 ;-------------------------------------------------
-; bit_swap32(): ½»»» dword ÄÚµÄÎ»
+; bit_swap32(): äº¤æ¢ dword å†…çš„ä½
 ; input:
 ;       esi - source
 ; output:
 ;       eax - dest
-; ÃèÊö:
+; æè¿°:
 ;       dest[31] <= source[0]
 ;       ... ...
 ;       dest[0]  <= source[31]
@@ -278,14 +278,14 @@ bit_swap32:
         xor eax, eax
         
         ;;
-        ;; Ñ­»·ÒÆ¶¯ 1 Î»Öµ
+        ;; å¾ªç¯ç§»åŠ¨ 1 ä½å€¼
         ;;
 bit_swap32.loop:        
-        shl esi, 1                              ; esi ¸ßÎ»ÒÆ³öµ½ CF
-        rcr eax, 1                              ; CF ÒÆÈë eax ¸ßÎ»
+        shl esi, 1                              ; esi é«˜ä½ç§»å‡ºåˆ° CF
+        rcr eax, 1                              ; CF ç§»å…¥ eax é«˜ä½
         ;;
-        ;; ×¢Òâ£º
-        ;;      1) Ê¹ÓÃ FF /1 µÄ dec Ö¸Áî£¬±ÜÃâÔÚ 64-bit Ä£Ê½ÏÂ±äÎª REX prefix
+        ;; æ³¨æ„ï¼š
+        ;;      1) ä½¿ç”¨ FF /1 çš„ dec æŒ‡ä»¤ï¼Œé¿å…åœ¨ 64-bit æ¨¡å¼ä¸‹å˜ä¸º REX prefix
         ;;
         DECv ecx
         jnz bit_swap32.loop
@@ -300,8 +300,8 @@ bit_swap32.loop:
 ;       edi - column
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´Ó (row, column) Î»ÖÃ¿ªÊ¼Çå¿ÕÆÁÄ»
+; æè¿°ï¼š
+;       1) ä» (row, column) ä½ç½®å¼€å§‹æ¸…ç©ºå±å¹•
 ;-------------------------------------------------
 clear_screen:
         push ebp
@@ -317,8 +317,8 @@ clear_screen:
         mov eax, 80 * 2
         mul esi
         lea ecx, [eax + edi * 2]                        ; ecx = (row * 80 + column) * 2
-        mov esi, 80 * 2 * 25                            ; Õû¸öÆÁÄ» size
-        sub esi, ecx                                    ; Ê£Óà size        
+        mov esi, 80 * 2 * 25                            ; æ•´ä¸ªå±å¹• size
+        sub esi, ecx                                    ; å‰©ä½™ size        
         REX.Wrxb
         mov edi, [ebp + PCB.LsbBase]
         REX.Wrxb
@@ -328,7 +328,7 @@ clear_screen:
         call zero_memory
         
         ;;
-        ;; Èç¹ûÓµÓĞ½¹µã£¬ÔòÇå target video buffer
+        ;; å¦‚æœæ‹¥æœ‰ç„¦ç‚¹ï¼Œåˆ™æ¸… target video buffer
         ;;
         mov eax, [ebp + PCB.ProcessorIndex]             ; eax = index
         REX.Wrxb
@@ -357,9 +357,9 @@ clear_screen.done:
 ;       none
 ; output:
 ;       eax - row
-; ÃèÊö:
-;       1) µÃµ½ video buffer µ±Ç°Î»ÖÃµÄĞĞºÅ
-;       2) ²»ĞŞ¸Ä esi Öµ£¬ÒÔ±ãºóĞøÊ¹ÓÃ
+; æè¿°:
+;       1) å¾—åˆ° video buffer å½“å‰ä½ç½®çš„è¡Œå·
+;       2) ä¸ä¿®æ”¹ esi å€¼ï¼Œä»¥ä¾¿åç»­ä½¿ç”¨
 ;-------------------------------------------------
 video_buffer_row:
         push ebx
@@ -396,9 +396,9 @@ video_buffer_row:
 ;       none
 ; output:
 ;       eax - column
-; ÃèÊö:
-;       1) µÃµ½ video buffer µ±Ç°Î»ÖÃµÄÁĞºÅ
-;       2) ²»ĞŞ¸Ä esi Öµ£¬ÒÔ±ãºóĞøÊ¹ÓÃ
+; æè¿°:
+;       1) å¾—åˆ° video buffer å½“å‰ä½ç½®çš„åˆ—å·
+;       2) ä¸ä¿®æ”¹ esi å€¼ï¼Œä»¥ä¾¿åç»­ä½¿ç”¨
 ;-------------------------------------------------      
 video_buffer_column:
         push ebx
@@ -438,8 +438,8 @@ video_buffer_column:
 ;       edi - column
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÉèÖÃ video buffer Î»ÖÃ
+; æè¿°ï¼š
+;       1) è®¾ç½® video buffer ä½ç½®
 ;-------------------------------------------------
 set_video_buffer:
         push ebp
@@ -454,7 +454,7 @@ set_video_buffer:
 %endif 
         
         ;;
-        ;; ¼ì²éÊÇ·ñ³¬³ö·¶Î§
+        ;; æ£€æŸ¥æ˜¯å¦è¶…å‡ºèŒƒå›´
         ;;
         cmp esi, 25
         jae set_video_buffer.done
@@ -484,13 +484,13 @@ set_video_buffer:
         add eax, [ebx + LSB.LocalVideoBufferHead]
         
         ;;
-        ;; ¸üĞÂ VideoBufferPtr
+        ;; æ›´æ–° VideoBufferPtr
         ;;
         REX.Wrxb
         mov [ebx + LSB.LocalVideoBufferPtr], eax
         
         ;;
-        ;; Èç¹ûµ±Ç°´¦ÀíÆ÷ÓµÓĞ½¹µã£¬Ôò¸üĞÂ target video buffer
+        ;; å¦‚æœå½“å‰å¤„ç†å™¨æ‹¥æœ‰ç„¦ç‚¹ï¼Œåˆ™æ›´æ–° target video buffer
         ;;
         REX.Wrxb
         mov ebx, [ebp + PCB.SdaBase]                    ; ebx = SDA
@@ -499,7 +499,7 @@ set_video_buffer:
         jne set_video_buffer.done
 
         ;;
-        ;; ¸üĞÂ target video buffer ptr
+        ;; æ›´æ–° target video buffer ptr
         ;;
         REX.Wrxb
         mov [ebx + SDA.VideoBufferPtr], ecx
@@ -521,8 +521,8 @@ set_video_buffer.done:
 ;       esi - string
 ; output:
 ;       0 - no, otherwise yes.
-; ÃèÊö:
-;       ¸ù¾İÌá¹©µÄ×Ö·û´®£¬¼ì²éÊÇ·ñĞèÒª×ª»»
+; æè¿°:
+;       æ ¹æ®æä¾›çš„å­—ç¬¦ä¸²ï¼Œæ£€æŸ¥æ˜¯å¦éœ€è¦è½¬æ¢
 ;-------------------------------------------------          
 check_new_line:
         push ebp
@@ -535,7 +535,7 @@ check_new_line:
 %endif
         
         call strlen
-        mov ecx, eax                            ; ×Ö·û´®³¤¶È
+        mov ecx, eax                            ; å­—ç¬¦ä¸²é•¿åº¦
         shl ecx, 1                              ; length * 2
         call video_buffer_column
         neg eax
@@ -543,7 +543,7 @@ check_new_line:
         cmp eax, ecx
         jae check_new_line.done
         ;;
-        ;; »»ĞĞ
+        ;; æ¢è¡Œ
         ;;
         REX.Wrxb
         mov ecx, [ebp + PCB.LsbBase]
@@ -551,7 +551,7 @@ check_new_line:
         add [ecx + LSB.LocalVideoBufferPtr], eax
         
         ;;
-        ;; Èç¹ûµ±Ç°ÓµÓĞ½¹µã£¬Ôò¸üĞÂ target video buffer
+        ;; å¦‚æœå½“å‰æ‹¥æœ‰ç„¦ç‚¹ï¼Œåˆ™æ›´æ–° target video buffer
         ;;
         mov ecx, [ebp + PCB.ProcessorIndex]
         REX.Wrxb
@@ -574,12 +574,12 @@ check_new_line.done:
 ;-------------------------------------------------
 ; write_char()
 ; input:
-;       esi - ×Ö·û
+;       esi - å­—ç¬¦
 ; output:
 ;       none
-; ÃèÊö:
-;       1) Ïò video buffer Ğ´ÈëÌá¹©µÄÒ»¸ö×Ö·û
-;       2) ÔÚ 64-bit Ä£Ê½ÏÂ¸´ÓÃ
+; æè¿°:
+;       1) å‘ video buffer å†™å…¥æä¾›çš„ä¸€ä¸ªå­—ç¬¦
+;       2) åœ¨ 64-bit æ¨¡å¼ä¸‹å¤ç”¨
 ;-------------------------------------------------          
 write_char:
         push ebx
@@ -593,10 +593,10 @@ write_char:
         mov ebp, [gs: PCB.Base]
 %endif
         
-        or si, 0F00h                                            ; si = ×Ö·û
+        or si, 0F00h                                            ; si = å­—ç¬¦
         
         ;;
-        ;; ¶Áµ±Ç° LocalVideoBufferPtr
+        ;; è¯»å½“å‰ LocalVideoBufferPtr
         ;;
         REX.Wrxb
         mov ebx, [ebp + PCB.LsbBase]                            ; ebx = LSB        
@@ -608,45 +608,45 @@ write_char:
         sub ecx, edi                                            ; ecx = index
         
         ;;
-        ;; ¼ì²éÊÇ·ñÓµÓĞ½¹µã
+        ;; æ£€æŸ¥æ˜¯å¦æ‹¥æœ‰ç„¦ç‚¹
         ;;
         mov eax, SDA.InFocus
         mov eax, [fs: eax]
         cmp eax, [ebp + PCB.ProcessorIndex]
-        sete dl                                                 ; dl = 1 Ê±£¬ÓµÓĞ½¹µã
+        sete dl                                                 ; dl = 1 æ—¶ï¼Œæ‹¥æœ‰ç„¦ç‚¹
         
         REX.Wrxb
         mov ebp, [ebp + PCB.SdaBase]                            ; ebp = SDA
         
         
         ;;
-        ;; ¼ì²éÊÇ·ñÎª»»ĞĞ·û
+        ;; æ£€æŸ¥æ˜¯å¦ä¸ºæ¢è¡Œç¬¦
         ;;
         cmp si, 0F0Ah
         jne write_char.@1
 
         ;;
-        ;; ´¦Àí»»ĞĞ£º
-        ;; 1) ¼ÆËãĞÂĞĞËùĞ´µÄÎ»ÖÃ£¬¸üĞÂ video buffer Ö¸ÕëÎªÏÂÒ»¸ö×Ö·ûËùĞ´Î»ÖÃ
+        ;; å¤„ç†æ¢è¡Œï¼š
+        ;; 1) è®¡ç®—æ–°è¡Œæ‰€å†™çš„ä½ç½®ï¼Œæ›´æ–° video buffer æŒ‡é’ˆä¸ºä¸‹ä¸€ä¸ªå­—ç¬¦æ‰€å†™ä½ç½®
         ;;
-        call video_buffer_column                                ; µÃµ½µ±Ç° column Öµ
+        call video_buffer_column                                ; å¾—åˆ°å½“å‰ column å€¼
         neg eax
-        add eax, 80 * 2                                         ; ÂúĞĞ²î¶î = (80 * 2) - column
-        add ecx, eax                                            ; index + ÂúĞĞ²î¶î
+        add eax, 80 * 2                                         ; æ»¡è¡Œå·®é¢ = (80 * 2) - column
+        add ecx, eax                                            ; index + æ»¡è¡Œå·®é¢
         jmp write_char.update
 
 write_char.@1:
         
         ;;
-        ;; ¼ì²éÊÇ·ñÎª HT ·û£¨Ë®Æ½TAB¼ü£©
+        ;; æ£€æŸ¥æ˜¯å¦ä¸º HT ç¬¦ï¼ˆæ°´å¹³TABé”®ï¼‰
         ;;
         cmp si, 0F09h
         jne write_char.next
         ;;
-        ;; ´¦ÀíTAB¼ü£º
-        ;; ¼ì²éÉÏÒ»¸ö×Ö·ûÊÇ·ñÎª TAB ¼ü
-        ;; 1) ÊÇ£¬buffer pointer ¼ÓÉÏ 10h
-        ;; 2) ·ñ£¬buffer pointer ¼ÓÉÏ 0Fh
+        ;; å¤„ç†TABé”®ï¼š
+        ;; æ£€æŸ¥ä¸Šä¸€ä¸ªå­—ç¬¦æ˜¯å¦ä¸º TAB é”®
+        ;; 1) æ˜¯ï¼Œbuffer pointer åŠ ä¸Š 10h
+        ;; 2) å¦ï¼Œbuffer pointer åŠ ä¸Š 0Fh
         ;;
         add ecx, 0Fh
         cmp BYTE [ebx + LSB.LocalVideoBufferLastChar], 09
@@ -655,7 +655,7 @@ write_char.@1:
         
 write_char.@2:        
         ;;
-        ;; µ÷Õûµ½ 8 * 2 ¸ö×Ö·û±ß½ç
+        ;; è°ƒæ•´åˆ° 8 * 2 ä¸ªå­—ç¬¦è¾¹ç•Œ
         ;;
         and ecx, 0FFFFFFF0h
         jmp write_char.update
@@ -663,18 +663,18 @@ write_char.@2:
         
 write_char.next:        
         ;;
-        ;; ¼ì²éÊÇ·ñ³¬¹ıÒ»ÆÁ£¨25 * 80)
+        ;; æ£€æŸ¥æ˜¯å¦è¶…è¿‡ä¸€å±ï¼ˆ25 * 80)
         ;;
         cmp ecx, (25 * 80 * 2)
         jae write_char.update
         
         ;;
-        ;; Ğ´ video buffer
+        ;; å†™ video buffer
         ;;
-        mov [edi + ecx], si                                     ; Ïò BufferHead[Index] Ğ´Èë×Ö·û
+        mov [edi + ecx], si                                     ; å‘ BufferHead[Index] å†™å…¥å­—ç¬¦
         
         ;;
-        ;; Èç¹ûµ±Ç°ÓµÓĞ½¹µã£¬Ğ´Èë target video buffer
+        ;; å¦‚æœå½“å‰æ‹¥æœ‰ç„¦ç‚¹ï¼Œå†™å…¥ target video buffer
         ;;
         test dl, dl
         jz write_char.next.@0
@@ -683,27 +683,27 @@ write_char.next:
         mov [eax + ecx], si
         
 write_char.next.@0:        
-        add ecx, 2                                              ; Ö¸ÏòÏÂÒ»¸ö×Ö·ûÎ»ÖÃ
+        add ecx, 2                                              ; æŒ‡å‘ä¸‹ä¸€ä¸ªå­—ç¬¦ä½ç½®
         
         
 write_char.update:        
         ;;
-        ;; ¸üĞÂ video buffer Ö¸Õë£¬Ö¸ÏòÖ¸Ò»¸ö×Ö·ûÎ»ÖÃ
+        ;; æ›´æ–° video buffer æŒ‡é’ˆï¼ŒæŒ‡å‘æŒ‡ä¸€ä¸ªå­—ç¬¦ä½ç½®
         ;;
         REX.Wrxb
         add edi, ecx
         REX.Wrxb
-        mov [ebx + LSB.LocalVideoBufferPtr], edi                ; ±£´æ Buffer Ptr
-        mov [ebx + LSB.LocalVideoBufferLastChar], si            ; ¸üĞÂÉÏÒ»¸ö×Ö·û
+        mov [ebx + LSB.LocalVideoBufferPtr], edi                ; ä¿å­˜ Buffer Ptr
+        mov [ebx + LSB.LocalVideoBufferLastChar], si            ; æ›´æ–°ä¸Šä¸€ä¸ªå­—ç¬¦
         
         ;;
-        ;; Èç¹ûµ±Ç°ÓµÓĞ½¹µã£¬Ôò¸üĞÂ target video buffer
+        ;; å¦‚æœå½“å‰æ‹¥æœ‰ç„¦ç‚¹ï¼Œåˆ™æ›´æ–° target video buffer
         ;;
         test dl, dl
         jz write_char.done
                
         ;; 
-        ;; ¸üĞÂ target video buffer ¼ÇÂ¼
+        ;; æ›´æ–° target video buffer è®°å½•
         ;;
         REX.Wrxb
         add ecx, [ebp + SDA.VideoBufferHead]
@@ -726,11 +726,11 @@ write_char.done:
 ;-------------------------------------------------
 ; putc()
 ; input:
-;       esi - ×Ö·û
+;       esi - å­—ç¬¦
 ; output:
 ;       none
-; ÃèÊö:
-;       1) Ïò video buffer ´òÓ¡Ò»¸ö×Ö·û
+; æè¿°:
+;       1) å‘ video buffer æ‰“å°ä¸€ä¸ªå­—ç¬¦
 ;-------------------------------------------------        
 putc:
         and esi, 0FFh
@@ -745,8 +745,8 @@ putc:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡»»ĞĞ
+; æè¿°:
+;       æ‰“å°æ¢è¡Œ
 ;------------------------------------------------
 println:
         mov si, 10
@@ -759,8 +759,8 @@ println:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡ TAB ¼ü
+; æè¿°:
+;       æ‰“å° TAB é”®
 ;------------------------------------------------
 print_tab:
         mov si, 09
@@ -773,8 +773,8 @@ print_tab:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡Ò»¸ö¿Õ¸ñ
+; æè¿°:
+;       æ‰“å°ä¸€ä¸ªç©ºæ ¼
 ;-------------------------------------------------   
 printblank:
         mov si, ' '
@@ -789,8 +789,8 @@ printblank:
 ;       edi - count
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡Èô¸É¸ö×Ö·û
+; æè¿°ï¼š
+;       1) æ‰“å°è‹¥å¹²ä¸ªå­—ç¬¦
 ;-------------------------------------------------
 print_chars:
         push ebx
@@ -801,8 +801,8 @@ print_chars.@0:
         mov esi, ebx     
         call putc
         ;;
-        ;; ×¢Òâ£º
-        ;;      1) Ê¹ÓÃ FF /1 µÄ dec Ö¸Áî£¬±ÜÃâÔÚ 64-bit Ä£Ê½ÏÂ±äÎª REX prefix
+        ;; æ³¨æ„ï¼š
+        ;;      1) ä½¿ç”¨ FF /1 çš„ dec æŒ‡ä»¤ï¼Œé¿å…åœ¨ 64-bit æ¨¡å¼ä¸‹å˜ä¸º REX prefix
         ;;
         DECv ecx    
         jnz print_chars.@0
@@ -814,11 +814,11 @@ print_chars.@0:
 ;-------------------------------------------------
 ; print_space()
 ; input:
-;       esi - ÊıÁ¿
+;       esi - æ•°é‡
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡Êı¸ö¿Õ¸ñ
+; æè¿°:
+;       æ‰“å°æ•°ä¸ªç©ºæ ¼
 ;-------------------------------------------------
 print_space:       
         mov edi, esi
@@ -833,15 +833,15 @@ print_space:
 ;       esi - string
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡×Ö·û´®
+; æè¿°:
+;       æ‰“å°å­—ç¬¦ä¸²
 ;-------------------------------------------------
 puts:
         push ebx
         push ecx
         
         ;;
-        ;; ×Ö·û flag
+        ;; å­—ç¬¦ flag
         ;;
         xor ecx, ecx
         
@@ -857,13 +857,13 @@ puts.loop:
         jz puts.done
         
         ;;
-        ;; ¼ì²éÉÏÒ»¸ö×Ö·ûÊÇ·ñÎª '\'
+        ;; æ£€æŸ¥ä¸Šä¸€ä¸ªå­—ç¬¦æ˜¯å¦ä¸º '\'
         ;;
         test ecx, CHAR_FLAG_BACKSLASH
         jz puts.@0
        
         ;;
-        ;; ¼ì²éÊÇ·ñÎª n
+        ;; æ£€æŸ¥æ˜¯å¦ä¸º n
         ;;
         cmp al, 'n'
         je puts.@01
@@ -883,26 +883,26 @@ puts.@01:
 
 puts.@0:        
         ;;
-        ;; ¼ì²éÊÇ·ñÎª '\' ×Ö·û
+        ;; æ£€æŸ¥æ˜¯å¦ä¸º '\' å­—ç¬¦
         ;;
         cmp al, '\'
         jne puts.@1
         
-        or ecx, CHAR_FLAG_BACKSLASH                             ; ¼ÇÂ¼·´Ğ±¸Ü
+        or ecx, CHAR_FLAG_BACKSLASH                             ; è®°å½•åæ–œæ 
         jmp puts.next
 
 
 puts.@1:
         ;;
-        ;; ´òÓ¡×Ö·û
+        ;; æ‰“å°å­—ç¬¦
         ;;        
         mov esi, eax
         call putc 
 
 puts.next:        
         ;;
-        ;; ×¢Òâ£º
-        ;;      1) Ê¹ÓÃ FF /0 µÄ inc Ö¸Áî£¬±ÜÃâÔÚ 64-bit Ä£Ê½ÏÂ±äÎª REX prefix
+        ;; æ³¨æ„ï¼š
+        ;;      1) ä½¿ç”¨ FF /0 çš„ inc æŒ‡ä»¤ï¼Œé¿å…åœ¨ 64-bit æ¨¡å¼ä¸‹å˜ä¸º REX prefix
         ;;        
         REX.Wrxb
         INCv ebx
@@ -922,8 +922,8 @@ puts.done:
 ;       esi - hex number
 ; output:
 ;       eax - char
-; ÃèÊö:
-;       ½«Ê®Áù½øÖÆÊı×Ö×ªÎª×Ö·û
+; æè¿°:
+;       å°†åå…­è¿›åˆ¶æ•°å­—è½¬ä¸ºå­—ç¬¦
 ;-------------------------------------------------        
 hex_to_char:
         mov eax, esi
@@ -1002,8 +1002,8 @@ dword_to_string.done:
 ;       esi - value
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡Ê®Áù½øÖÆÊı
+; æè¿°:
+;       æ‰“å°åå…­è¿›åˆ¶æ•°
 ;-------------------------------------------------
 print_hex_value:
         push ecx
@@ -1018,8 +1018,8 @@ print_hex_value.loop:
         call putc
         mov esi, ebx
         ;;
-        ;; ×¢Òâ£º
-        ;;      1) Ê¹ÓÃ FF /1 µÄ dec Ö¸Áî£¬±ÜÃâÔÚ 64-bit Ä£Ê½ÏÂ±äÎª REX prefix
+        ;; æ³¨æ„ï¼š
+        ;;      1) ä½¿ç”¨ FF /1 çš„ dec æŒ‡ä»¤ï¼Œé¿å…åœ¨ 64-bit æ¨¡å¼ä¸‹å˜ä¸º REX prefix
         ;;
         DECv ecx        
         jnz print_hex_value.loop
@@ -1036,8 +1036,8 @@ print_hex_value.loop:
 ;       esi - value
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡°ë¸ö×Ö½Ú£¨4Î»Öµ£©
+; æè¿°:
+;       æ‰“å°åŠä¸ªå­—èŠ‚ï¼ˆ4ä½å€¼ï¼‰
 ;-------------------------------------------------
 print_half_byte:
         call hex_to_char
@@ -1052,8 +1052,8 @@ print_half_byte:
 ;       esi - value
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡Ê®½øÖÆÊı
+; æè¿°:
+;       æ‰“å°åè¿›åˆ¶æ•°
 ;-------------------------------------------------
 print_decimal32:
 print_dword_decimal:
@@ -1068,9 +1068,9 @@ print_dword_decimal:
         sub esp, 64
         
         ;;
-        ;; ¶¨ÒåÁ½¸ö±äÁ¿:
-        ;; 1) quotient: ÓÃÀ´±£´æÃ¿´Î³ı10ºóµÄÉÌ
-        ;; 2) digit_array: ÓÃÀ´±£´æÃ¿´Î³ı10ºóµÄÓàÊı×Ö·û´®
+        ;; å®šä¹‰ä¸¤ä¸ªå˜é‡:
+        ;; 1) quotient: ç”¨æ¥ä¿å­˜æ¯æ¬¡é™¤10åçš„å•†
+        ;; 2) digit_array: ç”¨æ¥ä¿å­˜æ¯æ¬¡é™¤10åçš„ä½™æ•°å­—ç¬¦ä¸²
         ;;
 %define QUOTIENT_OFFSET                 8
 %define DIGIT_ARRAY_OFFSET              9
@@ -1078,34 +1078,34 @@ print_dword_decimal:
         mov eax, esi
         REX.Wrxb
         lea ebx, [ebp - QUOTIENT_OFFSET]
-        mov [ebx], eax                                  ; ³õÊ¼ÉÌÖµ
+        mov [ebx], eax                                  ; åˆå§‹å•†å€¼
         mov BYTE [ebp - DIGIT_ARRAY_OFFSET], 0          ; 0
-        mov ecx, 10                                     ; ³ıÊı
+        mov ecx, 10                                     ; é™¤æ•°
         
         ;;
-        ;; Ö¸ÏòÊı×éÎ²²¿£¬´ÓÊı×éºóÃæÍùÇ°Ğ´
+        ;; æŒ‡å‘æ•°ç»„å°¾éƒ¨ï¼Œä»æ•°ç»„åé¢å¾€å‰å†™
         ;;
         REX.Wrxb
         lea esi, [ebp - DIGIT_ARRAY_OFFSET]
 
 print_decimal.loop:
         REX.Wrxb
-        DECv esi                                ; Ö¸ÏòÏÂÒ»¸öÎ»ÖÃ£¬ÏòÇ°Ğ´
+        DECv esi                                ; æŒ‡å‘ä¸‹ä¸€ä¸ªä½ç½®ï¼Œå‘å‰å†™
         xor edx, edx
         div ecx                                 ; value / 10
         
         ;;
-        ;; ¼ì²éÉÌÊÇ·ñÎª 0£¬Îª 0 Ê±£¬³ı 10 ½áÊø
+        ;; æ£€æŸ¥å•†æ˜¯å¦ä¸º 0ï¼Œä¸º 0 æ—¶ï¼Œé™¤ 10 ç»“æŸ
         ;;
         test eax, eax
         cmovz edx, [ebx]
         mov [ebx], eax
-        lea edx, [edx + '0']                    ; ÓàÊı×ª»¯Îª×Ö·û£¬Ê¹ÓÃ lea Ö¸Áî£¬±ÜÃâÊ¹ÓÃ add Ö¸Áî£¨²»¸Ä±äeflags)
-        mov [esi], dl                           ; Ğ´ÈëÓàÊı×Ö·û
+        lea edx, [edx + '0']                    ; ä½™æ•°è½¬åŒ–ä¸ºå­—ç¬¦ï¼Œä½¿ç”¨ lea æŒ‡ä»¤ï¼Œé¿å…ä½¿ç”¨ add æŒ‡ä»¤ï¼ˆä¸æ”¹å˜eflags)
+        mov [esi], dl                           ; å†™å…¥ä½™æ•°å­—ç¬¦
         jnz print_decimal.loop
         
         ;;
-        ;; ÏÂÃæ´òÓ¡³öÊı×Ö´®
+        ;; ä¸‹é¢æ‰“å°å‡ºæ•°å­—ä¸²
         ;;
         call puts
         
@@ -1127,11 +1127,11 @@ print_decimal.loop:
 ;---------------------------------------------------------------
 ; print_dword_float()
 ; input:
-;       esi - ¸¡µãÊıµØÖ·Öµ£¨µ¥¾«¶ÈÖµ£©
+;       esi - æµ®ç‚¹æ•°åœ°å€å€¼ï¼ˆå•ç²¾åº¦å€¼ï¼‰
 ; output:
 ;       none
-; ÃèÊö:
-;       esi Ìá¹©ĞèÒª´òÓ¡¸¡µãÊıµÄµØÖ·£¬º¯Êı½«¼ÓÔØµ½ FPU stack ÖĞ
+; æè¿°:
+;       esi æä¾›éœ€è¦æ‰“å°æµ®ç‚¹æ•°çš„åœ°å€ï¼Œå‡½æ•°å°†åŠ è½½åˆ° FPU stack ä¸­
 ;--------------------------------------------------------------
 print_dword_float:
         fnsave [gs: PCB.FpuStateImage]
@@ -1146,11 +1146,11 @@ print_dword_float:
 ;---------------------------------------------------------------
 ; print_qword_float()
 ; input:
-;       esi - ¸¡µãÊıµØÖ·Öµ£¨Ë«¾«¶ÈÖµ£©
+;       esi - æµ®ç‚¹æ•°åœ°å€å€¼ï¼ˆåŒç²¾åº¦å€¼ï¼‰
 ; output:
 ;       none
-; ÃèÊö:
-;       esi Ìá¹©ĞèÒª´òÓ¡¸¡µãÊıµÄµØÖ·£¬º¯Êı½«¼ÓÔØµ½ FPU stack ÖĞ
+; æè¿°:
+;       esi æä¾›éœ€è¦æ‰“å°æµ®ç‚¹æ•°çš„åœ°å€ï¼Œå‡½æ•°å°†åŠ è½½åˆ° FPU stack ä¸­
 ;--------------------------------------------------------------
 print_qword_float:
         fnsave [gs: PCB.FpuStateImage]
@@ -1164,11 +1164,11 @@ print_qword_float:
 ;---------------------------------------------------------------
 ; print_tword_float()
 ; input:
-;       esi - ¸¡µãÊıµØÖ·Öµ£¨À©Õ¹Ë«¾«¶ÈÖµ£©
+;       esi - æµ®ç‚¹æ•°åœ°å€å€¼ï¼ˆæ‰©å±•åŒç²¾åº¦å€¼ï¼‰
 ; output:
 ;       none
-; ÃèÊö:
-;       esi Ìá¹©ĞèÒª´òÓ¡¸¡µãÊıµÄµØÖ·£¬º¯Êı½«¼ÓÔØµ½ FPU stack ÖĞ
+; æè¿°:
+;       esi æä¾›éœ€è¦æ‰“å°æµ®ç‚¹æ•°çš„åœ°å€ï¼Œå‡½æ•°å°†åŠ è½½åˆ° FPU stack ä¸­
 ;--------------------------------------------------------------
 print_tword_float:
         fnsave [gs: PCB.FpuStateImage]
@@ -1188,54 +1188,54 @@ print_tword_float:
 ;       esi - value
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡¸¡µãÊıµÄĞ¡ÊıµãÇ°µÄÖµ
+; æè¿°:
+;       æ‰“å°æµ®ç‚¹æ•°çš„å°æ•°ç‚¹å‰çš„å€¼
 ;-------------------------------------------------
 print_float:
         ;;
-        ;; ×¼±¸¹¤×÷£¬¼ÓÔØ³£ÊıÖµ
+        ;; å‡†å¤‡å·¥ä½œï¼ŒåŠ è½½å¸¸æ•°å€¼
         ;;
-        fld TWORD [crt.float_const10]                   ; ¼ÓÔØ¸¡µãÊı 10.0 Öµ¡¡
-        fld1                                            ; ¼ÓÔØ¸¡µãÊı 1
-        fld st2                                         ; ¸´ÖÆ value µ½ st0
+        fld TWORD [crt.float_const10]                   ; åŠ è½½æµ®ç‚¹æ•° 10.0 å€¼ã€€
+        fld1                                            ; åŠ è½½æµ®ç‚¹æ•° 1
+        fld st2                                         ; å¤åˆ¶ value åˆ° st0
         
         ;;
-        ;; µ±Ç° FPU stack ×´Ì¬£º
+        ;; å½“å‰ FPU stack çŠ¶æ€ï¼š
         ;; ** 1) st0    - float value
         ;; ** 2) st1    - 1.0
         ;; ** 3) st2    - 10.0
         ;;                
-        fprem                                           ; st0/st1£¬È¡ÓàÊıÖµ
-        fld st3                                         ; ¸´ÖÆ float value
-        fsub st0, st1                                   ; st0 µÄ½á¹ûÎªĞ¡ÊıµãÇ°ÃæµÄÖµ
+        fprem                                           ; st0/st1ï¼Œå–ä½™æ•°å€¼
+        fld st3                                         ; å¤åˆ¶ float value
+        fsub st0, st1                                   ; st0 çš„ç»“æœä¸ºå°æ•°ç‚¹å‰é¢çš„å€¼
         
         ;;
-        ;; ÏÂÃæÏÈ´òÓ¡Ğ¡ÊıµãÇ°ÃæµÄÖµ
+        ;; ä¸‹é¢å…ˆæ‰“å°å°æ•°ç‚¹å‰é¢çš„å€¼
         ;; 
         call print_point
         
         mov DWORD [crt.point], 0
         
         ;;
-        ;; µ±Ç° FPU stack ×´Ì¬£º
+        ;; å½“å‰ FPU stack çŠ¶æ€ï¼š
         ;; st(2) = 10.0
         ;; st(1) = 1.0
-        ;; st(0) = ÓàÊıÖµ 
+        ;; st(0) = ä½™æ•°å€¼ 
         ;;
 
 print_float.loop:
         fldz
-        fcomip st0, st1                                 ; ¼ì²éÓàÊıÊÇ·ñÎª 0
+        fcomip st0, st1                                 ; æ£€æŸ¥ä½™æ•°æ˜¯å¦ä¸º 0
         jz print_float.next
-        fmul st0, st2                                   ; ÓàÊı * 10
+        fmul st0, st2                                   ; ä½™æ•° * 10
         fld st1                                         ; 1.0
-        fld st1                                         ; ÓàÊı * 10
-        fprem                                           ; È¡ÓàÊı
+        fld st1                                         ; ä½™æ•° * 10
+        fprem                                           ; å–ä½™æ•°
         fld st2
         fsub st0, st1
         fistp DWORD [crt.value]
         mov esi, [crt.value]
-        call print_dword_decimal                        ; ´òÓ¡Öµ    
+        call print_dword_decimal                        ; æ‰“å°å€¼    
         mov DWORD [crt.point], 1
         fxch st2
         fstp DWORD [crt.value]
@@ -1260,8 +1260,8 @@ print_float.done:
 ;       esi - value
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡¸¡µãÊıµÄĞ¡ÊıµãÇ°µÄÖµ
+; æè¿°:
+;       æ‰“å°æµ®ç‚¹æ•°çš„å°æ•°ç‚¹å‰çš„å€¼
 ;-------------------------------------------------
 print_point:
         push ebx
@@ -1270,17 +1270,17 @@ print_point:
 
 print_point.loop:
         ;;
-        ;; µ±Ç°×´Ì¬£º
+        ;; å½“å‰çŠ¶æ€ï¼š
         ;; st(3) = 10.0
         ;; st(2) = 1.0
-        ;; st(1) = ÓàÊıÖµ
-        ;; st(0) = point Öµ
+        ;; st(1) = ä½™æ•°å€¼
+        ;; st(0) = point å€¼
         ;;
         dec ebx
         fdiv st0, st3                           ; value / 10
         fld st2
         fld st1
-        fprem                                   ; ÇóÓàÊı
+        fprem                                   ; æ±‚ä½™æ•°
         fsub st2, st0
         fmul st0, st5
         fistp DWORD [crt.value]
@@ -1289,7 +1289,7 @@ print_point.loop:
         mov BYTE [ebx], al  
         fstp DWORD [crt.value]      
         fldz
-        fcomip st0, st1                         ; ÓàÊıĞ¡ÓÚ 0
+        fcomip st0, st1                         ; ä½™æ•°å°äº 0
         jnz print_point.loop
 
 print_point.done:        
@@ -1308,8 +1308,8 @@ print_point.done:
 ;       esi - value
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡Ò»¸ö byte Öµ
+; æè¿°:
+;       æ‰“å°ä¸€ä¸ª byte å€¼
 ;-------------------------------------------------
 print_byte_value:
         push ebx
@@ -1334,8 +1334,8 @@ print_byte_value:
 ;       esi - value
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡Ò»¸ö word Öµ
+; æè¿°:
+;       æ‰“å°ä¸€ä¸ª word å€¼
 ;-------------------------------------------------
 print_word_value:
         push ebx
@@ -1356,8 +1356,8 @@ print_word_value:
 ;       esi - value
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡Ò»¸ö dword Öµ
+; æè¿°:
+;       æ‰“å°ä¸€ä¸ª dword å€¼
 ;-------------------------------------------------        
 print_dword_value:
         push ebx
@@ -1375,11 +1375,11 @@ print_dword_value:
 ;-------------------------------------------------
 ; print_qword_value()
 ; input:
-;       edi:esi - 64 Î» value
+;       edi:esi - 64 ä½ value
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡Ò»¸ö qword Öµ
+; æè¿°:
+;       æ‰“å°ä¸€ä¸ª qword å€¼
 ;-------------------------------------------------         
 print_qword_value:
         push ebx
@@ -1397,11 +1397,11 @@ print_qword_value:
 ;-------------------------------------------------
 ; is_letter()
 ; input:
-;       esi - ×Ö·û
+;       esi - å­—ç¬¦
 ; output:
 ;       1 - yes, 0 - no
-; ÃèÊö:
-;       ÅĞ¶Ï×Ö·ûÊÇ·ñÎª×ÖÄ¸
+; æè¿°:
+;       åˆ¤æ–­å­—ç¬¦æ˜¯å¦ä¸ºå­—æ¯
 ;------------------------------------------------- 
 is_letter:
         and esi, 0FFh
@@ -1424,11 +1424,11 @@ is_letter.done:
 ;-------------------------------------------------
 ; is_lowercase()
 ; input:
-;       esi - ×Ö·û
+;       esi - å­—ç¬¦
 ; output:
 ;       1 - yes, 0 - no
-; ÃèÊö:
-;       ÅĞ¶Ï×Ö·ûÊÇ·ñÎªĞ¡Ğ´×ÖÄ¸
+; æè¿°:
+;       åˆ¤æ–­å­—ç¬¦æ˜¯å¦ä¸ºå°å†™å­—æ¯
 ;------------------------------------------------- 
 is_lowercase:
         and esi, 0FFh
@@ -1445,11 +1445,11 @@ is_lowercase.done:
 ;-------------------------------------------------
 ; is_uppercase()
 ; input:
-;       esi - ×Ö·û
+;       esi - å­—ç¬¦
 ; output:
 ;       1 - yes, 0 - no
-; ÃèÊö:
-;       ÅĞ¶Ï×Ö·ûÊÇ·ñÎª´óĞ´×ÖÄ¸
+; æè¿°:
+;       åˆ¤æ–­å­—ç¬¦æ˜¯å¦ä¸ºå¤§å†™å­—æ¯
 ;-------------------------------------------------
 is_uppercase:
         and esi, 0FFh
@@ -1467,11 +1467,11 @@ is_uppercase.done:
 ;-------------------------------------------------
 ; is_digit()
 ; input:
-;       esi - ×Ö·û
+;       esi - å­—ç¬¦
 ; output:
 ;       1 - yes, 0 - no
-; ÃèÊö:
-;       ÅĞ¶Ï×Ö·ûÊÇ·ñÎªÊı×Ö
+; æè¿°:
+;       åˆ¤æ–­å­—ç¬¦æ˜¯å¦ä¸ºæ•°å­—
 ;-------------------------------------------------
 is_digit:
         and esi, 0FFh
@@ -1490,11 +1490,11 @@ is_digit.done:
 ;-------------------------------------------------
 ; lower_to_upper()
 ; input:
-;       esi - ×Ö·û
+;       esi - å­—ç¬¦
 ; output:
-;       eax - ½á¹û
-; ÃèÊö:
-;       Ğ¡Ğ´×ÖÄ¸×ª»»Îª´óĞ´×ÖÄ¸
+;       eax - ç»“æœ
+; æè¿°:
+;       å°å†™å­—æ¯è½¬æ¢ä¸ºå¤§å†™å­—æ¯
 ;-------------------------------------------------
 lower_to_upper:
         call is_lowercase
@@ -1510,11 +1510,11 @@ lower_to_upper.done:
 ;-------------------------------------------------
 ; upper_to_lower()
 ; input:
-;       esi - ×Ö·û
+;       esi - å­—ç¬¦
 ; output:
-;       eax - ½á¹û
-; ÃèÊö:
-;       ´óĞ´×ÖÄ¸×ª»»ÎªĞ¡Ğ´×ÖÄ¸
+;       eax - ç»“æœ
+; æè¿°:
+;       å¤§å†™å­—æ¯è½¬æ¢ä¸ºå°å†™å­—æ¯
 ;-------------------------------------------------
 upper_to_lower:
         call is_uppercase
@@ -1529,12 +1529,12 @@ upper_to_lower.done:
 ;-------------------------------------------------
 ; letter_convert()
 ; input:
-;       esi - ×Ö·û
-;       edi - Ñ¡Ôñ£¨1: ×ª»»Îª´óĞ´£¬0: ×ª»»ÎªĞ¡Ğ´£©
+;       esi - å­—ç¬¦
+;       edi - é€‰æ‹©ï¼ˆ1: è½¬æ¢ä¸ºå¤§å†™ï¼Œ0: è½¬æ¢ä¸ºå°å†™ï¼‰
 ; output:
-;       eax - ½á¹û
-; ÃèÊö:
-;       ¸ù¾İÑ¡Ôñ½øĞĞ×ª»»
+;       eax - ç»“æœ
+; æè¿°:
+;       æ ¹æ®é€‰æ‹©è¿›è¡Œè½¬æ¢
 ;-------------------------------------------------
 letter_convert:
         test edi, edi
@@ -1549,37 +1549,37 @@ letter_convert:
 ;-------------------------------------------------
 ; lowers_to_uppers()
 ; input:
-;       esi - Ô´´®µØÖ·
-;       edi - Ä¿±ê´®µØÖ·
+;       esi - æºä¸²åœ°å€
+;       edi - ç›®æ ‡ä¸²åœ°å€
 ; output:
 ;       none
-; ÃèÊö:
-;       Ğ¡Ğ´´®×ª»»Îª´óĞ´´®
+; æè¿°:
+;       å°å†™ä¸²è½¬æ¢ä¸ºå¤§å†™ä¸²
 ;-------------------------------------------------
 lowers_to_uppers:
-        mov eax, lower_to_upper                         ; Ğ¡Ğ´×ª´óĞ´º¯Êı
+        mov eax, lower_to_upper                         ; å°å†™è½¬å¤§å†™å‡½æ•°
         jmp do_string_convert
 
 
 ;-------------------------------------------------
 ; uppers_to_lowers()
 ; input:
-;       esi - Ô´´®µØÖ·
-;       edi - Ä¿±ê´®µØÖ·
+;       esi - æºä¸²åœ°å€
+;       edi - ç›®æ ‡ä¸²åœ°å€
 ; output:
 ;       none
-; ÃèÊö:
-;       ´óĞ´´®×ª»»ÎªĞ¡Ğ´´®
+; æè¿°:
+;       å¤§å†™ä¸²è½¬æ¢ä¸ºå°å†™ä¸²
 ;-------------------------------------------------
 uppers_to_lowers:
-        mov eax, lower_to_upper                         ; ´óĞ´×ªĞ¡Ğ´º¯Êı
+        mov eax, lower_to_upper                         ; å¤§å†™è½¬å°å†™å‡½æ•°
 
 
 do_string_convert:
         push ecx
         push edx
         ;;
-        ;; ¼ì²éÔ´´®/Ä¿±ê´®µØÖ·
+        ;; æ£€æŸ¥æºä¸²/ç›®æ ‡ä¸²åœ°å€
         ;;
         test esi, esi
         jz do_string_convert.done
@@ -1591,13 +1591,13 @@ do_string_convert:
         mov edi, eax
         
         ;;
-        ;; Öğ¸ö×Ö·û½øĞĞ×ª»»
+        ;; é€ä¸ªå­—ç¬¦è¿›è¡Œè½¬æ¢
         ;;
 do_string_convert.loop:
         movzx esi, BYTE [ecx]
         test esi, esi
         jz do_string_convert.done
-        call edi                                        ; µ÷ÓÃ×ª»»º¯Êı
+        call edi                                        ; è°ƒç”¨è½¬æ¢å‡½æ•°
         mov [edx], al
         inc edx
         inc ecx
@@ -1613,12 +1613,12 @@ do_string_convert.done:
 ;-------------------------------------------------
 ; dump_encodes()
 ; input:
-;       esi - ĞèÒª´òÓ¡µÄµØÖ·
-;       edi - ×Ö½ÚÊı
+;       esi - éœ€è¦æ‰“å°çš„åœ°å€
+;       edi - å­—èŠ‚æ•°
 ; output:
 ;       none
-; ÃèÊö:
-;       ½«Ìá¹©µÄµØÖ·ÄÚµÄ×Ö½Ú´òÓ¡³öÀ´
+; æè¿°:
+;       å°†æä¾›çš„åœ°å€å†…çš„å­—èŠ‚æ‰“å°å‡ºæ¥
 ;-------------------------------------------------
 dump_encodes:
         push ecx
@@ -1641,12 +1641,12 @@ dump_encodes.loop:
 ;-------------------------------------------------
 ; puts_with_select()
 ; input:
-;       esi - ×Ö·û´®
-;       edi - select code£¨select[0] = 1: ´óĞ´£¬0 : Ğ¡Ğ´£©
+;       esi - å­—ç¬¦ä¸²
+;       edi - select codeï¼ˆselect[0] = 1: å¤§å†™ï¼Œ0 : å°å†™ï¼‰
 ; output:
 ;       none
-; ÃèÊö£º
-;       ¸ù¾İÌá¹©µÄ select[0] Ñ¡Ôñ´òÓ¡´óĞ´»òĞ¡Ğ´
+; æè¿°ï¼š
+;       æ ¹æ®æä¾›çš„ select[0] é€‰æ‹©æ‰“å°å¤§å†™æˆ–å°å†™
 ;       
 ;-------------------------------------------------
 puts_with_select:
@@ -1657,7 +1657,7 @@ puts_with_select:
         jz puts_with_select.done
         
         ;;
-        ;; Ñ¡ÔñÏàÓ¦×ª»»º¯Êı
+        ;; é€‰æ‹©ç›¸åº”è½¬æ¢å‡½æ•°
         ;;
         bt edi, 0
         mov edx, lower_to_upper
@@ -1665,7 +1665,7 @@ puts_with_select:
         cmovc edx, eax
         
         ;;
-        ;; ÏÈ×ª»»ºó´òÓ¡
+        ;; å…ˆè½¬æ¢åæ‰“å°
         ;;
 puts_with_select.loop:        
         movzx esi, BYTE [ebx]
@@ -1689,16 +1689,16 @@ puts_with_select.done:
 ;-------------------------------------------------
 ; dump_string_with_mask()
 ; input:
-;       esi - mask flags Öµ£¨×î´ó32Î»£©
-;       edi - ×Ö·û´®Êı×é
+;       esi - mask flags å€¼ï¼ˆæœ€å¤§32ä½ï¼‰
+;       edi - å­—ç¬¦ä¸²æ•°ç»„
 ; output:
 ;       none
-; ÃèÊö:
-;       ¸ù¾İÌá¹©µÄ mask flags Öµ£¬À´´òÓ¡ edi ÄÚµÄÖµ
-;       1) mask flags ÖÃÎ»£¬Ôò´òÓ¡´óĞ´´®
-;       2) mask flags ÇåÎ»£¬Ôò´òÓ¡Ğ¡Ğ´´®
-; Ê¾Àı£º
-;       CPUID.01H:EDX ·µ»Ø 01 leaf µÄ¹¦ÄÜÖ§³ÖÎ»
+; æè¿°:
+;       æ ¹æ®æä¾›çš„ mask flags å€¼ï¼Œæ¥æ‰“å° edi å†…çš„å€¼
+;       1) mask flags ç½®ä½ï¼Œåˆ™æ‰“å°å¤§å†™ä¸²
+;       2) mask flags æ¸…ä½ï¼Œåˆ™æ‰“å°å°å†™ä¸²
+; ç¤ºä¾‹ï¼š
+;       CPUID.01H:EDX è¿”å› 01 leaf çš„åŠŸèƒ½æ”¯æŒä½
 ;       mov esi, edx
 ;       mov edi, edx_flags
 ;       call print_string_with_mask
@@ -1711,21 +1711,21 @@ dump_string_with_mask:
         mov ebx, edi
 dump_string_with.loop:        
         ;;
-        ;; È¡ mask flags µÄ MSB Î»·Åµ½ edi LSB ÖĞ£¬×÷Îª select code
+        ;; å– mask flags çš„ MSB ä½æ”¾åˆ° edi LSB ä¸­ï¼Œä½œä¸º select code
         ;;
         shl edx, 1
         rcr edi, 1
         ;;
-        ;; ¼ì²é×Ö·û´®Êı×éÄÚµÄ½áÊø±êÖ¾ -1
+        ;; æ£€æŸ¥å­—ç¬¦ä¸²æ•°ç»„å†…çš„ç»“æŸæ ‡å¿— -1
         ;;
-        mov ecx, [ebx]                          ; ¶Á×Ö·û´®Ö¸Õë
+        mov ecx, [ebx]                          ; è¯»å­—ç¬¦ä¸²æŒ‡é’ˆ
         cmp ecx, -1
         je dump_string_with_mask.done
         mov esi, ecx
-        call check_new_line                     ; ¼ì²éÊÇ·ñĞèÒª»»ĞĞ
+        call check_new_line                     ; æ£€æŸ¥æ˜¯å¦éœ€è¦æ¢è¡Œ
         mov esi, ecx
-        call puts_with_select                   ; Ñ¡Ôñ´òÓ¡´óĞ´/Ğ¡Ğ´
-        call printblank                         ; ´òÓ¡¿Õ¸ñ
+        call puts_with_select                   ; é€‰æ‹©æ‰“å°å¤§å†™/å°å†™
+        call printblank                         ; æ‰“å°ç©ºæ ¼
         add ebx, 4
         jmp dump_string_with.loop
 dump_string_with_mask.done:
@@ -1739,10 +1739,10 @@ dump_string_with_mask.done:
 ;-------------------------------------------------
 ; subtract64()
 ; input:
-;       edx:eax - ±»¼õÊı
-;       ecx:ebx - ¼õÊı
+;       edx:eax - è¢«å‡æ•°
+;       ecx:ebx - å‡æ•°
 ; output:
-;       edx:eax - ½á¹û
+;       edx:eax - ç»“æœ
 ;-------------------------------------------------        
 subtract64:
 sub64:
@@ -1753,10 +1753,10 @@ sub64:
 ;-------------------------------------------------
 ; subtract64_with_address()
 ; input:
-;       esi - ±»¼õÊıµØÖ·
-;       edi - ¼õÊıµØÖ·
+;       esi - è¢«å‡æ•°åœ°å€
+;       edi - å‡æ•°åœ°å€
 ; output:
-;       edx:eax - ½á¹û
+;       edx:eax - ç»“æœ
 ;-------------------------------------------------        
 subtract64_with_address:
         mov eax, [esi]
@@ -1766,11 +1766,11 @@ subtract64_with_address:
         ret
         
 ;-------------------------------------------------
-; decrement64(): 64 Î»¼õ 1
+; decrement64(): 64 ä½å‡ 1
 ; input:
-;       edx:eax - ±»¼õÊı
+;       edx:eax - è¢«å‡æ•°
 ; output:
-;       edx:eax - ½á¹û
+;       edx:eax - ç»“æœ
 ;-------------------------------------------------
 decrement64:
 dec64:
@@ -1783,10 +1783,10 @@ dec64:
 ;-------------------------------------------------
 ; addition64()
 ; input:
-;       edx:eax - ±»¼ÓÊı
-;       ecx:ebx - ¼ÓÊı
+;       edx:eax - è¢«åŠ æ•°
+;       ecx:ebx - åŠ æ•°
 ; output:
-;       edx:eax - ½á¹û
+;       edx:eax - ç»“æœ
 ;-------------------------------------------------  
 addition64:
 add64:
@@ -1798,10 +1798,10 @@ add64:
 ;-------------------------------------------------
 ; addition64_with_address()
 ; input:
-;       esi - ±»¼õÊıµØÖ·
-;       edi - ¼õÊıµØÖ·
+;       esi - è¢«å‡æ•°åœ°å€
+;       edi - å‡æ•°åœ°å€
 ; output:
-;       edx:eax - ½á¹û
+;       edx:eax - ç»“æœ
 ;-------------------------------------------------        
 addition64_with_address:
         mov eax, [esi]
@@ -1812,11 +1812,11 @@ addition64_with_address:
 
 
 ;------------------------------------------------- 
-; increment64(): 64 Î»¼Ó 1
+; increment64(): 64 ä½åŠ  1
 ; input:
-;       edx:eax - ±»¼ÓÊı
+;       edx:eax - è¢«åŠ æ•°
 ; output:
-;       edx:eax - ½á¹û
+;       edx:eax - ç»“æœ
 ;------------------------------------------------- 
 increment64:
 inc64:
@@ -1827,12 +1827,12 @@ inc64:
 
 
 ;------------------------------------------------- 
-; division64(): Á½¸ö 64 Î»ÊıÏà³ı
+; division64(): ä¸¤ä¸ª 64 ä½æ•°ç›¸é™¤
 ; input:
-;       edx:eax - ±»³ıÊı
-;       ecx:ebx - ³ıÊı
+;       edx:eax - è¢«é™¤æ•°
+;       ecx:ebx - é™¤æ•°
 ; output:
-;       edx:eax - ÉÌ
+;       edx:eax - å•†
 ;------------------------------------------------- 
 division64:
         push edi
@@ -1870,18 +1870,18 @@ division64:
         ret
 
 ;------------------------------------------------- 
-; division64_32(): 64 Î»³ıÒÔ 32 Î»Êı
+; division64_32(): 64 ä½é™¤ä»¥ 32 ä½æ•°
 ; input:
-;       edx:eax - ±»³ıÊı
-;       ebx - ³ıÊı
+;       edx:eax - è¢«é™¤æ•°
+;       ebx - é™¤æ•°
 ; output:
-;       edx:eax - ÉÌ
+;       edx:eax - å•†
 ;------------------------------------------------- 
 division64_32:
         cmp edx, ebx
         jae double_divsion
         ;
-        ; Ö±½Ó½øĞĞ edx:eax / ebx£¬ edx:eax = ÉÌ
+        ; ç›´æ¥è¿›è¡Œ edx:eax / ebxï¼Œ edx:eax = å•†
         ;
         div ebx
         xor edx, edx
@@ -1889,15 +1889,15 @@ division64_32:
         
 double_divsion:
         ;
-        ; ĞèÒª½øĞĞÁ½´Î³ıÔËËã
+        ; éœ€è¦è¿›è¡Œä¸¤æ¬¡é™¤è¿ç®—
         ;
         push ecx
-        mov ecx, eax                                            ; ±£´æ dividend low
+        mov ecx, eax                                            ; ä¿å­˜ dividend low
         mov eax, edx                                            ; dividend high
         xor edx, edx                                            ; 
-        div ebx                                                 ; ÏÈ½øĞĞ dividend ¸ßÎ»Ïà³ı
+        div ebx                                                 ; å…ˆè¿›è¡Œ dividend é«˜ä½ç›¸é™¤
         xchg eax, ecx                                           ; ecx = quotient high, eax = dividend low
-        div ebx                                                 ; ½øĞĞ dividend µÍÎ»Ïà³ı
+        div ebx                                                 ; è¿›è¡Œ dividend ä½ä½ç›¸é™¤
         mov edx, ecx                                            ; edx:eax = quotient    
         pop ecx
 division64_32.done:        
@@ -1905,13 +1905,13 @@ division64_32.done:
 
 
 ;------------------------------------------------------        
-; mul64(): 64Î»³Ë·¨
+; mul64(): 64ä½ä¹˜æ³•
 ; input:
-;       esi: ±»³ËÊıµØÖ·
-;       edi: ³ËÊıµØÖ·
-;       ebp: ½á¹ûÖµµØÖ·
+;       esi: è¢«ä¹˜æ•°åœ°å€
+;       edi: ä¹˜æ•°åœ°å€
+;       ebp: ç»“æœå€¼åœ°å€
 ;
-; ÃèÊö£º
+; æè¿°ï¼š
 ; c3:c2:c1:c0 = a1:a0 * b1:b0
 ;(1) a0*b0 = d1:d0
 ;(2) a1*b0 = e1:e0
@@ -1944,30 +1944,30 @@ do_mul64:
         mov ebx, [esi + 4]              ; a1        
         mov ecx, [edi]                  ; b0
         mul ecx                         ; a0 * b0 = d1:d0, eax = d0, edx = d1
-        mov [ebp], eax                  ; ±£´æ c0
-        mov ecx, edx                    ; ±£´æ d1
+        mov [ebp], eax                  ; ä¿å­˜ c0
+        mov ecx, edx                    ; ä¿å­˜ d1
         mov eax, [edi]                  ; b0
         mul ebx                         ; a1 * b0 = e1:e0, eax = e0, edx = e1
         add ecx, eax                    ; ecx = d1 + e0
-        mov [temp_value], edx           ; ±£´æ e1
-        adc DWORD [c2_carry], 0         ; ±£´æ c2 ½øÎ»
+        mov [temp_value], edx           ; ä¿å­˜ e1
+        adc DWORD [c2_carry], 0         ; ä¿å­˜ c2 è¿›ä½
         mov ebx, [esi]                  ; a0
         mov eax, [edi + 4]              ; b1
         mul ebx                         ; a0 * b1 = f1:f0
         add ecx, eax                    ; d1 + e0 + f0
-        mov [ebp + 4], ecx              ; ±£´æ c1
-        adc DWORD [c2_carry], 0         ; Ôö¼Ó c2 ½øÎ»
+        mov [ebp + 4], ecx              ; ä¿å­˜ c1
+        adc DWORD [c2_carry], 0         ; å¢åŠ  c2 è¿›ä½
         add [temp_value], edx           ; e1 + f1
-        adc DWORD [c3_carry], 0         ; ±£´æ c3 ½øÎ»
+        adc DWORD [c3_carry], 0         ; ä¿å­˜ c3 è¿›ä½
         mov eax, [esi + 4]              ; a1
         mul ebx                         ; a1 * b1 = h1:h0
         add [temp_value], eax           ; e1 + f1 + h0
-        adc DWORD [c3_carry], 0         ; Ôö¼Ó c3 ½øÎ»
-        mov eax, [c2_carry]             ; ¶ÁÈ¡ c2 ½øÎ»Öµ
+        adc DWORD [c3_carry], 0         ; å¢åŠ  c3 è¿›ä½
+        mov eax, [c2_carry]             ; è¯»å– c2 è¿›ä½å€¼
         add eax, [temp_value]           ; e1 + f1 + h0 + carry
-        mov [ebp + 8], eax              ; ±£´æ c2
+        mov [ebp + 8], eax              ; ä¿å­˜ c2
         add edx, [c3_carry]             ; h1 + carry
-        mov [ebp + 12], edx             ; ±£´æ c3
+        mov [ebp + 12], edx             ; ä¿å­˜ c3
         pop edx
         pop ebx
         pop ecx
@@ -1981,12 +1981,12 @@ do_mul64:
 ;       ecx:ebx
 ; output:
 ;       eflags
-; ÃèÊö£º
-;       Ö´ĞĞ64Î»ÊıµÄ±È½Ï²Ù×÷
+; æè¿°ï¼š
+;       æ‰§è¡Œ64ä½æ•°çš„æ¯”è¾ƒæ“ä½œ
 ;------------------------------------------------------  
 cmp64:
         ;;
-        ;; ÏÈ±È½Ï¸ß 32 Î»£¬²»ÏàµÈÊ±£¬ÔÙ±È½ÏµÍ 32 Î»
+        ;; å…ˆæ¯”è¾ƒé«˜ 32 ä½ï¼Œä¸ç›¸ç­‰æ—¶ï¼Œå†æ¯”è¾ƒä½ 32 ä½
         ;;
         cmp edx, ecx
         jne cmp64.done
@@ -1999,21 +1999,21 @@ cmp64.done:
 ;------------------------------------------------------  
 ; shl64()
 ; input:
-;       edx:eax - 64 Î»Öµ
+;       edx:eax - 64 ä½å€¼
 ;       ecx - count
 ; output:
-;       edx:eax - ½á¹û
-; ÃèÊö£º
-;       Ö´ĞĞ 64 Î»µÄ×óÒÆ
+;       edx:eax - ç»“æœ
+; æè¿°ï¼š
+;       æ‰§è¡Œ 64 ä½çš„å·¦ç§»
 ;------------------------------------------------------ 
 shl64:
-        and ecx, 63                                     ; Ö´ĞĞ×î´ó 63 Î»ÒÆ¶¯
+        and ecx, 63                                     ; æ‰§è¡Œæœ€å¤§ 63 ä½ç§»åŠ¨
         
         cmp ecx, 32
         jae shl64_64
         
         ;;
-        ;; Ïò×óÒÆ¶¯Ğ¡ÓÚ 32 Î»Êı
+        ;; å‘å·¦ç§»åŠ¨å°äº 32 ä½æ•°
         ;; 
         shld edx, eax, cl                               ; edx:eax << n
         shl eax, cl
@@ -2023,15 +2023,15 @@ shl64:
 
 shl64_64:
         ;;
-        ;; Ïò×óÒÆ¶¯ 32 Î»Êı£¬»òÕß³¬¹ı 32 Î»
-        ;; 1) n = 32 Ê±£º edx:eax << 32, ½á¹ûÎª eax:0
-        ;; 2) n > 32 Ê±£º edx:eax << n£¬ ½á¹ûÎª eax<<(n-32):0
+        ;; å‘å·¦ç§»åŠ¨ 32 ä½æ•°ï¼Œæˆ–è€…è¶…è¿‡ 32 ä½
+        ;; 1) n = 32 æ—¶ï¼š edx:eax << 32, ç»“æœä¸º eax:0
+        ;; 2) n > 32 æ—¶ï¼š edx:eax << nï¼Œ ç»“æœä¸º eax<<(n-32):0
         ;;
-        mov edx, eax                                    ; eax ÒÆÈë edx
-        xor eax, eax                                    ; µÍ 32 Î»Îª 0
-        and ecx, 31                                     ; È¡ 32 ÓàÊıÖµ£¬½á¹ûÎª 64 - n 
-        shl edx, cl                                     ; µ± n = 32 Ê±:  cl = 0
-                                                        ; µ± n > 32 Ê±£º 32 > cl > 0
+        mov edx, eax                                    ; eax ç§»å…¥ edx
+        xor eax, eax                                    ; ä½ 32 ä½ä¸º 0
+        and ecx, 31                                     ; å– 32 ä½™æ•°å€¼ï¼Œç»“æœä¸º 64 - n 
+        shl edx, cl                                     ; å½“ n = 32 æ—¶:  cl = 0
+                                                        ; å½“ n > 32 æ—¶ï¼š 32 > cl > 0
 shl64.done:
         ret        
 
@@ -2040,21 +2040,21 @@ shl64.done:
 ;------------------------------------------------------  
 ; shr64()
 ; input:
-;       edx:eax - 64 Î»Öµ
+;       edx:eax - 64 ä½å€¼
 ;       ecx - count
 ; output:
-;       edx:eax - ½á¹û
-; ÃèÊö£º
-;       Ö´ĞĞ 64 Î»µÄÓÒÒÆ
+;       edx:eax - ç»“æœ
+; æè¿°ï¼š
+;       æ‰§è¡Œ 64 ä½çš„å³ç§»
 ;------------------------------------------------------ 
 shr64:
-        and ecx, 63                                     ; Ö´ĞĞ×î´ó 63 Î»ÒÆ¶¯
+        and ecx, 63                                     ; æ‰§è¡Œæœ€å¤§ 63 ä½ç§»åŠ¨
         
         cmp ecx, 32
         jae shr64_64
         
         ;;
-        ;; ÏòÓÒÒÆ¶¯Ğ¡ÓÚ 32 Î»Êı
+        ;; å‘å³ç§»åŠ¨å°äº 32 ä½æ•°
         ;; 
         shrd eax, edx, cl                               ; edx:eax >> n
         shr edx, cl
@@ -2064,15 +2064,15 @@ shr64:
 
 shr64_64:
         ;;
-        ;; ÏòÓÒÒÆ¶¯ 32 Î»Êı£¬»òÕß³¬¹ı 32 Î»
-        ;; 1) n = 32 Ê±£º edx:eax >> 32, ½á¹ûÎª 0:edx
-        ;; 2) n > 32 Ê±£º edx:eax >> n£¬ ½á¹ûÎª 0:edx>>(n-32)
+        ;; å‘å³ç§»åŠ¨ 32 ä½æ•°ï¼Œæˆ–è€…è¶…è¿‡ 32 ä½
+        ;; 1) n = 32 æ—¶ï¼š edx:eax >> 32, ç»“æœä¸º 0:edx
+        ;; 2) n > 32 æ—¶ï¼š edx:eax >> nï¼Œ ç»“æœä¸º 0:edx>>(n-32)
         ;;
-        mov eax, edx                                    ; edx ÒÆÈë eax
-        xor edx, edx                                    ; ¸ß 32 Î»Îª 0
-        and ecx, 31                                     ; È¡ 32 ÓàÊıÖµ£¬½á¹ûÎª 64 - n 
-        shr eax, cl                                     ; µ± n = 32 Ê±:  cl = 0
-                                                        ; µ± n > 32 Ê±£º 32 > cl > 0
+        mov eax, edx                                    ; edx ç§»å…¥ eax
+        xor edx, edx                                    ; é«˜ 32 ä½ä¸º 0
+        and ecx, 31                                     ; å– 32 ä½™æ•°å€¼ï¼Œç»“æœä¸º 64 - n 
+        shr eax, cl                                     ; å½“ n = 32 æ—¶:  cl = 0
+                                                        ; å½“ n > 32 æ—¶ï¼š 32 > cl > 0
 shr64.done:
         ret        
 
@@ -2081,14 +2081,14 @@ shr64.done:
 ;------------------------------------------------------
 ; locked_xadd64():
 ; input:
-;       esi - ±»¼ÓÊıµØÖ·¡¡
-;       edx:eax - ¼ÓÊı
+;       esi - è¢«åŠ æ•°åœ°å€ã€€
+;       edx:eax - åŠ æ•°
 ; output:
-;       edx:eax - ·µ»Ø±»¼ÓÊıÔ­Öµ
-; ÃèÊö£º
-;       1) Ö´ĞĞ lock µÄ 64 Î»ÊıÏà¼Ó£¬½á¹û±£´æÔÚÄ¿±ê²Ù×÷ÊıÀï
-;       2) Ä¿±ê²Ù×÷ÊıÊÇÄÚ´æ
-;       3) º¯Êı·µ»ØÄ¿±ê²Ù×÷ÊıÔ­Öµ
+;       edx:eax - è¿”å›è¢«åŠ æ•°åŸå€¼
+; æè¿°ï¼š
+;       1) æ‰§è¡Œ lock çš„ 64 ä½æ•°ç›¸åŠ ï¼Œç»“æœä¿å­˜åœ¨ç›®æ ‡æ“ä½œæ•°é‡Œ
+;       2) ç›®æ ‡æ“ä½œæ•°æ˜¯å†…å­˜
+;       3) å‡½æ•°è¿”å›ç›®æ ‡æ“ä½œæ•°åŸå€¼
 ;------------------------------------------------------
 locked_xadd64:
         push ecx
@@ -2097,15 +2097,15 @@ locked_xadd64:
 
 
         ;;
-        ;; ¼ì²éÊÇ·ñÖ§³Ö cmpxchg8b Ö¸Áî
+        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ cmpxchg8b æŒ‡ä»¤
         ;;
-        bt DWORD [gs: PCB.FeatureEdx], 8                ; CPUID.01H:EDX[8].CMPXCHG8B Î»
+        bt DWORD [gs: PCB.FeatureEdx], 8                ; CPUID.01H:EDX[8].CMPXCHG8B ä½
         jc locked_xadd64.ok
         
         ;;
-        ;; ²»Ö§³Ö cmpxchg8b Ö¸ÁîÊ±£¬Ö±½ÓÖ´ĞĞÁ½´Î xadd Ö¸Áî
-        ;; ¾¯¸æ£º
-        ;;      1) ÔÚÕâÖÖÇé¿öÏÂ£¬²¢²»ÄÜÕæÕıµØÖ´ĞĞ 64 Î»µÄÔ­×Ó xadd ²Ù×÷
+        ;; ä¸æ”¯æŒ cmpxchg8b æŒ‡ä»¤æ—¶ï¼Œç›´æ¥æ‰§è¡Œä¸¤æ¬¡ xadd æŒ‡ä»¤
+        ;; è­¦å‘Šï¼š
+        ;;      1) åœ¨è¿™ç§æƒ…å†µä¸‹ï¼Œå¹¶ä¸èƒ½çœŸæ­£åœ°æ‰§è¡Œ 64 ä½çš„åŸå­ xadd æ“ä½œ
         ;;
         lock xadd [esi], eax
         lock xadd [esi + 4], edx
@@ -2114,41 +2114,41 @@ locked_xadd64:
         
         
         ;;
-        ;; ÏÂÃæÊ¹ÓÃ cmpxchg8b Ö¸Áî£¬¿ÉÒÔÊµÏÖÔÚ 32 Î»ÏÂ¶Ô 64 Î»Êı½øĞĞÔ­×Ó xadd ²Ù×÷
+        ;; ä¸‹é¢ä½¿ç”¨ cmpxchg8b æŒ‡ä»¤ï¼Œå¯ä»¥å®ç°åœ¨ 32 ä½ä¸‹å¯¹ 64 ä½æ•°è¿›è¡ŒåŸå­ xadd æ“ä½œ
         ;;
 locked_xadd64.ok:
 
         mov ebp, eax
-        mov edi, edx                                    ; edi:ebp ±£´æ¼ÓÊı
+        mov edi, edx                                    ; edi:ebp ä¿å­˜åŠ æ•°
         ;;
-        ;; È¡Ô­Öµ½øĞĞÏà¼Ó
+        ;; å–åŸå€¼è¿›è¡Œç›¸åŠ 
         ;;
         mov eax, [esi]
-        mov edx, [esi + 4]                              ; edx:eax = Ô­Öµ
+        mov edx, [esi + 4]                              ; edx:eax = åŸå€¼
                 
                 
 locked_xadd64.loop:
         mov ebx, ebp
-        mov ecx, edi                                    ; ecx:ebx = ¼ÓÊı
+        mov ecx, edi                                    ; ecx:ebx = åŠ æ•°
         add ebx, eax
         adc ecx, edx                                    ; ecx:ebx = edx:eax + ecx:ebx
-                                                        ; edx:eax = Ô­Öµ
+                                                        ; edx:eax = åŸå€¼
        
        ;;
-       ;; Ö´ĞĞ edx:eax Óë [esi] ±È½Ï£¬²¢ÇÒ½»»»
-       ;; 1) edx;eax == [esi] Ê±£º[esi] = ecx:ebx
-       ;; 2) edx:eax != [esi] Ê±£ºedx:eax = [esi]
+       ;; æ‰§è¡Œ edx:eax ä¸ [esi] æ¯”è¾ƒï¼Œå¹¶ä¸”äº¤æ¢
+       ;; 1) edx;eax == [esi] æ—¶ï¼š[esi] = ecx:ebx
+       ;; 2) edx:eax != [esi] æ—¶ï¼šedx:eax = [esi]
        ;;
         lock cmpxchg8b [esi]                            ; [esi] = ecx:ebx
         
         ;;
-        ;; ¼ì²é [esi] ÄÚµÄÔ­ÖµÊÇ·ñÒÑ¾­±»ĞŞ¸Ä
-        ;; ×¢Òâ£º
-        ;; 1) ÔÚÖ´ĞĞ¡°»ØĞ´¡±Ä¿±ê²Ù×÷ÊıÖ®Ç°£¬¡°¿ÉÄÜ¡±ÒÑ¾­±»ÆäËü´úÂëĞŞ¸ÄÁË [esi] ÄÚµÄÔ­Öµ
-        ;; 2) Òò´Ë£º±ØĞë¼ì²éÔ­ÖµÊÇ·ñÏàµÈ£¡
-        ;; 3) µ±Ô­ÖµÒÑ¾­±»ĞŞ¸ÄÊ±£¬ĞèÒªÖØĞÂ¼ÓÔØ [esi] Ô­Öµ£¬ÔÙ½øĞĞ¡°Ïà¼Ó¡±£¬¡°»ØĞ´¡±²Ù×÷
+        ;; æ£€æŸ¥ [esi] å†…çš„åŸå€¼æ˜¯å¦å·²ç»è¢«ä¿®æ”¹
+        ;; æ³¨æ„ï¼š
+        ;; 1) åœ¨æ‰§è¡Œâ€œå›å†™â€ç›®æ ‡æ“ä½œæ•°ä¹‹å‰ï¼Œâ€œå¯èƒ½â€å·²ç»è¢«å…¶å®ƒä»£ç ä¿®æ”¹äº† [esi] å†…çš„åŸå€¼
+        ;; 2) å› æ­¤ï¼šå¿…é¡»æ£€æŸ¥åŸå€¼æ˜¯å¦ç›¸ç­‰ï¼
+        ;; 3) å½“åŸå€¼å·²ç»è¢«ä¿®æ”¹æ—¶ï¼Œéœ€è¦é‡æ–°åŠ è½½ [esi] åŸå€¼ï¼Œå†è¿›è¡Œâ€œç›¸åŠ â€ï¼Œâ€œå›å†™â€æ“ä½œ
         ;;
-        jne locked_xadd64.loop                          ; [esi] Ô­ÖµÓë edx:eax ²»ÏàµÈÊ±£¬ÖØ¸´²Ù×÷ 
+        jne locked_xadd64.loop                          ; [esi] åŸå€¼ä¸ edx:eax ä¸ç›¸ç­‰æ—¶ï¼Œé‡å¤æ“ä½œ 
 locked_xadd64.done:        
         pop ebp
         pop ebx
@@ -2162,17 +2162,17 @@ locked_xadd64.done:
 ;------------------------------------------------------
 ; delay_with_us32()
 ; input:
-;       esi - ÑÓÊ± us Êı
+;       esi - å»¶æ—¶ us æ•°
 ; output:
 ;       none
-; ÃèÊö:
-;       1) Ö´ĞĞÑÓÊ±²Ù×÷
-;       2) ÑÓÊ±µÄµ¥Î»Îªus£¨Î¢Ãë£©
+; æè¿°:
+;       1) æ‰§è¡Œå»¶æ—¶æ“ä½œ
+;       2) å»¶æ—¶çš„å•ä½ä¸ºusï¼ˆå¾®ç§’ï¼‰
 ;------------------------------------------------------
 delay_with_us32:
         push edx
         ;;
-        ;; ¼ÆËã ticks Êı = us Êı * ProcessorFrequency
+        ;; è®¡ç®— ticks æ•° = us æ•° * ProcessorFrequency
         ;;
         mov eax, [gs: PCB.ProcessorFrequency]
         mul esi
@@ -2180,14 +2180,14 @@ delay_with_us32:
         mov esi, eax
 
         ;;
-        ;; ¼ÆËãÄ¿±ê ticks Öµ
+        ;; è®¡ç®—ç›®æ ‡ ticks å€¼
         ;;
         rdtsc
         add esi, eax
-        adc edi, edx                            ; edi:esi = Ä¿±ê ticks Öµ
+        adc edi, edx                            ; edi:esi = ç›®æ ‡ ticks å€¼
         
         ;;
-        ;; Ñ­»·±È½Ïµ±Ç° tick Óë Ä¿±ê tick
+        ;; å¾ªç¯æ¯”è¾ƒå½“å‰ tick ä¸ ç›®æ ‡ tick
         ;;
 delay_with_us32.loop:
         rdtsc
@@ -2205,18 +2205,18 @@ delay_with_us32.@0:
 ;------------------------------------------------------
 ; start_lapic_timer()
 ; input:
-;       esi - Ê±¼ä£¨µ¥Î»Îª us£©
-;       edi - ¶¨Ê±Ä£Ê½
-;       eax - »Øµ÷º¯Êı
+;       esi - æ—¶é—´ï¼ˆå•ä½ä¸º usï¼‰
+;       edi - å®šæ—¶æ¨¡å¼
+;       eax - å›è°ƒå‡½æ•°
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Æô¶¯ local apic timer
-; ²ÎÊı£º
-;       esi - Ìá¹©¶¨Ê±Ê±¼ä£¬µ¥Î»Îª us
-;       edi - LAPIC_TIMER_ONE_SHOT£¬Ê¹ÓÃÒ»´ÎĞÔ¶¨Ê±
-;             LAPIC_TIMER_PERIODIC, Ê¹ÓÃÖÜÆÚĞÔ¶¨Ê±
-;       eax - Ìá¹©Ò»¸ö»Øµ÷º¯Êı
+; æè¿°ï¼š
+;       1) å¯åŠ¨ local apic timer
+; å‚æ•°ï¼š
+;       esi - æä¾›å®šæ—¶æ—¶é—´ï¼Œå•ä½ä¸º us
+;       edi - LAPIC_TIMER_ONE_SHOTï¼Œä½¿ç”¨ä¸€æ¬¡æ€§å®šæ—¶
+;             LAPIC_TIMER_PERIODIC, ä½¿ç”¨å‘¨æœŸæ€§å®šæ—¶
+;       eax - æä¾›ä¸€ä¸ªå›è°ƒå‡½æ•°
 ;------------------------------------------------------
 start_lapic_timer:
         push ebp
@@ -2259,8 +2259,8 @@ start_lapic_timer.@0:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Í£Ö¹ local apic timer
+; æè¿°ï¼š
+;       1) åœæ­¢ local apic timer
 ;------------------------------------------------------
 stop_lapic_timer:
         push ebp
@@ -2288,8 +2288,8 @@ stop_lapic_timer:
 ;       edi - column
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÔÚ(row,column) Î»ÖÃÉÏÏÔÊ¾Ê±ÖÓ
+; æè¿°ï¼š
+;       1) åœ¨(row,column) ä½ç½®ä¸Šæ˜¾ç¤ºæ—¶é’Ÿ
 ;------------------------------------------------------
 clock:
         push ebp        
@@ -2304,7 +2304,7 @@ clock:
         call set_video_buffer
         
         ;;
-        ;; ÏÔÊ¾Ğ¡Ê±Êı
+        ;; æ˜¾ç¤ºå°æ—¶æ•°
         ;;
         mov eax, print_byte_value
         mov edi, print_dword_decimal
@@ -2315,7 +2315,7 @@ clock:
         mov esi, ':'
         call putc
         ;;
-        ;; ÏÔÊ¾·ÖÖÓÊı
+        ;; æ˜¾ç¤ºåˆ†é’Ÿæ•°
         ;;
         mov eax, print_byte_value
         mov edi, print_dword_decimal
@@ -2326,7 +2326,7 @@ clock:
         mov esi, ':'
         call putc
         ;;
-        ;; ÏÔÊ¾ÃëÖÓÊı
+        ;; æ˜¾ç¤ºç§’é’Ÿæ•°
         ;;
         mov eax, print_byte_value
         mov edi, print_dword_decimal
@@ -2346,12 +2346,12 @@ clock:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÏòËùÓĞ´¦ÀíÆ÷·¢ËÍ INIT ÏûÏ¢£¨°üÀ¨BSP£©
-;       2) ´Ëº¯ÊıÒı·¢´¦ÀíÆ÷ INIT RESET
-; ×¢Òâ£º
-;       1) INIT RESET ÏÂ£¬MSR ²»¸Ä±ä!
-;       2) BSP Ö´ĞĞ boot£¬ËùÓĞ AP µÈ´ı SIPI ÏûÏ¢!
+; æè¿°ï¼š
+;       1) å‘æ‰€æœ‰å¤„ç†å™¨å‘é€ INIT æ¶ˆæ¯ï¼ˆåŒ…æ‹¬BSPï¼‰
+;       2) æ­¤å‡½æ•°å¼•å‘å¤„ç†å™¨ INIT RESET
+; æ³¨æ„ï¼š
+;       1) INIT RESET ä¸‹ï¼ŒMSR ä¸æ”¹å˜!
+;       2) BSP æ‰§è¡Œ bootï¼Œæ‰€æœ‰ AP ç­‰å¾… SIPI æ¶ˆæ¯!
 ;------------------------------------------------------
 send_init_command:
 
@@ -2359,7 +2359,7 @@ send_init_command:
         mov eax, [gs: PCB.LapicBase]
         cmovz eax, [gs: PCB.LapicPhysicalBase]
         ;;
-        ;; ÏòËùÓĞ´¦ÀíÆ÷¹ã²¥ INIT
+        ;; å‘æ‰€æœ‰å¤„ç†å™¨å¹¿æ’­ INIT
         ;;
         mov DWORD [ebx + ICR1], 0FF000000h
         mov DWORD [ebx + ICR0], 00004500h           
@@ -2373,8 +2373,8 @@ send_init_command:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÌáÉı TPL£¨Task Priority Level£©Ò»¼¶
+; æè¿°ï¼š
+;       1) æå‡ TPLï¼ˆTask Priority Levelï¼‰ä¸€çº§
 ;----------------------------------------------
 raise_tpl:
         push ebp
@@ -2384,9 +2384,9 @@ raise_tpl:
 %else
         mov ebp, [gs: PCB.Base]
 %endif        
-        movzx esi, BYTE [ebp + PCB.CurrentTpl]                  ; ¶ÁÈ¡µ±Ç°µÄ TPL
-        mov [ebp + PCB.PrevTpl], esi                            ; ±£´æÎª PrevTpl
-        INCv esi                                                ; ÌáÉıÒ»¼¶
+        movzx esi, BYTE [ebp + PCB.CurrentTpl]                  ; è¯»å–å½“å‰çš„ TPL
+        mov [ebp + PCB.PrevTpl], esi                            ; ä¿å­˜ä¸º PrevTpl
+        INCv esi                                                ; æå‡ä¸€çº§
         jmp do_modify_tpl
 
 
@@ -2396,8 +2396,8 @@ raise_tpl:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ½µµÍ TPL£¨Task Priority Level£©Ò»¼¶
+; æè¿°ï¼š
+;       1) é™ä½ TPLï¼ˆTask Priority Levelï¼‰ä¸€çº§
 ;----------------------------------------------        
 lower_tpl:
         push ebp
@@ -2407,9 +2407,9 @@ lower_tpl:
 %else
         mov ebp, [gs: PCB.Base]
 %endif 
-        movzx esi, BYTE [ebp + PCB.CurrentTpl]                  ; ¶ÁÈ¡µ±Ç° TPL
-        mov [ebp + PCB.PrevTpl], esi                            ; ±£´æÎª PrevTpl
-        DECv esi                                                ; ½µµÍÒ»¼¶
+        movzx esi, BYTE [ebp + PCB.CurrentTpl]                  ; è¯»å–å½“å‰ TPL
+        mov [ebp + PCB.PrevTpl], esi                            ; ä¿å­˜ä¸º PrevTpl
+        DECv esi                                                ; é™ä½ä¸€çº§
         jmp do_modify_tpl
 
 
@@ -2420,8 +2420,8 @@ lower_tpl:
 ;       esi - TPL
 ; output:
 ;       none
-; ÃèÊö£º
-;       1)ĞŞ¸Ä TPL£¨Task Priority Level£©
+; æè¿°ï¼š
+;       1)ä¿®æ”¹ TPLï¼ˆTask Priority Levelï¼‰
 ;----------------------------------------------  
 change_tpl:
         push ebp
@@ -2432,8 +2432,8 @@ change_tpl:
         mov ebp, [gs: PCB.Base]
 %endif 
 
-        movzx eax, BYTE [ebp + PCB.CurrentTpl]                  ; ¶ÁÈ¡µ±Ç° TPL
-        mov [ebp + PCB.PrevTpl], eax                            ; ±£´æÎª PrevTpl        
+        movzx eax, BYTE [ebp + PCB.CurrentTpl]                  ; è¯»å–å½“å‰ TPL
+        mov [ebp + PCB.PrevTpl], eax                            ; ä¿å­˜ä¸º PrevTpl        
         jmp do_modify_tpl
         
 
@@ -2443,8 +2443,8 @@ change_tpl:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1)»Ö¸´Ô­ TPL£¨Task Priority Level£©
+; æè¿°ï¼š
+;       1)æ¢å¤åŸ TPLï¼ˆTask Priority Levelï¼‰
 ;----------------------------------------------        
 recover_tpl:
         push ebp
@@ -2455,7 +2455,7 @@ recover_tpl:
         mov ebp, [gs: PCB.Base]
 %endif 
 
-        movzx esi, BYTE [ebp + PCB.PrevTpl]                     ; ¶ÁÈ¡Ô­ TPL
+        movzx esi, BYTE [ebp + PCB.PrevTpl]                     ; è¯»å–åŸ TPL
         jmp do_modify_tpl
 
 
@@ -2469,11 +2469,11 @@ recover_tpl:
 ;-------------------------------------------
 do_modify_tpl:        
         and esi, 0FFh
-        mov [ebp + PCB.CurrentTpl], esi                         ; ĞÂµÄ CurrentTpl Öµ
+        mov [ebp + PCB.CurrentTpl], esi                         ; æ–°çš„ CurrentTpl å€¼
         shl esi, 4
         REX.Wrxb
         mov eax, [ebp + PCB.LapicBase]
-        mov [eax + LAPIC_TPR], esi                              ; Ğ´Èë local APIC TPR
+        mov [eax + LAPIC_TPR], esi                              ; å†™å…¥ local APIC TPR
 do_modity_tpl.end:        
         pop ebp
         ret
@@ -2487,9 +2487,9 @@ do_modity_tpl.end:
 ;       none
 ; output:
 ;       eax - scan code
-; ÃèÊö£º
-;       1) µÈ´ı°´½¨£¬·µ»ØÒ»¸öÉ¨ÃèÂë
-;       2) ´Ëº¯Êı×îºó½«¹Ø±Õ¼üÅÌ
+; æè¿°ï¼š
+;       1) ç­‰å¾…æŒ‰å»ºï¼Œè¿”å›ä¸€ä¸ªæ‰«æç 
+;       2) æ­¤å‡½æ•°æœ€åå°†å…³é—­é”®ç›˜
 ;----------------------------------------------
 read_keyboard:
         push ebp
@@ -2506,7 +2506,7 @@ read_keyboard:
 
 
         ;;
-        ;; ´ò¿ª keyboard
+        ;; æ‰“å¼€ keyboard
         ;;
 %ifdef REAL
         call lower_tpl
@@ -2515,7 +2515,7 @@ read_keyboard:
 %endif
 
         ;;        
-        ;; ¶Á´¦ÀíÆ÷µÄ LocalKeyBufferPtr Öµ
+        ;; è¯»å¤„ç†å™¨çš„ LocalKeyBufferPtr å€¼
         ;;
         REX.Wrxb
         mov ebp, [ebp + PCB.LsbBase]        
@@ -2524,20 +2524,20 @@ read_keyboard:
 
        
         ;;
-        ;; ´ò¿ªÖĞ¶ÏÔÊĞí
+        ;; æ‰“å¼€ä¸­æ–­å…è®¸
         ;;
         sti        
                
         ;;
-        ;; µÈ´ı...
-        ;; Ö±µ½ LocalKeyBufferPtr ·¢Éú¸Ä±äÊ±ÍË³ö!
+        ;; ç­‰å¾…...
+        ;; ç›´åˆ° LocalKeyBufferPtr å‘ç”Ÿæ”¹å˜æ—¶é€€å‡º!
         ;;       
                 
         WAIT_UNTIL_NEQ          [ebp + LSB.LocalKeyBufferPtr], ebx
                 
 
         ;;
-        ;; ÆÁ±Î keyboard
+        ;; å±è”½ keyboard
         ;;
 %ifdef REAL
         call raise_tpl
@@ -2547,7 +2547,7 @@ read_keyboard:
 
 
         ;;
-        ;; ¶Á¼üÅÌÉ¨ÃèÂë
+        ;; è¯»é”®ç›˜æ‰«æç 
         ;;
         REX.Wrxb
         mov ebx, [ebp + LSB.LocalKeyBufferPtr]
@@ -2567,11 +2567,11 @@ read_keyboard.done:
 ; input:
 ;       none
 ; output:
-;       eax - É¨ÃèÂë
-; ÃèÊö£º
-;       1) µÈ´ı°´¼ü£¬·µ»ØÒ»¸öÉ¨ÃèÂë
-;       2) wait_a_key()ÊÇÒÑ¾­´ò¿ª¼üÅÌÊ±Ê¹ÓÃ
-;       3£©read_keyboard() ÄÚ²¿´ò¿ª¼üÅÌ£¬ÎŞĞèÒÑ¾­¿ªÆô¼üÅÌ
+;       eax - æ‰«æç 
+; æè¿°ï¼š
+;       1) ç­‰å¾…æŒ‰é”®ï¼Œè¿”å›ä¸€ä¸ªæ‰«æç 
+;       2) wait_a_key()æ˜¯å·²ç»æ‰“å¼€é”®ç›˜æ—¶ä½¿ç”¨
+;       3ï¼‰read_keyboard() å†…éƒ¨æ‰“å¼€é”®ç›˜ï¼Œæ— éœ€å·²ç»å¼€å¯é”®ç›˜
 ;----------------------------------------------
 wait_a_key:
         push ebp
@@ -2587,28 +2587,28 @@ wait_a_key:
         mov ebp, [ebp + PCB.LsbBase]
                
         ;;
-        ;; ¶ÁÔ­ KeyBufferPtr Öµ
+        ;; è¯»åŸ KeyBufferPtr å€¼
         ;;
         xor eax, eax        
                 
         ;;
-        ;; ÔÚ x64 ÏÂ£¬lock xadd [ebp + LSB.LocalKeyBufferPtr], rax
-        ;; ÔÚ x86 ÏÂ£¬lock xadd [ebp + LSB.LocalKeybufferPtr], eax
+        ;; åœ¨ x64 ä¸‹ï¼Œlock xadd [ebp + LSB.LocalKeyBufferPtr], rax
+        ;; åœ¨ x86 ä¸‹ï¼Œlock xadd [ebp + LSB.LocalKeybufferPtr], eax
         ;;
         PREFIX_LOCK
         REX.Wrxb
         xadd [ebp + LSB.LocalKeyBufferPtr], eax
 
         ;;
-        ;; µÈ´ı...
-        ;; Ö±µ½ KeyBufferPtr ·¢Éú¸Ä±äÊ±ÍË³ö!
+        ;; ç­‰å¾…...
+        ;; ç›´åˆ° KeyBufferPtr å‘ç”Ÿæ”¹å˜æ—¶é€€å‡º!
         ;;       
                 
         WAIT_UNTIL_NEQ          [ebp + LSB.LocalKeyBufferPtr], eax
         
 
         ;;
-        ;; ¶Á¼üÅÌÉ¨ÃèÂë
+        ;; è¯»é”®ç›˜æ‰«æç 
         ;;
         REX.Wrxb
         mov eax, [ebp + LSB.LocalKeyBufferPtr]
@@ -2629,10 +2629,10 @@ wait_a_key.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1) µÈ´ı°´ÏÂ <ESC> ¼üÖØÆô
-;       2) ´Ëº¯ÊıÊ¹ÓÃ CPU hard reset ²Ù×÷ÖØÆô
-;       3) Íù target video buffer ´òÓ¡
+; æè¿°:
+;       1) ç­‰å¾…æŒ‰ä¸‹ <ESC> é”®é‡å¯
+;       2) æ­¤å‡½æ•°ä½¿ç”¨ CPU hard reset æ“ä½œé‡å¯
+;       3) å¾€ target video buffer æ‰“å°
 ;---------------------------------------------
 wait_esc_for_reset:
         push ebp
@@ -2645,7 +2645,7 @@ wait_esc_for_reset:
 
         
         ;;
-        ;; ¶¨Î»ÔÚ (24,0)
+        ;; å®šä½åœ¨ (24,0)
         ;;
         ;mov esi, 24
         ;mov edi, 0
@@ -2655,24 +2655,24 @@ wait_esc_for_reset:
         call puts
         
         ;;
-        ;; µÈ´ı°´ <ESC> ¼ü
+        ;; ç­‰å¾…æŒ‰ <ESC> é”®
         ;;
 wait_esc_for_reset.loop:
         call read_keyboard 
-        cmp al, SC_ESC                                  ; ÊÇ·ñÎª <ESC> ¼ü
+        cmp al, SC_ESC                                  ; æ˜¯å¦ä¸º <ESC> é”®
         jne wait_esc_for_reset.loop
         
 wait_esc_for_reset.next:
 
         ;;
-        ;; Ö´ĞĞ CPU RESET ²Ù×÷
-        ;; 1) ÔÚÕæÊµ»úÆ÷ÉÏÊ¹ÓÃ INIT RESET
-        ;; 2) ÔÚvmware ÉÏÊ¹ÓÃ CPU RESET
+        ;; æ‰§è¡Œ CPU RESET æ“ä½œ
+        ;; 1) åœ¨çœŸå®æœºå™¨ä¸Šä½¿ç”¨ INIT RESET
+        ;; 2) åœ¨vmware ä¸Šä½¿ç”¨ CPU RESET
         ;;
         
 %ifdef REAL
         ;;
-        ;; Ê¹ÓÃ INIT RESET ÀàĞÍ
+        ;; ä½¿ç”¨ INIT RESET ç±»å‹
         ;;
         test DWORD [ebp + PCB.ProcessorStatus], CPU_STATUS_PG
         REX.Wrxb
@@ -2680,7 +2680,7 @@ wait_esc_for_reset.next:
         REX.Wrxb
         cmovz eax, [ebp + PCB.LapicPhysicalBase]
         ;;
-        ;; ÏòËùÓĞ´¦ÀíÆ÷¹ã²¥ INIT
+        ;; å‘æ‰€æœ‰å¤„ç†å™¨å¹¿æ’­ INIT
         ;;
         mov DWORD [eax + ICR1], 0FF000000h
         mov DWORD [eax + ICR0], INIT_DELIVERY  
@@ -2688,7 +2688,7 @@ wait_esc_for_reset.next:
 %else        
         
         ;;
-        ;; Ö´ĞĞ CPU hard reset ²Ù×÷
+        ;; æ‰§è¡Œ CPU hard reset æ“ä½œ
         ;;
         RESET_CPU 
 
@@ -2706,18 +2706,18 @@ wait_esc_for_reset.next:
 ;       esi - lock
 ; output:
 ;       none
-; ÃèÊö:
-;       1) ´Ëº¯ÊıÓÃÀ´»ñµÃ×ÔĞıËø
-;       2) ÊäÈë²ÎÊıÎª spin lock µØÖ·
+; æè¿°:
+;       1) æ­¤å‡½æ•°ç”¨æ¥è·å¾—è‡ªæ—‹é”
+;       2) è¾“å…¥å‚æ•°ä¸º spin lock åœ°å€
 ;------------------------------------------------------
 get_spin_lock:
         ;;
-        ;; ×ÔĞıËø²Ù×÷·½·¨ËµÃ÷:
-        ;; 1) Ê¹ÓÃ bts Ö¸Áî£¬ÈçÏÂÃæÖ¸ÁîĞòÁĞ
+        ;; è‡ªæ—‹é”æ“ä½œæ–¹æ³•è¯´æ˜:
+        ;; 1) ä½¿ç”¨ bts æŒ‡ä»¤ï¼Œå¦‚ä¸‹é¢æŒ‡ä»¤åºåˆ—
         ;;    lock bts DWORD [esi], 0
         ;;    jnc AcquireLockOk
         ;;
-        ;; 2) ±¾ÀıÖĞÊ¹ÓÃ cmpxchg Ö¸Áî
+        ;; 2) æœ¬ä¾‹ä¸­ä½¿ç”¨ cmpxchg æŒ‡ä»¤
         ;;    lock cmpxchg [esi], edi
         ;;    jnc AcquireLockOk
         ;;    
@@ -2726,16 +2726,16 @@ get_spin_lock:
         mov edi, 1        
         
         ;;
-        ;; ³¢ÊÔ»ñÈ¡ lock
+        ;; å°è¯•è·å– lock
         ;;
 get_spin_lock.acquire:
         lock cmpxchg [esi], edi
         je get_spin_lock.done
 
         ;;
-        ;; »ñÈ¡Ê§°Üºó£¬¼ì²é lock ÊÇ·ñ¿ª·Å£¨Î´ÉÏËø£©
-        ;; 1) ÊÇ£¬ÔòÔÙ´ÎÖ´ĞĞ»ñÈ¡Ëø£¬²¢ÉÏËø
-        ;; 2) ·ñ£¬¼ÌĞø²»¶ÏµØ¼ì²é lock£¬Ö±µ½ lock ¿ª·Å
+        ;; è·å–å¤±è´¥åï¼Œæ£€æŸ¥ lock æ˜¯å¦å¼€æ”¾ï¼ˆæœªä¸Šé”ï¼‰
+        ;; 1) æ˜¯ï¼Œåˆ™å†æ¬¡æ‰§è¡Œè·å–é”ï¼Œå¹¶ä¸Šé”
+        ;; 2) å¦ï¼Œç»§ç»­ä¸æ–­åœ°æ£€æŸ¥ lockï¼Œç›´åˆ° lock å¼€æ”¾
         ;;
 get_spin_lock.check:        
         mov eax, [esi]
@@ -2755,20 +2755,20 @@ get_spin_lock.done:
 ;       edi - count
 ; output:
 ;       0 - successful, 1 - failure
-; ÃèÊö:
-;       1) ´Ëº¯ÊıÓÃÀ´»ñµÃ×ÔĞıËø£¬
-;       2) ÊäÈë²ÎÊı esi Îª spin lock µØÖ·
-;       3) ÊäÈë²ÎÊı edi Îª ¼ÆÊıÖµ
+; æè¿°:
+;       1) æ­¤å‡½æ•°ç”¨æ¥è·å¾—è‡ªæ—‹é”ï¼Œ
+;       2) è¾“å…¥å‚æ•° esi ä¸º spin lock åœ°å€
+;       3) è¾“å…¥å‚æ•° edi ä¸º è®¡æ•°å€¼
 ;------------------------------------------------------
 get_spin_lock_with_count:
         push ecx
         ;;
-        ;; ×ÔĞıËø²Ù×÷·½·¨ËµÃ÷:
-        ;; 1) Ê¹ÓÃ bts Ö¸Áî£¬ÈçÏÂÃæÖ¸ÁîĞòÁĞ
+        ;; è‡ªæ—‹é”æ“ä½œæ–¹æ³•è¯´æ˜:
+        ;; 1) ä½¿ç”¨ bts æŒ‡ä»¤ï¼Œå¦‚ä¸‹é¢æŒ‡ä»¤åºåˆ—
         ;;    lock bts DWORD [esi], 0
         ;;    jnc AcquireLockOk
         ;;
-        ;; 2) ±¾ÀıÖĞÊ¹ÓÃ cmpxchg Ö¸Áî
+        ;; 2) æœ¬ä¾‹ä¸­ä½¿ç”¨ cmpxchg æŒ‡ä»¤
         ;;    lock cmpxchg [esi], edi
         ;;    jnc AcquireLockOk
         ;;    
@@ -2777,16 +2777,16 @@ get_spin_lock_with_count:
         mov edi, 1        
         
         ;;
-        ;; ³¢ÊÔ»ñÈ¡ lock
+        ;; å°è¯•è·å– lock
         ;;
 get_spin_lock_with_count.acquire:
         lock cmpxchg [esi], edi
         je get_spin_lock_with_count.done
 
         ;;
-        ;; »ñÈ¡Ê§°Üºó£¬¼ì²é lock ÊÇ·ñ¿ª·Å£¨Î´ÉÏËø£©
-        ;; 1) ÊÇ£¬ÔòÔÙ´ÎÖ´ĞĞ»ñÈ¡Ëø£¬²¢ÉÏËø
-        ;; 2) ·ñ£¬¼ÌĞø²»¶ÏµØ¼ì²é lock£¬Ö±µ½ lock ¿ª·Å
+        ;; è·å–å¤±è´¥åï¼Œæ£€æŸ¥ lock æ˜¯å¦å¼€æ”¾ï¼ˆæœªä¸Šé”ï¼‰
+        ;; 1) æ˜¯ï¼Œåˆ™å†æ¬¡æ‰§è¡Œè·å–é”ï¼Œå¹¶ä¸Šé”
+        ;; 2) å¦ï¼Œç»§ç»­ä¸æ–­åœ°æ£€æŸ¥ lockï¼Œç›´åˆ° lock å¼€æ”¾
         ;;
 get_spin_lock_with_count.check:        
         dec ecx
@@ -2812,9 +2812,9 @@ get_spin_lock_with_count.done:
 ;       esi - buffer
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´òÓ¡ buffer Êı¾İ
-;       2) <UP>¼üÏòÉÏ·­£¬<DOWN>ÏòÏÂ·­, <ESC>ÍË³ö
+; æè¿°ï¼š
+;       1) æ‰“å° buffer æ•°æ®
+;       2) <UP>é”®å‘ä¸Šç¿»ï¼Œ<DOWN>å‘ä¸‹ç¿», <ESC>é€€å‡º
 ;-----------------------------------------------------
 dump_memory:
         push ebx
@@ -2831,7 +2831,7 @@ dump_memory.@0:
         call set_video_buffer
         
         ;;
-        ;; ´òÓ¡Í·²¿
+        ;; æ‰“å°å¤´éƒ¨
         ;;
         mov esi, 10
         call print_space
@@ -2854,7 +2854,7 @@ dump_memory.Header:
         call println
 
         ;;
-        ;; ´òÓ¡ buffer ÄÚÈİ
+        ;; æ‰“å° buffer å†…å®¹
         ;;
         xor ecx, ecx
         
@@ -2880,7 +2880,7 @@ dump_memory.@2:
         jb dump_memory.@1
         
         ;;
-        ;; ¿ØÖÆ¼üÅÌ
+        ;; æ§åˆ¶é”®ç›˜
         ;;
         mov esi, 24
         mov edi, 0
@@ -2890,9 +2890,9 @@ dump_memory.@2:
 
 dump_memory.@3:        
         call read_keyboard
-        cmp al, SC_ESC                          ; ÊÇ·ñÎª <Esc>
+        cmp al, SC_ESC                          ; æ˜¯å¦ä¸º <Esc>
         je dump_memory.@4
-        cmp al, SC_PGUP                         ; ÊÇ·ñÎª <PageUp>
+        cmp al, SC_PGUP                         ; æ˜¯å¦ä¸º <PageUp>
         jne dump_memory.CheckPageDown
         REX.Wrxb
         sub ebx, 256
@@ -2904,7 +2904,7 @@ dump_memory.@3:
         jmp dump_memory.@0
 
 dump_memory.CheckPageDown:
-        cmp al, SC_PGDN                         ; ÊÇ·ñÎª <PageDown>
+        cmp al, SC_PGDN                         ; æ˜¯å¦ä¸º <PageDown>
         jne dump_memory.@3
         REX.Wrxb
         add ebx, 256
@@ -2913,7 +2913,7 @@ dump_memory.CheckPageDown:
         
 dump_memory.@4:
         ;;
-        ;; Ö´ĞĞ CPU hard reset ²Ù×÷
+        ;; æ‰§è¡Œ CPU hard reset æ“ä½œ
         ;;
         RESET_CPU        
         pop edx                
@@ -2932,7 +2932,7 @@ dump_memory.@4:
 ;-----------------------------------------------------
 get_usable_processor_index:
         ;;
-        ;; ÔÚ UsableProcessorMask ÀïÕÒµ½Ò»¸ö¿ÉÓÃµÄ processor index Öµ
+        ;; åœ¨ UsableProcessorMask é‡Œæ‰¾åˆ°ä¸€ä¸ªå¯ç”¨çš„ processor index å€¼
         ;;
         mov eax, SDA.UsableProcessorMask
         mov eax, [fs: eax]
@@ -2951,14 +2951,14 @@ get_usable_processor_index:
 ;-----------------------------------------------------                        
 report_system_status:
         ;;
-        ;; ¶¨Î»ÔÚ 0,0 Î»ÖÃÉÏ
+        ;; å®šä½åœ¨ 0,0 ä½ç½®ä¸Š
         ;;
         mov esi, 0
         mov edi, 0
         call set_video_buffer
         
         ;;
-        ;; ´òÓ¡ [Cpus]
+        ;; æ‰“å° [Cpus]
         ;;
         mov esi, Status.CpusMsg
         call puts
@@ -2969,7 +2969,7 @@ report_system_status:
         call putc
         
         ;;
-        ;; ´òÓ¡ [Cpu model]
+        ;; æ‰“å° [Cpu model]
         ;;
         mov esi, Status.CpuModelMsg
         call puts
@@ -2980,7 +2980,7 @@ report_system_status:
         call putc
         
         ;;
-        ;; ´òÓ¡ [Stage]
+        ;; æ‰“å° [Stage]
         ;;
         mov esi, Status.StageMsg
         call puts
@@ -2992,7 +2992,7 @@ report_system_status:
         call putc
         
         ;;
-        ;; ´òÓ¡ [Cpu id]
+        ;; æ‰“å° [Cpu id]
         ;;
         mov esi, Status.CpuIdMsg
         call puts
@@ -3004,7 +3004,7 @@ report_system_status:
         
         
         ;;
-        ;; ´òÓ¡ [VMX]
+        ;; æ‰“å° [VMX]
         ;;
         mov esi, Status.VmxMsg
         call puts
@@ -3018,12 +3018,12 @@ report_system_status:
         call putc
         
         ;;
-        ;; ´òÓ¡ [Host/Guest]
+        ;; æ‰“å° [Host/Guest]
         ;;
         mov esi, Status.EptMsg
         call puts
         ;;
-        ;; ¼ì²é guest ±êÖ¾Öµ
+        ;; æ£€æŸ¥ guest æ ‡å¿—å€¼
         ;;
         mov esi, PCB.EptEnableFlag
         cmp BYTE [gs: esi], 1
@@ -3042,19 +3042,19 @@ report_system_status:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¸üĞÂÏµÍ³×´Ì¬µ½ local video buffer Àï
+; æè¿°ï¼š
+;       1) æ›´æ–°ç³»ç»ŸçŠ¶æ€åˆ° local video buffer é‡Œ
 ;-----------------------------------------------------                        
 update_system_status:
         ;;
-        ;; ¶¨Î»ÔÚ 0,0 Î»ÖÃÉÏ
+        ;; å®šä½åœ¨ 0,0 ä½ç½®ä¸Š
         ;;
         mov esi, 0
         mov edi, 0
         call set_video_buffer
 
         ;;
-        ;; ´òÓ¡ [Cpu id]
+        ;; æ‰“å° [Cpu id]
         ;;
         mov esi, Status.CpuIdMsg
         call puts
@@ -3065,7 +3065,7 @@ update_system_status:
         call putc
                
         ;;
-        ;; ´òÓ¡ [Stage]
+        ;; æ‰“å° [Stage]
         ;;
         mov esi, Status.StageMsg
         call puts
@@ -3077,7 +3077,7 @@ update_system_status:
         call putc
         
         ;;
-        ;; ´òÓ¡ [Cpus]
+        ;; æ‰“å° [Cpus]
         ;;
         mov esi, Status.CpusMsg
         call puts
@@ -3088,7 +3088,7 @@ update_system_status:
         call putc
         
         ;;
-        ;; ´òÓ¡ [Cpu model]
+        ;; æ‰“å° [Cpu model]
         ;;
         mov esi, Status.CpuModelMsg
         call puts
@@ -3099,7 +3099,7 @@ update_system_status:
         call putc
                 
         ;;
-        ;; ´òÓ¡ [VMX]
+        ;; æ‰“å° [VMX]
         ;;
         mov esi, Status.VmxMsg
         call puts
@@ -3113,13 +3113,13 @@ update_system_status:
         call putc
         
         ;;
-        ;; ´òÓ¡ [Ept]
+        ;; æ‰“å° [Ept]
         ;;
         mov esi, Status.EptMsg
         call puts
         
         ;;
-        ;; ¼ì²é Ept enable ±êÖ¾
+        ;; æ£€æŸ¥ Ept enable æ ‡å¿—
         ;;
         mov esi, PCB.EptEnableFlag
         cmp BYTE [gs: esi], 1

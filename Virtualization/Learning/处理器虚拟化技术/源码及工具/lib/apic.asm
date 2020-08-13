@@ -1,6 +1,6 @@
 ;*************************************************
 ;* apic.asm                                      *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -16,12 +16,12 @@ IAPIC_BASE64                    EQU     0FFFFF800FEC00000h
 
 
 ;-----------------------------------------------------
-; support_apic()£º¼ì²âÊÇ·ñÖ§³Ö APIC on ChipµÄ local APIC
+; support_apic()ï¼šæ£€æµ‹æ˜¯å¦æ”¯æŒ APIC on Chipçš„ local APIC
 ;----------------------------------------------------
 support_apic:
         push edx
         mov edx, [gs: PCB.FeatureEdx]
-        bt edx, 9				; ¼ì²é CPUID.01H:EDX[9] Î» 
+        bt edx, 9				; æ£€æŸ¥ CPUID.01H:EDX[9] ä½ 
         setc al
         movzx eax, al
         pop edx
@@ -29,33 +29,33 @@ support_apic:
 
 
 ;--------------------------------------------
-; support_x2apic(): ¼ìÔòÊÇ·ñÖ§³Ö x2apic
+; support_x2apic(): æ£€åˆ™æ˜¯å¦æ”¯æŒ x2apic
 ;--------------------------------------------
 support_x2apic:
         push ecx
         mov ecx, [gs: PCB.FeatureEcx]
         bt ecx, 21
-        setc al					; ¼ì²é CPUID.01H:ECX[21] Î»
+        setc al					; æ£€æŸ¥ CPUID.01H:ECX[21] ä½
         movzx eax, al
         pop ecx
         ret	
 
 
 ;-------------------------------------
-; enable_apic(): ¿ªÆô apic
+; enable_apic(): å¼€å¯ apic
 ; input:
 ;       none
 ;------------------------------------
 enable_apic:
         ;;
-        ;; ¼ì²éÊÇ·ñÒÑ¾­¿ªÆôÁË local apic
+        ;; æ£€æŸ¥æ˜¯å¦å·²ç»å¼€å¯äº† local apic
         ;;
         movzx eax, BYTE [gs: PCB.IsLapicEnable]
         test eax, eax
         jnz enable_apic.done
         
         ;;
-        ;; ¼ì²éÊÇ·ñ¿ªÆô paging£¬Ã»¿ªÆôÏÂ apic Ê¹ÓÃÎïÀí»ùÖ·
+        ;; æ£€æŸ¥æ˜¯å¦å¼€å¯ pagingï¼Œæ²¡å¼€å¯ä¸‹ apic ä½¿ç”¨ç‰©ç†åŸºå€
         ;; 
         mov eax, [gs: PCB.ProcessorStatus]
         test eax, CPU_STATUS_PG
@@ -63,14 +63,14 @@ enable_apic:
         cmovz esi, [gs: PCB.LapicPhysicalBase]
         
         ;;
-        ;; ¿ªÆô local apic
+        ;; å¼€å¯ local apic
         ;;
         mov eax, [esi + SVR]
         bt eax, 8
         mov [esi + SVR], eax
         mov eax, 1
         ;;
-        ;; ¸üĞÂ PCB.IsLapicEnable Öµ
+        ;; æ›´æ–° PCB.IsLapicEnable å€¼
         ;;
         mov [gs: PCB.IsLapicEnable], al
 enable_apic.done:        
@@ -78,7 +78,7 @@ enable_apic.done:
 
 
 ;-------------------------------------
-; disable_apic(): ¹Ø±Õ apic
+; disable_apic(): å…³é—­ apic
 ; input:
 ;       none
 ;------------------------------------
@@ -88,7 +88,7 @@ disable_apic:
         jz disable_apic.done
         
         ;;
-        ;; ¼ì²éÊÇ·ñ¿ªÆô paging£¬Ã»¿ªÆôÏÂ apic Ê¹ÓÃÎïÀí»ùÖ·
+        ;; æ£€æŸ¥æ˜¯å¦å¼€å¯ pagingï¼Œæ²¡å¼€å¯ä¸‹ apic ä½¿ç”¨ç‰©ç†åŸºå€
         ;; 
         mov eax, [gs: PCB.ProcessorStatus]
         test eax, CPU_STATUS_PG
@@ -96,13 +96,13 @@ disable_apic:
         cmovz esi, [gs: PCB.LapicPhysicalBase]
                 
         ;;
-        ;; ¹Ø±Õ apic
+        ;; å…³é—­ apic
         ;;
         mov eax, [esi + SVR]
         btr eax, 8		                ; SVR.enable = 0
         mov [esi + SVR], eax
         ;;
-        ;; ¸üĞÂ apic
+        ;; æ›´æ–° apic
         ;;
         mov BYTE [gs: PCB.IsLapicEnable], 0
 disable_apic.done:        
@@ -118,7 +118,7 @@ disable_apic.done:
 enable_x2apic:
         mov ecx, IA32_APIC_BASE
         rdmsr
-        or eax, 0xc00						; bit 10, bit 11 ÖÃÎ»
+        or eax, 0xc00						; bit 10, bit 11 ç½®ä½
         wrmsr
         ret
 	
@@ -128,13 +128,13 @@ enable_x2apic:
 disable_x2apic:
         mov ecx, IA32_APIC_BASE
         rdmsr
-        and eax, 0xfffff3ff					; bit 10, bit 11 ÇåÎ»
+        and eax, 0xfffff3ff					; bit 10, bit 11 æ¸…ä½
         wrmsr
         ret	
 
 
 ;------------------------------
-; reset_apic(): Çåµô local apic
+; reset_apic(): æ¸…æ‰ local apic
 ;------------------------------
 reset_apic:
         mov ecx, IA32_APIC_BASE
@@ -144,7 +144,7 @@ reset_apic:
         ret
 
 ;---------------------------------
-; set_apic(): ¿ªÆô apic
+; set_apic(): å¼€å¯ apic
 ;---------------------------------
 set_apic:
         mov ecx, IA32_APIC_BASE
@@ -157,29 +157,29 @@ set_apic:
 ;------------------------------------------------
 ; set_apic_physical_base()
 ; input:
-;       esi: µÍ 32 Î»£¬ edi: ¸ß°ë²¿·Ö
+;       esi: ä½ 32 ä½ï¼Œ edi: é«˜åŠéƒ¨åˆ†
 ; output:
 ;       none
-; ÃèÊö£º
-;       ÉèÖÃ apic µÄÎïÀí»ùÖ·£¨ÔÚ MAXPHYADDR ÖµÄÚ£©
+; æè¿°ï¼š
+;       è®¾ç½® apic çš„ç‰©ç†åŸºå€ï¼ˆåœ¨ MAXPHYADDR å€¼å†…ï¼‰
 ;------------------------------------------------
 set_apic_physical_base:
         push edx
         push ecx
         ;;
-        ;; È·±£µØÖ·ÔÚ´¦ÀíÆ÷Ö§³ÖµÄ MAXPHYADDR ·¶Î§ÄÚ
+        ;; ç¡®ä¿åœ°å€åœ¨å¤„ç†å™¨æ”¯æŒçš„ MAXPHYADDR èŒƒå›´å†…
         ;;
         and esi, [gs: PCB.MaxPhyAddrSelectMask]
         and edi, [gs: PCB.MaxPhyAddrSelectMask + 4]
         mov ecx, IA32_APIC_BASE
         rdmsr
-        and esi, 0FFFFF000h                                             ; È¥µôµÍ 12 Î»
-        and eax, 0FFFh                                                  ; ±£³ÖÔ­À´µÄ IA32_APIC_BASE ¼Ä´æÆ÷µÍ 12 Î»
+        and esi, 0FFFFF000h                                             ; å»æ‰ä½ 12 ä½
+        and eax, 0FFFh                                                  ; ä¿æŒåŸæ¥çš„ IA32_APIC_BASE å¯„å­˜å™¨ä½ 12 ä½
         or eax, esi
         mov edx, edi
         wrmsr
         ;;
-        ;; ¸üĞÂ apic ĞÅÏ¢
+        ;; æ›´æ–° apic ä¿¡æ¯
         mov [gs: PCB.LapicPhysicalBase], eax
         mov [gs: PCB.LapicPhysicalBase + 4], edx
         pop ecx
@@ -191,9 +191,9 @@ set_apic_physical_base:
 ; input:
 ;       none
 ; output:
-;       edx:eax - 64 Î»µØÖ·Öµ
-; ÃèÊö:
-;       µÃµ½ apic µÄÎïÀí»ùÖ·
+;       edx:eax - 64 ä½åœ°å€å€¼
+; æè¿°:
+;       å¾—åˆ° apic çš„ç‰©ç†åŸºå€
 ;----------------------------------------------------
 get_apic_physical_base:
         mov eax, [gs: PCB.LapicPhysicalBase]
@@ -207,9 +207,9 @@ get_apic_physical_base:
 ; input:
 ;       none
 ; output:
-;       eax - ×î´óÂß¼­´¦ÀíÆ÷Êı
-; ÃèÊö£º
-;       »ñµÃ package£¨´¦ÀíÆ÷£©ÖĞµÄÂß¼­ processor ÊıÁ¿
+;       eax - æœ€å¤§é€»è¾‘å¤„ç†å™¨æ•°
+; æè¿°ï¼š
+;       è·å¾— packageï¼ˆå¤„ç†å™¨ï¼‰ä¸­çš„é€»è¾‘ processor æ•°é‡
 ;----------------------------------------------------
 get_logical_processor_count:
         mov eax, [gs: PCB.MaxLogicalProcessor]
@@ -232,8 +232,8 @@ get_processor_core_count:
 ;       none
 ; output:
 ;       eax - inital apic id
-; ÃèÊö£º
-;       µÃµ½ initial apic id
+; æè¿°ï¼š
+;       å¾—åˆ° initial apic id
 ;---------------------------------------------------
 get_apic_id:
         mov eax, [gs: PCB.InitialApicId]
@@ -243,13 +243,13 @@ get_apic_id:
 ;---------------------------------------
 ; get_x2apic_id()
 ; output:
-;       eax - 32 Î»µÄ apic id Öµ
+;       eax - 32 ä½çš„ apic id å€¼
 ;---------------------------------------
 get_x2apic_id:
         push edx
-        mov eax, 0Bh            ; Ê¹ÓÃ 0B leaf
+        mov eax, 0Bh            ; ä½¿ç”¨ 0B leaf
         cpuid
-        mov eax, edx			; ·µ»Ø x2APIC ID
+        mov eax, edx			; è¿”å› x2APIC ID
         pop edx
         ret     
         
@@ -261,8 +261,8 @@ get_x2apic_id:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       Ã¶¾Ù CPUID 0B leaf£¬À´µÃµ½´¦ÀíÆ÷ÍØÆËĞÅÏ¢£¬¸üĞÂ PCB ÄÚµÄÍØÆË¼ÇÂ¼
+; æè¿°ï¼š
+;       æšä¸¾ CPUID 0B leafï¼Œæ¥å¾—åˆ°å¤„ç†å™¨æ‹“æ‰‘ä¿¡æ¯ï¼Œæ›´æ–° PCB å†…çš„æ‹“æ‰‘è®°å½•
 ;-------------------------------------------------------------------
 init_processor_topology_info:
         push ecx
@@ -271,7 +271,7 @@ init_processor_topology_info:
         push ebp
         
         ;;
-        ;; ¼ì²éÊÇ·ñÖ§³Ö CUPID OB leaf
+        ;; æ£€æŸ¥æ˜¯å¦æ”¯æŒ CUPID OB leaf
         ;;
         mov eax, [gs: PCB.MaxBasicLeaf]
         xor edx, edx
@@ -279,7 +279,7 @@ init_processor_topology_info:
         jb init_processor_topology_info.done
 
         ;;
-        ;; ¼ì²éÊÇ·ñ¿ªÆô paging£¬Ã»¿ªÆôÏÂ PCB Ê¹ÓÃÎïÀí»ùÖ·
+        ;; æ£€æŸ¥æ˜¯å¦å¼€å¯ pagingï¼Œæ²¡å¼€å¯ä¸‹ PCB ä½¿ç”¨ç‰©ç†åŸºå€
         ;;
         mov eax, [gs: PCB.ProcessorStatus]
         test eax, CPU_STATUS_PG
@@ -291,37 +291,37 @@ init_processor_topology_info:
         dec edi
                         
         ;;
-        ;; ¿ªÊ¼Ã¶¾Ù£ºEAX = 0Bh, ECX = 0
-        ;; È»ºó£¬Ã¿´ÎµİÔö ECX Öµ£¬ÔÙÖ´ĞĞ CPUID.0BH leaf
+        ;; å¼€å§‹æšä¸¾ï¼šEAX = 0Bh, ECX = 0
+        ;; ç„¶åï¼Œæ¯æ¬¡é€’å¢ ECX å€¼ï¼Œå†æ‰§è¡Œ CPUID.0BH leaf
         ;;
-        xor esi, esi                                            ; ¿ªÊ¼µÄ sub-leaf Îª 0
+        xor esi, esi                                            ; å¼€å§‹çš„ sub-leaf ä¸º 0
         
 init_processor_topology_info.loop:	
         mov ecx, esi
         mov eax, 0Bh
         cpuid
-        inc esi                                                 ; µİÔö sub-leaf       
+        inc esi                                                 ; é€’å¢ sub-leaf       
                 
         ;;
-        ;; Ö´ĞĞ CPUID.0BH/ECX Ê±£¬·µ»Ø ECX[15:8] Îª level type
+        ;; æ‰§è¡Œ CPUID.0BH/ECX æ—¶ï¼Œè¿”å› ECX[15:8] ä¸º level type
         ;;
-        ;; 1) ÊäÈë ECX = 0 Ê±£¬·µ»Ø£ºECX[7:0] = 0, ECX[15:8] = 1
-        ;; 2) ÊäÈë ECX = 1 Ê±£¬·µ»Ø£ºECX[7:0] = 1, ECX[15:8] = 2
-        ;; 3) ÊäÈë ECX = 2 Ê±£¬·µ»Ø£ºECX[7:0] = 2£¬ECX[15:8] = 0
+        ;; 1) è¾“å…¥ ECX = 0 æ—¶ï¼Œè¿”å›ï¼šECX[7:0] = 0, ECX[15:8] = 1
+        ;; 2) è¾“å…¥ ECX = 1 æ—¶ï¼Œè¿”å›ï¼šECX[7:0] = 1, ECX[15:8] = 2
+        ;; 3) è¾“å…¥ ECX = 2 æ—¶ï¼Œè¿”å›ï¼šECX[7:0] = 2ï¼ŒECX[15:8] = 0
         ;;        
         shr ecx, 8
         and ecx, 0FFh
-        jz init_processor_topology_info.next                  ; Èç¹û level = 0£¬Í£Ö¹Ã¶¾Ù
+        jz init_processor_topology_info.next                  ; å¦‚æœ level = 0ï¼Œåœæ­¢æšä¸¾
         
         ;;
-        ;; EAX[4:0] ·µ»Ø level µÄ mask width Öµ
+        ;; EAX[4:0] è¿”å› level çš„ mask width å€¼
         ;;
         and eax, 01Fh                                           ; mask width
         
         ;;
-        ;; ¸ù¾İ level type À´½øĞĞ´¦Àí:
-        ;; 1) ECX[15:8] = 1 Ê±£¬ÊôÓÚ thread level
-        ;; 2) ECX[15:8] = 2 Ê±£¬ÊôÓÚ core level
+        ;; æ ¹æ® level type æ¥è¿›è¡Œå¤„ç†:
+        ;; 1) ECX[15:8] = 1 æ—¶ï¼Œå±äº thread level
+        ;; 2) ECX[15:8] = 2 æ—¶ï¼Œå±äº core level
         ;; 
         cmp ecx, LEVEL_THREAD
         je @@1
@@ -329,30 +329,30 @@ init_processor_topology_info.loop:
         jne init_processor_topology_info.loop
         
         ;;
-        ;; ÊôÓÚ core level
-        ;; ×¢Òâ£º
-        ;; 1) CoreMaskWidth Öµ°üº¬ÁË ThreadMaskWidth ÔÚÄÚ
-        ;; 2) CoreSelectMask Öµ°üÆôÁË ThreadSelectMask ÔÚÄÚ
-        ;; 3) APIC ID Ê£ÓàµÄÓò¹éÎª PackageId£¬Òò´Ë£ºPackageId = APIC ID >> CoreMaskWidth
-        ;;¡¡
+        ;; å±äº core level
+        ;; æ³¨æ„ï¼š
+        ;; 1) CoreMaskWidth å€¼åŒ…å«äº† ThreadMaskWidth åœ¨å†…
+        ;; 2) CoreSelectMask å€¼åŒ…å¯äº† ThreadSelectMask åœ¨å†…
+        ;; 3) APIC ID å‰©ä½™çš„åŸŸå½’ä¸º PackageIdï¼Œå› æ­¤ï¼šPackageId = APIC ID >> CoreMaskWidth
+        ;;ã€€
         mov [ebp + TopologyInfo.CoreMaskWidth], al
         mov ecx, eax
         mov eax, edx
         shr eax, cl                                             ; PackageId = APIC ID >> CoreMaskWidth
-        mov [ebp + TopologyInfo.PackageId], eax                 ; ¸üĞÂ PackageId Öµ
+        mov [ebp + TopologyInfo.PackageId], eax                 ; æ›´æ–° PackageId å€¼
         xor eax, eax
-        shld eax, edi, cl                                       ; ³õÊ¼ CoreSelectMask = -1 << CoreMaskWidth
-        sub eax, [ebp + TopologyInfo.ThreadSelectMask]          ; CoreSelectMask = ³õÊ¼ CoreSelectMask - ThreadSelectMask
-        mov [ebp + TopologyInfo.CoreSelectMask], eax            ; ¸üĞÂ CoreSelectMask Öµ
-        and eax, edx                                            ; ³õÊ¼ CoreId = CoreSelectMask & APIC ID
+        shld eax, edi, cl                                       ; åˆå§‹ CoreSelectMask = -1 << CoreMaskWidth
+        sub eax, [ebp + TopologyInfo.ThreadSelectMask]          ; CoreSelectMask = åˆå§‹ CoreSelectMask - ThreadSelectMask
+        mov [ebp + TopologyInfo.CoreSelectMask], eax            ; æ›´æ–° CoreSelectMask å€¼
+        and eax, edx                                            ; åˆå§‹ CoreId = CoreSelectMask & APIC ID
         mov cl, BYTE [ebp + TopologyInfo.ThreadMaskWidth]
-        shr eax, cl                                             ; CoreId = ³õÊ¼ CoreId >> ThreadMaskWidth
-        mov [ebp + TopologyInfo.CoreId], al                     ; ¸üĞÂ CoreId Öµ
-        sub [ebp + TopologyInfo.CoreMaskWidth], cl              ; ¸üĞÂ CoreMaskWidth Öµ
+        shr eax, cl                                             ; CoreId = åˆå§‹ CoreId >> ThreadMaskWidth
+        mov [ebp + TopologyInfo.CoreId], al                     ; æ›´æ–° CoreId å€¼
+        sub [ebp + TopologyInfo.CoreMaskWidth], cl              ; æ›´æ–° CoreMaskWidth å€¼
         
         ;;
-        ;; ¼ì²â logical processor ÊıÁ¿:
-        ;; 1) µ±ÊôÓÚ Core Level£¨ECX[15:8] = 2£©Ê±£¬EBX[15:0] ·µ»Ø´¦ÀíÆ÷ÎïÀí package ÄÚÓĞµÄ logical processor ÊıÁ¿
+        ;; æ£€æµ‹ logical processor æ•°é‡:
+        ;; 1) å½“å±äº Core Levelï¼ˆECX[15:8] = 2ï¼‰æ—¶ï¼ŒEBX[15:0] è¿”å›å¤„ç†å™¨ç‰©ç† package å†…æœ‰çš„ logical processor æ•°é‡
         ;;
         and ebx, 0FFFFh
         mov [ebp + TopologyInfo.LogicalProcessorPerPackage], ebx
@@ -361,35 +361,35 @@ init_processor_topology_info.loop:
         
 @@1:
         ;;
-        ;; ÊôÓÚ thread level
+        ;; å±äº thread level
         ;;
-        mov [ebp + TopologyInfo.ThreadMaskWidth], al            ; ¸üĞÂ TheadMaskWidth Öµ
+        mov [ebp + TopologyInfo.ThreadMaskWidth], al            ; æ›´æ–° TheadMaskWidth å€¼
         mov ecx, eax
         xor eax, eax
         shld eax, edi, cl                                       ; ThreadSelectMask = -1 << ThreadMaskWidth
-        mov [ebp + TopologyInfo.ThreadSelectMask], eax          ; ¸üĞÂ ThreadSelectMask Öµ
+        mov [ebp + TopologyInfo.ThreadSelectMask], eax          ; æ›´æ–° ThreadSelectMask å€¼
         and eax, edx                                            ; ThreadId = APIC ID & ThreadSelectMask
-        mov [ebp + TopologyInfo.ThreadId], al                   ; ¸üĞÂ TheadId Öµ
+        mov [ebp + TopologyInfo.ThreadId], al                   ; æ›´æ–° TheadId å€¼
         
         ;;
-        ;; ¼ì²â logical processor ÊıÁ¿:
-        ;; 1) µ±ÊôÓÚ Thread Level£¨ECX[15:8] = 1£©Ê±£¬EBX[15:0] ·µ»Ø core ÄÚÓĞµÄ logical processor ÊıÁ¿
+        ;; æ£€æµ‹ logical processor æ•°é‡:
+        ;; 1) å½“å±äº Thread Levelï¼ˆECX[15:8] = 1ï¼‰æ—¶ï¼ŒEBX[15:0] è¿”å› core å†…æœ‰çš„ logical processor æ•°é‡
         ;;
         and ebx, 0FFFFh
-        mov [ebp + TopologyInfo.LogicalProcessorPerCore], ebx   ; ¸üĞÂ logical Processor per core Öµ
+        mov [ebp + TopologyInfo.LogicalProcessorPerCore], ebx   ; æ›´æ–° logical Processor per core å€¼
         
         jmp init_processor_topology_info.loop
         
         
 init_processor_topology_info.next:
         ;;
-        ;; ¸üĞÂÊ£ÓàĞÅÏ¢£º
-        ;; 1) 32 Î» Processor ID Öµ
-        ;; 2) ´¦ÀíÆ÷ logical processor Óë core ¼ÆÊıÖµ
+        ;; æ›´æ–°å‰©ä½™ä¿¡æ¯ï¼š
+        ;; 1) 32 ä½ Processor ID å€¼
+        ;; 2) å¤„ç†å™¨ logical processor ä¸ core è®¡æ•°å€¼
         ;;
-        mov [ebp + TopologyInfo.ProcessorId], edx               ; ¸üĞÂ ProcessorId£¨32 Î»µÄÀ©Õ¹ APIC ID Öµ£©
+        mov [ebp + TopologyInfo.ProcessorId], edx               ; æ›´æ–° ProcessorIdï¼ˆ32 ä½çš„æ‰©å±• APIC ID å€¼ï¼‰
         ;;
-        ;; ´¦ÀíÆ÷ logical processor Óë core ÊıÁ¿µÄ¼ÆËã·½·¨£º
+        ;; å¤„ç†å™¨ logical processor ä¸ core æ•°é‡çš„è®¡ç®—æ–¹æ³•ï¼š
         ;; 1) LogicalProcessorCount = LogicalProcessorPerPackage
         ;; 2) ProcessorCoreCount = LogicalProcessorPerPackage / LogicalProcessorPerCore
         ;;
@@ -415,8 +415,8 @@ init_processor_topology_info.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ·¢ËÍ EOI ÃüÁî¸ø local apic
+; æè¿°ï¼š
+;       1) å‘é€ EOI å‘½ä»¤ç»™ local apic
 ;-----------------------------------------------------
 send_eoi_command:
         push ebp
@@ -441,20 +441,20 @@ send_eoi_command:
 
 
 ;-----------------------------------------------------
-; get_mask_width(): µÃµ½ mask width£¬Ê¹ÓÃÓÚ xAPIC IDÖĞ
+; get_mask_width(): å¾—åˆ° mask widthï¼Œä½¿ç”¨äº xAPIC IDä¸­
 ; input:
-;       esi - maximum count£¨SMT »ò core µÄ×î´ó count Öµ£©
+;       esi - maximum countï¼ˆSMT æˆ– core çš„æœ€å¤§ count å€¼ï¼‰
 ; output:
 ;       eax - mask width
 ;-------------------------------------------------------
 get_mask_width:
-	xor eax, eax			; ÇåÄ¿±ê¼Ä´æÆ÷£¬ÓÃÓÚMSB²»Îª1Ê±
-	bsr eax, esi			; ²éÕÒ count ÖĞµÄ MSB Î»
+	xor eax, eax			; æ¸…ç›®æ ‡å¯„å­˜å™¨ï¼Œç”¨äºMSBä¸ä¸º1æ—¶
+	bsr eax, esi			; æŸ¥æ‰¾ count ä¸­çš„ MSB ä½
 	ret
 	
 	
 ;------------------------------------------------------------------
-; extrac_xapic_id(): ´Ó 8 Î»µÄ xAPIC ID ÀïÌáÈ¡ package, core, smt Öµ
+; extrac_xapic_id(): ä» 8 ä½çš„ xAPIC ID é‡Œæå– package, core, smt å€¼
 ;-------------------------------------------------------------------	
 extrac_xapic_id:
 	jmp do_extrac_xapic_id
@@ -464,41 +464,41 @@ do_extrac_xapic_id:
 	push edx
 	push ebx
 
-	call get_apic_id						; µÃµ½ xAPIC ID Öµ
-	mov [current_apic_id], eax				; ±£´æ xAPIC ID
+	call get_apic_id						; å¾—åˆ° xAPIC ID å€¼
+	mov [current_apic_id], eax				; ä¿å­˜ xAPIC ID
 
-;; ¼ÆËã SMT_MASK_WIDTH ºÍ SMT_SELECT_MASK	
-	call get_logical_processor_count		; µÃµ½ logical processor ×î´ó¼ÆÊıÖµ
+;; è®¡ç®— SMT_MASK_WIDTH å’Œ SMT_SELECT_MASK	
+	call get_logical_processor_count		; å¾—åˆ° logical processor æœ€å¤§è®¡æ•°å€¼
 	mov esi, eax
-	call get_mask_width						; µÃµ½ SMT_MASK_WIDTH
+	call get_mask_width						; å¾—åˆ° SMT_MASK_WIDTH
 	mov edx, [current_apic_id]
 	mov [xapic_smt_mask_width + edx * 4], eax
 	mov ecx, eax
 	mov ebx, 0xFFFFFFFF
-	shl ebx, cl								; µÃµ½ SMT_SELECT_MASK
+	shl ebx, cl								; å¾—åˆ° SMT_SELECT_MASK
 	not ebx
 	mov [xapic_smt_select_mask + edx * 4], ebx
 	
-;; ¼ÆËã CORE_MASK_WIDTH ºÍ CORE_SELECT_MASK 
+;; è®¡ç®— CORE_MASK_WIDTH å’Œ CORE_SELECT_MASK 
 	call get_processor_core_count
 	mov esi, eax
-	call get_mask_width						; µÃµ½ CORE_MASK_WIDTH
+	call get_mask_width						; å¾—åˆ° CORE_MASK_WIDTH
 	mov edx, [current_apic_id]	
 	mov [xapic_core_mask_width + edx * 4], eax
 	mov ecx, [xapic_smt_mask_width + edx * 4]
 	add ecx, eax							; CORE_MASK_WIDTH + SMT_MASK_WIDTH
 	mov eax, 32
 	sub eax, ecx
-	mov [xapic_package_mask_width + edx * 4], eax		; ±£´æ PACKAGE_MASK_WIDTH
+	mov [xapic_package_mask_width + edx * 4], eax		; ä¿å­˜ PACKAGE_MASK_WIDTH
 	mov ebx, 0xFFFFFFFF
 	shl ebx, cl
-	mov [xapic_package_select_mask + edx * 4], ebx		; ±£´æ PACKAGE_SELECT_MASK
+	mov [xapic_package_select_mask + edx * 4], ebx		; ä¿å­˜ PACKAGE_SELECT_MASK
 	not ebx									; ~(-1 << (CORE_MASK_WIDTH + SMT_MASK_WIDTH))
 	mov eax, [xapic_smt_select_mask + edx * 4]
 	xor ebx, eax							; ~(-1 << (CORE_MASK_WIDTH + SMT_MASK_WIDTH)) ^ SMT_SELECT_MASK
 	mov [xapic_core_select_mask + edx * 4], ebx
 	
-;; ÌáÈ¡ SMT_ID, CORE_ID, PACKAGE_ID
+;; æå– SMT_ID, CORE_ID, PACKAGE_ID
 	mov ebx, edx							; apic id
 	mov eax, [xapic_smt_select_mask]
 	and eax, edx							; APIC_ID & SMT_SELECT_MASK
@@ -521,14 +521,14 @@ do_extrac_xapic_id:
 	
 		
 ;-------------------------------------------------------------
-; extrac_x2apic_id(): ´Ó x2APIC_ID ÀïÌáÈ¡ package, core, smt Öµ
+; extrac_x2apic_id(): ä» x2APIC_ID é‡Œæå– package, core, smt å€¼
 ;-------------------------------------------------------------
 extrac_x2apic_id:
 	push ecx
 	push edx
 	push ebx
 
-; ²âÊÔÊÇ·ñÖ§³Ö leaf 11
+; æµ‹è¯•æ˜¯å¦æ”¯æŒ leaf 11
 	mov eax, 0
 	cpuid
 	cmp eax, 11
@@ -540,9 +540,9 @@ do_extrac_loop:
 	mov ecx, esi
 	mov eax, 11
 	cpuid	
-	mov [x2apic_id + edx * 4], edx				; ±£´æ x2apic id
+	mov [x2apic_id + edx * 4], edx				; ä¿å­˜ x2apic id
 	shr ecx, 8
-	and ecx, 0xff								; level ÀàĞÍ
+	and ecx, 0xff								; level ç±»å‹
 	jz do_extrac_subid
 	
 	cmp ecx, 1									; SMT level
@@ -550,36 +550,36 @@ do_extrac_loop:
 	cmp ecx, 2									; core level
 	jne do_extrac_loop_next
 
-;; ¼ÆËã core mask	
+;; è®¡ç®— core mask	
 	and eax, 0x1f
-	mov [x2apic_core_mask_width + edx * 4], eax	; ±£´æ CORE_MASK_WIDTH
+	mov [x2apic_core_mask_width + edx * 4], eax	; ä¿å­˜ CORE_MASK_WIDTH
 	mov ebx, 32
 	sub ebx, eax
-	mov [x2apic_package_mask_width + edx * 4], ebx	; ±£´æ package_mask_width
+	mov [x2apic_package_mask_width + edx * 4], ebx	; ä¿å­˜ package_mask_width
 	mov cl, al
 	mov ebx, 0xFFFFFFFF							;
 	shl ebx, cl									; -1 << CORE_MASK_WIDTH
-	mov [x2apic_package_select_mask + edx * 4], ebx		; ±£´æ package_select_mask
+	mov [x2apic_package_select_mask + edx * 4], ebx		; ä¿å­˜ package_select_mask
 	not ebx										; ~(-1 << CORE_MASK_WIDTH)
 	xor ebx, [x2apic_smt_select_mask + edx * 4]					; ~(-1 << CORE_MASK_WIDTH) ^ SMT_SELECT_MASK
-	mov [x2apic_core_select_mask + edx * 4], ebx					; ±£´æ CORE_SELECT_MASK
+	mov [x2apic_core_select_mask + edx * 4], ebx					; ä¿å­˜ CORE_SELECT_MASK
 	jmp do_extrac_loop_next
 
-;; ¼ÆËã smt mask	
+;; è®¡ç®— smt mask	
 extrac_smt:
 	and eax, 0x1f
-	mov [x2apic_smt_mask_width + edx * 4], eax					; ±£´æ SMT_MASK_WIDTH
+	mov [x2apic_smt_mask_width + edx * 4], eax					; ä¿å­˜ SMT_MASK_WIDTH
 	mov cl, al
 	mov ebx, 0xFFFFFFFF
 	shl ebx, cl									; (-1) << SMT_MASK_WIDTH
 	not ebx										; ~(-1 << SMT_MASK_WIDTH)
-	mov [x2apic_smt_select_mask + edx * 4], ebx					; ±£´æ SMT_SELECT_MASK
+	mov [x2apic_smt_select_mask + edx * 4], ebx					; ä¿å­˜ SMT_SELECT_MASK
 
 do_extrac_loop_next:
 	inc esi
 	jmp do_extrac_loop
 	
-;; ÌáÈ¡ SMT_ID, CORE_ID ÒÔ¼° PACKAGE_ID
+;; æå– SMT_ID, CORE_ID ä»¥åŠ PACKAGE_ID
 do_extrac_subid:
 	mov eax, [x2apic_id + edx * 4]
 	mov ebx, [x2apic_smt_select_mask]
@@ -606,7 +606,7 @@ extrac_x2apic_id_done:
 %endif	
 		
 ;-----------------------------------
-; read_esr(): ¶Á ESR ¼Ä´æÆ÷
+; read_esr(): è¯» ESR å¯„å­˜å™¨
 ;-----------------------------------
 read_esr:
         push ebp
@@ -617,7 +617,7 @@ read_esr:
 %endif        
         REX.Wrxb
         mov eax, [ebp + PCB.LapicBase]
-        mov DWORD [eax + ESR], 0		        ; Ğ´ ESR ¼Ä´æÆ÷
+        mov DWORD [eax + ESR], 0		        ; å†™ ESR å¯„å­˜å™¨
         mov eax, [eax + ESR]
         pop ebp
 	ret

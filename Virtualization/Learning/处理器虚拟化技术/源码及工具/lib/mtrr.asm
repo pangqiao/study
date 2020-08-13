@@ -1,12 +1,12 @@
 ;*************************************************
 ;* mtrr.asm                                      *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
 
 ;;
-;; Õâ¸öÄ£¿éÊÇ mtrr ¼Ä´æÆ÷µÄÀı³Ì
+;; è¿™ä¸ªæ¨¡å—æ˜¯ mtrr å¯„å­˜å™¨çš„ä¾‹ç¨‹
 ;;
 
 
@@ -16,14 +16,14 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       ¸üĞÂÄÚ´æÀàĞÍ¹ÜÀíĞÅÏ¢
+; æè¿°ï¼š
+;       æ›´æ–°å†…å­˜ç±»å‹ç®¡ç†ä¿¡æ¯
 ;-----------------------------------------------------
 update_memory_type_manage_info:
         push ecx
         push edx
         ;;
-        ;; ¼ì²é Memory Type Range Register ¹¦ÄÜ
+        ;; æ£€æŸ¥ Memory Type Range Register åŠŸèƒ½
         ;;
         mov ecx, IA32_MTRRCAP
         rdmsr
@@ -61,8 +61,8 @@ enable_mtrr:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       ³õÊ¼»¯ÄÚ´æÀàĞÍ¹ÜÀí¼ÇÂ¼
+; æè¿°ï¼š
+;       åˆå§‹åŒ–å†…å­˜ç±»å‹ç®¡ç†è®°å½•
 ;-----------------------------------------------------
 init_memory_type_manage_record:
         push ebx
@@ -98,8 +98,8 @@ init_memory_type_manage_record.loop:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       ³õÊ¼»¯ÄÚ´æÀàĞÍ¹ÜÀí¹¦ÄÜ
+; æè¿°ï¼š
+;       åˆå§‹åŒ–å†…å­˜ç±»å‹ç®¡ç†åŠŸèƒ½
 ;-----------------------------------------------------
 init_memory_type_manage:
         call update_memory_type_manage_info
@@ -112,19 +112,19 @@ init_memory_type_manage:
 ;-----------------------------------------------------------
 ; set_memory_range_type()
 ; input:
-;       edx:eax - ÄÚ´æÆğÊ¼Î»ÖÃ
-;       esi - ÄÚ´æ·¶Î§³¤¶È
-;       edi - ÄÚ´æÀàĞÍ
+;       edx:eax - å†…å­˜èµ·å§‹ä½ç½®
+;       esi - å†…å­˜èŒƒå›´é•¿åº¦
+;       edi - å†…å­˜ç±»å‹
 ; output:
 ;       1 - successful, 0 - failure
-; ÃèÊö£º
-;       ÉèÖÃÄ³¸öÄÚ´æ·¶Î§µÄ cache ÀàĞÍ
+; æè¿°ï¼š
+;       è®¾ç½®æŸä¸ªå†…å­˜èŒƒå›´çš„ cache ç±»å‹
 ;-----------------------------------------------------------
 set_memory_range_type:
         push ecx
-        and eax, 0FFFFF000h                             ; 4K ±ß½ç
+        and eax, 0FFFFF000h                             ; 4K è¾¹ç•Œ
         and edx, [gs: PCB.MaxPhyAddrSelectMask + 4]
-        and edi, 07h                                    ; È·±£ÄÚ´æÀàĞÍÖµ <= 7 
+        and edi, 07h                                    ; ç¡®ä¿å†…å­˜ç±»å‹å€¼ <= 7 
         mov ecx, [gs: PCB.MemTypeRecordTop]
         cmp ecx, [gs: PCB.MemTypeRecordMaximum]
         jae set_memory_range_type.done
@@ -134,22 +134,22 @@ set_memory_range_type:
         wrmsr
         
         ;;
-        ;; ½«ÄÚ´æÇøÓòÏòÉÏµ÷Õûµ½ÒÔ 4K Îªµ¥Î»µÄ³¤¶È
+        ;; å°†å†…å­˜åŒºåŸŸå‘ä¸Šè°ƒæ•´åˆ°ä»¥ 4K ä¸ºå•ä½çš„é•¿åº¦
         ;;
         add esi, 0FFFh
         and esi, 0FFFFF000h
         
         ;;
-        ;; Rang Mask µÄ¼ÆËã·½·¨£¨ÒÔ 8K ³¤¶ÈÀı£©
+        ;; Rang Mask çš„è®¡ç®—æ–¹æ³•ï¼ˆä»¥ 8K é•¿åº¦ä¾‹ï¼‰
         ;;
-        ;; 1) ³¤¶ÈÖµ(8k) - 1 = 2000h - 1 = 1FFFh
-        ;; 2) MaxPhyAddrSelectMask µÍ 32 Î» - 1FFFh = FFFFE000h
-        ;; 3) MaxPhyAddrSelectMask[63:32]:FFFFE000h ¾ÍÊÇ×îÖÕµÄ Rang Mask Öµ
+        ;; 1) é•¿åº¦å€¼(8k) - 1 = 2000h - 1 = 1FFFh
+        ;; 2) MaxPhyAddrSelectMask ä½ 32 ä½ - 1FFFh = FFFFE000h
+        ;; 3) MaxPhyAddrSelectMask[63:32]:FFFFE000h å°±æ˜¯æœ€ç»ˆçš„ Rang Mask å€¼
         ;;
-        dec esi                                         ; Çó³¤¶È mask Î»
-        mov eax, [gs: PCB.MaxPhyAddrSelectMask]         ; select mask µÍ 32 Î»
-        mov edx, [gs: PCB.MaxPhyAddrSelectMask + 4]     ; select mask ¸ß 32 Î»
-        sub eax, esi                                    ; µÃ³ö Rang Mask Öµ
+        dec esi                                         ; æ±‚é•¿åº¦ mask ä½
+        mov eax, [gs: PCB.MaxPhyAddrSelectMask]         ; select mask ä½ 32 ä½
+        mov edx, [gs: PCB.MaxPhyAddrSelectMask + 4]     ; select mask é«˜ 32 ä½
+        sub eax, esi                                    ; å¾—å‡º Rang Mask å€¼
         bts eax, 11                                     ; valid = 1
         mov ecx, [gs: PCB.MemTypeRecordTop]
         shl ecx, 1                                      ; ecx * 2
@@ -157,7 +157,7 @@ set_memory_range_type:
         wrmsr
         
         ;;
-        ;; ¸üĞÂ Top Ö¸ÕëÖµ
+        ;; æ›´æ–° Top æŒ‡é’ˆå€¼
         ;;
         inc DWORD [gs: PCB.MemTypeRecordTop]
         mov al, 1

@@ -1,6 +1,6 @@
 ;*************************************************
 ; pic8259.asm                                    *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
@@ -27,50 +27,50 @@ init_8253:
 ;       none
 ; ouput:
 ;       none
-; ÃèÊö£º
-;       ³õÊ¼»¯ 8259 ÉèÖÃ
-;       1) master Æ¬ÖĞ¶ÏÏòÁ¿ÊÇ 20h
-;       2) slave Æ¬ÖĞ¶ÏÏòÁ¿ÊÇ 28h       
+; æè¿°ï¼š
+;       åˆå§‹åŒ– 8259 è®¾ç½®
+;       1) master ç‰‡ä¸­æ–­å‘é‡æ˜¯ 20h
+;       2) slave ç‰‡ä¸­æ–­å‘é‡æ˜¯ 28h       
 ;-------------------------------------------------
 init_pic8259:
-;;; ³õÊ¼»¯ master 8259A Ğ¾Æ¬
-; 1) ÏÈĞ´ ICW1
+;;; åˆå§‹åŒ– master 8259A èŠ¯ç‰‡
+; 1) å…ˆå†™ ICW1
 	mov al, 11h  					; ICW = 1, ICW4-write required
 	out MASTER_ICW1_PORT, al
 	jmp $+2
 	nop
-; 2) ½Ó×ÅĞ´ ICW2
+; 2) æ¥ç€å†™ ICW2
 	mov al, PIC8259A_IRQ0_VECTOR                    ; interrupt vector
 	out MASTER_ICW2_PORT, al
 	jmp $+2
 	nop
-; 3) ½Ó×ÅĞ´ ICW3				
+; 3) æ¥ç€å†™ ICW3				
 	mov al, 04h					; bit2 must be 1
 	out MASTER_ICW3_PORT, al
 	jmp $+2
 	nop
-; 4) ½Ó×ÅĞ´ ICW4
+; 4) æ¥ç€å†™ ICW4
 	mov al, 01h					; for Intel Architecture
 	out MASTER_ICW4_PORT, al
 	jmp $+2
         nop
-;; ³õÊ¼»¯ slave 8259A Ğ¾Æ¬
-; 1) ÏÈĞ´ ICW1
+;; åˆå§‹åŒ– slave 8259A èŠ¯ç‰‡
+; 1) å…ˆå†™ ICW1
 	mov al, 11h					; ICW = 1, ICW4-write required
 	out SLAVE_ICW1_PORT, al
 	jmp $+2
 	nop
-; 2) ½Ó×ÅĞ´ ICW2
+; 2) æ¥ç€å†™ ICW2
 	mov al, PIC8259A_IRQ0_VECTOR + 8                ; interrupt vector
 	out SLAVE_ICW2_PORT, al
 	jmp $+2
 	nop
-; 3) ½Ó×ÅĞ´ ICW3				
+; 3) æ¥ç€å†™ ICW3				
 	mov al, 02h					; bit2 must be 1
 	out SLAVE_ICW3_PORT, al
 	jmp $+2
 	nop
-; 4) ½Ó×ÅĞ´ ICW4
+; 4) æ¥ç€å†™ ICW4
 	mov al, 01h					; for Intel Architecture
 	out SLAVE_ICW4_PORT, al		
 	ret
@@ -80,12 +80,12 @@ init_pic8259:
 ; setup_pic8259()
 ; input:
 ;       none
-; ÃèÊö£º
-;       ³õÊ¼»¯ 8259 ²¢ÉèÖÃÏàÓ¦µÄÖĞ¶Ï·şÎñÀı³Ì
+; æè¿°ï¼š
+;       åˆå§‹åŒ– 8259 å¹¶è®¾ç½®ç›¸åº”çš„ä¸­æ–­æœåŠ¡ä¾‹ç¨‹
 ;-------------------------------------------------
 setup_pic8259:
         ;;
-        ;; ³õÊ¼»¯ 8259 ºÍ 8253
+        ;; åˆå§‹åŒ– 8259 å’Œ 8253
         ;;
         call init_pic8259
         call init_8253                             
@@ -103,7 +103,7 @@ write_master_EOI:
 	ret
         
 ;-----------------------------
-; ºê MASTER_EOI()
+; å® MASTER_EOI()
 ;-----------------------------
 %macro MASTER_EOI 0
 	mov al, 00100000B				; OCW2 select, EOI
@@ -119,7 +119,7 @@ write_slave_EOI:
         ret
 	
 ;-----------------------------
-; ºê SLAVE_EOI()
+; å® SLAVE_EOI()
 ;-----------------------------
 %macro SLAVE_EOI 0
         mov al,  00100000B
@@ -128,7 +128,7 @@ write_slave_EOI:
 
 
 ;----------------------------
-; ÆÁ±ÎËùÓĞ 8259 ÖĞ¶Ï
+; å±è”½æ‰€æœ‰ 8259 ä¸­æ–­
 ;----------------------------
 disable_8259:
         mov al, 0FFh
@@ -151,7 +151,7 @@ enable_8259_timer:
 	ret	
 		
 ;--------------------------
-; mask ¼üÅÌ
+; mask é”®ç›˜
 ;--------------------------
 disable_8259_keyboard:
 	in al, MASTER_MASK_PORT
@@ -217,8 +217,8 @@ send_smm_command:
 	
 ;--------------------------------------------------
 ; keyboard_8259_handler:
-; ÃèÊö£º
-;       Ê¹ÓÃÓÚ 8259 IRQ1 handler
+; æè¿°ï¼š
+;       ä½¿ç”¨äº 8259 IRQ1 handler
 ;--------------------------------------------------
 keyboard_8259_handler:                
         push ebp
@@ -235,12 +235,12 @@ keyboard_8259_handler:
         mov ebp, [fs: SDA.Base]
 %endif  
         
-        in al, I8408_DATA_PORT                          ; ¶Á¼üÅÌÉ¨ÃèÂë
+        in al, I8408_DATA_PORT                          ; è¯»é”®ç›˜æ‰«æç 
         test al, al
-        js keyboard_8259_handler.done                   ; Îª break code
+        js keyboard_8259_handler.done                   ; ä¸º break code
   
         ;;
-        ;; ÊÇ·ñÎª¹¦ÄÜ¼ü
+        ;; æ˜¯å¦ä¸ºåŠŸèƒ½é”®
         ;;
         cmp al, SC_F1
         jb keyboard_8259_handler.next
@@ -248,7 +248,7 @@ keyboard_8259_handler:
         ja keyboard_8259_handler.next
 
         ;;
-        ;; ÇĞ»»µ±Ç°´¦ÀíÆ÷
+        ;; åˆ‡æ¢å½“å‰å¤„ç†å™¨
         ;;
         sub al, SC_F1
         movzx esi, al
@@ -261,19 +261,19 @@ keyboard_8259_handler:
 keyboard_8259_handler.next:
         
         ;;
-        ;; ½«É¨ÃèÂë±£´æÔÚ´¦ÀíÆ÷×Ô¼ºµÄ local keyboard buffer ÖĞ
-        ;; local keyboard buffer ÓÉ SDA.KeyBufferHeadPointer ºÍ SDA.KeyBufferPtrPointer Ö¸ÕëÖ¸Ïò
+        ;; å°†æ‰«æç ä¿å­˜åœ¨å¤„ç†å™¨è‡ªå·±çš„ local keyboard buffer ä¸­
+        ;; local keyboard buffer ç”± SDA.KeyBufferHeadPointer å’Œ SDA.KeyBufferPtrPointer æŒ‡é’ˆæŒ‡å‘
         ;;
         REX.Wrxb
-        mov ebx, [ebp + SDA.KeyBufferPtrPointer]                ; ebx = LSB.LocalKeyBufferPtr Ö¸ÕëÖµ
+        mov ebx, [ebp + SDA.KeyBufferPtrPointer]                ; ebx = LSB.LocalKeyBufferPtr æŒ‡é’ˆå€¼
         REX.Wrxb
-        mov esi, [ebx]                                          ; esi = LSB.LocalKeyBufferPtr Öµ
+        mov esi, [ebx]                                          ; esi = LSB.LocalKeyBufferPtr å€¼
         REX.Wrxb
         INCv esi
         
      
         ;;
-        ;; ¼ì²éÊÇ·ñ³¬¹ı»º³åÇø³¤¶È
+        ;; æ£€æŸ¥æ˜¯å¦è¶…è¿‡ç¼“å†²åŒºé•¿åº¦
         ;;
         mov ecx, [ebp + SDA.KeyBufferLength]
         REX.Wrxb
@@ -283,13 +283,13 @@ keyboard_8259_handler.next:
         REX.Wrxb
         cmp esi, ecx
         REX.Wrxb
-        cmovae esi, edi                                         ; Èç¹ûµ½´ï»º³åÇøÎ²²¿£¬ÔòÖ¸ÏòÍ·²¿
-        mov [esi], al                                           ; Ğ´ÈëÉ¨ÃèÂë
+        cmovae esi, edi                                         ; å¦‚æœåˆ°è¾¾ç¼“å†²åŒºå°¾éƒ¨ï¼Œåˆ™æŒ‡å‘å¤´éƒ¨
+        mov [esi], al                                           ; å†™å…¥æ‰«æç 
         REX.Wrxb
-        xchg [ebx], esi                                         ; ¸üĞÂ»º³åÇøÖ¸Õë 
+        xchg [ebx], esi                                         ; æ›´æ–°ç¼“å†²åŒºæŒ‡é’ˆ 
         
         ;;
-        ;; ¼ì²éÊÇ·ñĞèÒª·¢ËÍÍâ²¿ÖĞ¶Ï IPI µÄÄ¿±ê´¦ÀíÆ÷
+        ;; æ£€æŸ¥æ˜¯å¦éœ€è¦å‘é€å¤–éƒ¨ä¸­æ–­ IPI çš„ç›®æ ‡å¤„ç†å™¨
         ;;
         REX.Wrxb
         mov ebx, [ebp + SDA.ExtIntRtePtr]
@@ -300,7 +300,7 @@ keyboard_8259_handler.next:
         mov edx, [ebp + SDA.InFocus]     
 keyboard_8259_handler.SendExtIntIpi:
         ;;
-        ;; ¼ì²éÄ¿±ê´¦ÀíÆ÷ÊÇ·ñÓµÓĞ½¹µã
+        ;; æ£€æŸ¥ç›®æ ‡å¤„ç†å™¨æ˜¯å¦æ‹¥æœ‰ç„¦ç‚¹
         ;;
         cmp edx, [ebx + EXTINT_RTE.ProcessorIndex]
         jne keyboard_8259_handler.SendExtIntIpi.Next
@@ -312,7 +312,7 @@ keyboard_8259_handler.SendExtIntIpi:
         jz keyboard_8259_handler.SendExtIntIpi.Next
 
         ;;
-        ;; ¼ì²éÄ¿±ê´¦ÀíÆ÷ÊÇ·ñ´¦ÓÚ guest£¬²¢ÇÒÓµÓĞ½¹µã
+        ;; æ£€æŸ¥ç›®æ ‡å¤„ç†å™¨æ˜¯å¦å¤„äº guestï¼Œå¹¶ä¸”æ‹¥æœ‰ç„¦ç‚¹
         ;;
         mov esi, [eax + PCB.ProcessorStatus]
         xor esi, CPU_STATUS_GUEST | CPU_STATUS_GUEST_FOCUS
@@ -322,11 +322,11 @@ keyboard_8259_handler.SendExtIntIpi:
         DEBUG_RECORD    "sending IPI to target processor !"
         
         ;;
-        ;; ·¢ËÍÍâ²¿ÖĞ¶Ïµ½Ä¿±ê´¦ÀíÆ÷
+        ;; å‘é€å¤–éƒ¨ä¸­æ–­åˆ°ç›®æ ‡å¤„ç†å™¨
         ;;
         mov esi, [eax + PCB.ApicId]
-        movzx edi, BYTE [ebx + EXTINT_RTE.Vector]               ; 8259 µÄ IRQ0 vector
-        INCv edi                                                ; µÃµ½¼üÅÌÖĞ¶Ï IRQ1 vector
+        movzx edi, BYTE [ebx + EXTINT_RTE.Vector]               ; 8259 çš„ IRQ0 vector
+        INCv edi                                                ; å¾—åˆ°é”®ç›˜ä¸­æ–­ IRQ1 vector
         or edi, FIXED_DELIVERY | PHYSICAL        
         SEND_IPI_TO_PROCESSOR esi, edi
         
@@ -349,7 +349,7 @@ keyboard_8259_handler.done:
         iret
 
 
-%if 0           ;; È¡Ïû !!
+%if 0           ;; å–æ¶ˆ !!
 
 ;--------------------------------------------------
 ; Keyboard_8259_handler.BottomHalf
@@ -357,14 +357,14 @@ keyboard_8259_handler.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¼üÅÌ·şÎñÀı³ÌµÄÏÂ°ë²¿´¦Àí
+; æè¿°ï¼š
+;       1) é”®ç›˜æœåŠ¡ä¾‹ç¨‹çš„ä¸‹åŠéƒ¨å¤„ç†
 ;--------------------------------------------------
 Keyboard_8259_handler.BottomHalf:
         ;;
-        ;; ´ËÊ±£¬Õ»ÖĞÊı¾İÎª£º
-        ;; 1) ±£´æµÄ context
-        ;; 2) ·µ»Ø²ÎÊı
+        ;; æ­¤æ—¶ï¼Œæ ˆä¸­æ•°æ®ä¸ºï¼š
+        ;; 1) ä¿å­˜çš„ context
+        ;; 2) è¿”å›å‚æ•°
         ;;
 
 %ifdef __X64
@@ -379,30 +379,30 @@ Keyboard_8259_handler.BottomHalf:
         mov esi, esp
         
         ;;
-        ;; ½«ÖĞ¶ÏÕ»½á¹¹µ÷ÕûÎª far call Õ»½á¹¹
+        ;; å°†ä¸­æ–­æ ˆç»“æ„è°ƒæ•´ä¸º far call æ ˆç»“æ„
         ;;
 
         REX.Wrxb
-        mov eax, [esi + RETURN_EIP_OFFSET]                      ; ¶Á eip
+        mov eax, [esi + RETURN_EIP_OFFSET]                      ; è¯» eip
         REX.Wrxb
-        mov ebx, [esi + RETURN_EIP_OFFSET + REG_WIDTH]          ; ¶Á cs
+        mov ebx, [esi + RETURN_EIP_OFFSET + REG_WIDTH]          ; è¯» cs
         REX.Wrxb
-        mov ecx, [esi + RETURN_EIP_OFFSET + REG_WIDTH * 2]      ; ¶Á eflags
+        mov ecx, [esi + RETURN_EIP_OFFSET + REG_WIDTH * 2]      ; è¯» eflags
         REX.Wrxb
-        mov [esi + RETURN_EIP_OFFSET + REG_WIDTH * 2], ebx      ; cs Ğ´ÈëÔ­ eflags Î»ÖÃ
+        mov [esi + RETURN_EIP_OFFSET + REG_WIDTH * 2], ebx      ; cs å†™å…¥åŸ eflags ä½ç½®
         REX.Wrxb
-        mov [esi + RETURN_EIP_OFFSET + REG_WIDTH], eax          ; eip Ğ´ÈëÔ­ cs Î»ÖÃ
+        mov [esi + RETURN_EIP_OFFSET + REG_WIDTH], eax          ; eip å†™å…¥åŸ cs ä½ç½®
         REX.Wrxb
-        mov [esi + RETURN_EIP_OFFSET], ecx                      ; eflags Ğ´ÈëÔ­ eip Î»ÖÃ
+        mov [esi + RETURN_EIP_OFFSET], ecx                      ; eflags å†™å…¥åŸ eip ä½ç½®
 
 
         ;;
-        ;; ¼ì²é´¦ÀíÆ÷ÊÇ·ñÓµÓĞ½¹µã
-        ;; 1) ·ñ£¬½«×ªÈë HLT ×´Ì¬
-        ;; 2) ÊÇ£¬·µ»Ø±»ÖĞ¶ÏÕß
+        ;; æ£€æŸ¥å¤„ç†å™¨æ˜¯å¦æ‹¥æœ‰ç„¦ç‚¹
+        ;; 1) å¦ï¼Œå°†è½¬å…¥ HLT çŠ¶æ€
+        ;; 2) æ˜¯ï¼Œè¿”å›è¢«ä¸­æ–­è€…
         ;;        
         mov eax, PCB.ProcessorIndex
-        mov ecx, [gs: eax]                                      ; ¶Á´¦ÀíÆ÷µÄ index Öµ
+        mov ecx, [gs: eax]                                      ; è¯»å¤„ç†å™¨çš„ index å€¼
         
         mov eax, SDA.InFocus
         cmp ecx, [fs: eax]
@@ -410,13 +410,13 @@ Keyboard_8259_handler.BottomHalf:
 
 Keyboard_8259_handler.BottomHalf.@0:        
         ;;
-        ;; ½øÈë HLT ×´Ì¬
+        ;; è¿›å…¥ HLT çŠ¶æ€
         ;;
         hlt
         
         ;;
-        ;; µ±´¦ÀíÆ÷ÊÕµ½Íâ²¿ÖĞ¶ÏÇëÇó£¬´Ó HLT ÖĞ»½ĞÑ£¡
-        ;; ÖØĞÂÖ´ĞĞÏÂ´Î¼ì²éÊÇ·ñÓµÓĞ½¹µã
+        ;; å½“å¤„ç†å™¨æ”¶åˆ°å¤–éƒ¨ä¸­æ–­è¯·æ±‚ï¼Œä» HLT ä¸­å”¤é†’ï¼
+        ;; é‡æ–°æ‰§è¡Œä¸‹æ¬¡æ£€æŸ¥æ˜¯å¦æ‹¥æœ‰ç„¦ç‚¹
         ;;
         cmp ecx, [fs: eax]
         jne Keyboard_8259_handler.BottomHalf.@0
@@ -443,9 +443,9 @@ Keyboard_8259_handler.BottomHalf.Done:
 
 ;--------------------------------------------------
 ; timer_8259_handler()
-; ÃèÊö£º
-;       1) Ê¹ÓÃÓÚ 8259 IRQ0 handler
-;       2) Ã¿´ÎÖĞ¶Ï½«¼ÆÊıÖµ¼Ó 1
+; æè¿°ï¼š
+;       1) ä½¿ç”¨äº 8259 IRQ0 handler
+;       2) æ¯æ¬¡ä¸­æ–­å°†è®¡æ•°å€¼åŠ  1
 ;--------------------------------------------------
 timer_8259_handler:
         push eax
