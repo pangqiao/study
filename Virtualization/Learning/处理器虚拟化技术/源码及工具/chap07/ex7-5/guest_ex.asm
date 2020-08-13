@@ -1,12 +1,12 @@
 ;*************************************************
 ; guest_ex.asm                                   *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
   
         ;;
-        ;; Àı×Ó ex7-5£ºÊµÏÖÍâ²¿ÖĞ¶Ï×ª·¢£¬´¦Àí CPU1 guest µÄ¼üÅÌÖĞ¶Ï
-        ;; ±àÒëÃüÁî¿ÉÒÔÎª£º
+        ;; ä¾‹å­ ex7-5ï¼šå®ç°å¤–éƒ¨ä¸­æ–­è½¬å‘ï¼Œå¤„ç† CPU1 guest çš„é”®ç›˜ä¸­æ–­
+        ;; ç¼–è¯‘å‘½ä»¤å¯ä»¥ä¸ºï¼š
         ;;      1) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE -D__X64 -DGUEST_X64
         ;;      2) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE -D__X64
         ;;      3) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE
@@ -33,7 +33,7 @@
 %endif      
 
         ;;
-        ;; ³õÊ¼»¯ 8259
+        ;; åˆå§‹åŒ– 8259
         ;;
         cli
         call init_pic8259
@@ -42,7 +42,7 @@
         sti
         
         ;;
-        ;; ÉèÖÃ IRQ1 ÖĞ¶Ï handler
+        ;; è®¾ç½® IRQ1 ä¸­æ–­ handler
         ;;
         sidt [Guest.IdtPointer]
         mov ebx, [Guest.IdtPointer + 2]
@@ -78,7 +78,7 @@ GuestEx.Loop:
         jmp $
 
         ;;
-        ;; ½øÈë user È¨ÏŞ
+        ;; è¿›å…¥ user æƒé™
         ;;
 %if __BITS__ == 64
         push GuestUserSs64 | 3
@@ -105,8 +105,8 @@ GuestEx.UserEntry:
 
 ;--------------------------------------------------
 ; GuestKeyboardHandler:
-; ÃèÊö£º
-;       Ê¹ÓÃÓÚ 8259 IRQ1 handler
+; æè¿°ï¼š
+;       ä½¿ç”¨äº 8259 IRQ1 handler
 ;--------------------------------------------------
 GuestKeyboardHandler:
         push R3
@@ -115,9 +115,9 @@ GuestKeyboardHandler:
         push R0
 
         
-        in al, I8408_DATA_PORT                          ; ¶Á¼üÅÌÉ¨ÃèÂë
+        in al, I8408_DATA_PORT                          ; è¯»é”®ç›˜æ‰«æç 
         test al, al
-        js GuestKeyboardHandler.done                    ; Îª break code
+        js GuestKeyboardHandler.done                    ; ä¸º break code
   
 
         mov ebx, KeyBufferPtr
@@ -125,13 +125,13 @@ GuestKeyboardHandler:
         inc esi
         
         ;;
-        ;; ¼ì²éÊÇ·ñ³¬¹ı»º³åÇø³¤¶È
+        ;; æ£€æŸ¥æ˜¯å¦è¶…è¿‡ç¼“å†²åŒºé•¿åº¦
         ;;
         mov edi, KeyBuffer
         cmp esi, KeyBuffer + 255
         cmovae esi, edi
-        mov [esi], al                                           ; Ğ´ÈëÉ¨ÃèÂë
-        mov [ebx], esi                                         ; ¸üĞÂ»º³åÇøÖ¸Õë 
+        mov [esi], al                                           ; å†™å…¥æ‰«æç 
+        mov [ebx], esi                                         ; æ›´æ–°ç¼“å†²åŒºæŒ‡é’ˆ 
  
 GuestKeyboardHandler.done:
 	mov al, 00100000B				        ; OCW2 select, EOI

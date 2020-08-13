@@ -1,6 +1,6 @@
 ;*************************************************
 ; pic8259.asm                                    *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
@@ -27,50 +27,50 @@ init_8253:
 ;       none
 ; ouput:
 ;       none
-; ÃèÊö£º
-;       ³õÊ¼»¯ 8259 ÉèÖÃ
-;       1) master Æ¬ÖĞ¶ÏÏòÁ¿ÊÇ 20h
-;       2) slave Æ¬ÖĞ¶ÏÏòÁ¿ÊÇ 28h       
+; æè¿°ï¼š
+;       åˆå§‹åŒ– 8259 è®¾ç½®
+;       1) master ç‰‡ä¸­æ–­å‘é‡æ˜¯ 20h
+;       2) slave ç‰‡ä¸­æ–­å‘é‡æ˜¯ 28h       
 ;-------------------------------------------------
 init_pic8259:
-;;; ³õÊ¼»¯ master 8259A Ğ¾Æ¬
-; 1) ÏÈĞ´ ICW1
+;;; åˆå§‹åŒ– master 8259A èŠ¯ç‰‡
+; 1) å…ˆå†™ ICW1
 	mov al, 11h  					; ICW = 1, ICW4-write required
 	out MASTER_ICW1_PORT, al
 	jmp $+2
 	nop
-; 2) ½Ó×ÅĞ´ ICW2
+; 2) æ¥ç€å†™ ICW2
 	mov al, GUEST_IRQ0_VECTOR                       ; interrupt vector
 	out MASTER_ICW2_PORT, al
 	jmp $+2
 	nop
-; 3) ½Ó×ÅĞ´ ICW3				
+; 3) æ¥ç€å†™ ICW3				
 	mov al, 04h					; bit2 must be 1
 	out MASTER_ICW3_PORT, al
 	jmp $+2
 	nop
-; 4) ½Ó×ÅĞ´ ICW4
+; 4) æ¥ç€å†™ ICW4
 	mov al, 01h					; for Intel Architecture
 	out MASTER_ICW4_PORT, al
 	jmp $+2
         nop
-;; ³õÊ¼»¯ slave 8259A Ğ¾Æ¬
-; 1) ÏÈĞ´ ICW1
+;; åˆå§‹åŒ– slave 8259A èŠ¯ç‰‡
+; 1) å…ˆå†™ ICW1
 	mov al, 11h					; ICW = 1, ICW4-write required
 	out SLAVE_ICW1_PORT, al
 	jmp $+2
 	nop
-; 2) ½Ó×ÅĞ´ ICW2
+; 2) æ¥ç€å†™ ICW2
 	mov al, GUEST_IRQ0_VECTOR + 8                   ; interrupt vector
 	out SLAVE_ICW2_PORT, al
 	jmp $+2
 	nop
-; 3) ½Ó×ÅĞ´ ICW3				
+; 3) æ¥ç€å†™ ICW3				
 	mov al, 02h					; bit2 must be 1
 	out SLAVE_ICW3_PORT, al
 	jmp $+2
 	nop
-; 4) ½Ó×ÅĞ´ ICW4
+; 4) æ¥ç€å†™ ICW4
 	mov al, 01h					; for Intel Architecture
 	out SLAVE_ICW4_PORT, al		
 	ret
@@ -80,12 +80,12 @@ init_pic8259:
 ; setup_pic8259()
 ; input:
 ;       none
-; ÃèÊö£º
-;       ³õÊ¼»¯ 8259 ²¢ÉèÖÃÏàÓ¦µÄÖĞ¶Ï·şÎñÀı³Ì
+; æè¿°ï¼š
+;       åˆå§‹åŒ– 8259 å¹¶è®¾ç½®ç›¸åº”çš„ä¸­æ–­æœåŠ¡ä¾‹ç¨‹
 ;-------------------------------------------------
 setup_pic8259:
         ;;
-        ;; ³õÊ¼»¯ 8259 ºÍ 8253
+        ;; åˆå§‹åŒ– 8259 å’Œ 8253
         ;;
         call init_pic8259
         call init_8253                             
@@ -103,7 +103,7 @@ write_master_EOI:
 	ret
         
 ;-----------------------------
-; ºê MASTER_EOI()
+; å® MASTER_EOI()
 ;-----------------------------
 %macro MASTER_EOI 0
 	mov al, 00100000B				; OCW2 select, EOI
@@ -119,7 +119,7 @@ write_slave_EOI:
         ret
 	
 ;-----------------------------
-; ºê SLAVE_EOI()
+; å® SLAVE_EOI()
 ;-----------------------------
 %macro SLAVE_EOI 0
         mov al,  00100000B
@@ -128,7 +128,7 @@ write_slave_EOI:
 
 
 ;----------------------------
-; ÆÁ±ÎËùÓĞ 8259 ÖĞ¶Ï
+; å±è”½æ‰€æœ‰ 8259 ä¸­æ–­
 ;----------------------------
 disable_8259:
         mov al, 0FFh
@@ -151,7 +151,7 @@ enable_8259_timer:
 	ret	
 		
 ;--------------------------
-; mask ¼üÅÌ
+; mask é”®ç›˜
 ;--------------------------
 disable_8259_keyboard:
 	in al, MASTER_MASK_PORT
