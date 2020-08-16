@@ -487,6 +487,7 @@ echo $PID > $DPATH/set_ftrace_pid
 
 # set function tracer
 echo function > $DPATH/current_tracer
+#echo function_graph > $DPATH/current_tracer
 
 # start the tracing
 echo 1 > $DPATH/tracing_on
