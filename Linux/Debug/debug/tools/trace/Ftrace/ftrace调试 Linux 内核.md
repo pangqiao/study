@@ -607,6 +607,19 @@ echo 0 > tracing_on
 
 注: 如果想要追踪某个模块的所有函数的function_graph, 使用`set_ftrace_filter`, 即参照下面的指定模块部分内容
 
+```
+echo nop > /sys/kernel/debug/tracing/current_tracer
+echo > /sys/kernel/debug/tracing/trace
+echo ':mod:kvm' > set_ftrace_filter
+echo ':mod:kvm_amd' >> set_ftrace_filter
+echo ':mod:kvm_intel' >> set_ftrace_filter
+echo 1 > /sys/kernel/debug/tracing/tracing_on
+echo function_graph > /sys/kernel/debug/tracing/current_tracer
+echo :mod:kvm > $DPATH/set_ftrace_filter
+echo :mod:kvm_amd >> $DPATH/set_ftrace_filter
+echo :mod:kvm_intel >> $DPATH/set_ftrace_filter
+```
+
 ```sh
 #!/bin/bash
 
@@ -635,9 +648,9 @@ echo function_graph > $DPATH/current_tracer
 #replace test_proc_show by your function name
 #echo test_proc_show > $debugfs/tracing/set_graph_function
 
-echo :mod:kvm > set_ftrace_filter
-echo :mod:kvm_amd >> set_ftrace_filter
-echo :mod:kvm_intel >> set_ftrace_filter
+echo :mod:kvm > $DPATH/set_ftrace_filter
+echo :mod:kvm_amd >> $DPATH/set_ftrace_filter
+echo :mod:kvm_intel >> $DPATH/set_ftrace_filter
 
 # start the tracing
 echo 1 > $DPATH/tracing_on
