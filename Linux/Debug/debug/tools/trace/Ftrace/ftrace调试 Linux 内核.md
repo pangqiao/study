@@ -479,11 +479,11 @@ mount | grep -i debugfs &> /dev/null
 # flush existing trace data
 echo nop > $DPATH/current_tracer
 
-# set function tracer
-echo function > $DPATH/current_tracer
-
 # write current process id to set_ftrace_pid file
 echo $PID > $DPATH/set_ftrace_pid
+
+# set function tracer
+echo function > $DPATH/current_tracer
 
 # start the tracing
 echo 1 > $DPATH/tracing_on
