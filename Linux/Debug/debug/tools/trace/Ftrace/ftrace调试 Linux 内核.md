@@ -479,6 +479,9 @@ mount | grep -i debugfs &> /dev/null
 # flush existing trace data
 echo nop > $DPATH/current_tracer
 
+# stop the tracing
+echo 0 > $DPATH/tracing_on
+
 # write current process id to set_ftrace_pid file
 echo $PID > $DPATH/set_ftrace_pid
 
