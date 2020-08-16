@@ -20,6 +20,7 @@
 - [8. function 跟踪器](#8-function-跟踪器)
   - [8.1. 特定进程](#81-特定进程)
 - [9. function_graph 跟踪器](#9-function_graph-跟踪器)
+  - [指定进程](#指定进程)
 - [10. sched_switch 跟踪器](#10-sched_switch-跟踪器)
 - [11. irqsoff 跟踪器](#11-irqsoff-跟踪器)
 - [12. preemptoff跟踪器](#12-preemptoff跟踪器)
@@ -602,17 +603,54 @@ echo 0 > tracing_on
 
 清单 2 中最后通过 echo 命令重置了文件 `set_graph_function` 。
 
+## 指定进程
+
 注: 如果想要追踪某个模块的所有函数的function_graph, 使用`set_ftrace_filter`, 即参照下面的指定模块部分内容
 
-```
-echo nop > /sys/kernel/debug/tracing/current_tracer
-echo > /sys/kernel/debug/tracing/trace
+```sh
+#!/bin/bash
+
+DPATH="/sys/kernel/debug/tracing"
+
+## shell pid
+PID=$$
+## Quick basic checks
+[ `id -u` -ne 0 ] && { echo "needs to be root" ; exit 1; } # check for root permissions
+[ -z $1 ] && { echo "needs process name as argument" ; exit 1; } # check for args to this function
+mount | grep -i debugfs &> /dev/null
+[ $? -ne 0 ] && { echo "debugfs not mounted, mount it first"; exit 1; } #checks for debugfs mount
+
+# flush existing trace data
+echo nop > $DPATH/current_tracer
+
+# stop the tracing
+echo 0 > $DPATH/tracing_on
+
+# write current process id to set_ftrace_pid file
+echo $PID > $DPATH/set_ftrace_pid
+
+# set function tracer
+echo function_graph > $DPATH/current_tracer
+
+#replace test_proc_show by your function name
+#echo test_proc_show > $debugfs/tracing/set_graph_function
+
 echo ':mod:kvm' > set_ftrace_filter
 echo ':mod:kvm_amd' >> set_ftrace_filter
 echo ':mod:kvm_intel' >> set_ftrace_filter
-echo 1 > /sys/kernel/debug/tracing/tracing_on
-echo function_graph > /sys/kernel/debug/tracing/current_tracer
+
+# start the tracing
+echo 1 > $DPATH/tracing_on
+
+# execute the process
+# $* all parameter list
+exec $*
+
+# stop the tracing
+echo 0 > tracing_on
 ```
+
+
 
 # 10. sched_switch 跟踪器
 
