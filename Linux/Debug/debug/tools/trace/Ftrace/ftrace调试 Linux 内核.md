@@ -615,9 +615,6 @@ echo ':mod:kvm_amd' >> set_ftrace_filter
 echo ':mod:kvm_intel' >> set_ftrace_filter
 echo 1 > /sys/kernel/debug/tracing/tracing_on
 echo function_graph > /sys/kernel/debug/tracing/current_tracer
-echo :mod:kvm > $DPATH/set_ftrace_filter
-echo :mod:kvm_amd >> $DPATH/set_ftrace_filter
-echo :mod:kvm_intel >> $DPATH/set_ftrace_filter
 ```
 
 ```sh
@@ -648,10 +645,6 @@ echo function_graph > $DPATH/current_tracer
 #replace test_proc_show by your function name
 #echo test_proc_show > $debugfs/tracing/set_graph_function
 
-echo :mod:kvm > $DPATH/set_ftrace_filter
-echo :mod:kvm_amd >> $DPATH/set_ftrace_filter
-echo :mod:kvm_intel >> $DPATH/set_ftrace_filter
-
 # start the tracing
 echo 1 > $DPATH/tracing_on
 
@@ -660,7 +653,7 @@ echo 1 > $DPATH/tracing_on
 exec $*
 
 # stop the tracing
-echo 0 > tracing_on
+echo 0 > $DPATH/tracing_on
 ```
 
 
