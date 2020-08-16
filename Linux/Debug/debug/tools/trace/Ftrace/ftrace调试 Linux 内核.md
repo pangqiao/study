@@ -635,9 +635,9 @@ echo function_graph > $DPATH/current_tracer
 #replace test_proc_show by your function name
 #echo test_proc_show > $debugfs/tracing/set_graph_function
 
-echo ':mod:kvm' > set_ftrace_filter
-echo ':mod:kvm_amd' >> set_ftrace_filter
-echo ':mod:kvm_intel' >> set_ftrace_filter
+echo ":mod:kvm" > set_ftrace_filter
+echo ":mod:kvm_amd" >> set_ftrace_filter
+echo ":mod:kvm_intel" >> set_ftrace_filter
 
 # start the tracing
 echo 1 > $DPATH/tracing_on
