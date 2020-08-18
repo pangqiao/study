@@ -1156,6 +1156,15 @@ sunrpc:rpc_socket_state_change
 
 有关事件跟踪的更多细节，请阅读内核目录下`Documents/Trace/events.txt`文件。
 
+```
+cd /sys/kernel/debug/tracing
+echo kvm_cpuid >> set_event
+echo 1 > tracing_on
+......
+echo 0 > tracing_on
+cp /sys/kernel/debug/tracing/trace /data/perf_test/kvm_cpuid
+```
+
 # 18. trace-cmd and KernelShark
 
 trace-cmd是由Steven Rostedt在2009年发在LKML上的，它可以让操作跟踪器更简单。以下几步是获取最新的版本并装在你的系统上，包括它的GUI工具KernelShark。
