@@ -497,33 +497,6 @@ echo 1 > $DPATH/tracing_on
 # execute the process
 # $* all parameter list
 exec $*
-
-# stop the tracing
-echo 0 > tracing_on
-```
-
-```sh
-#!/bin/bash
-
-DPATH="/sys/kernel/debug/tracing"
-
-## shell pid
-PID=$$
-
-echo > $DPATH/trace
-
-# write current process id to set_ftrace_pid file
-echo $PID > $DPATH/set_ftrace_pid
-
-# start the tracing
-echo 1 > $DPATH/tracing_on
-
-# execute the process
-# $* all parameter list
-exec $*
-
-# stop the tracing
-echo 0 > tracing_on
 ```
 
 ```
