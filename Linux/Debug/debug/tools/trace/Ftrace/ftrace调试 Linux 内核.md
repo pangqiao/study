@@ -1093,7 +1093,46 @@ tracing的输入可以由一个叫`trace_options`的文件控制。
 
 `trace_options`的一个示例如图1所示。
 
-![2020-01-31-01-02-43.png](./images/2020-01-31-01-02-43.png)
+```
+# cat trace_options
+print-parent
+nosym-offset
+nosym-addr
+noverbose
+noraw
+nohex
+nobin
+noblock
+trace_printk
+annotate
+nouserstacktrace
+nosym-userobj
+noprintk-msg-only
+context-info
+nolatency-format
+record-cmd
+norecord-tgid
+overwrite
+nodisable_on_free
+irq-info
+markers
+noevent-fork
+nopause-on-trace
+function-trace
+nofunction-fork
+nodisplay-graph
+nostacktrace
+nofuncgraph-overrun
+funcgraph-cpu
+funcgraph-overhead
+nofuncgraph-proc
+funcgraph-duration
+nofuncgraph-abstime
+funcgraph-irqs
+nofuncgraph-tail
+sleep-time
+graph-time
+```
 
 要**禁用一个跟踪选项**，只需要在相应行首加一个“no”即可。
 
