@@ -647,7 +647,7 @@ echo $PID > $DPATH/set_ftrace_pid
 # set function tracer
 echo function_graph > $DPATH/current_tracer
 
-
+echo function-fork > trace_options
 
 #replace test_proc_show by your function name
 #echo test_proc_show > $debugfs/tracing/set_graph_function
