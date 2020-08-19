@@ -577,18 +577,23 @@ exec $*
 
 清单 2 中最后通过 echo 命令重置了文件 `set_graph_function` 。
 
+因为function_graph tracer的graph_ops继续共用global_ops的hash表，使用“`set_ftrace_filter`/`set_ftrace_notrace`”接口可以配置global_ops的filter_hash/notrace_hash表。所以可以继续使用“`set_ftrace_filter`/`set_ftrace_notrace`”来配置function_graph tracer的filter。
+
+function_graph tracer还可以使用“`set_graph_function`/`set_graph_notrace`”接口来配置过滤，需要两种过滤条件都满足的函数才能被trace。
+
 ## 采样某个模块
 
 ```
 cd /sys/kernel/debug/tracing/
-echo nop > /sys/kernel/debug/tracing/current_tracer
-echo 0 > /sys/kernel/debug/tracing/tracing_on
+echo nop > current_tracer
+echo 0 > tracing_on
 echo ':mod:kvm' > set_ftrace_filter
 echo ':mod:kvm_amd' >> set_ftrace_filter
 echo ':mod:kvm_intel' >> set_ftrace_filter
+echo > set_graph_function
 echo pvclock_gtod_notify > set_ftrace_notrace
-echo 1 > /sys/kernel/debug/tracing/tracing_on
-echo function_graph > /sys/kernel/debug/tracing/current_tracer
+echo 1 > tracing_on
+echo function_graph > current_tracer
 ```
 
 ## 指定进程
