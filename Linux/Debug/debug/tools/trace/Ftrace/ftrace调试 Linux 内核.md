@@ -577,9 +577,11 @@ exec $*
 
 清单 2 中最后通过 echo 命令重置了文件 `set_graph_function` 。
 
-因为function_graph tracer的graph_ops继续共用global_ops的hash表，使用“`set_ftrace_filter`/`set_ftrace_notrace`”接口可以配置global_ops的filter_hash/notrace_hash表。所以可以继续使用“`set_ftrace_filter`/`set_ftrace_notrace`”来配置function_graph tracer的filter。
+1. 因为function_graph tracer的graph_ops继续共用global_ops的hash表，使用“`set_ftrace_filter`/`set_ftrace_notrace`”接口可以配置global_ops的filter_hash/notrace_hash表。所以可以继续使用“`set_ftrace_filter`/`set_ftrace_notrace`”来配置function_graph tracer的filter。
 
-function_graph tracer还可以使用“`set_graph_function`/`set_graph_notrace`”接口来配置过滤，需要两种过滤条件都满足的函数才能被trace。
+2. function_graph tracer还可以使用“`set_graph_function`/`set_graph_notrace`”接口来配置过滤
+
+所以需要上面两种过滤条件都满足的函数才能被trace。
 
 ## 采样某个模块
 
