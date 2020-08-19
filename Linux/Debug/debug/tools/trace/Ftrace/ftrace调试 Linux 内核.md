@@ -20,6 +20,7 @@
 - [8. function 跟踪器](#8-function-跟踪器)
   - [8.1. 特定进程](#81-特定进程)
 - [9. function_graph 跟踪器](#9-function_graph-跟踪器)
+  - [采样某个模块](#采样某个模块)
   - [指定进程](#指定进程)
 - [10. sched_switch 跟踪器](#10-sched_switch-跟踪器)
 - [11. irqsoff 跟踪器](#11-irqsoff-跟踪器)
@@ -602,6 +603,19 @@ echo 0 > tracing_on
   * 对于**调用其它函数的函数**，则在其`“}”`对应行给出了**运行时长**，该时间是一个**累加值**，包括了其内部调用的函数的执行时长。`DURATION` 字段给出的时长并**不是精确的**，它还包含了执行 `ftrace` **自身的代码所耗费的时间**，所以示例中将内部函数时长累加得到的结果会与对应的外围调用函数的执行时长并不一致；不过通过该字段还是可以大致了解函数在时间上的运行开销的。
 
 清单 2 中最后通过 echo 命令重置了文件 `set_graph_function` 。
+
+## 采样某个模块
+
+```
+cd /sys/kernel/debug/tracing/
+echo nop > /sys/kernel/debug/tracing/current_tracer
+echo 0 > /sys/kernel/debug/tracing/tracing_on
+echo ':mod:kvm' > set_ftrace_filter
+echo ':mod:kvm_amd' >> set_ftrace_filter
+echo ':mod:kvm_intel' >> set_ftrace_filter
+echo 1 > /sys/kernel/debug/tracing/tracing_on
+echo function_graph > /sys/kernel/debug/tracing/current_tracer
+```
 
 ## 指定进程
 
