@@ -613,6 +613,7 @@ echo 0 > /sys/kernel/debug/tracing/tracing_on
 echo ':mod:kvm' > set_ftrace_filter
 echo ':mod:kvm_amd' >> set_ftrace_filter
 echo ':mod:kvm_intel' >> set_ftrace_filter
+echo pvclock_gtod_notify > set_ftrace_notrace
 echo 1 > /sys/kernel/debug/tracing/tracing_on
 echo function_graph > /sys/kernel/debug/tracing/current_tracer
 ```
