@@ -647,6 +647,8 @@ echo $PID > $DPATH/set_ftrace_pid
 # set function tracer
 echo function_graph > $DPATH/current_tracer
 
+
+
 #replace test_proc_show by your function name
 #echo test_proc_show > $debugfs/tracing/set_graph_function
 
@@ -1427,3 +1429,6 @@ if (condition)
 * 查看内核目录 kernel/trace下的 Makefile文件和 Kconfig文件了解 ftrace 相关编译选项。
 * 在 [developerWorks Linux 专区](http://www.ibm.com/developerworks/cn/linux/) 寻找为 Linux 开发人员（包括 Linux 新手入门）准备的更多参考资料，查阅我们 最受欢迎的文章和教程。 
 * 在 developerWorks 上查阅所有 Linux 技巧 和 Linux 教程。
+
+
+http://www.jeepxie.net/article/443180.html (none)
