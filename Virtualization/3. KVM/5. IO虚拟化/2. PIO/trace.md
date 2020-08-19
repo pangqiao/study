@@ -64,6 +64,38 @@ amd:
  144)   2.735 us    |      }
  144)   3.116 us    |    }
  144)   7.915 us    |  }
+ 144)               |  vcpu_enter_guest [kvm]() {
+ 144)   0.080 us    |    svm_prepare_guest_switch [kvm_amd]();
+ 144)   0.090 us    |    __srcu_read_unlock();
+ 144)   0.090 us    |    kvm_vcpu_exit_request [kvm]();
+ 144)               |    rcu_note_context_switch() {
+ 144)   0.080 us    |      rcu_qs();
+ 144)   0.241 us    |    }
+ 144)   0.080 us    |    fpregs_assert_state_consistent();
+ 144)               |    svm_vcpu_run [kvm_amd]() {
+ 144)               |      kvm_get_cr8 [kvm]() {
+ 144)   0.081 us    |        kvm_lapic_get_cr8 [kvm]();
+ 144)   0.241 us    |      }
+ 144)   0.080 us    |      kvm_load_guest_xsave_state [kvm]();
+ 144)   0.080 us    |      kvm_wait_lapic_expire [kvm]();
+ 144)   0.130 us    |      x86_virt_spec_ctrl();
+ 144)   0.110 us    |      get_cpu_entry_area();
+ 144)   0.101 us    |      get_cpu_entry_area();
+ 144)   0.160 us    |      x86_virt_spec_ctrl();
+ 144)   0.080 us    |      kvm_load_host_xsave_state [kvm]();
+ 144)               |      kvm_set_cr8 [kvm]() {
+ 144)               |        kvm_set_cr8.part.119 [kvm]() {
+ 144)               |          kvm_lapic_set_tpr [kvm]() {
+ 144)               |            apic_update_ppr [kvm]() {
+ 144)   0.090 us    |              __apic_update_ppr [kvm]();
+ 144)   0.250 us    |            }
+ 144)   0.401 us    |          }
+ 144)   0.571 us    |        }
+ 144)   0.731 us    |      }
+ 144)   3.206 us    |    }
+ 144)   0.090 us    |    svm_handle_exit_irqoff [kvm_amd]();
+ 144)   0.090 us    |    __srcu_read_lock();
+ 144)               |    handle_exit [kvm_amd]() {
 ```
 
 intel:
@@ -118,4 +150,24 @@ intel:
  49)   3.599 us    |      }
  49)   3.816 us    |    }
  49)   7.717 us    |  }
+ 49)               |  vcpu_enter_guest [kvm]() {
+ 49)   0.106 us    |    vmx_prepare_switch_to_guest [kvm_intel]();
+ 49)               |    vmx_sync_pir_to_irr [kvm_intel]() {
+ 49)   0.110 us    |      kvm_lapic_find_highest_irr [kvm]();
+ 49)   0.106 us    |      vmx_set_rvi [kvm_intel]();
+ 49)   0.530 us    |    }
+ 49)   0.103 us    |    kvm_vcpu_exit_request [kvm]();
+ 49)               |    vmx_vcpu_run [kvm_intel]() {
+ 49)   0.105 us    |      kvm_load_guest_xsave_state [kvm]();
+ 49)               |      clear_atomic_switch_msr [kvm_intel]() {
+ 49)   0.125 us    |        clear_atomic_switch_msr_special [kvm_intel]();
+ 49)   0.323 us    |      }
+ 49)   0.109 us    |      clear_atomic_switch_msr [kvm_intel]();
+ 49)   0.104 us    |      kvm_wait_lapic_expire [kvm]();
+ 49)   0.108 us    |      vmx_update_host_rsp [kvm_intel]();
+ 49)   0.112 us    |      kvm_load_host_xsave_state [kvm]();
+ 49)   0.112 us    |      __vmx_complete_interrupts [kvm_intel]();
+ 49)   2.216 us    |    }
+ 49)   0.109 us    |    vmx_handle_exit_irqoff [kvm_intel]();
+ 49)               |    vmx_handle_exit [kvm_intel]() {
 ```
