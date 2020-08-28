@@ -394,6 +394,7 @@ schedule
 
 ```
 # echo 0 > tracing_on   ## 禁用跟踪功能
+# echo > current_tracer
 ```
 
 # 8. function 跟踪器
