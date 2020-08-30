@@ -1,0 +1,26 @@
+
+本文来自: https://www.ibm.com/developerworks/cn/linux/l-lo-eBPF-history/index.html , 2017年
+
+数日之前，笔者参加某一技术会议之时，为人所安利了一款开源项目，演讲者对其性能颇为称道，称其乃基于近年在内核中炙手可热的 eBPF 技术。
+
+对这 eBPF 的名号，笔者略有些耳熟，会后遂一番搜索学习，发现 eBPF 果然源于早年间的成型于 BSD 之上的传统技术 BPF(Berkeley Packet Filter)，但无论其性能还是功能已然都不是 BPF 可以比拟的了，慨叹长江后浪推前浪，前浪死在沙滩上之余，笔者也发现国内相关文献匮乏，导致 eBPF 尚不为大众所知，遂撰此文，记录近日所得，希冀可以为广大读者打开新世界的大门。
+
+# 源头：一篇 1992 年的论文
+
+考虑到 BPF 的知名度，在介绍 eBPF 之前，笔者自觉还是有必要先来回答另一个问题：
+
+## 什么是 BPF?
+
+笔者在前文中说过了，BPF 的全称是 Berkeley Packet Filter，顾名思义，这是一个用于**过滤(filter)网络报文(packet)的架构**。
+
+其实 BPF 可谓是名气不大，作用不小的典范：如果笔者一开始提出 BPF 的同时还捎带上大名鼎鼎的 **tcpdump** 或 **wireshark**，估计绝大部分读者都会了然了：BPF 即为 tcpdump 抑或 wireshark 乃至**网络监控(Network Monitoring)领域**的基石。
+
+今天我们看到的 BPF 的设计，最早可以追溯到 1992 年刊行在 USENIX conference 上的一篇论文：The BSD Packet Filter: A New Architecture for User-level Packet Capture。由于最初版本的 BPF 是实现于 BSD 系统之上的，于是在论文中作者称之为"BSD Packet Filter"；后来由于 BPF 的理念渐成主流，为各大操作系统所接受，B 所代表的 BSD 便也渐渐淡去，最终演化成了今天我们眼中的 Berkeley Packet Filter。
+
+诚然，无论 BSD 和 Berkeley 如何变换，其后的 Packet Filter 总是不变的，这两个单词也基本概括了 BPF 的两大核心功能：
+
+过滤(Filter): 根据外界输入的规则过滤报文；
+复制(Copy)：将符合条件的报文由内核空间复制到用户空间；
+以 tcpdump 为例：熟悉网络监控(network monitoring)的读者大抵都知道 tcpdump 依赖于 pcap 库，tcpdump 中的诸多核心功能都经由后者实现，其整体工作流程如下图所示：
+
+图 1. Tcpdump 工作流程
