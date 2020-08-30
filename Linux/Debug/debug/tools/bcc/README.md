@@ -12,7 +12,7 @@ BCC--用于Linux性能监视, 网络和更多的动态跟踪工具
 
 <br>
 
-#1	BCC简介
+# BCC简介
 
 `BCC`--(`BPF Compiler Collection`, `BPF` 编译器集合) 是用于创建足智多谋内核跟踪和操作程序一套功能强大的适当的工具和示例文件. 它采用扩展 `BPF`( `Berkeley` 包过滤器), 最初被称为 `eBPF` 这是在 `Linux` 的 `3.15` 的新功能之一.
 
@@ -36,11 +36,9 @@ BCC--用于Linux性能监视, 网络和更多的动态跟踪工具
 
 最适合用于高级 `Linux` 用户, `BCC` 可以很容易地编写使用内核仪表用`C`, `BPF` 程序和 `Python` 和 `Lua`编写的前端分析脚本。 此外， 它支持多个任务， 如性能分析, 监控, 网络流量控制等.
 
-#2	如何在 `Linux` 系统中安装 `BCC`
--------
+# 如何在 `Linux` 系统中安装 `BCC`
 
-##2.1	开启内核选项支持BCC
--------
+## 开启内核选项支持BCC
 
 `Linux` `4.1` 以上的内核版本才能使能 `BCC` 的功能, 内核应该已经编译如下设置标志 :
 
@@ -68,10 +66,6 @@ grep -E "CONFIG_BPF=|CONFIG_BPF_SYSCALL=|CONFIG_BPF_SYSCALL=y|CONFIG_NET_CLS_BPF
 
 
 ##2.2	Ubuntu使用源安装
--------
-
-
-
 
 添加源信息
 
