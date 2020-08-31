@@ -595,6 +595,8 @@ sr0              11:0    1 1024M  0 rom
 
 #### 2.2.2.6. 扩大未挂载文件系统
 
+https://www.cnblogs.com/kevingrace/p/5825963.html
+
 `resize2fs`命令，用于扩大或者缩小**未挂载的ext2,ext3或者是ext4文件系统**。具体命令为：`resize2fs -p /dev/mapper/centos-root 20G`。这个路径，就是前面 root 对应 lv 的路径。
 
 ```
