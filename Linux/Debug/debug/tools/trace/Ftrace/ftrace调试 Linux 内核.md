@@ -588,9 +588,16 @@ echo ':mod:kvm_amd' >> set_ftrace_filter
 echo ':mod:kvm_intel' >> set_ftrace_filter
 echo > set_graph_function
 echo pvclock_gtod_notify > set_ftrace_notrace
-echo 1 > tracing_on
 echo function_graph > current_tracer
+echo 1 > tracing_on; sleep 30; echo 0 > tracing_on
 ```
+
+注: 如果filter设置过宽泛, 写trace是有延迟的, 所以很容易造成你想trace的函数信息没有写入, 这种情况下, 解决办法:
+
+1. trace时间拉长
+2. filter/graph_function设置少一点
+3. 设置tracing_cpumask
+4. 
 
 ## 指定进程
 
