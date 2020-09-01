@@ -1246,6 +1246,8 @@ ftrace 提供了一个用于向 ftrace 跟踪缓冲区输出跟踪信息的工�
     ...
 ```
 
+注: `trace_printk`不需要做任何ftrace配置, 直接读取trace文件即可.
+
 下面通过一个示例模块 `ftrace_demo` 来演示如何使用 `trace_printk()` 向跟踪**缓冲区输出信息**，以及**如何查看这些信息**。这里的示例模块程序中仅提供了`初始化`和`退出函数`，这样读者不会因为需要为模块创建必要的访问接口比如设备文件而分散注意力。
 
 注意，**编译模块**时要加入 `-pg` 选项。
@@ -1343,7 +1345,20 @@ trace_printk("elapsed %lld ns\n", elapsed_ns);
 ```
 
 ```cpp
-
+ void kvm_wait_lapic_expire(struct kvm_vcpu *vcpu)
+ {
+       if (lapic_timer_int_injected(vcpu))
+       u64 start, end;
+       trace_printk("---------- kvm wait lapic expire enter");
+       pr_info("---------- kvm wait lapic expire enter");
+       if (lapic_timer_int_injected(vcpu)) {
+               start = rdtsc();
+               __kvm_wait_lapic_expire(vcpu);
+               end = rdtsc();
+               trace_printk("-------- kvm wait lapic expired cost %lld", end-start);
+               pr_info("-------- kvm wait lapic expired cost %lld", end-start);
+       }
+ }
 ```
 
 ## 20.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录
