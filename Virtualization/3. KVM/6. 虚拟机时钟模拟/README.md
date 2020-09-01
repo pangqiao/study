@@ -54,5 +54,6 @@ index 654649b..abc296d 100644
 ```
 
 
+timer_advance_ns 针对 tscdeadline 模式
 
 
