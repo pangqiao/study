@@ -1342,6 +1342,10 @@ printk("elapsed %lld ns\n", elapsed_ns);
 trace_printk("elapsed %lld ns\n", elapsed_ns);
 ```
 
+```cpp
+
+```
+
 ## 20.2. 使用 tracing_on/tracing_off 控制跟踪信息的记录
 
 在跟踪过程中，有时候在检测到某些事件发生时，想要停止跟踪信息的记录，这样，跟踪缓冲区中较新的数据是与该事件有关的。在用户态，可以通过向文件 `tracing_on` 写入 0 来停止记录跟踪信息，写入 1 会继续记录跟踪信息。而在内核代码中，可以通过函数 `tracing_on()` 和 `tracing_off()` 来做到这一点，它们的行为类似于对 `/sys/kernel/debug/tracing` 下的文件 tracing_on 分别执行写 1 和 写 0 的操作。使用这两个函数，会对跟踪信息的记录控制地更准确一些，这是因为在用户态写文件 tracing_on 到实际暂停跟踪，中间由于上下文切换、系统调度控制等可能已经经过较长的时间，这样会积累大量的跟踪信息，而感兴趣的那部分可能会被覆盖掉了。
