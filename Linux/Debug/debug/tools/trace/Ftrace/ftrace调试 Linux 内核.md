@@ -597,7 +597,7 @@ echo 1 > tracing_on; sleep 30; echo 0 > tracing_on
 1. trace时间拉长
 2. filter/graph_function设置少一点
 3. 设置tracing_cpumask
-4. 
+4. 设置set_ftrace_pid
 
 ## 指定进程
 
