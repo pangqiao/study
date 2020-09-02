@@ -1186,16 +1186,23 @@ sunrpc:rpc_socket_state_change
 ```
 cd /sys/kernel/debug/tracing
 echo kvm_cpuid >> set_event
+echo 1 > tracing_on
+...
+echo 0 > tracing_on
 cp /sys/kernel/debug/tracing/trace /data/perf_test/kvm_cpuid
-```
 
-或
+cd /sys/kernel/debug/tracing
+echo nop > current_tracer
+echo > trace
+echo kvm_hypercall > set_event
+echo 1 > tracing_on; sleep 30; echo 0 > tracing_on
+```
 
 ```
 echo 1 > events/kvm/kvm_cpuid/enable
 ```
 
-注: 只要设置set_event或者开启相应enable即可, 不用额外配置
+注: 只要设置set_event或者开启相应enable, 然后打开tracing_on即可, 不用额外配置
 
 # 18. trace-cmd and KernelShark
 
