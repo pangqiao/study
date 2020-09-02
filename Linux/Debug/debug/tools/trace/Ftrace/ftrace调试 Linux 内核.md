@@ -1186,11 +1186,16 @@ sunrpc:rpc_socket_state_change
 ```
 cd /sys/kernel/debug/tracing
 echo kvm_cpuid >> set_event
-echo 1 > tracing_on
-......
-echo 0 > tracing_on
 cp /sys/kernel/debug/tracing/trace /data/perf_test/kvm_cpuid
 ```
+
+或
+
+```
+echo 1 > events/kvm/kvm_cpuid/enable
+```
+
+注: 只要设置set_event或者开启相应enable即可, 不用额外配置
 
 # 18. trace-cmd and KernelShark
 
@@ -1253,7 +1258,7 @@ ftrace 提供了一个用于向 ftrace 跟踪缓冲区输出跟踪信息的工�
     ...
 ```
 
-注: `trace_printk`不需要做任何ftrace配置, 直接读取trace文件即可.
+注: `trace_printk`不需要做任何ftrace配置, 也就是直接代码添加后, 跑代码, 直接读取trace文件即可.
 
 下面通过一个示例模块 `ftrace_demo` 来演示如何使用 `trace_printk()` 向跟踪**缓冲区输出信息**，以及**如何查看这些信息**。这里的示例模块程序中仅提供了`初始化`和`退出函数`，这样读者不会因为需要为模块创建必要的访问接口比如设备文件而分散注意力。
 
