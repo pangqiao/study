@@ -16,9 +16,9 @@ Port IO，所谓端口IO，x86上使用in、out指令进行访问。和内存的
 
 80386的I/O指令使得处理器可以访问I/O端口，以便从外设输入数据，或者向外设发送数据。这些指令有一个指定I/O空间端口地址的操作数。有两类的I/O指令：
 
-1. 在寄存器指定的地址**传送一个数据**（字节、字、双字）, 有IN/OUT指令。
+1. 在寄存器指定的地址**传送一个数据**（字节、字、双字）, 使用IN/OUT指令。
 
-2. 传送指定内存中的**一串数据**（字节串、字串、双字串）。这些被称作为“串 I/O指令”或者说“块I/O指令”, 有INS/OUTS指令
+2. 传送指定内存中的**一串数据**（字节串、字串、双字串）。这些被称作为“串 I/O指令”或者说“块I/O指令”, 使用INS/OUTS指令
 
 cat /proc/ioports查看当前OS的所有的ioports：
 
@@ -93,6 +93,30 @@ cat /proc/ioports查看当前OS的所有的ioports：
 常见的port 40---timer，60---keyboard等等。这是业界习惯。
 
 ## 2. PIO在KVM中
+
+```cpp
+static int handle_io(struct kvm_vcpu *vcpu)
+{
+        unsigned long exit_qualification;
+        int size, in, string;
+        unsigned port;
+        // 获取exit_qualification字段
+        exit_qualification = vmx_get_exit_qual(vcpu);
+        // 判断是否是串指令(INTS/OUTS), 16 = 0x10000, 即bit 4
+        string = (exit_qualification & 16) != 0;
+
+        ++vcpu->stat.io_exits;
+        // 串指令
+        if (string)
+                return kvm_emulate_instruction(vcpu, 0);
+        // 下面就是非串指令(IN/OUT)
+        port = exit_qualification >> 16;
+        size = (exit_qualification & 7) + 1;
+        in = (exit_qualification & 8) != 0;
+
+        return kvm_fast_pio(vcpu, size, port, in);
+}
+```
 
 `handle_io() -> kvm_fast_pio_out() -> emulator_pio_out_emulated() -> emulator_pio_in_out() -> kernel_pio() -> kvm_io_bus_write() -> __kvm_io_bus_write() -> kvm_iodevice_write() -> dev->ops->write()`
 
