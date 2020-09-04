@@ -37,4 +37,24 @@ EPT_VIOLATION表示的是对应的物理页不存在，而EPT_MISCONFIG表示EPT
 
 ## KVM如何标记EPT是MMIO类型 ?
 
-hardware_setup时候虚拟机如果开启了ept支持就调用ept_set_mmio_spte_mask初始化shadow_mmio_mask， 设置EPT页表项最低3bit为：110b就会触发ept_msconfig（110b表示该页可读可写但是还未分配或者不存在，这显然是一个错误的EPT页表项）.
+hardware_setup时候虚拟机如果开启了ept支持就调用ept_set_mmio_spte_mask初始化shadow_mmio_mask， 设置EPT页表项**最低 3 bit**为：`110b`就会触发ept_msconfig（110b表示该页**可读可写**但是**还未分配**或者**不存在**，这显然是一个错误的EPT页表项）.
+
+```cpp
+#define VMX_EPT_WRITABLE_MASK                   0x2ull
+#define VMX_EPT_EXECUTABLE_MASK                 0x4ull
+
+/* The mask to use to trigger an EPT Misconfiguration in order to track MMIO */
+#define VMX_EPT_MISCONFIG_WX_VALUE              (VMX_EPT_WRITABLE_MASK |       \
+                                                 VMX_EPT_EXECUTABLE_MASK)
+
+
+static void ept_set_mmio_spte_mask(void)
+{
+        /*
+         * EPT Misconfigurations can be generated if the value of bits 2:0
+         * of an EPT paging-structure entry is 110b (write/execute).
+         */
+        kvm_mmu_set_mmio_spte_mask(VMX_EPT_MISCONFIG_WX_VALUE, 0);
+}
+```
+
