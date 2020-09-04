@@ -122,7 +122,7 @@ static int em_out(struct x86_emulate_ctxt *ctxt)
 
 以em\_in为例，它调用pio\_in\_emulated()，该函数定义如下(X86)：
 
-```
+```cpp
 static const struct x86_emulate_ops emulate_ops = {
     ······
     .pio_in_emulated     = emulator_pio_in_emulated,
@@ -133,7 +133,7 @@ static const struct x86_emulate_ops emulate_ops = {
 
 通过追踪emulate\_ops调用关系，会发现是通过struct kvm\_x86\_ops vmx\_x86\_ops的vcpu\_create操作添加的映射
 
-```
+```cpp
 static struct kvm_x86_ops vmx_x86_ops = {
     ···
     .vcpu_create = vmx_create_vcpu, 
@@ -143,7 +143,7 @@ static struct kvm_x86_ops vmx_x86_ops = {
 
 通过查找vcpu\_create的调用关系，发现是函数kvm\_vm\_ioctl的case KVM\_CREATE\_VCPU调用
 
-```
+```cpp
 static long kvm_vm_ioctl(struct file *filp,
                unsigned int ioctl, unsigned long arg) 
 {                 
