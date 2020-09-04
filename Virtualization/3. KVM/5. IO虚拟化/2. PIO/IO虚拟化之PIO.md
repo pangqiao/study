@@ -110,13 +110,25 @@ static int handle_io(struct kvm_vcpu *vcpu)
         if (string)
                 return kvm_emulate_instruction(vcpu, 0);
         // 下面就是非串指令(IN/OUT)
-        port = exit_qualification >> 16;
+        // 端口号
+      port = exit_qualification >> 16;
+        // 大小, bits 2:0
         size = (exit_qualification & 7) + 1;
+        // 判断io方向，是in  还是out
         in = (exit_qualification & 8) != 0;
 
         return kvm_fast_pio(vcpu, size, port, in);
 }
 ```
+
+exit qualification 字段的 `bits 2:0`记录I/O指令访问的数据大小：
+* 为 0 时，1 个字节，例如：`in al, 92h`。
+* 为 1 时，2 个字节，例如：`in ax, 92h`。
+* 为 3 时，4 个字节，例如：`in eax,92h`。
+
+
+关于`Exit qualification字段`, 可以参见手册
+
 
 `handle_io() -> kvm_fast_pio_out() -> emulator_pio_out_emulated() -> emulator_pio_in_out() -> kernel_pio() -> kvm_io_bus_write() -> __kvm_io_bus_write() -> kvm_iodevice_write() -> dev->ops->write()`
 
