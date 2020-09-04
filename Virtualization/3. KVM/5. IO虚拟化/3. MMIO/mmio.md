@@ -58,3 +58,47 @@ static void ept_set_mmio_spte_mask(void)
 }
 ```
 
+同时还要对EPT的一些特殊位进行标记来标志该spte表示MMIO而不是虚拟机的物理内存，例如这里
+
+(1)set the special mask:  SPTE_SPECIAL_MASK．
+
+(2)reserved physical address bits:  the setting of a bit in the range `51:12` that is beyond the logical processor’s physic
+
+我们可以通过以两个函数对比一下kvm对MMIO pte的处理：
+
+```cpp
+void kvm_mmu_set_mmio_spte_mask(u64 mmio_value, u64 access_mask)
+{
+        BUG_ON((u64)(unsigned)access_mask != access_mask);
+        WARN_ON(mmio_value & (shadow_nonpresent_or_rsvd_mask << shadow_nonpresent_or_rsvd_mask_len));
+        WARN_ON(mmio_value & shadow_nonpresent_or_rsvd_lower_gfn_mask);
+        shadow_mmio_value = mmio_value | SPTE_MMIO_MASK;
+        shadow_mmio_access_mask = access_mask;
+}
+EXPORT_SYMBOL_GPL(kvm_mmu_set_mmio_spte_mask);
+
+static void kvm_set_mmio_spte_mask(void)
+{
+        u64 mask;
+
+        /*
+         * Set a reserved PA bit in MMIO SPTEs to generate page faults with
+         * PFEC.RSVD=1 on MMIO accesses.  64-bit PTEs (PAE, x86-64, and EPT
+         * paging) support a maximum of 52 bits of PA, i.e. if the CPU supports
+         * 52-bit physical addresses then there are no reserved PA bits in the
+         * PTEs and so the reserved PA approach must be disabled.
+         */
+        if (shadow_phys_bits < 52)
+                mask = BIT_ULL(51) | PT_PRESENT_MASK;
+        else
+                mask = 0;
+
+        kvm_mmu_set_mmio_spte_mask(mask, ACC_WRITE_MASK | ACC_USER_MASK);
+}
+```
+
+KVM在建立EPT页表项之后设置了这些标志位再访问对应页的时候会触发`EPT_MISCONFIG`退出了，然后调用`handle_ept_misconfig`-->`handle_mmio_page_fault`来完成MMIO处理操作。
+
+## QEMU如何标记设备的MMIO
+
+这里以e1000网卡模拟为例，设备初始化MMIO时候时候注册的MemoryRegion为IO类型（不是RAM类型）．
