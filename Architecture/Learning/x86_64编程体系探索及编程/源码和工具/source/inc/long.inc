@@ -5,7 +5,7 @@
 %ifndef LONG_INC
 %define LONG_INC
 
-; ¶¨Òå selector ³£Á¿
+; å®šä¹‰ selector å¸¸é‡
 code16_sel              equ     0x08
 data16_sel              equ     0x10
 code32_sel              equ     0x18
@@ -31,16 +31,16 @@ conforming_callgate_sel equ     0xc0
 processor0_tss_sel      equ     tss64_sel
 
 ;*
-;* ¶¨Òå processor µÄ TSS selector
+;* å®šä¹‰ processor çš„ TSS selector
 ;*
-;* ±£Áô 8 ¸ö TSS ÃèÊö·û¿Õ¼ä
+;* ä¿ç•™ 8 ä¸ª TSS æè¿°ç¬¦ç©ºé—´
 ;*
 processor_tss_sel       equ     0xd0
 
 reserved_sel            equ     0x150
 
 
-;; ¶¨Òå
+;; å®šä¹‰
 LDT64                   equ     0x2
 TSS64                   equ     0x9
 TSS64_BUSY              equ     0xb
@@ -61,7 +61,7 @@ LDT_USER32_SS           equ     0x20 | 4
 LDT_USER_CS             equ     0x28 | 4
 LDT_USER_SS             equ     0x30 | 4
 
-;; ¶¨Òå interrupt vector
+;; å®šä¹‰ interrupt vector
 DE_HANDLER_VECTOR       equ 0
 DB_HANDLER_VECTOR       equ 1
 NMI_HANDLER_VECTOR      equ 2
@@ -83,7 +83,7 @@ XF_HANDLER_VECTOR       equ 19
 SX_HANDLER_VECTOR       equ 31
 
 
-; ×Ô¶¨ÒåÖÐ¶Ï·þÎñÀý³ÌÏòÁ¿Öµ
+; è‡ªå®šä¹‰ä¸­æ–­æœåŠ¡ä¾‹ç¨‹å‘é‡å€¼
 SYSTEM_SERVICE_VECTOR   equ     0x40
 
 
@@ -102,7 +102,7 @@ APIC_LINT1_VECTOR       equ     0x32
 APIC_PERFMON_VECTOR     equ     0x33
 APIC_ERROR_VECTOR       equ     0x34
 
-;*** ÏÂÃæÃ¿ 4 ¸ölogical processor ¶¨Òå×ÔÒÑµÄ IPI ÏûÏ¢µÄÖÐ¶ÏÏòÁ¿
+;*** ä¸‹é¢æ¯ 4 ä¸ªlogical processor å®šä¹‰è‡ªå·²çš„ IPI æ¶ˆæ¯çš„ä¸­æ–­å‘é‡
 PROCESSOR0_IPI_VECTOR                equ        0x38
 PROCESSOR1_IPI_VECTOR                equ        0x39
 PROCESSOR2_IPI_VECTOR                equ        0x3a
@@ -112,7 +112,7 @@ BP_IPI_VECTOR                        equ        PROCESSOR0_IPI_VECTOR
 AP_IPI_VECTOR                        equ        PROCESSOR1_IPI_VECTOR
 
 
-;**** ×Ô¶¨ÒåÏµÍ³·þÎñÀý³ÌºÅ ****
+;**** è‡ªå®šä¹‰ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å· ****
 
 SYSTEM_SERVICE_USER     equ     0
 SYSTEM_SERVICE_USER0    equ     SYSTEM_SERVICE_USER
@@ -129,7 +129,7 @@ SYSTEM_SERVICE_USER9    equ     (SYSTEM_SERVICE_USER + 9)
 
 
 ;-----------------------------------------------
-; MAKE_SEGMENT_ATTRIBUTE(): ºê×éºÏ¶ÎÊôÐÔ
+; MAKE_SEGMENT_ATTRIBUTE(): å®ç»„åˆæ®µå±žæ€§
 ; input:
 ;                %1: type, %2: DPL, %3: G,  %4: D/B
 ;-----------------------------------------------
