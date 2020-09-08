@@ -1,7 +1,1 @@
-翻译自AMD SDM
-
-https://developer.amd.com/resources/developer-guides-manuals/ -> `AMD64 Architecture` -> `AMD64 Architecture Programmer’s Manual Volume 2: System Programming` -> `15. Secure Virtual Machine`
-
-
-
-
+AMD虚拟化的硬件能力, 翻译自AMD手册
