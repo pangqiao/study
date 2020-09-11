@@ -18,3 +18,6 @@ https://github.com/linux-test-project/ltp
 
 
 https://www.atlassian.com/engineering/jira-performance-engineering
+
+
+https://zhuanlan.zhihu.com/p/127829040 (未,)
