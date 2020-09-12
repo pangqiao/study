@@ -1,9 +1,8 @@
 Enabling SVM
 
+当`EFER.SVME`位**设置为1**时，可以使用**VMRUN**，**VMLOAD**，**VMSAVE**，**CLGI**，**VMMCALL**和**INVLPGA**指令。否则，这些指令会产生`#UD`异常。
 
-当`EFER.SVME`设置为1时，可以使用**VMRUN**，**VMLOAD**，**VMSAVE**，**CLGI**，**VMMCALL**和**INVLPGA**指令。否则，这些指令会产生`#UD`异常。
-
-当`EFER.SVME`位**设置为1**或功能标志CPUID `Fn8000_0001_ECX[SKINIT]`设**置为1**时，可以使用`SKINIT`和`STGI`指令。否则，这些指令会产生`#UD`异常。
+当`EFER.SVME`位**设置为1**或**功能标志CPUID** `Fn8000_0001_ECX[SKINIT]`设**置为1**时，可以使用`SKINIT`和`STGI`指令。否则，这些指令会产生`#UD`异常。
 
 在启用SVM之前，软件要使用以下算法检测是否可以启用SVM：
 
