@@ -4,19 +4,19 @@
 
 
 ;*
-;* ¶¨Òå long-mode Ä£Ê½ÏÂµÄÏµÍ³Êı¾İ
+;* å®šä¹‰ long-mode æ¨¡å¼ä¸‹çš„ç³»ç»Ÿæ•°æ®
 ;*
 
         bits 64
 
 
 ;----------------------------------------------
-; BSP ´¦ÀíÆ÷³õÊ¼»¯ long-mode ÏµÍ³±í
+; BSP å¤„ç†å™¨åˆå§‹åŒ– long-mode ç³»ç»Ÿè¡¨
 ;----------------------------------------------
 bsp_init_system_struct:
 init_system_struct:
 ;*
-;* ²âÊÔÊÇ·ñ BSP ´¦ÀíÆ÷
+;* æµ‹è¯•æ˜¯å¦ BSP å¤„ç†å™¨
 ;*
         mov ecx, IA32_APIC_BASE
         rdmsr
@@ -24,7 +24,7 @@ init_system_struct:
         jnc bsp_init_system_struct_done
 
 
-; ÉèÖÃ LDT ÃèÊö·û                       
+; è®¾ç½® LDT æè¿°ç¬¦                       
         mov rbx, ldt_sel + __global_descriptor_table                                            ; LDT descriptor
         mov rsi, SYSTEM_DATA64_BASE + (__local_descriptor_table - __system_data64_entry)        ; base
         mov rdi, __local_descriptor_table_end - __local_descriptor_table - 1                    ; limit
@@ -34,13 +34,13 @@ init_system_struct:
         mov BYTE [rbx + 5], 82h         ; type
         mov BYTE [rbx + 6], 0           ; limit[19:16]
 
-;; ÏÂÃæ½«ÏµÍ³Êı¾İ½á¹¹¶¨Î»ÔÚ SYSTEM_DATA64_BASE µÄÏßĞÔµØÖ·¿Õ¼äÉÏ
+;; ä¸‹é¢å°†ç³»ç»Ÿæ•°æ®ç»“æ„å®šä½åœ¨ SYSTEM_DATA64_BASE çš„çº¿æ€§åœ°å€ç©ºé—´ä¸Š
         mov rdi, SYSTEM_DATA64_BASE
         mov rsi, __system_data64_entry
         mov rcx, __system_data64_end - __system_data64_entry
         rep movsb
 
-;; ÏÂÃæÖØĞÂÉèÖÃ 64-bit »·¾³ÏÂµÄ GDT ºÍ IDT ±íÖ¸Õë
+;; ä¸‹é¢é‡æ–°è®¾ç½® 64-bit ç¯å¢ƒä¸‹çš„ GDT å’Œ IDT è¡¨æŒ‡é’ˆ
         mov rbx, SYSTEM_DATA64_BASE + (__gdt_pointer - __system_data64_entry)
         mov rax, SYSTEM_DATA64_BASE + (__global_descriptor_table - __system_data64_entry)
         mov [rbx + 2], rax
@@ -54,12 +54,12 @@ bsp_init_system_struct_done:
 
 
 
-; ÏÂÃæ¶¨ÒåËùÓĞ system Êı¾İµÄÈë¿Ú
+; ä¸‹é¢å®šä¹‰æ‰€æœ‰ system æ•°æ®çš„å…¥å£
 
 __system_data64_entry:
 
 ;-----------------------------------------
-; ÏÂÃæ¶¨Òå long-mode µÄ GDT ±í
+; ä¸‹é¢å®šä¹‰ long-mode çš„ GDT è¡¨
 ;-----------------------------------------
 __global_descriptor_table:
 
@@ -76,12 +76,12 @@ data32_desc			dq 0x00cf92000000ffff           ; for protected mode data segment
 kernel_code64_desc		dq 0x0020980000000000		; 64-bit code segment
 kernel_data64_desc		dq 0x0000920000000001		; 64-bit data segment
 
-;;; Ò²Îª sysexit Ö¸ÁîÊ¹ÓÃ¶ø×éÖ¯
+;;; ä¹Ÿä¸º sysexit æŒ‡ä»¤ä½¿ç”¨è€Œç»„ç»‡
 user_code32_desc		dq 0x00cffa000000ffff           ; for protected mode code segment
 								 ; or for compatibility mode code segmnt
 user_data32_desc		dq 0x00cff2000000ffff           ; for protected mode data segment
 								; or for compatibility mode data segment	
-;; Ò²Îª sysexit Ö¸ÁîÊ¹ÓÃ¶ø×éÖ¯                                                 
+;; ä¹Ÿä¸º sysexit æŒ‡ä»¤ä½¿ç”¨è€Œç»„ç»‡                                                 
 user_code64_desc		dq 0x0020f80000000000		; 64-bit non-conforming
 user_data64_desc		dq 0x0000f20000000000		; 64-bit data segment
 
@@ -94,7 +94,7 @@ call_gate_desc			dq 0, 0
 
 conforming_code64_desc		dq 0
 
-;; ÏÂÃæÎª syscall/sysret »·¾³×¼±¸					
+;; ä¸‹é¢ä¸º syscall/sysret ç¯å¢ƒå‡†å¤‡					
 				dq 0				; reserved
 sysret_stack64_desc		dq 0x0000f20000000000
 sysret_code64_desc		dq 0x0020f80000000000
@@ -103,7 +103,7 @@ data64_desc			dq 0x0000f00000000000		; 64-bit data segment
 
 ;test_kernel_data64_desc		dq 0x0000920000000001		; 64-bit data segment
                                                  				
-	times	40 dq 0						; ±£Áô 40 ¸ö descriptor Î»ÖÃ
+	times	40 dq 0						; ä¿ç•™ 40 ä¸ª descriptor ä½ç½®
 
 
 __global_descriptor_table_end:
@@ -112,7 +112,7 @@ __global_descriptor_table_end:
 
 
 ;--------------------------------------
-; ÏÂÃæ¶¨Òå long-mode µÄ LDT ±í
+; ä¸‹é¢å®šä¹‰ long-mode çš„ LDT è¡¨
 ;--------------------------------------
 
 __local_descriptor_table:
@@ -133,11 +133,11 @@ __local_descriptor_table_end:
 
 
 ;-------------------------------------------
-; ÏÂÃæ¶¨Òå long-mode µÄ IDT ±í
+; ä¸‹é¢å®šä¹‰ long-mode çš„ IDT è¡¨
 ;-------------------------------------------
 __interrupt_descriptor_table:
 
-times 0x50 dq 0, 0			; ±£Áô 0x50 ¸ö vector
+times 0x50 dq 0, 0			; ä¿ç•™ 0x50 ä¸ª vector
 
 __interrupt_descriptor_table_end:
 
@@ -160,10 +160,10 @@ __processor0_task_status_segment_end:
 
 
 ;*
-;* Îª 7 ¸ö´¦ÀíÆ÷¶¨Òå 7 ¸ö TSS ÇøÓò
+;* ä¸º 7 ä¸ªå¤„ç†å™¨å®šä¹‰ 7 ä¸ª TSS åŒºåŸŸ
 ;*
 __processor_task_status_segment:
-        times 104 * 8 db 0                                      ; ±£Áô 8 ¸ö TSS ¿Õ¼ä
+        times 104 * 8 db 0                                      ; ä¿ç•™ 8 ä¸ª TSS ç©ºé—´
         
 
 ;--------------------------------------------
@@ -181,7 +181,7 @@ __test_tss_end:
 
 
 ;----------------------------------------
-; ÏÂÃæ¶¨Òå descriptor table pointer ±äÁ¿
+; ä¸‹é¢å®šä¹‰ descriptor table pointer å˜é‡
 ;----------------------------------------
 
 __gdt_pointer:
@@ -195,7 +195,7 @@ idt_base	dq __interrupt_descriptor_table
 
 
 
-;; system Êı¾İÇøÓòµÄ½áÊø
+;; system æ•°æ®åŒºåŸŸçš„ç»“æŸ
 __system_data64_end:
 
 
