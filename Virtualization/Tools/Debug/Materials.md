@@ -6,3 +6,6 @@ KVM tracing: https://www.linux-kvm.org/page/Tracing
 
 
 很多trace等可以使用`kvm-unit-test/x86`下面的, 当然可以自己编写
+
+
+还有`tools/testing/selftests/kvm/`下面内容
