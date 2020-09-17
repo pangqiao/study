@@ -644,6 +644,9 @@ exec $*
 echo 0 > $DPATH/tracing_on
 ```
 
+```
+./traceprocess.sh ls
+```
 
 
 # 10. sched_switch 跟踪器
