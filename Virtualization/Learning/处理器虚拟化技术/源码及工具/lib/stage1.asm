@@ -1,6 +1,6 @@
 ;*************************************************
 ; stage1.asm                                     *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
@@ -12,12 +12,12 @@
 ;-------------------------------------------------------------------
 ; set_stage1_gdt:
 ; input:
-;       esi - GDT ±í»ùÖ· 
+;       esi - GDT è¡¨åŸºå€ 
 ; output:
-;       eax - ·µ»Ø GDT pointer
-; ÃèÊö£º
-;       1) ³õÊ¼»¯ÁÙÊ±µÄ GDT Êı¾İ
-;	2) ´Ëº¯ÊıÔËĞĞÔÚ 16 Î» real-mode ÏÂ 
+;       eax - è¿”å› GDT pointer
+; æè¿°ï¼š
+;       1) åˆå§‹åŒ–ä¸´æ—¶çš„ GDT æ•°æ®
+;	2) æ­¤å‡½æ•°è¿è¡Œåœ¨ 16 ä½ real-mode ä¸‹ 
 ;-------------------------------------------------------------------
 set_stage1_gdt:
         push edx
@@ -25,13 +25,13 @@ set_stage1_gdt:
         xor eax, eax
 
         ;;
-        ;; ÉèÖÃ»ù±¾ GDT ±íÏî
+        ;; è®¾ç½®åŸºæœ¬ GDT è¡¨é¡¹
         ;; 1) entry 0:          NULL descriptor
-        ;; 2) entry 1,2£º       64-bit kernel code/data ÃèÊö·û
-        ;; 3) entry 3,4:        32-bit user code/data ÃèÊö·û
-        ;; 4) entry 5,6:        64-bit user code/data ÃèÊö·û
-        ;; 5) entry 7,8:        32-bit kernel code/data ÃèÊö·û                
-        ;; 6) entry 9,10:       fs/gs ¶ÎÊ¹ÓÃ
+        ;; 2) entry 1,2ï¼š       64-bit kernel code/data æè¿°ç¬¦
+        ;; 3) entry 3,4:        32-bit user code/data æè¿°ç¬¦
+        ;; 4) entry 5,6:        64-bit user code/data æè¿°ç¬¦
+        ;; 5) entry 7,8:        32-bit kernel code/data æè¿°ç¬¦                
+        ;; 6) entry 9,10:       fs/gs æ®µä½¿ç”¨
         ;; 
 
 	    ;;		
@@ -41,15 +41,15 @@ set_stage1_gdt:
         mov [esi+4], eax
 
         ;;
-        ;; 64-bit Kernel CS/SS ÃèÊö·ûÉèÖÃËµÃ÷£º
-        ;; 1£©ÔÚ x64 ÌåÏµÏÂÃèÊö·û¿ÉÒÔÉèÖÃÎª£º
+        ;; 64-bit Kernel CS/SS æè¿°ç¬¦è®¾ç½®è¯´æ˜ï¼š
+        ;; 1ï¼‰åœ¨ x64 ä½“ç³»ä¸‹æè¿°ç¬¦å¯ä»¥è®¾ç½®ä¸ºï¼š
         ;;      * CS = 00209800_00000000h (L=P=1, G=D=0, C=R=A=0)
         ;;      * SS = 00009200_00000000h (L=1, G=B=0, W=1, E=A=0)
-        ;; 2) ÔÚ VMX ¼Ü¹¹ÏÂ, ÔÚVM-exit ·µ»Ø host ºó»á½«ÃèÊö·ûÉèÖÃÎª£º
+        ;; 2) åœ¨ VMX æ¶æ„ä¸‹, åœ¨VM-exit è¿”å› host åä¼šå°†æè¿°ç¬¦è®¾ç½®ä¸ºï¼š
         ;;      * CS = 00AF9B00_0000FFFFh (G=L=P=1, D=0, C=0, R=A=1, limit=4G)
         ;;      * SS = 00CF9300_0000FFFFh (G=P=1, B=1, E=0, W=A=1, limit=4G)
         ;;
-        ;; 3) Òò´Ë£¬ÎªÁËÓë host µÄÃèÊö·û´ï³ÉÒ»ÖÂ£¬ÕâÀï½«ÃèÊö·ûÉèÎª£º
+        ;; 3) å› æ­¤ï¼Œä¸ºäº†ä¸ host çš„æè¿°ç¬¦è¾¾æˆä¸€è‡´ï¼Œè¿™é‡Œå°†æè¿°ç¬¦è®¾ä¸ºï¼š
         ;;      * CS = 00AF9A00_0000FFFFh (G=L=P=1, D=0, C=A=0, R=1, limit=4G)
         ;;      * SS = 00CF9200_0000FFFFh (G=P=1, B=1, E=A=0, W=1, limit=4G)  
         ;
@@ -59,7 +59,7 @@ set_stage1_gdt:
         mov DWORD [esi+KernelSsSelector64+4], 00CF9200h   
 
         ;;
-        ;; 32-bit User CS/SS ÃèÊö·û
+        ;; 32-bit User CS/SS æè¿°ç¬¦
         ;;
         mov DWORD [esi+UserCsSelector32],   0000FFFFh
         mov DWORD [esi+UserCsSelector32+4], 00CFFA00h
@@ -67,7 +67,7 @@ set_stage1_gdt:
         mov DWORD [esi+UserSsSelector32+4], 00CFF200h
 
         ;;
-        ;; 64-bit User CS/SS ÃèÊö·û
+        ;; 64-bit User CS/SS æè¿°ç¬¦
         ;;
         mov DWORD [esi+UserCsSelector64], eax
         mov DWORD [esi+UserCsSelector64+4], 0020F800h
@@ -75,7 +75,7 @@ set_stage1_gdt:
         mov DWORD [esi+UserSsSelector64+4], 0000F200h
 
         ;;
-        ;; 32-bit Kernel CS/SS ÃèÊö·û
+        ;; 32-bit Kernel CS/SS æè¿°ç¬¦
         ;;
         mov DWORD [esi+KernelCsSelector32],   0000FFFFh
         mov DWORD [esi+KernelCsSelector32+4], 00CF9A00h
@@ -112,7 +112,7 @@ set_stage1_gdt:
         mov WORD [esi+TssSelector32+5], 0089h
 
         ;;
-        ;; ÉèÖÃ TSS ÄÚÈİ
+        ;; è®¾ç½® TSS å†…å®¹
         ;;
         mov eax, [CpuIndex]
         shl eax, 13
@@ -122,7 +122,7 @@ set_stage1_gdt:
         mov WORD [edx+tss32.IomapBase], 0
 
         ;;
-        ;; GDT pointer: ´ËÊ± GDT base Ê¹ÓÃÎïÀíµØÖ·
+        ;; GDT pointer: æ­¤æ—¶ GDT base ä½¿ç”¨ç‰©ç†åœ°å€
         ;;
         lea eax, [esi-10h]
         mov WORD  [eax], 12 * 8 - 1		; GDT limit
@@ -138,26 +138,26 @@ set_stage1_gdt:
 ;-------------------------------------------------------------------
 ; set_global_gdt:
 ; input:
-;       esi - GDT µØÖ·
+;       esi - GDT åœ°å€
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ³õÊ¼»¯ SDA ÇøÓòµÄ GDT Êı¾İ
-;	    2) ´Ëº¯ÊıÔËĞĞÔÚ 32 Î» protected-mode ÏÂ
+; æè¿°ï¼š
+;       1) åˆå§‹åŒ– SDA åŒºåŸŸçš„ GDT æ•°æ®
+;	    2) æ­¤å‡½æ•°è¿è¡Œåœ¨ 32 ä½ protected-mode ä¸‹
 ;-------------------------------------------------------------------
 set_global_gdt:
         add esi, 10h
         xor eax, eax
 
         ;;
-        ;; ÉèÖÃ»ù±¾ GDT ±íÏî
+        ;; è®¾ç½®åŸºæœ¬ GDT è¡¨é¡¹
         ;; 1) entry 0:          NULL descriptor
-        ;; 2) entry 1,2£º       64-bit kernel code/data ÃèÊö·û
-        ;; 3) entry 3,4:        32-bit user code/data ÃèÊö·û
-        ;; 4) entry 5,6:        64-bit user code/data ÃèÊö·û
-        ;; 5) entry 7,8:        32-bit kernel code/data ÃèÊö·û                
-        ;; 6) entry 9,10:       fs/gs ¶ÎÊ¹ÓÃ
-        ;; 7) entry 11,12:      TSS ÃèÊö·û¶¯Ì¬Ôö¼Ó
+        ;; 2) entry 1,2ï¼š       64-bit kernel code/data æè¿°ç¬¦
+        ;; 3) entry 3,4:        32-bit user code/data æè¿°ç¬¦
+        ;; 4) entry 5,6:        64-bit user code/data æè¿°ç¬¦
+        ;; 5) entry 7,8:        32-bit kernel code/data æè¿°ç¬¦                
+        ;; 6) entry 9,10:       fs/gs æ®µä½¿ç”¨
+        ;; 7) entry 11,12:      TSS æè¿°ç¬¦åŠ¨æ€å¢åŠ 
         ;; 
 
         ;;		
@@ -168,15 +168,15 @@ set_global_gdt:
 
 
         ;;
-        ;; 64-bit Kernel CS/SS ÃèÊö·ûÉèÖÃËµÃ÷£º
-        ;; 1£©ÔÚ x64 ÌåÏµÏÂÃèÊö·û¿ÉÒÔÉèÖÃÎª£º
+        ;; 64-bit Kernel CS/SS æè¿°ç¬¦è®¾ç½®è¯´æ˜ï¼š
+        ;; 1ï¼‰åœ¨ x64 ä½“ç³»ä¸‹æè¿°ç¬¦å¯ä»¥è®¾ç½®ä¸ºï¼š
         ;;      * CS = 00209800_00000000h (L=P=1, G=D=0, C=R=A=0)
         ;;      * SS = 00009200_00000000h (L=1, G=B=0, W=1, E=A=0)
-        ;; 2) ÔÚ VMX ¼Ü¹¹ÏÂ, ÔÚVM-exit ·µ»Ø host ºó»á½«ÃèÊö·ûÉèÖÃÎª£º
+        ;; 2) åœ¨ VMX æ¶æ„ä¸‹, åœ¨VM-exit è¿”å› host åä¼šå°†æè¿°ç¬¦è®¾ç½®ä¸ºï¼š
         ;;      * CS = 00AF9B00_0000FFFFh (G=L=P=1, D=0, C=0, R=A=1, limit=4G)
         ;;      * SS = 00CF9300_0000FFFFh (G=P=1, B=1, E=0, W=A=1, limit=4G)
         ;;
-        ;; 3) Òò´Ë£¬ÎªÁËÓë host µÄÃèÊö·û´ï³ÉÒ»ÖÂ£¬ÕâÀï½«ÃèÊö·ûÉèÎª£º
+        ;; 3) å› æ­¤ï¼Œä¸ºäº†ä¸ host çš„æè¿°ç¬¦è¾¾æˆä¸€è‡´ï¼Œè¿™é‡Œå°†æè¿°ç¬¦è®¾ä¸ºï¼š
         ;;      * CS = 00AF9A00_0000FFFFh (G=L=P=1, D=0, C=A=0, R=1, limit=4G)
         ;;      * SS = 00CF9200_0000FFFFh (G=P=1, B=1, E=A=0, W=1, limit=4G)  
         ;
@@ -186,7 +186,7 @@ set_global_gdt:
         mov DWORD [esi+KernelSsSelector64+4], 00CF9200h   
 
         ;;
-        ;; 32-bit User CS/SS ÃèÊö·û
+        ;; 32-bit User CS/SS æè¿°ç¬¦
         ;;
         mov DWORD [esi+UserCsSelector32],   0000FFFFh
         mov DWORD [esi+UserCsSelector32+4], 00CFFA00h
@@ -194,7 +194,7 @@ set_global_gdt:
         mov DWORD [esi+UserSsSelector32+4], 00CFF200h
 
         ;;
-        ;; 64-bit User CS/SS ÃèÊö·û
+        ;; 64-bit User CS/SS æè¿°ç¬¦
         ;;
         mov DWORD [esi+UserCsSelector64], eax
         mov DWORD [esi+UserCsSelector64+4], 0020F800h
@@ -202,7 +202,7 @@ set_global_gdt:
         mov DWORD [esi+UserSsSelector64+4], 0000F200h
 
         ;;
-        ;; 32-bit Kernel CS/SS ÃèÊö·û
+        ;; 32-bit Kernel CS/SS æè¿°ç¬¦
         ;;
         mov DWORD [esi+KernelCsSelector32],   0000FFFFh
         mov DWORD [esi+KernelCsSelector32+4], 00CF9A00h
@@ -239,7 +239,7 @@ set_global_gdt:
         mov [esi+TssSelector32], ax
 
         ;;
-        ;; GDT pointer: ´ËÊ± GDT base Ê¹ÓÃĞéÄâµØÖ·
+        ;; GDT pointer: æ­¤æ—¶ GDT base ä½¿ç”¨è™šæ‹Ÿåœ°å€
         ;;
         lea eax, [esi-10h]
         mov esi, [CpuIndex]
@@ -249,8 +249,8 @@ set_global_gdt:
         mov DWORD [eax+2], esi			; GDT base
 
         ;;
-        ;; ×¢Òâ£¬ÎªÁËÊÊÓ¦ÔÚ 64-bit »·¾³Àï
-        ;; 1) µ±ĞèÒª½øÈë longmode Ê±£¬ĞèÒª¶îÍâÔö¼ÓÒ»¸ö¿ÕµÄ GDT ÃèÊö·û £¡
+        ;; æ³¨æ„ï¼Œä¸ºäº†é€‚åº”åœ¨ 64-bit ç¯å¢ƒé‡Œ
+        ;; 1) å½“éœ€è¦è¿›å…¥ longmode æ—¶ï¼Œéœ€è¦é¢å¤–å¢åŠ ä¸€ä¸ªç©ºçš„ GDT æè¿°ç¬¦ ï¼
         ;;
         cmp DWORD [fs: SDA.ApLongmode], 1
         jne set_global_gdt.@0
@@ -260,14 +260,14 @@ set_global_gdt:
         
 set_global_gdt.@0:
         ;;
-        ;; ÉèÖÃ TSS ÄÚÈİ
+        ;; è®¾ç½® TSS å†…å®¹
         ;;
         mov esi, [gs: PCB.TssPhysicalBase]
         mov ax, [fs: SDA.KernelSsSelector]
         mov [esi+tss32.ss0], ax
         
         ;;
-        ;; ·ÖÅäÒ»¸ö kernel Ê¹ÓÃµÄ stack£¬×÷ÎªÖĞ¶Ï·şÎñÀı³ÌÊ¹ÓÃ
+        ;; åˆ†é…ä¸€ä¸ª kernel ä½¿ç”¨çš„ stackï¼Œä½œä¸ºä¸­æ–­æœåŠ¡ä¾‹ç¨‹ä½¿ç”¨
         ;;
         mov eax, 2000h
         lock add [fs:SDA.KernelStackPhysicalBase], eax
@@ -280,11 +280,11 @@ set_global_gdt.@0:
         mov DWORD [gs: PCB.KernelStack+4], 0FFFFF800h
 
         ;;
-        ;; ÉèÖÃ IOmap »ùÖ·
+        ;; è®¾ç½® IOmap åŸºå€
         ;;
         mov eax, SDA_BASE+SDA.Iomap
         sub eax, [gs: PCB.TssBase]
-        mov [esi+tss32.IomapBase], ax                           ; Iomap Æ«ÒÆÁ¿
+        mov [esi+tss32.IomapBase], ax                           ; Iomap åç§»é‡
         ret
 
 
@@ -294,45 +294,45 @@ set_global_gdt.@0:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ³õÊ¼»¯Ïµ½yÊı¾İÇøÓò£¨SDA£©
-;       2) ´Ëº¯ÊıÖ´ĞĞÔÚ 32-bit ±£»¤Ä£Ê½ÏÂ
+; æè¿°ï¼š
+;       1) åˆå§‹åŒ–ç³»çµ±æ•°æ®åŒºåŸŸï¼ˆSDAï¼‰
+;       2) æ­¤å‡½æ•°æ‰§è¡Œåœ¨ 32-bit ä¿æŠ¤æ¨¡å¼ä¸‹
 ;-------------------------------------------------------------------
 init_system_data_area:
         push ecx
         push edx
         ;;
-        ;; µØÖ·ËµÃ÷£º
-        ;; 1) ËùÓĞµÄµØÖ·ÖµÊ¹ÓÃ 64 Î»
-        ;; 2) µÍ 32 Î»Ê¹ÓÃÔÚ legacy Ä£Ê½ÏÂ£¬Ó³Éä 32 Î»Öµ
-        ;; 3) ¸ß 32 Î»Ê¹ÓÃÔÚ 64-bit Ä£Ê½ÏÂ£¬Ó³Éä 64 Î»Öµ
+        ;; åœ°å€è¯´æ˜ï¼š
+        ;; 1) æ‰€æœ‰çš„åœ°å€å€¼ä½¿ç”¨ 64 ä½
+        ;; 2) ä½ 32 ä½ä½¿ç”¨åœ¨ legacy æ¨¡å¼ä¸‹ï¼Œæ˜ å°„ 32 ä½å€¼
+        ;; 3) é«˜ 32 ä½ä½¿ç”¨åœ¨ 64-bit æ¨¡å¼ä¸‹ï¼Œæ˜ å°„ 64 ä½å€¼
         ;;
         
         
         ;;
-        ;; SDA »ù±¾ĞÅÏ¢ËµÃ÷£º
-        ;; 1) SDA.Base Öµ£º
-        ;;      1.1) legacy ÏÂ SDA_BASE = 8002_0000h
-        ;;      1.2) 64-bit ÏÂ SDA_BASE = ffff_f800_8000_0000h
-        ;; 2) SDA.PhysicalBase Öµ£º
-        ;;      2.1) legacy Óë 64-bit ÏÂ±£³Ö²»±ä£¬Îª 12_0000h
-        ;; 3) SDA.PcbBase Öµ£º
-        ;;      3.1) Ö¸Ïò BSP µÄ PCB ÇøÓò£¬¼´£º8000_0000h
-        ;; 4) SDA.PcbPhysicalBase Öµ£º
-        ;;      4.1) Ö¸Ïò BSP µÄ PCB ÎïÀíµØÖ·£¬¼´£º10_0000h
+        ;; SDA åŸºæœ¬ä¿¡æ¯è¯´æ˜ï¼š
+        ;; 1) SDA.Base å€¼ï¼š
+        ;;      1.1) legacy ä¸‹ SDA_BASE = 8002_0000h
+        ;;      1.2) 64-bit ä¸‹ SDA_BASE = ffff_f800_8000_0000h
+        ;; 2) SDA.PhysicalBase å€¼ï¼š
+        ;;      2.1) legacy ä¸ 64-bit ä¸‹ä¿æŒä¸å˜ï¼Œä¸º 12_0000h
+        ;; 3) SDA.PcbBase å€¼ï¼š
+        ;;      3.1) æŒ‡å‘ BSP çš„ PCB åŒºåŸŸï¼Œå³ï¼š8000_0000h
+        ;; 4) SDA.PcbPhysicalBase å€¼ï¼š
+        ;;      4.1) æŒ‡å‘ BSP çš„ PCB ç‰©ç†åœ°å€ï¼Œå³ï¼š10_0000h
         ;;
-        mov edx, 0FFFFF800h                                             ; 64 Î»µØÖ·ÖĞµÄ¸ß 32 Î»
+        mov edx, 0FFFFF800h                                             ; 64 ä½åœ°å€ä¸­çš„é«˜ 32 ä½
         xor ecx, ecx
         
-        mov DWORD [fs: SDA.Base], SDA_BASE                              ; SDA ĞéÄâµØÖ·
+        mov DWORD [fs: SDA.Base], SDA_BASE                              ; SDA è™šæ‹Ÿåœ°å€
         mov [fs: SDA.Base + 4], edx
-        mov DWORD [fs: SDA.PhysicalBase], SDA_PHYSICAL_BASE             ; SDA ÎïÀíµØÖ·
+        mov DWORD [fs: SDA.PhysicalBase], SDA_PHYSICAL_BASE             ; SDA ç‰©ç†åœ°å€
         mov [fs: SDA.PhysicalBase + 4], ecx
-        mov DWORD [fs: SDA.PcbBase], PCB_BASE                           ; Ö¸Ïò BSP µÄ PCB ÇøÓò
+        mov DWORD [fs: SDA.PcbBase], PCB_BASE                           ; æŒ‡å‘ BSP çš„ PCB åŒºåŸŸ
         mov [fs: SDA.PcbBase + 4], edx
-        mov DWORD [fs: SDA.PcbPhysicalBase], PCB_PHYSICAL_BASE          ; Ö¸Ïò BSP µÄ PCB ÇøÓò
+        mov DWORD [fs: SDA.PcbPhysicalBase], PCB_PHYSICAL_BASE          ; æŒ‡å‘ BSP çš„ PCB åŒºåŸŸ
         mov [fs: SDA.PcbPhysicalBase + 4], ecx
-        mov [fs: SDA.ProcessorCount], ecx                               ; Çå processor count
+        mov [fs: SDA.ProcessorCount], ecx                               ; æ¸… processor count
         mov DWORD [fs: SDA.Size], SDA_SIZE                              ; SDA size
         mov DWORD [fs: SDA.VideoBufferHead], 0B8000h
         mov DWORD [fs: SDA.VideoBufferHead + 4], ecx
@@ -340,29 +340,29 @@ init_system_data_area:
         mov DWORD [fs: SDA.VideoBufferPtr + 4], ecx
         mov DWORD [fs: SDA.TimerCount], ecx
         mov DWORD [fs: SDA.LastStatusCode], ecx
-        mov DWORD [fs: SDA.UsableProcessorMask], ecx                    ; UsableProcessorMask Ö¸Ê¾²»¿ÉÓÃ
-        mov DWORD [fs: SDA.ProcessMask], ecx                            ; process queue = 0£¬ÎŞÈÎÎñ
+        mov DWORD [fs: SDA.UsableProcessorMask], ecx                    ; UsableProcessorMask æŒ‡ç¤ºä¸å¯ç”¨
+        mov DWORD [fs: SDA.ProcessMask], ecx                            ; process queue = 0ï¼Œæ— ä»»åŠ¡
         mov DWORD [fs: SDA.ProcessMask + 4], ecx
         mov DWORD [fs: SDA.NmiIpiRequestMask], ecx
         
         ;;
-        ;; ¸üĞÂÎïÀíÄÚ´æ size
+        ;; æ›´æ–°ç‰©ç†å†…å­˜ size
         ;;
         mov eax, [MMap.Size]
         mov ecx, [MMap.Size + 4]
-        shrd eax, ecx, 10                                               ; ×ª»»Îª KB µ¥Î»
+        shrd eax, ecx, 10                                               ; è½¬æ¢ä¸º KB å•ä½
         mov [fs: SDA.MemorySize], eax
                
         ;;
-        ;; ±£´æbootÇı¶¯Æ÷
+        ;; ä¿å­˜booté©±åŠ¨å™¨
         ;;
         mov al, [7C03h]
         mov [fs: SDA.BootDriver], al
         
         ;;
-        ;; Èç¹ûĞèÒª½øÈë longmode Ôò¶¨Òå __X64 ·ûºÅ
-        ;; 1£©SDA.ApLongmode = 1 Ê±£¬½øÈëËùÓĞ´¦ÀíÆ÷½øÈë longmode Ä£Ê½
-        ;; 2) SDA.ApLongmode = 0 Ê±£¬Ê¹ÓÃ legacy »·¾³
+        ;; å¦‚æœéœ€è¦è¿›å…¥ longmode åˆ™å®šä¹‰ __X64 ç¬¦å·
+        ;; 1ï¼‰SDA.ApLongmode = 1 æ—¶ï¼Œè¿›å…¥æ‰€æœ‰å¤„ç†å™¨è¿›å…¥ longmode æ¨¡å¼
+        ;; 2) SDA.ApLongmode = 0 æ—¶ï¼Œä½¿ç”¨ legacy ç¯å¢ƒ
         ;;
 %ifdef  __X64
         mov DWORD [fs: SDA.ApLongmode], 1
@@ -372,39 +372,39 @@ init_system_data_area:
         
         
         ;;
-        ;; ³õÊ¼»¯ PCB pool ·ÖÅä¹ÜÀí¼ÇÂ¼
-        ;; 1) PCB pool ÓÃÀ´·ÖÃ¿¸ö logical processor ·ÖÅäË½ÓĞµÄ PCB ¿é
-        ;; 2) ¹²Ö§³Ö 16 ¸ö logical processor
-        ;; 3) PCB pool »ùÖ·Îª PCB_BASE = 8000_0000h£¬PCB_POOL_SIZE = 128K
-        ;; 4) PCB pool ÎïÀíµØÖ· PCB_PHYSICAL_BASE = 10_0000h
+        ;; åˆå§‹åŒ– PCB pool åˆ†é…ç®¡ç†è®°å½•
+        ;; 1) PCB pool ç”¨æ¥åˆ†æ¯ä¸ª logical processor åˆ†é…ç§æœ‰çš„ PCB å—
+        ;; 2) å…±æ”¯æŒ 16 ä¸ª logical processor
+        ;; 3) PCB pool åŸºå€ä¸º PCB_BASE = 8000_0000hï¼ŒPCB_POOL_SIZE = 128K
+        ;; 4) PCB pool ç‰©ç†åœ°å€ PCB_PHYSICAL_BASE = 10_0000h
         ;;
-        mov DWORD [fs: SDA.PcbPoolBase], PCB_BASE                       ; PCB pool »ùÖ·
+        mov DWORD [fs: SDA.PcbPoolBase], PCB_BASE                       ; PCB pool åŸºå€
         mov [fs: SDA.PcbPoolBase+4], edx
-        mov DWORD [fs: SDA.PcbPoolPhysicalBase], PCB_PHYSICAL_POOL      ; PCB pool ÎïÀí»ùÖ·
+        mov DWORD [fs: SDA.PcbPoolPhysicalBase], PCB_PHYSICAL_POOL      ; PCB pool ç‰©ç†åŸºå€
         mov DWORD [fs: SDA.PcbPoolPhysicalBase+4], ecx
-        mov DWORD [fs: SDA.PcbPoolPhysicalTop], SDA_PHYSICAL_BASE-1     ; PCB pool ¶¥²¿
+        mov DWORD [fs: SDA.PcbPoolPhysicalTop], SDA_PHYSICAL_BASE-1     ; PCB pool é¡¶éƒ¨
         mov DWORD [fs: SDA.PcbPoolPhysicalTop+4], ecx
         mov DWORD [fs: SDA.PcbPoolTop], PCB_BASE+PCB_POOL_SIZE-1
         mov DWORD [fs: SDA.PcbPoolTop+4], edx
         mov DWORD [fs: SDA.PcbPoolSize], PCB_POOL_SIZE
         
         ;;
-        ;; ³õÊ¼»¯ TSS ·ÖÅä pool ¼ÇÂ¼
-        ;; 1) TSS pool ÓÃÀ´ÎªÃ¿¸ö logical processor ·ÖÅäË½ÓĞµÄ TSS ¿é
-        ;; 2) Ã¿´Î·ÖÅäµÄ¶î¶È TssPoolGranularity = 100h ×Ö½Ú
+        ;; åˆå§‹åŒ– TSS åˆ†é… pool è®°å½•
+        ;; 1) TSS pool ç”¨æ¥ä¸ºæ¯ä¸ª logical processor åˆ†é…ç§æœ‰çš„ TSS å—
+        ;; 2) æ¯æ¬¡åˆ†é…çš„é¢åº¦ TssPoolGranularity = 100h å­—èŠ‚
         ;;
-        mov DWORD [fs: SDA.TssPoolBase], SDA_BASE + SDA.Tss             ; TSS pool »ùÖ·
+        mov DWORD [fs: SDA.TssPoolBase], SDA_BASE + SDA.Tss             ; TSS pool åŸºå€
         mov [fs: SDA.TssPoolBase+4], edx
         mov DWORD [fs: SDA.TssPoolPhysicalBase], SDA_PHYSICAL_BASE+SDA.Tss
         mov [fs: SDA.TssPoolPhysicalBase+4], ecx
-        mov DWORD [fs: SDA.TssPoolTop], SDA_BASE+SDA.Tss+0FFFh          ; TSS pool ¶¥²¿
+        mov DWORD [fs: SDA.TssPoolTop], SDA_BASE+SDA.Tss+0FFFh          ; TSS pool é¡¶éƒ¨
         mov DWORD [fs: SDA.TssPoolTop+4], edx
         mov DWORD [fs: SDA.TssPoolPhysicalTop], SDA_PHYSICAL_BASE+SDA.Tss+0FFFh
         mov DWORD [fs: SDA.TssPoolPhysicalTop+4], ecx
-        mov DWORD [fs: SDA.TssPoolGranularity], 100h                    ; TSS ¿é·ÖÅäÁ£¶ÈÎª 100h ×Ö½Ú
+        mov DWORD [fs: SDA.TssPoolGranularity], 100h                    ; TSS å—åˆ†é…ç²’åº¦ä¸º 100h å­—èŠ‚
         
         ;;
-        ;; ÉèÖÃ GDT selector
+        ;; è®¾ç½® GDT selector
         ;;
         mov WORD [fs: SDA.KernelCsSelector],   KernelCsSelector32
         mov WORD [fs: SDA.KernelSsSelector],   KernelSsSelector32
@@ -416,53 +416,53 @@ init_system_data_area:
         mov WORD [fs: SDA.SysretCsSelector],   UserCsSelector32	
 
         ;;
-        ;; ¸üĞÂ IDT pointer
-        ;; 1) ´ËÊ± IDT base Ê¹ÓÃÎïÀíµØÖ·
+        ;; æ›´æ–° IDT pointer
+        ;; 1) æ­¤æ—¶ IDT base ä½¿ç”¨ç‰©ç†åœ°å€
         ;;
         mov DWORD [fs: SDA.IdtBase], SDA_PHYSICAL_BASE+SDA.Idt
         mov [fs: SDA.IdtBase+4], edx
-        mov WORD [fs: SDA.IdtLimit], 256 * 16 - 1                       ; Ä¬ÈÏ±£´æ 255 ¸ö vector£¨Îª longmode ÏÂ£©
-        mov DWORD [fs: SDA.IdtTop], SDA_PHYSICAL_BASE+SDA.Idt           ; top Ö¸Ïò base
+        mov WORD [fs: SDA.IdtLimit], 256 * 16 - 1                       ; é»˜è®¤ä¿å­˜ 255 ä¸ª vectorï¼ˆä¸º longmode ä¸‹ï¼‰
+        mov DWORD [fs: SDA.IdtTop], SDA_PHYSICAL_BASE+SDA.Idt           ; top æŒ‡å‘ base
         mov [fs: SDA.IdtTop+4], edx
         
         ;;
-        ;; ³õÊ¼ SRT£¨ÏµÍ³·şÎñÀı³Ì±í£©ĞÅÏ¢
+        ;; åˆå§‹ SRTï¼ˆç³»ç»ŸæœåŠ¡ä¾‹ç¨‹è¡¨ï¼‰ä¿¡æ¯
         ;;
-        mov DWORD [fs: SRT.Base], SDA_BASE+SRT.Base                   ; SRT »ùÖ·
+        mov DWORD [fs: SRT.Base], SDA_BASE+SRT.Base                   ; SRT åŸºå€
         mov [fs: SRT.Base+4], edx
-        mov DWORD [fs: SRT.PhysicalBase], SDA_PHYSICAL_BASE + SRT.Base  ; SRT ÎïÀí»ùÖ·
+        mov DWORD [fs: SRT.PhysicalBase], SDA_PHYSICAL_BASE + SRT.Base  ; SRT ç‰©ç†åŸºå€
         mov [fs: SRT.PhysicalBase + 4], ecx
         mov DWORD [fs: SRT.Size], SRT_SIZE - SDA_SIZE
         mov DWORD [fs: SRT.Top], SRT_TOP
         mov DWORD [fs: SRT.Top + 4], edx
         mov DWORD [fs: SRT.Index], SDA_BASE + SRT.Entry
         mov DWORD [fs: SRT.Index + 4], edx
-        mov DWORD [fs: SRT.ServiceRoutineVector], SYS_SERVICE_CALL      ; ÏµÍ³·şÎñÀı³ÌÏòÁ¿ºÅ
+        mov DWORD [fs: SRT.ServiceRoutineVector], SYS_SERVICE_CALL      ; ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å‘é‡å·
                 
 
         ;;
-        ;; ³õÊ¼»¯ paging ¹ÜÀíÖµ£¨legacy Ä£Ê½ÏÂ£©
+        ;; åˆå§‹åŒ– paging ç®¡ç†å€¼ï¼ˆlegacy æ¨¡å¼ä¸‹ï¼‰
         ;;
-        mov DWORD [fs: SDA.XdValue], 0                                  ; XD Î»Çå 0
-        mov DWORD [fs: SDA.PtBase], PT_BASE                             ; PT ±í»ùÖ·Îª 0C0000000h
-        mov DWORD [fs: SDA.PtTop], PT_TOP                               ; PT ±í¶¥¶ËÎª 0C07FFFFFh
-        mov DWORD [fs: SDA.PtPhysicalBase], PT_PHYSICAL_BASE            ; PT ±íÎïÀí»ùÖ·Îª 200000h
-        mov DWORD [fs: SDA.PdtBase], PDT_BASE                           ; PDT ±í»ùÖ·Îª 0C0600000h
-        mov DWORD [fs: SDA.PdtTop], PDT_TOP                             ; PDT ±í¶¥¶ËÎª 0C0603FFFh        
-        mov DWORD [fs: SDA.PdtPhysicalBase], PDT_PHYSICAL_BASE          ; PDT ±íÎïÀí»ùÖ·Îª 800000h
+        mov DWORD [fs: SDA.XdValue], 0                                  ; XD ä½æ¸… 0
+        mov DWORD [fs: SDA.PtBase], PT_BASE                             ; PT è¡¨åŸºå€ä¸º 0C0000000h
+        mov DWORD [fs: SDA.PtTop], PT_TOP                               ; PT è¡¨é¡¶ç«¯ä¸º 0C07FFFFFh
+        mov DWORD [fs: SDA.PtPhysicalBase], PT_PHYSICAL_BASE            ; PT è¡¨ç‰©ç†åŸºå€ä¸º 200000h
+        mov DWORD [fs: SDA.PdtBase], PDT_BASE                           ; PDT è¡¨åŸºå€ä¸º 0C0600000h
+        mov DWORD [fs: SDA.PdtTop], PDT_TOP                             ; PDT è¡¨é¡¶ç«¯ä¸º 0C0603FFFh        
+        mov DWORD [fs: SDA.PdtPhysicalBase], PDT_PHYSICAL_BASE          ; PDT è¡¨ç‰©ç†åŸºå€ä¸º 800000h
         
         ;;
-        ;; ³õÊ¼ legacy Ä£Ê½ÏÂµÄ PPT ¼ÇÂ¼
-        ;; 1) PPT ±íÎïÀí»ùÖ· = SDA_PHYSICAL_BASE + SDA.Ppt
-        ;; 2) PPT ±í»ùÖ· = SDA_BASE + SDA.Ppt
-        ;; 3) PPT ±í¶¥¶Ë = SDA_BASE + SDA.Ppt + 31
+        ;; åˆå§‹ legacy æ¨¡å¼ä¸‹çš„ PPT è®°å½•
+        ;; 1) PPT è¡¨ç‰©ç†åŸºå€ = SDA_PHYSICAL_BASE + SDA.Ppt
+        ;; 2) PPT è¡¨åŸºå€ = SDA_BASE + SDA.Ppt
+        ;; 3) PPT è¡¨é¡¶ç«¯ = SDA_BASE + SDA.Ppt + 31
         ;;
         mov DWORD [fs: SDA.PptPhysicalBase], PPT_PHYSICAL_BASE
         mov DWORD [fs: SDA.PptBase], PPT_BASE
         mov DWORD [fs: SDA.PptTop], PPT_TOP
       
         ;;
-        ;; ³õÊ¼»¯ long-mode ÏÂµÄ page ¹ÜÀíÖµ
+        ;; åˆå§‹åŒ– long-mode ä¸‹çš„ page ç®¡ç†å€¼
         ;;
         mov eax, 0FFFFF6FBh
         mov DWORD [fs: SDA.PtBase64], 0
@@ -488,9 +488,9 @@ init_system_data_area:
         mov BYTE [fs: SDA.PptValid], 0
         
         ;;
-        ;; PT pool ¹ÜÀí¼ÇÂ¼:
-        ;; 1) Ö÷ PT pool ÇøÓò£º220_0000h - 2ff_ffffh£¨ffff_f800_8220_000h£©
-        ;; 2) ±¸ÓÃ Pt pool ÇøÓò£º20_0000h - 09f_ffffh£¨ffff_f800_8020_0000h£©
+        ;; PT pool ç®¡ç†è®°å½•:
+        ;; 1) ä¸» PT pool åŒºåŸŸï¼š220_0000h - 2ff_ffffhï¼ˆffff_f800_8220_000hï¼‰
+        ;; 2) å¤‡ç”¨ Pt pool åŒºåŸŸï¼š20_0000h - 09f_ffffhï¼ˆffff_f800_8020_0000hï¼‰
         ;;
         mov DWORD [fs: SDA.PtPoolPhysicalBase], PT_POOL_PHYSICAL_BASE64
         mov DWORD [fs: SDA.PtPoolPhysicalBase + 4], 0
@@ -514,9 +514,9 @@ init_system_data_area:
         mov BYTE [fs: SDA.PtPool2Free], 1
 
         ;;
-        ;; VMX Ept(extended page table)¹ÜÀí¼ÇÂ¼
-        ;; 1) PXT ±íÇøÓò£ºFFFF_F800_C0A0_0000h - FFFF_F800_C0BF_FFFFh(A0_0000h - BF_FFFFh)
-        ;; 2) PPT ±íÇøÓò£ºÔÚ SDA ÄÚ
+        ;; VMX Ept(extended page table)ç®¡ç†è®°å½•
+        ;; 1) PXT è¡¨åŒºåŸŸï¼šFFFF_F800_C0A0_0000h - FFFF_F800_C0BF_FFFFh(A0_0000h - BF_FFFFh)
+        ;; 2) PPT è¡¨åŒºåŸŸï¼šåœ¨ SDA å†…
         ;;
         mov eax, [fs: SDA.Base]
         mov edx, [fs: SDA.PhysicalBase]
@@ -540,18 +540,18 @@ init_system_data_area:
         
         
         ;;
-        ;; ³õÊ¼»¯ stack ºÍ pool ¹ÜÀíĞÅÏ¢
-        ;; 1) legacy ÏÂ£º KERNEL_STACK_BASE  = ffe0_0000h
+        ;; åˆå§‹åŒ– stack å’Œ pool ç®¡ç†ä¿¡æ¯
+        ;; 1) legacy ä¸‹ï¼š KERNEL_STACK_BASE  = ffe0_0000h
         ;;                USER_STACK_BASE    = 7fe0_0000h
         ;;                KERNEL_POOL_BASE   = 8320_0000h
         ;;                USER_POOL_BASE     = 7300_1000h
         ;;
-        ;; 2) 64-bit ÏÂ:  KERNEL_STACK_BASE64 = ffff_ff80_ffe0_0000h
+        ;; 2) 64-bit ä¸‹:  KERNEL_STACK_BASE64 = ffff_ff80_ffe0_0000h
         ;;                USER_STACK_BASE64   = 0000_0000_7fe0_0000h
         ;;                KERNEL_POOL_BASE64  = ffff_f800_8320_0000h
         ;;                USER_POOL_BASE64    = 0000_0000_7300_1000h
         ;;
-        ;; 3) ÎïÀíµØÖ·:   KERNEL_STACK_PHYSICAL_BASE = 0104_0000h
+        ;; 3) ç‰©ç†åœ°å€:   KERNEL_STACK_PHYSICAL_BASE = 0104_0000h
         ;;               USER_STACK_PHYSICAL_BASE    = 0101_0000h
         ;;               KERNEL_POOL_PHYSICAL_BASE   = 0320_0000h
         ;;               USER_POOL_PHYSICAL_BASE     = 0300_1000h
@@ -575,30 +575,30 @@ init_system_data_area:
         mov [fs: SDA.KernelPoolPhysicalBase + 4], ecx
 
         ;;
-        ;; ³õÊ¼»¯ BTS Pool Óë PEBS pool ¹ÜÀí¼ÇÂ¼
+        ;; åˆå§‹åŒ– BTS Pool ä¸ PEBS pool ç®¡ç†è®°å½•
         ;;
         mov edx, 0FFFFF800h
         mov ebx, [fs: SDA.Base]
         lea eax, [ebx + SDA.BtsBuffer]
-        mov [fs: SDA.BtsPoolBase], eax                          ; BTS Pool »ùÖ·
+        mov [fs: SDA.BtsPoolBase], eax                          ; BTS Pool åŸºå€
         mov [fs: SDA.BtsPoolBase + 4], edx
         add eax, 0FFFh                                          ; 4K size
-        mov DWORD [fs: SDA.BtsBufferSize], 100h                 ; Ã¿¸ö BTS buffer Ä¬ÈÏÎª 100h 
-        mov [fs: SDA.BtsPoolTop], eax                           ; BTS pool ¶¥¶Ë
+        mov DWORD [fs: SDA.BtsBufferSize], 100h                 ; æ¯ä¸ª BTS buffer é»˜è®¤ä¸º 100h 
+        mov [fs: SDA.BtsPoolTop], eax                           ; BTS pool é¡¶ç«¯
         mov [fs: SDA.BtsPoolTop + 4], edx
-        mov DWORD [fs: SDA.BtsRecordMaximum], 10                ; Ã¿¸ö BTS buffer ×î¶àÈİÄÉ 10 Ìõ¼ÇÂ¼
+        mov DWORD [fs: SDA.BtsRecordMaximum], 10                ; æ¯ä¸ª BTS buffer æœ€å¤šå®¹çº³ 10 æ¡è®°å½•
         lea eax, [ebx + SDA.PebsBuffer]
-        mov [fs: SDA.PebsPoolBase], eax                         ; PEBS Pool »ùÖ·
+        mov [fs: SDA.PebsPoolBase], eax                         ; PEBS Pool åŸºå€
         mov [fs: SDA.PebsPoolBase + 4], edx
         add eax, 3FFFh                                          ; 16K size
-        mov DWORD [fs: SDA.PebsBufferSize], 400h                ; Ã¿¸ö PEBS buffer Ä¬ÈÏÎª 400h
-        mov [fs: SDA.PebsPoolTop], eax                          ; PEBS pool ¶¥¶Ë
+        mov DWORD [fs: SDA.PebsBufferSize], 400h                ; æ¯ä¸ª PEBS buffer é»˜è®¤ä¸º 400h
+        mov [fs: SDA.PebsPoolTop], eax                          ; PEBS pool é¡¶ç«¯
         mov [fs: SDA.PebsPoolTop + 4], edx
-        mov DWORD [fs: SDA.PebsRecordMaximum], 5                ; Ã¿¸ö Pebs buffer ×î¶àÈİÄÉ 5 Ìõ¼ÇÂ¼
+        mov DWORD [fs: SDA.PebsRecordMaximum], 5                ; æ¯ä¸ª Pebs buffer æœ€å¤šå®¹çº³ 5 æ¡è®°å½•
         
         
         ;;
-        ;; ³õÊ¼»¯ VM domain pool ¹ÜÀí¼ÇÂ¼
+        ;; åˆå§‹åŒ– VM domain pool ç®¡ç†è®°å½•
         ;;
         mov DWORD [fs: SDA.DomainPhysicalBase], DOMAIN_PHYSICAL_BASE
         mov DWORD [fs: SDA.DomainPhysicalBase + 4], 0
@@ -606,7 +606,7 @@ init_system_data_area:
         mov DWORD [fs: SDA.DomainBase + 4], 0FFFFF800h
         
         ;;
-        ;; ³õÊ¼»¯ GPA Ó³ÉäÁĞ±í¹ÜÀí¼ÇÂ¼
+        ;; åˆå§‹åŒ– GPA æ˜ å°„åˆ—è¡¨ç®¡ç†è®°å½•
         ;;
         mov eax, SDA_BASE + SDA.GpaMappedList
         mov [fs: SDA.GmlBase], eax
@@ -614,7 +614,7 @@ init_system_data_area:
 
 %ifdef DEBUG_RECORD_ENABLE
         ;;
-        ;; ³õÊ¼»¯ DRS ¹ÜÀí¼ÇÂ¼
+        ;; åˆå§‹åŒ– DRS ç®¡ç†è®°å½•
         ;; 1) DrsBase = DrsBuffer
         ;; 2) DrsHeadPtr = DrsTailPtr = DrsBuffer
         ;; 3) DrsIndex = DrsBuffer
@@ -637,7 +637,7 @@ init_system_data_area:
         mov DWORD [fs: SDA.DrsMaxCount], MAX_DRS_COUNT
         
         ;;
-        ;; ³õÊ¼»¯Í·½Úµã PrevDrs Óë NextDrs
+        ;; åˆå§‹åŒ–å¤´èŠ‚ç‚¹ PrevDrs ä¸ NextDrs
         ;;
         mov edx, [fs: SDA.PhysicalBase]
         add edx, SDA.DrsBuffer
@@ -651,7 +651,7 @@ init_system_data_area:
         
 
         ;;
-        ;; ³õÊ¼»¯ DMB ¼ÇÂ¼
+        ;; åˆå§‹åŒ– DMB è®°å½•
         ;;
         mov eax, [fs: SDA.Base]
         add eax, SDA.DecodeManageBlock
@@ -665,7 +665,7 @@ init_system_data_area:
         mov DWORD [edx + SDA.DecodeManageBlock + DMB.DecodeBufferPtr + 4], 0FFFFF800h        
         
         ;;
-        ;; ³õÊ¼»¯ EXTINT_RTE ¹ÜÀí¼ÇÂ¼
+        ;; åˆå§‹åŒ– EXTINT_RTE ç®¡ç†è®°å½•
         ;;
         mov eax, [fs: SDA.Base]
         add eax, SDA.ExtIntRteBuffer
@@ -676,14 +676,14 @@ init_system_data_area:
         mov DWORD [fs: SDA.ExtIntRteCount], 0
         
         ;;
-        ;; ÅäÖÃ pic8259 ¼°Òì³£´¦ÀíÀı³Ì£¬È±Ê¡µÄÖĞ¶Ï·şÎñÀı³Ì
+        ;; é…ç½® pic8259 åŠå¼‚å¸¸å¤„ç†ä¾‹ç¨‹ï¼Œç¼ºçœçš„ä¸­æ–­æœåŠ¡ä¾‹ç¨‹
         ;;
         call setup_pic8259
         call install_default_exception_handler
         call install_default_interrupt_handler        
                 
         ;;
-        ;; ÉèÖÃ AP µÄ startup routine Èë¿ÚµØÖ·
+        ;; è®¾ç½® AP çš„ startup routine å…¥å£åœ°å€
         ;;
         mov eax, ApStage1Entry
         mov [fs: SDA.ApStartupRoutineEntry], eax
@@ -705,12 +705,12 @@ init_system_data_area:
 ; input:
 ;       none
 ; output:
-;       eax - PCB ÎïÀíµØÖ·
-;       edx - PCB ĞéÄâµØÖ·
-; ÃèÊö£º
-;       1) Ã¿¸ö´¦ÀíÆ÷µÄ PCB µØÖ·Ê¹ÓÃ alloc_pcb_base() À´·ÖÅä
-;       2) edx:eax - ·µ»Ø PCB ¿éµÄĞéÄâµØÖ·ºÍ¶ÔÓ¦µÄÎïÀíµØÖ·
-;       2) ÔÚ stage1£¨legacy ÏÂÎ´·ÖÒ³£©Ê¹ÓÃ
+;       eax - PCB ç‰©ç†åœ°å€
+;       edx - PCB è™šæ‹Ÿåœ°å€
+; æè¿°ï¼š
+;       1) æ¯ä¸ªå¤„ç†å™¨çš„ PCB åœ°å€ä½¿ç”¨ alloc_pcb_base() æ¥åˆ†é…
+;       2) edx:eax - è¿”å› PCB å—çš„è™šæ‹Ÿåœ°å€å’Œå¯¹åº”çš„ç‰©ç†åœ°å€
+;       2) åœ¨ stage1ï¼ˆlegacy ä¸‹æœªåˆ†é¡µï¼‰ä½¿ç”¨
 ;-------------------------------------------------------------------
 alloc_pcb_base:
         push ebx
@@ -735,12 +735,12 @@ alloc_pcb_base:
 ; input:
 ;       none
 ; output:
-;       eax - Tss ¿éÎïÀíµØÖ·
-;       edx - Tss ¿éĞéÄâµØÖ·
-; ÃèÊö:
-;       1) ´Ó TSS POOL Àï·ÖÅäÒ»¸ö TSS ¿é¿Õ¼ä       
-;       2) Èç¹û TSS Pool ÓÃÍê£¬·ÖÅäÊ§°Ü£¬·µ»Ø 0 Öµ
-;       3) ÔÚ stage1 ½×¶Îµ÷ÓÃ
+;       eax - Tss å—ç‰©ç†åœ°å€
+;       edx - Tss å—è™šæ‹Ÿåœ°å€
+; æè¿°:
+;       1) ä» TSS POOL é‡Œåˆ†é…ä¸€ä¸ª TSS å—ç©ºé—´       
+;       2) å¦‚æœ TSS Pool ç”¨å®Œï¼Œåˆ†é…å¤±è´¥ï¼Œè¿”å› 0 å€¼
+;       3) åœ¨ stage1 é˜¶æ®µè°ƒç”¨
 ;-------------------------------------------------------------------
 alloc_tss_base:
         push ebx
@@ -764,8 +764,8 @@ alloc_tss_base:
 ;       none
 ; output:
 ;       eax - stack base
-; ÃèÊö£º
-;       1) ·ÖÅä stage1 ½×¶ÎÊ¹ÓÃµÄ kernel stack
+; æè¿°ï¼š
+;       1) åˆ†é… stage1 é˜¶æ®µä½¿ç”¨çš„ kernel stack
 ;-------------------------------------------------------------------
 alloc_stage1_kernel_stack_4k_base:
         mov eax, 4096
@@ -778,13 +778,13 @@ alloc_stage1_kernel_stack_4k_base:
 ;-------------------------------------------------------------------
 ; alloc_stage1_kernel_pool_base()
 ; input:
-;       esi - Ò³ÊıÁ¿
+;       esi - é¡µæ•°é‡
 ; output:
-;       eax - ĞéÄâµØÖ·
-;       edx - ÎïÀíµØÖ·
-; ÃèÊö£º
-;       1) ÔÚ¡¡stage1 ½×¶Î·ÖÅäµÄ kernel pool
-;       2) ·µ»ØÎïÀíµØÖ·
+;       eax - è™šæ‹Ÿåœ°å€
+;       edx - ç‰©ç†åœ°å€
+; æè¿°ï¼š
+;       1) åœ¨ã€€stage1 é˜¶æ®µåˆ†é…çš„ kernel pool
+;       2) è¿”å›ç‰©ç†åœ°å€
 ;-------------------------------------------------------------------
 alloc_stage1_kernel_pool_base:
         push ecx
@@ -805,8 +805,8 @@ alloc_stage1_kernel_pool_base:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1) ³õÊ¼»¯´¦ÀíÆ÷µÄ PCB ÇøÓò
+; æè¿°:
+;       1) åˆå§‹åŒ–å¤„ç†å™¨çš„ PCB åŒºåŸŸ
 ;-----------------------------------------------------------------------
 init_processor_control_block:
         push edx
@@ -814,7 +814,7 @@ init_processor_control_block:
         push ebx
         
         ;;
-        ;; ·ÖÅä PCB µØÖ·
+        ;; åˆ†é… PCB åœ°å€
         ;;
         call alloc_pcb_base                             ; edx:eax = VA:PA
         mov [gs: PCB.PhysicalBase], eax
@@ -824,9 +824,9 @@ init_processor_control_block:
         mov ebx, edx
 
         ;;
-        ;; ·ÖÅä TSS ¿é
+        ;; åˆ†é… TSS å—
         ;;
-        call alloc_tss_base                             ; edx:eax ·µ»Ø VA:PA 
+        call alloc_tss_base                             ; edx:eax è¿”å› VA:PA 
         mov [gs: PCB.TssPhysicalBase], eax
         mov [gs: PCB.TssBase], edx
         mov DWORD [gs: PCB.TssPhysicalBase+4], 0
@@ -837,7 +837,7 @@ init_processor_control_block:
         mov DWORD [gs: PCB.IomapPhysicalBase], SDA_PHYSICAL_BASE+SDA.Iomap      
 
         ;;
-        ;; ÉèÖÃ GDT ±í
+        ;; è®¾ç½® GDT è¡¨
         ;;
         mov eax, [CpuIndex]
         shl eax, 8
@@ -854,15 +854,15 @@ init_processor_control_block:
         mov WORD [gs: PCB.TssSelector], TssSelector32 
 
         ;;
-        ;; ¸üĞÂ PCB »ù±¾¼ÇÂ¼
-        ;; 1) µØÖ·µÄ¸ß 32 Î»Ê¹ÓÃÔÚ 64-bit Ä£Ê½ÏÂ
+        ;; æ›´æ–° PCB åŸºæœ¬è®°å½•
+        ;; 1) åœ°å€çš„é«˜ 32 ä½ä½¿ç”¨åœ¨ 64-bit æ¨¡å¼ä¸‹
  
         mov DWORD [gs: PCB.Size], PCB_SIZE
         mov eax, [fs: SDA.Base]
-        mov [gs: PCB.SdaBase], eax                      ; Ö¸Ïò SDA ÇøÓò
+        mov [gs: PCB.SdaBase], eax                      ; æŒ‡å‘ SDA åŒºåŸŸ
         mov DWORD [gs: PCB.SdaBase+4], 0FFFFF800h
-        add eax, SRT.Base                               ; SRT ÇøÓò»ùÖ·£¨Î»ÓÚ SDA Ö®ºó£©
-        mov [gs: PCB.SrtBase], eax                      ; Ö¸Ïò System Service Routine Table ÇøÓò    
+        add eax, SRT.Base                               ; SRT åŒºåŸŸåŸºå€ï¼ˆä½äº SDA ä¹‹åï¼‰
+        mov [gs: PCB.SrtBase], eax                      ; æŒ‡å‘ System Service Routine Table åŒºåŸŸ    
         mov DWORD [gs: PCB.SrtBase+4], 0FFFFF800h
         mov eax, [fs: SDA.PhysicalBase]     
         mov [gs: PCB.SdaPhysicalBase], eax
@@ -873,24 +873,24 @@ init_processor_control_block:
         mov [gs: PCB.PptPhysicalBase], eax
 
         ;;
-        ;; ¸üĞÂ ReturnStackPointer
+        ;; æ›´æ–° ReturnStackPointer
         ;;
         lea eax, [ebx+PCB.ReturnStack]
         mov [gs: PCB.ReturnStackPointer], eax
         mov DWORD [gs: PCB.ReturnStackPointer+4], 0FFFFF800h
         
         ;;
-        ;; È±Ê¡µÄ TPR ¼¶±ğÎª 3
+        ;; ç¼ºçœçš„ TPR çº§åˆ«ä¸º 3
         ;;
         mov BYTE [gs: PCB.CurrentTpl], INT_LEVEL_THRESHOLD
         mov BYTE [gs: PCB.PrevTpl], 0
         
 
         ;;
-        ;; ÉèÖÃ LDT ¹ÜÀíĞÅÏ¢
-        ;; ×¢Òâ£º
-        ;; 1) LDT ´ËÊ±Îª¿Õ£¬ÕâÀïÊ¹ÓÃĞéÄâµØÖ·
-        ;; 2) µØÖ·¸ß 32 Î»Ê¹ÓÃÔÚ 64-bit Ä£Ê½ÏÂ
+        ;; è®¾ç½® LDT ç®¡ç†ä¿¡æ¯
+        ;; æ³¨æ„ï¼š
+        ;; 1) LDT æ­¤æ—¶ä¸ºç©ºï¼Œè¿™é‡Œä½¿ç”¨è™šæ‹Ÿåœ°å€
+        ;; 2) åœ°å€é«˜ 32 ä½ä½¿ç”¨åœ¨ 64-bit æ¨¡å¼ä¸‹
         ;;
         mov DWORD [gs: PCB.LdtBase], SDA_BASE+SDA.Ldt
         mov DWORD [gs: PCB.LdtBase+4], 0FFFFF800h
@@ -900,8 +900,8 @@ init_processor_control_block:
 
         
         ;;
-        ;; ¸üĞÂ context ÇøÓòÖ¸Õë
-        ;; 1) ÔÚ stage1 Ê¹ÓÃÎïÀíµØÖ·
+        ;; æ›´æ–° context åŒºåŸŸæŒ‡é’ˆ
+        ;; 1) åœ¨ stage1 ä½¿ç”¨ç‰©ç†åœ°å€
         ;;
         lea eax, [ebx+PCB.Context]
         mov [gs: PCB.ContextBase], eax
@@ -909,7 +909,7 @@ init_processor_control_block:
         mov [gs: PCB.XMMStateImageBase], eax
 
         ;;
-        ;; ·ÖÅä±¾µØ´æ´¢¿é
+        ;; åˆ†é…æœ¬åœ°å­˜å‚¨å—
         ;;
         mov esi, LSB_SIZE+0FFFh
         shr esi, 12
@@ -921,14 +921,14 @@ init_processor_control_block:
         mov ecx, eax                                                    ; ecx = LSB
         
         ;;
-        ;; Çå¿Õ LSB ¿é
+        ;; æ¸…ç©º LSB å—
         ;;
         mov esi, LSB_SIZE
         mov edi, edx
         call zero_memory
                 
         ;;
-        ;; ¸üĞÂ LSB »ù±¾ĞÅÏ¢
+        ;; æ›´æ–° LSB åŸºæœ¬ä¿¡æ¯
         ;;
         mov [edx+LSB.Base], ecx
         mov DWORD [edx+LSB.Base+4], 0FFFFF800h                      ; LSB.Base
@@ -936,7 +936,7 @@ init_processor_control_block:
         mov DWORD [edx+LSB.PhysicalBase+4], 0                       ; LSB.PhysicalBase
         
         ;;
-        ;; local video buffer ¼ÇÂ¼
+        ;; local video buffer è®°å½•
         ;;
         lea esi, [ecx+LSB.LocalVideoBuffer]
         mov [edx+LSB.LocalVideoBufferHead], esi
@@ -945,7 +945,7 @@ init_processor_control_block:
         mov DWORD [edx+LSB.LocalVideoBufferPtr+4], 0FFFFF800h       ; LSB.LocalVideoBufferPtr
         
         ;;
-        ;; local keyboard buffer ¼ÇÂ¼
+        ;; local keyboard buffer è®°å½•
         ;;
         lea esi, [ecx+LSB.LocalKeyBuffer]
         mov [edx+LSB.LocalKeyBufferHead], esi
@@ -956,11 +956,11 @@ init_processor_control_block:
                
         
         ;;
-        ;; ¸üĞÂ VMCS ¹ÜÀíÖ¸Õë£¨ĞéÄâÖ¸Õë£©
-        ;; 1) VmcsA Ö¸Ïò GuestA
-        ;; 2) VmcsB Ö¸Ïò GuestB
-        ;; 3) VmcsC Ö¸Ïò GuestC
-        ;; 4) VmcsD Ö¸Ïò GuestD
+        ;; æ›´æ–° VMCS ç®¡ç†æŒ‡é’ˆï¼ˆè™šæ‹ŸæŒ‡é’ˆï¼‰
+        ;; 1) VmcsA æŒ‡å‘ GuestA
+        ;; 2) VmcsB æŒ‡å‘ GuestB
+        ;; 3) VmcsC æŒ‡å‘ GuestC
+        ;; 4) VmcsD æŒ‡å‘ GuestD
         ;;
         mov edx, 0FFFFF800h
         mov ecx, [gs: PCB.Base]
@@ -979,7 +979,7 @@ init_processor_control_block:
         
 
         ;;
-        ;; ¸üĞÂ´¦ÀíÆ÷×´Ì¬
+        ;; æ›´æ–°å¤„ç†å™¨çŠ¶æ€
         ;; 
         lidt [fs: SDA.IdtPointer]
         mov eax, CPU_STATUS_PE
@@ -998,8 +998,8 @@ init_processor_control_block:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) °²×°Ä¬ÈÏµÄÒì³£´¦ÀíÀı³Ì
+; æè¿°ï¼š
+;       1) å®‰è£…é»˜è®¤çš„å¼‚å¸¸å¤„ç†ä¾‹ç¨‹
 ;-----------------------------------------------------------------------
 install_default_exception_handler:
         push ecx
@@ -1018,8 +1018,8 @@ install_default_exception_handler.loop:
         
 ;-----------------------------------------------------
 ; local_interrupt_default_handler()
-; ÃèÊö£º
-;       ´¦ÀíÆ÷µÄ local ÖĞ¶ÏÔ´È±Ê¡·şÎñÀı³Ì
+; æè¿°ï¼š
+;       å¤„ç†å™¨çš„ local ä¸­æ–­æºç¼ºçœæœåŠ¡ä¾‹ç¨‹
 ;-----------------------------------------------------
 local_interrupt_default_handler:
         push ebp
@@ -1047,27 +1047,27 @@ local_interrupt_default_handler:
 
 ;-----------------------------------------------------
 ; install_default_interrupt_handler()
-; ÃèÊö:
-;       °²×°Ä¬ÈÏµÄÖĞ¶Ï·şÎñÀı³Ì
+; æè¿°:
+;       å®‰è£…é»˜è®¤çš„ä¸­æ–­æœåŠ¡ä¾‹ç¨‹
 ;-----------------------------------------------------
 install_default_interrupt_handler:
         push ecx
         xor ecx, ecx
         
         ;;
-        ;; ËµÃ÷:
-        ;; 1) °²×° local vector table ·şÎñÀı³Ì
-        ;; 2) °²×° IPI ·şÎñÀı³Ì
-        ;; 3) °²×°ÏµÍ³·şÎñÀı³Ì(40h ÖĞ¶Ïµ÷ÓÃ£©
+        ;; è¯´æ˜:
+        ;; 1) å®‰è£… local vector table æœåŠ¡ä¾‹ç¨‹
+        ;; 2) å®‰è£… IPI æœåŠ¡ä¾‹ç¨‹
+        ;; 3) å®‰è£…ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹(40h ä¸­æ–­è°ƒç”¨ï¼‰
         ;;
      
         ;;
-        ;; °²×°È±Ê¡µÄ local ÖĞ¶ÏÔ´·şÎñÀı³Ì
+        ;; å®‰è£…ç¼ºçœçš„ local ä¸­æ–­æºæœåŠ¡ä¾‹ç¨‹
         ;;
         call install_default_local_interrupt_handler
 
         ;;
-        ;; PIC8259 ÏàÓ¦µÄÖĞ¶Ï·şÎñÀı³Ì
+        ;; PIC8259 ç›¸åº”çš„ä¸­æ–­æœåŠ¡ä¾‹ç¨‹
         ;;
         mov esi, PIC8259A_IRQ0_VECTOR
         mov edi, timer_8259_handler
@@ -1082,7 +1082,7 @@ install_default_interrupt_handler:
 %endif
 
         ;;
-        ;; ½¨Á¢ IRQ1 ÖĞ¶Ï·şÎñÀı³Ì
+        ;; å»ºç«‹ IRQ1 ä¸­æ–­æœåŠ¡ä¾‹ç¨‹
         ;;
         mov esi, IOAPIC_IRQ1_VECTOR
         mov edi, ioapic_keyboard_handler
@@ -1090,7 +1090,7 @@ install_default_interrupt_handler:
 
         
         ;;
-        ;; °²×° IPI ·şÎñÀı³Ì
+        ;; å®‰è£… IPI æœåŠ¡ä¾‹ç¨‹
         ;;       
         mov esi, IPI_VECTOR
         mov edi, dispatch_routine
@@ -1101,7 +1101,7 @@ install_default_interrupt_handler:
         call install_kernel_interrupt_handler32
 
         ;;
-        ;; °²×°ÏµÍ³µ÷ÓÃ·şÎñÀı³Ì
+        ;; å®‰è£…ç³»ç»Ÿè°ƒç”¨æœåŠ¡ä¾‹ç¨‹
         ;;
         mov esi, [fs: SRT.ServiceRoutineVector]
         mov edi, sys_service_routine
@@ -1114,8 +1114,8 @@ install_default_interrupt_handler:
 
 ;-----------------------------------------------------
 ; install_default_local_interrupt_handler()
-; ÃèÊö£º
-;       °²×°È±Ê¡ local interrupt
+; æè¿°ï¼š
+;       å®‰è£…ç¼ºçœ local interrupt
 ;-----------------------------------------------------
 install_default_local_interrupt_handler:
         mov esi, LAPIC_PERFMON_VECTOR
@@ -1142,67 +1142,67 @@ install_default_local_interrupt_handler:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ·¢ËÍ INIT-SIPI-SIPI ÏûÏ¢Ğò¸ø AP
-;       2) µÈ´ı AP Íê³ÉµÚ1½×¶Î¹¤×÷
+; æè¿°ï¼š
+;       1) å‘é€ INIT-SIPI-SIPI æ¶ˆæ¯åºç»™ AP
+;       2) ç­‰å¾… AP å®Œæˆç¬¬1é˜¶æ®µå·¥ä½œ
 ;-----------------------------------------------------
 wait_for_ap_stage1_done:
         push ebx
         push edx
         
         ;;
-        ;; local APIC µÚ1½×¶ÎÊ¹ÓÃÎïÀíµØÖ·
+        ;; local APIC ç¬¬1é˜¶æ®µä½¿ç”¨ç‰©ç†åœ°å€
         ;;
         mov ebx, [gs: PCB.LapicPhysicalBase]
         
         ;;
-        ;; ·¢ËÍ IPIs£¬Ê¹ÓÃ INIT-SIPI-SIPI ĞòÁĞ
-        ;; 1) ´Ó SDA.ApStartupRoutineEntry ÌáÈ¡ startup routine µØÖ·
+        ;; å‘é€ IPIsï¼Œä½¿ç”¨ INIT-SIPI-SIPI åºåˆ—
+        ;; 1) ä» SDA.ApStartupRoutineEntry æå– startup routine åœ°å€
         ;;      
-        mov DWORD [ebx+ICR0], 000c4500h                         ; ·¢ËÍ INIT IPI, Ê¹ËùÓĞ processor Ö´ĞĞ INIT
-        mov esi, 10 * 1000                                      ; ÑÓÊ± 10ms
+        mov DWORD [ebx+ICR0], 000c4500h                         ; å‘é€ INIT IPI, ä½¿æ‰€æœ‰ processor æ‰§è¡Œ INIT
+        mov esi, 10 * 1000                                      ; å»¶æ—¶ 10ms
         call delay_with_us
         
         ;;
-        ;; ÏÂÃæ·¢ËÍÁ½´Î SIPI£¬Ã¿´ÎÑÓÊ± 200us
-        ;; 1) ÌáÈ¡ Ap Startup Routine µØÖ·
+        ;; ä¸‹é¢å‘é€ä¸¤æ¬¡ SIPIï¼Œæ¯æ¬¡å»¶æ—¶ 200us
+        ;; 1) æå– Ap Startup Routine åœ°å€
         ;;
         mov edx, [fs: SDA.ApStartupRoutineEntry]
-        shr edx, 12                                             ; 4K ±ß½ç
+        shr edx, 12                                             ; 4K è¾¹ç•Œ
         and edx, 0FFh
         or edx, 000C4600h                                       ; Start-up IPI
 
         ;;
-        ;; Ê×´Î·¢ËÍ SIPI
+        ;; é¦–æ¬¡å‘é€ SIPI
         ;;
-        mov DWORD [ebx+ICR0], edx                               ; ·¢ËÍ Start-up IPI
-        mov esi, 200                                            ; ÑÓÊ± 200us
+        mov DWORD [ebx+ICR0], edx                               ; å‘é€ Start-up IPI
+        mov esi, 200                                            ; å»¶æ—¶ 200us
         call delay_with_us
         
         ;;
-        ;; ÔÙ´Î·¢ËÍ SIPI
+        ;; å†æ¬¡å‘é€ SIPI
         ;;
-        mov DWORD [ebx+ICR0], edx                               ; ÔÙ´Î·¢ËÍ Start-up IPI
+        mov DWORD [ebx+ICR0], edx                               ; å†æ¬¡å‘é€ Start-up IPI
         mov esi, 200
         call delay_with_us
 
         ;;
-        ;; ¿ª·ÅµÚ1½×¶Î AP Lock
+        ;; å¼€æ”¾ç¬¬1é˜¶æ®µ AP Lock
         ;;
         xor eax, eax
         mov ebx, [fs: SDA.Stage1LockPointer]
         xchg [ebx], eax
 
         ;;
-        ;; BSP ÒÑÍê³É¹¤×÷, ¼ÆÊıÖµÎª 1
+        ;; BSP å·²å®Œæˆå·¥ä½œ, è®¡æ•°å€¼ä¸º 1
         ;;
         mov DWORD [fs: SDA.ApInitDoneCount], 1
 
         ;;
-        ;; µÈ´ı AP Íê³É stage1 ¹¤×÷:
-        ;; ¼ì²é´¦ÀíÆ÷¼ÆÊı ProcessorCount ÊÇ·ñµÈÓÚ LocalProcessorCount Öµ
-        ;; 1)ÊÇ£¬ËùÓĞ AP Íê³É stage1 ¹¤×÷
-        ;; 2)·ñ£¬ÔÚµÈ´ı
+        ;; ç­‰å¾… AP å®Œæˆ stage1 å·¥ä½œ:
+        ;; æ£€æŸ¥å¤„ç†å™¨è®¡æ•° ProcessorCount æ˜¯å¦ç­‰äº LocalProcessorCount å€¼
+        ;; 1)æ˜¯ï¼Œæ‰€æœ‰ AP å®Œæˆ stage1 å·¥ä½œ
+        ;; 2)å¦ï¼Œåœ¨ç­‰å¾…
         ;;
 wait_for_ap_stage1_done.@0:        
         xor eax, eax
@@ -1216,7 +1216,7 @@ wait_for_ap_stage1_done.@0:
          
 wait_for_ap_stage1_done.ok:
         ;;
-        ;;  AP ´¦ÓÚ stage1 ×´Ì¬
+        ;;  AP å¤„äº stage1 çŠ¶æ€
         ;;
         mov DWORD [fs: SDA.ApStage], 1
         pop edx
