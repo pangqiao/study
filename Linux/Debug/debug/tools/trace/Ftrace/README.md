@@ -17,3 +17,5 @@ Linux ftrace框架介绍及运用: https://www.cnblogs.com/arnoldlu/p/7211249.ht
 关于Ftrace的一个完整案例: https://juejin.im/post/6844903989704654861
 
 重点: https://blog.csdn.net/pwl999/article/details/80627095 
+
+ftrace使用、nm(导出ko符号表)以及trace模块初始化: https://blog.csdn.net/lcw_202/article/details/7219454
