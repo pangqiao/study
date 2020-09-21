@@ -5,3 +5,4 @@
 - Linux inside中文: https://xinqiu.gitbooks.io/linux-insides-cn/content/index.html
 - 中断子系统: https://blog.csdn.net/droidphone/article/category/1118447
 - x86中断初始化: https://blog.csdn.net/jus3ve/article/details/81517907 和 https://blog.csdn.net/phenix_lord/article/details/45116595
+* Linux中断子系统: https://www.cnblogs.com/LoyenWang/category/1777370.html , https://www.cnblogs.com/LoyenWang/tag/%E4%B8%AD%E6%96%AD%E7%AE%A1%E7%90%86/

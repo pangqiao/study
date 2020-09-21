@@ -8,7 +8,7 @@
 4. Linux基本启动流程、初始化流程
 
 
-
+内存管理: https://www.cnblogs.com/LoyenWang/tag/%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86/
 
 
 
