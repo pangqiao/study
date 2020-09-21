@@ -1,4 +1,3 @@
-[TOC]
 
 http://www.wowotech.net/memory_management/memory_model.html
 
