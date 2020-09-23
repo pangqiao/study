@@ -5,3 +5,5 @@
 https://blog.csdn.net/zhoudaxia/article/category/1083057
 
 蜗窝科技之进程管理: http://www.wowotech.net/sort/process_management
+
+CONFIG_SCHED_AUTOGROUP: https://forum.ubuntu.org.cn/viewtopic.php?f=101&t=373509
