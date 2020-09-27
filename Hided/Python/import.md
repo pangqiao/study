@@ -254,6 +254,7 @@ sys.append('D:/xx/code')
 ### cannot import XXX
 
 文件a.py
+
 ```
 import sys
 print 'a++++++++', sys.modules # a no b
@@ -269,6 +270,7 @@ vara = 1
 ```
 
 文件b.py
+
 ```
 #import a
 import sys
