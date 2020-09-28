@@ -4,7 +4,7 @@
 当发生`#VMEXIT`，处理器：
 * 通过**清除GIF禁用中断**，以便在`#VMEXIT`之后，VMM软件可以**原子完成状态切换**。
 * 将当前guest状态写回VMCB - 与**VMRUN指令**加载的处理器状态**相同的子集**，包括`V_IRQ`，`V_TPR`和`INTERRUPT_SHADOW`位。
-* 将**退出guest的原因**保存在VMCB的`EXITCODE`字段中；根据拦截器操作的情况，其他**附加信息**可能会保存在**EXITINFO1**或**EXITINFO2**字段中。请注意，对于未指示使用的拦截器，未定义EXITINFO1和EXITINFO2字段的内容。
+* 将**退出guest的原因**保存在VMCB的`EXITCODE`字段中；根据拦截器操作的情况，其他**附加信息！！！** 可能会保存在**EXITINFO1**或**EXITINFO2**字段中。请注意，对于未指示使用的拦截器，未定义EXITINFO1和EXITINFO2字段的内容。
 * **清除所有拦截**。
 * 将**当前的ASID**寄存器重置为零（**主机ASID**）。
 * 清除处理器内部的`V_IRQ`和`V_INTR_MASKING`位。
