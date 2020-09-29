@@ -104,3 +104,5 @@ kthread_worker 和 kthread_work: https://blog.csdn.net/qqliyunpeng/article/detai
 
 
 Linux 学习笔记: https://github.com/Second222None/learn-linux
+
+BiscuitOS Blog 2.0 从点都面再到线将知识做到全面整合，完整的实践文档以及深入的专题研究专，彻底的开源免费，让知识自由共享。全新实践专题 "E820 内存管理器", 从 QEMU/KVM 虚拟化出发，完整分析 BIOS 中的细节，最终到达 Kernel/Userspace, 让 E820 内存分配器的每行代码有理可依，让涉及的每个知识点都串通实践化，无论是知识研究还是工程部署，值得每位开发者入手，需要的请戳: https://biscuitos.github.io/blog/MMU-E820/
