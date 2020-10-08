@@ -18,3 +18,5 @@
 * 将主机CPL设置为零。
 * 禁用主机DR7寄存器中的所有断点。
 * 检查重新加载的主机状态的一致性；**任何错误**都会导致**处理器关闭**(shutdown)。如果通过`#VMEXIT`重新加载的**主机的rIP**超出了**主机代码段的限制**或host rIP是**non-canonical形式**（在长模式下），则在主机内部会传递`#GP`故障。
+
+具体指令过程以及伪代码, 见AMD手册`3- General Purpose and System Instructions`的`VMRUN`指令部分
