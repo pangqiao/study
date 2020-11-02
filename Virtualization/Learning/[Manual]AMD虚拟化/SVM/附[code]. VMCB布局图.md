@@ -59,3 +59,18 @@ struct __attribute__ ((__packed__)) vmcb_control_area {
         u64 avic_physical_id;   /* Offset 0xf8 */
 };
 ```
+
+```cpp
+// arch/x86/include/asm/svm.h
+enum intercept_words {
+        INTERCEPT_CR = 0,
+        INTERCEPT_DR,
+        INTERCEPT_EXCEPTION,
+        INTERCEPT_WORD3,
+        INTERCEPT_WORD4,
+        INTERCEPT_WORD5,
+        MAX_INTERCEPT,
+};
+```
+
+
