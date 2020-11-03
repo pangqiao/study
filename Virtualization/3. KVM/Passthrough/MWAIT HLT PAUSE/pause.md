@@ -1,4 +1,7 @@
 
+[Question] About the behavior of HLT in VMX guest mode: https://www.spinics.net/lists/kvm/msg146319.html
+
+
 kvm: better MWAIT emulation for guests
 * v1: https://lkml.org/lkml/2017/3/9/799
 * v2: 
