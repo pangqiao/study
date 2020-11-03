@@ -28,3 +28,11 @@ KVM: X86: Provide a capability to disable PAUSE intercepts
 * KVM: Documentation: Add disable pause exits to KVM_CAP_X86_DISABLE_EXITS
 * KVM: X86: Provide a capability to disable cstate msr read intercepts
 * KVM: X86: Emulate MSR_IA32_MISC_ENABLE MWAIT bit
+
+
+[PATCH 1/3] KVM: X86: Provides userspace with a capability to not intercept MWAIT
+[PATCH 2/3] KVM: X86: Provides userspace with a capability to not intercept HLT
+[PATCH 3/3] KVM: X86: Provides userspace with a capability to not intercept PAUSE
+
+v1: https://www.spinics.net/lists/kvm/msg165281.html
+v2: https://lkml.org/lkml/2018/3/12/359
