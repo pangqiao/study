@@ -1,3 +1,7 @@
+在子机进入idle和锁自旋场景下, 子机会有较多mwait/hlt/pause调用, 每次调用会有vmexit的开销, 并且会造成一定的调度延迟. 
+
+实现mwait/hlt/pause指令的透传机制并提供用户态入口来disable, 从而减少了vmexit的开销, 降低了延迟.
+
 绑核场景，pvspinlock有一定开销，同时pause指令导致vm exit也会带来一定开销。
 
 透传了HLT和PAUSE指令，能减少相应的vm exit开销。
