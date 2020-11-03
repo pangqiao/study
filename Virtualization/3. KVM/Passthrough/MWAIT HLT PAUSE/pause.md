@@ -1,3 +1,6 @@
+绑核场景，pvspinlock有一定开销，同时pause指令导致vm exit也会带来一定开销。
+
+透传了HLT和PAUSE指令，能减少相应的vm exit开销。
 
 [Question] About the behavior of HLT in VMX guest mode: https://www.spinics.net/lists/kvm/msg146319.html
 
@@ -25,13 +28,9 @@ KVM: X86: Provide a capability to disable PAUSE intercepts
 
 
 
-* KVM: Documentation: Add disable pause exits to KVM_CAP_X86_DISABLE_EXITS
-* KVM: X86: Provide a capability to disable cstate msr read intercepts
-* KVM: X86: Emulate MSR_IA32_MISC_ENABLE MWAIT bit
 
 
-
-这是
+第部分, 透传了MWAIT、HLT和PAUSE指令
 
 [PATCH 1/3] KVM: X86: Provides userspace with a capability to not intercept MWAIT
 [PATCH 2/3] KVM: X86: Provides userspace with a capability to not intercept HLT
@@ -39,3 +38,10 @@ KVM: X86: Provide a capability to disable PAUSE intercepts
 
 v1: https://www.spinics.net/lists/kvm/msg165281.html
 v2(最终合入的): https://lkml.org/lkml/2018/3/12/359
+
+第3部分, 对patch的补充
+
+* KVM: Documentation: Add disable pause exits to KVM_CAP_X86_DISABLE_EXITS
+* KVM: X86: Provide a capability to disable cstate msr read intercepts
+* KVM: X86: Emulate MSR_IA32_MISC_ENABLE MWAIT bit
+
