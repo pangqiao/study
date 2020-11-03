@@ -24,8 +24,6 @@ KVM: Tie MWAIT/HLT/PAUSE interception to initially disabled capabilities
     * KVM: Add capability to not exit on HLT
     * KVM: Add capability to not exit on PAUSE
 - v1: https://www.spinics.net/lists/kvm/msg159356.html
-- v2: 
-
 
 透传了MWAIT、HLT和PAUSE指令
 
@@ -33,7 +31,7 @@ KVM: Tie MWAIT/HLT/PAUSE interception to initially disabled capabilities
 [PATCH 2/3] KVM: X86: Provides userspace with a capability to not intercept HLT
 [PATCH 3/3] KVM: X86: Provides userspace with a capability to not intercept PAUSE
 
-v1: https://www.spinics.net/lists/kvm/msg165281.html
+v1: https://www.spinics.net/lists/kvm/msg165281.html , 或 https://lkml.org/lkml/2018/3/1/194
 v2(最终合入的): https://lkml.org/lkml/2018/3/12/359
 
 对patch的补充
