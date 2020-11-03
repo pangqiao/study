@@ -42,3 +42,4 @@ v2(最终合入的): https://lkml.org/lkml/2018/3/12/359
 * KVM: X86: Provide a capability to disable cstate msr read intercepts
 * KVM: X86: Emulate MSR_IA32_MISC_ENABLE MWAIT bit
 
+v1: 
