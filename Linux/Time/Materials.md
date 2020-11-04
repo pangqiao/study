@@ -21,3 +21,5 @@ https://www.cnblogs.com/suzhou/archive/2013/06/04/3638986.html
 硬件方面，x86 主流平台，计时靠tsc，定时靠local apic timer。
 
 软件方面，linux, 低精度，高精度，先低精度然后切换到高精度。
+
+【Linux操作系统分析】定时测量——RTC，TSC，PIT，jiffies，计时体系结构，延迟函数, 概念: https://www.cnblogs.com/suzhou/archive/2013/06/04/3638986.html

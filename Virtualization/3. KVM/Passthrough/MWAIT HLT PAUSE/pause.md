@@ -6,6 +6,8 @@
 
 透传了HLT和PAUSE指令，能减少相应的vm exit开销。
 
+透传HLT指令后，边际效应会关闭pvspinlock。
+
 [Question] About the behavior of HLT in VMX guest mode: https://www.spinics.net/lists/kvm/msg146319.html
 
 
@@ -45,3 +47,14 @@ v2(最终合入的): https://lkml.org/lkml/2018/3/12/359
 * KVM: X86: Emulate MSR_IA32_MISC_ENABLE MWAIT bit
 
 https://patchwork.kernel.org/project/kvm/patch/1558418814-6822-1-git-send-email-wanpengli@tencent.com/
+
+
+KVM: x86: Implement Pause Loop Exit for SVM
+
+* v1: 
+* v2: https://lkml.org/lkml/2018/3/16/1267
+
+
+KVM: SVM: Fix disable pause loop exit/pause filtering capability on SVM
+
+* v3: https://www.spinics.net/lists/kernel/msg3610654.html
