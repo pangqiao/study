@@ -11,6 +11,8 @@ guest的lapic是通过host上的hrtimer模拟的，guest的timer到期后，vCPU
 * 一种方法是衡量`apic_timer_fn`和`VM-entry`之间的平均延迟。
 * 另一种方法是从1000ns开始，然后以500ns的增量**增加该值**，直到cyclictest的平均测试数停止减少。(until avg cyclictest numbers stop decreasing.)
 
+
+
 ```cpp
 // 
 
@@ -24,9 +26,9 @@ guest的lapic是通过host上的hrtimer模拟的，guest的timer到期后，vCPU
 对tscdeadline hrtimer过期动态调整
 
 KVM: x86: add option to advance tscdeadline hrtimer expiration, 涉及三个patch:
-* KVM: x86: add method to test PIR bitmap vector 
-* d0659d946be05e098883b6955d2764595997f6a4 , KVM: x86: add option to advance tscdeadline hrtimer expiration
-* 
+* 7c6a98dfa1ba9dc64a62e73624ecea9995736bbd, `KVM: x86: add method to test PIR bitmap vector`
+* d0659d946be05e098883b6955d2764595997f6a4, `KVM: x86: add option to advance tscdeadline hrtimer expiration`
+* 6c19b7538f5ae2b6cdf91ab29f7fddf7320ece5b, `KVM: x86: add tracepoint to wait_lapic_expire`
 
 相关的maillist如下
 
