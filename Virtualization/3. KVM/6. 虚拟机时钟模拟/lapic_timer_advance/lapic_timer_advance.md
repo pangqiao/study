@@ -13,6 +13,8 @@ guest的lapic是通过host上的hrtimer模拟的，guest的timer到期后，vCPU
 
 
 
+
+
 ```cpp
 // 
 
@@ -37,6 +39,6 @@ KVM: x86: add option to advance tscdeadline hrtimer expiration, 涉及三个patc
 * v3: https://www.spinics.net/lists/kvm/msg111674.html
 * v4: https://www.spinics.net/lists/kvm/msg111880.html
 * v5: https://www.spinics.net/lists/kvm/msg111895.html
-* v6: https://lore.kernel.org/kvm/20141223205841.410988818@redhat.com/
+* v6(最终合入版本): https://lore.kernel.org/kvm/20141223205841.410988818@redhat.com/
 
 
