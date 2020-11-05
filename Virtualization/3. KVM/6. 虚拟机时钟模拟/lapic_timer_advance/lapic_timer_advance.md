@@ -26,6 +26,7 @@ guest的lapic是通过host上的hrtimer模拟的，guest的timer到期后，vCPU
 KVM: x86: add option to advance tscdeadline hrtimer expiration, 涉及三个patch:
 * KVM: x86: add method to test PIR bitmap vector 
 * d0659d946be05e098883b6955d2764595997f6a4 , KVM: x86: add option to advance tscdeadline hrtimer expiration
+* 
 
 相关的maillist如下
 
