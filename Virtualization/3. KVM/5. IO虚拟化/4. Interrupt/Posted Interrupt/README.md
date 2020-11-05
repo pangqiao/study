@@ -15,3 +15,7 @@ Posted Interrupt 允许APIC中断直接注入到guest而不需要VM-Exit
 
 -  “acknowledge interrupt on exit”允许中断CPU运行在non-root模式产生时，可以被VMX的handler处理，而不是IDT的handler处理
 
+
+KVM: x86: add method to test PIR bitmap vector
+* v3: https://www.spinics.net/lists/kvm/msg111674.html
+* v4: https://www.spinics.net/lists/kvm/msg111881.html
