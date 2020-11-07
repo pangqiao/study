@@ -163,7 +163,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
 +
 +       if (kvm_apic_hw_enabled(apic)) {
 +               int vec = reg & APIC_VECTOR_MASK;
-+
++               // 
 +               if (kvm_x86_ops->test_posted_interrupt)
 +                       return kvm_x86_ops->test_posted_interrupt(vcpu, vec);
 +               else {
@@ -181,7 +181,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
 +       // vcpu没有lapic
 +       if (!kvm_vcpu_has_lapic(vcpu))
 +               return;
-+
++       // 如果expired_tscdeadline为0
 +       if (apic->lapic_timer.expired_tscdeadline == 0)
 +               return;
 +
