@@ -132,7 +132,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
 
 第二个就是hrtimer到期的中断回调函数`apic_timer_fn`
 
-无论是**设置定时器**, 还是**hrtimer到期回调**, 都是vm-exit后的动作, 然后在`vm-entry`之前, 
+无论是**设置定时器**, 还是**hrtimer到期回调**, 都是vm-exit后的动作, 然后在`vm-entry`之前, 会调用`wait_lapic_expire()`
 
 ```diff
 --- a/arch/x86/kvm/x86.c
@@ -148,7 +148,55 @@ static void start_apic_timer(struct kvm_lapic *apic)
 ```
 
 
-
+```diff
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
++/*
++ * On APICv, this test will cause a busy wait
++ * during a higher-priority task.
++ */
++
++static bool lapic_timer_int_injected(struct kvm_vcpu *vcpu)
++{
++       struct kvm_lapic *apic = vcpu->arch.apic;
++       u32 reg = kvm_apic_get_reg(apic, APIC_LVTT);
++
++       if (kvm_apic_hw_enabled(apic)) {
++               int vec = reg & APIC_VECTOR_MASK;
++
++               if (kvm_x86_ops->test_posted_interrupt)
++                       return kvm_x86_ops->test_posted_interrupt(vcpu, vec);
++               else {
++                       if (apic_test_vector(vec, apic->regs + APIC_ISR))
++                               return true;
++               }
++       }
++       return false;
++}
++
++void wait_lapic_expire(struct kvm_vcpu *vcpu)
++{
++       struct kvm_lapic *apic = vcpu->arch.apic;
++       u64 guest_tsc, tsc_deadline;
++       // vcpu没有lapic
++       if (!kvm_vcpu_has_lapic(vcpu))
++               return;
++
++       if (apic->lapic_timer.expired_tscdeadline == 0)
++               return;
++
++       if (!lapic_timer_int_injected(vcpu))
++               return;
++
++       tsc_deadline = apic->lapic_timer.expired_tscdeadline;
++       apic->lapic_timer.expired_tscdeadline = 0;
++       guest_tsc = kvm_x86_ops->read_l1_tsc(vcpu, native_read_tsc());
++
++       /* __delay is delay_tsc whenever the hardware has TSC, thus always.  */
++       if (guest_tsc < tsc_deadline)
++               __delay(tsc_deadline - guest_tsc);
+ }
+```
 
 
 
