@@ -86,7 +86,7 @@ guest的lapic是通过host上的hrtimer模拟的，guest的timer到期后，vCPU
  };
 ```
 
-在apic timer过期函数`apic_timer_expired`中设置了该变量, 等于设置tscdeadline的值, 表明这是tscdeadline模式下的要过期的tscdeadline值.
+在apic timer过期函数`apic_timer_expired`中设置了该变量, 等于设置tscdeadline的值, 表明这是tscdeadline模式下的要过期的目标tscdeadline值.
 
 ```diff
 --- a/arch/x86/kvm/lapic.c
@@ -103,7 +103,7 @@ guest的lapic是通过host上的hrtimer模拟的，guest的timer到期后，vCPU
 
         if (waitqueue_active(q))
                 wake_up_interruptible(q);
-+
++       // 如果是lvtt的tscdeadline模式
 +       if (apic_lvtt_tscdeadline(apic))
 +               ktimer->expired_tscdeadline = ktimer->tscdeadline;
 +}
@@ -141,6 +141,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
         }
 
         trace_kvm_entry(vcpu->vcpu_id);
+        // 延迟等待到期再vm-entry
 +       wait_lapic_expire(vcpu);
         kvm_x86_ops->run(vcpu);
 
@@ -188,15 +189,16 @@ static void start_apic_timer(struct kvm_lapic *apic)
 +       // 判断是否已经有timer中断请求
 +       if (!lapic_timer_int_injected(vcpu))
 +               return;
-+       // 获取 将过期的tscdeadline
++       // 获取 要过期的目标tscdeadline值
 +       tsc_deadline = apic->lapic_timer.expired_tscdeadline;
-+       // 清理
++       // 清空
 +       apic->lapic_timer.expired_tscdeadline = 0;
 +       // 获取虚拟机tsc
 +       guest_tsc = kvm_x86_ops->read_l1_tsc(vcpu, native_read_tsc());
 +
 +       /* __delay is delay_tsc whenever the hardware has TSC, thus always.  */
-        // 
++       // 如果要过期的目标tscdeadline值 大于 虚拟机tsc
++       // 延迟等待到期
 +       if (guest_tsc < tsc_deadline)
 +               __delay(tsc_deadline - guest_tsc);
  }
