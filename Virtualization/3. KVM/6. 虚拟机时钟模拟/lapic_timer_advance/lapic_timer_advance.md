@@ -155,7 +155,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
 + * On APICv, this test will cause a busy wait
 + * during a higher-priority task.
 + */
-+
++// 判断是否已经有LVTT请求, 即timer中断请求
 +static bool lapic_timer_int_injected(struct kvm_vcpu *vcpu)
 +{
 +       struct kvm_lapic *apic = vcpu->arch.apic;
@@ -167,7 +167,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
 +               if (kvm_x86_ops->test_posted_interrupt)
 +                       return kvm_x86_ops->test_posted_interrupt(vcpu, vec);
 +               else {
-                        // 是否已经有LVTT
++                       // 是否已经有LVTT请求
 +                       if (apic_test_vector(vec, apic->regs + APIC_ISR))
 +                               return true;
 +               }
@@ -185,15 +185,18 @@ static void start_apic_timer(struct kvm_lapic *apic)
 +       // 如果expired_tscdeadline为0
 +       if (apic->lapic_timer.expired_tscdeadline == 0)
 +               return;
-+
++       // 判断是否已经有timer中断请求
 +       if (!lapic_timer_int_injected(vcpu))
 +               return;
-+
++       // 获取 将过期的tscdeadline
 +       tsc_deadline = apic->lapic_timer.expired_tscdeadline;
++       // 清理
 +       apic->lapic_timer.expired_tscdeadline = 0;
++       // 获取虚拟机tsc
 +       guest_tsc = kvm_x86_ops->read_l1_tsc(vcpu, native_read_tsc());
 +
 +       /* __delay is delay_tsc whenever the hardware has TSC, thus always.  */
+        // 
 +       if (guest_tsc < tsc_deadline)
 +               __delay(tsc_deadline - guest_tsc);
  }
