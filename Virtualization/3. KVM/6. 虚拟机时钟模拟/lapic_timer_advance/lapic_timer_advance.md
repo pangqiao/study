@@ -163,10 +163,11 @@ static void start_apic_timer(struct kvm_lapic *apic)
 +
 +       if (kvm_apic_hw_enabled(apic)) {
 +               int vec = reg & APIC_VECTOR_MASK;
-+               // 
++               // 测试是否已经存在LVTT的posted-interrupt请求
 +               if (kvm_x86_ops->test_posted_interrupt)
 +                       return kvm_x86_ops->test_posted_interrupt(vcpu, vec);
 +               else {
+                        // 是否
 +                       if (apic_test_vector(vec, apic->regs + APIC_ISR))
 +                               return true;
 +               }
