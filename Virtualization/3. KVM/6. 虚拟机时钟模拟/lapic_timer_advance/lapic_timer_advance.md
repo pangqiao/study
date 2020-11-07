@@ -141,7 +141,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
         }
 
         trace_kvm_entry(vcpu->vcpu_id);
-        // 延迟等待到期再vm-entry
+        // 延迟等待timer到期再vm-entry
 +       wait_lapic_expire(vcpu);
         kvm_x86_ops->run(vcpu);
 
