@@ -3,29 +3,160 @@ guest的lapic是通过host上的hrtimer模拟的，guest的timer到期后，vCPU
 
 
 
-通过hrtimer来模拟guest中tscdeadline timer，添加一个选项来提前到期，并在VM-entry时自旋忙等它实际的到期时间。
+第一版代码是整个思想, 所以
+1. git show 7c6a98df/d0659d94/6c19b753 查看第一次的代码修改(也可以看mail list), 如果有疑问, 可以查看修改的各个版本
+2. reset回第一版三个patch都有的版本的代码, 查看当时系统情况
 
-这允许在cyclictest测试（或任何需要严格计时有关计时器到期的情况）中实现低延迟。
+当时系统是通过hrtimer来模拟guest中tscdeadline timer，添加一个选项来提前到期，并在VM-entry时自旋忙等它一直到实际的到期时间。
 
-注意：这个选项需要动态调整来为特定的硬件/guest组合找到合适的值。 
-* 一种方法是衡量`apic_timer_fn`和`VM-entry`之间的平均延迟。
+注意：这个选项需要**动态调整**来为特定的硬件/guest组合找到**合适的值**。 
+* 一种方法是衡量`apic_timer_fn`和`VM-entry`之间的**平均延迟**。
 * 另一种方法是从1000ns开始，然后以500ns的增量**增加该值**，直到cyclictest的平均测试数停止减少。(until avg cyclictest numbers stop decreasing.)
 
 
 
 
+定义了模块参数`lapic_timer_advance_ns`, 这就是advanced值, 即引入的那个选项.
+
+```diff
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -108,6 +108,10 @@ EXPORT_SYMBOL_GPL(kvm_max_guest_tsc_khz);
+ static u32 tsc_tolerance_ppm = 250;
+ module_param(tsc_tolerance_ppm, uint, S_IRUGO | S_IWUSR);
+
++/* lapic timer advance (tscdeadline mode only) in nanoseconds */
++unsigned int lapic_timer_advance_ns = 0;
++module_param(lapic_timer_advance_ns, uint, S_IRUGO | S_IWUSR);
++
+ static bool backwards_tsc_observed = false;
+
+--- a/arch/x86/kvm/x86.h
++++ b/arch/x86/kvm/x86.h
+@@ -170,5 +170,7 @@ extern u64 kvm_supported_xcr0(void);
+
+ extern unsigned int min_timer_period_us;
+
++extern unsigned int lapic_timer_advance_ns;
++
+```
+
+在设置定时器时候(`start_apic_timer`), 之前的代码设置hrtimer的超时时间是`now + (tscdeadline值 - 当前虚拟机tsc值)`, 模式是绝对时间(`HRTIMER_MODE_ABS`).
+
+而在新方案下, 有了advanced, 让其提前到期, 即将原有的hrtimer到期时间减去提前值(`lapic_timer_advance_ns`), 如下.
+
+```diff
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -1137,6 +1189,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
+               	/* lapic timer in tsc deadline mode */
+               	u64 guest_tsc, tscdeadline = apic->lapic_timer.tscdeadline;
+               	u64 ns = 0;
++               ktime_t expire;
+               	struct kvm_vcpu *vcpu = apic->vcpu;
+               	unsigned long this_tsc_khz = vcpu->arch.virtual_tsc_khz;
+               	unsigned long flags;
+@@ -1151,8 +1204,10 @@ static void start_apic_timer(struct kvm_lapic *apic)
+               	if (likely(tscdeadline > guest_tsc)) {
+                       	ns = (tscdeadline - guest_tsc) * 1000000ULL;
+                       	do_div(ns, this_tsc_khz);
++                       expire = ktime_add_ns(now, ns);
++                       expire = ktime_sub_ns(expire, lapic_timer_advance_ns);
+                       	hrtimer_start(&apic->lapic_timer.timer,
+-                               ktime_add_ns(now, ns), HRTIMER_MODE_ABS);
++                                     expire, HRTIMER_MODE_ABS);
+               	} else
+                       	apic_timer_expired(apic);
+```
+
+
+
+
+在kvm_timer引入了一个expired_tscdeadline变量
+
+```diff
+--- a/arch/x86/kvm/lapic.h
++++ b/arch/x86/kvm/lapic.h
+@@ -14,6 +14,7 @@ struct kvm_timer {
+        u32 timer_mode;
+        u32 timer_mode_mask;
+        u64 tscdeadline;
++       u64 expired_tscdeadline;
+        atomic_t pending;                       /* accumulated triggered timers */
+ };
+```
+
+在apic timer过期函数`apic_timer_expired`中设置了该变量, 等于设置tscdeadline的值, 表明这是tscdeadline模式下的要过期的tscdeadline值.
+
+```diff
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -1073,6 +1074,7 @@ static void apic_timer_expired(struct kvm_lapic *apic)
+ {
+        struct kvm_vcpu *vcpu = apic->vcpu;
+        wait_queue_head_t *q = &vcpu->wq;
++       struct kvm_timer *ktimer = &apic->lapic_timer;
+
+        /*
+         * Note: KVM_REQ_PENDING_TIMER is implicitly checked in
+@@ -1087,11 +1089,61 @@ static void apic_timer_expired(struct kvm_lapic *apic)
+
+        if (waitqueue_active(q))
+                wake_up_interruptible(q);
++
++       if (apic_lvtt_tscdeadline(apic))
++               ktimer->expired_tscdeadline = ktimer->tscdeadline;
++}
+```
+
+而根据查找, 发现对`apic_timer_expired`的调用只有两个.
+
+![2020-11-06-16-20-55.png](./images/2020-11-06-16-20-55.png)
+
+第一个是`start_apic_timer`, 设置apic timer定时器时候, 当定时器是tscdeadline模式时候, 并且虚拟机tsc值已经大于等于设置的tscdeadline值(即表明设置定时器中间已经到期了)
 
 ```cpp
-// 
-
+// arch/x86/kvm/lapic.c
+static void start_apic_timer(struct kvm_lapic *apic)
+{
+        ......
+        } else if (apic_lvtt_tscdeadline(apic)) {
+                ......
+                if (likely(tscdeadline > guest_tsc)) {
+                        ......
+                } else
+                        apic_timer_expired(apic);
+        }
+}
 ```
+
+第二个就是hrtimer到期的中断回调函数`apic_timer_fn`
+
+无论是**设置定时器**, 还是**hrtimer到期回调**, 都是vm-exit后的动作, 然后在`vm-entry`之前, 
+
+```diff
+--- a/arch/x86/kvm/x86.c
++++ b/arch/x86/kvm/x86.c
+@@ -6312,6 +6316,7 @@ static int vcpu_enter_guest(struct kvm_vcpu *vcpu)
+        }
+
+        trace_kvm_entry(vcpu->vcpu_id);
++       wait_lapic_expire(vcpu);
+        kvm_x86_ops->run(vcpu);
+
+        /*
+```
+
+
+
+
 
 
 
 
 # 社区相关patch
 
-对tscdeadline hrtimer过期动态调整
+1. 第一版代码: 对tscdeadline hrtimer过期动态调整
 
 KVM: x86: add option to advance tscdeadline hrtimer expiration, 涉及三个patch:
 * 7c6a98dfa1ba9dc64a62e73624ecea9995736bbd, `KVM: x86: add method to test PIR bitmap vector`
