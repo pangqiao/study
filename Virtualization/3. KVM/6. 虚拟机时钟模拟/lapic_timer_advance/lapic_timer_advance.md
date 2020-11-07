@@ -167,7 +167,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
 +               if (kvm_x86_ops->test_posted_interrupt)
 +                       return kvm_x86_ops->test_posted_interrupt(vcpu, vec);
 +               else {
-                        // 是否
+                        // 是否已经有LVTT
 +                       if (apic_test_vector(vec, apic->regs + APIC_ISR))
 +                               return true;
 +               }
