@@ -113,7 +113,7 @@ guest的lapic是通过host上的hrtimer模拟的，guest的timer到期后，vCPU
 
 ![2020-11-06-16-20-55.png](./images/2020-11-06-16-20-55.png)
 
-第一个是`start_apic_timer`, 设置apic timer定时器时候, 当定时器是tscdeadline模式时候, 并且虚拟机tsc值已经大于等于设置的tscdeadline值(即表明设置定时器中间已经到期了)
+第一个是`start_apic_timer`, 设置apic timer定时器时候, 当定时器是tscdeadline模式时候, 并且虚拟机tsc值已经大于等于设置的tscdeadline值(即表明设置定时器期间已经到期了)
 
 ```cpp
 // arch/x86/kvm/lapic.c
@@ -130,7 +130,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
 }
 ```
 
-第二个就是hrtimer到期的中断回调函数`apic_timer_fn`
+第二个就是hrtimer到期的中断回调函数`apic_timer_fn`, 而因为在启用hrtimer时减去了advanced值, 所以hrtimer会提前到期.
 
 无论是**设置定时器**, 还是**hrtimer到期回调**, 都是vm-exit后的动作, 然后在`vm-entry`之前, 会调用`wait_lapic_expire()`
 
