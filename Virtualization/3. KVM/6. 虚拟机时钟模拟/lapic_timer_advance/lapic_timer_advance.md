@@ -153,30 +153,6 @@ static void start_apic_timer(struct kvm_lapic *apic)
 ```diff
 --- a/arch/x86/kvm/lapic.c
 +++ b/arch/x86/kvm/lapic.c
-+/*
-+ * On APICv, this test will cause a busy wait
-+ * during a higher-priority task.
-+ */
-+// 判断是否已经有LVTT请求, 即timer中断请求
-+static bool lapic_timer_int_injected(struct kvm_vcpu *vcpu)
-+{
-+       struct kvm_lapic *apic = vcpu->arch.apic;
-+       u32 reg = kvm_apic_get_reg(apic, APIC_LVTT);
-+
-+       if (kvm_apic_hw_enabled(apic)) {
-+               int vec = reg & APIC_VECTOR_MASK;
-+               // 测试是否已经存在LVTT的posted-interrupt请求
-+               if (kvm_x86_ops->test_posted_interrupt)
-+                       return kvm_x86_ops->test_posted_interrupt(vcpu, vec);
-+               else {
-+                       // 是否已经有LVTT请求
-+                       if (apic_test_vector(vec, apic->regs + APIC_ISR))
-+                               return true;
-+               }
-+       }
-+       return false;
-+}
-+
 +void wait_lapic_expire(struct kvm_vcpu *vcpu)
 +{
 +       struct kvm_lapic *apic = vcpu->arch.apic;
@@ -205,7 +181,9 @@ static void start_apic_timer(struct kvm_lapic *apic)
  }
 ```
 
-注: 从这里也可以看到, 判断是否已经有中断请求，有两种, pi或正常中断.
+从这里也可以看到, 判断是否已经有中断请求，有两种
+* pi, 
+* 正常中断.
 
 ```diff
 --- a/arch/x86/kvm/lapic.c
