@@ -187,7 +187,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
 +       // 如果expired_tscdeadline为0
 +       if (apic->lapic_timer.expired_tscdeadline == 0)
 +               return;
-+       // 判断是否已经有timer中断请求
++       // 如果没有timer中断请求被注入, 直接返回
 +       if (!lapic_timer_int_injected(vcpu))
 +               return;
 +       // 获取 要过期的目标tscdeadline值
@@ -207,7 +207,33 @@ static void start_apic_timer(struct kvm_lapic *apic)
 
 注: 从这里也可以看到, 判断是否已经有中断请求，有两种, pi或正常中断.
 
-
+```diff
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
++/*
++ * On APICv, this test will cause a busy wait
++ * during a higher-priority task.
++ */
++// 判断是否已经有LVTT请求, 即timer中断请求
++static bool lapic_timer_int_injected(struct kvm_vcpu *vcpu)
++{
++       struct kvm_lapic *apic = vcpu->arch.apic;
++       u32 reg = kvm_apic_get_reg(apic, APIC_LVTT);
++
++       if (kvm_apic_hw_enabled(apic)) {
++               int vec = reg & APIC_VECTOR_MASK;
++               // 测试是否已经存在LVTT的posted-interrupt请求
++               if (kvm_x86_ops->test_posted_interrupt)
++                       return kvm_x86_ops->test_posted_interrupt(vcpu, vec);
++               else {
++                       // 是否已经有LVTT请求
++                       if (apic_test_vector(vec, apic->regs + APIC_ISR))
++                               return true;
++               }
++       }
++       return false;
++}
+```
 
 
 
