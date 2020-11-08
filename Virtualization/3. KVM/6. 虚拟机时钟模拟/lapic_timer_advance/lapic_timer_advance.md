@@ -69,9 +69,6 @@ guest的lapic是通过host上的hrtimer模拟的，guest的timer到期后，vCPU
                        	apic_timer_expired(apic);
 ```
 
-
-
-
 在kvm_timer引入了一个expired_tscdeadline变量
 
 ```diff
@@ -132,7 +129,11 @@ static void start_apic_timer(struct kvm_lapic *apic)
 
 第二个就是hrtimer到期的中断回调函数`apic_timer_fn`, 而因为在启用hrtimer时减去了advanced值, 所以hrtimer会提前到期.
 
-无论是**设置定时器**, 还是**hrtimer到期回调**, 都是vm-exit后的动作, 然后在`vm-entry`之前, 会调用`wait_lapic_expire()`, 延迟等待到期(这是因为)
+无论是**设置定时器**, 还是**hrtimer到期回调**, 都是vm-exit后的动作, 然后在`vm-entry`之前, 会调用`wait_lapic_expire()`, 延迟等待到期(这是因为timer提前到期, 所以可能还没到到期时间). 
+
+原有方案, 设置timer, vmexit后设置hrtimer, 然后hrtimer到期, 发生vmexit后进行注入, 这必然有exit后以及处理延迟.
+
+新的方案, 设置timer, vmexit后设置hrtimer(但是让提前到期), 然后hrtimer到期, 发生vmexit后进行注入, 但是因为是提前到期, 所以多等直到真正到期.
 
 ```diff
 --- a/arch/x86/kvm/x86.c
