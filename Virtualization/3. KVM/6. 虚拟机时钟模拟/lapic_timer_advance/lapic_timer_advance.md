@@ -181,9 +181,9 @@ static void start_apic_timer(struct kvm_lapic *apic)
  }
 ```
 
-从这里也可以看到, 判断是否已经有中断请求，有两种
+从这里也可以看到, 判断是否已经有中断请求被注入，有两种
 * pi, 
-* 正常中断.
+* 正常中断, 看是否在apic的ISR中
 
 ```diff
 --- a/arch/x86/kvm/lapic.c
