@@ -132,7 +132,7 @@ static void start_apic_timer(struct kvm_lapic *apic)
 
 第二个就是hrtimer到期的中断回调函数`apic_timer_fn`, 而因为在启用hrtimer时减去了advanced值, 所以hrtimer会提前到期.
 
-无论是**设置定时器**, 还是**hrtimer到期回调**, 都是vm-exit后的动作, 然后在`vm-entry`之前, 会调用`wait_lapic_expire()`, 延迟等待到期
+无论是**设置定时器**, 还是**hrtimer到期回调**, 都是vm-exit后的动作, 然后在`vm-entry`之前, 会调用`wait_lapic_expire()`, 延迟等待到期(这是因为)
 
 ```diff
 --- a/arch/x86/kvm/x86.c
@@ -182,8 +182,8 @@ static void start_apic_timer(struct kvm_lapic *apic)
 ```
 
 从这里也可以看到, 判断是否已经有中断请求被注入，有两种
-* posted interrupt, 看是否在posted-interrupt描述符
-* 正常中断, 看是否在apic的ISR中
+* posted interrupt, 看posted-interrupt描述符的pir对应位是否置位
+* 正常中断, 看apic的ISR是否置位
 
 ```diff
 --- a/arch/x86/kvm/vmx.c
@@ -235,8 +235,6 @@ static void start_apic_timer(struct kvm_lapic *apic)
 +       return false;
 +}
 ```
-
-
 
 # 社区相关patch
 
