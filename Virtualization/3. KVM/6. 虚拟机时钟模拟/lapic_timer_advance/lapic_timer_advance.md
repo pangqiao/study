@@ -86,7 +86,7 @@ guest的lapic是通过host上的hrtimer模拟的，guest的timer到期后，vCPU
  };
 ```
 
-在apic timer过期函数`apic_timer_expired`中设置了该变量, 等于设置tscdeadline的值, 表明这是tscdeadline模式下的要过期的目标tscdeadline值.
+在apic timer过期函数`apic_timer_expired`中设置了该变量, 等于设置tscdeadline的值, 表明这是tscdeadline模式下的实际要过期的目标tscdeadline值(没有提前值).
 
 ```diff
 --- a/arch/x86/kvm/lapic.c
