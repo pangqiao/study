@@ -182,10 +182,33 @@ static void start_apic_timer(struct kvm_lapic *apic)
 ```
 
 从这里也可以看到, 判断是否已经有中断请求被注入，有两种
-* pi, 
+* posted interrupt, 看是否在posted-interrupt描述符
 * 正常中断, 看是否在apic的ISR中
 
 ```diff
+--- a/arch/x86/kvm/vmx.c
++++ b/arch/x86/kvm/vmx.c
+@@ -435,6 +435,11 @@ static int pi_test_and_set_pir(int vector, struct pi_desc *pi_desc)
+        return test_and_set_bit(vector, (unsigned long *)pi_desc->pir);
+ }
+
++static int pi_test_pir(int vector, struct pi_desc *pi_desc)
++{
++       return test_bit(vector, (unsigned long *)pi_desc->pir);
++}
++
+@@ -6968,6 +6974,13 @@ static int handle_invvpid(struct kvm_vcpu *vcpu)
+        return 1;
+ }
+
++static bool vmx_test_pir(struct kvm_vcpu *vcpu, int vector)
++{
++       struct vcpu_vmx *vmx = to_vmx(vcpu);
++
++       return pi_test_pir(vector, &vmx->pi_desc);
++}
++
+
 --- a/arch/x86/kvm/lapic.c
 +++ b/arch/x86/kvm/lapic.c
 +/*
