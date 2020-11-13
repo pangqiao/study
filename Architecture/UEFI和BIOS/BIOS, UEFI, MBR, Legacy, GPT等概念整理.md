@@ -2,24 +2,24 @@
 
 <!-- code_chunk_output -->
 
-* [1. 固件接口标准](#1-固件接口标准)
-	* [1.1 BIOS](#11-bios)
-	* [1.2 EFI/UEFI](#12-efiuefi)
-* [2. 启动方式](#2-启动方式)
-	* [2.1 Legacy mode](#21-legacy-mode)
-	* [2.2 UEFI mode](#22-uefi-mode)
-	* [2.3 CSM mode](#23-csm-mode)
-* [3. 分区表](#3-分区表)
-	* [3.1 MBR分区表](#31-mbr分区表)
-	* [3.2 EBR分区表](#32-ebr分区表)
-	* [3.3 GPT分区表](#33-gpt分区表)
-* [4. 分区](#4-分区)
-	* [4.1 ESP（EFI系统分区）](#41-espefi系统分区)
-	* [4.2 Windows恢复分区](#42-windows恢复分区)
-* [5. Bootloader](#5-bootloader)
-	* [5.1 Grub](#51-grub)
-	* [5.2 Windows Boot Manager](#52-windows-boot-manager)
-	* [5.3 NTLDR](#53-ntldr)
+- [1. 固件接口标准](#1-固件接口标准)
+  - [1.1 BIOS](#11-bios)
+  - [1.2 EFI/UEFI](#12-efiuefi)
+- [2. 启动方式](#2-启动方式)
+  - [2.1 Legacy mode](#21-legacy-mode)
+  - [2.2 UEFI mode](#22-uefi-mode)
+  - [2.3 CSM mode](#23-csm-mode)
+- [3. 分区表](#3-分区表)
+  - [3.1 MBR分区表](#31-mbr分区表)
+  - [3.2 EBR分区表](#32-ebr分区表)
+  - [3.3 GPT分区表](#33-gpt分区表)
+- [4. 分区](#4-分区)
+  - [4.1 ESP（EFI系统分区）](#41-espefi系统分区)
+  - [4.2 Windows恢复分区](#42-windows恢复分区)
+- [5. Bootloader](#5-bootloader)
+  - [5.1 Grub](#51-grub)
+  - [5.2 Windows Boot Manager](#52-windows-boot-manager)
+  - [5.3 NTLDR](#53-ntldr)
 
 <!-- /code_chunk_output -->
 
@@ -48,7 +48,7 @@ PS：CMOS是PC上的另一个重要的存储器，用于保存BIOS的设置结�
 
 ### 1.2 EFI/UEFI
 
-Unified Extensible Firmware Interface，架设在系统固件之上的软件接口，用于替代BIOS接口，EFI是UEFI的前称。
+Unified Extensible Firmware Interface，统一可扩展固件接口, 架设在系统固件之上的软件接口，用于替代BIOS接口，EFI是UEFI的前称。
 
 一般认为，UEFI由以下几个部分组成：
 
