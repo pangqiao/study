@@ -22,3 +22,7 @@ https://www.git-scm.com/book/zh/v2/%E8%B5%B7%E6%AD%A5-%E5%AE%89%E8%A3%85-Git
 git log日期问题:
 https://www.chengweiyang.cn/2018/05/04/git-log-filter-by-date/
 
+
+git丢弃本地修改的所有文件（新增、删除、修改）
+
+https://blog.csdn.net/leedaning/article/details/51304690
