@@ -20,8 +20,8 @@
 - [8. function 跟踪器](#8-function-跟踪器)
   - [8.1. 特定进程](#81-特定进程)
 - [9. function_graph 跟踪器](#9-function_graph-跟踪器)
-  - [采样某个模块](#采样某个模块)
-  - [指定进程](#指定进程)
+  - [9.1. 采样某个模块](#91-采样某个模块)
+  - [9.2. 指定进程](#92-指定进程)
 - [10. sched_switch 跟踪器](#10-sched_switch-跟踪器)
 - [11. irqsoff 跟踪器](#11-irqsoff-跟踪器)
 - [12. preemptoff跟踪器](#12-preemptoff跟踪器)
@@ -577,7 +577,7 @@ exec $*
 
 所以需要上面两种过滤条件都满足的函数才能被trace。
 
-## 采样某个模块
+## 9.1. 采样某个模块
 
 ```
 cd /sys/kernel/debug/tracing/
@@ -599,7 +599,7 @@ echo 1 > tracing_on; sleep 30; echo 0 > tracing_on
 3. 设置tracing_cpumask
 4. 设置set_ftrace_pid
 
-## 指定进程
+## 9.2. 指定进程
 
 注: 如果想要追踪某个模块的所有函数的function_graph, 使用`set_ftrace_filter`, 即参照下面的指定模块部分内容
 

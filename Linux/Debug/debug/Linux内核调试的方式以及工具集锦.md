@@ -74,8 +74,7 @@
 
 [在 Linux 下用户空间与内核空间数据交换的方式, 第 2 部分: procfs、seq_file、debugfs和relayfs](http://www.ibm.com/developerworks/cn/linux/l-kerns-usrs2/)
 
-[Linux 文件系统：procfs, sysfs, debugfs 用法简介
-](http://www.tinylab.org/show-the-usage-of-procfs-sysfs-debugfs/)
+[Linux 文件系统：procfs, sysfs, debugfs 用法简介](http://www.tinylab.org/show-the-usage-of-procfs-sysfs-debugfs/)
 
 ## 2.1. procfs文件系统
 

@@ -4,7 +4,18 @@
 <!-- code_chunk_output -->
 
 - [1. Linux profiling 手段一览](#1-linux-profiling-手段一览)
+  - [1.1. 软件埋点](#11-软件埋点)
+    - [1.1.1. 手动埋点](#111-手动埋点)
+    - [1.1.2. 自动埋点](#112-自动埋点)
+    - [1.1.3. 动态埋点](#113-动态埋点)
+  - [1.2. 硬件统计](#12-硬件统计)
+    - [1.2.1. 计数累加](#121-计数累加)
+    - [1.2.2. 采样](#122-采样)
 - [2. Android systrace 工作原理](#2-android-systrace-工作原理)
+  - [2.1. User space](#21-user-space)
+    - [2.1.1. 埋点处](#211-埋点处)
+    - [2.1.2. atrace](#212-atrace)
+  - [2.2. Kernel space](#22-kernel-space)
 - [3. Android atrace 输出文件及图形化展示](#3-android-atrace-输出文件及图形化展示)
 - [4. Linux ftrace 实现原理回顾](#4-linux-ftrace-实现原理回顾)
 - [5. uprobe 的实现原理](#5-uprobe-的实现原理)
@@ -16,59 +27,86 @@
 
 # 1. Linux profiling 手段一览
 
+图一:
+
 ![2020-01-29-18-26-06.png](./images/2020-01-29-18-26-06.png)
 
 为方便介绍，将 Linux Profiling 手段分为两大类：
 
-- 软件埋点：
+## 1.1. 软件埋点
 
-    - 手动埋点：主动调用 trace 函数来实现埋点。
+第一类是**软件埋点**, 又分为三种
+
+### 1.1.1. 手动埋点
+
+实现: 主动调用 trace 函数来实现埋点。
 
     Android systrace 即是这样一个例子，如图 2 和 图 3 所示
 
-    - 自动埋点：借助工具链，自动埋点，对函数的 entry 和 return 进行 hook。
+### 1.1.2. 自动埋点
 
-    Linux ftrace 即是这样一个例子，图 4 简示了其实现原理
+实现：借助工具链，自动埋点，对**函数**的 **entry** 和 **return** 进行 hook。
 
-    - 动态埋点：运行时刻，在指定位置上加断点，断点触发时执行相应 handler。
+Linux ftrace 即是这样一个例子，图 4 简示了其实现原理
 
-    Handler 为注入内核的 eBPF 字节码
+### 1.1.3. 动态埋点
 
-    Linux kprobe / uprobe 就是这样的例子，图 5 和 图 6 简示了 uprobe 以及 uretprobe 的实现原理
+实现: 运行时刻，在**指定位置**上加**断点**，断点触发时执行相应 **handler**.
 
-- 硬件统计
+Handler 为注入内核的 eBPF 字节码
 
-    - 计数累加：统计一段时间内，某个性能监控单元（PMU）的计数。
+Linux kprobe / uprobe 就是这样的例子，图 5 和 图 6 简示了 uprobe 以及 uretprobe 的实现原理
 
-    例如：perf stat -e cache-misses -p PID，参见 brendangregg.com/perf.html ，Counting Events 一节
+## 1.2. 硬件统计
+第二类是**硬件统计**, 又分为两种
 
-    函数接口：参见 libperf 的封装，fd = perf_event_open(...); read(fd, …)
+### 1.2.1. 计数累加
 
-    - 采样：计数达标，产生中断，伴随 Backtrace 对应到代码行。
+实现: 统计一段时间内，**某个性能监控单元**（PMU）的**计数**。
 
-    例如：perf record -F 99 -p PID sleep 10，以及对应图形化展示 FlameGraph
+例如：`perf stat -e cache-misses -p PID`，参见 brendangregg.com/perf.html ，Counting Events 一节
 
-    函数接口：参见 perf_event_open，fd = perf_event_open(…); void *addr = mmap(…, fd, …);
+函数接口：参见 libperf 的封装，`fd = perf_event_open(...); read(fd, …)`
+
+### 1.2.2. 采样
+
+实现：**计数达标**，产生**中断**，伴随 Backtrace 对应到代码行。
+
+例如：`perf record -F 99 -p PID sleep 10`，以及对应图形化展示 FlameGraph
+
+函数接口：参见 `perf_event_open，fd = perf_event_open(…); void *addr = mmap(…, fd, …);`
 
 图 7 简示了其实现原理
 
 # 2. Android systrace 工作原理
 
+图2:
+
 ![2020-01-29-18-30-10.png](./images/2020-01-29-18-30-10.png)
 
-- User space，分为两部分
+## 2.1. User space
 
-    - 埋点处：通过嵌入代码中的 Trace API 调用，向 Linux kernel 的 tracing buffer 写日志。
+User space分为两部分
 
-    上图中，裸示了写 tracing buffer 的过程
+### 2.1.1. 埋点处
 
-    - atrace：读取 tracing buffer，存于磁盘文件，以免 tracing buffer 溢出丢失信息。
+埋点处：通过嵌入代码中的 Trace API 调用，向 Linux kernel 的 tracing buffer 写日志。
 
-- Kernel space，通过 scheduler 嵌入的 tracepoint，将调度事件，写入 tracing buffer。
+上图中，裸示了写 tracing buffer 的过程
 
-    tracing buffer 犹如一段 in-memory 的日志流，对齐了写入的各个标记和事件。
+### 2.1.2. atrace
+
+atrace：读取 tracing buffer，存于磁盘文件，以免 tracing buffer 溢出丢失信息。
+
+## 2.2. Kernel space
+
+Kernel space，通过 scheduler 嵌入的 tracepoint，将调度事件，写入 tracing buffer。
+
+tracing buffer 犹如一段 in-memory 的日志流，对齐了写入的各个标记和事件。
 
 # 3. Android atrace 输出文件及图形化展示
+
+图3:
 
 ![2020-01-29-18-34-41.png](./images/2020-01-29-18-34-41.png)
 
@@ -77,6 +115,8 @@ atrace 转储的 tracing buffer 内容，以及载入到 Chrome 浏览器，进�
 >Discuss：想象一个进程同时播放两段视频，视频解码库是多线程的，线程来自全局的 thread pool。通过 systrace，能区分这两个视频播放任务的 CPU 时间片吗？
 
 # 4. Linux ftrace 实现原理回顾
+
+图4:
 
 ![2020-01-29-18-39-10.png](./images/2020-01-29-18-39-10.png)
 
@@ -89,6 +129,8 @@ Linux kernel 热补丁方案，”kernel livepatch“，便借用了 ftrace 的�
 更多关于 ftrace 使用，参考[「Advanced Features of Ftrace」](https://events.static.linuxfound.org/sites/events/files/slides/linuxconjapan-ftrace-2014.pdf)
 
 # 5. uprobe 的实现原理
+
+图5:
 
 ![2020-01-29-18-43-37.png](./images/2020-01-29-18-43-37.png)
 
@@ -185,6 +227,8 @@ fail:
 
 于是就有了 **kretprobe** 以及 **uretprobe**。下图展示了 uretprobe 工作原理，同样修改自[dev.framing.life/tracing/kernel-and-user-probes-magic](https://dev.framing.life/tracing/kernel-and-user-probes-magic/)
 
+图6:
+
 ![2020-01-29-23-02-45.png](./images/2020-01-29-23-02-45.png)
 
 uprobe 的工作流中，需要**指定位置**方能埋点。除了上述提及的函数 **entry** & **return**，在**函数中间某处埋点**，意味着要**反汇编**，找到源代码行对应汇编地址，有些反人类。
@@ -204,6 +248,8 @@ uprobe 的工作流中，需要**指定位置**方能埋点。除了上述提及
 >[“Cache Line 伪共享发现与优化“](https://yq.aliyun.com/articles/465504)一文，介绍了如何发现名为 “Cache Line 伪共享” 的 “塞车事件”，并对应到代码行上。
 
 下图简示了采样的工作原理：当 “塞车” 计数达到采样频率时，产生一次中断，转储现场，从而回溯到代码行和相关上下文。
+
+图7:
 
 ![2020-01-29-23-39-07.png](./images/2020-01-29-23-39-07.png)
 
