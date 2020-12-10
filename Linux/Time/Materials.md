@@ -16,6 +16,9 @@ Linux Time: http://kernel.meizu.com/linux-time.html
 
 https://www.cnblogs.com/suzhou/archive/2013/06/04/3638986.html
 
+
+
+
 操作系统时钟从作用上分为两种: 计时和定时器
 
 硬件方面，x86 主流平台，计时靠tsc，定时靠local apic timer。
