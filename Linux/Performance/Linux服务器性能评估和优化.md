@@ -52,9 +52,9 @@
   </tr>
   <tr>
     <td>CPU</td>
-    <td>user% \+ sys% < 70%</td>
-    <td>user% \+ sys% = 85%</td>
-    <td>user% \+ sys% >= 90%</td>
+    <td>user% + sys% < 70%</td>
+    <td>user% + sys% = 85%</td>
+    <td>user% + sys% >= 90%</td>
   </tr>
   <tr>
     <td>内存</td>
