@@ -6,17 +6,17 @@
 
 
 ;------------------------------------
-; enable_ioapic(): ¿ªÆô ioapic
+; enable_ioapic(): å¼€å¯ ioapic
 ;------------------------------------
 enable_ioapic:
-        ; ¿ªÆô ioapic
+        ; å¼€å¯ ioapic
         call get_root_complex_base_address
         mov esi, [eax + 31FEh]
-        bts esi, 8                      ; IOAPIC enable Î»
+        bts esi, 8                      ; IOAPIC enable ä½
         and esi, 0FFFFFF00h             ; IOAPIC range select
         mov [eax + 31FEh], esi          ; enable ioapic
 
-        ; ÉèÖÃ IOAPIC ID
+        ; è®¾ç½® IOAPIC ID
         mov DWORD [IOAPIC_INDEX_REG], IOAPIC_ID_INDEX
         mov DWORD [IOAPIC_DATA_REG], 0F000000h          ; IOAPIC ID = 0Fh
         ret
@@ -26,37 +26,37 @@ enable_ioapic:
 ; ioapic_keyboard_handler()
 ;-----------------------------------
 ioapic_keyboard_handler:
-        in al, I8408_DATA_PORT                  ; ¶Á¼üÅÌÉ¨ÃèÂë
+        in al, I8408_DATA_PORT                  ; è¯»é”®ç›˜æ‰«æç 
         movzx eax, al
         cmp eax, key_map_end - key_map
         jg ioapic_keyboard_handler_done
         mov esi, [key_map + eax]
         call putc
 ioapic_keyboard_handler_done:
-        mov DWORD [APIC_BASE + EOI], 0          ; ·¢ËÍ EOI ÃüÁî
+        mov DWORD [APIC_BASE + EOI], 0          ; å‘é€ EOI å‘½ä»¤
         iret
 
 
 ;---------------------------------------------
-; dump_ioapic(): ´òÓ¡ ioapic ¼Ä´æÆ÷ĞÅÏ¢
+; dump_ioapic(): æ‰“å° ioapic å¯„å­˜å™¨ä¿¡æ¯
 ;---------------------------------------------
 dump_ioapic:
         push ecx
         
-; ´òÓ¡ ID, Version
+; æ‰“å° ID, Version
         mov esi, id_msg
         call puts
         mov DWORD [IOAPIC_INDEX_REG], IOAPIC_ID_INDEX
-        mov esi, [IOAPIC_DATA_REG]                              ; ¶Á ioapic ID
+        mov esi, [IOAPIC_DATA_REG]                              ; è¯» ioapic ID
         call print_dword_value
         mov esi, ver_msg
         call puts
         mov DWORD [IOAPIC_INDEX_REG], IOAPIC_VER_INDEX
-        mov esi, [IOAPIC_DATA_REG]                              ; ¶Á version
+        mov esi, [IOAPIC_DATA_REG]                              ; è¯» version
         call print_dword_value
         call println
 
-; ´òÓ¡ IOAPIC redirection table
+; æ‰“å° IOAPIC redirection table
         xor ecx, ecx
         mov esi, redirection
         call puts        
@@ -74,10 +74,10 @@ dump_next:
         call puts
 
         lea eax, [ecx * 2 + 10h]                        ; index
-        mov [IOAPIC_INDEX_REG], eax                     ; Ğ´Èë index
+        mov [IOAPIC_INDEX_REG], eax                     ; å†™å…¥ index
         mov esi, [IOAPIC_DATA_REG]
         lea eax, [ecx * 2 + 11h]                        ; index
-        mov [IOAPIC_INDEX_REG], eax                     ; Ğ´Èë index
+        mov [IOAPIC_INDEX_REG], eax                     ; å†™å…¥ index
         mov edi, [IOAPIC_DATA_REG]
         call print_qword_value
         mov esi, ' '
@@ -94,7 +94,7 @@ dump_next:
 
 
 
-;****** ioapic Êı¾İÇø **********
+;****** ioapic æ•°æ®åŒº **********
 
 id_msg          db 'ID: ', 0
 ver_msg         db '        Ver: ', 0
@@ -102,7 +102,7 @@ redirection     db '-------- Redirection Table ----------', 10, 0
 dump_msg        db ': ', 0
 
 
-;*** ¼üÅÌÉ¨ÃèÂë *****
+;*** é”®ç›˜æ‰«æç  *****
 key_map:
         db KEY_NULL, KEY_ESC, "1234567890-=", KEY_BS
         db KEY_TAB, "qwertyuiop[]", KEY_ENTER, KEY_CTRL

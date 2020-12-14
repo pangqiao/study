@@ -6,64 +6,64 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÎªÁËÍê³ÉÊµÑé£¬¹Ø±ÕÊ±¼äÖĞ¶ÏºÍ¼üÅÌÖĞ¶Ï
+;; ä¸ºäº†å®Œæˆå®éªŒï¼Œå…³é—­æ—¶é—´ä¸­æ–­å’Œé”®ç›˜ä¸­æ–­
         call disable_timer
         
-;; ÉèÖÃ #PF handler
+;; è®¾ç½® #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ÉèÖÃ #DB handler
+; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
 
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; è®¾ç½® sysenter/sysexit ä½¿ç”¨ç¯å¢ƒ
         call set_sysenter
 
-;; ÉèÖÃ system_service handler
+;; è®¾ç½® system_service handler
         mov esi, SYSTEM_SERVICE_VECTOR
         mov edi, system_service
         call set_user_interrupt_handler 
 
-; ÔÊĞíÖ´ĞĞ SSE Ö¸Áî        
+; å…è®¸æ‰§è¡Œ SSE æŒ‡ä»¤        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         
         
-;ÉèÖÃ CR4.PAE
+;è®¾ç½® CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; å¼€å¯ XD åŠŸèƒ½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; åˆå§‹åŒ– paging ç¯å¢ƒ
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
+;è®¾ç½® PDPT è¡¨åœ°å€        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; ´ò¿ª¡¡paging
+; æ‰“å¼€ã€€paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax                                 
@@ -82,50 +82,50 @@ entry:
         call disable_timer
         sti
         
-;========= ³õÊ¼»¯ÉèÖÃÍê±Ï =================
+;========= åˆå§‹åŒ–è®¾ç½®å®Œæ¯• =================
 
 
 ;*
-;* ÊµÑé ex14-11£º²âÊÔBTS bufferµÄ¹ıÂË¹¦ÄÜ
+;* å®éªŒ ex14-11ï¼šæµ‹è¯•BTS bufferçš„è¿‡æ»¤åŠŸèƒ½
 ;*
 
-; 1) ¿ªÆôAPIC
+; 1) å¼€å¯APIC
         call enable_xapic        
         
-; 2) ÉèÖÃ APIC performance monitor counter handler
+; 2) è®¾ç½® APIC performance monitor counter handler
         mov esi, APIC_PERFMON_VECTOR
         mov edi, apic_perfmon_handler
         call set_interrupt_handler
         
         
-; ÉèÖÃ LVT performance monitor counter
+; è®¾ç½® LVT performance monitor counter
         mov DWORD [APIC_BASE + LVT_PERFMON], FIXED_DELIVERY | APIC_PERFMON_VECTOR
         
-        call available_bts                                ; ²âÊÔ bts ÊÇ·ñ¿ÉÓÃ
+        call available_bts                                ; æµ‹è¯• bts æ˜¯å¦å¯ç”¨
         test eax, eax
-        jz next                                           ; ²»¿ÉÓÃ
+        jz next                                           ; ä¸å¯ç”¨
 
 
-; ÉèÖÃÍêÕû DS ÇøÓò£¨»·ĞÎ BTS buffer£©
+; è®¾ç½®å®Œæ•´ DS åŒºåŸŸï¼ˆç¯å½¢ BTS bufferï¼‰
         SET_DS_AREA
 
         
-; * ×¢²áÓÃ»§ÖĞ¶Ï·şÎñÀı³Ì
-; * ¹Ò½ÓÔÚ system_service_table ±íÉÏ
+; * æ³¨å†Œç”¨æˆ·ä¸­æ–­æœåŠ¡ä¾‹ç¨‹
+; * æŒ‚æ¥åœ¨ system_service_table è¡¨ä¸Š
 
-        mov esi, USER_ENABLE_BTS                        ; ¹¦ÄÜºÅ
-        mov edi, user_enable_bts                        ; ×Ô¶¨ÒåÀı³Ì
+        mov esi, USER_ENABLE_BTS                        ; åŠŸèƒ½å·
+        mov edi, user_enable_bts                        ; è‡ªå®šä¹‰ä¾‹ç¨‹
         call set_system_service_table
 
-        mov esi, USER_DISABLE_BTS                        ; ¹¦ÄÜºÅ
-        mov edi, user_disable_bts                        ; ×Ô¶¨ÒåÀı³Ì 
+        mov esi, USER_DISABLE_BTS                        ; åŠŸèƒ½å·
+        mov edi, user_disable_bts                        ; è‡ªå®šä¹‰ä¾‹ç¨‹ 
         call set_system_service_table
                 
-        mov esi, USER_DUMP_BTS                           ; ¹¦ÄÜºÅ
-        mov edi, user_dump_bts                           ; ×Ô¶¨ÒåÀı³Ì
+        mov esi, USER_DUMP_BTS                           ; åŠŸèƒ½å·
+        mov edi, user_dump_bts                           ; è‡ªå®šä¹‰ä¾‹ç¨‹
         call set_system_service_table
         
-; ½øÈë ring 3 ´úÂë
+; è¿›å…¥ ring 3 ä»£ç 
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -134,7 +134,7 @@ entry:
 
 
 ;; **********************************        
-;; ÏÂÃæÊÇÓÃ»§´úÂë£¨CPL = 3)
+;; ä¸‹é¢æ˜¯ç”¨æˆ·ä»£ç ï¼ˆCPL = 3)
 ;; **********************************
 
 user_entry:
@@ -144,20 +144,20 @@ user_entry:
 
 user_start:
         
-        ; ¿ªÆô BTS
+        ; å¼€å¯ BTS
         mov eax, USER_ENABLE_BTS
         int SYSTEM_SERVICE_VECTOR
 
-        ; ´òÓ¡²âÊÔĞÅÏ¢
+        ; æ‰“å°æµ‹è¯•ä¿¡æ¯
         mov esi, msg
         mov eax, SYS_PUTS
         int SYSTEM_SERVICE_VECTOR
         
-        ; ¹Ø±Õ BTS
+        ; å…³é—­ BTS
         mov eax, USER_DISABLE_BTS
         int SYSTEM_SERVICE_VECTOR
 
-        ; ´òÓ¡ BTS
+        ; æ‰“å° BTS
         mov eax, USER_DUMP_BTS
         int SYSTEM_SERVICE_VECTOR
 
@@ -166,8 +166,8 @@ next:
         jmp $
 
 
-;; ¶¨Òå 3 ¸öÓÃ»§ÖĞ¶Ï·şÎñÀı³ÌºÅ
-;; ¶ÔÓ¦ÓÚ user_enable_bts(), user_dislable_bts() ÒÔ¼° user_dump_bts()
+;; å®šä¹‰ 3 ä¸ªç”¨æˆ·ä¸­æ–­æœåŠ¡ä¾‹ç¨‹å·
+;; å¯¹åº”äº user_enable_bts(), user_dislable_bts() ä»¥åŠ user_dump_bts()
 
 USER_ENABLE_BTS         equ SYSTEM_SERVICE_USER0
 USER_DISABLE_BTS        equ SYSTEM_SERVICE_USER1
@@ -175,12 +175,12 @@ USER_DUMP_BTS           equ SYSTEM_SERVICE_USER2
 
 
 ;------------------------
-; ÔÚÓÃ»§²ãÀï¿ªÆô BTS ¹¦ÄÜ
+; åœ¨ç”¨æˆ·å±‚é‡Œå¼€å¯ BTS åŠŸèƒ½
 ;-------------------------
 user_enable_bts:
         ;*
-        ;* ¹Ø±ÕÔÚ OS kernel ²ãµÄ BTS ¼ÇÂ¼
-        ;* Ê¹ÓÃ»·ĞÎ BTS buffer
+        ;* å…³é—­åœ¨ OS kernel å±‚çš„ BTS è®°å½•
+        ;* ä½¿ç”¨ç¯å½¢ BTS buffer
         ;*
         mov ecx, IA32_DEBUGCTL
         mov edx, 0
@@ -189,7 +189,7 @@ user_enable_bts:
         ret
 
 ;--------------------------
-; ÔÚÓÃ»§²ãÀï¹Ø±Õ BTS ¹¦ÄÜ
+; åœ¨ç”¨æˆ·å±‚é‡Œå…³é—­ BTS åŠŸèƒ½
 ;-------------------------
 user_disable_bts:
         mov ecx, IA32_DEBUGCTL
@@ -199,7 +199,7 @@ user_disable_bts:
         ret
 
 ;--------------------------
-; ÔÚÓÃ»§²ã´òÓ¡ BTS buffer
+; åœ¨ç”¨æˆ·å±‚æ‰“å° BTS buffer
 ;--------------------------
 user_dump_bts:
         call dump_ds_management
@@ -208,10 +208,10 @@ user_dump_bts:
 
 
 
-;;; ²âÊÔº¯Êı
+;;; æµ‹è¯•å‡½æ•°
 foo:
         mov esi, msg
-        call puts                        ; ´òÓ¡Ò»ÌõĞÅÏ¢
+        call puts                        ; æ‰“å°ä¸€æ¡ä¿¡æ¯
         ret
 
 
@@ -222,11 +222,11 @@ msg        db 'hi, message from User...', 10, 10, 0
 
 %define APIC_PERFMON_HANDLER
 
-;******** include ÖĞ¶Ï handler ´úÂë ********
+;******** include ä¸­æ–­ handler ä»£ç  ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include æ¨¡å— ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -238,10 +238,10 @@ msg        db 'hi, message from User...', 10, 10, 0
 %include "..\lib\pic8259A.asm"
 
 
-;;************* º¯Êıµ¼Èë±í  *****************
+;;************* å‡½æ•°å¯¼å…¥è¡¨  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓĞÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; è¿™ä¸ª lib32 åº“å¯¼å…¥è¡¨æ”¾åœ¨ common\ ç›®å½•ä¸‹ï¼Œ
+; ä¾›æ‰€æœ‰å®éªŒçš„ protected.asm æ¨¡å—ä½¿ç”¨
 
 %include "..\common\lib32_import_table.imt"
 
