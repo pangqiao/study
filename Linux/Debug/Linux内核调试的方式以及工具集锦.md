@@ -208,25 +208,7 @@ mount -t sysfs sysfs /sysfs
 
 ## 4.2. ftrace前端工具trace-cmd
 
-*	trace-cmd 介绍
-
-`trace-cmd` 和 开源的 `kernelshark` 均是内核`Ftrace` 的前段工具, 用于分分析核性能.
-
-他们相当于是一个 `/sys/kernel/debug/tracing` 中文件系统接口的封装, 为用户提供了更加直接和方便的操作.
-
-*	使用
-
-```
-#  收集信息
-sudo trace-cmd reord subsystem:tracing 
-
-#  解析结果
-#sudo trace-cmd report
-```
-
 [trace-cmd: A front-end for Ftrace](https://lwn.net/Articles/410200/)
-
-其本质就是对`/sys/kernel/debug/tracing/events` 下各个模块进行操作, 收集数据并解析
 
 # 5. Kprobe && systemtap
 
