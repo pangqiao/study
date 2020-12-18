@@ -268,16 +268,6 @@ ftrace 提供了**不同的跟踪器**，以用于**不同的场合**，比如�
 hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 ```
 
-- `function`，函数调用追踪器，可以看出**哪个函数何时调用**。
-
-可以通过文件 `set_ftrace_filter` **指定要跟踪的函数**。
-
-- `function_graph`，函数调用图表追踪器，可以看出**哪个函数被哪个函数调用**，**何时返回**。
-
-可以通过文件 `set_grapch_function` 显示指定**要生成调用流程图的函数**。
-
-- `blk`，**block I/O追踪器**。
-
 - `mmiotrace`，**MMIO**( Memory MappedI/O)追踪器，用于Nouveau驱动程序等逆向工程。
 
 - `wakeup`，跟踪**进程唤醒信息**, 进程**调度延迟**追踪器。跟踪进程的调度延迟, 即高优先级进程从进入 `ready` 状态到获得 `CPU` 的延迟时间.

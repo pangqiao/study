@@ -192,14 +192,16 @@ mount -t sysfs sysfs /sysfs
 
 ## 4.1. trace && ftrace
 
-
-
 `Ftrace` 由 `RedHat` 的 `Steve Rostedt` 负责维护. 到 `2.6.30` 为止, 已经支持的 `tracer` 包括 :
 
 | Tracer | 描述 |
 |:------:|:---:|
-| Wakeup tracer |  该 `tracer` 只针对实时进程 |
-| Irqsoff tracer | 当中断被禁止时, 系统无法相应外部事件, 系统响应延迟, `irqsoff` 这个 `tracer` 能够跟踪并记录内核中哪些函数禁止了中断, 对于其中中断禁止时间最长的, `irqsoff` 将在 `log` 文件的第一行标示出来, 从而使开发人员可以迅速定位造成响应延迟的罪魁祸首. |
+| Function tracer 和 Function graph tracer | 函数调用追踪器，可以看出**哪个函数何时调用**。<p><p>可以通过文件 `set_ftrace_filter` **指定要跟踪的函数** |
+| Function graph tracer | 函数调用图表追踪器，可以看出**哪个函数被哪个函数调用**，**何时返回**。<p><p>可以通过文件 `set_grapch_function` 显示指定**要生成调用流程图的函数**。 |
+| blk tracer | block I/O追踪器 |
+| Schedule switch tracer | 跟踪进程调度情况 |
+| Wakeup tracer | 跟踪进程的调度延迟, 即高优先级进程从进入 `ready` 状态到获得 `CPU` 的延迟时间. 该 `tracer` 只针对实时进程 |
+| Irqsoff tracer | 当中断被禁止时, 系统无法相应外部事件, 比如键盘和鼠标, 时钟也无法产生 `tick` 中断. 这意味着系统响应延迟, `irqsoff` 这个 `tracer` 能够跟踪并记录内核中哪些函数禁止了中断, 对于其中中断禁止时间最长的, `irqsoff` 将在 `log` 文件的第一行标示出来, 从而使开发人员可以迅速定位造成响应延迟的罪魁祸首. |
 | Preemptoff tracer | 和前一个 tracer 类似, `preemptoff tracer` 跟踪并记录禁止内核抢占的函数, 并清晰地显示出禁止抢占时间最长的内核函数. |
 | Preemptirqsoff tracer | 同上, 跟踪和记录禁止中断或者禁止抢占的内核函数, 以及禁止时间最长的函数. |
 | Branch tracer | 跟踪内核程序中的 `likely/unlikely` 分支预测命中率情况. `Branch tracer` 能够记录这些分支语句有多少次预测成功. 从而为优化程序提供线索. |
