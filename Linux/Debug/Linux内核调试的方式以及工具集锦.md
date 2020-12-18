@@ -11,9 +11,6 @@
   - [2.4. relayfs文件系统](#24-relayfs文件系统)
   - [2.5. seq_file](#25-seq_file)
 - [3. printk](#3-printk)
-- [4. ftrace trace-cmd](#4-ftrace-trace-cmd)
-  - [4.1. trace && ftrace](#41-trace-ftrace)
-  - [4.2. ftrace前端工具trace-cmd](#42-ftrace前端工具trace-cmd)
 - [5. Kprobe && systemtap](#5-kprobe-systemtap)
   - [5.1. 内核kprobe机制](#51-内核kprobe机制)
   - [5.2. 前端工具systemtap](#52-前端工具systemtap)
@@ -187,28 +184,6 @@ mount -t sysfs sysfs /sysfs
 [调整内核printk的打印级别](http://blog.csdn.net/tonywgx/article/details/17504001)
 
 [linux设备驱动学习笔记--内核调试方法之printk](http://blog.csdn.net/itsenlin/article/details/43205983)
-
-# 4. ftrace trace-cmd
-
-## 4.1. trace && ftrace
-
-[ftrace和它的前端工具trace-cmd(深入了解Linux系统的利器)](http://blog.yufeng.info/archives/1012)
-
-[ftrace 简介](https://www.ibm.com/developerworks/cn/linux/l-cn-ftrace/)
-
-[内核性能调试–ftrace](http://blog.chinaunix.net/uid-20589411-id-3501525.html)
-
-[使用 ftrace 调试 Linux 内核，第 1 部分](https://www.ibm.com/developerworks/cn/linux/l-cn-ftrace1)
-
-[ftrace的使用](http://blog.csdn.net/cybertan/article/details/8258394)
-
-[[转]Linux内核跟踪之trace框架分析 ](http://blog.chinaunix.net/uid-24063584-id-2642103.html)
-
-[Linux trace使用入门](http://blog.csdn.net/jscese/article/details/46415531)
-
-## 4.2. ftrace前端工具trace-cmd
-
-[trace-cmd: A front-end for Ftrace](https://lwn.net/Articles/410200/)
 
 # 5. Kprobe && systemtap
 

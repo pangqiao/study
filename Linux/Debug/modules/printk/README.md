@@ -1,33 +1,11 @@
-Linux内核调试的方式以及工具集锦
-=======
 
-| CSDN | GitHub |
-|:----:|:------:|
-| [Linux内核调试的方式以及工具集锦](http://blog.csdn.net/gatieme/article/details/61623891) | [`AderXCoding/system/tools/you-get`](https://github.com/gatieme/AderXCoding/tree/master/system/tools/you-get) |
+# printk 介绍
 
-<br>
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
-本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可, 转载请注明出处, 谢谢合作
-<br>
-
-
-#1  printk 介绍
--------
-
-
-##1.1	`printk` 的由来
--------
-
+## `printk` 的由来
 
 在内核调试技术之中, 最简单的就是 `printk` 的使用了, 它的用法和C语言应用程序中的 `printf` 使用类似, 在应用程序中依靠的是 `stdio.h` 中的库, 而在 `linux` 内核中没有这个库, 所以在 `linux` 内核中, 实现了自己的一套库函数, `printk` 就是标准的输出函数
 
-
-
-
-
-##1.2	`printk` 与 `printf` 的差异
--------
-
+## `printk` 与 `printf` 的差异
 
 是什么导致一个运行在内核态而另一个运行用户态? 其实这两个函数几乎是相同的, 出现这种差异是因为 `tty_write` 函数需要使用 `fs` 指向的被显示的字符串, 而 `fs` 是专门用于存放用户态段选择符的, 因此, 在内核态时, 为了配合 `tty_write`函数, `printk` 会把 `fs` 修改为内核态数据段选择符 `ds` 中的值, 这样才能正确指向内核的数据缓冲区, 当然这个操作会先对 `fs` 进行压栈保存, 调用 `tty_write` 完毕后再出栈恢复. 总结说来, `printk` 与 `printf` 的差异是由 `fs` 造成的, 所以差异也是围绕对 `fs` 的处理。
 
@@ -343,14 +321,9 @@ module_exit(book_exit);
 
 
 
-#4	参考
--------
-
+# 参考
 
 [linux内核printk调试](http://blog.csdn.net/catamout/article/details/5380562)
-
-
-
 
 [linux内核调试技术之printk](http://www.cnblogs.com/veryStrong/p/6218383.html)
 
