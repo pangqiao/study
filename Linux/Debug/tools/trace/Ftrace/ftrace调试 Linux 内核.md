@@ -268,23 +268,29 @@ ftrace 提供了**不同的跟踪器**，以用于**不同的场合**，比如�
 hwlat blk function_graph wakeup_dl wakeup_rt wakeup function nop
 ```
 
-- `mmiotrace`，**MMIO**( Memory MappedI/O)追踪器，用于Nouveau驱动程序等逆向工程。
+| Tracer | 描述 |
+|:------:|:---|
+| `function` tracer | 函数调用追踪器，可以看出**哪个函数何时调用**。<p><p>可以通过文件 `set_ftrace_filter` **指定要跟踪的函数** |
+| `function graph` tracer | 函数调用图表追踪器，可以看出**哪个函数被哪个函数调用**，**何时返回**。<p><p>可以通过文件 `set_grapch_function` 显示指定**要生成调用流程图的函数**。 |
+| `blk` tracer | block I/O追踪器 |
+| `schedule_switch` tracer | 跟踪进程调度情况, 进行**上下文切换**的追踪(调度情况)，可以得知从哪个进程切换到了哪个进程 |
+| `wakeup` tracer | 与wakeup相同，但该 `tracer` 只针对实时进程 |
+| `wakeup_rt` tracer | 跟踪**进程唤醒信息**, 进程**调度延迟**追踪器。跟踪进程的调度延迟, 即高优先级进程从进入 `ready` 状态到获得 `CPU` 的延迟时间. 该 `tracer` 只针对实时进程 |
+| `irqsoff` tracer | 当中断被禁止时, 系统无法相应外部事件, 比如键盘和鼠标, 时钟也无法产生 `tick` 中断. 这意味着系统响应延迟, `irqsoff` 这个 `tracer` 能够跟踪并记录内核中**哪些函数禁止了中断**, 对于其中中断**禁止时间最长**的, `irqsoff` 将在 `log` 文件的第一行标示出来, 从而使开发人员可以迅速定位造成响应延迟的罪魁祸首. |
+| `preemptoff` tracer | 和前一个 tracer 类似, 追踪并记录**禁止内核抢占的函数**，并清晰显示出**禁止内核抢占时间最长的函数**. |
+| `preemptirqsoff` tracer | 同上, 跟踪和记录禁止中断或者禁止抢占的内核函数, 以及禁止时间最长的函数. 即综合了irqoff和preemptoff两个功能. |
+| `branch` tracer | 跟踪内核程序中的 `likely/unlikely` 分支预测命中率情况. `Branch tracer` 能够记录这些分支语句有多少次预测成功. 从而为优化程序提供线索. |
+| `hardware branch` tracer | 利用处理器的分支跟踪能力, 实现硬件级别的指令跳转记录. 在 `x86` 上, 主要利用了 `BTS` 这个特性. |
+| `initcall` tracer | 记录系统在 `boot` 阶段所调用的 `init call`. |
+| `mmiotrace` tracer | 记录 `memory map IO` 的相关信息, 用于Nouveau驱动程序等逆向工程. |
+| `power` tracer | 记录系统电源管理相关的信息 |
+| `sysprof` tracer | 缺省情况下, `sysprof tracer` 每隔 `1 msec` 对内核进行一次采样，记录函数调用和堆栈信息. |
+| `kernel memory` tracer | 内存 `tracer` 主要用来跟踪 `slab allocator` 的分配情况. 包括 `kfree`, `kmem_cache_alloc` 等 `API` 的调用情况, 用户程序可以根据 `tracer` 收集到的信息分析内部碎片情况, 找出内存分配最频繁的代码片断, 等等. |
+| `workqueue statistical` tracer |这是一个 ` statistic tracer`, 统计系统中所有的 `workqueue` 的工作情况, 比如有多少个 `work` 被插入 `workqueue`, 多少个已经被执行等. 开发人员可以以此来决定具体的 `workqueue` 实现, 比如是使用 `single threaded workqueue` 还是 `per cpu workqueue`. |
+| event tracer | 跟踪系统事件, 比如 `timer`, 系统调用, 中断等. |
+| nop tracer | 不会跟踪任何内核活动，将 nop 写入 `current_tracer` 文件可以**删除之前所使用的跟踪器**，并**清空之前收集到的跟踪信息**，即**刷新 trace 文件**. |
 
-- `wakeup`，跟踪**进程唤醒信息**, 进程**调度延迟**追踪器。跟踪进程的调度延迟, 即高优先级进程从进入 `ready` 状态到获得 `CPU` 的延迟时间.
-
-- `wakeup_rt`，与wakeup相同，但以**实时进程**为对象。
-
-- `irqsoff`，当中断被禁止时，系统无法响应外部事件，比如键盘和鼠标, 时钟也无法产生 `tick` 中断. 这意味着系统响应延迟，irqsoff跟踪并记录内核中**哪些函数禁止了中断**，对于其中**禁止中断时间最长**的，irqsoff将在log文件的第一行标示出来，从而可以迅速定位造成系统响应延迟的原因。
-
-- `preemptoff`，追踪并记录**禁止内核抢占的函数**，并清晰显示出**禁止内核抢占时间最长的函数**。
-
-- `preemptirqsoff`，追踪并记录**禁止内核抢占和中断时间最长**的函数。即综合了irqoff和preemptoff两个功能。
-
-- `sched_switch`，进行**上下文切换**的追踪(调度情况)，可以得知从哪个进程切换到了哪个进程。
-
-- `nop`，不会跟踪任何内核活动，将 nop 写入 current_tracer 文件可以**删除之前所使用的跟踪器**，并**清空之前收集到的跟踪信息**，即**刷新 trace 文件**。
-
-ftrace 还支持其它一些跟踪器，比如 initcall、ksym_tracer、mmiotrace、sysprof 等。
+这里还没有列出所有的 `tracer`, `ftrace` 是目前非常活跃的开发领域, 新的 `tracer` 将不断被加入内核。
 
 ftrace 框架支持**扩展添加新的跟踪器**。读者可以参考内核源码包中 `Documentation/trace` 目录下的文档以及 `kernel/trace` 下的源文件，以了解其它跟踪器的用途和如何添加新的跟踪器。
 
