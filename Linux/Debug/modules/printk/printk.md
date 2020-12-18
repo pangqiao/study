@@ -1,4 +1,3 @@
-
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
@@ -216,7 +215,6 @@ extern int console_printk[];
 
 `syslog` 和 `kern.log` 一般情况下可以得到所有的系统输出值, 而 `messages` 得到的是比控制台日志级别低的输出值, `debug` 得到的仅仅是 `debug` 级别的输出值.
 
-
 一般情况下, 优先级高于控制台日志级别的消息将被打印到控制台. 优先级低于控制台日志级别的消息将被打印到`messages` 日志文件中, 而在伪终端下不打印任何的信息.
 
 > 关于系统中日志文件的用途, 请参见[ubuntu /var/log/下各个日志文件描述及修复无message文件和debug文件](http://blog.csdn.net/gatieme/article/details/68951962), 如果系统中没有message, debug 日志文件也请参见[ubuntu /var/log/下各个日志文件描述及修复无message文件和debug文件](http://blog.csdn.net/gatieme/article/details/68951962)
@@ -274,7 +272,7 @@ module_init(book_init);
 module_exit(book_exit);
 ```
 
-查看日志的信息 `dmesg` 或者 `cat /var/log/syslog  `
+查看日志的信息 `dmesg` 或者 `cat /var/log/syslog`
 
 ![查看日志的信息 `dmesg` ](images/cat_var_log_syslog.png)
 
