@@ -20,8 +20,6 @@ Linux ftrace框架介绍及运用: https://www.cnblogs.com/arnoldlu/p/7211249.ht
 
 ftrace使用、nm(导出ko符号表)以及trace模块初始化: https://blog.csdn.net/lcw_202/article/details/7219454
 
-
-
 [ftrace和它的前端工具trace-cmd(深入了解Linux系统的利器)](http://blog.yufeng.info/archives/1012)
 
 [ftrace 简介](https://www.ibm.com/developerworks/cn/linux/l-cn-ftrace/)
