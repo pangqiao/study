@@ -192,24 +192,14 @@ mount -t sysfs sysfs /sysfs
 
 ## 4.1. trace && ftrace
 
-`Linux`当前版本中, 功能最强大的调试、跟踪手段. 其最基本的功能是提供了动态和静态探测点, 用于探测内核中指定位置上的相关信息.
 
-静态探测点, 是在内核代码中调用 `ftrace` 提供的相应接口实现, 称之为静态是因为, 是在内核代码中写死的, 静态编译到内核代码中的, 在内核编译后, 就不能再动态修改. 在开启 `ftrace` 相关的内核配置选项后, 内核中已经在一些关键的地方设置了静态探测点, 需要使用时, 即可查看到相应的信息.
-
-动态探测点, 基本原理为 : 利用 `mcount` 机制, 在内核编译时, 在每个函数入口保留数个字节, 然后在使用 `ftrace`时, 将保留的字节替换为需要的指令, 比如跳转到需要的执行探测操作的代码。
-
-`ftrace` 的作用是帮助开发人员了解 `Linux` 内核的运行时行为, 以便进行故障调试或性能分析.
-
-最早 `ftrace` 是一个 `function tracer`, 仅能够记录内核的函数调用流程. 如今 `ftrace` 已经成为一个 `framework`, 采用 `plugin` 的方式支持开发人员添加更多种类的 `trace` 功能.
 
 `Ftrace` 由 `RedHat` 的 `Steve Rostedt` 负责维护. 到 `2.6.30` 为止, 已经支持的 `tracer` 包括 :
 
 | Tracer | 描述 |
 |:------:|:---:|
-| Function tracer 和 Function graph tracer |跟踪函数调用 |
-| Schedule switch tracer | 跟踪进程调度情况 |
-| Wakeup tracer | 跟踪进程的调度延迟, 即高优先级进程从进入 `ready` 状态到获得 `CPU` 的延迟时间. 该 `tracer` 只针对实时进程 |
-| Irqsoff tracer | 当中断被禁止时, 系统无法相应外部事件, 比如键盘和鼠标, 时钟也无法产生 `tick` 中断. 这意味着系统响应延迟, `irqsoff` 这个 `tracer` 能够跟踪并记录内核中哪些函数禁止了中断, 对于其中中断禁止时间最长的, `irqsoff` 将在 `log` 文件的第一行标示出来, 从而使开发人员可以迅速定位造成响应延迟的罪魁祸首. |
+| Wakeup tracer |  该 `tracer` 只针对实时进程 |
+| Irqsoff tracer | 当中断被禁止时, 系统无法相应外部事件, 系统响应延迟, `irqsoff` 这个 `tracer` 能够跟踪并记录内核中哪些函数禁止了中断, 对于其中中断禁止时间最长的, `irqsoff` 将在 `log` 文件的第一行标示出来, 从而使开发人员可以迅速定位造成响应延迟的罪魁祸首. |
 | Preemptoff tracer | 和前一个 tracer 类似, `preemptoff tracer` 跟踪并记录禁止内核抢占的函数, 并清晰地显示出禁止抢占时间最长的内核函数. |
 | Preemptirqsoff tracer | 同上, 跟踪和记录禁止中断或者禁止抢占的内核函数, 以及禁止时间最长的函数. |
 | Branch tracer | 跟踪内核程序中的 `likely/unlikely` 分支预测命中率情况. `Branch tracer` 能够记录这些分支语句有多少次预测成功. 从而为优化程序提供线索. |
