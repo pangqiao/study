@@ -227,9 +227,9 @@ extern int console_printk[];
 
 通过读写 `/proc/sys/kernel/printk`文件可读取和修改控制台的日志级别.
 
-![权限信息](cat_proc_sys_kernel_printk.png)
+![权限信息](images/cat_proc_sys_kernel_printk.png)
 
-![日志运行级别](cat_proc_sys_kernel_printk.png)
+![日志运行级别](images/cat_proc_sys_kernel_printk.png)
 
 内容依次分别为, 控制台日志级别 `console_loglevel`, 默认消息级别 `default_message_loglevel`, 控制台最小的日志级别 `minimum_console_loglevel`, 默认的控制台日志级别 `default_console_loglevel`
 
@@ -276,15 +276,15 @@ module_exit(book_exit);
 
 查看日志的信息 `dmesg` 或者 `cat /var/log/syslog  `
 
-![查看日志的信息 `dmesg` ](cat_var_log_syslog.png)
+![查看日志的信息 `dmesg` ](images/cat_var_log_syslog.png)
 
 查看 `message` 信息, 或者 `cat /var/log/syslog`
 
-![查看 `message` 信息](cat_var_log_messages.png)
+![查看 `message` 信息](images/cat_var_log_messages.png)
 
 查看 `debug` 信息
 
-![查看 `debug` 信息](cat_var_log_debug.png)
+![查看 `debug` 信息](images/cat_var_log_debug.png)
 
 # 4. 参考
 
