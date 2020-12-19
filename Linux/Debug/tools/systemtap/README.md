@@ -1,10 +1,15 @@
+
+
 http://ddebs.ubuntu.com/pool/main/l/linux/
 
-http://www.ibm.com/developerworks/cn/linux/l-cn-systemtap3/
+* Linux 下的一个全新的性能测量和调式诊断工具 Systemtap，第 1 部分, kprobe, kprobe 的原理、编程接口、局限性和使用注意事项: https://www.ibm.com/developerworks/cn/linux/l-cn-systemtap1/
+* Linux 下的一个全新的性能测量和调式诊断工具 Systemtap，第 2 部分, DTrace, DTrace的原理: https://www.ibm.com/developerworks/cn/linux/l-cn-systemtap2/
+* Linux 下的一个全新的性能测量和调式诊断工具 Systemtap, 第 3 部分, Systemtap, Systemtap的原理，Systemtap与DTrace比较，以及安装要求和安装步骤: http://www.ibm.com/developerworks/cn/linux/l-cn-systemtap3/
 
 https://www.ibm.com/developerworks/cn/linux/l-systemtap/
 
 [SystemTap知识（一）](http://www.cnblogs.com/yjf512/p/3286429.html)
+
 [内核探测工具systemtap简介](http://www.cnblogs.com/hazir/p/systemtap_introduction.html)
 
 [内核探测工具systemtap简介](http://www.cnblogs.com/hazir/p/systemtap_introduction.html)
@@ -14,9 +19,13 @@ https://www.ibm.com/developerworks/cn/linux/l-systemtap/
 [Systemtap语言详解](http://blog.csdn.net/linyt/article/category/645022)
 
 [Systemtap-Wiki](https://sourceware.org/systemtap/wiki)
+
 [Systemtap-Documentation](https://sourceware.org/systemtap/documentation.html)
+
 [Language Reference](https://sourceware.org/systemtap/langref/)
+
 [IBM RedBook Systemtap](http://www.redbooks.ibm.com/abstracts/redp4469.html)
+
 [Debian Systemtap Package](https://packages.qa.debian.org/s/systemtap.html)
 
 [使用systemtap调试Linux内核](http://www.tuicool.com/articles/a6fYnyY)
