@@ -1,8 +1,6 @@
-You-Get--基于Python3的开源网络视频下载工具
 
-| CSDN | GitHub |
-|:----:|:------:|
-| [You-Get--基于Python3的开源网络视频下载工具](http://blog.csdn.net/gatieme/article/details/61623891) | [`AderXCoding/system/tools/you-get`](https://github.com/gatieme/AderXCoding/tree/master/system/tools/you-get) |
+
+
 
 [Linux内核里的DebugFS](http://www.cnblogs.com/wwang/archive/2011/01/17/1937609.html)
 
