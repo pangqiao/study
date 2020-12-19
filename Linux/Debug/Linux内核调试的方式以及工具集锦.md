@@ -3,23 +3,33 @@
 
 <!-- code_chunk_output -->
 
-- [1. 内核调试工具总结](#1-内核调试工具总结)
-- [用户空间与内核空间数据交换的文件系统](#用户空间与内核空间数据交换的文件系统)
-- [3. Kprobe && systemtap](#3-kprobe-systemtap)
-  - [3.1. 内核kprobe机制](#31-内核kprobe机制)
-  - [3.2. 前端工具systemtap](#32-前端工具systemtap)
-- [4. kgdb && kgtp](#4-kgdb-kgtp)
-  - [4.1. kgdb](#41-kgdb)
-  - [4.2. KGTP](#42-kgtp)
-- [5. perf](#5-perf)
-- [6. LTTng](#6-lttng)
-- [7. 参考资料](#7-参考资料)
-  - [7.1. 系列文章来源](#71-系列文章来源)
-  - [7.2. 其他参考](#72-其他参考)
+- [1. 意义](#1-意义)
+- [2. 内核调试工具总结](#2-内核调试工具总结)
+- [3. 用户空间与内核空间数据交换的文件系统](#3-用户空间与内核空间数据交换的文件系统)
+- [4. printk](#4-printk)
+- [5. ftrace && trace-cmd](#5-ftrace-trace-cmd)
+- [6. Kprobe && systemtap](#6-kprobe-systemtap)
+  - [6.1. 内核kprobe机制](#61-内核kprobe机制)
+  - [6.2. 前端工具systemtap](#62-前端工具systemtap)
+- [7. kgdb && kgtp](#7-kgdb-kgtp)
+  - [7.1. kgdb](#71-kgdb)
+  - [7.2. KGTP](#72-kgtp)
+- [8. perf](#8-perf)
+- [9. LTTng](#9-lttng)
+- [10. 参考资料](#10-参考资料)
+  - [10.1. 系列文章来源](#101-系列文章来源)
+  - [10.2. 其他参考](#102-其他参考)
 
 <!-- /code_chunk_output -->
 
-# 1. 内核调试工具总结
+# 1. 意义
+
+这个文章主要目的有:
+
+1. 宏观描述debug手段
+2. 不同手段之间的关系, 比如
+
+# 2. 内核调试工具总结
 
 内核总是那么捉摸不透, 内核也会犯错, 但是调试却不能像用户空间程序那样, 为此内核开发者为我们提供了一系列的工具和系统来支持内核的调试.
 
@@ -40,13 +50,25 @@
 | OL DTrace | `Oracle Linux DTracer` |
 | sysdig |  |
 
-# 用户空间与内核空间数据交换的文件系统
+# 3. 用户空间与内核空间数据交换的文件系统
+
+它们都用于Linux内核和用户空间的数据交换, 只是适用场景不同
 
 见`./filesystem`
 
-# 3. Kprobe && systemtap
+# 4. printk
 
-## 3.1. 内核kprobe机制
+用法和C语言应用程序中的 printf 使用类似
+
+见`./printk`
+
+# 5. ftrace && trace-cmd
+
+ftrace 是 Linux当前版本中, 功能最强大的调试、跟踪手段.
+
+# 6. Kprobe && systemtap
+
+## 6.1. 内核kprobe机制
 
 `kprobe` 是 `linux` 内核的一个重要特性, 是一个轻量级的内核调试工具, 同时它又是其他一些更高级的内核调试工具(比如 `perf` 和 `systemtap`)的 "基础设施", 4.0版本的内核中, 强大的 `eBPF` 特性也寄生于 `kprobe` 之上, 所以 `kprobe` 在内核中的地位就可见一斑了.
 
@@ -66,7 +88,7 @@
 
 [kprobe原理解析（一）](http://www.cnblogs.com/honpey/p/4575928.html)
 
-## 3.2. 前端工具systemtap
+## 6.2. 前端工具systemtap
 
 `SystemTap` 是监控和跟踪运行中的 `Linux` 内核的操作的动态方法. 这句话的关键词是动态, 因为 `SystemTap` 没有使用工具构建一个特殊的内核, 而是允许您在运行时动态地安装该工具. 它通过一个 `Kprobes` 的应用编程接口 (`API`) 来实现该目的.
 
@@ -98,9 +120,9 @@
 
 [Linux 下的一个全新的性能测量和调式诊断工具 Systemtap, 第 3 部分: Systemtap](https://www.ibm.com/developerworks/cn/linux/l-cn-systemtap3/)
 
-# 4. kgdb && kgtp
+# 7. kgdb && kgtp
 
-## 4.1. kgdb
+## 7.1. kgdb
 
 *	KDB 和 KGDB 合并, 并进入内核
 
@@ -130,7 +152,7 @@
 
 总结一下 : `kdb` 和 `kgdb` 合并之后，系统中对这两种调试方式几乎没有了明显的界限，比如通过串口进行远程访问的时候，可以使用 `kgdb` 命令, 也可以使用 `kdb` 命令（使用gdb monitor实现）
 
-## 4.2. KGTP
+## 7.2. KGTP
 
 `KGTP` 是一个 实时 轻量级 `Linux` 调试器 和 跟踪器. 使用 `KGTP`
 
@@ -150,7 +172,7 @@ KGTP在Linux内核 2.6.18到upstream 上都被测试过。
 
 [ KGTP中增加对GDB命令“set trace-buffer-size”的支持 - Week 5](http://blog.csdn.net/calmdownba/article/details/38659317)
 
-# 5. perf
+# 8. perf
 
 `Perf` 是用来进行软件性能分析的工具。
 通过它, 应用程序可以利用 `PMU`, `tracepoint` 和内核中的特殊计数器来进行性能统计. 它不但可以分析指定应用程序的性能问题 (`per thread`). 也可以用来分析内核的性能问题, 当然也可以同时分析应用代码和内核，从而全面理解应用程序中的性能瓶颈.
@@ -178,7 +200,7 @@ KGTP在Linux内核 2.6.18到upstream 上都被测试过。
 
 [perf 移植](http://www.cnblogs.com/helloworldtoyou/p/5585152.html)
 
-# 6. LTTng
+# 9. LTTng
 
 `LTTng` 是一个 `Linux` 平台开源的跟踪工具, 是一套软件组件, 可允许跟踪 `Linux` 内核和用户程序, 并控制跟踪会话(开始/停止跟踪、启动/停止事件 等等). 这些组件被绑定如下三个包 :
 
@@ -194,9 +216,9 @@ KGTP在Linux内核 2.6.18到upstream 上都被测试过。
 
 [LTTng and LTTng project](http://blog.csdn.net/ganggexiongqi/article/details/6664331)
 
-# 7. 参考资料
+# 10. 参考资料
 
-## 7.1. 系列文章来源
+## 10.1. 系列文章来源
 
 | CSDN | GitHub |
 |:----:|:------:|
@@ -204,7 +226,7 @@ KGTP在Linux内核 2.6.18到upstream 上都被测试过。
 
 `奔跑吧Linux内核 第6章 内核调试`
 
-## 7.2. 其他参考
+## 10.2. 其他参考
 
 https://www.cnblogs.com/alantu2018/p/8997149.html
 
