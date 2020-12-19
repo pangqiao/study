@@ -1,7 +1,20 @@
 
-# 用户空间与内核空间数据交换的文件系统
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
-内核中有三个常用的**伪文件系统**: `procfs`, `debugfs`和`sysfs`.
+<!-- code_chunk_output -->
+
+- [1. 伪文件系统](#1-伪文件系统)
+- [2. procfs文件系统](#2-procfs文件系统)
+- [3. sysfs文件系统](#3-sysfs文件系统)
+- [4. debugfs文件系统](#4-debugfs文件系统)
+- [5. relayfs文件系统](#5-relayfs文件系统)
+- [6. seq_file](#6-seq_file)
+
+<!-- /code_chunk_output -->
+
+# 1. 伪文件系统
+
+用户空间与内核空间数据交换的文件系统
 
 | 文件系统 | 描述 |
 |:--------:|:-------|
@@ -20,19 +33,19 @@
 
 * `relayfs` 是一个快速的转发 `(relay)` 数据的文件系统, 它以其功能而得名. 它为那些需要从内核空间转发**大量数据**到用户空间的工具和应用提供了**快速有效的转发机制**.
 
-# 2.1. procfs文件系统
+[在 Linux 下用户空间与内核空间数据交换的方式, 第 2 部分: procfs、seq_file、debugfs和relayfs](http://www.ibm.com/developerworks/cn/linux/l-kerns-usrs2/)
 
-* `ProcFs` 介绍
+[Linux 文件系统：procfs, sysfs, debugfs 用法简介](http://www.tinylab.org/show-the-usage-of-procfs-sysfs-debugfs/)
+
+# 2. procfs文件系统
 
 `procfs` 是比较老的一种用户态与内核态的数据交换方式, 内核的很多数据都是通过这种方式出口给用户的, 内核的很多参数也是通过这种方式来让用户方便设置的. 除了 `sysctl` 控制出口到 `/proc` 下的参数, `procfs` 提供的大部分内核参数是**只读**的. 
 
 实际上, 很多应用严重地依赖于procfs, 因此它几乎是必不可少的组件. 前面部分的几个例子实际上已经使用它来出口内核数据, 但是并没有讲解如何使用, 本节将讲解如何使用`procfs`.
 
-* 参考资料
-
 [用户空间与内核空间数据交换的方式(2)------procfs](http://www.cnblogs.com/hoys/archive/2011/04/10/2011141.html)
 
-# 2.2. sysfs文件系统
+# 3. sysfs文件系统
 
 内核子系统或设备驱动可以**直接编译到内核**, 也可以编译成**模块**编译到内核, 使用前一节介绍的方法通过内核启动参数来向它们传递参数, 如果编译成模块, 则可以通过命令行在插入模块时传递参数, 或者在运行时, 通过 `sysfs` 来**设置或读取模块数据**.
 
@@ -47,7 +60,7 @@ mount -t sysfs sysfs /sysfs
 
 [用户空间与内核空间数据交换的方式(6)------模块参数与sysfs](http://www.cnblogs.com/hoys/archive/2011/04/10/2011470.html)
 
-# 2.3. debugfs文件系统
+# 4. debugfs文件系统
 
 内核开发者经常需要向用户空间应用输出一些**调试信息**, 在稳定的系统中可能根本不需要这些调试信息, 但是在开发过程中, 为了搞清楚内核的行为, 调试信息非常必要, printk可能是用的最多的, 但它并不是最好的, 调试信息只是在开发中用于调试, 而 `printk` 将一直输出, 因此开发完毕后需要清除不必要的 `printk` 语句, 另外如果开发者希望用户空间应用能够改变内核行为时, `printk` 就无法实现.
 
@@ -63,22 +76,58 @@ mount -t sysfs sysfs /sysfs
 
 [用户空间与内核空间数据交换的方式(1)------debugfs](http://www.cnblogs.com/hoys/archive/2011/04/10/2011124.html)
 
+[Linux内核里的DebugFS](http://www.cnblogs.com/wwang/archive/2011/01/17/1937609.html)
+
 [Linux驱动调试的Debugfs的使用简介](http://soft.chinabyte.com/os/110/12377610.shtml)
 
-[Linux内核里的DebugFS](http://www.cnblogs.com/wwang/archive/2011/01/17/1937609.html)
+[Linux Debugfs文件系统介绍及使用](http://blog.sina.com.cn/s/blog_40d2f1c80100p7u2.html)
 
 [Debugging the Linux Kernel with debugfs](http://opensourceforu.com/2010/10/debugging-linux-kernel-with-debugfs/)
 
 [debugfs-seq_file](http://lxr.free-electrons.com/source/drivers/base/power/wakeup.c)
 
-[Linux Debugfs文件系统介绍及使用](http://blog.sina.com.cn/s/blog_40d2f1c80100p7u2.html)
-
-[在 Linux 下用户空间与内核空间数据交换的方式, 第 2 部分: procfs、seq_file、debugfs和relayfs](http://www.ibm.com/developerworks/cn/linux/l-kerns-usrs2/)
-
-[Linux 文件系统：procfs, sysfs, debugfs 用法简介](http://www.tinylab.org/show-the-usage-of-procfs-sysfs-debugfs/)
-
-
 [Linux 运用debugfs调试方法](http://www.xuebuyuan.com/1023006.html)
+
+# 5. relayfs文件系统
+
+`relayfs` 是一个快速的转发(`relay`)数据的文件系统, 它以其功能而得名. 它为那些需要从内核空间转发大量数据到用户空间的工具和应用提供了快速有效的转发机制.
+
+`Channel` 是 `relayfs` 文件系统定义的一个主要概念, 每一个 `channel` 由一组内核缓存组成, 每一个 `CPU` 有一个对应于该 `channel` 的内核缓存, 每一个内核缓存用一个在 `relayfs` 文件系统中的文件文件表示, 内核使用 `relayfs` 提供的写函数把需要转发给用户空间的数据快速地写入当前 `CPU` 上的 `channel` 内核缓存, 用户空间应用通过标准的文件 `I/` O函数在对应的 `channel` 文件中可以快速地取得这些被转发出的数据 `mmap` 来. 写入到 `channel` 中的数据的格式完全取决于内核中创建`channel` 的模块或子系统.
+
+`relayfs` 的用户空间`API` :
+
+`relayfs` 实现了四个标准的文件 `I/O` 函数, `open、mmap、poll和close`
+
+| 函数 | 描述 |
+|:---:|:----:|
+| `open` | 打开一个 `channel` 在某一个 `CPU` 上的缓存对应的文件. |
+| `mmap` | 把打开的 `channel` 缓存映射到调用者进程的内存空间. |
+| `read` | 读取 `channel` 缓存, 随后的读操作将看不到被该函数消耗的字节, 如果 `channel` 的操作模式为非覆盖写, 那么用户空间应用在有内核模块写时仍可以读取, 但是如 `channel` 的操作模式为覆盖式, 那么在读操作期间如果有内核模块进行写，结果将无法预知, 因此对于覆盖式写的 `channel`, 用户应当在确认在 `channel` 的写完全结束后再进行读. |
+| poll | 用于通知用户空间应用转发数据跨越了子缓存的边界, 支持的轮询标志有 `POLLIN`、`POLLRDNORM` 和 `POLLERR` |
+| `close` | 关闭 `open` 函数返回的文件描述符, 如果没有进程或内核模块打开该 `channel` 缓存, `close` 函数将释放该`channel` 缓存 |
+
+>注意 : 用户态应用在使用上述 `API` 时必须保证已经挂载了 `relayfs` 文件系统, 但内核在创建和使用 `channel`时不需要`relayfs` 已经挂载. 下面命令将把 `relayfs` 文件系统挂载到 `/mnt/relay`.
+
+[用户空间与内核空间数据交换的方式(4)------relayfs](http://www.cnblogs.com/hoys/archive/2011/04/10/2011270.html)
+
+[Relay：一种内核到用户空间的高效数据传输技术](https://www.ibm.com/developerworks/cn/linux/l-cn-relay/)
+
+# 6. seq_file
+
+一般地, 内核通过在 `procfs` 文件系统下建立文件来向用户空间提供输出信息, 用户空间可以通过任何文本阅读应用查看该文件信息, 但是 `procfs` 有一个缺陷, 如果输出内容大于1个内存页, 需要多次读, 因此处理起来很难, 另外, 如果输出太大, 速度比较慢, 有时会出现一些意想不到的情况, `Alexander Viro` 实现了一套新的功能, 使得内核输出大文件信息更容易, 该功能出现在 `2.4.15`(包括 `2.4.15`)以后的所有 `2.4` 内核以及 `2.6` 内核中, 尤其是在 `2.6` 内核中，已经大量地使用了该功能
+
+[用户空间与内核空间数据交换的方式(3)------seq_file](http://www.cnblogs.com/hoys/archive/2011/04/10/2011261.html)
+
+[内核proc文件系统与seq接口（4）---seq_file接口编程浅析](http://blog.chinaunix.net/uid-20543672-id-3235254.html)
+
+[Linux内核中的seq操作](http://www.cnblogs.com/qq78292959/archive/2012/06/13/2547335.html)
+
+[seq_file源码分析](http://www.cppblog.com/csjiaxin/articles/136681.html)
+
+[用序列文件(seq_file)接口导出常用数据结构](http://blog.chinaunix.net/uid-317451-id-92670.html)
+
+[seq_file机制](http://blog.csdn.net/a8039974/article/details/24052619)
+
 
 误删恢复
 
