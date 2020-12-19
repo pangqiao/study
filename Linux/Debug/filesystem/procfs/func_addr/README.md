@@ -37,8 +37,7 @@ grep ffffffff811fdb90 /boot/System.map-4.4.0-72-generic
 
 ![system_map](system_map.png)
 
-#2	使用 nm 命令读取 vmlinux 的信息
--------
+# 使用 nm 命令读取 vmlinux 的信息
 
 ```cpp
 nm /usr/lib/debug/boot/vmlinux-4.4.0-72-generic | grep perf_trace_do_sys_open
@@ -50,8 +49,7 @@ nm /usr/lib/debug/boot/vmlinux-4.4.0-72-generic | grep ffffffff811fdb90
 
 
 
-#3	从 /proc/kallsyms 文件获得地址
--------
+# 从 /proc/kallsyms 文件获得地址
 
 ```cpp
 cat /proc/kallsyms | grep perf_trace_do_sys_open
@@ -61,8 +59,7 @@ cat /proc/kallsyms | grep ffffffff811fdb90
 
 ![proc_kallsyms](proc_kallsyms.png )
 
-#4	使用内核函数接口
--------
+# 使用内核函数接口
 
 *	已知内核符号，获取内核符号地址
 

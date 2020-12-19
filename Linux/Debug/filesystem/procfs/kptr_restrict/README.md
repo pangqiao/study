@@ -5,18 +5,7 @@ kptr_restrict 向用户空间内核中的指针(/proc/kallsyms-modules显示valu
 |:----:|:------:|
 | [kptr_restrict 向用户空间内核中的指针(/proc/kallsyms-modules显示value全部为0)](http://blog.csdn.net/gatieme) | [`LinuxDeviceDrivers/study/debug/filesystem/procfs/kptr_restrict`](https://github.com/gatieme/LDD-LinuxDeviceDrivers/tree/master/study/debug/filesystem/procfs/kptr_restrict) |
 
-<br>
-
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a>
-
-本作品采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可, 转载请注明出处, 谢谢合作
-
-因本人技术水平和知识面有限, 内容如有纰漏或者需要修正的地方, 欢迎大家指正, 也欢迎大家提供一些其他好的调试工具以供收录, 鄙人在此谢谢啦
-
-<br>
-
-#1	/proc/kallsyms显示value全部为0
--------
+# /proc/kallsyms显示value全部为0
 
 今天一个同事问我 `cat /proc/kallsyms` 显示 `value` 全部为 `0`. 我在手机端试了一下, 果然如此.
 
