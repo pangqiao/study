@@ -294,7 +294,7 @@ module_exit(book_exit);
 
 [linux设备驱动学习笔记--内核调试方法之printk](http://blog.csdn.net/itsenlin/article/details/43205983)
 
-[内核日志及printk结构浅析 ](http://blog.chinaunix.net/uid-26993600-id-3252420.html)
+[内核日志及printk结构浅析](http://blog.chinaunix.net/uid-26993600-id-3252420.html)
 
 [驱动程序调试方法之printk——printk的原理与直接使用](http://www.cnblogs.com/lidabo/p/5414007.html)
 
