@@ -53,7 +53,7 @@
 | 文件系统 | 描述 |
 |:--------:|:-------|
 | procfs   | The proc filesystem is a pseudo-filesystem which provides an interface to kernel data structures. |
-| sysfs    | The filesystem for exporting kernel objects.                                                      |
+| sysfs    | The filesystem for exporting kernel objects. |
 | debugfs  | Debugfs exists as a simple way for kernel developers to make information available to user space. |
 | relayfs  | A significantly streamlined version of relayfs was recently accepted into the -mm kernel tree.    |
 
