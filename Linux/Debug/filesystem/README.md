@@ -1,6 +1,23 @@
 
 
+内核中有三个常用的**伪文件系统**: `procfs`, `debugfs`和`sysfs`.
 
+| 文件系统 | 描述 |
+|:--------:|:-------|
+| procfs   | The proc filesystem is a pseudo-filesystem which provides an interface to kernel data structures. |
+| sysfs    | The filesystem for exporting kernel objects. |
+| debugfs  | Debugfs exists as a simple way for kernel developers to make information available to user space. |
+| relayfs  | A significantly streamlined version of relayfs was recently accepted into the -mm kernel tree.    |
+
+它们都用于Linux内核和用户空间的数据交换, 但是适用的场景有所差异：
+
+* `procfs` 历史最早, 最初就是用来跟内核交互的唯一方式, 用来获取**处理器**、**内存**、**设备驱动**、**进程**等各种信息.
+
+* `sysfs` 跟 `kobject` 框架紧密联系, 而 `kobject` 是为**设备驱动模型**而存在的, 所以 `sysfs` 是为**设备驱动**服务的.
+
+* `debugfs` 从名字来看就是为 `debug` 而生, 所以更加灵活.
+
+* `relayfs` 是一个快速的转发 `(relay)` 数据的文件系统, 它以其功能而得名. 它为那些需要从内核空间转发**大量数据**到用户空间的工具和应用提供了**快速有效的转发机制**.
 
 [Linux内核里的DebugFS](http://www.cnblogs.com/wwang/archive/2011/01/17/1937609.html)
 
