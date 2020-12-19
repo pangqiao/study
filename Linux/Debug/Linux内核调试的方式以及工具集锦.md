@@ -346,6 +346,10 @@ KGTP在Linux内核 2.6.18到upstream 上都被测试过。
 
 ## 9.2. 其他参考
 
+https://www.cnblogs.com/alantu2018/p/8997149.html
+
+https://www.osetc.com/archives/7236.html
+
 [Linux内核调试方法](http://www.cnblogs.com/shineshqw/articles/2359114.html)
 
 [choose-a-linux-traccer](http://www.brendangregg.com/blog/2015-07-08/choosing-a-linux-traccer.html), [中英文对照](http://www.oschina.net/translate/choossing-a-linux-tracer?cmp)
