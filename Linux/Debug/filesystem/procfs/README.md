@@ -1,8 +1,11 @@
 
-http://blog.chinaunix.net/uid-26941022-id-3223594.html
+* 内核proc文件系统与seq接口（2）---内核proc文件系统编程接口: http://blog.chinaunix.net/uid-26941022-id-3223594.html
 
-http://blog.csdn.net/njuitjf/article/details/16940865
+* 内核proc文件系统与seq接口（4）---seq_file接口编程浅析: http://blog.chinaunix.net/uid-28253945-id-3382865.html
 
-http://blog.chinaunix.net/uid-28253945-id-3382865.html
+ubuntu/linux mint 创建proc文件的三种方法
+* ubuntu/linux mint 创建proc文件的三种方法（一）: https://blog.csdn.net/a_ran/article/details/37626765
+* ubuntu/linux mint 创建proc文件的三种方法（二）: https://blog.csdn.net/a_ran/article/details/37629899
+* ubuntu/linux mint 创建proc文件的三种方法（三）: http://blog.csdn.net/a_ran/article/details/37630101
 
-http://blog.csdn.net/a_ran/article/details/37630101
+proc_create的使用方法: http://blog.csdn.net/njuitjf/article/details/16940865
