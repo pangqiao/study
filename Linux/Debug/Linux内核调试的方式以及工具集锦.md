@@ -70,7 +70,7 @@ ftrace 是 Linux当前版本中, 功能最强大的调试、跟踪手段.
 
 ## 6.1. 内核kprobe机制
 
-kprobe是其他一些高级调试工具(比如`perf`和`systemtap`)
+kprobe是其他一些高级调试工具(比如`perf`和`systemtap`)的 "基础设施", 4.0版本的内核中, 强大的 `eBPF` 特性也寄生于 `kprobe` 之上.
 
 ## 6.2. 前端工具systemtap
 
