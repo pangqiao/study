@@ -70,6 +70,8 @@ ftrace 是 Linux当前版本中, 功能最强大的调试、跟踪手段.
 
 ## 6.1. 内核kprobe机制
 
+kprobe是其他一些高级调试工具(比如`perf`和`systemtap`)
+
 ## 6.2. 前端工具systemtap
 
 `SystemTap` 是监控和跟踪运行中的 `Linux` 内核的操作的动态方法. 这句话的关键词是动态, 因为 `SystemTap` 没有使用工具构建一个特殊的内核, 而是允许您在运行时动态地安装该工具. 它通过一个 `Kprobes` 的应用编程接口 (`API`) 来实现该目的.
