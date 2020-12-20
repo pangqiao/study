@@ -1,3 +1,27 @@
+
+
+# 简介
+
+`kprobe` 是 `linux` 内核的一个重要特性, 是一个轻量级的内核调试工具, 同时它又是其他一些更高级的内核调试工具(比如 `perf` 和 `systemtap`)的 "基础设施", 4.0版本的内核中, 强大的 `eBPF` 特性也寄生于 `kprobe` 之上, 所以 `kprobe` 在内核中的地位就可见一斑了.
+
+`Kprobes` 提供了一个强行进入任何内核例程并从中断处理器无干扰地收集信息的接口. 使用 `Kprobes` 可以收集处理器寄存器和全局数据结构等调试信息。开发者甚至可以使用 `Kprobes` 来修改 寄存器值和全局数据结构的值.
+
+如何高效地调试内核?
+
+`printk` 是一种方法, 但是 `printk` 终归是毫无选择地全量输出, 某些场景下不实用, 于是你可以试一下`tracepoint`, 我使能 `tracepoint` 机制的时候才输出. 对于傻傻地放置 `printk` 来输出信息的方式, `tracepoint` 是个进步, 但是 `tracepoint` 只是内核在某些特定行为(比如进程切换)上部署的一些静态锚点, 这些锚点并不一定是你需要的, 所以你仍然需要自己部署`tracepoint`, 重新编译内核. 那么 `kprobe` 的出现就很有必要了, 它可以在运行的内核中动态插入探测点, 执行你预定义的操作.
+
+它的基本工作机制是: 用户指定一个探测点, 并把一个用户定义的处理函数关联到该探测点, 当内核执行到该探测点时, 相应的关联函数被执行，然后继续执行正常的代码路径.
+
+`kprobe` 实现了三种类型的探测点 : `kprobes`, `jprobes`和 `kretprobes`(也叫返回探测点). `kprobes` 是可以被插入到内核的任何指令位置的探测点, `jprobes` 则只能被插入到一个内核函数的入口, 而 `kretprobes` 则是在指定的内核函数返回时才被执行.
+
+[kprobe工作原理](http://blog.itpub.net/15480802/viewspace-1162094/)
+
+[随想录(强大的kprobe)](http://blog.csdn.net/feixiaoxing/article/details/40351811)
+
+[kprobe原理解析（一）](http://www.cnblogs.com/honpey/p/4575928.html)
+
+
+
 https://www.ibm.com/developerworks/cn/linux/l-cn-systemtap1/
 
 
