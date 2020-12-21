@@ -99,25 +99,6 @@ kprobe是隐藏在诸多技术后的一个**基础组件**，例如`ftrace`、`p
 
 
 
-
-[SystemTap 学习笔记 - 安装篇](https://segmentfault.com/a/1190000000671438)
-
-[Linux 自检和 SystemTap 用于动态内核分析的接口和语言](https://www.ibm.com/developerworks/cn/linux/l-systemtap/)
-
-[Brendan's blog Using SystemTap](http://dtrace.org/blogs/brendan/2011/10/15/using-systemtap/)
-
-[内核调试神器SystemTap — 简介与使用（一）](http://blog.csdn.net/zhangskd/article/details/25708441)
-
-[内核探测工具systemtap简介](http://www.cnblogs.com/hazir/p/systemtap_introduction.html)
-
-[SystemTap Beginner](http://blog.csdn.net/kafeiflynn/article/details/6429976)
-
-[使用systemtap调试linux内核](http://blog.csdn.net/heli007/article/details/7187748)
-
-[Ubuntu Kernel Debuginfo](http://ddebs.ubuntu.com/pool/main/l/linux)
-
-[Linux 下的一个全新的性能测量和调式诊断工具 Systemtap, 第 3 部分: Systemtap](https://www.ibm.com/developerworks/cn/linux/l-cn-systemtap3/)
-
 # 7. kgdb && kgtp
 
 ## 7.1. kgdb
