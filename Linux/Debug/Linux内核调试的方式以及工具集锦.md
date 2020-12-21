@@ -94,7 +94,7 @@ kprobe是隐藏在诸多技术后的一个**基础组件**，例如`ftrace`、`p
 
 ## 6.2. 前端工具systemtap
 
-
+systemtap 利用Kprobe 提供的API来实现**动态**地**监控和跟踪运行中！！！的Linux内核**的工具.
 
 
 
