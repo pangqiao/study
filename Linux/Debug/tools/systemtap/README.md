@@ -1,5 +1,32 @@
 
 
+
+`SystemTap` 是监控和跟踪运行中的 `Linux` 内核的操作的动态方法. 这句话的关键词是**动态**, 因为 `SystemTap` 没有使用工具构建一个特殊的内核, 而是允许您在运行时**动态地安装该工具**. 它通过 `Kprobes` 的应用编程接口 (`API`) 来实现该目的.
+
+## Solaris中的DTrace
+
+`SystemTap` 与一种名为 `DTrace` 的老技术相似，`DTrace`技术源于 `Sun Solaris` 操作系统. 在 `DTrace` 中, 开发人员可以用 **D 编程语言**(`C` 语言的子集, 但修改为**支持跟踪行为**)编写脚本. `DTrace` 脚本包含**许多探针**和**相关联的操作**, 这些操作在探针 "触发" 时发生. 例如, 探针可以表示简单的系统调用，也可以表示更加复杂的交互，比如执行特定的代码行
+
+`DTrace` 是 `Solaris` 最引人注目的部分, 所以在其他操作系统中开发它并不奇怪. `DTrace` 是在 `Common Development and Distribution License (CDDL)` 之下发行的, 并且被移植到 `FreeBSD` 操作系统中.
+
+## IBM AIX中的ProbeVue
+
+另一个非常有用的内核跟踪工具是 `ProbeVue`, 它是 `IBM` 为 `IBM® AIX®` 操作系统 `6.1` 开发的. 您可以使用 `ProbeVue` 探查**系统**的**行为**和**性能**, 以及提供**特定进程的详细信息**. 这个工具使用一个标准的内核**以动态的方式进行跟踪**.
+
+## Linux中的SystemTap
+
+考虑到 `DTrace` 和 `ProbeVue` 在各自的操作系统中的巨大作用, 为 `Linux` 操作系统策划一个实现该功能的开源项目是势不可挡的. `SystemTap` 从 `2005` 年开始开发, 它提供与 `DTrace` 和 `ProbeVue` 类似的功能. 许多社区还进一步完善了它, 包括 `Red Hat`、`Intel`、`Hitachi` 和 `IBM` 等.
+
+这些解决方案在功能上都是类似的, 在**触发探针**时**使用探针**和**相关联的操作脚本**.
+
+![2020-12-21-21-32-30.png](./images/2020-12-21-21-32-30.png)
+
+
+
+
+
+
+
 http://ddebs.ubuntu.com/pool/main/l/linux/
 
 * Linux 下的一个全新的性能测量和调式诊断工具 Systemtap，第 1 部分, kprobe, kprobe 的原理、编程接口、局限性和使用注意事项: https://www.ibm.com/developerworks/cn/linux/l-cn-systemtap1/

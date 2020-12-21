@@ -8,6 +8,8 @@
 - [3. 用户空间与内核空间数据交换的文件系统](#3-用户空间与内核空间数据交换的文件系统)
 - [4. printk](#4-printk)
 - [5. ftrace && trace-cmd](#5-ftrace-trace-cmd)
+  - [5.1. ftrace](#51-ftrace)
+  - [5.2. trace-cmd](#52-trace-cmd)
 - [6. Kprobe && systemtap](#6-kprobe-systemtap)
   - [6.1. 内核kprobe机制](#61-内核kprobe机制)
   - [6.2. 前端工具systemtap](#62-前端工具systemtap)
@@ -64,7 +66,17 @@
 
 # 5. ftrace && trace-cmd
 
+见``
+
+## 5.1. ftrace
+
 ftrace 是 Linux当前版本中, 功能最强大的调试、跟踪手段.
+
+提供了动态探测点(函数)和静态探测点(`tracepoint`).
+
+## 5.2. trace-cmd
+
+`trace-cmd` 和 开源的 `kernelshark`(GUI工具) 均是内核`Ftrace` 的前段工具, 用于分分析核性能.
 
 # 6. Kprobe && systemtap
 
@@ -74,23 +86,19 @@ ftrace 是 Linux当前版本中, 功能最强大的调试、跟踪手段.
 
 1. `printk` 终归是毫无选择地全量输出, 某些场景下不实用, 可以使用`tracepoint`, **只有使能** `tracepoint` 机制的时候才输出.
 2. `tracepoint`只是一些**静态锚点**, 有些锚点并不一定是你需要的, 但是你仍然需要自己部署`tracepoint`, **重新编译内核**. 
-3. kprobe在运行的内核中**动态插入探测点**, 执行你**预定义的操作**.
+3. `kprobe`在运行的内核中**动态插入探测点**, 执行你**预定义的操作**.
 
-kprobe是其他一些高级调试工具(比如`perf`和`systemtap`)的 "基础设施", 4.0版本的内核中, 强大的 `eBPF` 特性也寄生于 `kprobe` 之上.
+kprobe是隐藏在诸多技术后的一个**基础组件**，例如`ftrace`、`perf`、`SystemTap`、`LTTng`, 还有最近非常火热的`ebpf`.
+
+详细见`./kprobe`
 
 ## 6.2. 前端工具systemtap
 
-`SystemTap` 是监控和跟踪运行中的 `Linux` 内核的操作的动态方法. 这句话的关键词是动态, 因为 `SystemTap` 没有使用工具构建一个特殊的内核, 而是允许您在运行时动态地安装该工具. 它通过一个 `Kprobes` 的应用编程接口 (`API`) 来实现该目的.
 
-`SystemTap` 与一种名为 `DTrace` 的老技术相似，该技术源于 `Sun Solaris` 操作系统. 在 `DTrace` 中, 开发人员可以用 `D` 编程语言(`C` 语言的子集, 但修改为支持跟踪行为)编写脚本. `DTrace` 脚本包含许多探针和相关联的操作, 这些操作在探针 "触发" 时发生. 例如, 探针可以表示简单的系统调用，也可以表示更加复杂的交互，比如执行特定的代码行
 
-`DTrace` 是 `Solaris` 最引人注目的部分, 所以在其他操作系统中开发它并不奇怪. `DTrace` 是在 `Common Development and Distribution License (CDDL)` 之下发行的, 并且被移植到 `FreeBSD` 操作系统中.
 
-另一个非常有用的内核跟踪工具是 `ProbeVue`, 它是 `IBM` 为 `IBM® AIX®` 操作系统 `6.1` 开发的. 您可以使用 `ProbeVue` 探查系统的行为和性能, 以及提供特定进程的详细信息. 这个工具使用一个标准的内核以动态的方式进行跟踪.
 
-考虑到 `DTrace` 和 `ProbeVue` 在各自的操作系统中的巨大作用, 为 `Linux` 操作系统策划一个实现该功能的开源项目是势不可挡的. `SystemTap` 从 `2005` 年开始开发, 它提供与 `DTrace` 和 `ProbeVue` 类似的功能. 许多社区还进一步完善了它, 包括 `Red Hat`、`Intel`、`Hitachi` 和 `IBM` 等.
 
-这些解决方案在功能上都是类似的, 在触发探针时使用探针和相关联的操作脚本.
 
 [SystemTap 学习笔记 - 安装篇](https://segmentfault.com/a/1190000000671438)
 
