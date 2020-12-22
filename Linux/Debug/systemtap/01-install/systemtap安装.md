@@ -1,11 +1,11 @@
 
-摘要 : `SYSTEMTAP` 是内核开发者必备的工具, 通过自动化的 `kprobe`, 而这个软件依赖于**内核符号表/调试信息/内核头文件**等等, 如果我们想测试最新的内核特性, 就需要安装带有 `debuginfo` 的内核和相关头文件. 而我们源仓库中自带的`systemtap` 很多时候, 因为版本和内核符号表的变动, 在新的内核中无法运行, 因此很多情况下我们需要自己编译 `systemtap`.
+摘要 : `SYSTEMTAP` 是内核开发者必备的工具, 通过自动化的 `kprobe`, 而这个软件依赖于**内核符号表**/**调试信息**/**内核头文件**等等, 如果我们想测试最新的内核特性, 就需要安装带有 `debuginfo` 的内核和**相关头文件**. 而我们源仓库中自带的`systemtap` 很多时候, 因为版本和内核符号表的变动, 在新的内核中无法运行, 因此很多情况下我们需要自己编译 `systemtap`.
 
 # 使用和编译Systemtap的依赖包
 
 本文主要讲解了 `ubuntu` 上如果在自己编译的内核下编译安装使用 `systemtap`.
 
-我们从`systemtap`的工作原来来分析, 其可能需要的依赖和配置
+我们从`systemtap`的工作原理来分析, 其可能需要的依赖和配置
 
 `Systemtap` 工作原理是, 参见[1.5 The stap command](https://sourceware.org/systemtap/langref/SystemTap_overview.html)
 
