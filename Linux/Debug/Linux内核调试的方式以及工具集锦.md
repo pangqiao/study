@@ -108,53 +108,7 @@ systemtap 利用Kprobe 提供的API来实现**动态**地**监控和跟踪运行
 
 ## 7.1. kgdb
 
-*	KDB 和 KGDB 合并, 并进入内核
-
-`KGDB` 是大名鼎鼎的内核调试工具, 他是由 `KDB` 和 `KGDB` 项目合并而来.
-
-`kdb` 是一个Linux系统的内核调试器, 它是由SGI公司开发的遵循GPL许可证的开放源码调试工具. `kdb` 嵌入在`Linux` 内核中. 为内核&&驱动程序员提供调试手段. 它适合于调试内核空间的程序代码. 譬如进行设备驱动程序调试. 内核模块的调试等.
-
-`kgdb` 和 `kdb` 现在已经合并了. 对于一个正在运行的`kgdb` 而言, 可以使用 `gdbmonitor` 命令来使用 `kdb` 命令. 比如
-
-```cpp
-(gdb)gdb monitor ps -A
-```
-
-就可以运行 `kdb` 的 `ps` 命令了.
-
-分析一下 `kdb` 补丁和合入主线的 `kdb` 有啥不同
-
-`kdb`跟 `kgdb` 合并之后, 也可以使用 `kgdb` 的`IO` 驱动(比如键盘), 但是同时也 `kdb`也丧失了一些功能. 合并之后的`kdb`不在支持汇编级的源码调试. 因此它现在也是平台独立的.
-
-1.	kdump和kexec已经被移除。
-
-2.	从/proc/meninfo中获取的信息比以前少了。
-
-3.	bt命令现在使用的是内核的backtracer，而不是kdb原来使用的反汇编。
-
-4.	合并之后的kdb不在具有原来的反汇编（id命令）
-
-总结一下 : `kdb` 和 `kgdb` 合并之后，系统中对这两种调试方式几乎没有了明显的界限，比如通过串口进行远程访问的时候，可以使用 `kgdb` 命令, 也可以使用 `kdb` 命令（使用gdb monitor实现）
-
 ## 7.2. KGTP
-
-`KGTP` 是一个 实时 轻量级 `Linux` 调试器 和 跟踪器. 使用 `KGTP`
-
-使用 `KGTP` 不需要在 `Linux` 内核上打 `PATCH` 或者重新编译, 只要编译KGTP模块并 `insmod` 就可以.
-
-其让 `Linux` 内核提供一个远程 `GDB` 调试接口, 于是在本地或者远程的主机上的GDB可以在不需要停止内核的情况下用 `GDB tracepoint` 和其他一些功能 调试 和 跟踪 `Linux`.
-
-即使板子上没有 `GDB` 而且其没有可用的远程接口, `KGTP` 也可以用离线调试的功能调试内核（见http://code.google.com/p/kgtp/wiki/HOWTOCN#/sys/kernel/debug/gtpframe和离线调试）。
-
-KGTP支持 X86-32 ， X86-64 ， MIPS 和 ARM 。
-KGTP在Linux内核 2.6.18到upstream 上都被测试过。
-而且还可以用在 Android 上(见 [HowToUseKGTPinAndroid](http://code.google.com/p/kgtp/wiki/HowToUseKGTPinAndroid))
-
-[github-KGTP](https://github.com/teawater/kgtp)
-
-[KGTP内核调试使用](http://blog.csdn.net/djinglan/article/details/15335653)
-
-[ KGTP中增加对GDB命令“set trace-buffer-size”的支持 - Week 5](http://blog.csdn.net/calmdownba/article/details/38659317)
 
 # 8. perf
 
