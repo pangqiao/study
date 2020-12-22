@@ -7,7 +7,7 @@
 
 我们从`systemtap`的工作原理来分析, 其可能需要的依赖和配置
 
-`Systemtap` 工作原理是, 参见[1.5 The stap command](https://sourceware.org/systemtap/langref/SystemTap_overview.html)
+`Systemtap` 工作原理是, 参见[1.5 The stap command](https://sourceware.org/systemtap/langref/1_SystemTap_overview.html)
 
 1. 通过`stap`工具将脚本语句翻译成`C`语句, 编译成内核模块
 2. 模块加载之后, 将所有探测的事件以钩子的方式挂到内核上, 当任何处理器上的某个事件发生时, 相应钩子上句柄就会被执行
