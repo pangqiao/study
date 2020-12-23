@@ -15,7 +15,7 @@
   - [6.2. 前端工具systemtap](#62-前端工具systemtap)
 - [7. kgdb && kgtp](#7-kgdb-kgtp)
   - [7.1. kgdb](#71-kgdb)
-  - [7.2. KGTP](#72-kgtp)
+  - [7.2. kgtp](#72-kgtp)
 - [8. perf](#8-perf)
 - [9. LTTng](#9-lttng)
 - [10. 参考资料](#10-参考资料)
@@ -108,29 +108,27 @@ systemtap 利用Kprobe 提供的API来实现**动态**地**监控和跟踪运行
 
 ## 7.1. kgdb
 
-## 7.2. KGTP
+详细见`./kgdb/`
+
+## 7.2. kgtp
+
+详细见`./kgtp/`
 
 # 8. perf
 
 `Perf` 是用来进行软件性能分析的工具。
-通过它, 应用程序可以利用 `PMU`, `tracepoint` 和内核中的特殊计数器来进行性能统计. 它不但可以分析指定应用程序的性能问题 (`per thread`). 也可以用来分析内核的性能问题, 当然也可以同时分析应用代码和内核，从而全面理解应用程序中的性能瓶颈.
 
-最初的时候, 它叫做 `Performance counter`, 在 `2.6.31` 中第一次亮相. 此后他成为内核开发最为活跃的一个领域. 在 `2.6.32` 中它正式改名为 `Performance Event`, 因为 `perf` 已不再仅仅作为 `PMU` 的抽象, 而是能够处理所有的性能相关的事件.
+它提供一个**性能分析框架**，它以**性能事件**为基础，基于**对这些事件！！！采样！！！** 进行**性能统计**原理，可用于性能瓶颈的查找与热点代码的定位. 
 
-使用 `perf`, 您可以分析程序运行期间发生的硬件事件，比如 `instructions retired` , `processor clock  cycles` 等; 您也可以分析软件事件, 比如 `Page Fault` 和进程切换。
-这使得 `Perf` 拥有了众多的性能分析能力, 举例来说，使用 `Perf` 可以计算每个时钟周期内的指令数, 称为 `IPC`, `IPC` 偏低表明代码没有很好地利用 `CPU`.
+**采样的周期**以**事件的数量来表示**，而**非基于时间**。当**目标事件计数溢出指定的数值！！！**，则**产生一个采样**。
 
-`Perf` 还可以对程序进行函数级别的采样, 从而了解程序的性能瓶颈究竟在哪里等等. `Perf` 还可以替代 `strace`, 可以添加动态内核 `probe` 点. 还可以做 `benchmark` 衡量调度器的好坏.
 
-人们或许会称它为进行性能分析的"瑞士军刀", 但我不喜欢这个比喻, 我觉得 `perf` 应该是一把世间少有的倚天剑.
-金庸笔下的很多人都有对宝刀的癖好, 即便本领低微不配拥有, 但是喜欢, 便无可奈何. 我恐怕正如这些人一样, 因此进了酒馆客栈, 见到相熟或者不相熟的人, 就要兴冲冲地要讲讲那倚天剑的故事.
 
 [Perf -- Linux下的系统性能调优工具，第 1 部分](https://www.ibm.com/developerworks/cn/linux/l-cn-perf1/index.html)
 
 [perf Examples](http://www.brendangregg.com/perf.html)
 
-改进版的perf, [Performance analysis tools based on Linux perf_events (aka perf) and ftrace
-](https://github.com/brendangregg/perf-tools)
+改进版的perf, [Performance analysis tools based on Linux perf_events (aka perf) and ftrace](https://github.com/brendangregg/perf-tools)
 
 [Perf使用教程](http://blog.chinaunix.net/uid-10540984-id-3854969.html)
 
