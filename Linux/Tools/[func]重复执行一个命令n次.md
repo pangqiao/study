@@ -13,6 +13,8 @@ function run() {
     shift
     for n in $(seq $number); do
       $@
+    echo ""
+    echo "------------ $n end ----------------"
     done
 }
 ```
