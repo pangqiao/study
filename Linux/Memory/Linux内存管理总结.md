@@ -130,7 +130,7 @@
   - [11.1 \_\_alloc\_pages\_may\_oom()触发OOM killer机制](#111-__alloc_pages_may_oom触发oom-killer机制)
     - [11.1.1 out\_of\_memory()](#1111-out_of_memory)
       - [11.1.1.1 select\_bad\_process()选择进程](#11111-select_bad_process选择进程)
-      - [11.1.1.2 oom\_kill\_process()进行kill操作](#11112-oom_kill_process进行kill操作)
+      - [11.1.1.2 oom_kill_process()进行kill操作](#11112-oom_kill_process进行kill操作)
 - [12 slab slob slub分配器](#12-slab-slob-slub分配器)
   - [12.1 操作接口](#121-操作接口)
   - [12.2 内核中的内存管理](#122-内核中的内存管理)
@@ -3825,7 +3825,7 @@ Linux系统内存管理中存在着一个称之为OOM killer（Out\-Of\-Memory k
 
 由此可知，**分值越低**的则**越不会被kill**，而且该值可以通过**修改oom\_score\_adj进行调整**。
 
-#### 11.1.1.2 oom\_kill\_process()进行kill操作
+#### 11.1.1.2 oom_kill_process()进行kill操作
 
 判断**当前被kill的进程情况**，如果该进程处于**退出状态**，则设置**TIF\_MEMDIE标志**，不做kill操作；
 
