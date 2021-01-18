@@ -130,7 +130,7 @@
   - [11.1 \_\_alloc\_pages\_may\_oom()触发OOM killer机制](#111-__alloc_pages_may_oom触发oom-killer机制)
     - [11.1.1 out\_of\_memory()](#1111-out_of_memory)
       - [11.1.1.1 select\_bad\_process()选择进程](#11111-select_bad_process选择进程)
-      - [11.1.1.2 oom_kill_process()进行kill操作](#11112-oom_kill_process进行kill操作)
+      - [oom_kill_process()进行kill操作](#oom_kill_process进行kill操作)
 - [12 slab slob slub分配器](#12-slab-slob-slub分配器)
   - [12.1 操作接口](#121-操作接口)
   - [12.2 内核中的内存管理](#122-内核中的内存管理)
@@ -198,7 +198,7 @@
   - [21.2 小结](#212-小结)
 - [22 缺页异常处理](#22-缺页异常处理)
   - [22.1 缺页异常初始化](#221-缺页异常初始化)
-  - [22.2 do\_page\_fault()](#222-do_page_fault)
+  - [22.2 do_page_fault()](#222-do_page_fault)
   - [22.3 内核空间异常处理](#223-内核空间异常处理)
   - [22.4 用户空间异常处理](#224-用户空间异常处理)
   - [22.x 小结](#22x-小结)
@@ -3825,7 +3825,7 @@ Linux系统内存管理中存在着一个称之为OOM killer（Out\-Of\-Memory k
 
 由此可知，**分值越低**的则**越不会被kill**，而且该值可以通过**修改oom\_score\_adj进行调整**。
 
-#### 11.1.1.2 oom_kill_process()进行kill操作
+#### oom_kill_process()进行kill操作
 
 判断**当前被kill的进程情况**，如果该进程处于**退出状态**，则设置**TIF\_MEMDIE标志**，不做kill操作；
 
@@ -6055,7 +6055,7 @@ set\_intr\_gate()是一个宏定义。
 
 异常处理函数是do\_page\_fault()
 
-## 22.2 do\_page\_fault()
+## 22.2 do_page_fault()
 
 **缺页中断处理**的核心函数是**do\_page\_fault**(),该函数的实现和**具体的体系结构**相关。
 
