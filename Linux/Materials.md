@@ -8,6 +8,8 @@
 * Kernel网站: https://kernelnewbies.org/
 * 如何加入Linux内核开发社区: https://tonybai.com/2012/03/27/how-to-participate-linux-community-section-1/
 
+https://www.jeanleo.com/
+
 * 博客站: http://www.kerneltravel.net/
 
 - 代码阅读
