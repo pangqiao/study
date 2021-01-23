@@ -102,6 +102,8 @@ Linux内核之旅: http://www.kerneltravel.net/
 
 Linux内核初学者仓库: git@github.com:ljrkernel/LearningLinuxKernel.git
 
+Linux全功能学习: https://github.com/cirosantilli/linux-kernel-module-cheat
+
 kthread_worker 和 kthread_work: https://blog.csdn.net/qqliyunpeng/article/details/53931350
 
 

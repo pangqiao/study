@@ -103,6 +103,13 @@ auth 25415058 subscribe linux-pm xxx@xxx.com
 
 注2：订阅邮箱尽量使用正常邮箱，比如工作邮箱。有些邮箱，如qq邮箱，可能会订阅失败。另外，一旦订阅成功，一定要及时查看、清理，否则会把邮箱撑爆。
 
+推荐的 mail list achieve
+
+1. https://lore.kernel.org/lists.html
+2. https://www.spinics.net/lists/
+3. 整体的kernel, 不细分: https://www.mail-archive.com/linux-kernel@vger.kernel.org/
+4. 整体的kernel, 不细分: https://lkml.org/lkml
+
 # 5. 参考
 
 转发自蜗窝科技，www.wowotech.net, 文章链接 http://www.wowotech.net/linux_application/lkml.html

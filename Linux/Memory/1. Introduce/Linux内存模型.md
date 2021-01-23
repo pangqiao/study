@@ -1,5 +1,4 @@
 
-http://www.wowotech.net/memory_management/memory_model.html
 
 ## 一、前言
 
@@ -124,3 +123,7 @@ Discontiguous Memory Model需要获取node id，只要找到node id，一切都�
 ```
 
 毫无疑问，我们需要在虚拟地址空间中分配一段地址来安放struct page数组（该数组包含了所有物理内存跨度空间page），也就是VMEMMAP\_START的定义。
+
+# 参考
+
+http://www.wowotech.net/memory_management/memory_model.html
