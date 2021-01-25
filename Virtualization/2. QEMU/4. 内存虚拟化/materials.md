@@ -12,3 +12,5 @@ https://www.binss.me/blog/qemu-note-of-memory/
 http://oenhan.com/qemu-memory-struct
 
 https://blog.csdn.net/leoufung/article/details/48781205
+
+热插拔: https://huazq.github.io/2020/03/23/Qemu%E5%86%85%E5%AD%98%E7%83%AD%E6%8F%92%E6%8B%94/
