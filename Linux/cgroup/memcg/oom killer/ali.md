@@ -59,7 +59,7 @@ https://github.com/alibaba/cloud-kernel/commit/52e375fcb7a71d62566dc89764ce107e2
 - 遍历parent subsystem的children(子链表串)css
         - 如果子css的task数目小于等于 其对应的memcg不可kill的task数目(num_oom_skip), 下一个子css
         - 子css的memcg的priority大于chosen_priority, 下一个子css
-        - 子css的memcg的priority小于chosen_priority, 子css优先级更低, 
+        - 子css的memcg的priority小于chosen_priority, 子css优先级更低, 遍历子css的子css
 
 
 
