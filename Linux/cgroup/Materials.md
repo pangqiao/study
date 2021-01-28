@@ -13,3 +13,7 @@ Control groups系列: https://lwn.net/Articles/604609/
 https://www.cnblogs.com/LittleHann/p/4512896.html
 
 https://www.codetd.com/article/3110676
+
+cgroup源码分析——基于centos3.10.0-693.25.4: https://www.codetd.com/article/4253326
+
+cgroup代码浅析（2）: https://www.cnblogs.com/muahao/p/10281139.html
