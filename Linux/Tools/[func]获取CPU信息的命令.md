@@ -3,11 +3,11 @@
 
 <!-- code_chunk_output -->
 
-- [1 cat命令 \- 获取CPU信息](#1-cat命令-获取cpu信息)
-- [2 lscpu命令 \- 显示CPU架构信息](#2-lscpu命令-显示cpu架构信息)
-- [3 cpuid命令 \- 显示x86 CPU](#3-cpuid命令-显示x86-cpu)
-- [4 dmidecode命令 \- 显示Linux硬件信息](#4-dmidecode命令-显示linux硬件信息)
-- [5 Inxi工具 \- 显示Linux系统信息](#5-inxi工具-显示linux系统信息)
+- [1 cat命令 - 获取CPU信息](#1-cat命令-获取cpu信息)
+- [2 lscpu命令 - 显示CPU架构信息](#2-lscpu命令-显示cpu架构信息)
+- [3 cpuid命令 - 显示x86 CPU](#3-cpuid命令-显示x86-cpu)
+- [4 dmidecode命令 - 显示Linux硬件信息](#4-dmidecode命令-显示linux硬件信息)
+- [5 Inxi工具 - 显示Linux系统信息](#5-inxi工具-显示linux系统信息)
 - [6 lshw工具 \- 列出硬件配置](#6-lshw工具-列出硬件配置)
 - [7 hardinfo \- 在GTK \+窗口中显示硬件信息](#7-hardinfo-在gtk-窗口中显示硬件信息)
 - [hwinfo - 显示当前硬件信息](#hwinfo-显示当前硬件信息)
@@ -17,13 +17,13 @@
 
 <!-- /code_chunk_output -->
 
-# 1 cat命令 \- 获取CPU信息
+# 1 cat命令 - 获取CPU信息
 
 ```
 # cat /proc/cpuinfo
 ```
 
-# 2 lscpu命令 \- 显示CPU架构信息
+# 2 lscpu命令 - 显示CPU架构信息
 
 命令lscpu从sysfs和/proc/cpuinfo打印CPU体系结构信息
 
@@ -56,7 +56,7 @@ NUMA 节点0 CPU：    0-11
 Flags:                 fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch epb intel_pt ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt xsaveopt xsavec xgetbv1 dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp spec_ctrl intel_stibp flush_l1d
 ```
 
-# 3 cpuid命令 \- 显示x86 CPU
+# 3 cpuid命令 - 显示x86 CPU
 
 命令cpuid转储从CPUID指令收集的CPU的完整信息，并从该信息中发现x86 CPU的确切型号。
 
@@ -74,7 +74,7 @@ $ sudo dnf install cpuid	#Fedora 22+
 # cpuid
 ```
 
-# 4 dmidecode命令 \- 显示Linux硬件信息
+# 4 dmidecode命令 - 显示Linux硬件信息
 
 dmidecode是用于检索任何Linux系统的硬件信息的工具。 它以人性化的格式转储计算机的DMI（又称SMBIOS）表格，便于检索。
 
@@ -148,7 +148,7 @@ Processor Information
 
 关于dmidecode可查看dmidocode命令详细信息
 
-# 5 Inxi工具 \- 显示Linux系统信息
+# 5 Inxi工具 - 显示Linux系统信息
 
 Inxi是一款功能强大的命令行系统信息脚本，用于控制台和IRC（Internet Relay Chat）。 您可以使用它来即时检索硬件信息。
 
