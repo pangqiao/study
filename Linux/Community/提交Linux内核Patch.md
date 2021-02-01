@@ -72,14 +72,15 @@ index 1bf949c43b76..f6ab3ccf698f 100644
 这里使用Gmail邮箱服务，在Linux项目.git/config配置中添加如下内容：
 
 ```conf
-[user]
-    name = Xi Kangjie
-    email = imxikangjie@gmail.com
 [sendemail]
-    smtpEncryption = tls
-    smtpServer = smtp.gmail.com
-    smtpUser = imxikangjie@gmail.com
-    smtpServerPort = 587
+	from = lihaiwei.kernel@gmail.com
+	smtpserver = smtp.gmail.com
+	smtpserverport = 587
+	smtpencryption = tls
+	smtpuser = lihaiwei.kernel@gmail.com
+	smtppass = "XXX"
+	suppresscc = self
+	chainreplyto = false
 ```
 
 注意在Google账户配置中允许不够安全的应用登陆，否则后面发送Patch会收到如下警告：
@@ -218,6 +219,8 @@ Linux内核被划分成**不同的子系统**，如网络、内存管理等，�
 # 参考
 
 文章来自: https://consen.github.io/2018/01/19/submit-linux-kernel-patch/
+
+见 `Git/10. send-mail.md`
 
 * [Submitting patches: the essential guide to getting your code into the kernel](https://www.kernel.org/doc/html/latest/process/submitting-patches.html)
 * [The perfect patch](https://www.ozlabs.org/~akpm/stuff/tpp.txt)
