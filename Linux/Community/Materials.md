@@ -2,5 +2,3 @@
 
 * 如何加入Linux内核开发社区: https://tonybai.com/2012/03/27/how-to-participate-linux-community-section-1/
 
-
-如何从社区邮件列表获取完整的补丁（pwclient）: https://blog.csdn.net/xiaofeng_yan/article/details/109343716
