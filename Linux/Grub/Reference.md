@@ -9,4 +9,8 @@ centos8中grub2启动菜单项实战
 
 https://blog.csdn.net/chenweicheer/article/details/104856232
 
+RHEL7/8 Grub2选择启动菜单条目
+
+https://zhuanlan.zhihu.com/p/85342729
+
 grubby 命令和 grub2相关命令
