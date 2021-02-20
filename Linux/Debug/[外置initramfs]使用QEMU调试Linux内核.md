@@ -3,11 +3,11 @@
 
 <!-- code_chunk_output -->
 
-* [1 编译调试版内核](#1-编译调试版内核)
-* [2 构建initramfs根文件系统](#2-构建initramfs根文件系统)
-* [3 调试](#3-调试)
-* [4 获取当前进程](#4-获取当前进程)
-* [5 参考](#5-参考)
+- [1. 编译调试版内核](#1-编译调试版内核)
+- [2. 构建initramfs根文件系统](#2-构建initramfs根文件系统)
+- [3. 调试](#3-调试)
+- [4. 获取当前进程](#4-获取当前进程)
+- [5. 参考](#5-参考)
 
 <!-- /code_chunk_output -->
 
@@ -17,7 +17,7 @@
 - 一个压缩的内核vmlinuz或者bzImage
 - 一份裁剪过的文件系统initrd
 
-# 1 编译调试版内核
+# 1. 编译调试版内核
 
 对内核进行调试需要解析符号信息，所以得编译一个调试版内核。
 
@@ -40,7 +40,7 @@ Kernel hacking  --->
 
 当编译结束后，可以将vmlinux和bzImage文件copy到一个干净的目录下。
 
-# 2 构建initramfs根文件系统
+# 2. 构建initramfs根文件系统
 
 Linux系统启动阶段，boot loader加载完**内核文件vmlinuz后**，内核**紧接着**需要挂载磁盘根文件系统，但如果此时内核没有相应驱动，无法识别磁盘，就需要先加载驱动，而驱动又位于/lib/modules，得挂载根文件系统才能读取，这就陷入了一个两难境地，系统无法顺利启动。于是有了**initramfs根文件系统**，其中包含必要的设备驱动和工具，boot loader加载initramfs到内存中，内核会将其挂载到根目录/,然后**运行/init脚本**，挂载真正的磁盘根文件系统。
 
@@ -104,7 +104,7 @@ exec /sbin/init
 $ find . -print0 | cpio --null -ov --format=newc | gzip -9 > ../initramfs.cpio.gz
 ```
 
-# 3 调试
+# 3. 调试
 
 qemu 是一款虚拟机，可以模拟x86 & arm 等等硬件平台<似乎可模拟的硬件平台很多...>，而qemu 也内嵌了一个 gdbserver。
 
@@ -228,7 +228,7 @@ Breakpoint 1, cmdline_proc_show (m=0xffff880006695000, v=0x1 <irq_stack_union+1>
 $2 = 0xffff880007e68980 "console=ttyS0"
 ```
 
-# 4 获取当前进程
+# 4. 获取当前进程
 
 《深入理解Linux内核》第三版第三章–进程，讲到内核采用了一种精妙的设计来获取当前进程。
 
@@ -264,7 +264,7 @@ $50 = 77
 $52 = 77
 ```
 
-# 5 参考
+# 5. 参考
 
 - [Tips for Linux Kernel Development](http://eisen.io/slides/jeyu_tips_for_kernel_dev_cmps107_2017.pdf)
 - [How to Build A Custom Linux Kernel For Qemu](http://mgalgs.github.io/2015/05/16/how-to-build-a-custom-linux-kernel-for-qemu-2015-edition.html)
