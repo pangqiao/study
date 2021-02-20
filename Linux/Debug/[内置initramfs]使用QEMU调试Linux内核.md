@@ -3,13 +3,13 @@
 
 <!-- code_chunk_output -->
 
-- [1 构建initramfs根文件系统](#1-构建initramfs根文件系统)
-- [2 编译调试版内核](#2-编译调试版内核)
-- [3 调试](#3-调试)
-- [4 问题和解决方案](#4-问题和解决方案)
-- [GDB调试内核与模块](#gdb调试内核与模块)
-- [相关脚本](#相关脚本)
-- [5. 参考](#5-参考)
+- [1. 构建initramfs根文件系统](#1-构建initramfs根文件系统)
+- [2. 编译调试版内核](#2-编译调试版内核)
+- [3. 调试](#3-调试)
+- [4. 问题和解决方案](#4-问题和解决方案)
+- [5. GDB调试内核与模块](#5-gdb调试内核与模块)
+- [6. 相关脚本](#6-相关脚本)
+- [7. 参考](#7-参考)
 
 <!-- /code_chunk_output -->
 
@@ -19,7 +19,7 @@
 - 一个压缩的内核vmlinuz或者bzImage
 - 一份裁剪过的文件系统initrd
 
-# 1 构建initramfs根文件系统
+# 1. 构建initramfs根文件系统
 
 Linux系统启动阶段，boot loader加载完**内核文件vmlinuz后**，内核**紧接着**需要挂载磁盘根文件系统，但如果此时内核没有相应驱动，无法识别磁盘，就需要先加载驱动，而驱动又位于/lib/modules，得挂载根文件系统才能读取，这就陷入了一个两难境地，系统无法顺利启动。于是有了**initramfs根文件系统**，其中包含必要的设备驱动和工具，boot loader加载initramfs到内存中，内核会将其挂载到根目录/,然后**运行/init脚本**，挂载真正的磁盘根文件系统。
 
@@ -121,7 +121,7 @@ $ sudo mknod null c 1 3
 
 当然也可以使用既有的initramfs，或者将其进行裁剪（https://blog.csdn.net/weijitao/article/details/79477792）
 
-# 2 编译调试版内核
+# 2. 编译调试版内核
 
 对内核进行调试需要解析符号信息，所以得编译一个调试版内核。
 
@@ -174,7 +174,7 @@ $ make -j 20
 
 当编译结束后，可以将vmlinux和bzImage文件copy到一个干净的目录下。
 
-# 3 调试
+# 3. 调试
 
 qemu 是一款虚拟机，可以模拟x86 & arm 等等硬件平台<似乎可模拟的硬件平台很多...>，而qemu 也内嵌了一个 gdbserver。这个gdbserver于是就可以和gdb构成一个远程合作伙伴，通过ip:port 网络方式或者是通过串口/dev/ttyS\*来进行工作，一个在这头，一个在那头。
 
@@ -312,7 +312,7 @@ drwxrwxrwt    2 0        0               40 May 30 08:21 tmp
 
 这就是initramfs中包含的内容
 
-# 4 问题和解决方案
+# 4. 问题和解决方案
 
 1. 为什么要关闭 Build a relocatable kernel 
 
@@ -351,7 +351,7 @@ CONFIG_NET=y
 如果`CONFIG_UEVENT_HELPER`和CONFIG_NET不选或没全选上的话，/proc/sys/kernel下将不会创建hotplug文件
 
 
-# GDB调试内核与模块
+# 5. GDB调试内核与模块
 
 本节介绍如何调试 KVM 虚拟机内核和模块。并说明在调试过程中如何加载模块并链接符号表。
 
@@ -362,7 +362,7 @@ CONFIG_NET=y
 (gdb) c
 ```
 
-# 相关脚本
+# 6. 相关脚本
 
 当前目录下
 
@@ -370,7 +370,7 @@ CONFIG_NET=y
 - gdb.sh: gdb启动脚本
 - .config: 虚拟机的内核编译.config
 
-# 5. 参考
+# 7. 参考
 
 - [Tips for Linux Kernel Development](http://eisen.io/slides/jeyu_tips_for_kernel_dev_cmps107_2017.pdf)
 - [How to Build A Custom Linux Kernel For Qemu](http://mgalgs.github.io/2015/05/16/how-to-build-a-custom-linux-kernel-for-qemu-2015-edition.html)
