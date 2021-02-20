@@ -33,3 +33,5 @@ ftrace使用、nm(导出ko符号表)以及trace模块初始化: https://blog.csd
 [[转]Linux内核跟踪之trace框架分析 ](http://blog.chinaunix.net/uid-24063584-id-2642103.html)
 
 [Linux trace使用入门](http://blog.csdn.net/jscese/article/details/46415531)
+
+如何利用ftrace精确跟踪特定进程调度信息: https://mp.weixin.qq.com/s/RtIMTgyc-_OSh93fPndHzw (重要)
