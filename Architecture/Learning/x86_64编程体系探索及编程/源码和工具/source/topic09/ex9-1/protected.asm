@@ -6,111 +6,111 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN           ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN           ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #DB handler
+;; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ #AC handler
+;; è®¾ç½® #AC handler
         mov esi, AC_HANDLER_VECTOR
         mov edi, AC_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ #UD handler
+;; è®¾ç½® #UD handler
         mov esi, UD_HANDLER_VECTOR
         mov edi, UD_handler
         call set_interrupt_handler
                 
-;; ÉèÖÃ #NM handler
+;; è®¾ç½® #NM handler
         mov esi, NM_HANDLER_VECTOR
         mov edi, NM_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ TSS µÄ ESP0        
+;; è®¾ç½® TSS çš„ ESP0        
         mov esi, tss32_sel
         call get_tss_base
         mov DWORD [eax + 4], 9FFFh
         
                 
-;; ¹Ø±ÕËùÓĞ 8259ÖĞ¶Ï
+;; å…³é—­æ‰€æœ‰ 8259ä¸­æ–­
         call disable_8259
 
 
-;################  ÊµÑé´úÂë  ###########################        
+;################  å®éªŒä»£ç   ###########################        
 
 ; SMRAM control
-        SET_SMRAM_OPEN                       ; ÖÃ D_OPEN Îª 1£¬´ò¿ª SMRAM ÇøÓò
+        SET_SMRAM_OPEN                       ; ç½® D_OPEN ä¸º 1ï¼Œæ‰“å¼€ SMRAM åŒºåŸŸ
 
-; ½« SMI handler Ğ´Èë a8000 ´¦
+; å°† SMI handler å†™å…¥ a8000 å¤„
         mov ecx, CSEG_SMM_END - CSEG_SMM_BEGIN
         mov esi, CSEG_SMM_BEGIN
         mov edi, 0A8000h
         rep movsb
 
-; ½« Tseg SMM Ğ´Èë 2000000h ´¦
+; å°† Tseg SMM å†™å…¥ 2000000h å¤„
         mov ecx, TSEG_SMM_END - TSEG_SMM_BEGIN
         mov esi, TSEG_SMM_BEGIN
         mov edi, 2008000h
         rep movsb
 
 
-;; Ğ´ SMI_EN ¼Ä´æÆ÷µÄ APMC_EN Î»
+;; å†™ SMI_EN å¯„å­˜å™¨çš„ APMC_EN ä½
         call get_PMBASE
         mov edx, eax
-        add edx, 30h                        ; SMI_EN ¼Ä´æÆ÷Î»ÖÃ
-        in eax, dx                          ; ¶Á DWORD
+        add edx, 30h                        ; SMI_EN å¯„å­˜å™¨ä½ç½®
+        in eax, dx                          ; è¯» DWORD
         bts eax, 5                          ; APMC_EN = 1
-        out dx, eax                         ; Ğ´ DWORD
+        out dx, eax                         ; å†™ DWORD
         
 
-;; µÚ1´Î´¥·¢ SMI#£¬½øÈë SMI handler ÔÚ 0A8000h ´¦                
+;; ç¬¬1æ¬¡è§¦å‘ SMI#ï¼Œè¿›å…¥ SMI handler åœ¨ 0A8000h å¤„                
         mov dx, APM_CNT
         out dx, al
         
         
-;; #### ÊµÑé: ¸ø SMI handler ´«µİ²ÎÊı ########
-        mov ebx, 100FFFCh                        ; ÔÚ ebx ¸³ÓÚ 100FFFCh ¸ø SMI handler ´«µİ²ÎÊı
-        mov al, 01                               ; ²ÎÊıÀàĞÍ 1
-        mov dx, APM_STS                         ; Í¨¹ı APM status ¼Ä´æÆ÷¸ø SMI handler ´«µİÀàĞÍ
+;; #### å®éªŒ: ç»™ SMI handler ä¼ é€’å‚æ•° ########
+        mov ebx, 100FFFCh                        ; åœ¨ ebx èµ‹äº 100FFFCh ç»™ SMI handler ä¼ é€’å‚æ•°
+        mov al, 01                               ; å‚æ•°ç±»å‹ 1
+        mov dx, APM_STS                         ; é€šè¿‡ APM status å¯„å­˜å™¨ç»™ SMI handler ä¼ é€’ç±»å‹
         out dx, al
         
         
         
-;; µÚ2´Î´¥·¢ SMI# ½øÈë SMI handler ÔÚ 2008000h Î»ÖÃ        
+;; ç¬¬2æ¬¡è§¦å‘ SMI# è¿›å…¥ SMI handler åœ¨ 2008000h ä½ç½®        
         mov dx, APM_CNT
         out dx, al        
         
-;; *** ÏÂÃæ½øĞĞÌ½²â SMRAM ÇøÓòµÄÊµÑé ***        
-;; 1. µ± D_OPEN = 1 µÄÇé¿öÏÂ£¬½øĞĞÌ½²â SMRAM ÇøÓò
-        SET_SMRAM_CLOSE                                ; ¹Ø±ÕÎªÁËÏÔÊ¾Êä³ö
+;; *** ä¸‹é¢è¿›è¡Œæ¢æµ‹ SMRAM åŒºåŸŸçš„å®éªŒ ***        
+;; 1. å½“ D_OPEN = 1 çš„æƒ…å†µä¸‹ï¼Œè¿›è¡Œæ¢æµ‹ SMRAM åŒºåŸŸ
+        SET_SMRAM_CLOSE                                ; å…³é—­ä¸ºäº†æ˜¾ç¤ºè¾“å‡º
         mov esi, msg12
         call puts
-        SET_SMRAM_OPEN                                ; ´ò¿ª½øĞĞÌ½²â
+        SET_SMRAM_OPEN                                ; æ‰“å¼€è¿›è¡Œæ¢æµ‹
         call enumerate_smi_region
 
-;; ÓÉ SMI handler ·µ»Ø        
-        SET_SMRAM_CLOSE                               ; Çå D_OPEN Î»£¬¹Ø±Õ SMRAM ÇøÓò
+;; ç”± SMI handler è¿”å›        
+        SET_SMRAM_CLOSE                               ; æ¸… D_OPEN ä½ï¼Œå…³é—­ SMRAM åŒºåŸŸ
 
 
-;; 2. µ± D_OPEN = 0 µÄÇé¿öÏÂ£¬½øĞĞÉî²â SMRAM ÇøÓò
+;; 2. å½“ D_OPEN = 0 çš„æƒ…å†µä¸‹ï¼Œè¿›è¡Œæ·±æµ‹ SMRAM åŒºåŸŸ
 
-;; Ì½²â SMRAM ÇøÓò        
+;; æ¢æµ‹ SMRAM åŒºåŸŸ        
         mov esi, msg13
         call puts
         call enumerate_smi_region        
@@ -121,13 +121,13 @@ entry:
         cmp al, 1
         jnz next
 
-;; ÏÂÃæµÄÊµÑéÊÇÔÚ SMI handler Àï¸´ÖÆ State Save Map ĞÅÏ¢µ½Ìá¹©µÄÎ»ÖÃÉÏ ****
-;; *** ´òÓ¡ SMM State Save Map ÇøÓòĞÅÏ¢£¨²¿·Ö)        
+;; ä¸‹é¢çš„å®éªŒæ˜¯åœ¨ SMI handler é‡Œå¤åˆ¶ State Save Map ä¿¡æ¯åˆ°æä¾›çš„ä½ç½®ä¸Š ****
+;; *** æ‰“å° SMM State Save Map åŒºåŸŸä¿¡æ¯ï¼ˆéƒ¨åˆ†)        
         mov esi, msg14
         call puts
         
         mov ebx, 1000000h
-;*** Êä³ö ES ĞÅÏ¢        
+;*** è¾“å‡º ES ä¿¡æ¯        
         mov esi, es_msg
         call puts
         mov esi, selector_msg
@@ -152,7 +152,7 @@ entry:
         call print_qword_value
         call println
         
-;*** Êä³ö CS ĞÅÏ¢        
+;*** è¾“å‡º CS ä¿¡æ¯        
         mov esi, cs_msg
         call puts
         mov esi, selector_msg
@@ -177,7 +177,7 @@ entry:
         call print_qword_value
         call println        
         
-;*** Êä³ö SS ĞÅÏ¢        
+;*** è¾“å‡º SS ä¿¡æ¯        
         mov esi, ss_msg
         call puts
         mov esi, selector_msg
@@ -202,7 +202,7 @@ entry:
         call print_qword_value
         call println        
         
-;*** Êä³ö DS ĞÅÏ¢        
+;*** è¾“å‡º DS ä¿¡æ¯        
         mov esi, ds_msg
         call puts
         mov esi, selector_msg
@@ -228,7 +228,7 @@ entry:
         call println        
         call println
         
-;*** Êä³ö GDTR ĞÅÏ¢        
+;*** è¾“å‡º GDTR ä¿¡æ¯        
         mov esi, gdtr_msg
         call puts
         mov esi, base_msg
@@ -243,7 +243,7 @@ entry:
         call print_word_value        
         call println
         
-;*** Êä³ö IDTR ĞÅÏ¢        
+;*** è¾“å‡º IDTR ä¿¡æ¯        
         mov esi, idtr_msg
         call puts
         mov esi, base_msg
@@ -259,7 +259,7 @@ entry:
         call println
                 
 
-;*** Êä³ö LDTR ĞÅÏ¢        
+;*** è¾“å‡º LDTR ä¿¡æ¯        
         mov esi, ldtr_msg
         call puts
         mov esi, selector_msg
@@ -285,7 +285,7 @@ entry:
         call println
                 
 
-;*** Êä³ö TR ĞÅÏ¢        
+;*** è¾“å‡º TR ä¿¡æ¯        
         mov esi, tr_msg
         call puts
         mov esi, selector_msg
@@ -311,14 +311,14 @@ entry:
         call println
         call println
                         
-; ´òÓ¡ SMBASE 
+; æ‰“å° SMBASE 
         mov esi, smbase_msg
         call puts
         mov esi, [ebx + 0FF00h]                        
         call print_dword_value
         call println
 
-; ´òÓ¡ Rip
+; æ‰“å° Rip
         mov esi, rip_msg
         call puts
         mov esi, [ebx + 0FF78h]        
@@ -326,7 +326,7 @@ entry:
         call print_qword_value
         call println
 
-; ´òÓ¡ Rflags
+; æ‰“å° Rflags
         mov esi, rflags_msg
         call puts
         mov esi, [ebx + 0FF70h]
@@ -337,7 +337,7 @@ entry:
 next:
                         
                                                 
-; ½øÈë ring 3 ´úÂë
+; è¿›å…¥ ring 3 ä»£ç 
         push DWORD user_data32_sel | 0x3
         push esp
         push DWORD user_code32_sel | 0x3        
@@ -401,29 +401,29 @@ rip_msg              db 'RIP:    ', 0
 rflags_msg           db 'Rflags: ', 0
 
 
-;####### ÏÂÃæÊÇ SMM ÇøÓò #######
+;####### ä¸‹é¢æ˜¯ SMM åŒºåŸŸ #######
 
 CSEG_SMM_BEGIN:
 
         bits 16        
 
 ;#
-;# Õâ¸ö SMI handler µÄÄ¿µÄÊÇÖØ¶¨Î»ÔÚ 200000h Î»ÖÃÉÏ ###
+;# è¿™ä¸ª SMI handler çš„ç›®çš„æ˜¯é‡å®šä½åœ¨ 200000h ä½ç½®ä¸Š ###
 ;#
 cseg_smi_entry:
         mov ebx, 0AFEFCh                        ; SMM revision id
         mov al, [ebx]
-        cmp al, 0x64                                ; ²âÊÔ SMM °æ±¾
+        cmp al, 0x64                                ; æµ‹è¯• SMM ç‰ˆæœ¬
         je new_rev
         mov ebx, 0AFEF8h
         jmp set_SMBASE
 new_rev:
         mov ebx, 0AFF00h
 set_SMBASE:        
-        mov eax, 2000000h                        ; 32M ±ß½ç
-        mov [ebx], eax                            ; ĞÂµÄ SMBASE
+        mov eax, 2000000h                        ; 32M è¾¹ç•Œ
+        mov [ebx], eax                            ; æ–°çš„ SMBASE
 
-;; ²âÊÔ´ò¿ª CR0.PE = 1
+;; æµ‹è¯•æ‰“å¼€ CR0.PE = 1
 ;        db 0x66
 ;        lgdt [DWORD gdt_pointer- cseg_smi_entry + 0xa8000]
 ;        mov eax, cr0
@@ -435,28 +435,28 @@ set_SMBASE:
 ;        mov ax, 0x10
 ;        mov ds, ax        
 
-; ²âÊÔµ÷ÓÃÖĞ¶Ï
+; æµ‹è¯•è°ƒç”¨ä¸­æ–­
 ;        int 13h                
 
-; ²âÊÔ jmp far
-        ;jmp DWORD 0:0x2008000                ; Ô¶µ÷ÓÃ
+; æµ‹è¯• jmp far
+        ;jmp DWORD 0:0x2008000                ; è¿œè°ƒç”¨
         
-;; ²âÊÔ SMM ÀïµÄÖĞ¶Ïµ÷ÓÃ        
+;; æµ‹è¯• SMM é‡Œçš„ä¸­æ–­è°ƒç”¨        
         ;db 0x66
         ;lidt [DWORD smm_ivt - cseg_smi_entry + 0xa8000]
         ;int 0
 
-;; ²âÊÔ SMM ÀïµÄµ¥²½µ÷ÊÔ        
+;; æµ‹è¯• SMM é‡Œçš„å•æ­¥è°ƒè¯•        
 ;        pushfd
 ;        bts DWORD [esp], 8
 ;        popfd
 ;        mov eax, 1
 ;        mov eax, 2
 
-;; ²âÊÔ I/O restart
+;; æµ‹è¯• I/O restart
 ;        mov BYTE [DWORD 0AFEC8h], 0FFh
 
-;; ²âÊÔ CR0/CR4
+;; æµ‹è¯• CR0/CR4
 ;        mov eax, [DWORD 0A0000h + 0FF58h]                ; CR0 image
 ;        btr eax, 30                                                                ; CR0.CD = 0
 ;        bts eax, 29                                                                ; CR0.NW = 1
@@ -467,7 +467,7 @@ smm_ivt        dw 0x3ff
                 dd vector0 -cseg_smi_entry + 0xa8000
         
 IVT:
-vector0        dw        8000H                        ;; ¹ş!! vector 0 ÊÇ×ªµ½ SMI handler Èë¿Úµã
+vector0        dw        8000H                        ;; å“ˆ!! vector 0 æ˜¯è½¬åˆ° SMI handler å…¥å£ç‚¹
                dw         0A000H
 
 GDT:
@@ -488,30 +488,30 @@ CSEG_SMM_END:
 
 TSEG_SMM_BEGIN:
 ;#
-;### Õâ¸öÊÇ×îÖÕµÄ SMI handler
+;### è¿™ä¸ªæ˜¯æœ€ç»ˆçš„ SMI handler
 ;#
 
 tseg_smi_entry:
         mov dx, APM_STS
-        in al, dx                          ; ¶Á²ÎÊıÀàĞÍ
-        cmp al, 01                         ; ÊÇ·ñÎªÀàĞÍ 1
+        in al, dx                          ; è¯»å‚æ•°ç±»å‹
+        cmp al, 01                         ; æ˜¯å¦ä¸ºç±»å‹ 1
         jnz smi_handler_done
         
-        mov ebx, 200FEFCh                ; SMM revision id µÄÎ»ÖÃ
-        cmp byte [ebx], 64h                ; ²âÊÔÊÇ·ñÎª°æ±¾ 64h
+        mov ebx, 200FEFCh                ; SMM revision id çš„ä½ç½®
+        cmp byte [ebx], 64h                ; æµ‹è¯•æ˜¯å¦ä¸ºç‰ˆæœ¬ 64h
         je rev_64h
-        mov ebx, 2007FDCh                ; Intel °æ±¾µÄ ebx ¼Ä´æÆ÷Î»ÖÃ
+        mov ebx, 2007FDCh                ; Intel ç‰ˆæœ¬çš„ ebx å¯„å­˜å™¨ä½ç½®
         jmp read_ebx
 rev_64h:        
-        mov ebx, 200FFE0h                ; AMD64 °æ±¾µÄ rbx ¼Ä´æÆ÷Î»ÖÃ
+        mov ebx, 200FFE0h                ; AMD64 ç‰ˆæœ¬çš„ rbx å¯„å­˜å™¨ä½ç½®
 read_ebx:        
-        mov edi, [ebx]                   ; ¶ÁÈ¡ ebx ¼Ä´æÆ÷µÄÖµ£¨´«µİ¹ıµÄ²ÎÊı-Õ»µ×£©
+        mov edi, [ebx]                   ; è¯»å– ebx å¯„å­˜å™¨çš„å€¼ï¼ˆä¼ é€’è¿‡çš„å‚æ•°-æ ˆåº•ï¼‰
         
-;; ÏÂÃæÊÇ¸´ÖÆ SMI handler µÄ state save ÇøÓòµ½Ä¿±êÎ»ÖÃÉÏ£¨ÓÉebx¼Ä´æÆ÷´«¹ıÀ´µÄ²ÎÊı£©
-        mov esi, 200FFFCh                ; save ÇøÓòµÄÆğÊ¼Î»ÖÃ(Õ»µ×£©
+;; ä¸‹é¢æ˜¯å¤åˆ¶ SMI handler çš„ state save åŒºåŸŸåˆ°ç›®æ ‡ä½ç½®ä¸Šï¼ˆç”±ebxå¯„å­˜å™¨ä¼ è¿‡æ¥çš„å‚æ•°ï¼‰
+        mov esi, 200FFFCh                ; save åŒºåŸŸçš„èµ·å§‹ä½ç½®(æ ˆåº•ï¼‰
         mov ecx, (2010000h-200FC00h)/4
         std
-        db 0x67                  ; address size override ²Ù×÷
+        db 0x67                  ; address size override æ“ä½œ
         rep movsd
         
         mov al, 01
@@ -533,26 +533,26 @@ enumerate_smi_region:
 es_msg1        db 'rsm instruction at region: '
 es_value dq 0, 0
 es_msg2 db ' address: 0x', 0
-smi_region: times 10 dd 0, 0                ; ¶¨Òå 10 ¸ö±äÁ¿±£´æ region ºÍ address
+smi_region: times 10 dd 0, 0                ; å®šä¹‰ 10 ä¸ªå˜é‡ä¿å­˜ region å’Œ address
 do_enumerate_smi_region:
         push ebx
         push ecx
         push edx
         
-;; Çå±äÁ¿
+;; æ¸…å˜é‡
         mov edi, smi_region
         xor eax, eax
         mov ecx, 20
         rep stosd
                 
-        mov ebx, 0x30000                      ;; ´Ó 300000H Î»ÖÃ¿ªÊ¼Ì½²â
+        mov ebx, 0x30000                      ;; ä» 300000H ä½ç½®å¼€å§‹æ¢æµ‹
         xor ecx, ecx
         xor edx, edx
 do_enumerate_smi_region_loop:
         mov ax, [ebx + ecx]
-        cmp ax, 0xaa0f                        ; ²éÕÒ rsm Ö¸Áî
+        cmp ax, 0xaa0f                        ; æŸ¥æ‰¾ rsm æŒ‡ä»¤
         jne enumerate_smi_region_next
-        ;; ±£´æ region ºÍ address
+        ;; ä¿å­˜ region å’Œ address
         mov [smi_region + edx * 4], ebx
         lea esi, [ebx + ecx]
         mov [smi_region + edx * 4 + 4], esi
@@ -568,8 +568,8 @@ enumerate_smi_region_next_region:
         cmp ebx, 0x10000000
         jb do_enumerate_smi_region_loop
         
-;; ´òÓ¡Ì½²â½á¹û        
-        SET_SMRAM_CLOSE                          ; ¹Ø±Õ SMRAM ÎªÁË´òÓ¡Ì½²â½á¹û
+;; æ‰“å°æ¢æµ‹ç»“æœ        
+        SET_SMRAM_CLOSE                          ; å…³é—­ SMRAM ä¸ºäº†æ‰“å°æ¢æµ‹ç»“æœ
         xor edx, edx        
 enumerate_smi_region_result:        
         mov eax, [smi_region + edx * 4]
@@ -629,7 +629,7 @@ register_message_table        dd eax_message, ebx_message, ecx_message, edx_mess
                               dd esp_message, ebp_message, esi_message, edi_message, 0
 
 do_DB_handler:        
-;; µÃµ½¼Ä´æÆ÷Öµ
+;; å¾—åˆ°å¯„å­˜å™¨å€¼
         pushad
         
         mov esi, db_msg1
@@ -638,7 +638,7 @@ do_DB_handler:
         lea ebx, [esp + 4 * 7]
         xor ecx, ecx
 
-;; Í£Ö¹Ìõ¼ş        
+;; åœæ­¢æ¡ä»¶        
         mov esi, [esp + 4 * 8]
         cmp esi, [return_address]
         je clear_TF
@@ -675,11 +675,11 @@ do_DB_handler_next:
         mov [return_address], eax
         jmp do_DB_handler_done
 clear_TF:
-        btr DWORD [esp + 4 * 8 + 8], 8             ; Çå TF ±êÖ¾
+        btr DWORD [esp + 4 * 8 + 8], 8             ; æ¸… TF æ ‡å¿—
         mov esi, db_msg2
         call puts
 do_DB_handler_done:        
-        bts DWORD [esp + 4 * 8 + 8], 16            ; ÉèÖÃ eflags.RF Îª 1£¬ÒÔ±ãÖĞ¶Ï·µ»ØÊ±£¬¼ÌĞøÖ´ĞĞ
+        bts DWORD [esp + 4 * 8 + 8], 16            ; è®¾ç½® eflags.RF ä¸º 1ï¼Œä»¥ä¾¿ä¸­æ–­è¿”å›æ—¶ï¼Œç»§ç»­æ‰§è¡Œ
         popad
         iret
 
@@ -693,7 +693,7 @@ gp_msg2                db 'return address: 0x'
 ret_address        dq 0, 0 
 gp_msg3                db 'skip STI instruction', 10, 0
 do_GP_handler:        
-        add esp, 4                                                        ;  ºöÂÔ´íÎóÂë
+        add esp, 4                                                        ;  å¿½ç•¥é”™è¯¯ç 
         mov esi, [esp]
         mov edi, ret_address
         call get_dword_hex_string
@@ -701,21 +701,21 @@ do_GP_handler:
         call puts
         call println
         mov eax, [esp]
-        cmp BYTE [eax], 0xfb                        ; ¼ì²éÊÇ·ñÒòÎª sti Ö¸Áî¶ø²úÉú #GP Òì³£
+        cmp BYTE [eax], 0xfb                        ; æ£€æŸ¥æ˜¯å¦å› ä¸º sti æŒ‡ä»¤è€Œäº§ç”Ÿ #GP å¼‚å¸¸
         jne fix
-        inc eax                                      ; Èç¹ûÊÇµÄ»°£¬Ìø¹ı²úÉú #GP Òì³£µÄ sti Ö¸Áî£¬Ö´ĞĞÏÂÒ»ÌõÖ¸Áî
+        inc eax                                      ; å¦‚æœæ˜¯çš„è¯ï¼Œè·³è¿‡äº§ç”Ÿ #GP å¼‚å¸¸çš„ sti æŒ‡ä»¤ï¼Œæ‰§è¡Œä¸‹ä¸€æ¡æŒ‡ä»¤
         mov [esp], eax
         mov esi, gp_msg3
         call puts
         jmp do_GP_handler_done
 fix:
         mov eax, [esp+12]
-        mov esi, [esp+4]                                ; µÃµ½±»ÖĞ¶Ï´úÂëµÄ cs
+        mov esi, [esp+4]                                ; å¾—åˆ°è¢«ä¸­æ–­ä»£ç çš„ cs
         test esi, 3
         jz fix_eip
         mov eax, [eax]
 fix_eip:        
-        mov [esp], eax                                  ; Ğ´Èë·µ»ØµØÖ·        
+        mov [esp], eax                                  ; å†™å…¥è¿”å›åœ°å€        
 do_GP_handler_done:                
         iret
 
@@ -728,10 +728,10 @@ ud_msg1                db '---> Now, enter the #UD handler', 10, 0
 do_UD_handler:
         mov esi, ud_msg1
         call puts
-        mov eax, [esp+12]                        ; µÃµ½ user esp
+        mov eax, [esp+12]                        ; å¾—åˆ° user esp
         mov eax, [eax]
-        mov [esp], eax                           ; Ìø¹ı²úÉú#UDµÄÖ¸Áî
-        add DWORD [esp+12], 4                   ; pop ÓÃ»§ stack
+        mov [esp], eax                           ; è·³è¿‡äº§ç”Ÿ#UDçš„æŒ‡ä»¤
+        add DWORD [esp+12], 4                   ; pop ç”¨æˆ· stack
         iret
         
 ;----------------------------------------------
@@ -743,10 +743,10 @@ nm_msg1                db '---> Now, enter the #NM handler', 10, 0
 do_NM_handler:        
         mov esi, nm_msg1
         call puts
-        mov eax, [esp+12]                        ; µÃµ½ user esp
+        mov eax, [esp+12]                        ; å¾—åˆ° user esp
         mov eax, [eax]
-        mov [esp], eax                           ; Ìø¹ı²úÉú#NMµÄÖ¸Áî
-        add DWORD [esp+12], 4                   ; pop ÓÃ»§ stack
+        mov [esp], eax                           ; è·³è¿‡äº§ç”Ÿ#NMçš„æŒ‡ä»¤
+        add DWORD [esp+12], 4                   ; pop ç”¨æˆ· stack
         iret          
 
 ;-----------------------------------------------
@@ -765,21 +765,21 @@ do_AC_handler:
         mov esi, ac_msg1
         call puts
         call println
-;; ÏÖÔÚ disable        AC ¹¦ÄÜ
-        btr DWORD [esp+12+4*8], 18                ; Çåelfags imageÖĞµÄAC±êÖ¾        
+;; ç°åœ¨ disable        AC åŠŸèƒ½
+        btr DWORD [esp+12+4*8], 18                ; æ¸…elfags imageä¸­çš„ACæ ‡å¿—        
         popa
-        add esp, 4                                 ; ºöÂÔ error code        
+        add esp, 4                                 ; å¿½ç•¥ error code        
         iret
 
 
-;********* include Ä£¿é ********************
+;********* include æ¨¡å— ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
 %include "..\lib\pci.asm"
 %include "..\lib\pic8259A.asm"
 
-;; º¯Êıµ¼Èë±í
+;; å‡½æ•°å¯¼å…¥è¡¨
 %include "..\common\lib32_import_table.imt"
 
 PROTECTED_END:
