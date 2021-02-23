@@ -21,3 +21,5 @@ cgroup代码浅析（2）: https://www.cnblogs.com/muahao/p/10281139.html
 Linux cgroup的整体框架: https://blog.csdn.net/zsj100213/article/details/89088446
 
 Linux Cgroup系列（02）：创建并管理cgroup: https://segmentfault.com/a/1190000007241437
+
+cgroups 数据结构设计: https://www.cnblogs.com/lisperl/archive/2012/04/18/2455027.html
