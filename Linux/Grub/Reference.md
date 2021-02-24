@@ -14,3 +14,6 @@ RHEL7/8 Grub2选择启动菜单条目
 https://zhuanlan.zhihu.com/p/85342729
 
 grubby 命令和 grub2相关命令
+
+
+https://tinychen.com/20201118-centos8-use-grubby-modify-kernel/
