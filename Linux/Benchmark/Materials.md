@@ -23,3 +23,5 @@ https://www.atlassian.com/engineering/jira-performance-engineering
 https://zhuanlan.zhihu.com/p/127829040 (未,)
 
 https://openbenchmarking.org/ : 
+
+可靠性测试: https://cloud.tencent.com/developer/article/1179363
