@@ -25,3 +25,5 @@ Linux Cgroup系列（02）：创建并管理cgroup: https://segmentfault.com/a/1
 cgroups 数据结构设计: https://www.cnblogs.com/lisperl/archive/2012/04/18/2455027.html
 
 linux cgroup代码学习(2)——数据结构整理: https://segmentfault.com/a/1190000010543907
+
+cgroup 分析之CPU和内存部分: https://ggaaooppeenngg.github.io/zh-CN/2017/05/07/cgroups-%E5%88%86%E6%9E%90%E4%B9%8B%E5%86%85%E5%AD%98%E5%92%8CCPU/
