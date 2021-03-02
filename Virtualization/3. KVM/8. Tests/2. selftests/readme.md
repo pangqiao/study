@@ -1,18 +1,14 @@
 
 
+参见 `Linux/Benchmark/selftest`
+
 官方文档: `Documentation/dev-tools/kselftest.rst`
 
 ```
 yum install libcap-devel -y
-
 yum install libmount-devel -y
-
 yum install libcap-ng-devel -y
-
 yum install libmnl-devel -y
-
-
-
 ```
 
 
