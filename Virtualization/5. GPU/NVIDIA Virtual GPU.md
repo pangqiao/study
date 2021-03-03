@@ -3,38 +3,38 @@
 
 <!-- code_chunk_output -->
 
-- [基本介绍](#基本介绍)
-  - [NVIDIA vGPU Software使用方式](#nvidia-vgpu-software使用方式)
-  - [架构](#架构)
-  - [1.3 支持的GPU](#13-支持的gpu)
-    - [1.3.1 Virtual GPU Types](#131-virtual-gpu-types)
-  - [1.4 Guest VM支持](#14-guest-vm支持)
-    - [1.4.1 Windows虚拟机](#141-windows虚拟机)
-    - [1.4.2 Linux虚拟机](#142-linux虚拟机)
-  - [1.5 NVIDIA vGPU软件功能](#15-nvidia-vgpu软件功能)
-- [2 安装和配置NVIDIA Virtual GPU Manager](#2-安装和配置nvidia-virtual-gpu-manager)
-  - [2.1 准备工作](#21-准备工作)
-  - [2.2 给KVM安装NVIDIA Virtual GPU Manager](#22-给kvm安装nvidia-virtual-gpu-manager)
-  - [2.3 确定vGPU type](#23-确定vgpu-type)
-- [3 使用vGPU](#3-使用vgpu)
-  - [3.1 Virsh命令](#31-virsh命令)
-  - [3.2 QEMU命令](#32-qemu命令)
-  - [3.3 OpenStack使用](#33-openstack使用)
-    - [3.3.1 创建flavor](#331-创建flavor)
-    - [3.3.2 创建虚拟机](#332-创建虚拟机)
-  - [3.4 确认vGPU已经创建](#34-确认vgpu已经创建)
-  - [3.5 设置vGPU的参数](#35-设置vgpu的参数)
-  - [3.6 删除vGPU](#36-删除vgpu)
-- [4 给虚拟机安装驱动](#4-给虚拟机安装驱动)
-- [5 License这个vGPU](#5-license这个vgpu)
-- [参考](#参考)
+- [1. 基本介绍](#1-基本介绍)
+  - [1.1. NVIDIA vGPU Software使用方式](#11-nvidia-vgpu-software使用方式)
+  - [1.2. 架构](#12-架构)
+  - [1.3. 支持的GPU](#13-支持的gpu)
+    - [1.3.1. Virtual GPU Types](#131-virtual-gpu-types)
+  - [1.4. Guest VM支持](#14-guest-vm支持)
+    - [1.4.1. Windows虚拟机](#141-windows虚拟机)
+    - [1.4.2. Linux虚拟机](#142-linux虚拟机)
+  - [1.5. NVIDIA vGPU软件功能](#15-nvidia-vgpu软件功能)
+- [2. 安装和配置NVIDIA Virtual GPU Manager](#2-安装和配置nvidia-virtual-gpu-manager)
+  - [2.1. 准备工作](#21-准备工作)
+  - [2.2. 给KVM安装NVIDIA Virtual GPU Manager](#22-给kvm安装nvidia-virtual-gpu-manager)
+  - [2.3. 确定vGPU type](#23-确定vgpu-type)
+- [3. 使用vGPU](#3-使用vgpu)
+  - [3.1. Virsh命令](#31-virsh命令)
+  - [3.2. QEMU命令](#32-qemu命令)
+  - [3.3. OpenStack使用](#33-openstack使用)
+    - [3.3.1. 创建flavor](#331-创建flavor)
+    - [3.3.2. 创建虚拟机](#332-创建虚拟机)
+  - [3.4. 确认vGPU已经创建](#34-确认vgpu已经创建)
+  - [3.5. 设置vGPU的参数](#35-设置vgpu的参数)
+  - [3.6. 删除vGPU](#36-删除vgpu)
+- [4. 给虚拟机安装驱动](#4-给虚拟机安装驱动)
+- [5. License这个vGPU](#5-license这个vgpu)
+- [6. 参考](#6-参考)
 
 <!-- /code_chunk_output -->
 
 
-# 基本介绍
+# 1. 基本介绍
 
-## NVIDIA vGPU Software使用方式
+## 1.1. NVIDIA vGPU Software使用方式
 
 NVIDIA vGPU有三种使用方式
 
@@ -44,7 +44,7 @@ NVIDIA vGPU有三种使用方式
 
 这里介绍vGPU方式.
 
-## 架构
+## 1.2. 架构
 
 NVIDIA vGPU系统架构:
 
@@ -58,13 +58,13 @@ NVIDIA vGPU内部架构:
 
 ![config](./images/2.png)
 
-## 1.3 支持的GPU
+## 1.3. 支持的GPU
 
 NVIDIA vGPU作为licensed产品在Tesla GPU上可用.
 
 要求的平台和支持的GPU, 见[NVIDIA Virtual GPU Software Documentation](https://docs.nvidia.com/grid/latest/)
 
-### 1.3.1 Virtual GPU Types
+### 1.3.1. Virtual GPU Types
 
 每个物理GPU能够支持几种不同类型的Virtual GPU. Virtual GPU类型有一定数量的frame buffer, 一定数量的display heads以及最大数目的resolution. 
 
@@ -88,27 +88,27 @@ vGPU类型名称中的板类型后面的数字表示分配给该类型的vGPU的
 
 ![config](./images/3.png)
 
-## 1.4 Guest VM支持
+## 1.4. Guest VM支持
 
 NVIDIA vGPU支持Windows和Linux虚拟机. 支持的vGPU类型取决于虚拟机的操作系统.
 
-### 1.4.1 Windows虚拟机
+### 1.4.1. Windows虚拟机
 
 支持所有的NVIDIA vGPU类型.
 
-### 1.4.2 Linux虚拟机
+### 1.4.2. Linux虚拟机
 
 64位Linux只支持Q\-series和B\-series系列NVIDIA vGPU
 
-## 1.5 NVIDIA vGPU软件功能
+## 1.5. NVIDIA vGPU软件功能
 
 NVIDIA vGPU软件包括Quadro vDWS, GRID Virtual PC, 和 GRID Virtual Applications.
 
-# 2 安装和配置NVIDIA Virtual GPU Manager
+# 2. 安装和配置NVIDIA Virtual GPU Manager
 
 根据Hypervisor的不同而不同. 这步完成后, 可以给虚拟机安装驱动并能license任何NVIDIA vGPU
 
-## 2.1 准备工作
+## 2.1. 准备工作
 
 开始之前, 确保下面条件已经满足:
 
@@ -121,7 +121,7 @@ NVIDIA vGPU软件包括Quadro vDWS, GRID Virtual PC, 和 GRID Virtual Applicatio
     - Hypervisor, 比如KVM
     - 管理Hypervisor的软件, 比如VMware vCenter Server
 
-## 2.2 给KVM安装NVIDIA Virtual GPU Manager
+## 2.2. 给KVM安装NVIDIA Virtual GPU Manager
 
 准备工作:
 
@@ -193,7 +193,7 @@ Tue Apr  9 14:26:40 2019
 +-----------------------------------------------------------------------------+
 ```
 
-## 2.3 确定vGPU type
+## 2.3. 确定vGPU type
 
 确保想要使用vGPU的虚拟机关闭
 
@@ -262,11 +262,11 @@ GRID V100DX-1Q
 
 libvirt用的就是这个mdev\_type标识符
 
-# 3 使用vGPU
+# 3. 使用vGPU
 
 下面介绍三种方式使用vGPU, 包括virsh命令、QEMU命令以及OpenStack的集成
 
-## 3.1 Virsh命令
+## 3.1. Virsh命令
 
 1. 给vGPU生成一个UUID
 
@@ -322,7 +322,7 @@ ec6c61ab-ace5-4607-8118-e9b52c5550af
 # virsh start vm-name
 ```
 
-## 3.2 QEMU命令
+## 3.2. QEMU命令
 
 前3步和Virsh命令使用一样
 
@@ -338,7 +338,7 @@ ec6c61ab-ace5-4607-8118-e9b52c5550af
 
 其中, device属性是vgpu的id, 多个vgpu需要添加多个, uuid属性带的是虚拟机id
 
-## 3.3 OpenStack使用
+## 3.3. OpenStack使用
 
 修改nova配置文件, "/etc/kolla/nova-compute/nova.conf", 添加
 
@@ -349,7 +349,7 @@ enabled_vgpu_types = nvidia-194
 
 然后重启nova\-compute服务
 
-### 3.3.1 创建flavor
+### 3.3.1. 创建flavor
 
 创建一个需要1个vGPU的flavor
 
@@ -359,11 +359,11 @@ enabled_vgpu_types = nvidia-194
 # openstack flavor set vgpu_1 --property "resources:VGPU=1"
 ```
 
-### 3.3.2 创建虚拟机
+### 3.3.2. 创建虚拟机
 
 在"实例类型"选择"vgpu_1"
 
-## 3.4 确认vGPU已经创建
+## 3.4. 确认vGPU已经创建
 
 查看虚拟机的信息
 
@@ -438,7 +438,7 @@ Tue Apr  9 15:58:54 2019
 +-----------------------------------------------------------------------------+
 ```
 
-## 3.5 设置vGPU的参数
+## 3.5. 设置vGPU的参数
 
 用来控制vGPU的行为, 包括限制之类的
 
@@ -455,7 +455,7 @@ Tue Apr  9 15:58:54 2019
 # echo " " > vgpu_params
 ```
 
-## 3.6 删除vGPU
+## 3.6. 删除vGPU
 
 ```
 # cd /sys/class/mdev_bus/domain\:bus\:slot.function/mdev_supported_types/
@@ -463,7 +463,7 @@ Tue Apr  9 15:58:54 2019
 
 
 
-# 4 给虚拟机安装驱动
+# 4. 给虚拟机安装驱动
 
 准备工作
 
@@ -497,7 +497,7 @@ warning没事
 
 ![](./images/2019-04-09-16-27-26.png)
 
-# 5 License这个vGPU
+# 5. License这个vGPU
 
 我们使用配置文件来license
 
@@ -525,6 +525,6 @@ Apr  9 16:23:56 localhost nvidia-gridd: Calling load_byte_array(tra)
 Apr  9 16:23:58 localhost nvidia-gridd: License acquired successfully. (Info: http://10.5.8.208:7070/request; Quadro-Virtual-DWS,5.0)
 ```
 
-# 参考
+# 6. 参考
 
 https://docs.nvidia.com/grid/latest/grid-vgpu-user-guide/index.html
