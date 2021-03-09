@@ -3,7 +3,7 @@
 
 <!-- code_chunk_output -->
 
-- [程描述符struct task\_struct](#程描述符struct-task_struct)
+- [程描述符struct task_struct](#程描述符struct-task_struct)
   - [进程状态](#进程状态)
     - [1.1.1 5个互斥状态](#111-5个互斥状态)
     - [1.1.2 2个终止状态](#112-2个终止状态)
@@ -308,7 +308,7 @@
 
 <!-- /code_chunk_output -->
 
-# 程描述符struct task\_struct
+# 程描述符struct task_struct
 
 ## 进程状态
 
