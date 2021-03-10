@@ -363,7 +363,7 @@ Tmux 也有一个插件管理系统，名字就叫做 `Tmux Plugin Manager`。
 git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 ```
 
-在Tmux配置文件底部加上:
+在Tmux配置文件`~/.tmux.conf`底部加上:
 
 ```
 # List of plugins
