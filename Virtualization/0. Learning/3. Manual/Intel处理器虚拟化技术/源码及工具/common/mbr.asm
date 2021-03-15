@@ -28,7 +28,7 @@ init_start:
     mov ds, ax
 
     ;;
-    ;; ¸´ÖÆ mbr ´úÂëµ½ 0:0600h
+    ;; å¤åˆ¶ mbr ä»£ç åˆ° 0:0600h
     ;;
     mov si, init_start
     mov di, MBR_SECTION
@@ -44,13 +44,13 @@ init_start:
     retf
 
 ;------------------------
-; MBR Ö÷Òª´úÂë
+; MBR ä¸»è¦ä»£ç 
 ;------------------------
 main:
     sti
 
     ;;
-    ;; ÔÚ 4 ¸ö·ÖÇø±íÀï²éÕÒ¿ÉÆô¶¯·ÖÇø
+    ;; åœ¨ 4 ä¸ªåˆ†åŒºè¡¨é‡ŒæŸ¥æ‰¾å¯å¯åŠ¨åˆ†åŒº
     ;;
     mov cx, 4
     mov bp, MBR_SETCION + DPT1_OFFSET

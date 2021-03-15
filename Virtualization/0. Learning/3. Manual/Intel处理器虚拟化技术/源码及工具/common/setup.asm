@@ -1,13 +1,13 @@
 ;*************************************************
 ; setup.asm                                      *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
 
 ;;
-;; Õâ¸ö setup Ä£Ê½ÊÇ¹²ÓÃµÄ£¬·ÅÔÚ ..\common\ Ä¿Â¼ÏÂ
-;; ÓÃÓÚĞ´Èë´ÅÅÌµÄµÚ 1 ºÅÉÈÇø £¡
+;; è¿™ä¸ª setup æ¨¡å¼æ˜¯å…±ç”¨çš„ï¼Œæ”¾åœ¨ ..\common\ ç›®å½•ä¸‹
+;; ç”¨äºå†™å…¥ç£ç›˜çš„ç¬¬ 1 å·æ‰‡åŒº ï¼
 ;;
 
 %include "..\inc\support.inc"
@@ -17,37 +17,37 @@
 
 
 ;;
-;; ËµÃ÷£º
-;; 1) Ä£¿é¿ªÊ¼µãÊÇ SETUP_SEGMENT
-;; 2) Ä£¿éÍ·µÄ´æ·ÅÊÇ¡°Ä£¿é size¡±
-;; 3) load_module() º¯Êı½«Ä£¿é¼ÓÔØµ½ SETUP_SEGMENT Î»ÖÃÉÏ
-;; 4) SETUP Ä£¿éµÄ¡°Èë¿Úµã¡±ÊÇ£ºSETUP_SEGMENT + 0x18
+;; è¯´æ˜ï¼š
+;; 1) æ¨¡å—å¼€å§‹ç‚¹æ˜¯ SETUP_SEGMENT
+;; 2) æ¨¡å—å¤´çš„å­˜æ”¾æ˜¯â€œæ¨¡å— sizeâ€
+;; 3) load_module() å‡½æ•°å°†æ¨¡å—åŠ è½½åˆ° SETUP_SEGMENT ä½ç½®ä¸Š
+;; 4) SETUP æ¨¡å—çš„â€œå…¥å£ç‚¹â€æ˜¯ï¼šSETUP_SEGMENT + 0x18
         
         [SECTION .text]
         org SETUP_SEGMENT
 
 
 ;;
-;; ÔÚ 0x8000 ÇøÓò¶¨ÒåÒıµ¼¹ÜÀí¿é (LOADER_BLOCK)
+;; åœ¨ 0x8000 åŒºåŸŸå®šä¹‰å¼•å¯¼ç®¡ç†å— (LOADER_BLOCK)
 ;;         
-SetupLenth      DD SETUP_LENGTH                 ; Õâ¸öÄ£¿éµÄ size
+SetupLenth      DD SETUP_LENGTH                 ; è¿™ä¸ªæ¨¡å—çš„ size
 CpuIndex        DD 0FFFFFFFFh                   ; CPU index
 CurrentVideo    DD 0B8000h					    ; CurrentVideo
-ApStage1Lock    DD 1                            ; stage1£¨setup£©½×¶ÎµÄËø
-ApStage2Lock    DD 1                            ; stage2£¨protected£©½×¶ÎµÄËø
-ApStage3Lock    DD 1                            ; stage3£¨long£©½×¶ÎµÄËø    
+ApStage1Lock    DD 1                            ; stage1ï¼ˆsetupï¼‰é˜¶æ®µçš„é”
+ApStage2Lock    DD 1                            ; stage2ï¼ˆprotectedï¼‰é˜¶æ®µçš„é”
+ApStage3Lock    DD 1                            ; stage3ï¼ˆlongï¼‰é˜¶æ®µçš„é”    
 MMap.Size       DQ 0
-MMap.Base:      DQ 0                            ; ÄÚ´æÇøÓòµÄµØÆğµØÖ·
-MMap.Length:    DQ 0                            ; ÄÚ´æÇøÓòµÄ³¤¶È
-MMap.Type:      DD 0                            ; ÄÚ´æÇøÓòµÄÀàĞÍ:
+MMap.Base:      DQ 0                            ; å†…å­˜åŒºåŸŸçš„åœ°èµ·åœ°å€
+MMap.Length:    DQ 0                            ; å†…å­˜åŒºåŸŸçš„é•¿åº¦
+MMap.Type:      DD 0                            ; å†…å­˜åŒºåŸŸçš„ç±»å‹:
 
 
 ;;
-;; Ä£¿éµ±Ç°ÔËĞĞÔÚ 16 Î»ÊµÄ£Ê½ÏÂ
+;; æ¨¡å—å½“å‰è¿è¡Œåœ¨ 16 ä½å®æ¨¡å¼ä¸‹
 ;;
         bits 16
         
-SetupEntry:                                             ; ÕâÊÇÄ£¿é´úÂëµÄÈë¿Úµã¡£
+SetupEntry:                                             ; è¿™æ˜¯æ¨¡å—ä»£ç çš„å…¥å£ç‚¹ã€‚
         cli
         cld
         NMI_DISABLE
@@ -61,38 +61,38 @@ SetupEntry:                                             ; ÕâÊÇÄ£¿é´úÂëµÄÈë¿Úµã¡£
                 
 
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-        ;;;;;;;;;;; ÏÂÃæÊÇ 32 Î»´úÂë ;;;;;;;;;;;;;;;;;;;
+        ;;;;;;;;;;; ä¸‹é¢æ˜¯ 32 ä½ä»£ç  ;;;;;;;;;;;;;;;;;;;
         ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         
         bits 32
 
         ;;
-        ;; ÏÂÃæ½øĞĞÊı¾İµÄ³õÊ¼»¯ÉèÖÃ:
-        ;; 1) Ê×ÏÈ£¬³õÊ¼»¯ SDA£¨System Data Area£©ÇøÓòÊı¾İ
-        ;; 2) È»ºó£¬³õÊ¼»¯ PCB£¨Processor Control Block£©ÇøÓòÊı¾İ
+        ;; ä¸‹é¢è¿›è¡Œæ•°æ®çš„åˆå§‹åŒ–è®¾ç½®:
+        ;; 1) é¦–å…ˆï¼Œåˆå§‹åŒ– SDAï¼ˆSystem Data Areaï¼‰åŒºåŸŸæ•°æ®
+        ;; 2) ç„¶åï¼Œåˆå§‹åŒ– PCBï¼ˆProcessor Control Blockï¼‰åŒºåŸŸæ•°æ®
         ;;
-        ;; ËµÃ÷:
-        ;; 1) SDA Êı¾İÊÇËùÓĞ´¦ÀíÆ÷¹²Ïí£¬ËùÒÔ±ØĞëÏÈ³õÊ¼»¯
-        ;; 2) PCB Êı¾İÊÇ logical processor Êı¾İ£¬¹²Ö§³Ö 16 ¸ö PCB ¿é
-        ;; 3) PCB Êı¾İÊÇ¶¯Ì¬·ÖÅä£¬Ã¿¸ö PCB ¿é»ùÖ·²»Í¬
+        ;; è¯´æ˜:
+        ;; 1) SDA æ•°æ®æ˜¯æ‰€æœ‰å¤„ç†å™¨å…±äº«ï¼Œæ‰€ä»¥å¿…é¡»å…ˆåˆå§‹åŒ–
+        ;; 2) PCB æ•°æ®æ˜¯ logical processor æ•°æ®ï¼Œå…±æ”¯æŒ 16 ä¸ª PCB å—
+        ;; 3) PCB æ•°æ®æ˜¯åŠ¨æ€åˆ†é…ï¼Œæ¯ä¸ª PCB å—åŸºå€ä¸åŒ
         ;; 
         ;;
-        ;; fs ¶ÎËµÃ÷£º
-        ;;      1) fs Ö¸Ïò SDA£¨System Data Area£©ÇøÓò£¬ÊÇËùÓĞ logical processor ¹²ÏíµÄÊı¾İÇøÓò
-        ;; ×¢Òâ£º
-        ;;      1) ĞèÒªÔÚÖ§³Ö 64 Î»µÄ´¦ÀíÆ÷ÉÏ²ÅÄÜÖ±½ÓĞ´ IA_FS_BASE ¼Ä´æÆ÷£¡
-        ;;      2) ·ñÔò£¬ĞèÒª¿ªÆô±£»¤Ä£Ê½À´¼ÓÔØ FS ¶Î»ùÖ·
-        ;;      3) GS ¶Î»ùÖ·ÔÚºóĞø´úÂëÖĞ¸üĞÂ
+        ;; fs æ®µè¯´æ˜ï¼š
+        ;;      1) fs æŒ‡å‘ SDAï¼ˆSystem Data Areaï¼‰åŒºåŸŸï¼Œæ˜¯æ‰€æœ‰ logical processor å…±äº«çš„æ•°æ®åŒºåŸŸ
+        ;; æ³¨æ„ï¼š
+        ;;      1) éœ€è¦åœ¨æ”¯æŒ 64 ä½çš„å¤„ç†å™¨ä¸Šæ‰èƒ½ç›´æ¥å†™ IA_FS_BASE å¯„å­˜å™¨ï¼
+        ;;      2) å¦åˆ™ï¼Œéœ€è¦å¼€å¯ä¿æŠ¤æ¨¡å¼æ¥åŠ è½½ FS æ®µåŸºå€
+        ;;      3) GS æ®µåŸºå€åœ¨åç»­ä»£ç ä¸­æ›´æ–°
         ;;        
         call init_system_data_area
 
 
 PcbInitEntry:
         ;;
-        ;; ÉèÖÃ PCB£¨Processor Control Block£©ÄÚÈİ
-        ;; ËµÃ÷£º
-        ;; 1) ´Ë´¦Îª logical processor µÄ PCB ³õÊ¼»¯Èë¿Ú£¨°üÀ¨ BSP Óë AP£©
-        ;; 2) Ã¿¸ö logical processor ¶¼ĞèÒª¾­¹ıÏÂÃæµÄ PCB Êı¾İ³õÊ¼»¯
+        ;; è®¾ç½® PCBï¼ˆProcessor Control Blockï¼‰å†…å®¹
+        ;; è¯´æ˜ï¼š
+        ;; 1) æ­¤å¤„ä¸º logical processor çš„ PCB åˆå§‹åŒ–å…¥å£ï¼ˆåŒ…æ‹¬ BSP ä¸ APï¼‰
+        ;; 2) æ¯ä¸ª logical processor éƒ½éœ€è¦ç»è¿‡ä¸‹é¢çš„ PCB æ•°æ®åˆå§‹åŒ–
         ;; 
         call init_processor_control_block
         call init_apic
@@ -104,26 +104,26 @@ PcbInitEntry:
 
 %ifndef DBG
         ;;
-        ;; Stage1 ½×¶Î×îºó¹¤×÷£¬¼ì²éÊÇ·ñÎª BSP
-        ;; 1) ÊÇ£¬Ôò·¢ËÍ INIT-SIPI-SIPI ĞòÁĞ
-        ;; 2) ·ñ£¬ÔòµÈ´ı½ÓÊÕ SIPI 
+        ;; Stage1 é˜¶æ®µæœ€åå·¥ä½œï¼Œæ£€æŸ¥æ˜¯å¦ä¸º BSP
+        ;; 1) æ˜¯ï¼Œåˆ™å‘é€ INIT-SIPI-SIPI åºåˆ—
+        ;; 2) å¦ï¼Œåˆ™ç­‰å¾…æ¥æ”¶ SIPI 
         ;;
         cmp BYTE [gs: PCB.IsBsp], 1
         jne ApStage1End
 
         ;;
-        ;; ÕâÊÇ BSP µÚ1½×¶ÎµÄ×îºó¹¤×÷£º
-        ;; 1) ·¢ËÍ INIT-SIPI-SIPI ĞòÁĞ¸ø AP 
-        ;; 2) µÈ´ıËùÓĞ AP µÚ1½×¶ÎÍê³É
-        ;; 3) ×ªÈëÏÂ½×¶Î¹¤×÷
+        ;; è¿™æ˜¯ BSP ç¬¬1é˜¶æ®µçš„æœ€åå·¥ä½œï¼š
+        ;; 1) å‘é€ INIT-SIPI-SIPI åºåˆ—ç»™ AP 
+        ;; 2) ç­‰å¾…æ‰€æœ‰ AP ç¬¬1é˜¶æ®µå®Œæˆ
+        ;; 3) è½¬å…¥ä¸‹é˜¶æ®µå·¥ä½œ
         ;;
         call wait_for_ap_stage1_done
 %endif         
 
         ;;
-        ;; ¼ì²éÊÇ·ñĞèÒª½øÈë longmode
-        ;; 1) ÊÇ£¬Ìø¹ı stage2, ½øÈë stage3 ½×¶Î£¨longmode Ä£Ê½£©
-        ;; 2) ·ñ£¬½øÈë stage2 ½×¶Î
+        ;; æ£€æŸ¥æ˜¯å¦éœ€è¦è¿›å…¥ longmode
+        ;; 1) æ˜¯ï¼Œè·³è¿‡ stage2, è¿›å…¥ stage3 é˜¶æ®µï¼ˆlongmode æ¨¡å¼ï¼‰
+        ;; 2) å¦ï¼Œè¿›å…¥ stage2 é˜¶æ®µ
         ;;
         cmp DWORD [fs: SDA.ApLongmode], 1
         mov eax, [PROTECTED_SEGMENT+4]
@@ -133,19 +133,19 @@ PcbInitEntry:
 
 %ifndef DBG      
         ;;
-        ;; APµÚ1½×¶Î×îºó¹¤×÷ËµÃ÷£º
-        ;; 1) Ôö¼Ó ApInitDoneCount ¼ÆÊıÖµ
-        ;; 1) AP µÈ´ıµÚ2½×¶ÎËø£¨µÈ´ı BSP ¿ª·Å stage2 Ëø£©
+        ;; APç¬¬1é˜¶æ®µæœ€åå·¥ä½œè¯´æ˜ï¼š
+        ;; 1) å¢åŠ  ApInitDoneCount è®¡æ•°å€¼
+        ;; 1) AP ç­‰å¾…ç¬¬2é˜¶æ®µé”ï¼ˆç­‰å¾… BSP å¼€æ”¾ stage2 é”ï¼‰
         ;;
         
 ApStage1End:  
         ;;
-        ;; Ôö¼ÓÍê³É¼ÆÊı
+        ;; å¢åŠ å®Œæˆè®¡æ•°
         ;;
         lock inc DWORD [fs: SDA.ApInitDoneCount]
 
         ;;
-        ;; ¿ª·ÅµÚ1½×¶Î AP Lock
+        ;; å¼€æ”¾ç¬¬1é˜¶æ®µ AP Lock
         ;;
         xor eax, eax
         mov ebx, [fs: SDA.Stage1LockPointer]
@@ -155,31 +155,31 @@ ApStage1End:
 	call dump_trace_message
 %endif
         ;;
-        ;; ¼ì²éÊÇ·ñĞèÒª½øÈë longmode
-        ;; 1) ÊÇ£¬Ìø¹ı stage2, µÈ´ı stage3 Ëø£¬½øÈë stage3 ½×¶Î£¨longmode Ä£Ê½£©
-        ;; 2) ·ñ£¬µÈ´ı stage2 Ëø£¬½øÈë stage2 ½×¶Î
+        ;; æ£€æŸ¥æ˜¯å¦éœ€è¦è¿›å…¥ longmode
+        ;; 1) æ˜¯ï¼Œè·³è¿‡ stage2, ç­‰å¾… stage3 é”ï¼Œè¿›å…¥ stage3 é˜¶æ®µï¼ˆlongmode æ¨¡å¼ï¼‰
+        ;; 2) å¦ï¼Œç­‰å¾… stage2 é”ï¼Œè¿›å…¥ stage2 é˜¶æ®µ
         ;;
         cmp DWORD [fs: SDA.ApLongmode], 1
         je ApStage1End.WaitStage3
 
         ;;
-        ;; ÏÖÔÚµÈ´ı stage2 µÄËø¿ª·Å
+        ;; ç°åœ¨ç­‰å¾… stage2 çš„é”å¼€æ”¾
         ;;
         mov esi, [fs: SDA.Stage2LockPointer]
         call get_spin_lock
         ;;
-        ;; ½øÈë stage2
+        ;; è¿›å…¥ stage2
         ;;
         jmp [PROTECTED_SEGMENT+8]
         
 ApStage1End.WaitStage3:
         ;;
-        ;; ÏÖÔÚµÈ´ı stage3 Ëø¿ª·Å
+        ;; ç°åœ¨ç­‰å¾… stage3 é”å¼€æ”¾
         ;;
         mov esi, [fs: SDA.Stage3LockPointer]
         call get_spin_lock                
         ;;
-        ;; ½øÈë stage3
+        ;; è¿›å…¥ stage3
         ;; 
         jmp [LONG_SEGMENT+8]
 
@@ -204,7 +204,7 @@ ApStage1Entry:
         cld
 
         ;;
-        ;; real mode ³õÊ¼»·¾³
+        ;; real mode åˆå§‹ç¯å¢ƒ
         ;;
         xor ax, ax
         mov ds, ax
@@ -215,14 +215,14 @@ ApStage1Entry:
 ApStage1Entry.Next:        
        
         ;;
-        ;; ¼ì²é ApLock£¬ÊÇ·ñÔÊĞí AP ½øÈë startup routine Ö´ĞĞ
+        ;; æ£€æŸ¥ ApLockï¼Œæ˜¯å¦å…è®¸ AP è¿›å…¥ startup routine æ‰§è¡Œ
         ;;
         xor eax, eax
         xor esi, esi
         inc esi
         
         ;;
-        ;; »ñµÃ×ÔĞıËø
+        ;; è·å¾—è‡ªæ—‹é”
         ;;
 AcquireApStage1Lock:
         lock cmpxchg [ApStage1Lock], esi
@@ -239,7 +239,7 @@ CheckApStage1Lock:
         
 AcquireApStage1LockOk:
         ;;
-        ;; AP stage1 Ç°ÆÚ´¦Àí
+        ;; AP stage1 å‰æœŸå¤„ç†
         ;;
         lock inc DWORD [CpuIndex]
         call check_cpu_environment
@@ -250,7 +250,7 @@ AcquireApStage1LockOk:
         bits 32
         
 %if 0
-;; ÏÂÃæÊÇÎª²âÊÔ¶øÔö¼Ó !!
+;; ä¸‹é¢æ˜¯ä¸ºæµ‹è¯•è€Œå¢åŠ  !!
         call init_processor_control_block
         call init_apic
         call init_processor_basic_info
@@ -261,11 +261,11 @@ AcquireApStage1LockOk:
 
 
         ;;
-        ;; Ôö¼ÓÍê³É¼ÆÊı
+        ;; å¢åŠ å®Œæˆè®¡æ•°
         ;;
         lock inc DWORD [fs: SDA.ApInitDoneCount]
         ;;
-        ;; ¿ª·ÅµÚ1½×¶Î AP Lock
+        ;; å¼€æ”¾ç¬¬1é˜¶æ®µ AP Lock
         ;;
         xor eax, eax
         mov ebx, [fs: SDA.Stage1LockPointer]
@@ -273,20 +273,20 @@ AcquireApStage1LockOk:
 
 call dump_trace_message
         ;;
-        ;; ÏÖÔÚµÈ´ı stage2 µÄËø¿ª·Å
+        ;; ç°åœ¨ç­‰å¾… stage2 çš„é”å¼€æ”¾
         ;;
         mov esi, [fs: SDA.Stage2LockPointer]
         call get_spin_lock
 
         ;;
-        ;; ½øÈë stage2
+        ;; è¿›å…¥ stage2
         ;;
         jmp [PROTECTED_SEGMENT+8]
         
 
 %endif
         ;;
-        ;; ×ªÈë PCB ³õÊ¼»¯
+        ;; è½¬å…¥ PCB åˆå§‹åŒ–
         ;; 
         mov eax, PcbInitEntry
         jmp eax
@@ -296,8 +296,8 @@ call dump_trace_message
 
 ;-----------------------------------------
 ; dump_trace_message():
-; ËµÃ÷:
-;       ´òÓ¡ trace ĞÅÏ¢
+; è¯´æ˜:
+;       æ‰“å° trace ä¿¡æ¯
 ;-----------------------------------------
 dump_trace_message:
         mov esi, Status.CpuIdMsg        
@@ -318,7 +318,7 @@ dump_trace_message.@1:
 
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ÏÂÃæÊÇ include ½øÀ´µÄº¯ÊıÄ£¿é        ;;
+;; ä¸‹é¢æ˜¯ include è¿›æ¥çš„å‡½æ•°æ¨¡å—        ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
         bits 16
@@ -328,7 +328,7 @@ dump_trace_message.@1:
   
         bits 32
 ;;
-;; ÏÂÃæ´úÂëÊ¹ÓÃÔÚ stage1 ½×¶Î
+;; ä¸‹é¢ä»£ç ä½¿ç”¨åœ¨ stage1 é˜¶æ®µ
 ;;        
 %include "..\lib\print.asm"
 %include "..\lib\crt.asm"        
@@ -356,14 +356,14 @@ dump_trace_message.@1:
         ALIGN 16
 
 ;;
-;; stage1 µÄ GDT Óë TSS ÇøÓò
+;; stage1 çš„ GDT ä¸ TSS åŒºåŸŸ
 ;;
 setup.Gdt     times (16*128)  DB 0
 setup.Tss     times (16*128)  DB 0
 
         
 ;;
-;; Ä£¿é³¤¶È
+;; æ¨¡å—é•¿åº¦
 ;;
 SETUP_LENGTH    EQU     $ - SETUP_SEGMENT
 
