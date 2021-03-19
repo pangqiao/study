@@ -9,3 +9,5 @@ KVM tracing: https://www.linux-kvm.org/page/Tracing
 
 
 还有`tools/testing/selftests/kvm/`下面内容
+
+社区很有意思的一系列debug的patch: https://patchwork.kernel.org/project/kvm/cover/20210315221020.661693-1-mlevitsk@redhat.com/
