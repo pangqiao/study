@@ -1,12 +1,12 @@
 ;*************************************************
 ;* exception.asm                                 *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
 
 ;;
-;; ´¦ÀíÓÉÓÚ Exception ¶øÒı·¢µÄ VM exit
+;; å¤„ç†ç”±äº Exception è€Œå¼•å‘çš„ VM exit
 ;;
 
 
@@ -20,10 +20,10 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       ÔÚÏÂÃæµÄÇé¿öÏÂ£¬VMM ĞèÒª reflect exception ¸ø guest Ö´ĞĞ:
-;       1) VM exit ÊÇÓÉÓÚ exception Òı·¢
-;       2) exception µÄÊÇÓÉÓÚ guest OS Ìõ¼ş¶ø²úÉúµÄ
+; æè¿°ï¼š
+;       åœ¨ä¸‹é¢çš„æƒ…å†µä¸‹ï¼ŒVMM éœ€è¦ reflect exception ç»™ guest æ‰§è¡Œ:
+;       1) VM exit æ˜¯ç”±äº exception å¼•å‘
+;       2) exception çš„æ˜¯ç”±äº guest OS æ¡ä»¶è€Œäº§ç”Ÿçš„
 ;----------------------------------------------------------
 reflect_exception_to_guest:
         push ebx
@@ -34,14 +34,14 @@ reflect_exception_to_guest:
         sub esp, 8
         
         ;;
-        ;; µ± VM-exit IDT-vectoring information µÄ bit31 Îª 1 Ê±£¬ËµÃ÷ VM-exit ²úÉúÔÚ event delivery ¹ı³ÌÖĞ
-        ;; ÄÇÃ´ reflect exception ÓÉÁ½´óÇé¿ö·Ö±ğ¶Ô´ı:
-        ;; 1) Ö±½Ó reflect ¸ø guest
-        ;; 2) reflect #DF exception ¸ø guest
+        ;; å½“ VM-exit IDT-vectoring information çš„ bit31 ä¸º 1 æ—¶ï¼Œè¯´æ˜ VM-exit äº§ç”Ÿåœ¨ event delivery è¿‡ç¨‹ä¸­
+        ;; é‚£ä¹ˆ reflect exception ç”±ä¸¤å¤§æƒ…å†µåˆ†åˆ«å¯¹å¾…:
+        ;; 1) ç›´æ¥ reflect ç»™ guest
+        ;; 2) reflect #DF exception ç»™ guest
         ;;
         
         ;;
-        ;; ¶Á VM-exit interrupt information ºÍ VM-exit interrupt error code Öµ
+        ;; è¯» VM-exit interrupt information å’Œ VM-exit interrupt error code å€¼
         ;;
         ReadVmcsRegion VMEXIT_INTERRUPTION_INFORMATION
         mov ebx, eax
@@ -49,9 +49,9 @@ reflect_exception_to_guest:
         mov ecx, eax        
         
         ;;
-        ;; ¼ì²é bit12 Î»£¨NMI unblocking due to IRET£©
-        ;; 1) bit12 Îª 0 Ê±£¬²»ĞŞ¸Ä blocking by NMI Î»
-        ;; 2) bit12 Îª 1 Ê±£¬¼ì²é VM-exit event ÊÇ·ñÎª #DF
+        ;; æ£€æŸ¥ bit12 ä½ï¼ˆNMI unblocking due to IRETï¼‰
+        ;; 1) bit12 ä¸º 0 æ—¶ï¼Œä¸ä¿®æ”¹ blocking by NMI ä½
+        ;; 2) bit12 ä¸º 1 æ—¶ï¼Œæ£€æŸ¥ VM-exit event æ˜¯å¦ä¸º #DF
         ;; 
         xor esi, esi
         btr ebx, 12
@@ -60,7 +60,7 @@ reflect_exception_to_guest:
         je reflect_exception_to_guest.@0
         
         ;;
-        ;; ĞèÒªÉèÖÃ blocking by NMI Î»
+        ;; éœ€è¦è®¾ç½® blocking by NMI ä½
         ;;
         mov esi, GUEST_BLOCKING_BY_NMI        
  
@@ -68,10 +68,10 @@ reflect_exception_to_guest.@0:
 
         
         ;;
-        ;; ²¢ÅĞ¶Ï VM exit ÊÇ·ñÔÚ event delivery ¹ı³ÌÖĞ²úÉú
-        ;; 1) ¶Á VM eixt IDT-vectoring informationg
-        ;; 2) ¼ì²é bit31 ÊÇ·ñÎª 1
-        ;; 3) ¼ì²éÊÇ·ñÊôÓÚ hardware exception
+        ;; å¹¶åˆ¤æ–­ VM exit æ˜¯å¦åœ¨ event delivery è¿‡ç¨‹ä¸­äº§ç”Ÿ
+        ;; 1) è¯» VM eixt IDT-vectoring informationg
+        ;; 2) æ£€æŸ¥ bit31 æ˜¯å¦ä¸º 1
+        ;; 3) æ£€æŸ¥æ˜¯å¦å±äº hardware exception
         ;;
         ReadVmcsRegion IDT_VECTORING_INFORMATION
         mov edx, eax
@@ -79,25 +79,25 @@ reflect_exception_to_guest.@0:
         jz reflect_exception_to_guest.inject
         
         ;;
-        ;; µ± IDT-vectoring information ÓĞĞ§Ê±£¬NMI unblocking due to IRET Î»ÊôÓÚ undefined Öµ
+        ;; å½“ IDT-vectoring information æœ‰æ•ˆæ—¶ï¼ŒNMI unblocking due to IRET ä½å±äº undefined å€¼
         ;;
-        xor esi, esi                                                    ; Çå blocking by NMI Î»
+        xor esi, esi                                                    ; æ¸… blocking by NMI ä½
         
         ;;
-        ;; ¼ì²éÊÇ·ñÊôÓÚ hardware exception£¨3£©
+        ;; æ£€æŸ¥æ˜¯å¦å±äº hardware exceptionï¼ˆ3ï¼‰
         ;;
         and eax, 700h
         cmp eax, INTERRUPT_TYPE_HARDWARE_EXCEPTION
         jne reflect_exception_to_guest.inject
         
         ;;
-        ;; µ±Ô­Ê¼ event ÊÇ #DF Ê±£¬±íÃ÷ guest Óöµ½ triple fault
+        ;; å½“åŸå§‹ event æ˜¯ #DF æ—¶ï¼Œè¡¨æ˜ guest é‡åˆ° triple fault
         ;;
         cmp dl, 8
         jne reflect_exception_to_guest.@1
 
         ;;
-        ;; VMM ½« guest ½øÈë shutdown ×´Ì¬
+        ;; VMM å°† guest è¿›å…¥ shutdown çŠ¶æ€
         ;;        
         WriteVmcsRegion GUEST_ACTIVITY_STATE, GUEST_STATE_SHUTDOWN
         
@@ -105,47 +105,47 @@ reflect_exception_to_guest.@0:
         
         
         ;;
-        ;; ÏÂÃæµÄÇéĞÎÖ®Ò»£¬ĞèÒª reflect #DF exception ¸ø guest
-        ;; 1) Èç¹ûÔ­Ê¼ event£¨¼ÇÂ¼ÔÚ IDT-vectoring Àï£©ºÍÒı·¢ VM-exit µÄ event ¶¼ÊÇÊôÓÚ #DE£¬#TS£¬#NP£¬#SS »ò #GP
-        ;;   £¨¶ÔÓ¦µÄ vector Îª 0, 10, 11, 12£¬13£©
-        ;; 2) Èç¹ûÔ­Ê¼ event Îª #PF£¬²¢ÇÒÒı·¢ VM-exit µÄ event Îª #PF »ò #DE£¬#TS£¬#NP£¬#SS, #GP
-        ;;   £¨¶ÔÓ¦µÄ vector Îª 14, 0, 10, 11, 12, 13£©
-        ;; ÉÏÃæÇéĞÎÖ®Ò»±íÃ÷£ºevent delivery ÆÚ¼ä·¢ÉúÁË #DF Òì³£
+        ;; ä¸‹é¢çš„æƒ…å½¢ä¹‹ä¸€ï¼Œéœ€è¦ reflect #DF exception ç»™ guest
+        ;; 1) å¦‚æœåŸå§‹ eventï¼ˆè®°å½•åœ¨ IDT-vectoring é‡Œï¼‰å’Œå¼•å‘ VM-exit çš„ event éƒ½æ˜¯å±äº #DEï¼Œ#TSï¼Œ#NPï¼Œ#SS æˆ– #GP
+        ;;   ï¼ˆå¯¹åº”çš„ vector ä¸º 0, 10, 11, 12ï¼Œ13ï¼‰
+        ;; 2) å¦‚æœåŸå§‹ event ä¸º #PFï¼Œå¹¶ä¸”å¼•å‘ VM-exit çš„ event ä¸º #PF æˆ– #DEï¼Œ#TSï¼Œ#NPï¼Œ#SS, #GP
+        ;;   ï¼ˆå¯¹åº”çš„ vector ä¸º 14, 0, 10, 11, 12, 13ï¼‰
+        ;; ä¸Šé¢æƒ…å½¢ä¹‹ä¸€è¡¨æ˜ï¼ševent delivery æœŸé—´å‘ç”Ÿäº† #DF å¼‚å¸¸
         ;;
 
 reflect_exception_to_guest.@1:
        
         ;;
-        ;; Ô­Ê¼ event ÊÇ·ñÎª contributory exception£¨0, 10, 11, 12, 13£©
+        ;; åŸå§‹ event æ˜¯å¦ä¸º contributory exceptionï¼ˆ0, 10, 11, 12, 13ï¼‰
         ;;
-        cmp dl, 0                                                       ; ¼ì²é #DE
+        cmp dl, 0                                                       ; æ£€æŸ¥ #DE
         je reflect_exception_to_guest.@2
-        cmp dl, 10                                                      ; ¼ì²é 10-13
+        cmp dl, 10                                                      ; æ£€æŸ¥ 10-13
         jb reflect_exception_to_guest.inject
         cmp dl, 13                         
         jbe reflect_exception_to_guest.@2
         
         ;;
-        ;; Ô­Ê¼ event ÊÇ·ñÎª #PF
+        ;; åŸå§‹ event æ˜¯å¦ä¸º #PF
         ;;
-        cmp dl, 14                                                      ; ¼ì²é #PF
+        cmp dl, 14                                                      ; æ£€æŸ¥ #PF
         jne reflect_exception_to_guest.inject   
                 
         
         ;;
-        ;; ¼ì²é VM-exit event ÊÇ·ñÎª #PF
+        ;; æ£€æŸ¥ VM-exit event æ˜¯å¦ä¸º #PF
         ;;       
         cmp bl, 14
         je reflect_exception_to_guest.df
         
 reflect_exception_to_guest.@2:
-        cmp bl, 0                                                       ; ¼ì²é #DE
+        cmp bl, 0                                                       ; æ£€æŸ¥ #DE
         je reflect_exception_to_guest.df
         
         ;;
-        ;; ÊÇ·ñ contributory exception£¨10, 11, 12, 13£©
+        ;; æ˜¯å¦ contributory exceptionï¼ˆ10, 11, 12, 13ï¼‰
         ;;
-        cmp bl, 10                                                      ; ¼ì²é 10 - 13
+        cmp bl, 10                                                      ; æ£€æŸ¥ 10 - 13
         jb reflect_exception_to_guest.inject
         cmp bl, 13
         ja reflect_exception_to_guest.inject           
@@ -153,7 +153,7 @@ reflect_exception_to_guest.@2:
 
 reflect_exception_to_guest.df:
         ;;
-        ;; ¹¹ÔìÒ»¸ö #DF Òì³£µÄ event injection ĞÅÏ¢
+        ;; æ„é€ ä¸€ä¸ª #DF å¼‚å¸¸çš„ event injection ä¿¡æ¯
         ;; 1) vector = 08h
         ;; 2) interrupt type = hardware exception
         ;; 3) deliver error code = 1
@@ -165,15 +165,15 @@ reflect_exception_to_guest.df:
         
 reflect_exception_to_guest.inject:        
         ;;
-        ;; ÉèÖÃ injection ĞÅÏ¢£º
-        ;; 1) ¸´ÖÆ VM exit interrupt-information 
-        ;; 2) ¸´ÖÆ VM exit interrupt error code
+        ;; è®¾ç½® injection ä¿¡æ¯ï¼š
+        ;; 1) å¤åˆ¶ VM exit interrupt-information 
+        ;; 2) å¤åˆ¶ VM exit interrupt error code
         ;;
         WriteVmcsRegion VMENTRY_INTERRUPTION_INFORMATION, ebx
         WriteVmcsRegion VMENTRY_EXCEPTION_ERROR_CODE, ecx
 
         ;;
-        ;; ÉèÖÃ guest interruptibility state
+        ;; è®¾ç½® guest interruptibility state
         ;;                
         ReadVmcsRegion GUEST_INTERRUPTIBILITY_STATE
         or esi, eax
@@ -195,9 +195,9 @@ reflect_exception_to_guest.done:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #DE Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #DE å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_DE:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -209,9 +209,9 @@ do_DE:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #DB Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #DB å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_DB:
         push ebp
@@ -222,7 +222,7 @@ do_DB:
 %endif
         
         ;;
-        ;; ·´Éä #DB Òì³£
+        ;; åå°„ #DB å¼‚å¸¸
         ;;
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_DB
         DoVmWrite       VMENTRY_INSTRUCTION_LENGTH, [ebp + PCB.ExitInfoBuf + EXIT_INFO.InstructionLength]
@@ -239,9 +239,9 @@ do_DB:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ NMI Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± NMI å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_NMI:
         push ebp
@@ -254,19 +254,19 @@ do_NMI:
         DEBUG_RECORD    "[do_NMI]: call NMI handler !"
 
         ;;
-        ;; ÏÂÃæ²ÉÓÃ£¬Ö÷¶¯µ÷ÓÃ NMI handler ·½Ê½ÔÚVMMÄÚÍê³É NMI
+        ;; ä¸‹é¢é‡‡ç”¨ï¼Œä¸»åŠ¨è°ƒç”¨ NMI handler æ–¹å¼åœ¨VMMå†…å®Œæˆ NMI
         ;;
         int NMI_VECTOR
 
         ;;
-        ;; ÏÂÃæ×¢Èë NMI ÈÃ guest Íê³É
-        ;; 1) ½«ÕâÖÖ·½Ê½¸ü¸ÄÎª VMM Íê³É
+        ;; ä¸‹é¢æ³¨å…¥ NMI è®© guest å®Œæˆ
+        ;; 1) å°†è¿™ç§æ–¹å¼æ›´æ”¹ä¸º VMM å®Œæˆ
         ;;
 %if 0
         DEBUG_RECORD    "[do_NMI]: inject a NMI event !"
         
         ;;
-        ;; ×¢Èë NMI ÊÂ¼ş
+        ;; æ³¨å…¥ NMI äº‹ä»¶
         ;;       
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_NMI
         SetVmcsField    VMENTRY_INSTRUCTION_LENGTH, 0
@@ -283,9 +283,9 @@ do_NMI:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #BP Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #BP å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_BP:
         push ebp
@@ -298,7 +298,7 @@ do_BP:
         DEBUG_RECORD    "[do_BP]: inject a #BP event !"        
         
         ;;
-        ;; ·´Éä #BP Òì³£
+        ;; åå°„ #BP å¼‚å¸¸
         ;;
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_BP
         DoVmWrite       VMENTRY_INSTRUCTION_LENGTH, [ebp + PCB.ExitInfoBuf + EXIT_INFO.InstructionLength]
@@ -315,9 +315,9 @@ do_BP:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #OF Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #OF å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_OF:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -330,9 +330,9 @@ do_OF:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #BR Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #BR å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_BR:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -344,9 +344,9 @@ do_BR:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #UD Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #UD å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_UD:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -360,9 +360,9 @@ do_UD:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #NM Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #NM å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_NM:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -375,9 +375,9 @@ do_NM:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #DF Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #DF å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_DF:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -391,9 +391,9 @@ do_DF:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #TS Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #TS å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_TS:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -406,9 +406,9 @@ do_TS:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #NP Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #NP å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_NP:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -421,9 +421,9 @@ do_NP:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #SS Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #SS å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_SS:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -435,9 +435,9 @@ do_SS:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #GP Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #GP å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_GP:
         push ebp
@@ -455,10 +455,10 @@ do_GP:
         REX.Wrxb
         mov ebx, [ebp + PCB.CurrentVmbPointer]
         
-        call get_interrupt_info                 ; ÊÕ¼¯ÖĞ¶ÏÏà¹ØĞÅÏ¢
+        call get_interrupt_info                 ; æ”¶é›†ä¸­æ–­ç›¸å…³ä¿¡æ¯
         
         ;;
-        ;; ÊôÓÚ software interrupt, external-interrupt ÒÔ¼° privileged interrupt Ê±£¬Ö´ĞĞÖĞ¶Ï´¦Àí
+        ;; å±äº software interrupt, external-interrupt ä»¥åŠ privileged interrupt æ—¶ï¼Œæ‰§è¡Œä¸­æ–­å¤„ç†
         ;;
         movzx eax, BYTE [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.InterruptType]
         cmp al, INTERRUPT_TYPE_SOFTWARE
@@ -469,9 +469,9 @@ do_GP:
         je do_GP.DoInterrupt
 
         ;;
-        ;; ·´Éä´¦Àí£º
-        ;; 1) µ± IDT-vectoring information ¼ÇÂ¼Òì³£Îª #DE£¬#TS£¬#NP, #SS »òÕß #GP Ê±£¬ĞèÒª·´Éä #DF Òì³£
-        ;; 2) µ± IDT-vectoring information ¼ÇÂ¼Òì³£Îª #DF Òì³££¬ĞèÒª´¦Àí triple fault
+        ;; åå°„å¤„ç†ï¼š
+        ;; 1) å½“ IDT-vectoring information è®°å½•å¼‚å¸¸ä¸º #DEï¼Œ#TSï¼Œ#NP, #SS æˆ–è€… #GP æ—¶ï¼Œéœ€è¦åå°„ #DF å¼‚å¸¸
+        ;; 2) å½“ IDT-vectoring information è®°å½•å¼‚å¸¸ä¸º #DF å¼‚å¸¸ï¼Œéœ€è¦å¤„ç† triple fault
         ;;
         cmp eax, INTERRUPT_TYPE_HARD_EXCEPTION
         jne do_GP.ReflectGp
@@ -507,13 +507,13 @@ do_GP.TripleFalut:
         jmp do_GP.Done1
         
         ;;
-        ;; ´¦Àí triple fault 
+        ;; å¤„ç† triple fault 
         ;;        
         SetVmcsField    GUEST_ACTIVITY_STATE, GUEST_STATE_SHUTDOWN
         jmp do_GP.Done
 
         ;;
-        ;; #### ÏÂÃæ VMM ½øĞĞÖĞ¶ÏµÄ delivery ´¦Àí ####
+        ;; #### ä¸‹é¢ VMM è¿›è¡Œä¸­æ–­çš„ delivery å¤„ç† ####
         ;;
 do_GP.DoInterrupt:        
         DEBUG_RECORD    "process INT instruction"
@@ -542,9 +542,9 @@ do_GP.Done1:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #PF Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #PF å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_PF:
         push ebp
@@ -580,9 +580,9 @@ do_PF.Done:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #MF Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #MF å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_MF:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -596,9 +596,9 @@ do_MF:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #AC Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #AC å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_AC:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -611,9 +611,9 @@ do_AC:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #MC Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #MC å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_MC:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -627,9 +627,9 @@ do_MC:
 ; input:
 ;       none
 ; output:
-;       eax - VMM ´¦ÀíÂë
-; ÃèÊö£º
-;       1) ´¦ÀíÓÉ #XM Òı·¢µÄ VM-exit
+;       eax - VMM å¤„ç†ç 
+; æè¿°ï¼š
+;       1) å¤„ç†ç”± #XM å¼•å‘çš„ VM-exit
 ;-----------------------------------------------------------------------
 do_XM:
         mov eax, VMM_PROCESS_DUMP_VMCS
@@ -643,8 +643,8 @@ do_XM:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ±£ÁôµÄÒì³£
+; æè¿°ï¼š
+;       1) ä¿ç•™çš„å¼‚å¸¸
 ;-----------------------------------------------------------------------
 DoReserved:
         ret
@@ -656,8 +656,8 @@ DoReserved:
 ;       esi - vector
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ´¦ÀíÖĞ¶Ï delivery ²Ù×÷
+; æè¿°ï¼š
+;       1) å¤„ç†ä¸­æ–­ delivery æ“ä½œ
 ;-----------------------------------------------------------------------
 do_int_process:
         push ebp
@@ -679,9 +679,9 @@ do_int_process:
         mov ecx, esi                                    ; ecx = vector
                         
         ;;
-        ;; ¼ì²éÊÇ·ñ´¦ÓÚ IA-32e Ä£Ê½
-        ;; 1) ÊÇ£¬´¦Àí IA-32e Ä£Ê½ÏÂµÄ INT Ö¸Áî
-        ;; 2) ·ñ£¬´¦Àí protected Ä£Ê½ÏÂµÄ INT Ö¸Áî
+        ;; æ£€æŸ¥æ˜¯å¦å¤„äº IA-32e æ¨¡å¼
+        ;; 1) æ˜¯ï¼Œå¤„ç† IA-32e æ¨¡å¼ä¸‹çš„ INT æŒ‡ä»¤
+        ;; 2) å¦ï¼Œå¤„ç† protected æ¨¡å¼ä¸‹çš„ INT æŒ‡ä»¤
         ;;
         test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.GuestStatus], GUEST_STATUS_LONGMODE
         jnz do_int_process.Longmode
@@ -690,12 +690,12 @@ do_int_process.Protected:
         DEBUG_RECORD    "[do_int_process.Protected]..."
         
         ;;
-        ;; #### ´¦Àí protected Ä£Ê½ÏÂµÄ INT Ö¸ÁîÖ´ĞĞ ####
+        ;; #### å¤„ç† protected æ¨¡å¼ä¸‹çš„ INT æŒ‡ä»¤æ‰§è¡Œ ####
         ;;
         shl ecx, 3
 
         ;;
-        ;; step 1: ¼ì²é vector ÊÇ·ñ³¬³ö IDT limit
+        ;; step 1: æ£€æŸ¥ vector æ˜¯å¦è¶…å‡º IDT limit
         ;; 1) (vector * 8 + 7) > limit ?
         ;;
         mov edx, ecx
@@ -757,7 +757,7 @@ do_int_process.Np_CsSelector_01B:
 
 do_int_process.Protected.ReadDesc:
         ;;
-        ;; step 2: ¶Á IDT ÃèÊö·û
+        ;; step 2: è¯» IDT æè¿°ç¬¦
         ;;
         REX.Wrxb
         add edx, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtBase]
@@ -768,7 +768,7 @@ do_int_process.Protected.ReadDesc:
                 
 do_int_process.Protected.CheckType:
         ;;
-        ;; step 3: ¼ì²é IDT ÃèÊö·ûÊÇ·ñÊôÓÚ gate
+        ;; step 3: æ£€æŸ¥ IDT æè¿°ç¬¦æ˜¯å¦å±äº gate
         ;;
         shr edi, 8
         and edi, 0Fh
@@ -781,7 +781,7 @@ do_int_process.Protected.CheckType:
         
 do_int_process.Protected.CheckPrivilege:
         ;;
-        ;; step 4: µ±ÊôÓÚsoftware-interrupt Ê±£¬¼ì²éÈ¨ÏŞ£ºCPL <= IDT-gate.DPL
+        ;; step 4: å½“å±äºsoftware-interrupt æ—¶ï¼Œæ£€æŸ¥æƒé™ï¼šCPL <= IDT-gate.DPL
         ;;
         movzx eax, BYTE [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.InterruptType]
         cmp eax, INTERRUPT_TYPE_SOFTWARE
@@ -796,7 +796,7 @@ do_int_process.Protected.CheckPrivilege:
 
 do_int_process.Protected.CheckPresent:        
         ;;
-        ;; step 5: ¼ì²é gate ÊÇ·ñÎª present
+        ;; step 5: æ£€æŸ¥ gate æ˜¯å¦ä¸º present
         ;;
         test DWORD [edx + 4], (1 << 15)
         jz do_int_process.Np_vector_11B
@@ -804,20 +804,20 @@ do_int_process.Protected.CheckPresent:
 
 do_int_process.Protected.GateType:
         ;;
-        ;; step 6: ¼ì²é gate ÀàĞÍ
+        ;; step 6: æ£€æŸ¥ gate ç±»å‹
         ;;
         test DWORD [edx + 4], (1 << 9)
         jnz do_int_process.InterruptTrap
         
         ;;
-        ;; ### ±£Áô´¦Àí task-gate ###
+        ;; ### ä¿ç•™å¤„ç† task-gate ###
         ;;
         jmp do_int_process.Done
         
 
 do_int_process.InterruptTrap:
         ;;
-        ;; step 7: ¼ì²é code-segment selector ÊÇ·ñÎª NULL
+        ;; step 7: æ£€æŸ¥ code-segment selector æ˜¯å¦ä¸º NULL
         ;;
         movzx ecx, WORD [edx + 2]
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCs], cx
@@ -825,7 +825,7 @@ do_int_process.InterruptTrap:
         jz do_int_process.Gp_01B
         
         ;;
-        ;; step 8: ¼ì²é code-segment selector ÊÇ·ñ³¬³ö GDT limit
+        ;; step 8: æ£€æŸ¥ code-segment selector æ˜¯å¦è¶…å‡º GDT limit
         ;;
         mov esi, ecx
         add esi, 7
@@ -833,7 +833,7 @@ do_int_process.InterruptTrap:
         ja do_int_process.Gp_CsSelector_01B
         
         ;;
-        ;; step 9: ¶ÁÈ¡ code-segment ÃèÊö·û
+        ;; step 9: è¯»å– code-segment æè¿°ç¬¦
         ;;
         REX.Wrxb
         mov edx, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.GdtBase]
@@ -844,13 +844,13 @@ do_int_process.InterruptTrap:
 
      
         ;;
-        ;; step 10: ¼ì²éÃèÊö·û C/D Î»£¬ÊÇ·ñÎª code-segment
+        ;; step 10: æ£€æŸ¥æè¿°ç¬¦ C/D ä½ï¼Œæ˜¯å¦ä¸º code-segment
         ;;
         test edi, (1 << 11)
         jz do_int_process.Gp_CsSelector_01B
 
         ;;
-        ;; step 11: ¼ì²éÈ¨ÏŞ£ºDPL <= CPL
+        ;; step 11: æ£€æŸ¥æƒé™ï¼šDPL <= CPL
         ;;
         mov esi, edi
         shr esi, 13
@@ -859,7 +859,7 @@ do_int_process.InterruptTrap:
         ja do_int_process.Gp_CsSelector_01B
 
         ;;
-        ;; step 12: ¼ì²é code-segment ÃèÊö·ûÊÇ·ñÎª present
+        ;; step 12: æ£€æŸ¥ code-segment æè¿°ç¬¦æ˜¯å¦ä¸º present
         ;;
         test edi, (1 << 15)
         jz do_int_process.Np_CsSelector_01B
@@ -867,10 +867,10 @@ do_int_process.InterruptTrap:
 
 do_int_process.InterruptTrap.Next:
         ;;
-        ;; step 13: ¸ù¾İÈ¨ÏŞ½øĞĞÏàÓ¦´¦Àí
+        ;; step 13: æ ¹æ®æƒé™è¿›è¡Œç›¸åº”å¤„ç†
         ;;
-        ;; ×¢Òâ£º ### ×÷ÎªÀı×Ó£¬±£ÁôÊµÏÖ¶Ô conforming ÀàĞÍ¶ÎµÄ´¦Àí ###
-        ;;        ### ×÷ÎªÀı×Ó£¬±£ÁôÊµÏÖ¶Ô virutal-8086 Ä£Ê½ÏÂµÄÖĞ¶Ï´¦Àí ###
+        ;; æ³¨æ„ï¼š ### ä½œä¸ºä¾‹å­ï¼Œä¿ç•™å®ç°å¯¹ conforming ç±»å‹æ®µçš„å¤„ç† ###
+        ;;        ### ä½œä¸ºä¾‹å­ï¼Œä¿ç•™å®ç°å¯¹ virutal-8086 æ¨¡å¼ä¸‹çš„ä¸­æ–­å¤„ç† ###
         ;;
         mov eax, do_interrupt_for_inter_privilege
         mov edi, do_interrupt_for_intra_privilege        
@@ -887,12 +887,12 @@ do_int_process.InterruptTrap.Next:
         
 do_int_process.Longmode:
         ;;
-        ;; ´¦Àí longmode Ä£Ê½ÏÂµÄ INT Ö¸ÁîÖ´ĞĞ
+        ;; å¤„ç† longmode æ¨¡å¼ä¸‹çš„ INT æŒ‡ä»¤æ‰§è¡Œ
         ;;
         DEBUG_RECORD    "[do_int_process.Longmode]..."
         
         ;;
-        ;; step 1: ¼ì²é vector ÊÇ·ñ³¬³ö IDT.limit
+        ;; step 1: æ£€æŸ¥ vector æ˜¯å¦è¶…å‡º IDT.limit
         ;;
         shl ecx, 4
         lea esi, [ecx + 15]
@@ -900,7 +900,7 @@ do_int_process.Longmode:
         ja do_int_process.Gp_vector_11B
 
         ;;
-        ;; step 2: ¶Á IDT ÃèÊö·û
+        ;; step 2: è¯» IDT æè¿°ç¬¦
         ;;
         REX.Wrxb
         mov edx, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtBase]
@@ -916,7 +916,7 @@ do_int_process.Longmode:
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 8], edi
 
         ;;
-        ;; step 3: ¼ì²é IDT ÃèÊö·ûÊÇ·ñÊôÓÚ interrupt-gate, trap-gate
+        ;; step 3: æ£€æŸ¥ IDT æè¿°ç¬¦æ˜¯å¦å±äº interrupt-gate, trap-gate
         ;;
         mov edi, [edx + 4]
         shr edi, 8
@@ -928,7 +928,7 @@ do_int_process.Longmode:
         
 do_int_process.Longmode.CheckPrivilege:
         ;;
-        ;; step 4: µ±ÊôÓÚsoftware-interrupt Ê±£¬¼ì²éÈ¨ÏŞ£ºCPL <= IDT-gate.DPL
+        ;; step 4: å½“å±äºsoftware-interrupt æ—¶ï¼Œæ£€æŸ¥æƒé™ï¼šCPL <= IDT-gate.DPL
         ;;
         movzx eax, BYTE [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.InterruptType]
         cmp eax, INTERRUPT_TYPE_SOFTWARE
@@ -942,7 +942,7 @@ do_int_process.Longmode.CheckPrivilege:
 
 do_int_process.Longmode.CheckPresent:
         ;;
-        ;; step 5: ¼ì²é IDT-gate ÊÇ·ñÎª present
+        ;; step 5: æ£€æŸ¥ IDT-gate æ˜¯å¦ä¸º present
         ;;
         test DWORD [edx + 4], (1 << 15)
         jnz do_int_process.InterruptTrap
@@ -958,7 +958,7 @@ do_int_process.Longmode.CheckPresent:
         
 do_int_process.ReflectException:        
         ;;
-        ;; ×¢ÈëÒì³£
+        ;; æ³¨å…¥å¼‚å¸¸
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, eax
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, ecx
@@ -979,8 +979,8 @@ do_int_process.Done:
 ;       esi - privilege level
 ; output:
 ;       eax - statusf code
-; ÃèÊö£º
-;       1) ´¦Àí legacy Ä£Ê½ÏÂµÄÌØÈ¨¼¶ÄÚµÄÖĞ¶Ï£¨ÇĞÈë¸ßÈ¨ÏŞ£©
+; æè¿°ï¼š
+;       1) å¤„ç† legacy æ¨¡å¼ä¸‹çš„ç‰¹æƒçº§å†…çš„ä¸­æ–­ï¼ˆåˆ‡å…¥é«˜æƒé™ï¼‰
 ;-----------------------------------------------------------------------
 do_interrupt_for_inter_privilege:
         push ebp
@@ -1001,7 +1001,7 @@ do_interrupt_for_inter_privilege:
         mov ecx, esi                                                    ; ecx = privilege level
         
         ;;
-        ;; step 1: ¼ì²é TSS ÊÇ·ñÎª 32-bit
+        ;; step 1: æ£€æŸ¥ TSS æ˜¯å¦ä¸º 32-bit
         ;;
         test DWORD [ebx + VMB.GuestTmb + GTMB.TssAccessRights], (1 << 3)
         jnz do_interrupt_for_inter_privilege.Tss32
@@ -1011,8 +1011,8 @@ do_interrupt_for_inter_privilege.Tss16:
         add ecx, 2
         
         ;;
-        ;; step 1: ¼ì²é stack pointer µØÖ·ÊÇ·ñ³¬³ö TSS limit: (DPL << 2) + 2 + 3 > limit ?
-        ;; 1) ³¬³ö limit£¬Ôò²úÉú #TS(TSS_selector, 0, EXT)
+        ;; step 1: æ£€æŸ¥ stack pointer åœ°å€æ˜¯å¦è¶…å‡º TSS limit: (DPL << 2) + 2 + 3 > limit ?
+        ;; 1) è¶…å‡º limitï¼Œåˆ™äº§ç”Ÿ #TS(TSS_selector, 0, EXT)
         ;;
         lea esi, [ecx + 3]
         cmp esi, [ebx + VMB.GuestTmb + GTMB.TssLimit]
@@ -1020,18 +1020,18 @@ do_interrupt_for_inter_privilege.Tss16:
         
 do_interrupt_for_inter_privilege.ReadStack16:        
         ;;
-        ;; step 2: ¶ÁÈ¡ÖĞ¶Ï handler Ê¹ÓÃµÄ stack pointer
+        ;; step 2: è¯»å–ä¸­æ–­ handler ä½¿ç”¨çš„ stack pointer
         ;;
         REX.Wrxb
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TssBase]            
         movzx esi, WORD [eax + ecx]                                             ;; new SP
-        movzx ecx, WORD [eax + ecx + 2]                                         ;; new SS£¨ecx)
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSs], cx             ;; ±£´æ SS
+        movzx ecx, WORD [eax + ecx + 2]                                         ;; new SSï¼ˆecx)
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSs], cx             ;; ä¿å­˜ SS
         REX.Wrxb
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp], esi           ;; ±£´æÄ¿±ê RSP        
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp], esi           ;; ä¿å­˜ç›®æ ‡ RSP        
         call get_system_va_of_guest_os
         REX.Wrxb
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp], eax                 ;; ±£´æ RSP        
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp], eax                 ;; ä¿å­˜ RSP        
         jmp do_interrupt_for_inter_privilege.CheckSsSelector       
         
 do_interrupt_for_inter_privilege.Tss32:
@@ -1039,8 +1039,8 @@ do_interrupt_for_inter_privilege.Tss32:
         add ecx, 4
 
         ;;
-        ;; step 1: ¼ì²é stack pointer µØÖ·ÊÇ·ñ³¬³ö TSS limit
-        ;; 1)  (DPL << 3) + 4 + 5 > limit Ôò²úÉú #TS(TSS_selector, 0, EXT)
+        ;; step 1: æ£€æŸ¥ stack pointer åœ°å€æ˜¯å¦è¶…å‡º TSS limit
+        ;; 1)  (DPL << 3) + 4 + 5 > limit åˆ™äº§ç”Ÿ #TS(TSS_selector, 0, EXT)
         ;;
         lea esi, [ecx + 5]
         cmp esi, [ebx + VMB.GuestTmb + GTMB.TssLimit]
@@ -1069,17 +1069,17 @@ do_interrupt_for_inter_privilege.Ts_SsSelector_01B:
         
 do_interrupt_for_inter_privilege.IdtGate16: 
         ;;
-        ;; ¼ì²é 16 Î» IDT-gate Àï£¬stack ÊÇ·ñÄÜÈİÄÉ 10 bytes£¨5 *  2)£¬¸ù¾İ stack ¶ÎÊÇ·ñÊôÓÚ expand-down ¶Î
+        ;; æ£€æŸ¥ 16 ä½ IDT-gate é‡Œï¼Œstack æ˜¯å¦èƒ½å®¹çº³ 10 bytesï¼ˆ5 *  2)ï¼Œæ ¹æ® stack æ®µæ˜¯å¦å±äº expand-down æ®µ
         ;; 1) expand-down:  esp - 10 > SS.limit && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit 
         ;;
-        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], (1 << 10)  ; SS.E Î»
+        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], (1 << 10)  ; SS.E ä½
         jz do_interrupt_for_inter_privilege.IdtGate16.ExpandUp
         
         
 do_interrupt_for_inter_privilege.IdtGate16.ExpandDown:
         ;;
-        ;; ¼ì²é expand-down ÀàĞÍ¶Î
+        ;; æ£€æŸ¥ expand-down ç±»å‹æ®µ
         ;;
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
         sub esi, 10
@@ -1087,15 +1087,15 @@ do_interrupt_for_inter_privilege.IdtGate16.ExpandDown:
         jbe do_interrupt_for_inter_privilege.Ss_SsSelector_01B
         
         ;;
-        ;; ¸ù¾İ SS.B Î»¼ì²é
+        ;; æ ¹æ® SS.B ä½æ£€æŸ¥
         ;;
-        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], (1 << 22)  ; SS.B Î»
+        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], (1 << 22)  ; SS.B ä½
         jnz do_interrupt_for_inter_privilege.GetCsLimit
-        mov eax, 0FFFFFh                                ;; SS.B = 0 Ê±£¬expand-down ¶ÎÉÏÏŞÎª 0FFFFFh
+        mov eax, 0FFFFFh                                ;; SS.B = 0 æ—¶ï¼Œexpand-down æ®µä¸Šé™ä¸º 0FFFFFh
         
 do_interrupt_for_inter_privilege.IdtGate16.ExpandUp:
         ;;
-        ;; ¼ì²é expand-up ÀàĞÍ
+        ;; æ£€æŸ¥ expand-up ç±»å‹
         ;;        
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
         cmp esi, eax
@@ -1133,30 +1133,30 @@ do_interrupt_for_inter_privilege.Gp_01B:
 
 do_interrupt_for_inter_privilege.ReadStack32:
         ;;
-        ;; step 2: ¶ÁÈ¡ÖĞ¶Ï handler Ê¹ÓÃµÄ stack pointer
+        ;; step 2: è¯»å–ä¸­æ–­ handler ä½¿ç”¨çš„ stack pointer
         ;;
         REX.Wrxb
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TssBase]
         mov esi, [eax + ecx]                                                    ;; new ESP
         REX.Wrxb
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp], esi           ;; ±£´æÄ¿±ê RSP
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp], esi           ;; ä¿å­˜ç›®æ ‡ RSP
         movzx ecx, WORD [eax + ecx + 4]                                         ;; new SS
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSs], cx             ;; ±£´æÄ¿±ê SS
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSs], cx             ;; ä¿å­˜ç›®æ ‡ SS
         call get_system_va_of_guest_os
         REX.Wrxb
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp], eax                 ;; ±£´æ RSP
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp], eax                 ;; ä¿å­˜ RSP
 
 do_interrupt_for_inter_privilege.CheckSsSelector:        
         ;;
-        ;; step 3: ¼ì²é SS selector ÊÇ·ñÎª NULL£¬ÊôÓÚ NULL Ôò²úÉú #TS(EXT)
+        ;; step 3: æ£€æŸ¥ SS selector æ˜¯å¦ä¸º NULLï¼Œå±äº NULL åˆ™äº§ç”Ÿ #TS(EXT)
         ;;
         test ecx, 0FFF8h
         jz do_interrupt_for_inter_privilege.Ts_01B
 
         ;;
-        ;; step 4: ¼ì²é SS selector ÊÇ·ñ³¬³ö limit£¬³¬³öÔò²úÉú #TS(SS_selector, 0, EXT)
+        ;; step 4: æ£€æŸ¥ SS selector æ˜¯å¦è¶…å‡º limitï¼Œè¶…å‡ºåˆ™äº§ç”Ÿ #TS(SS_selector, 0, EXT)
         ;; 
-        ;; ×¢Òâ£º#### ´Ë´¦±£Áô¼ì²é LDT ####
+        ;; æ³¨æ„ï¼š#### æ­¤å¤„ä¿ç•™æ£€æŸ¥ LDT ####
         ;;
         mov eax, ecx
         and eax, 0FFF8h
@@ -1165,7 +1165,7 @@ do_interrupt_for_inter_privilege.CheckSsSelector:
         ja do_interrupt_for_inter_privilege.Ts_SsSelector_01B
 
         ;;
-        ;; step 5: ¼ì²é SS.RPL ÊÇ·ñµÈÓÚ CS.DPL£¬²»µÈÓÚÔò²úÉú #TS(SS_selector, 0, EXT)
+        ;; step 5: æ£€æŸ¥ SS.RPL æ˜¯å¦ç­‰äº CS.DPLï¼Œä¸ç­‰äºåˆ™äº§ç”Ÿ #TS(SS_selector, 0, EXT)
         ;;
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCsDesc + 4]                ; code segment
         shr eax, 13                                                                     ; CS.DPL
@@ -1174,7 +1174,7 @@ do_interrupt_for_inter_privilege.CheckSsSelector:
         jnz do_interrupt_for_inter_privilege.Ts_SsSelector_01B
 
         ;;
-        ;; step 6: ¶ÁÈ¡ stack-segment ÃèÊö·û
+        ;; step 6: è¯»å– stack-segment æè¿°ç¬¦
         ;;
         mov esi, ecx
         and esi, 0FFF8h
@@ -1186,19 +1186,19 @@ do_interrupt_for_inter_privilege.CheckSsSelector:
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], edi
 
         ;;
-        ;; step 7: ¼ì²é SS ÃèÊö·û£¬ÒÔ¼° SS.DPL Óë CS.DPL
+        ;; step 7: æ£€æŸ¥ SS æè¿°ç¬¦ï¼Œä»¥åŠ SS.DPL ä¸ CS.DPL
         ;;
-        test edi, (1 << 9)                                                              ; ¼ì²éÊÇ·ñ¿ÉĞ´
+        test edi, (1 << 9)                                                              ; æ£€æŸ¥æ˜¯å¦å¯å†™
         jz do_interrupt_for_inter_privilege.Ts_SsSelector_01B                           ;               
         mov esi, edi
         xor edi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCsDesc + 4]                
-        test edi, (3 << 13)                                                             ; ¼ì²é SS.DPL == CS.DPL
+        test edi, (3 << 13)                                                             ; æ£€æŸ¥ SS.DPL == CS.DPL
         jnz do_interrupt_for_inter_privilege.Ts_SsSelector_01B
-        test esi, (1 << 15)                                                             ; ¼ì²éÊÇ·ñÎªpresent
+        test esi, (1 << 15)                                                             ; æ£€æŸ¥æ˜¯å¦ä¸ºpresent
         jz do_interrupt_for_inter_privilege.Ss_SsSelector_01B          
 
         ;;
-        ;; step 8: ¶ÁÈ¡ SS.limit
+        ;; step 8: è¯»å– SS.limit
         ;;
         movzx eax, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc]            ; limit[15:0]
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4]
@@ -1211,24 +1211,24 @@ do_interrupt_for_inter_privilege.CheckSsSelector:
 
 do_interrupt_for_inter_privilege.CheckSsLimit:                         
         ;;
-        ;; step 9: ¼ì²éÊÇ·ñÄÜÈİÄÉÑ¹ÈëµÄÖµ
+        ;; step 9: æ£€æŸ¥æ˜¯å¦èƒ½å®¹çº³å‹å…¥çš„å€¼
         ;;
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsLimit], eax               ; ±£´æ SS.limit     
-        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 4], (1 << 11)    ; ¼ì²é 16-bit gate »¹ÊÇ 32-bit
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsLimit], eax               ; ä¿å­˜ SS.limit     
+        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 4], (1 << 11)    ; æ£€æŸ¥ 16-bit gate è¿˜æ˜¯ 32-bit
         jz do_interrupt_for_inter_privilege.IdtGate16
 
         ;;
-        ;; ¼ì²é 32 Î» stack ÊÇ·ñÄÜÈİÄÉ 20 bytes£¨5 *  4)£¬¸ù¾İ stack ¶ÎÊÇ·ñÊôÓÚ expand-down ¶Î
+        ;; æ£€æŸ¥ 32 ä½ stack æ˜¯å¦èƒ½å®¹çº³ 20 bytesï¼ˆ5 *  4)ï¼Œæ ¹æ® stack æ®µæ˜¯å¦å±äº expand-down æ®µ
         ;; 1) expand-down:  esp - 20 > SS.limit  && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit
         ;;
-        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], (1 << 10)  ; SS.E Î»
+        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], (1 << 10)  ; SS.E ä½
         jz do_interrupt_for_inter_privilege.CheckSsLimit.ExpandUp
         
         
 do_interrupt_for_inter_privilege.CheckSsLimit.ExpandDown:
         ;;
-        ;; ¼ì²é expand-down ÀàĞÍ¶Î
+        ;; æ£€æŸ¥ expand-down ç±»å‹æ®µ
         ;;
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
         sub esi, 20
@@ -1236,15 +1236,15 @@ do_interrupt_for_inter_privilege.CheckSsLimit.ExpandDown:
         jbe do_interrupt_for_inter_privilege.Ss_SsSelector_01B
         
         ;;
-        ;; ¸ù¾İ SS.B Î»¼ì²é
+        ;; æ ¹æ® SS.B ä½æ£€æŸ¥
         ;;
-        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], (1 << 22)  ; SS.B Î»
+        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], (1 << 22)  ; SS.B ä½
         jnz do_interrupt_for_inter_privilege.GetCsLimit
-        mov eax, 0FFFFFh                                ;; SS.B = 0 Ê±£¬expand-down ¶ÎÉÏÏŞÎª 0FFFFFh
+        mov eax, 0FFFFFh                                ;; SS.B = 0 æ—¶ï¼Œexpand-down æ®µä¸Šé™ä¸º 0FFFFFh
         
 do_interrupt_for_inter_privilege.CheckSsLimit.ExpandUp:
         ;;
-        ;; ¼ì²é expand-up ÀàĞÍ
+        ;; æ£€æŸ¥ expand-up ç±»å‹
         ;;        
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
         cmp esi, eax
@@ -1252,7 +1252,7 @@ do_interrupt_for_inter_privilege.CheckSsLimit.ExpandUp:
 
 do_interrupt_for_inter_privilege.GetCsLimit:
         ;;
-        ;; step 10: ¶ÁÈ¡ CS.limit
+        ;; step 10: è¯»å– CS.limit
         ;;
         movzx eax, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCsDesc]             ; limit[15:0]
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCsDesc + 4]
@@ -1265,24 +1265,24 @@ do_interrupt_for_inter_privilege.GetCsLimit:
 
 do_interrupt_for_inter_privilege.CheckCsLimit:
         ;;
-        ;; step 11: ¶ÁÈ¡Ä¿±ê RIP
+        ;; step 11: è¯»å–ç›®æ ‡ RIP
         ;;
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCsLimit], eax               ; ±£´æ CS.limit
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCsLimit], eax               ; ä¿å­˜ CS.limit
         movzx esi, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc]              ; offset[15:0]
         mov edi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 4]
         and edi, 0FFFF0000h                                                             ; offset[31:16]
         or esi, edi
         REX.Wrxb
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRip], esi                   ; ±£´æÄ¿±ê RIP
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRip], esi                   ; ä¿å­˜ç›®æ ‡ RIP
 
         ;;
-        ;; step 12£º¼ì²é Eip ÊÇ·ñ³¬³ö Cs.limit£¬³¬³öÔò²úÉú #GP(EXT)
+        ;; step 12ï¼šæ£€æŸ¥ Eip æ˜¯å¦è¶…å‡º Cs.limitï¼Œè¶…å‡ºåˆ™äº§ç”Ÿ #GP(EXT)
         ;;
         cmp esi, eax
         ja do_interrupt_for_inter_privilege.Gp_01B
           
         ;;
-        ;; step 13: ¼ÓÔØ SS Óë ESP
+        ;; step 13: åŠ è½½ SS ä¸ ESP
         ;;
         movzx eax, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSs]
         SetVmcsField    GUEST_SS_SELECTOR, eax
@@ -1307,7 +1307,7 @@ do_interrupt_for_inter_privilege.CheckCsLimit:
         
 do_interrupt_for_inter_privilege.LoadCsEip:
         ;;
-        ;; step 14: ¼ÓÔØ CS:EIP
+        ;; step 14: åŠ è½½ CS:EIP
         ;;       
         movzx eax, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCs]
         SetVmcsField    GUEST_CS_SELECTOR, eax
@@ -1328,7 +1328,7 @@ do_interrupt_for_inter_privilege.LoadCsEip:
 
 do_interrupt_for_inter_privilege.Push:
         ;;
-        ;; step 15: ·µ»ØĞÅÏ¢Ñ¹Èë stack ÖĞ
+        ;; step 15: è¿”å›ä¿¡æ¯å‹å…¥ stack ä¸­
         ;;
         REX.Wrxb
         mov edx, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp]        
@@ -1348,7 +1348,7 @@ do_interrupt_for_inter_privilege.Push:
         
 do_interrupt_for_inter_privilege.Push16:    
         ;;
-        ;; Ñ¹Èë 16 Î»Êı¾İ
+        ;; å‹å…¥ 16 ä½æ•°æ®
         ;;    
         mov ax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.OldSs]
         mov [edx - 2], ax
@@ -1363,7 +1363,7 @@ do_interrupt_for_inter_privilege.Push16:
 
 do_interrupt_for_inter_privilege.Flags:        
         ;;
-        ;; step 16: ¸üĞÂ eflags
+        ;; step 16: æ›´æ–° eflags
         ;;        
         mov esi, ~(FLAGS_TF | FLAGS_VM | FLAGS_RF | FLAGS_NT)
         mov edi, ~(FLAGS_TF | FLAGS_VM | FLAGS_RF | FLAGS_NT | FLAGS_IF)
@@ -1379,7 +1379,7 @@ do_interrupt_for_inter_privilege.Flags:
         
 do_interrupt_for_inter_privilege.ReflectException:
         ;;
-        ;; ×¢ÈëÒì³£
+        ;; æ³¨å…¥å¼‚å¸¸
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, eax
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, ecx
@@ -1401,8 +1401,8 @@ do_interrupt_for_inter_privilege.Done:
 ;       esi - privilege level
 ; output:
 ;       eax - status code
-; ÃèÊö£º
-;       1) ´¦Àí longmode Ä£Ê½ÏÂµÄÌØÈ¨¼¶ÄÚµÄÖĞ¶Ï£¨ÇĞÈë¸ßÈ¨ÏŞ£©
+; æè¿°ï¼š
+;       1) å¤„ç† longmode æ¨¡å¼ä¸‹çš„ç‰¹æƒçº§å†…çš„ä¸­æ–­ï¼ˆåˆ‡å…¥é«˜æƒé™ï¼‰
 ;-----------------------------------------------------------------------
 do_interrupt_for_inter_privilege_longmode:
         push ebp
@@ -1423,7 +1423,7 @@ do_interrupt_for_inter_privilege_longmode:
         mov ecx, esi  
  
         ;;
-        ;; step 1: ¸ù¾İ IST Öµ¼ÆËã stack pointer Æ«ÒÆÁ¿
+        ;; step 1: æ ¹æ® IST å€¼è®¡ç®— stack pointer åç§»é‡
         ;;
         mov edx, esi       
         shl edx, 3
@@ -1434,7 +1434,7 @@ do_interrupt_for_inter_privilege_longmode:
         cmovnz edx, esi
 
         ;;
-        ;; step 2: ¼ì²é stack pointer ÊÇ·ñ³¬³ö TSS limit
+        ;; step 2: æ£€æŸ¥ stack pointer æ˜¯å¦è¶…å‡º TSS limit
         ;;
         mov esi, edx
         add esi, 7
@@ -1442,18 +1442,18 @@ do_interrupt_for_inter_privilege_longmode:
         ja do_interrupt_for_inter_privilege_longmode.Ts_TsSelector_01B
 
         ;;
-        ;; step 3: ¶ÁÈ¡ stack pointer
+        ;; step 3: è¯»å– stack pointer
         ;;
         REX.Wrxb
         add edx, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TssBase]
         REX.Wrxb
         mov esi, [edx]                                                  ;; new RSP
         mov edi, [edx + 4]
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSs], cx     ;; ±£´æ SS
-                                                                        ;; SS selector ±»¼ÓÔØÎª NULL
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSs], cx     ;; ä¿å­˜ SS
+                                                                        ;; SS selector è¢«åŠ è½½ä¸º NULL
 
         ;;
-        ;; step 4: ¼ì²é RSP ÊÇ·ñÎª canonical µØÖ·ĞÎÊ½£¬·ñÔò²úÉú #SS(EXT)
+        ;; step 4: æ£€æŸ¥ RSP æ˜¯å¦ä¸º canonical åœ°å€å½¢å¼ï¼Œå¦åˆ™äº§ç”Ÿ #SS(EXT)
         ;;
         shrd eax, edi, 16
         sar eax, 16
@@ -1461,7 +1461,7 @@ do_interrupt_for_inter_privilege_longmode:
         jne do_interrupt_for_inter_privilege_longmode.Ss_01B
         
         ;;
-        ;; step 5:  RSP ÏòÏÂµ÷Õûµ½ 16 ×Ö½Ú±ß½ç¶ÔÆë
+        ;; step 5:  RSP å‘ä¸‹è°ƒæ•´åˆ° 16 å­—èŠ‚è¾¹ç•Œå¯¹é½
         ;;
         
         REX.Wrxb
@@ -1470,10 +1470,10 @@ do_interrupt_for_inter_privilege_longmode:
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp], esi
         call get_system_va_of_guest_os
         REX.Wrxb
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp], eax         ;; ±£´æ RSP
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp], eax         ;; ä¿å­˜ RSP
 
         ;;
-        ;; step 6: ¼ì²é RIP ÊÇ·ñÎª canonical µØÖ·ĞÎÊ½£¬·ñÔò²úÉú #GP(EXT)
+        ;; step 6: æ£€æŸ¥ RIP æ˜¯å¦ä¸º canonical åœ°å€å½¢å¼ï¼Œå¦åˆ™äº§ç”Ÿ #GP(EXT)
         ;;
         movzx esi, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc]
         mov edi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 4]
@@ -1488,7 +1488,7 @@ do_interrupt_for_inter_privilege_longmode:
         jne do_interrupt_for_inter_privilege_longmode.Gp_01B
         
         ;;
-        ;; step 7: ¼ÓÔØ RSP£¬SS = NULL-selector
+        ;; step 7: åŠ è½½ RSPï¼ŒSS = NULL-selector
         ;;
         REX.Wrxb
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
@@ -1504,7 +1504,7 @@ do_interrupt_for_inter_privilege_longmode:
         SetVmcsField    GUEST_SS_BASE, 0
 
         ;;
-        ;; step 8: Ñ¹Èë·µ»ØĞÅÏ¢µ½ stack ÖĞ
+        ;; step 8: å‹å…¥è¿”å›ä¿¡æ¯åˆ° stack ä¸­
         ;;
         REX.Wrxb
         mov edx, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp]        
@@ -1527,7 +1527,7 @@ do_interrupt_for_inter_privilege_longmode:
         mov [edx - 40], eax
         
         ;;
-        ;; step 9: ¼ÓÔØ CS:RIP
+        ;; step 9: åŠ è½½ CS:RIP
         ;;
         movzx eax, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCs]
         SetVmcsField    GUEST_CS_SELECTOR, eax
@@ -1547,7 +1547,7 @@ do_interrupt_for_inter_privilege_longmode:
 
   
         ;;
-        ;; step 10: ¸üĞÂ rflags
+        ;; step 10: æ›´æ–° rflags
         ;;
         mov esi, ~(FLAGS_TF | FLAGS_VM | FLAGS_RF | FLAGS_NT)
         mov edi, ~(FLAGS_TF | FLAGS_VM | FLAGS_RF | FLAGS_NT | FLAGS_IF)
@@ -1580,7 +1580,7 @@ do_interrupt_for_inter_privilege_longmode.Ss_01B:
         
 do_interrupt_for_inter_privilege_longmode.ReflectException:
         ;;
-        ;; ×¢ÈëÒì³£
+        ;; æ³¨å…¥å¼‚å¸¸
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, eax
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, ecx        
@@ -1602,8 +1602,8 @@ do_interrupt_for_inter_privilege_longmode.Done:
 ;       none
 ; output:
 ;       eax -status code
-; ÃèÊö£º
-;       1) ´¦Àí legacy Ä£Ê½ÏÂµÄÌØÈ¨¼¶ÍâµÄÖĞ¶Ï£¨Í¬¼¶£©
+; æè¿°ï¼š
+;       1) å¤„ç† legacy æ¨¡å¼ä¸‹çš„ç‰¹æƒçº§å¤–çš„ä¸­æ–­ï¼ˆåŒçº§ï¼‰
 ;-----------------------------------------------------------------------
 do_interrupt_for_intra_privilege:
         push ebp
@@ -1623,7 +1623,7 @@ do_interrupt_for_intra_privilege:
         mov ebx, [ebp + PCB.CurrentVmbPointer]
 
         ;;
-        ;; Ä¿±ê RSP µÈÓÚÔ­ RSP
+        ;; ç›®æ ‡ RSP ç­‰äºåŸ RSP
         ;;
         REX.Wrxb
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.OldRsp]
@@ -1634,7 +1634,7 @@ do_interrupt_for_intra_privilege:
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp], eax
         
         ;;
-        ;; Ä¿±ê SS µÈÓÚÔ­ SS
+        ;; ç›®æ ‡ SS ç­‰äºåŸ SS
         ;;
         mov ax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.OldSs]
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSs], ax
@@ -1644,23 +1644,23 @@ do_interrupt_for_intra_privilege:
         
 do_interrupt_for_intra_privilege.CheckSsLimit:
         ;;
-        ;; step 1: ¼ì²éÊÇ·ñÄÜÈİÄÉÑ¹ÈëµÄÖµ
+        ;; step 1: æ£€æŸ¥æ˜¯å¦èƒ½å®¹çº³å‹å…¥çš„å€¼
         ;;
-        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 4], (1 << 11)    ; ¼ì²é 16-bit gate »¹ÊÇ 32-bit
+        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 4], (1 << 11)    ; æ£€æŸ¥ 16-bit gate è¿˜æ˜¯ 32-bit
         jz do_interrupt_for_intra_privilege.IdtGate16
 
         ;;
-        ;; ¼ì²é 32 Î» stack ÊÇ·ñÄÜÈİÄÉ 12 bytes£¨3 * 4)£¬¸ù¾İ stack ¶ÎÊÇ·ñÊôÓÚ expand-down ¶Î
+        ;; æ£€æŸ¥ 32 ä½ stack æ˜¯å¦èƒ½å®¹çº³ 12 bytesï¼ˆ3 * 4)ï¼Œæ ¹æ® stack æ®µæ˜¯å¦å±äº expand-down æ®µ
         ;; 1) expand-down:  esp - 12 > SS.limit && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit 
         ;;
-        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.CurrentSsDesc + 4], (1 << 10)  ; SS.E Î»
+        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.CurrentSsDesc + 4], (1 << 10)  ; SS.E ä½
         jz do_interrupt_for_intra_privilege.CheckSsLimit.ExpandUp
         
         
 do_interrupt_for_intra_privilege.CheckSsLimit.ExpandDown:
         ;;
-        ;; ¼ì²é expand-down ÀàĞÍ¶Î
+        ;; æ£€æŸ¥ expand-down ç±»å‹æ®µ
         ;;
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
         sub esi, 12
@@ -1668,15 +1668,15 @@ do_interrupt_for_intra_privilege.CheckSsLimit.ExpandDown:
         jbe do_interrupt_for_intra_privilege.Ss_01B
         
         ;;
-        ;; ¸ù¾İ SS.B Î»¼ì²é
+        ;; æ ¹æ® SS.B ä½æ£€æŸ¥
         ;;
-        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.CurrentSsDesc + 4], (1 << 22)  ; SS.B Î»
+        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.CurrentSsDesc + 4], (1 << 22)  ; SS.B ä½
         jnz do_interrupt_for_intra_privilege.GetCsLimit
-        mov eax, 0FFFFFh                                ;; SS.B = 0 Ê±£¬expand-down ¶ÎÉÏÏŞÎª 0FFFFFh
+        mov eax, 0FFFFFh                                ;; SS.B = 0 æ—¶ï¼Œexpand-down æ®µä¸Šé™ä¸º 0FFFFFh
         
 do_interrupt_for_intra_privilege.CheckSsLimit.ExpandUp:
         ;;
-        ;; ¼ì²é expand-up ÀàĞÍ
+        ;; æ£€æŸ¥ expand-up ç±»å‹
         ;;        
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
         cmp esi, eax
@@ -1684,7 +1684,7 @@ do_interrupt_for_intra_privilege.CheckSsLimit.ExpandUp:
 
 do_interrupt_for_intra_privilege.GetCsLimit:
         ;;
-        ;; step 2: ¶ÁÈ¡ CS.limit
+        ;; step 2: è¯»å– CS.limit
         ;;
         movzx eax, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCsDesc]         ; limit[15:0]
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCsDesc + 4]
@@ -1697,7 +1697,7 @@ do_interrupt_for_intra_privilege.GetCsLimit:
         
 do_interrupt_for_intra_privilege.CheckCsLimit:
         ;;
-        ;; step 3: EIP ÊÇ·ñ³¬³ö cs.limit
+        ;; step 3: EIP æ˜¯å¦è¶…å‡º cs.limit
         ;;
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCsLimit], eax
         movzx esi, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc]              ; offset[15:0]
@@ -1705,12 +1705,12 @@ do_interrupt_for_intra_privilege.CheckCsLimit:
         and edi, 0FFFF0000h                                                             ; offset[31:16]
         or esi, edi
         REX.Wrxb
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRip], esi                   ; ±£´æÄ¿±ê RIP
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRip], esi                   ; ä¿å­˜ç›®æ ‡ RIP
         cmp esi, eax
         ja do_interrupt_for_intra_privilege.Gp_01B
 
         ;;
-        ;; step 4: Ñ¹Èë·µ»ØĞÅÏ¢
+        ;; step 4: å‹å…¥è¿”å›ä¿¡æ¯
         ;;
         REX.Wrxb
         mov edx, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp]
@@ -1718,7 +1718,7 @@ do_interrupt_for_intra_privilege.CheckCsLimit:
         jz do_interrupt_for_intra_privilege.Push16
         
         ;;
-        ;; Ñ¹Èë 32 Î»Êı¾İ 
+        ;; å‹å…¥ 32 ä½æ•°æ® 
         ;;
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.OldFlags]
         mov [edx - 4], eax
@@ -1728,7 +1728,7 @@ do_interrupt_for_intra_privilege.CheckCsLimit:
         mov [edx - 12], eax
 
         ;;
-        ;; ¸üĞÂ ESP
+        ;; æ›´æ–° ESP
         ;;
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
         sub eax, 12
@@ -1736,7 +1736,7 @@ do_interrupt_for_intra_privilege.CheckCsLimit:
 
 do_interrupt_for_intra_privilege.LoadCsEip:        
         ;;
-        ;; step 5: ¼ÓÔØ CS:EIP
+        ;; step 5: åŠ è½½ CS:EIP
         ;;
         movzx eax, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCs]
         SetVmcsField    GUEST_CS_SELECTOR, eax
@@ -1756,7 +1756,7 @@ do_interrupt_for_intra_privilege.LoadCsEip:
         SetVmcsField    GUEST_RIP, eax        
 
         ;;
-        ;; step 6: ¸üĞÂ eflags
+        ;; step 6: æ›´æ–° eflags
         ;;
         mov eax, ~(FLAGS_TF | FLAGS_NT | FLAGS_VM | FLAGS_RF)
         mov esi, ~(FLAGS_TF | FLAGS_NT | FLAGS_VM | FLAGS_RF | FLAGS_IF)
@@ -1769,7 +1769,7 @@ do_interrupt_for_intra_privilege.LoadCsEip:
                         
 do_interrupt_for_intra_privilege.Push16:
         ;;
-        ;; Ñ¹Èë 16 Î»Êı¾İ
+        ;; å‹å…¥ 16 ä½æ•°æ®
         ;;
         mov ax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.OldFlags]
         mov [edx - 2], ax
@@ -1779,7 +1779,7 @@ do_interrupt_for_intra_privilege.Push16:
         mov [edx - 8], ax
         
         ;;
-        ;; ¸üĞÂ RSP
+        ;; æ›´æ–° RSP
         ;;
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
         sub eax, 8
@@ -1788,17 +1788,17 @@ do_interrupt_for_intra_privilege.Push16:
         
 do_interrupt_for_intra_privilege.IdtGate16: 
         ;;
-        ;; ¼ì²é 16 Î» IDT-gate Àï£¬stack ÊÇ·ñÄÜÈİÄÉ 6 bytes£¨3 * 2)£¬¸ù¾İ stack ¶ÎÊÇ·ñÊôÓÚ expand-down ¶Î
+        ;; æ£€æŸ¥ 16 ä½ IDT-gate é‡Œï¼Œstack æ˜¯å¦èƒ½å®¹çº³ 6 bytesï¼ˆ3 * 2)ï¼Œæ ¹æ® stack æ®µæ˜¯å¦å±äº expand-down æ®µ
         ;; 1) expand-down:  esp - 6 > SS.limit && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit 
         ;;
-        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.CurrentSsDesc + 4], (1 << 10)  ; SS.E Î»
+        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.CurrentSsDesc + 4], (1 << 10)  ; SS.E ä½
         jz do_interrupt_for_intra_privilege.IdtGate16.ExpandUp
         
         
 do_interrupt_for_intra_privilege.IdtGate16.ExpandDown:
         ;;
-        ;; ¼ì²é expand-down ÀàĞÍ¶Î
+        ;; æ£€æŸ¥ expand-down ç±»å‹æ®µ
         ;;
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
         sub esi, 6
@@ -1806,15 +1806,15 @@ do_interrupt_for_intra_privilege.IdtGate16.ExpandDown:
         jbe do_interrupt_for_intra_privilege.Ss_01B
         
         ;;
-        ;; ¸ù¾İ SS.B Î»¼ì²é
+        ;; æ ¹æ® SS.B ä½æ£€æŸ¥
         ;;
-        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.CurrentSsDesc + 4], (1 << 22)  ; SS.B Î»
+        test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.CurrentSsDesc + 4], (1 << 22)  ; SS.B ä½
         jnz do_interrupt_for_intra_privilege.GetCsLimit
-        mov eax, 0FFFFFh                                ;; SS.B = 0 Ê±£¬expand-down ¶ÎÉÏÏŞÎª 0FFFFFh
+        mov eax, 0FFFFFh                                ;; SS.B = 0 æ—¶ï¼Œexpand-down æ®µä¸Šé™ä¸º 0FFFFFh
         
 do_interrupt_for_intra_privilege.IdtGate16.ExpandUp:
         ;;
-        ;; ¼ì²é expand-up ÀàĞÍ
+        ;; æ£€æŸ¥ expand-up ç±»å‹
         ;;        
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
         cmp esi, eax
@@ -1834,7 +1834,7 @@ do_interrupt_for_intra_privilege.Gp_01B:
 
 do_interrupt_for_intra_privilege.ReflectException:        
         ;;
-        ;; ×¢ÈëÒì³£
+        ;; æ³¨å…¥å¼‚å¸¸
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, eax
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, ecx   
@@ -1857,8 +1857,8 @@ do_interrupt_for_intra_privilege.Done:
 ;       none
 ; output:
 ;       eax - status code
-; ÃèÊö£º
-;       1) ´¦Àí longmode Ä£Ê½ÏÂµÄÌØÈ¨¼¶ÍâµÄÖĞ¶Ï£¨Í¬¼¶£©
+; æè¿°ï¼š
+;       1) å¤„ç† longmode æ¨¡å¼ä¸‹çš„ç‰¹æƒçº§å¤–çš„ä¸­æ–­ï¼ˆåŒçº§ï¼‰
 ;-----------------------------------------------------------------------
 do_interrupt_for_intra_privilege_longmode:
         push ebp
@@ -1879,7 +1879,7 @@ do_interrupt_for_intra_privilege_longmode:
         mov ebx, [ebp + PCB.CurrentVmbPointer]
         
         ;;
-        ;; µ±Ç° RSP
+        ;; å½“å‰ RSP
         ;;
         REX.Wrxb
         mov esi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.OldRsp]
@@ -1887,7 +1887,7 @@ do_interrupt_for_intra_privilege_longmode:
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp], esi
 
         ;;
-        ;; step 1: ¼ì²é IST
+        ;; step 1: æ£€æŸ¥ IST
         ;;
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 4]
         and eax, 7
@@ -1898,7 +1898,7 @@ do_interrupt_for_intra_privilege_longmode:
         ja do_interrupt_for_intra_privilege_longmode.Ts_TsSelector_01B
 
         ;;
-        ;; ¶ÁÈ¡ IST pointer
+        ;; è¯»å– IST pointer
         ;;        
         REX.Wrxb
         add eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TssBase]
@@ -1909,7 +1909,7 @@ do_interrupt_for_intra_privilege_longmode:
 
 do_interrupt_for_intra_privilege_longmode.CheckRsp:         
         ;;
-        ;; step 2: ¼ì²é RSP ÊÇ·ñÎª canonical µØÖ·ĞÎÊ½
+        ;; step 2: æ£€æŸ¥ RSP æ˜¯å¦ä¸º canonical åœ°å€å½¢å¼
         ;;
         REX.Wrxb
         mov eax, esi
@@ -1926,17 +1926,17 @@ do_interrupt_for_intra_privilege_longmode.CheckRsp:
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp], esi
         call get_system_va_of_guest_os
         REX.Wrxb
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp], eax         ;; ±£´æ RSP
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp], eax         ;; ä¿å­˜ RSP
 
         ;;
-        ;; step 3: ¶ÁÈ¡ RIP£¬²¢¼ì²é RIP ÊÇ·ñÎª canonical µØÖ·
+        ;; step 3: è¯»å– RIPï¼Œå¹¶æ£€æŸ¥ RIP æ˜¯å¦ä¸º canonical åœ°å€
         ;;
         movzx esi, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc]              ; offset[15:0]
         mov edi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 4]
         and edi, 0FFFF0000h                                                             ; offset[31:16]
         or esi, edi
         mov edi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 8]
-        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRip], esi                   ; ±£´æÄ¿±ê RIP
+        mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRip], esi                   ; ä¿å­˜ç›®æ ‡ RIP
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRip + 4], edi
         shl edi, 16
         sar edi, 16
@@ -1944,7 +1944,7 @@ do_interrupt_for_intra_privilege_longmode.CheckRsp:
         jne do_interrupt_for_intra_privilege_longmode.Gp_01B
 
         ;;
-        ;; step 4: Ñ¹Èë·µ»ØĞÅÏ¢
+        ;; step 4: å‹å…¥è¿”å›ä¿¡æ¯
         ;;
         REX.Wrxb
         mov edx, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp]
@@ -1967,7 +1967,7 @@ do_interrupt_for_intra_privilege_longmode.CheckRsp:
         mov [edx - 40], eax
 
         ;;
-        ;; step 5: ¼ÓÔØĞÂµÄ RSP Öµ
+        ;; step 5: åŠ è½½æ–°çš„ RSP å€¼
         ;;
         REX.Wrxb
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
@@ -1976,7 +1976,7 @@ do_interrupt_for_intra_privilege_longmode.CheckRsp:
         SetVmcsField    GUEST_RSP, eax 
 
         ;;
-        ;; step 6: ¼ÓÔØ CS:RIP
+        ;; step 6: åŠ è½½ CS:RIP
         ;;
         movzx eax, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCs]
         SetVmcsField    GUEST_CS_SELECTOR, eax
@@ -2005,7 +2005,7 @@ do_interrupt_for_intra_privilege_longmode.SetCsLimit:
         SetVmcsField    GUEST_RIP, eax
 
         ;;
-        ;; step 7: ¸üĞÂ rflags
+        ;; step 7: æ›´æ–° rflags
         ;;
         mov eax, ~(FLAGS_TF | FLAGS_NT | FLAGS_VM | FLAGS_RF)
         mov esi, ~(FLAGS_TF | FLAGS_NT | FLAGS_VM | FLAGS_RF | FLAGS_IF)
@@ -2035,7 +2035,7 @@ do_interrupt_for_intra_privilege_longmode.Ss_01B:
         
 do_interrupt_for_intra_privilege_longmode.ReflectException:
         ;;
-        ;; ×¢ÈëÒì³£
+        ;; æ³¨å…¥å¼‚å¸¸
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, eax
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, ecx   
@@ -2052,7 +2052,7 @@ do_interrupt_for_intra_privilege_longmode.Done:
 
 
 ;**********************************
-; Òì³£´¦ÀíÀı³Ì±í                  *
+; å¼‚å¸¸å¤„ç†ä¾‹ç¨‹è¡¨                  *
 ;**********************************
 DoExceptionTable:
         DD      do_DE, do_DB, do_NMI, do_BP, do_DF

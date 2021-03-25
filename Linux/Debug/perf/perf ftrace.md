@@ -15,6 +15,11 @@ e) 获取结果：/sys/kernel/debug/tracing/trace
 
 目前tracer只支持function和function_graph，后续会陆续增加。难道后续perf有可能会把debugfs的功能全部集中到perf？不可想象。干脆把proc也集中好了，目前好像pert top就是干这个的。
 
+perf ftrace -f function_graph usleep 123456
+
+perf ftrace -t function_graph -a -- insmod ipi_benchmark.ko > after_perf_ftrace
+
+
 参考：
 
 https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d01f4e8db22cf4d04f6c86351d959b584eb1f5f7

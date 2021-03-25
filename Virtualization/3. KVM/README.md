@@ -10,3 +10,8 @@ kvm halt polling: https://segmentfault.com/a/1190000017366802
 
 
 Passthrough IPI: https://lore.kernel.org/kvm/0109A01C-59D0-4C72-8B05-14959AD26AD2@bytedance.com/T/#u
+
+
+READMSR和CPUID指令在Guest中的代码执行路径学习, https://www.tqwba.com/x_d/jishu/428479.html
+
+rdmsr可以参见另外一个文件: `Forbid writing to MSR_F15H_PERF MSRs.md`
