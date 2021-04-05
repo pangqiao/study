@@ -1,6 +1,6 @@
 ;*************************************************
 ;* ioapic.asm                                    *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -17,22 +17,22 @@ init_ioapic_unit:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1) ¿ªÆô ioapic
-;       2) ÔÚ stage1 ÏÂÊ¹ÓÃ
+; æè¿°:
+;       1) å¼€å¯ ioapic
+;       2) åœ¨ stage1 ä¸‹ä½¿ç”¨
 ;------------------------------------
 enable_ioapic:
         ;;
-        ;; ¿ªÆô ioapic
+        ;; å¼€å¯ ioapic
         ;;
         call get_root_complex_base_address
         mov esi, [eax + 31FEh]
-        bts esi, 8                                      ; IOAPIC enable Î»
+        bts esi, 8                                      ; IOAPIC enable ä½
         and esi, 0FFFFFF00h                             ; IOAPIC range select
         mov [eax + 31FEh], esi                          ; enable ioapic
        
         ;;
-        ;; ÉèÖÃ IOAPIC ID
+        ;; è®¾ç½® IOAPIC ID
         ;;
         mov DWORD [0FEC00000h], IOAPIC_ID_INDEX
         mov DWORD [0FEC00010h], 0F000000h              ; IOAPIC ID = 0Fh
@@ -58,12 +58,12 @@ ioapic_keyboard_handler:
 %endif  
      
         
-        in al, I8408_DATA_PORT                          ; ¶Á¼üÅÌÉ¨ÃèÂë
+        in al, I8408_DATA_PORT                          ; è¯»é”®ç›˜æ‰«æç 
         test al, al
-        js ioapic_keyboard_handler.done                 ; Îª break code
+        js ioapic_keyboard_handler.done                 ; ä¸º break code
         
         ;;
-        ;; ÊÇ·ñÎª¹¦ÄÜ¼ü
+        ;; æ˜¯å¦ä¸ºåŠŸèƒ½é”®
         ;;
         cmp al, SC_F1
         jb ioapic_keyboard_handler.next
@@ -71,7 +71,7 @@ ioapic_keyboard_handler:
         ja ioapic_keyboard_handler.next
 
         ;;
-        ;; ÇĞ»»µ±Ç°´¦ÀíÆ÷
+        ;; åˆ‡æ¢å½“å‰å¤„ç†å™¨
         ;;
         sub al, SC_F1
         movzx esi, al
@@ -84,18 +84,18 @@ ioapic_keyboard_handler:
 ioapic_keyboard_handler.next:
         
         ;;
-        ;; ½«É¨ÃèÂë±£´æÔÚ´¦ÀíÆ÷×Ô¼ºµÄ local keyboard buffer ÖĞ
-        ;; local keyboard buffer ÓÉ SDA.KeyBufferHeadPointer ºÍ SDA.KeyBufferPtrPointer Ö¸ÕëÖ¸Ïò
+        ;; å°†æ‰«æç ä¿å­˜åœ¨å¤„ç†å™¨è‡ªå·±çš„ local keyboard buffer ä¸­
+        ;; local keyboard buffer ç”± SDA.KeyBufferHeadPointer å’Œ SDA.KeyBufferPtrPointer æŒ‡é’ˆæŒ‡å‘
         ;;
         REX.Wrxb
-        mov ebx, [ebp + SDA.KeyBufferPtrPointer]                ; ebx = LSB.LocalKeyBufferPtr Ö¸ÕëÖµ
+        mov ebx, [ebp + SDA.KeyBufferPtrPointer]                ; ebx = LSB.LocalKeyBufferPtr æŒ‡é’ˆå€¼
         REX.Wrxb
-        mov esi, [ebx]                                          ; esi = LSB.LocalKeyBufferPtr Öµ
+        mov esi, [ebx]                                          ; esi = LSB.LocalKeyBufferPtr å€¼
         REX.Wrxb
         INCv esi
         
         ;;
-        ;; ¼ì²éÊÇ·ñ³¬¹ı»º³åÇø³¤¶È
+        ;; æ£€æŸ¥æ˜¯å¦è¶…è¿‡ç¼“å†²åŒºé•¿åº¦
         ;;
         REX.Wrxb
         mov ecx, [ebp + SDA.KeyBufferHead]                      ; ecx = LSB.KeyBufferHead
@@ -106,10 +106,10 @@ ioapic_keyboard_handler.next:
         REX.Wrxb
         cmp esi, ecx
         REX.Wrxb
-        cmovae esi, edi                                         ; Èç¹ûµ½´ï»º³åÇøÎ²²¿£¬ÔòÖ¸ÏòÍ·²¿
-        mov [esi], al                                           ; Ğ´ÈëÉ¨ÃèÂë
+        cmovae esi, edi                                         ; å¦‚æœåˆ°è¾¾ç¼“å†²åŒºå°¾éƒ¨ï¼Œåˆ™æŒ‡å‘å¤´éƒ¨
+        mov [esi], al                                           ; å†™å…¥æ‰«æç 
         REX.Wrxb
-        xchg [ebx], esi                                         ; ¸üĞÂ»º³åÇøÖ¸Õë 
+        xchg [ebx], esi                                         ; æ›´æ–°ç¼“å†²åŒºæŒ‡é’ˆ 
                 
 ioapic_keyboard_handler.done:       
         call send_eoi_command
@@ -124,25 +124,25 @@ ioapic_keyboard_handler.done:
 
 
 ;----------------------------------------------------
-; init_ioapic_keyboard(): ³õÊ¼»¯ ioapic keyboard ¹¦ÄÜ
+; init_ioapic_keyboard(): åˆå§‹åŒ– ioapic keyboard åŠŸèƒ½
 ;----------------------------------------------------
 init_ioapic_keyboard:
         push ebx
         ;;
-        ;; ÉèÖÃ IOAPIC µÄ redirectior table 1 ¼Ä´æÆ÷        
+        ;; è®¾ç½® IOAPIC çš„ redirectior table 1 å¯„å­˜å™¨        
         ;;
         mov ebx, [gs: PCB.IapicPhysicalBase]
         mov DWORD [ebx + IOAPIC_INDEX], IRQ1_INDEX
         mov DWORD [ebx + IOAPIC_DATA], LOGICAL | IOAPIC_IRQ1_VECTOR | IOAPIC_RTE_MASKED
         mov DWORD [ebx + IOAPIC_INDEX], IRQ1_INDEX + 1
-        mov DWORD [ebx + IOAPIC_DATA], 01000000h                ; Ê¹ÓÃ processor #0
+        mov DWORD [ebx + IOAPIC_DATA], 01000000h                ; ä½¿ç”¨ processor #0
         pop ebx
         ret
         
         
 %if 0        
 ;----------------------------------------------
-; wait_esc_for_reset_ex(): µÈ´ı°´ÏÂ <ESC> ¼üÖØÆô
+; wait_esc_for_reset_ex(): ç­‰å¾…æŒ‰ä¸‹ <ESC> é”®é‡å¯
 ;---------------------------------------------
 wait_esc_for_reset_ex:
         mov esi, Ioapic.WaitResetMsg
@@ -151,7 +151,7 @@ wait_esc_for_reset_ex.loop:
         xor esi, esi
         lock xadd [fs: SDA.KeyBufferPtr], esi
         mov al, [esi]
-        cmp al, 01                              ; ¼ì²é°´¼üÊÇ·ñÎª <ESC> ¼ü
+        cmp al, 01                              ; æ£€æŸ¥æŒ‰é”®æ˜¯å¦ä¸º <ESC> é”®
         je wait_esc_for_reset_ex.next
         pause
         jmp wait_esc_for_reset_ex.loop        

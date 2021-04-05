@@ -31,3 +31,13 @@ qemu-system-x86_64 -cpu ?
 
 
 PV很多都是可以通过启动参数控制的
+
+
+xen的smp pv操作在
+
+```cpp
+// arch/x86/xen/smp_pv.c
+static const struct smp_ops xen_smp_ops __initconst = {
+        ......
+}
+```

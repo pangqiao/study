@@ -1,16 +1,16 @@
 ;************************************************
 ;* perfmon.inc                                  *
-;* Copyright (c) 2009-2013 µËÖ¾                 *
+;* Copyright (c) 2009-2013 é‚“å¿—                 *
 ;* All rights reserved.                         *
 ;*                                              *
-;* ´Ë´úÂëÓÃÓÚÑ§Ï°ºÍÑÐ¾¿£¬ÇëÎðÓÃÓÚÉÌÒµÓÃÍ¾!      *
-;* ±£ÁôËùÓÐÈ¨Àû! 2009-2012                      *
-;* ½»Á÷Ñ§Ï°»ò±¨¸æ bug: mik@mouseos.com           *
+;* æ­¤ä»£ç ç”¨äºŽå­¦ä¹ å’Œç ”ç©¶ï¼Œè¯·å‹¿ç”¨äºŽå•†ä¸šç”¨é€”!      *
+;* ä¿ç•™æ‰€æœ‰æƒåˆ©! 2009-2012                      *
+;* äº¤æµå­¦ä¹ æˆ–æŠ¥å‘Š bug: mik@mouseos.com           *
 ;************************************************
 
 
 ;
-; ¶¨Òå performance monitior µ¥ÔªÍ·ÎÄ¼þ 
+; å®šä¹‰ performance monitior å•å…ƒå¤´æ–‡ä»¶ 
 ;
 
 %ifndef PERFMON_INC
@@ -19,8 +19,8 @@
 
 
 ;*
-;* Ê¹ÓÃÔ¤¶¨Òå¼à¿ØÊÂ¼þ£¬ÓÃÀ´¼à¿ØÖ¸ÁîÖ´ÐÐÊýÁ¿
-;* IA32_PERFEVTSELx ¼Ä´æÆ÷µÄÉèÖÃÎª£ºEN=1, INT=1, USR=OS=1, umask=0, event select = c0
+;* ä½¿ç”¨é¢„å®šä¹‰ç›‘æŽ§äº‹ä»¶ï¼Œç”¨æ¥ç›‘æŽ§æŒ‡ä»¤æ‰§è¡Œæ•°é‡
+;* IA32_PERFEVTSELx å¯„å­˜å™¨çš„è®¾ç½®ä¸ºï¼šEN=1, INT=1, USR=OS=1, umask=0, event select = c0
 ;*
 %define UNHALTED_CORE_CYCLE_EVENT               53003Ch
 %define INST_COUNT_EVENT                        5300C0h
@@ -32,7 +32,7 @@
 
 
 ;*
-;* ¶¨Òå Westmere ¼Ü¹¹ÉÏµÄ PEBS ÊÂ¼þ
+;* å®šä¹‰ Westmere æž¶æž„ä¸Šçš„ PEBS äº‹ä»¶
 ;*
 %define PEBS_INST_COUNT_EVENT                   5300C0h
 %define PEBS_X87_OPS_COUNT_EVENT                53FEC1h
@@ -45,12 +45,12 @@
 %define PEBS_MEM_LOAD_DTLB_MISS_EVENT           5310CBh
 
 
-;* ¶¨Òå load latency ÊÂ¼þ
+;* å®šä¹‰ load latency äº‹ä»¶
 %define PEBS_MEM_INST_COUNT_EVENT               53100Bh
 
 
 ;*
-;* ÏÂÃæ¶¨Òå IA32_PERF_GLOBAL_CTRL ¼Ä´æÆ÷ enable Î»
+;* ä¸‹é¢å®šä¹‰ IA32_PERF_GLOBAL_CTRL å¯„å­˜å™¨ enable ä½
 ;*
 %define IA32_PMC0_EN                            01h
 %define IA32_PMC1_EN                            02h
@@ -62,7 +62,7 @@
 
 
 ;*
-;* ÏÂÃæ¶¨Òå IA32_PEBS_ENABLE ¼Ä´æÆ÷ enable Î»
+;* ä¸‹é¢å®šä¹‰ IA32_PEBS_ENABLE å¯„å­˜å™¨ enable ä½
 ;*
 %define PEBS_PMC0_EN                            01h
 %define PEBS_PMC1_EN                            02h
@@ -76,51 +76,51 @@
 
 
 ;*
-;* ¶¨Òåºê×Ü¿ª¹Ø
+;* å®šä¹‰å®æ€»å¼€å…³
 ;*
 
 ;-------------------------------------------------------
-; ºê ENABLE_COUNTER£º¿ªÆô counter enable
+; å® ENABLE_COUNTERï¼šå¼€å¯ counter enable
 ; input:
-;       %1 - ²ÎÊý1£ºÐèÒª¿ªÆôµÄ IA32_PMCx ¼ÆÊýÆ÷ 
-;       %2 - ²ÎÊý2: ÐèÒª¿ªÆôµÄ IA32_FIXED_CTRx ¼ÆÊýÆ÷
+;       %1 - å‚æ•°1ï¼šéœ€è¦å¼€å¯çš„ IA32_PMCx è®¡æ•°å™¨ 
+;       %2 - å‚æ•°2: éœ€è¦å¼€å¯çš„ IA32_FIXED_CTRx è®¡æ•°å™¨
 ;
-; Ê¾Àý£º
+; ç¤ºä¾‹ï¼š
 ;       ENABLE_COUNTER (IA32_PMC0_EN | IA32_PMC1_EN), 0
 ;-------------------------------------------------------
 %macro ENABLE_COUNTER 2
         mov ecx, IA32_PERF_GLOBAL_CTRL
         rdmsr
-        or eax, %1                      ; IA32_PMCx ¼ÆÊýÆ÷
-        or edx, %2                      ; IA32_FIXED_CTRx ¼ÆÊýÆ÷
+        or eax, %1                      ; IA32_PMCx è®¡æ•°å™¨
+        or edx, %2                      ; IA32_FIXED_CTRx è®¡æ•°å™¨
         wrmsr
 %endmacro
 
 
 ;-------------------------------------------------------
-; ºê DISABLE_COUNTER£º¹Ø±Õ counter enable
+; å® DISABLE_COUNTERï¼šå…³é—­ counter enable
 ; input:
-;       %1 - ²ÎÊý1£ºÐèÒª¹Ø±ÕµÄ IA32_PMCx ¼ÆÊýÆ÷ 
-;       %2 - ²ÎÊý2: ÐèÒª¹Ø±ÕµÄ IA32_FIXED_CTRx ¼ÆÊýÆ÷
+;       %1 - å‚æ•°1ï¼šéœ€è¦å…³é—­çš„ IA32_PMCx è®¡æ•°å™¨ 
+;       %2 - å‚æ•°2: éœ€è¦å…³é—­çš„ IA32_FIXED_CTRx è®¡æ•°å™¨
 ;
-; Ê¾Àý£º
+; ç¤ºä¾‹ï¼š
 ;       DISABLE_COUNTER (IA32_PMC0_EN | IA32_PMC1_EN), 0
 ;-------------------------------------------------------
 %macro DISABLE_COUNTER 2
         mov ecx, IA32_PERF_GLOBAL_CTRL
         rdmsr
-        and eax, (-1) ^ (%1)    ; IA32_PMCx ¼ÆÊýÆ÷¡¡
-        and edx, (-1) ^ (%2)    ; IA32_FIXED_CTRx ¼ÆÊýÆ÷
+        and eax, (-1) ^ (%1)    ; IA32_PMCx è®¡æ•°å™¨ã€€
+        and edx, (-1) ^ (%2)    ; IA32_FIXED_CTRx è®¡æ•°å™¨
         wrmsr
 %endmacro
 
 
 ;-----------------------------------------------------
-; ºê ENABLE_PEBS_COUNTER: ¿ªÆô counter PEBS ÖÐ¶ÏÐí¿É
+; å® ENABLE_PEBS_COUNTER: å¼€å¯ counter PEBS ä¸­æ–­è®¸å¯
 ; input:
-;       %1 - ²ÎÊý1£ºÐèÒª¿ªÆôµÄ IA32_PMCx ¼ÆÊýÆ÷
-;       %2 - ²ÎÊý2: ÐèÒª¿ªÆôµÄ load latency ¼ÆÊýÆ÷Ðí¿É
-; Ê¾Àý£º
+;       %1 - å‚æ•°1ï¼šéœ€è¦å¼€å¯çš„ IA32_PMCx è®¡æ•°å™¨
+;       %2 - å‚æ•°2: éœ€è¦å¼€å¯çš„ load latency è®¡æ•°å™¨è®¸å¯
+; ç¤ºä¾‹ï¼š
 ;       ENABLE_PEBS_COUNTER (PEBS_PMC0_EN), 0
 ;-------------------------------------------------------
 %macro ENABLE_PEBS_COUNTER 2
@@ -133,11 +133,11 @@
 
 
 ;-----------------------------------------------------
-; ºê DISABLE_PEBS_COUNTER: ¹Ø±Õ counter PEBS ÖÐ¶ÏÐí¿É
+; å® DISABLE_PEBS_COUNTER: å…³é—­ counter PEBS ä¸­æ–­è®¸å¯
 ; input:
-;       %1 - ²ÎÊý1£ºÐèÒª¹Ø±ÕµÄ IA32_PMCx ¼ÆÊýÆ÷
-;       %2 - ²ÎÊý2: ÐèÒª¹Ø±ÕµÄ load latency ¼ÆÊýÆ÷Ðí¿É
-; Ê¾Àý£º
+;       %1 - å‚æ•°1ï¼šéœ€è¦å…³é—­çš„ IA32_PMCx è®¡æ•°å™¨
+;       %2 - å‚æ•°2: éœ€è¦å…³é—­çš„ load latency è®¡æ•°å™¨è®¸å¯
+; ç¤ºä¾‹ï¼š
 ;       DISABLE_PEBS_COUNTER (PEBS_PMC0_EN), 0
 ;-------------------------------------------------------
 %macro DISABLE_PEBS_COUNTER 2
@@ -151,7 +151,7 @@
 
 
 ;-----------------------------------------
-; ÔÚÈ«¾Ö¿ØÖÆÆ÷Àï¿ªÆôËùÓÐµÄ¼ÆÊýÆ÷
+; åœ¨å…¨å±€æŽ§åˆ¶å™¨é‡Œå¼€å¯æ‰€æœ‰çš„è®¡æ•°å™¨
 ;-----------------------------------------
 %macro ENABLE_GLOBAL_COUNTER 0
         ENABLE_COUNTER 0Fh, 07h
@@ -159,7 +159,7 @@
 
 
 ;------------------------------------------
-; ¹Ø±ÕËùÓÐÈ«¾Ö¿ØÖÆÆ÷µÄ¼ÆÊýÆ÷
+; å…³é—­æ‰€æœ‰å…¨å±€æŽ§åˆ¶å™¨çš„è®¡æ•°å™¨
 ;------------------------------------------
 %macro DISABLE_GLOBAL_COUNTER 0
         DISABLE_COUNTER 0Fh, 07h
@@ -172,7 +172,7 @@
 
 
 ;*
-;* ÏÂÃæ¶¨Òå¿ªÆô IA32_PMCx ¼ÆÊýÆ÷ºê
+;* ä¸‹é¢å®šä¹‰å¼€å¯ IA32_PMCx è®¡æ•°å™¨å®
 ;*
 %macro ENABLE_IA32_PMC0 0
         ENABLE_COUNTER (IA32_PMC0_EN), 0
@@ -193,7 +193,7 @@
 
 ;*
 ;*
-;* ÏÂÃæ¶¨Òå¹Ø±Õ IA32_PMCx ¼ÆÊýÆ÷
+;* ä¸‹é¢å®šä¹‰å…³é—­ IA32_PMCx è®¡æ•°å™¨
 ;*
 %macro DISABLE_IA32_PMC0 0
         DISABLE_COUNTER (IA32_PMC0_EN), 0
@@ -213,15 +213,15 @@
 
 
 ;*
-;* ÏÂÃæ¶¨Òå¿ªÆô IA32_FIXED_CTRx ¼ÆÊýÆ÷
+;* ä¸‹é¢å®šä¹‰å¼€å¯ IA32_FIXED_CTRx è®¡æ•°å™¨
 ;*
 %macro ENABLE_IA32_FIXED_CTR0 0
         ;*
-        ;* ÏÈÉèÖÃIA32_FIXED_CTR_CTRL¼Ä´æÆ÷
+        ;* å…ˆè®¾ç½®IA32_FIXED_CTR_CTRLå¯„å­˜å™¨
         ;*
         mov ecx, IA32_FIXED_CTR_CTRL
         rdmsr
-        and eax, 0FFFFFFF0h             ; ÉèÖÃ IA32_FIXED_CTR0
+        and eax, 0FFFFFFF0h             ; è®¾ç½® IA32_FIXED_CTR0
         or eax, 0Bh                     ; En=3(all ring levels), ANY=0, PMI=1
         wrmsr
         ENABLE_COUNTER  0, (IA32_FIXED_CTR0_EN)
@@ -230,7 +230,7 @@
 %macro ENABLE_IA32_FIXED_CTR1 0
         mov ecx, IA32_FIXED_CTR_CTRL
         rdmsr
-        and eax, 0FFFFFF0Fh             ; ÉèÖÃ IA32_FIXED_CTR1
+        and eax, 0FFFFFF0Fh             ; è®¾ç½® IA32_FIXED_CTR1
         or eax, 0B0h                    ; En=3(all ring levels), ANY=0, PMI=1
         wrmsr
         ENABLE_COUNTER 0, (IA32_FIXED_CTR1_EN)
@@ -239,7 +239,7 @@
 %macro ENABLE_IA32_FIXED_CTR2 0
         mov ecx, IA32_FIXED_CTR_CTRL
         rdmsr
-        and eax, 0FFFFF0FFh             ; ÉèÖÃ IA32_FIXED_CTR2
+        and eax, 0FFFFF0FFh             ; è®¾ç½® IA32_FIXED_CTR2
         or eax, 0B00h                   ; En=3(all ring levels), ANY=0, PMI=1
         wrmsr
         ENABLE_COUNTER 0, (IA32_FIXED_CTR2_EN)
@@ -247,7 +247,7 @@
 
 
 ;* 
-;* ÏÂÃæ¶¨Òå¹Ø±Õ IA32_FIXED_CTRx ¼ÆÊýÆ÷
+;* ä¸‹é¢å®šä¹‰å…³é—­ IA32_FIXED_CTRx è®¡æ•°å™¨
 ;*
 %macro DISABLE_IA32_FIXED_CTR0 0
         DISABLE_COUNTER 0, (IA32_FIXED_CTR0_EN)
@@ -263,7 +263,7 @@
 
 
 ;*
-;* ÏÂÃæ¶¨Òå¿ªÆô PEBS_ENABLE ºê
+;* ä¸‹é¢å®šä¹‰å¼€å¯ PEBS_ENABLE å®
 ;*
 %macro ENABLE_PEBS_PMC0 0
         ENABLE_PEBS_COUNTER (PEBS_PMC0_EN), 0
@@ -283,7 +283,7 @@
 
 
 ;*
-;* ¿ªÆô PEBS ²¢Ê¹ÓÃ load latency »úÖÆ
+;* å¼€å¯ PEBS å¹¶ä½¿ç”¨ load latency æœºåˆ¶
 ;*
 %macro ENABLE_PEBS_WITH_LL_PMC0 0
         ENABLE_PEBS_COUNTER (PEBS_PMC0_EN), (LL_PMC0_EN)
@@ -303,7 +303,7 @@
 
 
 ;*
-;* ¹Ø±Õ PEBS
+;* å…³é—­ PEBS
 ;*
 %macro DISABLE_PEBS_PMC0 0
         DISABLE_PEBS_COUNTER (PEBS_PMC0_EN), 0
@@ -324,7 +324,7 @@
 
 
 ;*
-;* ¹Ø±Õ PEBS ºÍ load latency »úÖÆ
+;* å…³é—­ PEBS å’Œ load latency æœºåˆ¶
 ;*
 %macro DISABLE_PEBS_WITH_LL_PMC0 0
         DISABLE_PEBS_COUNTER (PEBS_PMC0_EN), (LL_PMC0_EN)
@@ -344,9 +344,9 @@
 
 
 ;-----------------------------------------------
-; ºê RESET_FIXED_PMC()
-; ÃèÊö£º
-;       ÇåËùÓÐ IA32_FIXED_CTR¼ÆÊýÆ÷µÄÖµÎª 0
+; å® RESET_FIXED_PMC()
+; æè¿°ï¼š
+;       æ¸…æ‰€æœ‰ IA32_FIXED_CTRè®¡æ•°å™¨çš„å€¼ä¸º 0
 ;-----------------------------------------------
 %macro RESET_FIXED_PMC 0
         xor eax, eax
@@ -361,9 +361,9 @@
 
 
 ;---------------------------------------------
-; ºê RESET_PMC()
-; ÃèÊö:
-;       ÇåËùÓÐ IA32_PMC ¼ÆÊýÆ÷µÄÖµÎª0
+; å® RESET_PMC()
+; æè¿°:
+;       æ¸…æ‰€æœ‰ IA32_PMC è®¡æ•°å™¨çš„å€¼ä¸º0
 ;---------------------------------------------
 %macro RESET_PMC 0
         xor eax, eax
@@ -379,12 +379,12 @@
 %endmacro
 
 
-;########## ÏÂÃæÊÇÏà¹Ø PEBS ÖÐ¶Ï handler ´¦ÀíµÄºê¶¨Òå ##############
+;########## ä¸‹é¢æ˜¯ç›¸å…³ PEBS ä¸­æ–­ handler å¤„ç†çš„å®å®šä¹‰ ##############
 
 ;--------------------------------------------------------------
-; ºê RESET_COUNTER_OVERFLOW()
-; ÃèÊö£º
-;       Çå IA32_PERF_GLOBAL_STATUS ¼Ä´æÆ÷ËùÓÐ overflow ±êÖ¾Î»
+; å® RESET_COUNTER_OVERFLOW()
+; æè¿°ï¼š
+;       æ¸… IA32_PERF_GLOBAL_STATUS å¯„å­˜å™¨æ‰€æœ‰ overflow æ ‡å¿—ä½
 ;-------------------------------------------------------------
 %macro RESET_COUNTER_OVERFLOW 0
 	mov ecx, IA32_PERF_GLOBAL_OVF_CTRL
@@ -394,20 +394,20 @@
 %endmacro
 
 ;-------------------------------------------------------------
-; ºê RESET_PMI_COUNTER_OVERFLOW()
-; ÃèÊö£º
-;       Çå´¥·¢ PMI ÖÐ¶ÏµÄ counter overflow
-;       È¥µô´¥·¢ PEBS ÖÐ¶ÏµÄ counter overflow
+; å® RESET_PMI_COUNTER_OVERFLOW()
+; æè¿°ï¼š
+;       æ¸…è§¦å‘ PMI ä¸­æ–­çš„ counter overflow
+;       åŽ»æŽ‰è§¦å‘ PEBS ä¸­æ–­çš„ counter overflow
 ;-------------------------------------------------------------
 %macro RESET_PMI_COUNTER_OVERFLOW 0
         mov ecx, IA32_PERF_GLOBAL_STATUS
         rdmsr
-        mov esi, eax                    ; ±£´æ overflow status
+        mov esi, eax                    ; ä¿å­˜ overflow status
         mov ecx, IA32_PEBS_ENABLE
         rdmsr
-        and eax, esi                    ; È¡ PEBS overflow status
+        and eax, esi                    ; å– PEBS overflow status
         not eax
-        and eax, esi                    ; È¡ PMI overflow status
+        and eax, esi                    ; å– PMI overflow status
         mov ecx, IA32_PERF_GLOBAL_OVF_CTRL
         mov edx, 0
         wrmsr
@@ -415,14 +415,14 @@
 
 
 ;--------------------------------------------------------------
-; ºê RESET_PEBS_BUFFER_OVERFLOW() 
-; ÃèÊö£º
-;       Çå IA32_PERF_GLOBAL_STATUS ¼Ä´æÆ÷µÄ OvfBuffer Î»
+; å® RESET_PEBS_BUFFER_OVERFLOW() 
+; æè¿°ï¼š
+;       æ¸… IA32_PERF_GLOBAL_STATUS å¯„å­˜å™¨çš„ OvfBuffer ä½
 ;--------------------------------------------------------------
 %macro RESET_PEBS_BUFFER_OVERFLOW 0
         mov ecx, IA32_PERF_GLOBAL_OVF_CTRL
         mov eax, 0
-        mov edx, 40000000h              ; OvfBuffer Î»
+        mov edx, 40000000h              ; OvfBuffer ä½
         wrmsr
 %endmacro
 

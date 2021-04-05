@@ -1,6 +1,6 @@
 ;*************************************************
 ;* crt64.asm                                     *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
@@ -16,11 +16,11 @@
 ;       rsi - address
 ; output;
 ;       none
-; ÃèÊö£º
-;       1) Ò»´ÎÇå 4K Ò³Ãæ
-;       2) µØÖ·ÔÚ 4K ±ß½çÉÏ
-;       3) Ğè¿ªÆô SSE Ö¸ÁîÖ§³Ö    
-;       4) ÔÚ 64-bit ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       1) ä¸€æ¬¡æ¸… 4K é¡µé¢
+;       2) åœ°å€åœ¨ 4K è¾¹ç•Œä¸Š
+;       3) éœ€å¼€å¯ SSE æŒ‡ä»¤æ”¯æŒ    
+;       4) åœ¨ 64-bit ä¸‹ä½¿ç”¨
 ;------------------------------------------        
 clear_4k_page64:
         pxor xmm0, xmm0
@@ -47,15 +47,15 @@ clear_4k_page64.done:
 
 
 ;-----------------------------------------
-; clear_4k_buffer64()£ºÇå 4K ÄÚ´æ
+; clear_4k_buffer64()ï¼šæ¸… 4K å†…å­˜
 ; input:  
 ;       rsi: address
 ; output;
 ;       none
-; ÃèÊö£º
-;       1) Ò»´ÎÇå 4K Ò³Ãæ
-;       2) µØÖ·ÔÚ 4K ±ß½çÉÏ
-;       3) Ê¹ÓÃ GPI Ö¸Áî´¦Àí
+; æè¿°ï¼š
+;       1) ä¸€æ¬¡æ¸… 4K é¡µé¢
+;       2) åœ°å€åœ¨ 4K è¾¹ç•Œä¸Š
+;       3) ä½¿ç”¨ GPI æŒ‡ä»¤å¤„ç†
 ;-----------------------------------------
 clear_4k_buffer64:
         push rsi
@@ -70,7 +70,7 @@ clear_4k_buffer64:
 
 
 ;-----------------------------------------
-; clear_4k_page_n64()£ºÇå n¸ö 4KÒ³Ãæ
+; clear_4k_page_n64()ï¼šæ¸… nä¸ª 4Ké¡µé¢
 ; input:  
 ;       rsi - address
 ;       rdi - count
@@ -86,7 +86,7 @@ clear_4k_page_n64:
 
 
 ;-----------------------------------------
-; clear_4k_buffer_n64()£ºÇå n¸ö 4K ÄÚ´æ¿é
+; clear_4k_buffer_n64()ï¼šæ¸… nä¸ª 4K å†…å­˜å—
 ; input:  
 ;       rsi - address
 ;       rdi - count
@@ -108,8 +108,8 @@ clear_4k_buffer_n64:
 ;       rdi - buffer
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÇåÄÚ´æ¿é
+; æè¿°ï¼š
+;       1) æ¸…å†…å­˜å—
 ;-------------------------------------------------------------------
 zero_memory64:
         push rcx
@@ -119,49 +119,49 @@ zero_memory64:
         xor eax, eax
         
         ;;
-        ;; ¼ì²é count > 8 ?
+        ;; æ£€æŸ¥ count > 8 ?
         ;;
         cmp esi, 8
         jb zero_memory64.@1
         
         ;;
-        ;; ÏÈĞ´ÈëÊ× 8 ×Ö½Ú
+        ;; å…ˆå†™å…¥é¦– 8 å­—èŠ‚
         ;;
         mov [rdi], rax
         
         ;;
-        ;; ¼ÆËãµ÷Õûµ½ 8 ×Ö½Ú±ß½çÉÏµÄ²î¶î£¬ÏÂÃæÔ­ÀíµÈÓÚ 8 - (dest & 07)
-        ;; 1) ÀıÈç£º[2:0] = 011B£¨3£©
-        ;; 2) È¡·´ºó = 100B£¨4£©
-        ;; 3) ¼Ó1ºó = 101B£¨5£©
+        ;; è®¡ç®—è°ƒæ•´åˆ° 8 å­—èŠ‚è¾¹ç•Œä¸Šçš„å·®é¢ï¼Œä¸‹é¢åŸç†ç­‰äº 8 - (dest & 07)
+        ;; 1) ä¾‹å¦‚ï¼š[2:0] = 011Bï¼ˆ3ï¼‰
+        ;; 2) å–åå = 100Bï¼ˆ4ï¼‰
+        ;; 3) åŠ 1å = 101Bï¼ˆ5ï¼‰
         ;;
         mov ecx, esi                                    ; count 
         mov esi, edi
-        not esi                                         ; Ô­ dest È¡·´
+        not esi                                         ; åŸ dest å–å
         inc esi                                         ; 
-        and esi, 07h                                    ; µÃµ½ QWORD ±ß½çÉÏµÄ²î¶î
-        sub ecx, esi                                    ; c = count - ²î¶î
+        and esi, 07h                                    ; å¾—åˆ° QWORD è¾¹ç•Œä¸Šçš„å·®é¢
+        sub ecx, esi                                    ; c = count - å·®é¢
         
         ;;
-        ;; dest ÏòÉÏµ÷Õûµ½ QWORD ±ß½ç
+        ;; dest å‘ä¸Šè°ƒæ•´åˆ° QWORD è¾¹ç•Œ
         ;;
-        add rdi, rsi                                    ; dest = Ô­ dest + ²î¶î
+        add rdi, rsi                                    ; dest = åŸ dest + å·®é¢
         
         ;;
-        ;; ÒÔ QWORD Îªµ¥Î»Ğ´Èë
+        ;; ä»¥ QWORD ä¸ºå•ä½å†™å…¥
         ;;
         mov esi, ecx
         shr ecx, 3                                      ; n = c / 8
                 
         ;;
-        ;; Ò»´Î 8 ×Ö½Ú QWORD ±ß½çÉÏĞ´Èë
+        ;; ä¸€æ¬¡ 8 å­—èŠ‚ QWORD è¾¹ç•Œä¸Šå†™å…¥
         ;;        
         rep stosq
 
 
 zero_memory64.@1:            
         ;;
-        ;; Ò»´Î 1 ×Ö½Ú£¬Ğ´ÈëÊ£Óà×Ö½ÚÊı
+        ;; ä¸€æ¬¡ 1 å­—èŠ‚ï¼Œå†™å…¥å‰©ä½™å­—èŠ‚æ•°
         ;;
         mov ecx, esi
         and ecx, 07h
@@ -175,7 +175,7 @@ zero_memory64.done:
 
 
 ;-------------------------------------------------
-; strlen64(): µÃÈ¡×Ö·û´®³¤¶È
+; strlen64(): å¾—å–å­—ç¬¦ä¸²é•¿åº¦
 ; input:
 ;       rsi - string
 ; output:
@@ -185,30 +185,30 @@ strlen64:
         push rcx
         xor eax, eax
         ;;
-        ;; ÊäÈëµÄ string = NULL Ê±£¬·µ»Ø 0 Öµ
+        ;; è¾“å…¥çš„ string = NULL æ—¶ï¼Œè¿”å› 0 å€¼
         ;;
         test rsi, rsi
         jz strlen64.done
         
         ;;
-        ;; ²âÊÔÊÇ·ñÖ§³Ö SSE4.2 Ö¸Áî£¬ÒÔ¼°ÊÇ·ñ¿ªÆô SSE Ö¸ÁîÖ´ĞĞ
-        ;; Ñ¡ÔñÊ¹ÓÃ SSE4.2 °æ±¾µÄ strlen Ö¸Áî
+        ;; æµ‹è¯•æ˜¯å¦æ”¯æŒ SSE4.2 æŒ‡ä»¤ï¼Œä»¥åŠæ˜¯å¦å¼€å¯ SSE æŒ‡ä»¤æ‰§è¡Œ
+        ;; é€‰æ‹©ä½¿ç”¨ SSE4.2 ç‰ˆæœ¬çš„ strlen æŒ‡ä»¤
         ;;
         cmp DWORD [gs: PCB.SSELevel], SSE4_2
         jb strlen64.legacy
         test DWORD [gs: PCB.InstructionStatus], INST_STATUS_SSE
-        jnz sse4_strlen + 1                           ; ×ªÈëÖ´ĞĞ sse4_strlen() 
+        jnz sse4_strlen + 1                           ; è½¬å…¥æ‰§è¡Œ sse4_strlen() 
 
 
 strlen64.legacy:
 
         ;;
-        ;; Ê¹ÓÃ legacy ·½Ê½
+        ;; ä½¿ç”¨ legacy æ–¹å¼
         ;;
         xor ecx, ecx
         mov rdi, rsi
         dec rcx                                         ; rcx = -1
-        repne scasb                                     ; Ñ­»·²éÕÒ 0 Öµ
+        repne scasb                                     ; å¾ªç¯æŸ¥æ‰¾ 0 å€¼
         sub rax, rcx                                    ; 0 - rcx
         dec rax
 strlen64.done:
@@ -217,7 +217,7 @@ strlen64.done:
         
         
 ;-------------------------------------------------
-; memcpy64(): ¸´ÖÆÄÚ´æ¿é
+; memcpy64(): å¤åˆ¶å†…å­˜å—
 ; input:
 ;       rsi - source
 ;       rdi - dest 
@@ -245,10 +245,10 @@ memcpy64:
 ; input:
 ;       none
 ; output:
-;       rax - tss ¿éµØÖ·
-; ÃèÊö£º
-;       1) ´Ó TSS POOL Àï·ÖÅäÒ»¸ö TSS ¿é
-;       2) Ê§°ÜÊ±·µ»Ø 0 Öµ
+;       rax - tss å—åœ°å€
+; æè¿°ï¼š
+;       1) ä» TSS POOL é‡Œåˆ†é…ä¸€ä¸ª TSS å—
+;       2) å¤±è´¥æ—¶è¿”å› 0 å€¼
 ;-------------------------------------------------------------------
 get_tss_base64:
         push rbx
@@ -268,36 +268,36 @@ get_tss_base64:
 
 
 ;-------------------------------------------------------------------
-; append_gdt_descriptor64(): Íù GDT ±íÌí¼ÓÒ»¸öÃèÊö·û
+; append_gdt_descriptor64(): å¾€ GDT è¡¨æ·»åŠ ä¸€ä¸ªæè¿°ç¬¦
 ; input:
-;       rsi - 64 Î»ÃèÊö·û
+;       rsi - 64 ä½æè¿°ç¬¦
 ; output:
-;       rax - ·µ»Ø selector Öµ
-; ÃèÊö£º
-;       1) Íù GDT ±íÌí¼ÓÒ»¸öÃèÊö·û
-;       2) ÔÚ 64-bit ÏÂÊ¹ÓÃ
+;       rax - è¿”å› selector å€¼
+; æè¿°ï¼š
+;       1) å¾€ GDT è¡¨æ·»åŠ ä¸€ä¸ªæè¿°ç¬¦
+;       2) åœ¨ 64-bit ä¸‹ä½¿ç”¨
 ;-------------------------------------------------------------------
 append_gdt_descriptor64:
         ;;
-        ;; ¼ì²é Top ÉÏµÄÃèÊö·ûÊÇ·ñÎª 128 Î»ÏµÍ³ÃèÊö·û
-        ;; 1) ÊÇ£ºÏÂÒ»Ìõ entry = top + 16
-        ;; 2) ·ñ£ºÏÂÒ»Ìõ entry = top + 8
+        ;; æ£€æŸ¥ Top ä¸Šçš„æè¿°ç¬¦æ˜¯å¦ä¸º 128 ä½ç³»ç»Ÿæè¿°ç¬¦
+        ;; 1) æ˜¯ï¼šä¸‹ä¸€æ¡ entry = top + 16
+        ;; 2) å¦ï¼šä¸‹ä¸€æ¡ entry = top + 8
         ;;
-        mov r9, [fs: SDA.GdtTop]                        ; ¶ÁÈ¡ GDT ¶¥¶ËÔ­Öµ
+        mov r9, [fs: SDA.GdtTop]                        ; è¯»å– GDT é¡¶ç«¯åŸå€¼
         mov rax, [r9]
-        bt rax, 44                                      ; ¼ì²é S ±êÖ¾Î»
+        bt rax, 44                                      ; æ£€æŸ¥ S æ ‡å¿—ä½
         mov r8, 8
         mov rax, 16
         cmovc rax, r8
-        add r9, rax                                     ; Ö¸ÏòÏÂÒ»Ìõ entry
-        mov [r9], rsi                                   ; Ğ´Èë GDT 
-        mov [fs: SDA.GdtTop], r9                        ; ¸üĞÂ gdt_top ¼ÇÂ¼
-        add DWORD [fs: SDA.GdtLimit], 8                 ; ¸üĞÂ gdt_limit ¼ÇÂ¼
-        sub r9, [fs: SDA.GdtBase]                       ; µÃµ½ selector Öµ
+        add r9, rax                                     ; æŒ‡å‘ä¸‹ä¸€æ¡ entry
+        mov [r9], rsi                                   ; å†™å…¥ GDT 
+        mov [fs: SDA.GdtTop], r9                        ; æ›´æ–° gdt_top è®°å½•
+        add DWORD [fs: SDA.GdtLimit], 8                 ; æ›´æ–° gdt_limit è®°å½•
+        sub r9, [fs: SDA.GdtBase]                       ; å¾—åˆ° selector å€¼
         mov rax, r9
         
         ;;
-        ;; ÏÂÃæË¢ĞÂ gdtr ¼Ä´æÆ÷
+        ;; ä¸‹é¢åˆ·æ–° gdtr å¯„å­˜å™¨
         ;;
         lgdt [fs: SDA.GdtPointer]
         ret
@@ -306,34 +306,34 @@ append_gdt_descriptor64:
 ;-------------------------------------------------------------------
 ; append_gdt_system_descriptor64()
 ; input:
-;       rdi:rsi - 128 Î»ÏµÍ³ÃèÊö·û
+;       rdi:rsi - 128 ä½ç³»ç»Ÿæè¿°ç¬¦
 ; output:
-;       rax - ·µ»Ø selector Öµ
-; ÃèÊö:
-;       1) Íù GDT Ìí¼ÓÏµÍ³ÃèÊö·û£¬°üÀ¨£ºTSS£¬LDT ÒÔ¼° Call-gate ÃèÊö·û
+;       rax - è¿”å› selector å€¼
+; æè¿°:
+;       1) å¾€ GDT æ·»åŠ ç³»ç»Ÿæè¿°ç¬¦ï¼ŒåŒ…æ‹¬ï¼šTSSï¼ŒLDT ä»¥åŠ Call-gate æè¿°ç¬¦
 ;-------------------------------------------------------------------
 append_gdt_system_descriptor64:
         ;;
-        ;; ¼ì²é Top ÉÏµÄÃèÊö·ûÊÇ·ñÎª 128 Î»ÏµÍ³ÃèÊö·û
-        ;; 1) ÊÇ£ºÏÂÒ»Ìõ entry = top + 16
-        ;; 2) ·ñ£ºÏÂÒ»Ìõ entry = top + 8
+        ;; æ£€æŸ¥ Top ä¸Šçš„æè¿°ç¬¦æ˜¯å¦ä¸º 128 ä½ç³»ç»Ÿæè¿°ç¬¦
+        ;; 1) æ˜¯ï¼šä¸‹ä¸€æ¡ entry = top + 16
+        ;; 2) å¦ï¼šä¸‹ä¸€æ¡ entry = top + 8
         ;;
-        mov r9, [fs: SDA.GdtTop]                        ; ¶ÁÈ¡ GDT ¶¥¶ËÔ­Öµ
+        mov r9, [fs: SDA.GdtTop]                        ; è¯»å– GDT é¡¶ç«¯åŸå€¼
         mov rax, [r9]
-        bt rax, 44                                      ; ¼ì²é S ±êÖ¾Î»
+        bt rax, 44                                      ; æ£€æŸ¥ S æ ‡å¿—ä½
         mov r8, 8
         mov rax, 16
         cmovc rax, r8
-        add r9, rax                                     ; Ö¸ÏòÏÂÒ»Ìõ entry
-        mov [r9], rsi                                   ; Ğ´Èë GDT 
+        add r9, rax                                     ; æŒ‡å‘ä¸‹ä¸€æ¡ entry
+        mov [r9], rsi                                   ; å†™å…¥ GDT 
         mov [r9 + 8], rdi
-        mov [fs: SDA.GdtTop], r9                        ; ¸üĞÂ gdt_top ¼ÇÂ¼
-        add DWORD [fs: SDA.GdtLimit], 16                ; ¸üĞÂ gdt_limit ¼ÇÂ¼
-        sub r9, [fs: SDA.GdtBase]                       ; µÃµ½ selector Öµ
+        mov [fs: SDA.GdtTop], r9                        ; æ›´æ–° gdt_top è®°å½•
+        add DWORD [fs: SDA.GdtLimit], 16                ; æ›´æ–° gdt_limit è®°å½•
+        sub r9, [fs: SDA.GdtBase]                       ; å¾—åˆ° selector å€¼
         mov rax, r9
         
         ;;
-        ;; ÏÂÃæË¢ĞÂ gdtr ¼Ä´æÆ÷
+        ;; ä¸‹é¢åˆ·æ–° gdtr å¯„å­˜å™¨
         ;;
         lgdt [fs: SDA.GdtPointer]
         ret
@@ -346,29 +346,29 @@ append_gdt_system_descriptor64:
 ; input:
 ;       none
 ; output:
-;       rax - ·µ»ØÒÆ³ıµÄÃèÊö·û
-;       rdx:rax - 128 Î»ÏµÍ³ÃèÊö·û
-; ÃèÊö£º
-;       1) ÒÆ³ı GDT ±í¶¥ÉÏµÄÒ»¸öÃèÊö·û
-;       2) ·µ»Ø±»ÒÆ³ıµÄÃèÊö·û£¬Èç¹ûÊôÓÚ system ÃèÊö·û£¬·µ»Ø 128 Î»ÃèÊö·û
+;       rax - è¿”å›ç§»é™¤çš„æè¿°ç¬¦
+;       rdx:rax - 128 ä½ç³»ç»Ÿæè¿°ç¬¦
+; æè¿°ï¼š
+;       1) ç§»é™¤ GDT è¡¨é¡¶ä¸Šçš„ä¸€ä¸ªæè¿°ç¬¦
+;       2) è¿”å›è¢«ç§»é™¤çš„æè¿°ç¬¦ï¼Œå¦‚æœå±äº system æè¿°ç¬¦ï¼Œè¿”å› 128 ä½æè¿°ç¬¦
 ;-------------------------------------------------------------------
 remove_gdt_descriptor64:
         xor r9, r9
         xor rax, rax
         ;;
-        ;; ¼ì²é GDT ±íÊÇ·ñÎª¿Õ
+        ;; æ£€æŸ¥ GDT è¡¨æ˜¯å¦ä¸ºç©º
         ;;
-        mov r8, [fs: SDA.GdtTop]                        ; GDT top Ö¸Õë
+        mov r8, [fs: SDA.GdtTop]                        ; GDT top æŒ‡é’ˆ
         cmp r8, [fs: SDA.GdtBase]
         jbe remove_gdt_descriptor64.done
         
-        mov rax, [r8]                                   ; ¶Á¶¥ÉÏÔ­ÃèÊö·ûÖµ
+        mov rax, [r8]                                   ; è¯»é¡¶ä¸ŠåŸæè¿°ç¬¦å€¼
         ;;
-        ;; ¼ì²éÊÇ·ñÊôÓÚ system ÃèÊö·û
+        ;; æ£€æŸ¥æ˜¯å¦å±äº system æè¿°ç¬¦
         ;; 
         bt rax, 44
         jnc remove_gdt_descriptor64.system
-        mov [r8], r9                                    ; ÇåÔ­ GDT ±íÏî
+        mov [r8], r9                                    ; æ¸…åŸ GDT è¡¨é¡¹
         mov esi, 8
         jmp remove_gdt_descriptor64.next
         
@@ -379,15 +379,15 @@ remove_gdt_descriptor64.system:
         mov esi, 16
         
 remove_gdt_descriptor64.next:
-        sub DWORD [fs: SDA.GdtLimit], esi               ; ¸üĞÂ GDT limit
+        sub DWORD [fs: SDA.GdtLimit], esi               ; æ›´æ–° GDT limit
         ;;
-        ;; ¼ì²éÇ°Ò»¸ö entry ÊÇ·ñÎª system ÃèÊö·û
-        ;; 1) ÊÇ£ºÇ°Ò»¸ö entry = top - 16
-        ;; 2) ·ñ£ºÇ°Ò»¸ö entry = top - 8
+        ;; æ£€æŸ¥å‰ä¸€ä¸ª entry æ˜¯å¦ä¸º system æè¿°ç¬¦
+        ;; 1) æ˜¯ï¼šå‰ä¸€ä¸ª entry = top - 16
+        ;; 2) å¦ï¼šå‰ä¸€ä¸ª entry = top - 8
         ;;
         mov rsi, [r8 - 8]
         ;;
-        ;; ¼ì²éÃèÊö·ûÀàĞÍÊÇ·ñÎª 0 
+        ;; æ£€æŸ¥æè¿°ç¬¦ç±»å‹æ˜¯å¦ä¸º 0 
         ;;        
         shr rsi, 40
         and esi, 0Fh
@@ -396,13 +396,13 @@ remove_gdt_descriptor64.next:
         cmovnz esi, r9d
               
         ;;
-        ;; ¸üĞÂ TOP Öµ
+        ;; æ›´æ–° TOP å€¼
         ;;
         sub r8, rsi        
         mov [fs: SDA.GdtTop], r8
         
         ;;
-        ;; ¸üĞÂ GDTR
+        ;; æ›´æ–° GDTR
         ;;
         lgdt [fs: SDA.GdtPointer]
         
@@ -416,44 +416,44 @@ remove_gdt_descriptor64.done:
 ; write_gdt_descriptor64()
 ; input:
 ;       esi - selector
-;       rdi - 64 Î»ÃèÊö·ûÖµ
+;       rdi - 64 ä½æè¿°ç¬¦å€¼
 ; output:
-;       rax - ·µ»ØÃèÊö·ûµØÖ·
-; ÃèÊö£º
-;       ¸ù¾İÌá¹©µÄ selector ÖµÔÚ GDT ±íĞ´ÈëÒ»¸öÃèÊö·û
+;       rax - è¿”å›æè¿°ç¬¦åœ°å€
+; æè¿°ï¼š
+;       æ ¹æ®æä¾›çš„ selector å€¼åœ¨ GDT è¡¨å†™å…¥ä¸€ä¸ªæè¿°ç¬¦
 ;-------------------------------------------------------------------   
 write_gdt_descriptor64:
         and esi, 0FFF8h
         mov r8, [fs: SDA.GdtBase]
         add r8, rsi
-        mov [r8], rdi                                   ; Ğ´ÈëÃèÊö·û
+        mov [r8], rdi                                   ; å†™å…¥æè¿°ç¬¦
         
         ;;
-        ;; ¼ì²â¼°¸üĞÂ GDT µÄ top
+        ;; æ£€æµ‹åŠæ›´æ–° GDT çš„ top
         ;;
         add esi, 7
-        cmp r8, [fs: SDA.GdtTop]                        ; ÊÇ·ñ³¬ GDT TOP
+        cmp r8, [fs: SDA.GdtTop]                        ; æ˜¯å¦è¶… GDT TOP
         jbe write_gdt_descriptor64.next
         
         ;;
-        ;; ´óÓÚ Top£¬Ğè¸üĞÂ Top 
+        ;; å¤§äº Topï¼Œéœ€æ›´æ–° Top 
         ;;
         mov [fs: SDA.GdtTop], r8
 
 write_gdt_descriptor64.next:
         ;;
-        ;; ¼ì²éÊÇ·ñ³¬ GDT limit
+        ;; æ£€æŸ¥æ˜¯å¦è¶… GDT limit
         ;;
         cmp esi, [fs: SDA.GdtLimit]
         jbe write_gdt_descriptor64.done
         
         ;;
-        ;; ³¬ limit£¬Ğè¸üĞÂ GDT limit
+        ;; è¶… limitï¼Œéœ€æ›´æ–° GDT limit
         ;;
         mov [fs: SDA.GdtLimit], esi
         
         ;;
-        ;; Ë¢ĞÂ GDTR
+        ;; åˆ·æ–° GDTR
         ;;
         lgdt [fs: SDA.GdtPointer]
         
@@ -469,11 +469,11 @@ write_gdt_descriptor64.done:
 ; input:
 ;       esi - selector
 ; output:
-;       rdx:rax - 128 Î»ÏµÍ³ÃèÊö·û
-; ÃèÊö£º
-;       1) ¶ÁÈ¡ GDT ÃèÊö·ûÏî
-;       2) ÊôÓÚÏµÍ³ÃèÊö·û£¬Ôò rdx:rax ·µ»Ø 128 Î»ÃèÊö·û
-;       3) Ê§°Ü·µ»Ø -1
+;       rdx:rax - 128 ä½ç³»ç»Ÿæè¿°ç¬¦
+; æè¿°ï¼š
+;       1) è¯»å– GDT æè¿°ç¬¦é¡¹
+;       2) å±äºç³»ç»Ÿæè¿°ç¬¦ï¼Œåˆ™ rdx:rax è¿”å› 128 ä½æè¿°ç¬¦
+;       3) å¤±è´¥è¿”å› -1
 ;-------------------------------------------------------------------        
 read_gdt_descriptor64:
         and esi, 0FFF8h
@@ -484,25 +484,25 @@ read_gdt_descriptor64:
         mov rdx, rax
         
         ;;
-        ;; ¼ì²éÊÇ·ñ³¬ limit
+        ;; æ£€æŸ¥æ˜¯å¦è¶… limit
         ;;
         cmp esi, [fs: SDA.GdtLimit]
         ja read_gdt_descriptor64.done
         ;;
-        ;; ¶Á GDT ±íÏî
+        ;; è¯» GDT è¡¨é¡¹
         ;;
         add r8, [fs: SDA.GdtBase]
         mov rax, [r8]
         
         ;;
-        ;; ¼ì²éÊÇ·ñÎª system ÃèÊö·û
+        ;; æ£€æŸ¥æ˜¯å¦ä¸º system æè¿°ç¬¦
         ;;
         xor edx, edx
-        bt rax, 44                                      ; S ±êÖ¾Î»
+        bt rax, 44                                      ; S æ ‡å¿—ä½
         jc read_gdt_descriptor64.done
         
         ;;
-        ;; S = 0£¬ÊôÓÚ system ÃèÊö·û
+        ;; S = 0ï¼Œå±äº system æè¿°ç¬¦
         ;;
         mov rdx, [r8 + 8]
                 
@@ -513,11 +513,11 @@ read_gdt_descriptor64.done:
 
 
 ;-------------------------------------------------------------------
-; read_idt_descriptor64(): ¶ÁÈ¡ IDT ÃèÊö·û
+; read_idt_descriptor64(): è¯»å– IDT æè¿°ç¬¦
 ; input:
 ;       esi - vector  
 ; output:
-;       rdx:rax - ³É¹¦Ê±£¬·µ»Ø 128 Î»ÃèÊö·û£¬Ê§°ÜÊ±£¬·µ»Ø -1 Öµ
+;       rdx:rax - æˆåŠŸæ—¶ï¼Œè¿”å› 128 ä½æè¿°ç¬¦ï¼Œå¤±è´¥æ—¶ï¼Œè¿”å› -1 å€¼
 ;------------------------------------------------------------------- 
 read_idt_descrptor64:
         and esi, 0FFh
@@ -529,12 +529,12 @@ read_idt_descrptor64:
         mov rdx, rax
         
         ;;
-        ;; ¼ì²éÊÇ·ñ³¬ limit
+        ;; æ£€æŸ¥æ˜¯å¦è¶… limit
         ;;
         cmp esi, [fs: SDA.IdtLimit]
         ja read_idt_descriptor64.done
         ;;
-        ;; ¶ÁÈ¡ IDT ±íÏî
+        ;; è¯»å– IDT è¡¨é¡¹
         ;;
         add r8, [fs: SDA.IdtBase]
         mov rax, [r8]
@@ -546,12 +546,12 @@ read_idt_descriptor64.done:
 
 
 ;-------------------------------------------------------------------
-; write_idt_descriptor64(): ¸ù¾İÌá¹©µÄ vector ÖµÔÚ IDT ±íĞ´ÈëÒ»¸öÃèÊö·û
+; write_idt_descriptor64(): æ ¹æ®æä¾›çš„ vector å€¼åœ¨ IDT è¡¨å†™å…¥ä¸€ä¸ªæè¿°ç¬¦
 ; input:
 ;       esi - vector
-;       rdx:rax - 128 Î»ÃèÊö·ûÖµ
+;       rdx:rax - 128 ä½æè¿°ç¬¦å€¼
 ; output:
-;       rax - ·µ»ØÃèÊö·ûµØÖ·
+;       rax - è¿”å›æè¿°ç¬¦åœ°å€
 ;-------------------------------------------------------------------
 write_idt_descriptor64:
         and esi, 0FFh
@@ -565,34 +565,34 @@ write_idt_descriptor64:
 
         
 ;-------------------------------------------------------------------
-; mask_io_port_access64(): ÆÁ±Î¶ÔÄ³¸ö¶Ë¿ÚµÄ·ÃÎÊ
+; mask_io_port_access64(): å±è”½å¯¹æŸä¸ªç«¯å£çš„è®¿é—®
 ; input:
-;       esi - ¶Ë¿ÚÖµ
+;       esi - ç«¯å£å€¼
 ; output:
 ;       none
 ;-------------------------------------------------------------------
 mask_io_port_access64:
-        mov r8, [gs: PCB.IomapBase]                     ; ¶Áµ±Ç° Iomap »ùÖ·
+        mov r8, [gs: PCB.IomapBase]                     ; è¯»å½“å‰ Iomap åŸºå€
         mov eax, esi
         shr eax, 3                                      ; port / 8
-        and esi, 7                                      ; È¡ byte ÄÚÎ»ÖÃ
-        bts [r8 + rax], esi                             ; ÖÃÎ»
+        and esi, 7                                      ; å– byte å†…ä½ç½®
+        bts [r8 + rax], esi                             ; ç½®ä½
         ret
         
         
 ;-------------------------------------------------------------------
-; unmask_io_port_access(): ÆÁ±Î¶ÔÄ³¸ö¶Ë¿ÚµÄ·ÃÎÊ
+; unmask_io_port_access(): å±è”½å¯¹æŸä¸ªç«¯å£çš„è®¿é—®
 ; input:
-;       esi - ¶Ë¿ÚÖµ
+;       esi - ç«¯å£å€¼
 ; output:
 ;       none
 ;-------------------------------------------------------------------
 unmask_io_port_access64:
-        mov r8, [gs: PCB.IomapBase]                     ; ¶Áµ±Ç° Iomap »ùÖ·
+        mov r8, [gs: PCB.IomapBase]                     ; è¯»å½“å‰ Iomap åŸºå€
         mov eax, esi
         shr eax, 3                                      ; port / 8
-        and esi, 7                                      ; È¡ byte ÄÚÎ»ÖÃ
-        btr [r8 + rax], esi                             ; ÇåÎ»
+        and esi, 7                                      ; å– byte å†…ä½ç½®
+        btr [r8 + rax], esi                             ; æ¸…ä½
         ret
         
         
@@ -608,10 +608,10 @@ unmask_io_port_access64:
 ;       none
 ; output:
 ;       rax - fs base
-; ÃèÊö£º
-;       1) ¶ÁÈ¡ FS base Öµ
-;       2) basic °æ±¾Ê¹ÓÃ RDMSR Ö¸Áî¶Á FS base
-;       3) extended °æ±¾Ê¹ÓÃ RDFSBASE Ö¸Áî¶Á FS base
+; æè¿°ï¼š
+;       1) è¯»å– FS base å€¼
+;       2) basic ç‰ˆæœ¬ä½¿ç”¨ RDMSR æŒ‡ä»¤è¯» FS base
+;       3) extended ç‰ˆæœ¬ä½¿ç”¨ RDFSBASE æŒ‡ä»¤è¯» FS base
 ;-------------------------------------------------------------------
 read_fs_base:
         push rcx
@@ -633,10 +633,10 @@ read_fs_base_ex:
 ;       none
 ; output:
 ;       rax - gs base
-; ÃèÊö£º
-;       1) ¶ÁÈ¡ GS base Öµ
-;       2) basic °æ±¾Ê¹ÓÃ RDMSR Ö¸Áî¶Á GS base
-;       3) extended °æ±¾Ê¹ÓÃ RDFSBASE Ö¸Áî¶Á GS base
+; æè¿°ï¼š
+;       1) è¯»å– GS base å€¼
+;       2) basic ç‰ˆæœ¬ä½¿ç”¨ RDMSR æŒ‡ä»¤è¯» GS base
+;       3) extended ç‰ˆæœ¬ä½¿ç”¨ RDFSBASE æŒ‡ä»¤è¯» GS base
 ;-------------------------------------------------------------------
 read_gs_base:
         push rcx
@@ -659,10 +659,10 @@ read_gs_base_ex:
 ;       rsi - fs base
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Ğ´ FS base Öµ
-;       2) basic °æ±¾Ê¹ÓÃ WRMSR Ö¸ÁîĞ´ FS base
-;       3) extended °æ±¾Ê¹ÓÃ WRFSBASE Ö¸ÁîĞ´ FS base
+; æè¿°ï¼š
+;       1) å†™ FS base å€¼
+;       2) basic ç‰ˆæœ¬ä½¿ç”¨ WRMSR æŒ‡ä»¤å†™ FS base
+;       3) extended ç‰ˆæœ¬ä½¿ç”¨ WRFSBASE æŒ‡ä»¤å†™ FS base
 ;-------------------------------------------------------------------
 write_fs_base:
         push rcx
@@ -685,10 +685,10 @@ write_fs_base_ex:
 ;       rsi - gs base
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Ğ´ GS base Öµ
-;       2) basic °æ±¾Ê¹ÓÃ WRMSR Ö¸ÁîĞ´ GS base
-;       3) extended °æ±¾Ê¹ÓÃ WRGSBASE Ö¸ÁîĞ´ GS base
+; æè¿°ï¼š
+;       1) å†™ GS base å€¼
+;       2) basic ç‰ˆæœ¬ä½¿ç”¨ WRMSR æŒ‡ä»¤å†™ GS base
+;       3) extended ç‰ˆæœ¬ä½¿ç”¨ WRGSBASE æŒ‡ä»¤å†™ GS base
 ;-------------------------------------------------------------------
 write_gs_base:
         push rcx
@@ -708,7 +708,7 @@ write_gs_base_ex:
 rw_fs_gs_base:
         
         ;;
-        ;; ¼ì²é RDWRFSBASE Ö¸ÁîÊÇ·ñ¿ÉÓÃ
+        ;; æ£€æŸ¥ RDWRFSBASE æŒ‡ä»¤æ˜¯å¦å¯ç”¨
         ;;
         test DWORD [gs: PCB.InstructionStatus], INST_STATUS_RWFSBASE
         cmovz rax, r8
@@ -718,35 +718,35 @@ rw_fs_gs_base:
        
 read_fs_base.rdfsbase:
         ;;
-        ;; ¶Á FS base
+        ;; è¯» FS base
         ;;
         rdfsbase rax
         jmp rw_fs_gs_base.done
 
 read_gs_base.rdgsbase:
         ;;
-        ;; ¶Á GS base
+        ;; è¯» GS base
         ;;
         rdgsbase rax
         jmp rw_fs_gs_base.done
         
 write_fs_base.wrfsbase:        
         ;;
-        ;; Ğ´ FS base
+        ;; å†™ FS base
         ;;
         wrfsbase rsi
         jmp rw_fs_gs_base.done
         
 write_gs_base.wrgsbase:
         ;;
-        ;; Ğ´ GS base
+        ;; å†™ GS base
         ;;
         wrgsbase rsi
         jmp rw_fs_gs_base.done
 
 read_fs_gs_base.legacy:        
         ;;
-        ;; Ê¹ÓÃ legacy ·½Ê½¶Á FS/GS base
+        ;; ä½¿ç”¨ legacy æ–¹å¼è¯» FS/GS base
         ;;
         rdmsr
         shl rdx, 32
@@ -755,7 +755,7 @@ read_fs_gs_base.legacy:
         
 write_fs_gs_base.legacy:                
         ;;
-        ;; Ê¹ÓÃ legacy ·½Ê½Ğ´ FS/GS base
+        ;; ä½¿ç”¨ legacy æ–¹å¼å†™ FS/GS base
         ;;
         shld rdx, rsi, 32
         mov eax, esi
@@ -775,12 +775,12 @@ rw_fs_gs_base.done:
 
 
 ;-------------------------------------------------
-; bit_swap64(): ½»»» qword ÄÚµÄÎ»
+; bit_swap64(): äº¤æ¢ qword å†…çš„ä½
 ; input:
 ;       rsi - source
 ; output:
 ;       rax - dest
-; ÃèÊö:
+; æè¿°:
 ;       dest[63] <= source[0]
 ;       ... ...
 ;       dest[0]  <= source[63]
@@ -791,11 +791,11 @@ bit_swap64:
         xor eax, eax
         
         ;;
-        ;; Ñ­»·ÒÆ¶¯ 1 Î»Öµ
+        ;; å¾ªç¯ç§»åŠ¨ 1 ä½å€¼
         ;;
 bit_swap64.loop:        
-        shl rsi, 1                              ; rsi ¸ßÎ»ÒÆ³öµ½ CF
-        rcr rax, 1                              ; CF ÒÆÈë rax ¸ßÎ»
+        shl rsi, 1                              ; rsi é«˜ä½ç§»å‡ºåˆ° CF
+        rcr rax, 1                              ; CF ç§»å…¥ rax é«˜ä½
         dec ecx
         jnz bit_swap64.loop
         pop rcx        
@@ -815,13 +815,13 @@ bit_swap64.loop:
 ;       esi - string
 ; output:
 ;       0 - no, otherwise yes.
-; ÃèÊö:
-;       ¸ù¾İÌá¹©µÄ×Ö·û´®£¬¼ì²éÊÇ·ñĞèÒª×ª»»
+; æè¿°:
+;       æ ¹æ®æä¾›çš„å­—ç¬¦ä¸²ï¼Œæ£€æŸ¥æ˜¯å¦éœ€è¦è½¬æ¢
 ;-------------------------------------------------          
 check_new_line64:
         push rcx
         call strlen64
-        mov ecx, eax                            ; ×Ö·û´®³¤¶È
+        mov ecx, eax                            ; å­—ç¬¦ä¸²é•¿åº¦
         shl ecx, 1                              ; length * 2
         call target_video_buffer_column64
         neg eax
@@ -829,7 +829,7 @@ check_new_line64:
         cmp eax, ecx
         jae check_new_line64.done
         ;;
-        ;; »»ĞĞ
+        ;; æ¢è¡Œ
         ;;
         add [fs: SDA.VideoBufferPtr], eax
 check_new_line64.done:        
@@ -849,20 +849,20 @@ check_new_line64.done:
 ;       rsi - value
 ; output:
 ;       none
-; ÃèÊö:
-;       1) ´òÓ¡ 64 Î»Ê®Áù½øÖÆÊı
+; æè¿°:
+;       1) æ‰“å° 64 ä½åå…­è¿›åˆ¶æ•°
 ;-------------------------------------------------
 print_qword_value64:
 print_hex_value64:
         push r10
         mov r10, rsi
         ;;
-        ;; ´òÓ¡¸ß 32 Î»
+        ;; æ‰“å°é«˜ 32 ä½
         ;;
         shr rsi, 32
         call print_dword_value
         ;;
-        ;; ´òÓ¡µÍ 32 Î»
+        ;; æ‰“å°ä½ 32 ä½
         ;;
         mov esi, r10d
         call print_dword_value
@@ -876,8 +876,8 @@ print_hex_value64:
 ;       rsi - value
 ; output:
 ;       none
-; ÃèÊö:
-;       ´òÓ¡Ê®½øÖÆÊı
+; æè¿°:
+;       æ‰“å°åè¿›åˆ¶æ•°
 ;-------------------------------------------------
 print_decimal64:
 print_dword_decimal64:
@@ -888,7 +888,7 @@ print_dword_decimal64:
         mov ecx, 10
         
         ;;
-        ;; Ö¸ÏòÊı×éÎ²²¿£¬´ÓÊı×éºóÃæÍùÇ°Ğ´
+        ;; æŒ‡å‘æ•°ç»„å°¾éƒ¨ï¼Œä»æ•°ç»„åé¢å¾€å‰å†™
         ;;
         mov BYTE [crt.digit_array + 60], 0
         lea rsi, [crt.digit_array + 59]
@@ -899,17 +899,17 @@ print_decimal64.loop:
         div rcx                                 ; value / 10
         
         ;;
-        ;; ¼ì²éÉÌÊÇ·ñÎª 0£¬Îª 0 Ê±£¬³ı 10 ½áÊø
+        ;; æ£€æŸ¥å•†æ˜¯å¦ä¸º 0ï¼Œä¸º 0 æ—¶ï¼Œé™¤ 10 ç»“æŸ
         ;;
         test rax, rax
         cmovz rdx, [crt.quotient]
         mov [crt.quotient], rax
-        lea rdx, [rdx + '0']                    ; ÓàÊı×ª»¯Îª×Ö·û
-        mov [rsi], dl                           ; Ğ´ÈëÓàÊı
+        lea rdx, [rdx + '0']                    ; ä½™æ•°è½¬åŒ–ä¸ºå­—ç¬¦
+        mov [rsi], dl                           ; å†™å…¥ä½™æ•°
         jnz print_decimal64.loop
         
         ;;
-        ;; ÏÂÃæ´òÓ¡³öÊı×Ö´®
+        ;; ä¸‹é¢æ‰“å°å‡ºæ•°å­—ä¸²
         ;;
         call puts
         pop rcx
@@ -924,19 +924,19 @@ print_decimal64.loop:
 ;       rsi - lock
 ; output:
 ;       none
-; ÃèÊö:
-;       1) ´Ëº¯ÊıÓÃÀ´»ñµÃ×ÔĞıËø
-;       2) ÊäÈë²ÎÊıÎª spin lock µØÖ·
+; æè¿°:
+;       1) æ­¤å‡½æ•°ç”¨æ¥è·å¾—è‡ªæ—‹é”
+;       2) è¾“å…¥å‚æ•°ä¸º spin lock åœ°å€
 ;------------------------------------------------------
 get_spin_lock64:
         push rdx
         ;;
-        ;; ×ÔĞıËø²Ù×÷·½·¨ËµÃ÷:
-        ;; 1) Ê¹ÓÃ bts Ö¸Áî£¬ÈçÏÂÃæÖ¸ÁîĞòÁĞ
+        ;; è‡ªæ—‹é”æ“ä½œæ–¹æ³•è¯´æ˜:
+        ;; 1) ä½¿ç”¨ bts æŒ‡ä»¤ï¼Œå¦‚ä¸‹é¢æŒ‡ä»¤åºåˆ—
         ;;    lock bts DWORD [rsi], 0
         ;;    jnc AcquireLockOk
         ;;
-        ;; 2) ±¾ÀıÖĞÊ¹ÓÃ cmpxchg Ö¸Áî
+        ;; 2) æœ¬ä¾‹ä¸­ä½¿ç”¨ cmpxchg æŒ‡ä»¤
         ;;    lock cmpxchg [rsi], edi
         ;;    jnc AcquireLockOk
         ;;    
@@ -945,16 +945,16 @@ get_spin_lock64:
         mov edi, 1        
         
         ;;
-        ;; ³¢ÊÔ»ñÈ¡ lock
+        ;; å°è¯•è·å– lock
         ;;
 get_spin_lock64.acquire:
         lock cmpxchg [rsi], edi
         je get_spin_lock64.done
 
         ;;
-        ;; »ñÈ¡Ê§°Üºó£¬¼ì²é lock ÊÇ·ñ¿ª·Å£¨Î´ÉÏËø£©
-        ;; 1) ÊÇ£¬ÔòÔÙ´ÎÖ´ĞĞ»ñÈ¡Ëø£¬²¢ÉÏËø
-        ;; 2) ·ñ£¬¼ÌĞø²»¶ÏµØ¼ì²é lock£¬Ö±µ½ lock ¿ª·Å
+        ;; è·å–å¤±è´¥åï¼Œæ£€æŸ¥ lock æ˜¯å¦å¼€æ”¾ï¼ˆæœªä¸Šé”ï¼‰
+        ;; 1) æ˜¯ï¼Œåˆ™å†æ¬¡æ‰§è¡Œè·å–é”ï¼Œå¹¶ä¸Šé”
+        ;; 2) å¦ï¼Œç»§ç»­ä¸æ–­åœ°æ£€æŸ¥ lockï¼Œç›´åˆ° lock å¼€æ”¾
         ;;
 get_spin_lock64.check:        
         mov eax, [rsi]
@@ -972,17 +972,17 @@ get_spin_lock64.done:
 ;------------------------------------------------------
 ; delay_with_us64()
 ; input:
-;       esi - ÑÓÊ± us Êı
+;       esi - å»¶æ—¶ us æ•°
 ; output:
 ;       none
-; ÃèÊö:
-;       1) Ö´ĞĞÑÓÊ±²Ù×÷
-;       2) ÑÓÊ±µÄµ¥Î»Îªus£¨Î¢Ãë£©
+; æè¿°:
+;       1) æ‰§è¡Œå»¶æ—¶æ“ä½œ
+;       2) å»¶æ—¶çš„å•ä½ä¸ºusï¼ˆå¾®ç§’ï¼‰
 ;------------------------------------------------------
 delay_with_us64:
         push rdx
         ;;
-        ;; ¼ÆËã ticks Êı = us Êı * ProcessorFrequency
+        ;; è®¡ç®— ticks æ•° = us æ•° * ProcessorFrequency
         ;;
         mov eax, [gs: PCB.ProcessorFrequency]
         mul esi
@@ -990,14 +990,14 @@ delay_with_us64:
         mov esi, eax
 
         ;;
-        ;; ¼ÆËãÄ¿±ê ticks Öµ
+        ;; è®¡ç®—ç›®æ ‡ ticks å€¼
         ;;
         rdtsc
         add esi, eax
-        adc edi, edx                            ; edi:esi = Ä¿±ê ticks Öµ
+        adc edi, edx                            ; edi:esi = ç›®æ ‡ ticks å€¼
         
         ;;
-        ;; Ñ­»·±È½Ïµ±Ç° tick Óë Ä¿±ê tick
+        ;; å¾ªç¯æ¯”è¾ƒå½“å‰ tick ä¸ ç›®æ ‡ tick
         ;;
 delay_with_us64.loop:
         rdtsc
@@ -1021,8 +1021,8 @@ delay_with_us64.@0:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1) µÈ´ı°´ÏÂ <ESC> ¼üÖØÆô
+; æè¿°:
+;       1) ç­‰å¾…æŒ‰ä¸‹ <ESC> é”®é‡å¯
 ;------------------------------------------------------
 wait_esc_for_reset64:
         mov esi, 24
@@ -1032,7 +1032,7 @@ wait_esc_for_reset64:
         call puts64
 
         ;;
-        ;; µÈ´ı°´¼ü
+        ;; ç­‰å¾…æŒ‰é”®
         ;;        
 wait_esc_for_reset64.loop:
         call read_keyboard
@@ -1042,25 +1042,25 @@ wait_esc_for_reset64.loop:
 wait_esc_for_reset64.next:
 
         ;;
-        ;; Ö´ĞĞ CPU RESET ²Ù×÷
-        ;; 1) ÔÚÕæÊµ»úÆ÷ÉÏÊ¹ÓÃ INIT RESET
-        ;; 2) ÔÚvmware ÉÏÊ¹ÓÃ CPU RESET
+        ;; æ‰§è¡Œ CPU RESET æ“ä½œ
+        ;; 1) åœ¨çœŸå®æœºå™¨ä¸Šä½¿ç”¨ INIT RESET
+        ;; 2) åœ¨vmware ä¸Šä½¿ç”¨ CPU RESET
         ;;
         
 %ifdef REAL
         ;;
-        ;; Ê¹ÓÃ INIT RESET ÀàĞÍ
+        ;; ä½¿ç”¨ INIT RESET ç±»å‹
         ;;
         mov rax, [gs: PCB.LapicBase]
         ;;
-        ;; ÏòËùÓĞ´¦ÀíÆ÷¹ã²¥ INIT
+        ;; å‘æ‰€æœ‰å¤„ç†å™¨å¹¿æ’­ INIT
         ;;
         mov DWORD [rax + ICR1], 0FF000000h
         mov DWORD [rax + ICR0], 00004500h   
         
 %else  
         ;;
-        ;; Ö´ĞĞ CPU hard reset ²Ù×÷
+        ;; æ‰§è¡Œ CPU hard reset æ“ä½œ
         ;;
         RESET_CPU 
 %endif        

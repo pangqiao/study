@@ -1,13 +1,13 @@
 ;*************************************************
 ;* debug.asm                                     *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
 
 
 ;
-; ĞÔÄÜ¼à¿Ø¿â
+; æ€§èƒ½ç›‘æ§åº“
 ;
 
 ;--------------------------------------------
@@ -16,9 +16,9 @@
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ¼ì²éÊÇ·ñÊôÓÚ Intel Æ½Ì¨
-;       2) ÇåËùÓĞ counter
+; æè¿°ï¼š
+;       1) æ£€æŸ¥æ˜¯å¦å±äº Intel å¹³å°
+;       2) æ¸…æ‰€æœ‰ counter
 ;--------------------------------------------
 init_perfmon_unit:
         push ecx
@@ -29,9 +29,9 @@ init_perfmon_unit:
         je init_perfmon_unit.done
         
         ;;
-        ;; perfmon ³õÊ¼ÉèÖÃ
-        ;; ¹Ø±ÕËùÓĞ counter ºÍ PEBS 
-        ;; Çå overflow ±êÖ¾Î»
+        ;; perfmon åˆå§‹è®¾ç½®
+        ;; å…³é—­æ‰€æœ‰ counter å’Œ PEBS 
+        ;; æ¸… overflow æ ‡å¿—ä½
         ;;
         
         DISABLE_GLOBAL_COUNTER
@@ -47,25 +47,25 @@ init_perfmon_unit.done:
 
 
 ;--------------------------------------------
-; get_unhalted_cpi(): ²âÁ¿ non-halted CPI Öµ
+; get_unhalted_cpi(): æµ‹é‡ non-halted CPI å€¼
 ; input:
-;       esi - Ğè²âµÄº¯Êı´úÂë
+;       esi - éœ€æµ‹çš„å‡½æ•°ä»£ç 
 ; outpu:
-;       eax - CPI Öµ
-; ÃèÊö:
-;       Ê¹ÓÃ CPU_CLK_UNHALTED.CORE ÊÂ¼ş
+;       eax - CPI å€¼
+; æè¿°:
+;       ä½¿ç”¨ CPU_CLK_UNHALTED.CORE äº‹ä»¶
 ;-------------------------------------------
 get_unhalted_cpi:
         push ecx
         push edx
         ;*
-        ;* ÏÈ¹Ø±ÕFixed¼ÆÊıÆ÷£¬²¢ÇåÎª0Öµ
+        ;* å…ˆå…³é—­Fixedè®¡æ•°å™¨ï¼Œå¹¶æ¸…ä¸º0å€¼
         ;*
         DISABLE_COUNTER 0, (IA32_FIXED_CTR0_EN | IA32_FIXED_CTR1_EN)
         RESET_FIXED_PMC
 
         ;*
-        ;* ¿ªÆôFixed¼ÆÊıÆ÷£¬¿ªÊ¼¼ÆÊı
+        ;* å¼€å¯Fixedè®¡æ•°å™¨ï¼Œå¼€å§‹è®¡æ•°
         ;*
         mov ecx, IA32_FIXED_CTR_CTRL
         mov eax, 0BBh
@@ -73,10 +73,10 @@ get_unhalted_cpi:
         wrmsr
         ENABLE_COUNTER 0, (IA32_FIXED_CTR0_EN | IA32_FIXED_CTR1_EN)
 
-        call esi                ; µ÷ÓÃ±»²âÁ¿º¯Êı
+        call esi                ; è°ƒç”¨è¢«æµ‹é‡å‡½æ•°
         
         ;*
-        ;* ¹Ø±ÕFxied¼ÆÊıÆ÷£¬Í£Ö¹¼ÆÊı
+        ;* å…³é—­Fxiedè®¡æ•°å™¨ï¼Œåœæ­¢è®¡æ•°
         DISABLE_COUNTER 0, (IA32_FIXED_CTR0_EN | IA32_FIXED_CTR1_EN)
         
         mov ecx, IA32_FIXED_CTR0
@@ -99,34 +99,34 @@ get_unhalted_cpi:
 
 
 ;--------------------------------------------
-; get_nominal_cpi(): ²âÁ¿ non-nominal CPI Öµ
+; get_nominal_cpi(): æµ‹é‡ non-nominal CPI å€¼
 ; input:
-;       esi - Ğè²âµÄº¯Êı´úÂë
+;       esi - éœ€æµ‹çš„å‡½æ•°ä»£ç 
 ; outpu:
-;       eax - CPI Öµ
-; ÃèÊö£º
-;       Ê¹ÓÃ CPU_CLK_UNHALTED.REF ÊÂ¼ş
+;       eax - CPI å€¼
+; æè¿°ï¼š
+;       ä½¿ç”¨ CPU_CLK_UNHALTED.REF äº‹ä»¶
 ;-------------------------------------------
 get_nominal_cpi:
         push ecx
         push edx
         ;*
-        ;* ÏÈ¹Ø±ÕFixed¼ÆÊıÆ÷£¬²¢ÇåÎª0Öµ
+        ;* å…ˆå…³é—­Fixedè®¡æ•°å™¨ï¼Œå¹¶æ¸…ä¸º0å€¼
         ;*
         DISABLE_COUNTER 0, (IA32_FIXED_CTR0_EN | IA32_FIXED_CTR2_EN)
         RESET_FIXED_PMC
 
         ;*
-        ;* ¿ªÆôFixed¼ÆÊıÆ÷£¬¿ªÊ¼¼ÆÊı
+        ;* å¼€å¯Fixedè®¡æ•°å™¨ï¼Œå¼€å§‹è®¡æ•°
         mov ecx, IA32_FIXED_CTR_CTRL
         mov eax, 0B0Bh
         mov edx, 0
         wrmsr
         ENABLE_COUNTER 0, (IA32_FIXED_CTR0_EN | IA32_FIXED_CTR2_EN)
-        call esi                ; µ÷ÓÃ²âÊÔº¯Êı
+        call esi                ; è°ƒç”¨æµ‹è¯•å‡½æ•°
         
         ;*
-        ;* ¹Ø±ÕFxied¼ÆÊıÆ÷£¬Í£Ö¹¼ÆÊı
+        ;* å…³é—­Fxiedè®¡æ•°å™¨ï¼Œåœæ­¢è®¡æ•°
         DISABLE_COUNTER 0, (IA32_FIXED_CTR0_EN | IA32_FIXED_CTR2_EN)
         
         mov ecx, IA32_FIXED_CTR0
@@ -154,13 +154,13 @@ get_nominal_cpi:
 
 
 ;-----------------------------------------------
-; support_full_write(): ²âÊÔÊÇ·ñÖ§³Ö full-write
+; support_full_write(): æµ‹è¯•æ˜¯å¦æ”¯æŒ full-write
 ; output:
 ;        1-support, 0-no support
 ;-----------------------------------------------
 support_full_write:
         ;;
-        ;; ¼ì²é PerfCapabilities[13] Î»
+        ;; æ£€æŸ¥ PerfCapabilities[13] ä½
         ;;       
         mov eax, [gs: PCB.PerfCapabilities]
         test eax, PERF_FW_WRITE_AVAILABLE
@@ -170,14 +170,14 @@ support_full_write:
 
 
 ;----------------------------------------------
-; write_counter_maximum(): Ğ´Èë counter µÄ×î´óÖµ
+; write_counter_maximum(): å†™å…¥ counter çš„æœ€å¤§å€¼
 ; input:
 ;       esi-counter
 ;-----------------------------------------------
 write_counter_maximum:
         push ecx
         push edx
-        call support_full_write                 ; ÊÇ·ñÖ§³ÖĞ´Èë×î´óÖµ
+        call support_full_write                 ; æ˜¯å¦æ”¯æŒå†™å…¥æœ€å¤§å€¼
         mov edi, 0FFFFh
         xor edx, edx
         test eax, eax
@@ -191,7 +191,7 @@ write_counter_maximum:
         ret
 
 ;---------------------------------------------------
-; check_counter_overflow(): ¼ì²éÊÇ·ñ counter ·¢ÉúÒç³ö
+; check_counter_overflow(): æ£€æŸ¥æ˜¯å¦ counter å‘ç”Ÿæº¢å‡º
 ; output:
 ;        1-yes, 0-no
 ;---------------------------------------------------
@@ -201,10 +201,10 @@ check_counter_overflow:
         push edx
         mov ecx, IA32_PERF_GLOBAL_STATUS
         rdmsr
-        test edx, 7                             ; ²âÊÔ IA32_FIXED_CTRx ¼Ä´æÆ÷
+        test edx, 7                             ; æµ‹è¯• IA32_FIXED_CTRx å¯„å­˜å™¨
         setnz dl
         jnz test_counter_overflow.done
-        test eax, 0Fh                           ; ²âÊÔ IA32_PMCx ¼Ä´æÆ÷
+        test eax, 0Fh                           ; æµ‹è¯• IA32_PMCx å¯„å­˜å™¨
         setnz dl
 test_counter_overflow.done:
         movzx eax, dl
@@ -213,7 +213,7 @@ test_counter_overflow.done:
         ret
 
 ;-------------------------------------------------------
-; test_pebs_buffer_overflow(): ¼ì²é PEBS buffer ÊÇ·ñÒç³ö
+; test_pebs_buffer_overflow(): æ£€æŸ¥ PEBS buffer æ˜¯å¦æº¢å‡º
 ; output:
 ;        1-yes, 0-no
 ;-------------------------------------------------------
@@ -221,41 +221,41 @@ test_pebs_buffer_overflow:
 check_pebs_buffer_overflow:
         mov ecx, IA32_PERF_GLOBAL_STATUS
         rdmsr
-        bt edx, 30                              ; ²âÊÔ OvfBuffer Î»
+        bt edx, 30                              ; æµ‹è¯• OvfBuffer ä½
         setc al
         movzx eax, al
         ret
 
 ;-----------------------------------------------
-; test_pebs_interrupt(): ¼ì²éÊÇ·ñ²úÉú PEBS ÖĞ¶Ï
+; test_pebs_interrupt(): æ£€æŸ¥æ˜¯å¦äº§ç”Ÿ PEBS ä¸­æ–­
 ; output:
 ;       1-yes, 0-no
 ;----------------------------------------------
 test_pebs_interrupt:
 check_pebs_interrupt:
-        mov eax, [gs: PCB.PebsBufferIndex]      ; Ô­ PEBS index Öµ
+        mov eax, [gs: PCB.PebsBufferIndex]      ; åŸ PEBS index å€¼
         mov esi, [gs: PCB.PebsIndexPointer]
-        mov esi, [esi]                          ; ¶Áµ±Ç° PEBS index Öµ
+        mov esi, [esi]                          ; è¯»å½“å‰ PEBS index å€¼
         cmp esi, eax
-        seta al                                 ; µ±Ç° PEBS index ´óÓÚÔ­Öµ£¬¾ÍÖÃ 1
+        seta al                                 ; å½“å‰ PEBS index å¤§äºåŸå€¼ï¼Œå°±ç½® 1
         movzx eax, al
         ret
 
 
 ;--------------------------------------------------------------------
-; reset_pmi_counter_overflow(): ÇåÓÉ PMI ÖĞ¶Ï²úÉúµÄ counter overflow 
+; reset_pmi_counter_overflow(): æ¸…ç”± PMI ä¸­æ–­äº§ç”Ÿçš„ counter overflow 
 ;---------------------------------------------------------------------
 reset_pmi_counter_overflow:
         push ecx
         push edx
         mov ecx, IA32_PERF_GLOBAL_STATUS
         rdmsr
-        mov esi, eax                            ; ±£´æ overflow status
+        mov esi, eax                            ; ä¿å­˜ overflow status
         mov ecx, IA32_PEBS_ENABLE
         rdmsr
-        and eax, esi                            ; È¡ PEBS overflow status
+        and eax, esi                            ; å– PEBS overflow status
         not eax
-        and eax, esi                            ; È¡ PMI overflow status
+        and eax, esi                            ; å– PMI overflow status
         mov ecx, IA32_PERF_GLOBAL_OVF_CTRL
         mov edx, 0
         wrmsr
@@ -265,7 +265,7 @@ reset_pmi_counter_overflow:
 
 
 ;------------------------------
-; ´òÓ¡ IA32_PERFEVTSELx ¼Ä´æÆ÷
+; æ‰“å° IA32_PERFEVTSELx å¯„å­˜å™¨
 ;-----------------------------
 dump_perfevtsel:
         jmp do_dump_perfevtsel
@@ -302,7 +302,7 @@ do_dump_perfevtsel_loop:
         ret
 
 ;----------------------------------
-; ´òÓ¡ PMC ¼Ä´æÆ÷
+; æ‰“å° PMC å¯„å­˜å™¨
 ;----------------------------------
 dump_pmc:
         push ecx
@@ -335,7 +335,7 @@ dump_pmc_loop:
         ret
         
 ;----------------------------
-; ´òÓ¡ Fixed-function counter
+; æ‰“å° Fixed-function counter
 ;----------------------------
 dump_fixed_pmc:
         push ecx
@@ -368,7 +368,7 @@ dump_fixed_pmc_loop:
         ret
 
 ;--------------------------
-;´òÓ¡ fixed counter control
+;æ‰“å° fixed counter control
 ;---------------------------
 dump_fixed_counter_control:
         mov esi, fixed_ctr_ctrl
@@ -382,7 +382,7 @@ dump_fixed_counter_control:
         ret
 
 ;----------------------------------
-; ´òÓ¡ IA32_PERF_GLOBAL_CTRL ¼Ä´æÆ÷
+; æ‰“å° IA32_PERF_GLOBAL_CTRL å¯„å­˜å™¨
 ;----------------------------------
 dump_perf_global_ctrl:
 dump_perfmon_global_ctrl:
@@ -397,7 +397,7 @@ dump_perfmon_global_ctrl:
         ret
 
 ;----------------------------------
-; ´òÓ¡ IA32_PERF_GLOBAL_STATUS ¼Ä´æÆ÷
+; æ‰“å° IA32_PERF_GLOBAL_STATUS å¯„å­˜å™¨
 ;----------------------------------        
 dump_perf_global_status:
 dump_perfmon_global_status:
@@ -411,7 +411,7 @@ dump_perfmon_global_status:
         call println
         ret        
 ;----------------------------------
-; ´òÓ¡ IA32_PERF_GLOBAL_OVF ¼Ä´æÆ÷
+; æ‰“å° IA32_PERF_GLOBAL_OVF å¯„å­˜å™¨
 ;----------------------------------
 dump_perf_global_ovf_ctrl:
 dump_perfmon_global_ovf:
@@ -426,7 +426,7 @@ dump_perfmon_global_ovf:
         ret
 
 ;----------------------------------
-; ´òÓ¡ËùÓĞ performace monitor ¼Ä´æÆ÷
+; æ‰“å°æ‰€æœ‰ performace monitor å¯„å­˜å™¨
 ;----------------------------------
 dump_perfmon:
         call dump_perfevtsel
@@ -439,9 +439,9 @@ dump_perfmon:
         ret                        
 
 
-;; **** Êı¾İÇø *******
+;; **** æ•°æ®åŒº *******
 
-; ÏÂÃæ¶¨Òå±£´æ performance monitor Ïà¹ØµÄ¼Ä´æÆ÷Öµ
+; ä¸‹é¢å®šä¹‰ä¿å­˜ performance monitor ç›¸å…³çš„å¯„å­˜å™¨å€¼
 perf_global_ctrl_value          dq 0
 perf_global_status_value        dq 0
 
