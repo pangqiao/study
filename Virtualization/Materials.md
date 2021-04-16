@@ -2,11 +2,17 @@
 
 2.对Linux kernel有全面了解，关键模块有理解（走读kernel源码，对流程有印象）。推荐书籍：深入Linux内核架构（+1）或者深入理解LINUX内核。
 
-3.hypervisor虚拟化, Intel的《系统虚拟化》，很老很实用，看Qemu，KVM，Xen代码。
+3.hypervisor虚拟化, Intel的《系统虚拟化》，很老很实用，看Qemu，KVM，Xen代码
+
+多个hypervisor代码对比着看:
+
+* kvm:
+
+* xen: 
+
+* ACRN: https://github.com/projectacrn/acrn-hypervisor
 
 4.容器虚拟化，读cgroup,lxc,docker代码。
-
-5.换一份虚拟化工作。
 
 Linux虚拟化技术: http://tinylab.org/tiny-salon-phase-ii-virtualization-technology/
 

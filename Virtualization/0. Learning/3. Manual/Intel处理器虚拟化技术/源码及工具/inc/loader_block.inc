@@ -3,26 +3,26 @@
 
 
 ;;
-;; 定义 LOADER_BLOCK
+;; 瀹氫箟 LOADER_BLOCK
 ;;
 
 struc LOADER_BLOCK
-        .ModuleSize     RESD    1           ; 模块 size
+        .ModuleSize     RESD    1           ; 妯″潡 size
         .CpuIndex       RESD    1           ; CPU index
-        .CurrentVideo   RESD    1           ; 记录 video 当前位置
+        .CurrentVideo   RESD    1           ; 璁板綍 video 褰撳墠浣嶇疆
         .Stage1Lock     RESD    1           ; stage1 lock
         .Stage2Lock     RESD    1           ; stage2 lock
         .Stage3Lock     RESD    1           ; stage3 lock
         .MMapSize       RESQ    1           ; size
-        .MMapBase       RESQ    1           ; 内存区域起始地位
-        .MMapLength     RESQ    1           ; 内存区域长度
-        .MMapType       RESD    1           ; 内存区域类型
+        .MMapBase       RESQ    1           ; 鍐呭瓨鍖哄煙璧峰鍦颁綅
+        .MMapLength     RESQ    1           ; 鍐呭瓨鍖哄煙闀垮害
+        .MMapType       RESD    1           ; 鍐呭瓨鍖哄煙绫诲瀷
 endstruc
 
 
 
 ;;
-;; 引导块基址
+;; 寮曞鍧楀熀鍧�
 ;;
 LoaderBase              EQU     0x8000
 
