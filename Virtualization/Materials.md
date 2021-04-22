@@ -4,9 +4,9 @@
 
 3.hypervisor虚拟化, Intel的《系统虚拟化》，很老很实用，看Qemu，KVM，Xen代码
 
-多个hypervisor代码对比着看:
+某个部分有疑问, 可以多个hypervisor代码对比着看:
 
-* kvm:
+* kvm: 
 
 * xen: 
 

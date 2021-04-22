@@ -1,12 +1,12 @@
 ; apic.inc
-; Copyright (c) 2009-2012 µËÖ¾
+; Copyright (c) 2009-2012 é‚“å¿—
 ; All rights reserved.
 
 %ifndef APIC_INC
 %define APIC_INC
 
 ;
-; ¶¨Òå APIC_BASE µÄ linear address
+; å®šä¹‰ APIC_BASE çš„ linear address
 ;
 %define APIC_BASE					0x800000
 
@@ -60,12 +60,12 @@
 
 
 
-; APIC timer Öµ¶¨Òå
+; APIC timer å€¼å®šä¹‰
 %define	TIMER_ONE_SHOT				00000h
 %define TIMER_PERIODIC				20000h
 %define TIMER_TSC				40000h
 
-; ¶¨Òå delivery mode Öµ
+; å®šä¹‰ delivery mode å€¼
 %define FIXED                                   0000h
 %define LOWEST                                  0100h
 %define SMI                                     0200h
@@ -92,7 +92,7 @@
 %define ALL_EX_SELF				0C0000h
 
 
-; IPI ÏûÏ¢·¢ËÍÄ£Ê½
+; IPI æ¶ˆæ¯å‘é€æ¨¡å¼
 
 %define STARTUP_IPI                             000C4600H
 %define INIT_IPI                                000C4500H
