@@ -58,6 +58,7 @@ Handler 为注入内核的 eBPF 字节码
 Linux kprobe / uprobe 就是这样的例子，图 5 和 图 6 简示了 uprobe 以及 uretprobe 的实现原理
 
 ## 1.2. 硬件统计
+
 第二类是**硬件统计**, 又分为两种
 
 ### 1.2.1. 计数累加

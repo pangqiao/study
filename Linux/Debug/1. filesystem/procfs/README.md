@@ -16,3 +16,4 @@ ubuntu/linux mint 创建proc文件的三种方法
 
 
 proc_create的使用方法: http://blog.csdn.net/njuitjf/article/details/16940865
+

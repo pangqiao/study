@@ -1,0 +1,1 @@
+linux journalctl 命令: https://www.cnblogs.com/sparkdev/p/8795141.html
