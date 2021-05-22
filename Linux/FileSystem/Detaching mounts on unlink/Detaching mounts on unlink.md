@@ -58,12 +58,69 @@ https://lore.kernel.org/patchwork/project/lkml/list/?submitter=353&archive=both
 看提交的patch, 找到相关patch的最初版本
 
 * RFC: https://lore.kernel.org/patchwork/cover/411005/
-* v1: https://lore.kernel.org/linux-fsdevel/87ob28kqks.fsf_-_@xmission.com/
+* v1: https://lore.kernel.org/patchwork/cover/442167/
 * 3.15 v2: https://lore.kernel.org/patchwork/cover/444858/
 
 git repo:
 
 https://git.kernel.org/pub/scm/linux/kernel/git/ebiederm/user-namespace.git/refs/heads vfs-detach-mounts*
+
+
+
+
+
+
+
+
+以 `Detach mounts on unlink` 为例
+
+首先, 确定最初的patchset. 通过`tig blame fs/namei.c` 查看 `vfs_rmdir()` 函数中的 `detach_mounts(dentry);`确定了一个commit:
+
+```
+8ed936b5671bfb33d89bc60bdcc7cf0470ba52fe, "vfs: Lazily remove mounts on unlinked files and directories.", Tue Oct 1 18:33:48 2013
+```
+
+通过 `patchwork.kernel` 没有搜索到相关patch数据:
+
+https://patchwork.kernel.org/project/linux-fsdevel/list/?series=&submitter=&state=*&q=Lazily+remove+mounts+on+unlinked+files+and+directories&archive=both&delegate=
+
+这是2013年的, 所以可能没有数据, 所以从 `lore.kernel.org/patchwork` 搜索, 得到了, 链接如下:
+
+https://lore.kernel.org/patchwork/project/lkml/list/?series=&submitter=&state=*&q=Lazily+remove+mounts+on+unlinked+files+and+directories&archive=both&delegate=
+
+![2021-05-22-22-51-40.png](./images/2021-05-22-22-51-40.png)
+
+这里得到了 4 个版本的
+
+* RFC: https://lore.kernel.org/patchwork/cover/411005/, Oct. 4, 2013, 10:41 p.m. UTC
+* v1: https://lore.kernel.org/patchwork/cover/413940/, Oct. 15, 2013, 8:15 p.m. UTC
+* v2: https://lore.kernel.org/patchwork/cover/442167/, Feb. 15, 2014, 9:34 p.m. UTC
+* v3: https://lore.kernel.org/patchwork/cover/444858/, Feb. 25, 2014, 9:33 a.m. UTC
+
+但是从时间上看, 很明显没有最终版本的
+
+**还有个办法**, 点击 author 名字, 然后删掉上面的 `Archived = No`, 得到如下
+
+https://lore.kernel.org/patchwork/project/lkml/list/?submitter=353&archive=both
+
+看提交的时间和名字, 找到相关patch的最初版本
+
+很明显, 也没有找到`2014-10-01`的版本, 所以也可比较明确知道, 这个应该是通过其他途径合入的, 这里就不细究了.
+
+这里就得到了最初始的 RFC 版本。
+
+最后再通过 `lore.kernel.org/lists.html` 的模块进行搜索:
+
+https://lore.kernel.org/linux-fsdevel/?q=Detaching+mounts+on+unlink
+
+根据时间相近性得到了 `DoS with unprivileged mounts`:
+
+https://lore.kernel.org/linux-fsdevel/CAJfpegsxgnSRUW-E5HM3uT5QfGyUtn_v=i4Ppkkkutp34287AA@mail.gmail.com/
+
+
+
+
+
 
 
 # 资料

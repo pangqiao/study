@@ -1,23 +1,25 @@
-http://www.cnblogs.com/hazir/p/systemtap_introduction.html
 
-http://www.ibm.com/developerworks/cn/linux/l-cn-systemtap3/
+不用看各处的资料, 专注官方资料以及命令的help就够了
 
-1. https://www.ibm.com/developerworks/cn/linux/l-cn-perf1/
-2. https://www.cnblogs.com/arnoldlu/p/6241297.html
-3. perf文档: linux tree/tools/perf/Documentation/ 
+* 内核中perf文档: linux tree/tools/perf/Documentation/* , 里面既有详细描述, 又有案例介绍
+* 命令的help: 基本属于上一部分的子集
+* https://perf.wiki.kernel.org/index.php/Main_Page, perf的官方内核wiki主页
+* Brendan Gregg 的博客: http://www.brendangregg.com/perf.html
+* 在commit信息或当时的patchset讨论情况中也会有一些信息以及命令怎么使用
 
-https://www.cnblogs.com/jiayy/p/3722222.html
+这个更好: 描述更详细, 且有示例
+```
+perf --help XXX
+```
 
-http://www.brendangregg.com/perf.html
+这个属于快速帮助
 
-https://github.com/brendangregg/perf-tools
+```
+perf XXX -h
+```
 
-http://abcdxyzk.github.io/blog/2015/07/27/debug-perf/
 
-详细有例: https://www.cntofu.com/book/46/linux_tools/linuxxia_de_nei_he_ce_shi_gong_ju_2014_2014_perf_s.md
 
-https://blog.gmem.cc/perf
-
-https://www.cnblogs.com/arnoldlu/p/6241297.html
+https://www.cnblogs.com/arnoldlu/p/6241297.html, 剩余子命令的使用
 
 动态追踪: https://blog.arstercz.com/introduction_to_linux_dynamic_tracing/
