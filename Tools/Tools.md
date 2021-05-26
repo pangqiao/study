@@ -52,3 +52,4 @@
 - chrome下载: https://tools.shuax.com/chrome/#/
 - SCI-HUB: 论文网站, https://sci-hub.tw/ , 使用方法: https://zhuanlan.zhihu.com/p/24299207
 * VPN软件: packetix vpn client
+* 定时休息提醒: https://hovancik.net/stretchly/downloads/ (简单、开源) 或者 time out(收费, 功能强大)

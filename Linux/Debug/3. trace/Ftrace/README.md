@@ -1,3 +1,12 @@
+
+不用看各处的资料, 专注官方资料即可
+
+1. 内核文档, `Document/*`, 这肯定是最新的
+2. 官方wiki: https://wiki.kernel.org/
+3. feature的相关commit, 很多commit会介绍很多, 包括背景、原理以及使用方式等等
+
+
+
 https://www.cnblogs.com/arnoldlu/p/9014365.html
 
 https://www.cnblogs.com/jefree/p/4439007.html

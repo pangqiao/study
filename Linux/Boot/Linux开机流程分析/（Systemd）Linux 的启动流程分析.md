@@ -3,23 +3,23 @@
 
 <!-- code_chunk_output -->
 
-* [1 Linux 的启动流程分析](#1-linux-的启动流程分析)
-	* [1.1 启动流程一览](#11-启动流程一览)
-	* [1.2 BIOS, boot loader 与 kernel 加载](#12-bios-boot-loader-与-kernel-加载)
-		* [1.2.1 BIOS、开机自检与MBR/GPT](#121-bios-开机自检与mbrgpt)
-		* [1.2.2 Boot Loader的功能](#122-boot-loader的功能)
-		* [1.2.3 加载核心检测硬件与 initrd 的功能](#123-加载核心检测硬件与-initrd-的功能)
-	* [1.3 第一支程序 systemd 及配置档 default.target进入开机程序分析](#13-第一支程序-systemd-及配置档-defaulttarget进入开机程序分析)
-		* [1.3.1 常见操作环境 target 兼容 runlevel 的等级](#131-常见操作环境-target-兼容-runlevel-的等级)
-		* [1.3.2 systemd的处理流程](#132-systemd的处理流程)
-	* [1.4 systemd 执行sysinit.target 初始化系统、basic.target 准备系统](#14-systemd-执行sysinittarget-初始化系统-basictarget-准备系统)
-	* [1.5 systemd启动multi-user.target服务：相容的rc.local、getty.target启动](#15-systemd启动multi-usertarget服务相容的rclocal-gettytarget启动)
-		* [1.5.1 相容 systemV 的 rc-local.service](#151-相容-systemv-的-rc-localservice)
-		* [1.5.2 提供 tty 界面与登入的服务](#152-提供-tty-界面与登入的服务)
-	* [1.6 systemd启动graphical.target底下的服务](#16-systemd启动graphicaltarget底下的服务)
-	* [1.7 开机过程会用的主要设置](#17-开机过程会用的主要设置)
-		* [1.7.1 关于模块： /etc/modprobe.d/*.conf 及 /etc/modules-load.d/*.conf](#171-关于模块-etcmodprobedconf-及-etcmodules-loaddconf)
-		* [1.7.2 /etc/sysconfig/*](#172-etcsysconfig)
+- [1 Linux 的启动流程分析](#1-linux-的启动流程分析)
+  - [1.1 启动流程一览](#11-启动流程一览)
+  - [1.2 BIOS, boot loader 与 kernel 加载](#12-bios-boot-loader-与-kernel-加载)
+    - [1.2.1 BIOS、开机自检与MBR/GPT](#121-bios-开机自检与mbrgpt)
+    - [1.2.2 Boot Loader的功能](#122-boot-loader的功能)
+    - [1.2.3 加载核心检测硬件与 initrd 的功能](#123-加载核心检测硬件与-initrd-的功能)
+  - [1.3 第一支程序 systemd 及配置档 default.target进入开机程序分析](#13-第一支程序-systemd-及配置档-defaulttarget进入开机程序分析)
+    - [1.3.1 常见操作环境 target 兼容 runlevel 的等级](#131-常见操作环境-target-兼容-runlevel-的等级)
+    - [1.3.2 systemd的处理流程](#132-systemd的处理流程)
+  - [1.4 systemd 执行sysinit.target 初始化系统、basic.target 准备系统](#14-systemd-执行sysinittarget-初始化系统-basictarget-准备系统)
+  - [1.5 systemd启动multi-user.target服务：相容的rc.local、getty.target启动](#15-systemd启动multi-usertarget服务相容的rclocal-gettytarget启动)
+    - [1.5.1 相容 systemV 的 rc-local.service](#151-相容-systemv-的-rc-localservice)
+    - [1.5.2 提供 tty 界面与登入的服务](#152-提供-tty-界面与登入的服务)
+  - [1.6 systemd启动graphical.target底下的服务](#16-systemd启动graphicaltarget底下的服务)
+  - [1.7 开机过程会用的主要设置](#17-开机过程会用的主要设置)
+    - [1.7.1 关于模块： /etc/modprobe.d/*.conf 及 /etc/modules-load.d/*.conf](#171-关于模块-etcmodprobedconf-及-etcmodules-loaddconf)
+    - [1.7.2 /etc/sysconfig/*](#172-etcsysconfig)
 
 <!-- /code_chunk_output -->
 
@@ -306,7 +306,7 @@ May  4 17:52 /usr/lib/systemd/system/runlevel6.target -> reboot.target
 
 ### 1.3.2 systemd的处理流程
 
-当取得 /etc/systemd/system/default.target 后。 首先，它会链接到 /usr/lib/systemd/system/ 下去取得 multi-user.target 或 graphical.target 其中的一 个，假设是使用 graphical.target ，接下来 systemd 会去找两个地方的设置， 就是如下的目录：
+当取得 /etc/systemd/system/default.target 后。 首先，它会链接到 /usr/lib/systemd/system/ 下去取得 multi-user.target 或 graphical.target 其中的一个，假设是使用 graphical.target ，接下来 systemd 会去找两个地方的设置， 就是如下的目录：
 
 - /etc/systemd/system/graphical.target.wants/：使用者设置加载的 unit
 

@@ -3,15 +3,15 @@
 
 <!-- code_chunk_output -->
 
-* [1 命名空间概念](#1-命名空间概念)
-* [2 Linux内核命名空间描述](#2-linux内核命名空间描述)
-* [3 命名空间的创建](#3-命名空间的创建)
-	* [3.1 PID Namespace](#31-pid-namespace)
-	* [3.2 IPC Namespace](#32-ipc-namespace)
-	* [3.3 mount Namespace](#33-mount-namespace)
-	* [3.4 Network Namespace](#34-network-namespace)
-	* [3.5 UTS Namespace](#35-uts-namespace)
-	* [3.6 user\_namespace](#36-user_namespacehttplxrfree-electronscomsourceincludelinuxuser_namespacehl25)
+- [1 命名空间概念](#1-命名空间概念)
+- [2 Linux内核命名空间描述](#2-linux内核命名空间描述)
+- [3 命名空间的创建](#3-命名空间的创建)
+  - [3.1 PID Namespace](#31-pid-namespace)
+  - [3.2 IPC Namespace](#32-ipc-namespace)
+  - [3.3 mount Namespace](#33-mount-namespace)
+  - [3.4 Network Namespace](#34-network-namespace)
+  - [3.5 UTS Namespace](#35-uts-namespace)
+  - [3.6 user_namespace](#36-user_namespace)
 
 <!-- /code_chunk_output -->
 
@@ -134,7 +134,7 @@ struct nsproxy init_nsproxy = {
     
 - CLONE\_NEWIPC    **进程间通信(IPC)的命名空间**，可以将SystemV的IPC和POSIX的消息队列独立出来。
 
-- CLONE\_NEWNET    网络命名空间，用于隔离网络资源（/proc/net、IP地址、网卡、路由等）。后台进程可以运行在不同命名空间内的相同端口上，用户还可以虚拟出一块网卡。
+- CLONE\_NEWNET    **网络命名空间**，用于隔离网络资源（/proc/net、IP地址、网卡、路由等）。后台进程可以运行在不同命名空间内的相同端口上，用户还可以虚拟出一块网卡。
 
 - CLONE\_NEWNS     **挂载命名空间**，进程运行时可以将挂载点与系统分离，使用这个功能时，我们可以达到 chroot 的功能，而在安全性方面比 chroot 更高。
     
@@ -176,6 +176,6 @@ PID Namespace和IPC Namespace可以组合起来一起使用，只需在调用clo
 
 Linux Namespaces机制本身就是为了实现container based virtualizaiton开发的。它提供了一套轻量级、高效率的系统资源隔离方案，远比传统的虚拟化技术开销小，不过它也不是完美的，它为内核的开发带来了更多的复杂性，它在隔离性和容错性上跟传统的虚拟化技术比也还有差距。
 
-## 3.6 [user\_namespace](http://lxr.free-electrons.com/source/include/linux/user_namespace.h#L25)
+## 3.6 user_namespace
 
 CLONE\_NEWUSER指定子进程拥有**新的用户空间**.每个 container 可以有不同的 user 和 group id, 也就是说可以以 container 内部的用户在 container 内部执行程序而非 Host 上的用户。
