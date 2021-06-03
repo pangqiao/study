@@ -13,3 +13,6 @@ Linux 源码分析 -- 文件系统: https://blog.csdn.net/YuZhiHui_No1/article/d
 蜗窝科技: http://www.wowotech.net/filesystem/370.html
 
 <Linux内核源码>文件系统VFS内核4.0.4版本基本概念源码: https://www.cnblogs.com/guguli/p/4556445.html
+
+Linux中xfs文件系统模块化详解: http://www.soolco.com/post/53736_1_1.html
+

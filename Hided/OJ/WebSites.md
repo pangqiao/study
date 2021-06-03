@@ -5,3 +5,6 @@
 - LintCode中文leetcode：http://www.lintcode.com/zh-cn/problem/
 - LeetCode：https://leetcode.com/
 - Phone App
+
+
+leetcode: https://mp.weixin.qq.com/s/vSGzpEPZCTunsczuIcsjWQ
