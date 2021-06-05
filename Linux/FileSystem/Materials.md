@@ -16,3 +16,4 @@ Linux 源码分析 -- 文件系统: https://blog.csdn.net/YuZhiHui_No1/article/d
 
 Linux中xfs文件系统模块化详解: http://www.soolco.com/post/53736_1_1.html
 
+如何写一个文件系统: 知乎动态
