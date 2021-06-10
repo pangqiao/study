@@ -3,18 +3,18 @@
 
 <!-- code_chunk_output -->
 
-* [一、 什么是coredump](#一-什么是coredump)
-* [二、 coredump文件的存储位置](#二-coredump文件的存储位置)
-* [三、 如何判断一个文件是coredump文件](#三-如何判断一个文件是coredump文件)
-* [四、 产生coredum的一些条件总结](#四-产生coredum的一些条件总结)
-	* [a. 打开core dump](#a-打开core-dump)
-	* [b. 查看保存路径和文件名格式](#b-查看保存路径和文件名格式)
-* [五、 coredump产生的几种可能情况](#五-coredump产生的几种可能情况)
-* [六、 利用gdb进行coredump的定位](#六-利用gdb进行coredump的定位)
+- [什么是coredump](#什么是coredump)
+- [coredump文件的存储位置](#coredump文件的存储位置)
+- [如何判断一个文件是coredump文件](#如何判断一个文件是coredump文件)
+- [产生coredum的一些条件总结](#产生coredum的一些条件总结)
+  - [打开core dump](#打开core-dump)
+  - [查看保存路径和文件名格式](#查看保存路径和文件名格式)
+- [coredump产生的几种可能情况](#coredump产生的几种可能情况)
+- [利用gdb进行coredump的定位](#利用gdb进行coredump的定位)
 
 <!-- /code_chunk_output -->
 
-# 一、 什么是coredump
+# 什么是coredump
 
 在使用半导体作为内存的材料前，人类是利用线圈当作内存的材料（发明者为王安），线圈就叫作core ，用线圈做的内存就叫作“core memory”。（线圈的单词应该是coil）如今，半导体工业澎勃发展，已经没有人用线圈当内存了，不过，在许多情况下，人们还是把内存叫作“core”。所以注意了：这里的core不是核心，而是内存。不过结合实际来看，好像也有点“内核所占内存”的意思。 
 
@@ -24,7 +24,7 @@ core dump又是什么？我们在开发（或使用）一个程序时，最怕�
 
 Linux下的C程序常常会因为内存访问错误等原因造成segment fault（段错误），此时如果系统core dump功能是打开的，那么将会有内存映像转储到硬盘上来，之后可以用gdb对core文件进行分析，还原系统发生段错误时刻的堆栈情况。这对于我们发现程序bug很有帮助。
 
-# 二、 coredump文件的存储位置
+# coredump文件的存储位置
 
 1. core文件默认的存储位置与对应的可执行程序在同一目录下，文件名是core，大家可以通过下面的命令看到core文件的存在位置：
 
@@ -33,11 +33,11 @@ cat  /proc/sys/kernel/core_pattern
 缺省值是core
 ```
 
-注意：这里是指在进程当前工作目录的下创建。通常与程序在相同的路径下。但如果程序中调用了chdir函数，则有可能改变了当前工作目录。这时core文件创建在chdir指定的路径下。有好多程序崩溃了，我们却找不到core文件放在什么位置。和chdir函数就有关系。当然程序崩溃了不一定都产生 core文件。
+注意：这里是指**在进程当前工作目录的下创建**。通常与程序在相同的路径下。但如果程序中调用了**chdir函数**，则有可能改变了当前工作目录。这时core文件创建在chdir指定的路径下。有好多程序崩溃了，我们却找不到core文件放在什么位置。和chdir函数就有关系。当然程序崩溃了不一定都产生 core 文件。
 
 如下程序代码：则会把生成的core文件存储在/data/coredump/wd，而不是大家认为的跟可执行文件在同一目录。
 
-```
+```cpp
 #include <stdio.h>
 #include <unistd.h>
 
@@ -56,7 +56,7 @@ int main(){
 }
 ```
 
-2. 可以在/proc/sys/kernel中找到core_user_pid，通过下面命令使core文件名加上pid号，还可以用
+2. 可以在`/proc/sys/kernel`中找到`core_user_pid`，通过下面命令使core文件名加上pid号，还可以用
 
 ```
 echo "1" > /proc/sys/kernel/core_uses_pid
@@ -102,29 +102,33 @@ echo “/data/coredump/core.%e.%p” >/proc/sys/kernel/core_pattern
 
 如果在上述文件名中包含目录分隔符“/”，那么所生成的core文件将会被放到指定的目录中。
 
-# 三、 如何判断一个文件是coredump文件
+# 如何判断一个文件是coredump文件
 
 在类unix系统下，coredump文件本身主要的格式也是ELF格式，因此，我们可以通过readelf命令进行判断。
 
-![readelf -h core](images/readelf.png)
+> readelf -h coredump/core-crash-11117-1623309639
+
+![2021-06-10-15-23-19.png](./images/2021-06-10-15-23-19.png)
 
 可以看到ELF文件头的Type字段的类型是：CORE (Core file)
 
 可以通过简单的file命令进行快速判断：     
 
-![file core](images/file_core.png)
+![2021-06-10-15-24-53.png](./images/2021-06-10-15-24-53.png)
 
-# 四、 产生coredum的一些条件总结
+# 产生coredum的一些条件总结
 
-1. 产生coredump的条件，首先需要确认当前会话打开了core dump。ulimit –c，若为0，则不会产生对应的coredump，需要进行修改和设置。
+1. 产生coredump的条件，首先需要确认当前会话打开了core dump。
 
-使用ulimit -a可以查看系统core文件的大小限制
+`ulimit –c`，若为0，则不会产生对应的coredump，需要进行修改和设置。
 
-![ulimit -a](images/ulimit-a.png)
+使用`ulimit -a`可以查看系统core文件的大小限制
 
-可以看出，这里的size的单位是blocks,一般1block=512bytes
+![2021-06-10-15-32-38.png](./images/2021-06-10-15-32-38.png)
 
-使用ulimit -c [kbytes]可以设置系统允许生成的core文件大小
+可以看出，这里的size的单位是blocks, 一般 `1block = 512bytes`
+
+使用`ulimit -c [kbytes]`可以设置系统允许生成的core文件大小
 
 ```
 ulimit -c 0 不产生core文件  
@@ -132,12 +136,11 @@ ulimit -c 100 设置core文件最大为100k
 ulimit -c unlimited 不限制core文件大小  
 ```
 
-若想甚至对应的字符大小，则可以指定：
-ulimit –c [size]
+若想甚至对应的字符大小，则可以指定：`ulimit –c [size]`
 
 但当前设置的ulimit只对当前会话有效，若想系统均有效，则需要进行如下设置：
 
-## a. 打开core dump
+## 打开core dump
 
 方法一：  配置profile文件，打开/etc/profile文件，在里面可以找到【ulimit -S -c 0 > /dev/null 2>&1】，将它改成【ulimit -S -c unlimited > /dev/null 2>&1】；或者下面命令
 
@@ -148,9 +151,9 @@ echo "ulimit -c unlimited"  >> /etc/profile
 
 方法二：修改/etc/security/limits.conf文件，添加【* soft core 0】，这个方法可以针对指定用户或用户组打开core dump【user soft core 0或@group soft core 0】。不过要使用这个方法一定要将方法一提到的那行注释掉，不可同时存在
 
-## b. 查看保存路径和文件名格式
+## 查看保存路径和文件名格式
 
-/proc/sys/kernel/core_pattern 和 /proc/sys/kernel/core_uses_pid
+`/proc/sys/kernel/core_pattern` 和 `/proc/sys/kernel/core_uses_pid`
 
 - 在/etc/sysctl.conf中加入以下一行，这将使程序崩溃时生成的coredump文件位于/data/coredump/目录下，再执行命令【sysctl -p】即可生效:
 
@@ -175,7 +178,7 @@ The core file will not be generated if
 (e) the file is too big (recall the RLIMIT_CORE limit in Section 7.11). The permissions of the core file (assuming that the file doesn't already exist) are usually user-read and user-write, although Mac OS X sets only user-read.
 ```
 
-# 五、 coredump产生的几种可能情况
+# coredump产生的几种可能情况
 
 发生doredump一般都是在进程收到某个信号的时候，linux上现在大概有60多个信号，可以使用 kill -l 命令全部列出来。
 
@@ -232,7 +235,7 @@ The core file will not be generated if
 
 不要使用大的局部变量（因为局部变量都分配在栈上），这样容易造成堆栈溢出，破坏系统的栈和堆结构，导致出现莫名其妙的错误。  
 
-# 六、 利用gdb进行coredump的定位
+# 利用gdb进行coredump的定位
 
 - 第一个例子
 
@@ -447,6 +450,7 @@ Missing separate debuginfos, use: debuginfo-install glibc-2.17-105.el7.x86_64
 ```
 
 从上述输出可以清楚的看到，段错误出现在segment_fault.cc的第15行，问题已经清晰地定位到了。
+
 很多系统默认的core文件大小都是0，我们可以通过在shell的启动脚本/etc/bashrc或者~/.bashrc等地方来加入 ulimit -c 命令来指定core文件大小，从而确保core文件能够生成。
 
 除此之外，还可以在/proc/sys/kernel/core_pattern里设置core文件的文件名模板，详情请看core的官方man手册。
