@@ -6,54 +6,54 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN        ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN        ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #DB handler
+;; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ #AC handler
+;; è®¾ç½® #AC handler
         mov esi, AC_HANDLER_VECTOR
         mov edi, AC_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ #UD handler
+;; è®¾ç½® #UD handler
         mov esi, UD_HANDLER_VECTOR
         mov edi, UD_handler
         call set_interrupt_handler
                 
-;; ÉèÖÃ #NM handler
+;; è®¾ç½® #NM handler
         mov esi, NM_HANDLER_VECTOR
         mov edi, NM_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ TSS µÄ ESP0        
+;; è®¾ç½® TSS çš„ ESP0        
         mov esi, tss32_sel
         call get_tss_base
         mov DWORD [eax + 4], 9FFFh
         
                 
-;; ¹Ø±ÕËùÓĞ 8259ÖĞ¶Ï
+;; å…³é—­æ‰€æœ‰ 8259ä¸­æ–­
         call disable_8259
 
-;################  ÊµÑé´úÂë  ###########################        
+;################  å®éªŒä»£ç   ###########################        
         
-;; ´òÓ¡Ô­À´µÄÖµ        
+;; æ‰“å°åŸæ¥çš„å€¼        
         call dump_CPUID_leaf_01_ecx
         call println
         call dump_CPUID_leaf_05
@@ -63,29 +63,29 @@ entry:
         mov esi, msg11
         call puts
         
-;;ÏÖÔÚ¸ü¸Ä monitor/mwait enableÎ»£¬ÒÔ¼°¸ü¸Ä monitor line size
+;;ç°åœ¨æ›´æ”¹ monitor/mwait enableä½ï¼Œä»¥åŠæ›´æ”¹ monitor line size
 ;        mov ecx, IA32_MISC_ENABLE
 ;        rdmsr
-;        btc eax, 18                                                 ; ½« monitor/mwait Ö¸Áî disable 
+;        btc eax, 18                                                 ; å°† monitor/mwait æŒ‡ä»¤ disable 
 ;        wrmsr
         
-;; ×¢Òâµ± MONITOR/MWAIT Ö¸Áî±» disable Ê±£¬IA32_MONITOR_FILTER_LINE_SIZE ¼Ä´æÆ÷ÊÇ²»¿ÉÓÃµÄ
+;; æ³¨æ„å½“ MONITOR/MWAIT æŒ‡ä»¤è¢« disable æ—¶ï¼ŒIA32_MONITOR_FILTER_LINE_SIZE å¯„å­˜å™¨æ˜¯ä¸å¯ç”¨çš„
         mov ecx, IA32_MONITOR_FILTER_LINE_SIZE
         xor edx, edx
-        mov eax, 2000H                                                ; ÉèÖÃ×î´ó¼àÊÓ line size Îª 2000H
+        mov eax, 2000H                                                ; è®¾ç½®æœ€å¤§ç›‘è§† line size ä¸º 2000H
         wrmsr
-        mov eax, 1000H                                                ; ÉèÖÃ×îĞ¡¼àÊÓ line size Îª 1000H
+        mov eax, 1000H                                                ; è®¾ç½®æœ€å°ç›‘è§† line size ä¸º 1000H
         wrmsr
 
         
-;; ´òÓ¡ĞÂµÄÖµ        
+;; æ‰“å°æ–°çš„å€¼        
         call dump_CPUID_leaf_01_ecx
         call println
         call dump_CPUID_leaf_05
         call println        
         
                                                 
-; ½øÈë ring 3 ´úÂë
+; è¿›å…¥ ring 3 ä»£ç 
         push DWORD user_data32_sel | 0x3
         push esp
         push DWORD user_code32_sel | 0x3        
@@ -165,7 +165,7 @@ register_message_table        dd eax_message, ebx_message, ecx_message, edx_mess
                                dd esp_message, ebp_message, esi_message, edi_message, 0
 
 do_DB_handler:        
-;; µÃµ½¼Ä´æÆ÷Öµ
+;; å¾—åˆ°å¯„å­˜å™¨å€¼
         pushad
         
         mov esi, db_msg1
@@ -174,7 +174,7 @@ do_DB_handler:
         lea ebx, [esp + 4 * 7]
         xor ecx, ecx
 
-;; Í£Ö¹Ìõ¼ş        
+;; åœæ­¢æ¡ä»¶        
         mov esi, [esp + 4 * 8]
         cmp esi, [return_address]
         je clear_TF
@@ -211,11 +211,11 @@ do_DB_handler_next:
         mov [return_address], eax
         jmp do_DB_handler_done
 clear_TF:
-        btr DWORD [esp + 4 * 8 + 8], 8              ; Çå TF ±êÖ¾
+        btr DWORD [esp + 4 * 8 + 8], 8              ; æ¸… TF æ ‡å¿—
         mov esi, db_msg2
         call puts
 do_DB_handler_done:        
-        bts DWORD [esp + 4 * 8 + 8], 16             ; ÉèÖÃ eflags.RF Îª 1£¬ÒÔ±ãÖĞ¶Ï·µ»ØÊ±£¬¼ÌĞøÖ´ĞĞ
+        bts DWORD [esp + 4 * 8 + 8], 16             ; è®¾ç½® eflags.RF ä¸º 1ï¼Œä»¥ä¾¿ä¸­æ–­è¿”å›æ—¶ï¼Œç»§ç»­æ‰§è¡Œ
         popad
         iret
 
@@ -229,7 +229,7 @@ gp_msg2            db 'return address: 0x'
 ret_address        dq 0, 0 
 gp_msg3            db 'skip STI instruction', 10, 0
 do_GP_handler:        
-        add esp, 4                                   ;  ºöÂÔ´íÎóÂë
+        add esp, 4                                   ;  å¿½ç•¥é”™è¯¯ç 
         mov esi, [esp]
         mov edi, ret_address
         call get_dword_hex_string
@@ -237,21 +237,21 @@ do_GP_handler:
         call puts
         call println
         mov eax, [esp]
-        cmp BYTE [eax], 0xfb                        ; ¼ì²éÊÇ·ñÒòÎª sti Ö¸Áî¶ø²úÉú #GP Òì³£
+        cmp BYTE [eax], 0xfb                        ; æ£€æŸ¥æ˜¯å¦å› ä¸º sti æŒ‡ä»¤è€Œäº§ç”Ÿ #GP å¼‚å¸¸
         jne fix
-        inc eax                                      ; Èç¹ûÊÇµÄ»°£¬Ìø¹ı²úÉú #GP Òì³£µÄ sti Ö¸Áî£¬Ö´ĞĞÏÂÒ»ÌõÖ¸Áî
+        inc eax                                      ; å¦‚æœæ˜¯çš„è¯ï¼Œè·³è¿‡äº§ç”Ÿ #GP å¼‚å¸¸çš„ sti æŒ‡ä»¤ï¼Œæ‰§è¡Œä¸‹ä¸€æ¡æŒ‡ä»¤
         mov [esp], eax
         mov esi, gp_msg3
         call puts
         jmp do_GP_handler_done
 fix:
         mov eax, [esp+12]
-        mov esi, [esp+4]                            ; µÃµ½±»ÖĞ¶Ï´úÂëµÄ cs
+        mov esi, [esp+4]                            ; å¾—åˆ°è¢«ä¸­æ–­ä»£ç çš„ cs
         test esi, 3
         jz fix_eip
         mov eax, [eax]
 fix_eip:        
-        mov [esp], eax                                ; Ğ´Èë·µ»ØµØÖ·        
+        mov [esp], eax                                ; å†™å…¥è¿”å›åœ°å€        
 do_GP_handler_done:                
         iret
 
@@ -264,10 +264,10 @@ ud_msg1 db '---> Now, enter the #UD handler', 10, 0
 do_UD_handler:
         mov esi, ud_msg1
         call puts
-        mov eax, [esp+12]                        ; µÃµ½ user esp
+        mov eax, [esp+12]                        ; å¾—åˆ° user esp
         mov eax, [eax]
-        mov [esp], eax                          ; Ìø¹ı²úÉú#UDµÄÖ¸Áî
-        add DWORD [esp+12], 4                    ; pop ÓÃ»§ stack
+        mov [esp], eax                          ; è·³è¿‡äº§ç”Ÿ#UDçš„æŒ‡ä»¤
+        add DWORD [esp+12], 4                    ; pop ç”¨æˆ· stack
         iret
         
 ;----------------------------------------------
@@ -279,10 +279,10 @@ nm_msg1 db '---> Now, enter the #NM handler', 10, 0
 do_NM_handler:        
         mov esi, nm_msg1
         call puts
-        mov eax, [esp+12]                        ; µÃµ½ user esp
+        mov eax, [esp+12]                        ; å¾—åˆ° user esp
         mov eax, [eax]
-        mov [esp], eax                           ; Ìø¹ı²úÉú#NMµÄÖ¸Áî
-        add DWORD [esp+12], 4                   ; pop ÓÃ»§ stack
+        mov [esp], eax                           ; è·³è¿‡äº§ç”Ÿ#NMçš„æŒ‡ä»¤
+        add DWORD [esp+12], 4                   ; pop ç”¨æˆ· stack
         iret        
 
 ;-----------------------------------------------
@@ -301,20 +301,20 @@ do_AC_handler:
         mov esi, ac_msg1
         call puts
         call println
-;; ÏÖÔÚ disable AC ¹¦ÄÜ
-        btr DWORD [esp+12+4*8], 18                ; Çåelfags imageÖĞµÄAC±êÖ¾        
+;; ç°åœ¨ disable AC åŠŸèƒ½
+        btr DWORD [esp+12+4*8], 18                ; æ¸…elfags imageä¸­çš„ACæ ‡å¿—        
         popa
-        add esp, 4                                ; ºöÂÔ error code        
+        add esp, 4                                ; å¿½ç•¥ error code        
         iret
 
 
-;********* include Ä£¿é ********************
+;********* include æ¨¡å— ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
 %include "..\lib\pic8259A.asm"
 
-;; º¯Êıµ¼Èë±í
+;; å‡½æ•°å¯¼å…¥è¡¨
 %include "..\common\lib32_import_table.imt"
 
 PROTECTED_END:

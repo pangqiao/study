@@ -2,20 +2,20 @@
 
 <!-- code_chunk_output -->
 
-* [1 列出所有连接](#1-列出所有连接)
-* [2 只列出 TCP 或 UDP 或 Unix socket的连接](#2-只列出-tcp-或-udp-或-unix-socket的连接)
-* [3 禁用反向域名解析，加快查询速度](#3-禁用反向域名解析加快查询速度)
-* [4 只列出监听中的连接](#4-只列出监听中的连接)
-* [5 获取进程名、进程号以及用户 ID](#5-获取进程名-进程号以及用户-id)
-* [6 打印统计数据](#6-打印统计数据)
-* [7 显示内核路由信息](#7-显示内核路由信息)
-* [8 打印网络接口](#8-打印网络接口)
-* [9 netstat 持续输出](#9-netstat-持续输出)
-* [10 显示多播组信息](#10-显示多播组信息)
-* [11 更多用法](#11-更多用法)
-	* [11.1 打印 active 状态的连接](#111-打印-active-状态的连接)
-	* [11.2 查看服务是否在运行](#112-查看服务是否在运行)
-* [12 参考](#12-参考)
+- [1. 列出所有连接: a](#1-列出所有连接-a)
+- [2. 只列出 TCP 或 UDP 或 Unix socket的连接: t/u](#2-只列出-tcp-或-udp-或-unix-socket的连接-tu)
+- [3. 禁用反向域名解析，加快查询速度: n](#3-禁用反向域名解析加快查询速度-n)
+- [4. 只列出监听中的连接: l](#4-只列出监听中的连接-l)
+- [5. 获取进程名、进程号以及用户 ID: p](#5-获取进程名-进程号以及用户-id-p)
+- [6. 打印统计数据: s](#6-打印统计数据-s)
+- [7. 显示内核路由信息: r](#7-显示内核路由信息-r)
+- [8. 打印网络接口: i](#8-打印网络接口-i)
+- [9. netstat 持续输出: c](#9-netstat-持续输出-c)
+- [10. 显示多播组信息: g](#10-显示多播组信息-g)
+- [11. 更多用法](#11-更多用法)
+  - [11.1. 过滤 active 状态的连接](#111-过滤-active-状态的连接)
+  - [11.2. 查看服务是否在运行](#112-查看服务是否在运行)
+- [12. 参考](#12-参考)
 
 <!-- /code_chunk_output -->
 
@@ -24,13 +24,13 @@ Netstat 是一款命令行工具，可用于列出系统上所有的网络套接
 以下的简单介绍来自 netstat 的 man 手册：
 netstat - 打印网络连接、路由表、连接的数据统计、伪装连接以及广播域成员。
 
-# 1 列出所有连接
+# 1. 列出所有连接: a
 
 第一个要介绍的，是最简单的命令：列出所有当前的连接。使用 -a 选项即可。
 
 ```
 $ netstat -a
- 
+
 Active Internet connections (servers and established)
 Proto Recv-Q Send-Q Local Address           Foreign Address         State      
 tcp        0      0 enlightened:domain      *:*                     LISTEN     
@@ -60,7 +60,7 @@ unix  2      [ ACC ]     STREAM     LISTENING     40202    @/dbus-vfs-daemon/soc
 
 上述命令列出tcp, udp和unix协议下所有套接字的所有连接。然而这些信息还不够详细，管理员往往需要查看某个协议或端口的具体连接情况。
 
-# 2 只列出 TCP 或 UDP 或 Unix socket的连接
+# 2. 只列出 TCP 或 UDP 或 Unix socket的连接: t/u
 
 使用 -t 选项列出 TCP 协议的连接：
 
@@ -101,7 +101,7 @@ udp6       0      0 [::]:ntp                [::]:*
 $ netstat -ax
 ```
 
-# 3 禁用反向域名解析，加快查询速度
+# 3. 禁用反向域名解析，加快查询速度: n
 
 默认情况下 netstat 会通过反向域名解析技术查找每个 IP 地址对应的主机名。这会降低查找速度。如果你觉得 IP 地址已经足够，而没有必要知道主机名，就使用 -n 选项禁用域名解析功能。
 
@@ -118,7 +118,7 @@ tcp6       0      0 ::1:631                 :::*                    LISTEN
 
 上述命令列出所有 TCP 协议的连接，没有使用域名解析技术。So easy ? 非常好。
 
-# 4 只列出监听中的连接
+# 4. 只列出监听中的连接: l
 
 任何网络服务的后台进程都会打开一个端口，用于监听接入的请求。这些正在监听的套接字也和连接的套接字一样，也能被 netstat 列出来。使用 -l 选项列出正在监听的套接字。
 
@@ -135,7 +135,7 @@ tcp6       0      0 ::1:631                 :::*                    LISTEN
 
 注意：不要使用 -a 选项，否则 netstat 会列出所有连接，而不仅仅是监听端口。
 
-# 5 获取进程名、进程号以及用户 ID
+# 5. 获取进程名、进程号以及用户 ID: p
 
 查看端口和连接的信息时，能查看到它们对应的进程名和进程号对系统管理员来说是非常有帮助的。举个栗子，Apache 的 httpd 服务开启80端口，如果你要查看 http 服务是否已经启动，或者 http 服务是由 apache 还是 nginx 启动的，这时候你可以看看进程名。
 
@@ -169,10 +169,12 @@ tcp6       0      0 ip6-localhost:ipp       [::]:*                  LISTEN      
 
 注意 - 假如你将 -n 和 -e 选项一起使用，User 列的属性就是用户的 ID 号，而不是用户名。
 
-# 6 打印统计数据
+# 6. 打印统计数据: s
 
 netstat 可以打印出网络统计数据，包括某个协议下的收发包数量。
+
 下面列出所有网络包的统计情况：
+
 ```
 $ netstat -s
 Ip:
@@ -196,7 +198,7 @@ Icmp:
 
 如果想只打印出 TCP 或 UDP 协议的统计数据，只要加上对应的选项（-t 和 -u）即可，so easy。
 
-# 7 显示内核路由信息
+# 7. 显示内核路由信息: r
 
 使用 -r 选项打印内核路由信息。打印出来的信息与 route 命令输出的信息一样。我们也可以使用 -n 选项禁止域名解析。
 
@@ -208,7 +210,7 @@ Destination      Gateway      Genmask         Flags     MSS  Window  irtt   Ifac
 192.168.1.0      0.0.0.0      255.255.255.0   U         0    0       0      eth0
 ```
 
-# 8 打印网络接口
+# 8. 打印网络接口: i
 
 netstat 也能打印网络接口信息，-i 选项就是为这个功能而生。
 ```
@@ -246,7 +248,7 @@ lo        Link encap:LocalLoopback
 
 上面的输出信息与 ifconfig 输出的信息一样。
 
-# 9 netstat 持续输出
+# 9. netstat 持续输出: c
 
 我们可以使用 netstat 的 -c 选项持续输出信息。
 
@@ -255,7 +257,7 @@ $ netstat -ct
 ```
 这个命令可持续输出 TCP 协议信息。
 
-# 10 显示多播组信息
+# 10. 显示多播组信息: g
 
 选项 -g 会输出 IPv4 和 IPv6 的多播组信息。
 
@@ -277,16 +279,16 @@ wlan0           1      ip6-allnodes
 wlan0           1      ff01::1
 ```
 
-# 11 更多用法
+# 11. 更多用法
 
 目前为止我们列出了 netstat 的基本用法，现在让我们一起来 geek 吧～
 
-## 11.1 打印 active 状态的连接
+## 11.1. 过滤 active 状态的连接
 
 active 状态的套接字连接用 "ESTABLISHED" 字段表示，所以我们可以使用 grep 命令获得 active 状态的连接：
 
 ```
-$ netstat-atnp |grep ESTA
+$ netstat -atnp |grep ESTA
 (Not all processes could be identified, non-owned process info
  will not be shown, you would have to be root to see it all.)
 tcp        00192.168.1.2:49156173.255.230.5:80        ESTABLISHED 1691/chrome     
@@ -299,7 +301,7 @@ tcp        00192.168.1.2:33324173.194.36.117:443      ESTABLISHED 1691/chrome
 $ watch-d -n0 "netstat -atnp | grep ESTA"
 ```
 
-## 11.2 查看服务是否在运行
+## 11.2. 查看服务是否在运行
 
 如果你想看看 http,smtp 或 ntp 服务是否在运行，使用 grep。
 ```
@@ -314,7 +316,7 @@ unix        2                        []         DGRAM     174181789/ntpd
 ```
 从这里可以看到 ntp 服务正在运行。使用 grep 命令你可以查看 http 或 smtp 或其它任何你想查看的服务。
 
-# 12 参考
+# 12. 参考
 
 - 本文来自: http://www.binarytides.com/linux-netstat-command-examples/
-- 阅读它的手册（man netstat）。
+- 阅读它的手册(man netstat)

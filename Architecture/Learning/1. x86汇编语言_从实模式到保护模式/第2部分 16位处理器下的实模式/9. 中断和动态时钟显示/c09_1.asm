@@ -1,21 +1,21 @@
-         ;�����嵥9-1
-         ;�ļ�����c09_1.asm
-         ;�ļ�˵�����û����� 
-         ;�������ڣ�2011-4-16 22:03
+         ;代码清单9-1
+         ;文件名：c09_1.asm
+         ;文件说明：用户程序 
+         ;创建日期：2011-4-16 22:03
          
 ;===============================================================================
-SECTION header vstart=0                     ;�����û�����ͷ���� 
-    program_length  dd program_end          ;�����ܳ���[0x00]
+SECTION header vstart=0                     ;定义用户程序头部段 
+    program_length  dd program_end          ;程序总长度[0x00]
     
-    ;�û�������ڵ�
-    code_entry      dw start                ;ƫ�Ƶ�ַ[0x04]
-                    dd section.code.start   ;�ε�ַ[0x06] 
+    ;用户程序入口点
+    code_entry      dw start                ;偏移地址[0x04]
+                    dd section.code.start   ;段地址[0x06] 
     
     realloc_tbl_len dw (header_end-realloc_begin)/4
-                                            ;���ض�λ�������[0x0a]
+                                            ;段重定位表项个数[0x0a]
     
     realloc_begin:
-    ;���ض�λ��           
+    ;段重定位表           
     code_segment    dd section.code.start   ;[0x0c]
     data_segment    dd section.data.start   ;[0x14]
     stack_segment   dd section.stack.start  ;[0x1c]
@@ -23,7 +23,7 @@ SECTION header vstart=0                     ;�����û�����ͷ����
 header_end:                
     
 ;===============================================================================
-SECTION code align=16 vstart=0           ;�������Σ�16�ֽڶ��룩 
+SECTION code align=16 vstart=0           ;定义代码段（16字节对齐） 
 new_int_0x70:
       push ax
       push bx
@@ -32,66 +32,66 @@ new_int_0x70:
       push es
       
   .w0:                                    
-      mov al,0x0a                        ;���NMI����Ȼ��ͨ���ǲ���Ҫ��
+      mov al,0x0a                        ;阻断NMI。当然，通常是不必要的
       or al,0x80                          
       out 0x70,al
-      in al,0x71                         ;���Ĵ���A
-      test al,0x80                       ;���Ե�7λUIP 
-      jnz .w0                            ;���ϴ�����ڸ������ڽ����ж���˵ 
-                                         ;�ǲ���Ҫ�� 
+      in al,0x71                         ;读寄存器A
+      test al,0x80                       ;测试第7位UIP 
+      jnz .w0                            ;以上代码对于更新周期结束中断来说 
+                                         ;是不必要的 
       xor al,al
       or al,0x80
       out 0x70,al
-      in al,0x71                         ;��RTC��ǰʱ��(��)
+      in al,0x71                         ;读RTC当前时间(秒)
       push ax
 
       mov al,2
       or al,0x80
       out 0x70,al
-      in al,0x71                         ;��RTC��ǰʱ��(��)
+      in al,0x71                         ;读RTC当前时间(分)
       push ax
 
       mov al,4
       or al,0x80
       out 0x70,al
-      in al,0x71                         ;��RTC��ǰʱ��(ʱ)
+      in al,0x71                         ;读RTC当前时间(时)
       push ax
 
-      mov al,0x0c                        ;�Ĵ���C���������ҿ���NMI 
+      mov al,0x0c                        ;寄存器C的索引。且开放NMI 
       out 0x70,al
-      in al,0x71                         ;��һ��RTC�ļĴ���C������ֻ����һ���ж�
-                                         ;�˴����������Ӻ��������жϵ���� 
+      in al,0x71                         ;读一下RTC的寄存器C，否则只发生一次中断
+                                         ;此处不考虑闹钟和周期性中断的情况 
       mov ax,0xb800
       mov es,ax
 
       pop ax
       call bcd_to_ascii
-      mov bx,12*160 + 36*2               ;����Ļ�ϵ�12��36�п�ʼ��ʾ
+      mov bx,12*160 + 36*2               ;从屏幕上的12行36列开始显示
 
       mov [es:bx],ah
-      mov [es:bx+2],al                   ;��ʾ��λСʱ����
+      mov [es:bx+2],al                   ;显示两位小时数字
 
       mov al,':'
-      mov [es:bx+4],al                   ;��ʾ�ָ���':'
-      not byte [es:bx+5]                 ;��ת��ʾ���� 
+      mov [es:bx+4],al                   ;显示分隔符':'
+      not byte [es:bx+5]                 ;反转显示属性 
 
       pop ax
       call bcd_to_ascii
       mov [es:bx+6],ah
-      mov [es:bx+8],al                   ;��ʾ��λ��������
+      mov [es:bx+8],al                   ;显示两位分钟数字
 
       mov al,':'
-      mov [es:bx+10],al                  ;��ʾ�ָ���':'
-      not byte [es:bx+11]                ;��ת��ʾ����
+      mov [es:bx+10],al                  ;显示分隔符':'
+      not byte [es:bx+11]                ;反转显示属性
 
       pop ax
       call bcd_to_ascii
       mov [es:bx+12],ah
-      mov [es:bx+14],al                  ;��ʾ��λСʱ����
+      mov [es:bx+14],al                  ;显示两位小时数字
       
-      mov al,0x20                        ;�жϽ�������EOI 
-      out 0xa0,al                        ;���Ƭ���� 
-      out 0x20,al                        ;����Ƭ���� 
+      mov al,0x20                        ;中断结束命令EOI 
+      out 0xa0,al                        ;向从片发送 
+      out 0x20,al                        ;向主片发送 
 
       pop es
       pop dx
@@ -102,14 +102,14 @@ new_int_0x70:
       iret
 
 ;-------------------------------------------------------------------------------
-bcd_to_ascii:                            ;BCD��תASCII
-                                         ;���룺AL=bcd��
-                                         ;�����AX=ascii
-      mov ah,al                          ;�ֲ���������� 
-      and al,0x0f                        ;��������4λ 
-      add al,0x30                        ;ת����ASCII 
+bcd_to_ascii:                            ;BCD码转ASCII
+                                         ;输入：AL=bcd码
+                                         ;输出：AX=ascii
+      mov ah,al                          ;分拆成两个数字 
+      and al,0x0f                        ;仅保留低4位 
+      add al,0x30                        ;转换成ASCII 
 
-      shr ah,4                           ;�߼�����4λ 
+      shr ah,4                           ;逻辑右移4位 
       and ah,0x0f                        
       add ah,0x30
 
@@ -123,84 +123,84 @@ start:
       mov ax,[data_segment]
       mov ds,ax
       
-      mov bx,init_msg                    ;��ʾ��ʼ��Ϣ 
+      mov bx,init_msg                    ;显示初始信息 
       call put_string
 
-      mov bx,inst_msg                    ;��ʾ��װ��Ϣ 
+      mov bx,inst_msg                    ;显示安装信息 
       call put_string
  
-;BIOS����ʱ��������Ƭ���жϺŴ�0x80��ʼ����Ƭ���жϺŴ�0x70��ʼ��RTC�Ǵ�Ƭ�е�һ���ж�
+;BIOS启动时，设置主片的中断号从0x80开始，从片的中断号从0x70开始，RTC是从片中第一个中断
       mov al,0x70
       mov bl,4
-      mul bl                             ;����0x70���ж���IVT�е�ƫ��
+      mul bl                             ;计算0x70号中断在IVT中的偏移
       mov bx,ax                          
 
 	  
-;��һ�����滻ϵͳ�е�Ĭ�ϵ�0x70�жϺŵ�ַ
-;�滻���Լ��ĳ��򣬼���ÿ��0x70�ж�ʱ��ִ���������	  
-      cli                                ;��ֹ�Ķ��ڼ䷢���µ�0x70���ж�
+;第一步，替换系统中的默认的0x70中断号地址
+;替换掉自己的程序，即：每当0x70中断时将执行这个程序	  
+      cli                                ;防止改动期间发生新的0x70号中断
 
       push es
       mov ax,0x0000
       mov es,ax
-      mov word [es:bx],new_int_0x70      ;ƫ�Ƶ�ַ��
+      mov word [es:bx],new_int_0x70      ;偏移地址。
                                           
-      mov word [es:bx+2],cs              ;�ε�ַ
+      mov word [es:bx+2],cs              ;段地址
       pop es
 
-;�ڶ�����0x70�ж���RTC�жϣ�RTC�ж�Ҫ����һ������
-;a���ر�NMI�ж�
-;b�����������ж��е�ĳ���ж�
-;c����ȡc�Ĵ�������ռĴ�����׼�������ж�
-;d������IMR�Ĵ�������ƬΪ��0x20/0x21 ��ƬΪ��0xa0/0xa1
+;第二步，0x70中断是RTC中断；RTC中断要满足一定条件
+;a、关闭NMI中断
+;b、设置三个中断中的某个中断
+;c、读取c寄存器，清空寄存器，准备接受中断
+;d、设置IMR寄存器，主片为：0x20/0x21 从片为：0xa0/0xa1
 	  
-      mov al,0x0b                        ;RTC�Ĵ���B
-      or al,0x80                         ;���NMI 
+      mov al,0x0b                        ;RTC寄存器B
+      or al,0x80                         ;阻断NMI 
       out 0x70,al
-      mov al,0x12                        ;���üĴ���B����ֹ�������жϣ����Ÿ� 
-      out 0x71,al                        ;�½������жϣ�BCD�룬24Сʱ�� 
+      mov al,0x12                        ;设置寄存器B，禁止周期性中断，开放更 
+      out 0x71,al                        ;新结束后中断，BCD码，24小时制 
 
       mov al,0x0c
       out 0x70,al
-      in al,0x71                         ;��RTC�Ĵ���C����λδ�����ж�״̬
+      in al,0x71                         ;读RTC寄存器C，复位未决的中断状态
 
-      in al,0xa1                         ;��8259��Ƭ��IMR�Ĵ��� 
-      and al,0xfe                        ;���bit 0(��λ����RTC)
-      out 0xa1,al                        ;д�ش˼Ĵ��� 
+      in al,0xa1                         ;读8259从片的IMR寄存器 
+      and al,0xfe                        ;清除bit 0(此位连接RTC)
+      out 0xa1,al                        ;写回此寄存器 
 
-      sti                                ;���¿����ж� 
+      sti                                ;重新开放中断 
 
-      mov bx,done_msg                    ;��ʾ��װ�����Ϣ 
+      mov bx,done_msg                    ;显示安装完成信息 
       call put_string
 
-      mov bx,tips_msg                    ;��ʾ��ʾ��Ϣ
+      mov bx,tips_msg                    ;显示提示信息
       call put_string
       
       mov cx,0xb800
       mov ds,cx
-      mov byte [12*160 + 33*2],'@'       ;��Ļ��12�У�35��
+      mov byte [12*160 + 33*2],'@'       ;屏幕第12行，35列
        
  .idle:
-      hlt                                ;ʹCPU����͹���״̬��ֱ�����жϻ���
-      not byte [12*160 + 33*2+1]         ;��ת��ʾ���� 
+      hlt                                ;使CPU进入低功耗状态，直到用中断唤醒
+      not byte [12*160 + 33*2+1]         ;反转显示属性 
       jmp .idle
 
 ;-------------------------------------------------------------------------------
-put_string:                              ;��ʾ��(0��β)��
-                                         ;���룺DS:BX=����ַ
+put_string:                              ;显示串(0结尾)。
+                                         ;输入：DS:BX=串地址
          mov cl,[bx]
          or cl,cl                        ;cl=0 ?
-         jz .exit                        ;�ǵģ����������� 
+         jz .exit                        ;是的，返回主程序 
          call put_char
-         inc bx                          ;��һ���ַ� 
+         inc bx                          ;下一个字符 
          jmp put_string
 
    .exit:
          ret
 
 ;-------------------------------------------------------------------------------
-put_char:                                ;��ʾһ���ַ�
-                                         ;���룺cl=�ַ�ascii
+put_char:                                ;显示一个字符
+                                         ;输入：cl=字符ascii
          push ax
          push bx
          push cx
@@ -208,23 +208,23 @@ put_char:                                ;��ʾһ���ַ�
          push ds
          push es
 
-         ;����ȡ��ǰ���λ��
+         ;以下取当前光标位置
          mov dx,0x3d4
          mov al,0x0e
          out dx,al
          mov dx,0x3d5
-         in al,dx                        ;��8λ 
+         in al,dx                        ;高8位 
          mov ah,al
 
          mov dx,0x3d4
          mov al,0x0f
          out dx,al
          mov dx,0x3d5
-         in al,dx                        ;��8λ 
-         mov bx,ax                       ;BX=�������λ�õ�16λ��
+         in al,dx                        ;低8位 
+         mov bx,ax                       ;BX=代表光标位置的16位数
 
-         cmp cl,0x0d                     ;�س�����
-         jnz .put_0a                     ;���ǡ������ǲ��ǻ��е��ַ� 
+         cmp cl,0x0d                     ;回车符？
+         jnz .put_0a                     ;不是。看看是不是换行等字符 
          mov ax,bx                       ; 
          mov bl,80                       
          div bl
@@ -233,23 +233,23 @@ put_char:                                ;��ʾһ���ַ�
          jmp .set_cursor
 
  .put_0a:
-         cmp cl,0x0a                     ;���з���
-         jnz .put_other                  ;���ǣ��Ǿ�������ʾ�ַ� 
+         cmp cl,0x0a                     ;换行符？
+         jnz .put_other                  ;不是，那就正常显示字符 
          add bx,80
          jmp .roll_screen
 
- .put_other:                             ;������ʾ�ַ�
+ .put_other:                             ;正常显示字符
          mov ax,0xb800
          mov es,ax
          shl bx,1
          mov [es:bx],cl
 
-         ;���½����λ���ƽ�һ���ַ�
+         ;以下将光标位置推进一个字符
          shr bx,1
          add bx,1
 
  .roll_screen:
-         cmp bx,2000                     ;��곬����Ļ������
+         cmp bx,2000                     ;光标超出屏幕？滚屏
          jl .set_cursor
 
          mov ax,0xb800
@@ -260,7 +260,7 @@ put_char:                                ;��ʾһ���ַ�
          mov di,0x00
          mov cx,1920
          rep movsw
-         mov bx,3840                     ;�����Ļ���һ��
+         mov bx,3840                     ;清除屏幕最底一行
          mov cx,80
  .cls:
          mov word[es:bx],0x0720
