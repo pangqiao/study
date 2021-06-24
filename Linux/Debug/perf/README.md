@@ -23,3 +23,5 @@ perf XXX -h
 https://www.cnblogs.com/arnoldlu/p/6241297.html, 剩余子命令的使用
 
 动态追踪: https://blog.arstercz.com/introduction_to_linux_dynamic_tracing/
+
+perf 会遇到的一些问题以及解决办法: http://oliveryang.net/2016/07/linux-perf-tools-tips/

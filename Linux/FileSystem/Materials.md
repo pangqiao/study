@@ -19,3 +19,6 @@ Linux中xfs文件系统模块化详解: http://www.soolco.com/post/53736_1_1.htm
 如何写一个文件系统: 知乎动态
 
 umount 异步机制: https://www.jianshu.com/p/f82c23da17cd
+
+
+xfs_repair: https://cloud.tencent.com/developer/article/1579810

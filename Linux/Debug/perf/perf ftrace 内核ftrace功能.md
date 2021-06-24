@@ -82,7 +82,7 @@ perf ftrace [<options>] -- <command> [<options>]
 
 # 示例
 
-perf ftrace -f function_graph usleep 123456
+perf ftrace -t function_graph usleep 123456
 
 perf ftrace -t function_graph -a -- insmod ipi_benchmark.ko > after_perf_ftrace
 

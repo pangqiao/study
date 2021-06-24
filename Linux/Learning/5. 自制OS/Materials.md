@@ -53,3 +53,7 @@ https://github.com/haiwei-li/firekylin
 使用X86汇编和C写的小型操作系统
 
 https://github.com/Gerry-Lee/MyOS
+
+
+计算机自制操作系统：完成总结 - kaka的文章 - 知乎
+https://zhuanlan.zhihu.com/p/149465851
