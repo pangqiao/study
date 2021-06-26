@@ -21,3 +21,8 @@ https://blog.csdn.net/xqjcool/article/details/105087948
 
 
 Crash工具实战-变量解析【转】: http://blog.chinaunix.net/uid-14528823-id-4358785.html (原)
+
+
+crash 查看链表和类似于 contain_of 查找
+
+https://feichashao.com/kernel-doubly-linked-list/
