@@ -26,3 +26,5 @@ Crash工具实战-变量解析【转】: http://blog.chinaunix.net/uid-14528823-
 crash 查看链表和类似于 contain_of 查找
 
 https://feichashao.com/kernel-doubly-linked-list/
+
+调试指南: https://github.com/xuliker/kde/issues/65
