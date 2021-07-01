@@ -29,3 +29,4 @@ xfs文件系统使用总结: http://zhangbin.junxilinux.com/?p=103
 
 
 
+linux 3.10 一个扇区异常可能引发的hung: https://www.javazxz.com/thread-9827-1-1.html
