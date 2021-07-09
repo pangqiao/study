@@ -4,7 +4,7 @@ https://blog.csdn.net/wjlkoorey/article/details/52012976
 
 先看一个最简单的程序：
 
-```
+```cpp
 /*test.c*/
 #include <stdio.h>
 
