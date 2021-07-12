@@ -40,3 +40,8 @@ xv6 是一个类Unix的教学操作系统（MIT基于Unix v6 的重新实现）�
 
 
 https://github.com/yinfredyue/MIT6.828
+
+
+https://zhuanlan.zhihu.com/p/386900395
+
+
