@@ -105,3 +105,7 @@
 ▲此后，Win10安装程序要至少重启两次，耐心等待30分钟左右将进入后续设置
 
 6. 接下来就是下一步, 直到完成.
+
+# 参考
+
+UEFI安装CentOS 7: https://stillwuyan.github.io/2017/02/04/install-centos7-in-uefi-mode/ , https://blog.csdn.net/weixin_41709624/article/details/108929270
