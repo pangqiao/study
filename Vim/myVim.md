@@ -8,9 +8,7 @@
 apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev libclang1 vim-nox vim-gtk
 ```
 
-```
-# yum install -y ctags cscope
-```
+vim-gtk 可以让 vim 有 ``
 
 fontconfig用来安装字体库
 
