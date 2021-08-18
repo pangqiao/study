@@ -5,7 +5,7 @@
 # 安装软件
 
 ```
-apt-get install ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev libclang1 vim-nox
+apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev libclang1 vim-nox vim-gtk
 ```
 
 ```
