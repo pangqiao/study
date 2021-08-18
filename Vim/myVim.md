@@ -5,7 +5,7 @@
 # 安装软件
 
 ```
-apt-get install ctags cscope git wmctrl fonts-powerline 
+apt-get install ctags cscope git wmctrl fonts-powerline ccls
 ```
 
 ```
