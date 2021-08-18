@@ -8,7 +8,7 @@
 apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev libclang1 vim-nox vim-gtk
 ```
 
-vim-gtk 可以让 vim 有 ``
+vim-gtk 可以让 vim 有 `+clipboard` feature 支持
 
 fontconfig用来安装字体库
 
