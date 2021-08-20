@@ -16,8 +16,8 @@
       - [msr寄存器确认](#msr寄存器确认)
       - [kvm-ok](#kvm-ok)
     - [内存虚拟化](#内存虚拟化-1)
-- [3 VT-d技术](#3-vt-d技术)
-- [4 VT-c技术](#4-vt-c技术)
+- [VT-d技术](#vt-d技术)
+- [VT-c技术](#vt-c技术)
 
 <!-- /code_chunk_output -->
 
@@ -28,7 +28,7 @@
 下面以一台Intel Haswell\-UP平台的服务器为例，来说明在BIOS中的设置。
 
 BIOS中Enabled的**VT**和**VT\-d**选项，如图3-2所示。
-￼
+
 ![](./images/2019-05-15-09-02-49.png)
 
 对于不同平台或不同厂商的BIOS，VT和VT\-d等设置的位置可能是不一样的，需要根据实际的硬件情况和BIOS中的选项来灵活设置。
@@ -42,17 +42,17 @@ BIOS中Enabled的**VT**和**VT\-d**选项，如图3-2所示。
 查看config文件, 确保kvm和kvm\_intel作为模块存在
 
 ```
-CONFIG_HAVE_KVM=y￼
-CONFIG_HAVE_KVM_IRQCHIP=y￼
-CONFIG_HAVE_KVM_EVENTFD=y￼
-CONFIG_KVM_APIC_ARCHITECTURE=y￼
-CONFIG_KVM_MMIO=y￼
-CONFIG_KVM_ASYNC_PF=y￼
-CONFIG_HAVE_KVM_MSI=y￼
-CONFIG_VIRTUALIZATION=y￼
-CONFIG_KVM=m￼
-CONFIG_KVM_INTEL=m￼
-# CONFIG_KVM_AMD is not set￼
+CONFIG_HAVE_KVM=y
+CONFIG_HAVE_KVM_IRQCHIP=y
+CONFIG_HAVE_KVM_EVENTFD=y
+CONFIG_KVM_APIC_ARCHITECTURE=y
+CONFIG_KVM_MMIO=y
+CONFIG_KVM_ASYNC_PF=y
+CONFIG_HAVE_KVM_MSI=y
+CONFIG_VIRTUALIZATION=y
+CONFIG_KVM=m
+CONFIG_KVM_INTEL=m
+# CONFIG_KVM_AMD is not set
 CONFIG_KVM_MMU_AUDIT=y
 ```
 
@@ -83,7 +83,7 @@ Intel硬件虚拟化技术大致分为如下3个类别（这个顺序也基本�
 对于内存虚拟化**EPT**以及**vpid**的支持查询
 
 ```
-[root@kvm-host ~]# grep -E “ept|vpid” /proc/cpuinfo ￼
+[root@kvm-host ~]# grep -E “ept|vpid” /proc/cpuinfo 
 ```
 
 如果查找到了表示你当前的CPU是**支持虚拟化功能**的，但是**不代表你现在的VT功能是开启**的。
@@ -97,10 +97,10 @@ Intel硬件虚拟化技术大致分为如下3个类别（这个顺序也基本�
 系统启动后确认内核模块
 
 ```
-[root@kvm-host kvm]# modprobe kvm￼
-[root@kvm-host kvm]# modprobe kvm_intel￼
-[root@kvm-host kvm]# lsmod | grep kvm￼
-kvm_intel             192512  0 ￼
+[root@kvm-host kvm]# modprobe kvm
+[root@kvm-host kvm]# modprobe kvm_inte
+[root@kvm-host kvm]# lsmod | grep kvm
+kvm_intel             192512  0 
 kvm                   577536  1 kvm_intel
 irqbypass              13503  1 kvm
 ```
@@ -135,14 +135,14 @@ ubuntu下安装cpu\-checker包, 调用"kvm\-ok"可查看
 
 sysfs文件系统
 
-在**宿主机**中，可以根据**sysfs￼文件系统**中**kvm\_intel模块**的**当前参数值**来确定KVM是否打开**EPT和VPID**特性。
+在**宿主机**中，可以根据**sysfs文件系统**中**kvm\_intel模块**的**当前参数值**来确定KVM是否打开**EPT和VPID**特性。
 
 在默认情况下，如果硬件支持了EPT、VPID，则**kvm\_intel模块加载**时**默认开启EPT和VPID**特性，这样KVM会默认使用它们。
 
 ```
-[root@kvm-host ~]# cat /sys/module/kvm_intel/parameters/ept￼
-Y￼
-[root@kvm-host ~]# cat /sys/module/kvm_intel/parameters/vpid￼
+[root@kvm-host ~]# cat /sys/module/kvm_intel/parameters/ept
+Y
+[root@kvm-host ~]# cat /sys/module/kvm_intel/parameters/vpid
 Y
 ```
 
@@ -153,18 +153,18 @@ Y
 当然，一般不要手动关闭EPT和VPID功能，否则会导致客户机中内存访问的性能下降。
 
 ```
-[root@kvm-host ~]# modprobe kvm_intel ept=0,vpid=0 ￼
-[root@kvm-host ~]# rmmod kvm_intel￼
+[root@kvm-host ~]# modprobe kvm_intel ept=0,vpid=0 
+[root@kvm-host ~]# rmmod kvm_inte
 [root@kvm-host ~]# modprobe kvm_intel ept=1,vpid=1
 ```
 
-# 3 VT-d技术
+# VT-d技术
 
 指Intel的**芯片组(南桥)的虚拟化**技术支持，通过Intel **IOMMU**可以实现对**设备直接分配**的支持。
 
 VT-d技术可下载<Intel Virtualization Technology for Directed I/O Architecture Specification> 文档
 
-# 4 VT-c技术
+# VT-c技术
 
 指Intel的**I/O设备**相关的虚拟化技术支持，主要包含**两个技术**：
 
