@@ -15,8 +15,10 @@
   - [3.7. 查看磁盘分区和文件系统状态](#37-查看磁盘分区和文件系统状态)
   - [3.8. 刷新根分区](#38-刷新根分区)
 - [4. 创建数据盘并使用](#4-创建数据盘并使用)
+- [修改镜像内容](#修改镜像内容)
 - [键盘输入设置](#键盘输入设置)
 - [虚拟机最终启动命令](#虚拟机最终启动命令)
+- [修改](#修改)
 
 <!-- /code_chunk_output -->
 
@@ -216,6 +218,9 @@ tmpfs          tmpfs  299M  4.0K  299M   1% /run/user/0
 
 数据盘格式化并挂载: https://www.cnblogs.com/jyzhao/p/4778657.html
 
+# 修改镜像内容
+
+通过 `qmeu-nbd` 工具
 
 # 键盘输入设置
 
@@ -238,3 +243,22 @@ ubuntu中启用page up/down进行补全功能: https://blog.csdn.net/jingtaohuan
 # ubuntu hirsute image -- daemonize start
 /usr/bin/qemu-system-x86_64  -name ubuntu-hirsute -machine pc-i440fx-hirsute,accel=kvm,usb=off,dump-guest-core=off -cpu host -m 4G -smp 4,sockets=1,cores=2,threads=2 -uuid 982ab310-b608-49f9-8e0f-afdf7fa3fdda -smbios type=1,serial=982ab310-b608-49f9-8e0f-afdf7fa3fdda,uuid=982ab310-b608-49f9-8e0f-afdf7fa3fdda -no-user-config -nodefaults -chardev socket,id=montest,server=on,wait=off,path=/tmp/mon_test -mon chardev=montest,mode=readline -rtc base=utc,clock=vm -global kvm-pit.lost_tick_policy=discard -no-hpet -no-shutdown -boot strict=on -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=/images/ubuntu_hirsute.qcow2,format=qcow2,if=none,id=drive-virtio-disk0,cache=none,aio=native -object iothread,id=iothread0 -device virtio-blk-pci,iothread=iothread0,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -drive file=/images/data.qcow2,format=qcow2,if=none,id=drive-virtio-disk1,cache=none,aio=native -object iothread,id=iothread1 -device virtio-blk-pci,iothread=iothread1,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,id=virtio-disk1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -chardev pty,id=charserial0 -device isa-serial,chardev=charserial0,id=serial0 -vnc 0.0.0.0:1 -k en-us -device cirrus-vga,id=video0,bus=pci.0,addr=0x6 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x7 -msg timestamp=on -daemonize
 ```
+
+# 修改
+
+
+
+```
+# vim /etc/default/grub
+GRUB_DEFAULT="Advanced options for Ubuntu>Ubuntu, with Linux 5.4.129-02962-ge8dff
+9ce0bd6d"
+GRUB_TIMEOUT_STYLE=menu
+GRUB_TIMEOUT=10
+GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
+GRUB_CMDLINE_LINUX_DEFAULT="quiet splash"
+GRUB_CMDLINE_LINUX=""
+
+# update-grub
+```
+
+ubuntu修改默认启动内核: https://cdmana.com/2021/03/20210328153654881n.html

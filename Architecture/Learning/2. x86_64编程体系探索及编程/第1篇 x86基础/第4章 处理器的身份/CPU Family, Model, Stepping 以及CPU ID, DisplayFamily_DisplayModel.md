@@ -3,12 +3,12 @@
 
 <!-- code_chunk_output -->
 
-* [CPU ID](#cpu-id)
-	* [Type（类型）](#type类型)
-	* [Family（系列）](#family系列)
-	* [Mode（型号）](#mode型号)
-	* [Stepping（步进编号）](#stepping步进编号)
-	* [Brand ID（品种标识）](#brand-id品种标识)
+- [CPU ID](#cpu-id)
+  - [Type（类型）](#type类型)
+  - [Family（系列）](#family系列)
+  - [Mode（型号）](#mode型号)
+  - [Stepping（步进编号）](#stepping步进编号)
+  - [Brand ID（品种标识）](#brand-id品种标识)
 
 <!-- /code_chunk_output -->
 
@@ -52,7 +52,7 @@ stepping  : 10
 **model name**: CPU属于的**名字**及其**编号**、标称**主频**
 
 **stepping**: CPU属于**制作更新版本**。Stepping ID(步进)也叫分级鉴别产品数据转换规范， “步进”编号标识生产英特尔微处理器的**设计或制造版本数据**(例如步进4)。步进用于标识一次“**修订**”，通过使用唯一的步进，可以有效地控制和跟踪所做的更改。步进还可以让最终用户**更具体地识别其系统所安装的处理器版本**。在尝试确定微处理器的内部设计或制造特性时，英特尔可能会需要使用此分类数据。
-        
+
 - Katmai Stepping含义：“2”为kB0步进；“3”为kC0步进。
 - Coppermine Stepping含义：“l”为cA2步进；“3”为cB0步进；“6”为cC0步进。
 
