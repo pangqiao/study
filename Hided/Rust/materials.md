@@ -6,4 +6,15 @@ https://www.zhihu.com/question/31038569
 
 Github上有一个repo叫 [awesome-rust](https://github.com/rust-unofficial/awesome-rust)，汇集了Github上几乎全部的优秀Rust开源项目。举例几个有名的项目：Mozilla的Servo浏览器引擎，AWS的Firecracker MicroVM，Web框架actix-web，当然还有最近Facebook发布的Libra。
 
-Rust大法好。
+
+
+
+Rust Language Cheat Sheet: https://cheats.rs/
+
+Rust 实例: https://doc.rust-lang.org/stable/rust-by-example/
+
+张汉东 的 "Rust编程之道", github: https://github.com/ZhangHanDong
+
+《Rust编程之道》随书源码: https://github.com/ZhangHanDong/tao-of-rust-codes
+
+Rust 编程之道【新版/第二版】: https://github.com/ZhangHanDong/the-tao-of-rust-programming-v2
