@@ -25,7 +25,7 @@
 
 # 2. 字体
 
-"SauceCodePro Nerd Font Mono"
+"SauceCodePro Nerd Font"
 
 # 3. 万能入口
 
