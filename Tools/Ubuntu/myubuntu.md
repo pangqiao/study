@@ -5,8 +5,9 @@
 
 - [分区方案](#分区方案)
 - [虚拟机](#虚拟机)
-- [网络代理](#网络代理)
 - [grub修改](#grub修改)
+- [网络代理](#网络代理)
+- [重要配置](#重要配置)
 
 <!-- /code_chunk_output -->
 
@@ -71,14 +72,6 @@ https://www.jianshu.com/p/fe4e3915495e
 
 数据盘 50G 起步
 
-
-
-
-
-# 网络代理
-
-https://blog.csdn.net/kan2016/article/details/90411137
-
 # grub修改
 
 修改 `/etc/default/grub`
@@ -97,3 +90,28 @@ GRUB_CMDLINE_LINUX=""
 ```
 update-grub
 ```
+
+
+
+# 网络代理
+
+https://blog.csdn.net/kan2016/article/details/90411137
+
+其实在终端配置代理就可行了, 即通过 export 能解决大多数
+
+
+
+# 重要配置
+
+* `~/.bashrc`
+* `~/.gitconfig`
+* `~/XXrc`, 自定义代理配置
+
+>export http_proxy=http://XXX.com:port
+>export https_proxy=$http_proxy
+>export ftp_proxy=
+>export socks_proxy='http://XXX.com:port'
+>export no_proxy='XXX.com,.XXX.com,localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12'
+
+* `~/.ssh/config`, 
+* `~/.tmux.conf` 和 `~/.tmux/*`

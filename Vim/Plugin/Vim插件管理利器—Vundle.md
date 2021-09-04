@@ -57,6 +57,7 @@ $ git clone https://github.com/VundleVim/Vundle.vim.git  ~/.vim/bundle/vundle
 可以在终端通过vim打开~/.vimrc文件
 
 添加的配置信息（样例） 
+
 注：以后安装新插件就直接编辑vimrc，添加plugin就行了，在这里我们添加的plugin只是例子，你可以不安装这些插件，换上自己需要安装的插件。
 
 ```
