@@ -15,6 +15,9 @@ Rust 实例: https://doc.rust-lang.org/stable/rust-by-example/
 
 张汉东 的 "Rust编程之道", github: https://github.com/ZhangHanDong
 
-《Rust编程之道》随书源码: https://github.com/ZhangHanDong/tao-of-rust-codes
 
-Rust 编程之道【新版/第二版】: https://github.com/ZhangHanDong/the-tao-of-rust-programming-v2
+rust语言有什么推荐的资料或者书籍或者项目吗? - 知乎
+https://www.zhihu.com/question/331533104
+
+
+

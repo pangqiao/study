@@ -115,3 +115,4 @@ https://blog.csdn.net/kan2016/article/details/90411137
 
 * `~/.ssh/config`, 
 * `~/.tmux.conf` 和 `~/.tmux/*`
+* `~/.cargo/config` 
