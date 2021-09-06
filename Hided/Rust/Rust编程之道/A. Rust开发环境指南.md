@@ -3,27 +3,36 @@
 
 <!-- code_chunk_output -->
 
-- [1. 在线 PlayGroud](#1-在线-playgroud)
-- [2. 本地安装 Rust](#2-本地安装-rust)
-  - [2.1. 安装](#21-安装)
-  - [2.2. 修改国内源](#22-修改国内源)
-- [3. Docker 中使用 Rust](#3-docker-中使用-rust)
-- [4. Rust IDE](#4-rust-ide)
-- [5. 开发依赖工具](#5-开发依赖工具)
-  - [5.1. Racer 代码补全](#51-racer-代码补全)
-  - [5.2. RLS](#52-rls)
-  - [5.3. cargo 插件](#53-cargo-插件)
-    - [5.3.1. clippy](#531-clippy)
-    - [5.3.2. rustfmt](#532-rustfmt)
-    - [5.3.3. cargo fix](#533-cargo-fix)
+- [1. 社区](#1-社区)
+- [2. 在线 PlayGroud](#2-在线-playgroud)
+- [3. 本地安装 Rust](#3-本地安装-rust)
+  - [3.1. 安装](#31-安装)
+  - [3.2. 环境变量](#32-环境变量)
+  - [3.3. 多版本](#33-多版本)
+  - [3.4. rust 升级](#34-rust-升级)
+  - [3.5. Rust 卸载](#35-rust-卸载)
+  - [3.6. 修改国内源](#36-修改国内源)
+- [4. Docker 中使用 Rust](#4-docker-中使用-rust)
+- [5. Rust IDE](#5-rust-ide)
+- [6. 开发依赖工具](#6-开发依赖工具)
+  - [6.1. Racer 代码补全](#61-racer-代码补全)
+  - [6.2. RLS](#62-rls)
+  - [6.3. cargo 插件](#63-cargo-插件)
+    - [6.3.1. clippy](#631-clippy)
+    - [6.3.2. rustfmt](#632-rustfmt)
+    - [6.3.3. cargo fix](#633-cargo-fix)
 
 <!-- /code_chunk_output -->
 
-# 1. 在线 PlayGroud
+# 1. 社区
 
-官方在线 PlayGroud: https://play.rust-lang.org .
+快速配置: https://www.rust-lang.org/learn/get-started
 
-# 2. 本地安装 Rust
+# 2. 在线 PlayGroud
+
+在线 Rust 不用安装: [PlayGroud](https://play.rust-lang.org)
+
+# 3. 本地安装 Rust
 
 Rust 工具集包含两个重要组件:
 
@@ -36,7 +45,7 @@ Rust 工具集有三类版本:
 * Beta, 测试版. 只包含 Nightly 中被标记为稳定的特性.
 * Stable, 稳定版.
 
-## 2.1. 安装
+## 3.1. 安装
 
 Rust 有一个安装工具: rustup. 类似于 Ruby 的 rbenv、Python 的 pyenv, Node 的 nvm.
 
@@ -52,11 +61,13 @@ curl https://sh.rustup.rs -sSf | sh
 curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
 ```
 
-> 会下载了 rustup-init.sh 然后执行
+> 会下载了 rustup-init.sh 然后 sh 执行
 
 此工具全平台通用.
 
-rustup 会在 Cargo 目录下安装 rustc、cargo、rustup, 以及其他标准工具. Unix平台默认安装在 `$HOME/.cargo/bin`
+## 3.2. 环境变量
+
+rustup 会在 `$HOME/.cargo/bin` 目录下安装 rustc、cargo、rustup, 以及其他标准工具. 通常将这个目录加入 PATH 环境变量中.
 
 检测:
 
@@ -64,7 +75,18 @@ rustup 会在 Cargo 目录下安装 rustc、cargo、rustup, 以及其他标准�
 rustc --version
 ```
 
-rustup 可以帮助管理本地的多个编译器版本, 通过 rustup default 指定一个默认的 rustc 版本.
+## 3.3. 多版本
+
+rustup 可以帮助管理本地的多个编译器版本.
+
+rustup default 查看默认的编译器版本
+
+```
+# rustup default
+stable-x86_64-unknown-linux-gnu (default)
+```
+
+通过 rustup default 指定一个默认的 rustc 版本.
 
 ```
 rustup default nightly
@@ -78,7 +100,21 @@ rustup default nightly-2018-05-12
 
 rustup 会自动下载相应的编译器版本来安装.
 
-## 2.2. 修改国内源
+## 3.4. rust 升级
+
+rust 社区更新很频繁. 不定期需要更新下.
+
+```
+rustup update
+```
+
+## 3.5. Rust 卸载
+
+```
+rustup self uninstall
+```
+
+## 3.6. 修改国内源
 
 Rustup 的服务器可以修改成 中国科学技术(USTC) 的 Rustup 镜像.
 
@@ -102,12 +138,16 @@ replace-with = 'tuna'
 registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
 ```
 
-# 3. Docker 中使用 Rust
+# 4. Docker 中使用 Rust
 
 在 Dockerfile 中添加
 
-```
-
+```dockerfile
+FROM phusion/baseimage
+ENV RUSTUP_HOME=/rust
+ENV CARGO_HOME=/cargo
+ENV PATH=/cargo/bin:/rust/bin:$PATH
+RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
 ```
 
 如果你不想使用Nightly版本，可以将nightly换成stable。
@@ -118,25 +158,25 @@ registry = "https://mirrors.tuna.tsinghua.edu.cn/git/crates.io-index.git"
 RUN rustup default nightly-2018-05-12
 ```
 
-# 4. Rust IDE
+# 5. Rust IDE
 
 比如 Visual Studio Code、IntelliJ IDEA等。
 
-# 5. 开发依赖工具
+# 6. 开发依赖工具
 
-## 5.1. Racer 代码补全
+## 6.1. Racer 代码补全
 
 
 
-## 5.2. RLS
+## 6.2. RLS
 
 RLS 是Rust Language Server的简写，微软提出编程语言服务器的概念，将 IDE 的一些编程语言相关的部分由单独的服务器来实现，比如代码补全、跳转定义、查看文档等。这样，不同的IDE或编辑器只需要实现客户端接口即可。
 
 
 
-## 5.3. cargo 插件
+## 6.3. cargo 插件
 
-### 5.3.1. clippy
+### 6.3.1. clippy
 
 分析源码, 检查代码中的 Code Smell.
 
@@ -144,7 +184,7 @@ RLS 是Rust Language Server的简写，微软提出编程语言服务器的概�
 rustup component add clippy
 ```
 
-### 5.3.2. rustfmt
+### 6.3.2. rustfmt
 
 统一代码风格
 
@@ -152,6 +192,6 @@ rustup component add clippy
 rustup component add rustfmt
 ```
 
-### 5.3.3. cargo fix
+### 6.3.3. cargo fix
 
 cargo 自带子命令 cargo fix, 帮助开发者自动修复编译器中有警告的代码

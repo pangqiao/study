@@ -1,6 +1,16 @@
 
-如何开始学习 Rust 语言? - 蒋古申的回答 - 知乎
-https://www.zhihu.com/question/31038569/answer/915365379
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. method 1](#1-method-1)
+- [2. method 2](#2-method-2)
+- [3. materials](#3-materials)
+- [4. Reference](#4-reference)
+
+<!-- /code_chunk_output -->
+
+# 1. method 1
 
 第一步：
 
@@ -28,10 +38,42 @@ https://www.zhihu.com/question/31038569/answer/915365379
 
 之后主要通过项目练手，阅读开源代码，逐步提高，推荐辅助阅读张汉东的《Rust 编程之道》。
 
+# 2. method 2
 
+有本书（系列文章）叫 [Learning Rust With Entirely Too Many Linked Lists](https://rust-unofficial.github.io/too-many-lists/) 非常推荐。写的很有趣也很实用。
 
-有一定 C 基础, 直接 Rust by Example 速成
+个人感觉官网的书 ([The book](https://github.com/rust-lang/book), 中文翻译: [The book](https://github.com/KaiserY/rust-book-chinese)) + 这本“一坨链表”上手就很充分了。多留意Rust标准库中处理并发和同步的一些使用和具体实现会很有帮助。
 
-但是有些关键的概念, 如 ownership, borrowing, lifetimes 这三节请看一手资料, 别看博客:
+关注Rust几个重要的特性, 如 ownership, borrowing, lifetimes 等, 这三节请看官方一手资料, 别看博客:
 [Ownership](https://doc.rust-lang.org/book/ownership.html)
 
+# 3. materials
+
+官方快速配置 Rust 开发环境并编写一个小应用！: [Getting started](https://www.rust-lang.org/learn/get-started)
+
+Cargo 书籍: [The Cargo Book](https://doc.rust-lang.org/cargo/index.html)
+
+在线执行 Rust: [Playground](https://play.rust-lang.org/)
+
+Rust 语言 Cheat Sheet(各种很全的资料): https://cheats.rs/
+
+官方入门书籍: [The book](https://doc.rust-lang.org/book/), [中文版](https://kaisery.github.io/trpl-zh-cn/)
+
+[Rust编程之道](https://book.douban.com/subject/30418895/), 作者 https://github.com/ZhangHanDong
+
+通过多个链表例子教会你 Rust 基本和高级编程: https://rust-unofficial.github.io/too-many-lists/
+
+通过一系列代码示例，用于说明各种 Rust 概念和标准库: [Rust by Example](https://doc.rust-lang.org/stable/rust-by-example/)
+
+Rust 代码和资料的精选列表: [Awesome Rust](https://github.com/rust-unofficial/awesome-rust) , 汇集了Github上几乎全部的优秀Rust开源项目。举例几个有名的项目：Mozilla的Servo浏览器引擎，AWS的Firecracker MicroVM，Web框架actix-web，当然还有最近Facebook发布的Libra。
+
+有些关键的概念, 如 ownership, borrowing, lifetimes 这三节请看官方一手资料, 别看博客:
+[Ownership](https://doc.rust-lang.org/book/ownership.html)
+
+# 4. Reference
+
+如何开始学习 Rust 语言? - 蒋古申的回答 - 知乎
+https://www.zhihu.com/question/31038569/answer/915365379
+
+rust语言有什么推荐的资料或者书籍或者项目吗? - 知乎
+https://www.zhihu.com/question/331533104
