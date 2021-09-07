@@ -14,7 +14,7 @@ CPU架构就是指令集架构，是给写汇编软件（编译器）的同事�
 - 《ARM 与 x86》，作者王齐。
 - 《现代体系结构上的 UNIX 系统：内核程序员的对称多处理和缓存技术》，作者Curt Schimmel。
 - 手机CPU、桌面CPU、笔记本CPU、桌面显卡、笔记本显卡等性能以及架构等详细参数: http://www.mydrivers.com/zhuanti/
-- 王齐先生的博客: http://blog.sina.com.cn/sailingxr
+- 王齐先生的博客: http://blog.sina.com.cn/sailingxr , https://www.weibo.com/u/1685243084
 
 自研芯片有多难:
 
