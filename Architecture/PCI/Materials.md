@@ -1,10 +1,8 @@
-《PCI Experss体系结构导读》作者博客：http://blog.sina.com.cn/s/articlelist_1685243084_3_1.html
-
-PCIe资料汇总：http://blog.csdn.net/abcamus/article/details/72812507
-
-https://blog.csdn.net/mao0514/article/category/1518607
 
 
+# 书籍
+
+《PCI Experss体系结构导读》(2010年):
 
 PCI Express系统体系结构标准教材: https://book.douban.com/subject/1446120/
 
@@ -13,3 +11,31 @@ PCI Express系统体系结构标准教材: https://book.douban.com/subject/14461
 PCI Express Technology(2012年, 好像更好): Mike Jackson, Ravi Budruk
 
 PCI Express System Architecture(2008年): Ravi Budruk, Don Anderson, Tom Shanley
+
+# Blog
+
+PCIe资料汇总：http://blog.csdn.net/abcamus/article/details/72812507
+
+https://blog.csdn.net/mao0514/article/category/1518607
+
+
+Linux下的PCI总线驱动: http://blog.chinaunix.net/uid-24148050-id-101021.html
+
+
+PCI学习笔记: http://blog.csdn.net/weiqing1981127/article/details/8031541
+
+Linux PCI网卡驱动的详细分析
+
+http://soft.chinabyte.com/os/13/12304513.shtml
+
+Linux kernel中网络设备的管理
+
+http://www.linuxidc.com/Linux/2013-08/88472.htm
+
+PCI驱动初始化流程–基于POWERPC85xx架构的Linux内核PCI初始化
+
+http://blog.csdn.net/luwei860123/article/details/38816473
+
+PowerPC的PCI总线的dts配置【转】
+
+http://blog.163.com/liuqiang_mail@126/blog/static/10996887520126192504668/

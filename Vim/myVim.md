@@ -94,3 +94,5 @@ python3 install.py --clang-completer --system-libclang --rust-completer
 # 5. rust 支持
 
 https://blog.stdio.io/1103#method4
+
+https://github.com/rust-lang/rust.vim
