@@ -21,3 +21,7 @@
 - UEFI和UEFI论坛：https://zhuanlan.zhihu.com/p/25676417
 - UEFI+BIOS探秘：https://zhuanlan.zhihu.com/UEFIBlog
 - 全局唯一标识分区表(GPT)维基百科：https://zh.wikipedia.org/wiki/GUID%E7%A3%81%E7%A2%9F%E5%88%86%E5%89%B2%E8%A1%A8
+
+
+
+《UEFI编程实践》作者: 罗冰

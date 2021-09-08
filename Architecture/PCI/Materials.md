@@ -2,15 +2,25 @@
 
 # 书籍
 
+深入浅出SSD: https://book.douban.com/subject/30240853/
+
 《PCI Experss体系结构导读》(2010年):
 
 PCI Express系统体系结构标准教材: https://book.douban.com/subject/1446120/
 
-深入浅出SSD: https://book.douban.com/subject/30240853/
-
 PCI Express Technology(2012年, 好像更好): Mike Jackson, Ravi Budruk
 
 PCI Express System Architecture(2008年): Ravi Budruk, Don Anderson, Tom Shanley
+
+summay:
+
+不要直接看 spec, spec 没有任何计算机体系结构相关内容(看《PCI Experss体系结构导读》前言)
+
+先看 《深入浅出SSD》, 这个更通俗简单
+
+再看 《PCI Experss体系结构导读》
+
+再 《PCI Express Technology》
 
 # Blog
 
