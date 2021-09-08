@@ -108,23 +108,21 @@ $ find . -print0 | cpio --null -ov --format=newc | gzip -9 > ../initramfs.cpio.g
 
 qemu 是一款虚拟机，可以模拟x86 & arm 等等硬件平台<似乎可模拟的硬件平台很多...>，而qemu 也内嵌了一个 gdbserver。
 
-这个gdbserver于是就可以和gdb构成一个远程合作伙伴，通过ip:port 网络方式或者是通过串口/dev/ttyS\*来进行工作，一个在这头，一个在那头。
+这个gdbserver于是就可以和gdb构成一个远程合作伙伴，通过ip:port 网络方式或者是通过串口`/dev/ttyS*`来进行工作，一个在这头，一个在那头。
 
 启动内核：
 
-```
-$ cd busybox-1.28.0
-$ qemu-system-x86_64 -s -S -m 512 -kernel arch/x86/boot/bzImage -initrd initramfs.cpio.gz -nographic -append "console=ttyS0, loglevel=8"
-```
+> cd busybox-1.28.0
+> qemu-system-x86_64 -s -S -m 512 -kernel arch/x86/boot/bzImage -initrd initramfs.cpio.gz -nographic -append "console=ttyS0, loglevel=8"
 
-- \-s是-gdb tcp::1234缩写，监听1234端口，在GDB中可以通过target remote localhost:1234连接；
-- \-S表示 QEMU 虚拟机会冻结 CPU 直到远程的 GDB 输入相应控制命令，所以运行后看不到任何输出；
-- \-kernel指定编译好的调试版内核；
-- \-initrd指定制作的initramfs，这个文件可以从 /boot/initrd.img\-3.13.0\-43\-generic  拷贝而来，关于它是什么东西呢？ 可以参考这个： http://www.linuxfly.org/post/94/ ，或者是这个 http://blog.csdn.net/chrisniu1984/article/details/3907874;
-- \-nographic取消图形输出窗口，使QEMU成简单的命令行程序；
-- \-append "console=ttyS0"将输出重定向到console，将会显示在标准输出stdio。\-append 后面跟的是**虚拟机的cmdline**
+- `-s`: `-gdb tcp::1234` 的缩写，监听1234端口，在GDB中可以通过`target remote localhost:1234`连接；
+- `-S`: 表示 QEMU 虚拟机会冻结 CPU 直到远程的 GDB 输入相应控制命令，所以运行后看不到任何输出；
+- `-kernel`: 指定编译好的调试版内核；
+- `-initrd`: 指定制作的initramfs，这个文件可以从 /boot/initrd.img\-3.13.0\-43\-generic  拷贝而来，关于它是什么东西呢？ 可以参考这个： http://www.linuxfly.org/post/94/ ，或者是这个 http://blog.csdn.net/chrisniu1984/article/details/3907874;
+- `-nographic`: 取消图形输出窗口，使QEMU成简单的命令行程序；
+- `-append "console=ttyS0"`: 将输出重定向到console，将会显示在标准输出stdio。\-append 后面跟的是**虚拟机的cmdline**
 
-**内核安装**的vmlinuz-2.6.32-504.el6.x86_64是bzImage格式（需要使用arch/x86/boot/bzImage文件），而内核编译完，内核源码\{KERNEL}根目录下的vmlinux是ELF格式。
+**内核安装**的vmlinuz-2.6.32-504.el6.x86_64是bzImage格式（需要使用arch/x86/boot/bzImage文件），而内核编译完，内核源码根目录下的vmlinux是ELF格式。
 
 **启动后的根目录**, 就是**initramfs**中包含的内容：
 
