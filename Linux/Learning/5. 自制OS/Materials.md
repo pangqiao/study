@@ -18,6 +18,8 @@ AndrewS.Tanenbaum和AlbertS.Woodhull的《操作系统：设计与实现》
 
 于渊github: https://github.com/yyu
 
+BiscuitOS: https://biscuitos.github.io/blog/BiscuitOS_Catalogue/
+
 ## 2. Project
 
 ### 2.1. hurlex
