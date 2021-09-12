@@ -26,7 +26,7 @@ xfs_repair: https://cloud.tencent.com/developer/article/1579810
 xfs文件系统使用总结: http://zhangbin.junxilinux.com/?p=103
 
 
-
+《Linux内核探秘：深入解析文件系统和设备驱动的架构与设计》
 
 
 linux 3.10 一个扇区异常可能引发的hung: https://www.javazxz.com/thread-9827-1-1.html

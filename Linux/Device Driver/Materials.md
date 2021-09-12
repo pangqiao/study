@@ -12,3 +12,5 @@ https://biscuitos.github.io/blog/BiscuitOS_Catalogue/
 
 《Linux设备驱动开发详解：基于最新的Linux4.0内核》, 宋宝华
 
+《Linux内核探秘：深入解析文件系统和设备驱动的架构与设计》
+

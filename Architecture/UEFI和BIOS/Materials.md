@@ -25,3 +25,7 @@
 
 
 《UEFI编程实践》作者: 罗冰
+
+《UEFI原理与编程》
+
+ACPI与UEFI: https://zhuanlan.zhihu.com/p/25893464
