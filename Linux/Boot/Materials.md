@@ -7,3 +7,5 @@
 
 
 arm32启动过程的介绍文章https://people.kernel.org/linusw/
+
+初步了解计算机与操作系统启动原理: https://www.jianshu.com/p/26e184605952

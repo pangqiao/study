@@ -1,4 +1,5 @@
 可信任启动——Tboot
+
 1.TXT和Tboot简介
 
 现在越来越多的公司开始使用虚拟化技术来提高物理资源的利用率和系统可管理性，客户机都运行在Hypervisor之上，所以通常会把Hypervisor作为安全可信的基础，这就要求Hypervisor本身是可信任的。Hhypervisor的可信启动是一个可信Hypervisor的基础，也是整个虚拟化环境的安全可信的基础。由于Hypervisor是和系统物理硬件接触最紧密的软件层，它直接依赖于系统的固件（如BIOS）和硬件（如CPU、内存），所以可以利用一些硬件技术来保证hypervisor的可信启动。

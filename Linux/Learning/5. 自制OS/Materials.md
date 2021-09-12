@@ -20,6 +20,8 @@ AndrewS.Tanenbaum和AlbertS.Woodhull的《操作系统：设计与实现》
 
 BiscuitOS: https://biscuitos.github.io/blog/BiscuitOS_Catalogue/
 
+《一个64位操作系统的设计与实现 》
+
 ## 2. Project
 
 ### 2.1. hurlex
