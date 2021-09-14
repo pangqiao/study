@@ -3,25 +3,25 @@
 
 <!-- code_chunk_output -->
 
-* [1 传统BIOS](#1-传统bios)
-* [2 UEFI](#2-uefi)
-* [3 UEFI的DXE与磁盘上的文件](#3-uefi的dxe与磁盘上的文件)
-* [4 EFI系统分区](#4-efi系统分区)
-* [5 Windows 8/8.1/10在UEFI和BIOS下，各种启动文件的顺序](#5-windows-88110在uefi和bios下各种启动文件的顺序)
-	* [5.1 BIOS下](#51-bios下)
-	* [5.2 UEFI下](#52-uefi下)
-* [6 问题](#6-问题)
-	* [6.1 以前我一直装Ghost版的Windows，UEFI之后真的没法Ghost了么？](#61-以前我一直装ghost版的windowsuefi之后真的没法ghost了么)
-	* [6.2 Windows无法定位现有分区，也无法。。。。。](#62-windows无法定位现有分区也无法)
-	* [6.3 不需要第三方工具就能做UEFI下的Windows安装盘？](#63-不需要第三方工具就能做uefi下的windows安装盘)
-	* [6.4 我电脑是UEFI的，想装Linux，但我手头没优盘，听说也能搞定？](#64-我电脑是uefi的想装linux但我手头没优盘听说也能搞定)
-	* [6.5 装个Linux，但我希望默认还是Windows；重装Windows，可是我开机不再默认Grub，怎么回Linux？](#65-装个linux但我希望默认还是windows重装windows可是我开机不再默认grub怎么回linux)
-	* [6.6 重装Windows，提示我什么MBR、GPT，不让装？](#66-重装windows提示我什么mbr-gpt不让装)
-* [7 参考](#7-参考)
+- [1. 传统BIOS](#1-传统bios)
+- [2. UEFI](#2-uefi)
+- [3. UEFI的DXE](#3-uefi的dxe)
+- [4. EFI系统分区](#4-efi系统分区)
+- [5. Windows 的启动顺序](#5-windows-的启动顺序)
+  - [5.1. BIOS](#51-bios)
+  - [5.2. UEFI](#52-uefi)
+- [6. Q&A](#6-qa)
+  - [6.1. Ghost](#61-ghost)
+  - [6.2. 无法定位分区](#62-无法定位分区)
+  - [6.3. 无工具制作安装盘](#63-无工具制作安装盘)
+  - [6.4. 无U盘安装](#64-无u盘安装)
+  - [6.5. 默认grub](#65-默认grub)
+  - [6.6. 安装在 MBR](#66-安装在-mbr)
+- [7. 参考](#7-参考)
 
 <!-- /code_chunk_output -->
 
-# 1 传统BIOS
+# 1. 传统BIOS
 
 一句话概括：**BIOS只认识设备，不认识分区、不认识文件**。
 
@@ -44,7 +44,7 @@ BIOS启动的时候，按照CMOS设置里的顺序，挨个存储设备看：（
 
 其实**BIOS并不认识分区表（不关心，BIOS开始执行512字节代码就不管了）**。哪怕磁盘上没有分区表，没分过区，只要前512字节有0x55 0xAA的结尾，有合适的引导代码，也是能启动的。
 
-# 2 UEFI
+# 2. UEFI
 
 （此处只讨论民用64位架构下的UEFI。）
 
@@ -54,21 +54,23 @@ UEFI启动的时候，经过一系列初始化（SEC、CAR、DXE什么的，SEC�
 
 - **文件启动项**，大约记录的是**某个磁盘的某个分区的某个路径下的某个文件**。对于文件启动项，固件会直接加载这个**EFI文件**，并执行。类似于DOS下你敲了个win.com就执行了Windows 3.2/95/98的启动。文件不存在则失败。
 
-- **设备启动项**，大约记录的就是“某个U盘”、“某个硬盘”。（此处只讨论U盘、硬盘）对于设备启动项，UEFI标准规定了默认的路径“\EFI\Boot\bootX64.efi”。UEFI会加载**磁盘**上的**这个文件（\EFI\Boot\bootX64.efi）**。文件不存在则失败。
+- **设备启动项**，大约记录的就是“某个U盘”、“某个硬盘”。（此处只讨论U盘、硬盘）对于设备启动项，UEFI标准规定了默认的路径“`\EFI\Boot\bootX64.efi`”。UEFI会加载**磁盘**上的**这个文件（\EFI\Boot\bootX64.efi）**。文件不存在则失败。
 
-至于这个EFI文件会干嘛，主板是不管的。
+至于**这个EFI文件会干嘛**，**主板是不管**的。
 
-但是随着Windows8.x，以及UEFI标准2.x，推出了一个叫做SecureBoot的功能。开了SecureBoot之后，主板会验证即将加载的efi文件的签名，如果开发者不是受信任的开发者，就会拒绝加载。
+但是随着Windows8.x，以及UEFI标准2.x，推出了一个叫做**SecureBoot**的功能。开了SecureBoot之后，**主板会验证即将加载的efi文件的签名**，如果开发者不是受信任的开发者，就会拒绝加载。
 
 比如CloverX64.efi就好像没有签名。
 
-# 3 UEFI的DXE与磁盘上的文件
+# 3. UEFI的DXE
 
-一个磁盘**分区**，要**格式化**之后，才能往里存**文件**，格式化的时候，又能选择不同的**文件系统**。比如Win10可以选FAT32、NTFS、exFAT、ReFS几种，Linux可以选ext2、ext3、ext4、FAT32等，macOS可以选FAT32、HFS+、APFS、exFAT几种。
+一个磁盘**分区**，要**格式化**之后，才能往里存**文件**，格式化的时候，又能选择不同的**文件系统**。比如
+
+* Win10可以选FAT32、NTFS、exFAT、ReFS几种
+* Linux可以选ext2、ext3、ext4、FAT32等
+* macOS可以选FAT32、HFS+、APFS、exFAT几种。
 
 其实**每个操作系统**，都先有**文件系统驱动**，然后才能读取某种**文件系统**。
-
-比如Windows带了上述四种文件系统等驱动，Linux带了FAT32、ext等文件系统等驱动，macOS带了上述四种驱动以及NTFS等只读驱动。
 
 **设备**也是一样的，先有**设备驱动**，然后才能**读取设备**。
 
@@ -80,13 +82,13 @@ UEFI作为一个模糊了**固件**和**操作系统界限**的东西，作为�
 
 UEFI启动后，**进入了DXE阶段，就开始加载设备驱动（这里是设备驱动），然后UEFI就会有设备列表**了。
 
-对于其中的磁盘，**UEFI会加载对应的驱动解析其中的分区表（GPT和MBR）**。然后UEFI就会有**所有分区的列表**了。然后UEFI就会用**内置的文件系统驱动（这里是文件系统驱动）**，解析每个**分区**。然后UEFI就会**认识分区里的文件**了。比如“\EFI\Boot\bootX64.efi”。
+对于其中的磁盘，**UEFI会加载对应的驱动解析其中的分区表（GPT和MBR）**。然后UEFI就会有**所有分区的列表**了。然后UEFI就会用**内置的文件系统驱动（这里是文件系统驱动）**，解析每个**分区**。然后UEFI就会**认识分区里的文件**了。比如“`\EFI\Boot\bootX64.efi`”。
 
 作为UEFI标准里，钦定的文件系统，**FAT32.efi是每个主板都会带的**。**所有UEFI的主板都认识FAT32分区**。这就是UEFI的Windows安装盘为啥非得是FAT32的。除此之外，苹果的主板还会支持hfs分区。如果某天Linus Torvalds推出了主板，我猜这主板一定会带EXT4.efi，哈哈哈哈哈。
 
 如同Windows可以安装驱动一样，**UEFI也能在后期加载驱动**。比如CloverX64.efi启动之后，会加载\EFI\Clover\drivers64UEFI下的所有驱动。包括VboxHFS.efi等各种efi。网上你也能搜到NTFS.efi。再比如，**UEFIShell下，你可以手动执行命令加载驱动**。
 
-# 4 EFI系统分区
+# 4. EFI系统分区
 
 UEFI规范里，在**GPT分区表**的基础上，规定了一个**EFI系统分区（EFI System Partition，ESP），ESP要格式化成FAT32（这个分区是要格式化为某个文件系统的），EFI启动文件要放在“\EFI\<厂商>”文件夹下面**。
 
@@ -101,11 +103,11 @@ Macbook上的ESP分区里的“\EFI\Apple”文件夹：
 
 **UEFI下，启动盘是ESP分区，跟Windows不是同一个分区。**
 
-根据UEFI标准里说的，你可以把U盘里的“\EFI\Clover”文件夹，拷贝到**硬盘里的ESP对应的路径**下。然后把“\EFI\Clover\CloverX64.efi”添加为**UEFI的文件启动项**就行了。
+根据UEFI标准里说的，你可以把U盘里的“`\EFI\Clover`”文件夹，拷贝到**硬盘里的ESP对应的路径**下。然后把“`\EFI\Clover\CloverX64.efi`”添加为**UEFI的文件启动项**就行了。
 
 Windows的BCD命令，其实也可以添加UEFI启动项，然而我没搞懂怎么弄。我更喜欢用EasyUEFI来搞这些操作。但是免费版的EasyUEFI不支持企业版Windows哦～某些Win10用户要被拒之门外了。
 
-这一节的最后，再说说“\EFI\Boot”这个文件夹。这个文件夹，放谁家的程序都行。无论是“\EFI\Microsoft\Boot\Bootmgfw.efi”，还是“\EFI\Clover\CloverX64.efi”，只要**放到“\EFI\Boot”下并且改名“bootX64.efi”（设备启动项）**，就能在**没添加文件启动项**的情况下，**默认加载对应的系统**。
+这一节的最后，再说说“`\EFI\Boot`”这个文件夹。这个文件夹，放谁家的程序都行。无论是“`\EFI\Microsoft\Boot\Bootmgfw.efi`”，还是“`\EFI\Clover\CloverX64.efi`”，只要**放到“\EFI\Boot”下并且改名“bootX64.efi”（设备启动项）**，就能在**没添加文件启动项**的情况下，**默认加载对应的系统**。
 
 举个例子：**一个U盘，你想做成Windows安装盘+Hackintosh安装盘**，该怎么做？
 
@@ -117,15 +119,19 @@ Windows的BCD命令，其实也可以添加UEFI启动项，然而我没搞懂怎
 
 嗯，这一节就写到这吧。
 
-# 5 Windows 8/8.1/10在UEFI和BIOS下，各种启动文件的顺序
+# 5. Windows 的启动顺序
 
-## 5.1 BIOS下
+Windows 8/8.1/10在UEFI和BIOS下，各种启动文件的顺序
+
+## 5.1. BIOS
+
+BIOS 启动:
 
 MBR->PBR->bootmgr->WinLoad.exe
 
 ![config](images/13.jpg)
 
-按照前文说的，**BIOS加载某个磁盘MBR的启动代码**，这里特指Windows的引导代码，这段代码会查找活动分区（**BIOS不认识活动分区，但这段代码认识活动分区，0x80**）的位置，加载并执行活动分区的PBR（另一段引导程序）。
+按照前文说的，**BIOS加载某个磁盘MBR的启动代码**，这里特指Windows的引导代码，这段代码会查找活动分区（**BIOS不认识活动分区，而是这段代码认识活动分区，0x80**）的位置，加载并执行活动分区的PBR（另一段引导程序）。
 
 Windows的PBR认识FAT32和NTFS两种分区，找到分区根目录的bootmgr文件，加载、执行bootmgr。
 
@@ -137,7 +143,9 @@ bootmgr没了MBR和PBR的大小限制，可以做更多的事。它会加载并�
 
 这就解释了，为什么，有的时候，Windows装在磁盘2上，却要在BIOS里选磁盘0启动了。因为bootmgr可能在磁盘0上。
 
-## 5.2 UEFI下
+## 5.2. UEFI
+
+UEFI 启动:
 
 UEFI固件->bootmgfw.efi->WinLoad.efi
 
@@ -153,9 +161,11 @@ UEFI查找**硬盘分区**中第一个**FAT分区**内的引导文件进行系�
 
 其中的虚线，跟上面的一样，意思是，**Windows启动盘和EFI启动盘，可以是一个硬盘，也可以是不同的硬盘**。所以**对于UEFI来说，启动盘是bootmgfw.efi所在的那个盘**。
 
-# 6 问题
+# 6. Q&A
 
-## 6.1 以前我一直装Ghost版的Windows，UEFI之后真的没法Ghost了么？
+## 6.1. Ghost
+
+> 以前我一直装Ghost版的Windows，UEFI之后真的没法Ghost了么？
 
 先说一句，真不推荐用网上的Ghost版Windows安装盘来装系统了。微软公开放出了官方的原版Win10下载链接，而且还有启动盘制作程序。链接在这：[下载 Windows 10](https://link.zhihu.com/?target=https%3A//www.microsoft.com/zh-cn/software-download/windows10)。写这个的原因，是因为，有时候，自己做的Ghost备份，还是挺好用的。
 
@@ -167,13 +177,17 @@ UEFI查找**硬盘分区**中第一个**FAT分区**内的引导文件进行系�
 
 总结一下，Ghost还原Windows分区之后，调用BCDBoot配置启动项即可。
 
-## 6.2 Windows无法定位现有分区，也无法。。。。。
+## 6.2. 无法定位分区
+
+> Windows无法定位现有分区，也无法
 
 这种报错信息，如果是**在UEFI模式下，一般是因为，你有多块硬盘，而且超过一块硬盘上，有ESP分区**。只要把不想用的ESP分区删掉，或者拔掉对应的硬盘，保证装Windows的时候，只有一个硬盘上有ESP分区，即可。
 
 如果实在做不到，考虑用DISM.exe安装Windows吧。Win7的DISM.exe真的太弱了。尽量用Win10安装盘或者Win10PE里的DISM.exe。
 
-## 6.3 不需要第三方工具就能做UEFI下的Windows安装盘？
+## 6.3. 无工具制作安装盘
+
+> 不需要第三方工具就能做UEFI下的Windows安装盘？
 
 确实啊，根据上文说的，**U盘，格式化成FAT32**，然后把Windows安装盘的ISO里面的东西拷贝到U盘就行了。（适用于Win8/8.1/10以及WinServer2012/2012R2/2016。WinVista x64/Win7x64以及WinServer2008x64/2008R2需要额外操作，WinVista x86/Win7x86/WinServer2008x86不支持UEFI）
 
@@ -181,24 +195,32 @@ UEFI查找**硬盘分区**中第一个**FAT分区**内的引导文件进行系�
 
 ![config](images/15.jpg)
 
-## 6.4 我电脑是UEFI的，想装Linux，但我手头没优盘，听说也能搞定？
+## 6.4. 无U盘安装
 
-对啊对啊，搞个FAT32的分区，把Linux安装盘的iso镜像里面的文件拷贝进去，然后在Windows下，用工具给那个分区的BOOTx64.efi，添加为UEFI文件启动项，开机时候选那个启动项，就能启动到Linux安装盘了。下面示意图是Ubuntu的。记得查看一下你的Linux支不支持SecureBoot哦！如果你要装的Linux不支持SecureBoot，记得**关掉主板的SecureBoot设置**哦。
+> 我电脑是UEFI的，想装Linux，但我手头没优盘，听说也能搞定？
+
+对，搞个FAT32的分区，把Linux安装盘的iso镜像里面的文件拷贝进去，然后在Windows下，用工具给那个分区的BOOTx64.efi，添加为UEFI文件启动项，开机时候选那个启动项，就能启动到Linux安装盘了。下面示意图是Ubuntu的。记得查看一下你的Linux支不支持SecureBoot哦！如果你要装的Linux不支持SecureBoot，记得**关掉主板的SecureBoot设置**哦。
 
 Ubuntu安装盘ISO镜像内的UEFI启动文件：
 
 ![config](images/16.jpg)
 
-## 6.5 装个Linux，但我希望默认还是Windows；重装Windows，可是我开机不再默认Grub，怎么回Linux？
+## 6.5. 默认grub
+
+> 装个Linux，但我希望默认还是Windows；重装Windows，可是我开机不再默认Grub，怎么回Linux？
 
 如果是UEFI模式，那就跟之前一样，改启动项顺序就行了。
 
 如果是传统BIOS的，要么用bootsect.exe把MBR改成Windows的。要么用工具把MBR刷成Grub的。也可以考虑Linux下用dd命令备份MBR的前446字节，到时候再还原回去。
 
-## 6.6 重装Windows，提示我什么MBR、GPT，不让装？
+## 6.6. 安装在 MBR
 
-这个就是Windows安装程序的限制了。BIOS模式下的Windows只允许被装在MBR分区表下面。UEFI模式下的Windows只允许被装在GPT分区下。但事实上，MBR分区表，也能启动UEFI模式下的Windows。
+> 重装Windows，提示我什么MBR、GPT，不让装？
 
-# 7 参考
+这个就是Windows安装程序的限制了。BIOS模式下的Windows只允许被装在MBR分区表下面。UEFI模式下的Windows只允许被装在GPT分区下。
+
+但事实上，MBR分区表，也能启动UEFI模式下的Windows。
+
+# 7. 参考
 
 本文来自: https://zhuanlan.zhihu.com/p/31365115
