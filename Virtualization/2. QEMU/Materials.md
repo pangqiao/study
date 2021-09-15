@@ -30,7 +30,7 @@ Qemu内存管理代码分析: https://blog.csdn.net/shirleylinyuer/article/detai
 
 qemu 各个模块: https://richardweiyang.gitbooks.io/understanding_qemu/address_space/08-commit_mr.html
 
-qemu 2019: https://www.shangmayuan.com/a/b5d230757e6c49aa8868099d.html
+qemu 2019: https://www.shangmayuan.com/a/b5d230757e6c49aa8868099d.html , https://juejin.cn/post/6844903844455907335 , 
 
 重要: https://www.cnblogs.com/ck1020/category/905469.html
 
