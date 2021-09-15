@@ -36,5 +36,6 @@ qemu 2019: https://www.shangmayuan.com/a/b5d230757e6c49aa8868099d.html
 
 重要: https://luohao-brian.gitbooks.io/interrupt-virtualization/qemu-kvm-zhong-duan-xu-ni-hua-kuang-jia-fen-679028-4e0a29.html
 
+重要: https://richardweiyang-2.gitbook.io/understanding_qemu/
 
 qemu源码: 《QEMU/KVM源码解析与应用》, 李强, https://item.jd.com/12720957.html
