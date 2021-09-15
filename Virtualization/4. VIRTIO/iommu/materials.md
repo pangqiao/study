@@ -1,7 +1,11 @@
 
-SPEC: https://jpbrucker.net/virtio-iommu/spec/
+Virtio-IOMMU 驱动程序现在使用 Linux 5.14 内核的 x86/x86_64硬件工作。 是 Virtio - Iommu 驱动程序 （合并在 Linux 5.3）， 在几年前在树外工作后， 最初专注于 AArch64 的准虚拟 Iommu 硬件。现在，2021 年 Linux 5.14 的 VirtIO-IOMMU 代码也已调整为适用于 x86 英特尔/AMD 硬件。Virtio-IOMMU 可以处理模拟和准虚拟化设备的管理。ACPI 虚拟 I/O 翻译表 （VIOT） 用于描述准虚拟平台的拓扑，在此案例中，x86 用于描述 virtio-iommu 和端点之间的关系。 Linux 5.14 的 IOMMU 更改还包括 Arm SMMU 更新、英特尔 VT-d 现在支持异步嵌套功能以及各种其他改进。还有一个新的是"amd_iommu=force_enable"内核启动选项，用于在通常有问题的平台上强制 IOMMU。AMD 斯通尼是经常展示越野车 IOMMU 行为的平台之一。
 
 
+
+
+
+Virtio IOMMU 是一种半虚拟化设备，允许通过 virtio-mmio 发送 IOMMU 请求，如map/unmap。
 
 使用VirtIO标准实现不同虚拟化组件的跨管理程序兼容性，有一个虚拟IOMMU设备现在由Linux 5.3内核中的工作驱动程序支持。
 
@@ -11,7 +15,110 @@ VirtIO规范提供了v0.8规范中的虚拟IOMMU设备，该规范与平台无�
 
 Linux VirtIO-IOMMU驱动程序的修补程序自去年以来一直在浮动，而本周最后一个Linux 5.3内核合并窗口已经排队等待登陆。 这个VirtIO IOMMU驱动程序将作为下一个内核的VirtIO/Vhost修复/功能/性能工作的一部分。
 
-
 QEMU正在等待补丁来支持这个VirtIO IOMMU功能。
 
 
+
+
+virtio-iommu 最早是 2017 年提出来的
+
+[2017] vIOMMU/ARM: Full Emulation and virtio-iommu Approaches by Eric Auger: https://www.youtube.com/watch?v=7aZAsanbKwI , 
+
+https://events.static.linuxfound.org/sites/events/files/slides/viommu_arm_upload_1.pdf
+
+SPEC: https://jpbrucker.net/virtio-iommu/spec/
+
+
+
+virtio-iommu: a paravirtualized IOMMU
+
+
+Add virtio-iommu driver (2017 ~ 2019): 前几个版本在 kvm 中, 后面的在 pci 中
+* RFC: https://patchwork.kernel.org/project/kvm/patch/20170407192314.26720-1-jean-philippe.brucker@arm.com/
+* RFC v2: https://patchwork.kernel.org/project/kvm/patch/20171117185211.32593-2-jean-philippe.brucker@arm.com/
+* v1: https://www.spinics.net/lists/kvm/msg164322.html , https://patchwork.kernel.org/project/kvm/patch/20180214145340.1223-2-jean-philippe.brucker@arm.com/
+* v2: https://www.spinics.net/lists/kvm/msg170655.html , https://patchwork.kernel.org/project/kvm/patch/20180621190655.56391-3-jean-philippe.brucker@arm.com/
+* v3: https://patchwork.kernel.org/project/linux-pci/cover/20181012145917.6840-1-jean-philippe.brucker@arm.com/
+
+* v4: https://patchwork.kernel.org/project/linux-pci/cover/20181115165234.43990-1-jean-philippe.brucker@arm.com/
+
+* v5: https://patchwork.kernel.org/project/linux-pci/cover/20181122193801.50510-1-jean-philippe.brucker@arm.com/
+
+* v6: https://patchwork.kernel.org/project/linux-pci/cover/20181211182104.18241-1-jean-philippe.brucker@arm.com/
+* v7: https://patchwork.kernel.org/project/linux-pci/patch/20190115121959.23763-6-jean-philippe.brucker@arm.com/
+* v8: https://patchwork.kernel.org/project/linux-pci/patch/20190530170929.19366-6-jean-philippe.brucker@arm.com/
+* v9: 
+
+
+
+Add virtio-iommu device specification(virtio-spce, https://github.com/oasis-tcs/virtio-spec/blob/master/virtio-iommu.tex): https://lists.oasis-open.org/archives/virtio-comment/201901/msg00017.html
+
+
+
+
+
+virtio-iommu on non-devicetree platforms(2019 ~ 2020):
+* RFC: [virtio-iommu on non-devicetree platforms](https://patchwork.kernel.org/project/linux-pci/cover/20191122105000.800410-1-jean-philippe@linaro.org/)
+* v1: https://patchwork.kernel.org/project/linux-pci/cover/20200214160413.1475396-1-jean-philippe@linaro.org/
+* v2: https://patchwork.kernel.org/project/linux-pci/cover/20200228172537.377327-1-jean-philippe@linaro.org/
+* 
+
+
+
+Add support for ACPI VIOT(2021, linux-acpi), 给 acpi viot table 添加一个driver, 从而可以在non-devicetree 平台(比如x86)使用 virtio-iommu:
+* RFC: 
+* V1: https://patchwork.kernel.org/project/linux-acpi/cover/20210316191652.3401335-1-jean-philippe@linaro.org/
+* V2: https://patchwork.kernel.org/project/linux-acpi/cover/20210423113836.3974972-1-jean-philippe@linaro.org/
+* v3: https://patchwork.kernel.org/project/linux-acpi/cover/20210602154444.1077006-1-jean-philippe@linaro.org/
+* v4: https://patchwork.kernel.org/project/linux-acpi/cover/20210610075130.67517-1-jean-philippe@linaro.org/
+* v5: https://patchwork.kernel.org/project/linux-acpi/cover/20210618152059.1194210-1-jean-philippe@linaro.org/
+* v6: 
+
+robert.moore@intel.com
+
+
+
+qemu:
+
+
+
+virtio-iommu: VFIO integration
+
+> 2017 ~ 2020. 
+> This patch series allows PCI pass-through using virtio-iommu.
+
+* RFC: https://patchwork.kernel.org/project/qemu-devel/patch/1499927922-32303-3-git-send-email-Bharat.Bhushan@nxp.com/
+* RFC v2: https://patchwork.kernel.org/project/qemu-devel/patch/1500017104-3574-3-git-send-email-Bharat.Bhushan@nxp.com/
+* RFC v3: https://patchwork.kernel.org/project/qemu-devel/patch/1503312534-6642-3-git-send-email-Bharat.Bhushan@nxp.com/
+
+* v10: https://patchwork.kernel.org/project/qemu-devel/cover/20201008171558.410886-1-jean-philippe@linaro.org/
+* v11: https://patchwork.kernel.org/project/qemu-devel/cover/20201030180510.747225-1-jean-philippe@linaro.org/
+
+
+
+VIRTIO-IOMMU device
+
+> 2020, implements the QEMU virtio-iommu device.
+> 必须 virtio-iommu on non-devicetree platforms 的 kernel patchset 合入才生效
+
+* v15: https://patchwork.kernel.org/project/qemu-devel/cover/20200208120022.1920-1-eric.auger@redhat.com/
+* v16: https://patchwork.kernel.org/project/qemu-devel/cover/20200214132745.23392-1-eric.auger@redhat.com/
+
+
+
+virtio-iommu: Built-in topology and x86 support
+
+> 2020
+
+v1: https://patchwork.kernel.org/project/qemu-devel/cover/20200821162839.3182051-1-jean-philippe@linaro.org/
+
+
+
+
+virtio-iommu: Add ACPI support (还未合入)
+
+> 2021
+
+* v1: https://patchwork.kernel.org/project/qemu-devel/cover/20210810084505.2257983-1-jean-philippe@linaro.org/
+* v2: https://patchwork.kernel.org/project/qemu-devel/cover/20210903143208.2434284-1-jean-philippe@linaro.org/
+* v3: https://patchwork.kernel.org/project/qemu-devel/cover/20210914142004.2433568-1-jean-philippe@linaro.org/
