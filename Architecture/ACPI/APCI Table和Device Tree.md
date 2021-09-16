@@ -24,3 +24,4 @@ ACPI Table根据版本又分为1.0B，2.0，3.0，4.0。
 2） ACPI 3.0 ：RSDP3，RSDT，XSDT，FADT3，FACS3，DSDT，MADT，HPET，MCFG，SSDT等
 
 以系统支持ACPI3.0为例子，说明系统中ACPI table之间的关系如图：
+

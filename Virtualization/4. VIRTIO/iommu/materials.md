@@ -32,6 +32,9 @@ SPEC: https://jpbrucker.net/virtio-iommu/spec/
 
 KVM patchsets: https://patchwork.kernel.org/project/kvm/list/?submitter=Jean-Philippe%20Brucker&state=*&archive=both&param=2&page=3
 
+
+
+
 virtio-iommu: a paravirtualized IOMMU
 
 > 2017, This is the initial proposal for a paravirtualized IOMMU device using virtio transport. It contains a description of the device, a Linux driver,and a toy implementation in kvmtool. 
@@ -73,6 +76,8 @@ Scenario 1: a hardware device passed through twice via VFIO
                  HOST                   :             GUEST
 ```
 
+
+
 ```
 (1) a. Guest userspace is running a net driver (e.g. DPDK). It allocates a
        buffer with mmap, obtaining virtual address VA. It then send a
@@ -109,7 +114,9 @@ Add virtio-iommu driver
 
 
 
-Add virtio-iommu device specification(virtio-spce, https://github.com/oasis-tcs/virtio-spec/blob/master/virtio-iommu.tex): https://lists.oasis-open.org/archives/virtio-comment/201901/msg00017.html
+Add virtio-iommu device specification(virtio-spce, https://github.com/oasis-tcs/virtio-spec/blob/master/virtio-iommu.tex): 
+
+* https://lists.oasis-open.org/archives/virtio-comment/201901/msg00017.html
 
 
 
@@ -118,6 +125,8 @@ Add virtio-iommu device specification(virtio-spce, https://github.com/oasis-tcs/
 virtio-iommu on non-devicetree platforms
 
 > (2019 ~ 2020):
+> 
+> Hardware platforms usually describe the IOMMU topology using either device-tree pointers or vendor-specific ACPI tables.
 
 * RFC: [virtio-iommu on non-devicetree platforms](https://patchwork.kernel.org/project/linux-pci/cover/20191122105000.800410-1-jean-philippe@linaro.org/)
 * v1: https://patchwork.kernel.org/project/linux-pci/cover/20200214160413.1475396-1-jean-philippe@linaro.org/
@@ -137,11 +146,28 @@ Add support for ACPI VIOT
 * v5: https://patchwork.kernel.org/project/linux-acpi/cover/20210618152059.1194210-1-jean-philippe@linaro.org/
 * v6: 
 
+
+
 robert.moore@intel.com
 
 
 
 qemu:
+
+https://patchwork.kernel.org/project/qemu-devel/list/?state=*&q=virtio-iommu&archive=both&param=2&page=3
+
+
+VIRTIO-IOMMU device
+
+> 2017 ~ 2020, implements the QEMU virtio-iommu device.
+> 必须 virtio-iommu on non-devicetree platforms 的 kernel patchset 合入才生效
+
+* RFC v7: https://patchwork.kernel.org/project/qemu-devel/cover/1533586484-5737-1-git-send-email-eric.auger@redhat.com/
+* v10: https://patchwork.kernel.org/project/qemu-devel/cover/20190730172137.23114-1-eric.auger@redhat.com/
+* v15: https://patchwork.kernel.org/project/qemu-devel/cover/20200208120022.1920-1-eric.auger@redhat.com/
+* v16: https://patchwork.kernel.org/project/qemu-devel/cover/20200214132745.23392-1-eric.auger@redhat.com/
+
+
 
 
 
@@ -153,19 +179,10 @@ virtio-iommu: VFIO integration
 * RFC: https://patchwork.kernel.org/project/qemu-devel/patch/1499927922-32303-3-git-send-email-Bharat.Bhushan@nxp.com/
 * RFC v2: https://patchwork.kernel.org/project/qemu-devel/patch/1500017104-3574-3-git-send-email-Bharat.Bhushan@nxp.com/
 * RFC v3: https://patchwork.kernel.org/project/qemu-devel/patch/1503312534-6642-3-git-send-email-Bharat.Bhushan@nxp.com/
-
+* RFC v5: https://patchew.org/QEMU/20181127064101.25887-1-Bharat.Bhushan@nxp.com/
+* 
 * v10: https://patchwork.kernel.org/project/qemu-devel/cover/20201008171558.410886-1-jean-philippe@linaro.org/
 * v11: https://patchwork.kernel.org/project/qemu-devel/cover/20201030180510.747225-1-jean-philippe@linaro.org/
-
-
-
-VIRTIO-IOMMU device
-
-> 2020, implements the QEMU virtio-iommu device.
-> 必须 virtio-iommu on non-devicetree platforms 的 kernel patchset 合入才生效
-
-* v15: https://patchwork.kernel.org/project/qemu-devel/cover/20200208120022.1920-1-eric.auger@redhat.com/
-* v16: https://patchwork.kernel.org/project/qemu-devel/cover/20200214132745.23392-1-eric.auger@redhat.com/
 
 
 
@@ -185,3 +202,11 @@ virtio-iommu: Add ACPI support (还未合入)
 * v1: https://patchwork.kernel.org/project/qemu-devel/cover/20210810084505.2257983-1-jean-philippe@linaro.org/
 * v2: https://patchwork.kernel.org/project/qemu-devel/cover/20210903143208.2434284-1-jean-philippe@linaro.org/
 * v3: https://patchwork.kernel.org/project/qemu-devel/cover/20210914142004.2433568-1-jean-philippe@linaro.org/
+
+
+
+
+dump viot
+
+use viot details
+

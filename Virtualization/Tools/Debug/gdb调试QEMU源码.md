@@ -2,6 +2,10 @@ https://www.cnblogs.com/woshiweige/p/4518431.html
 
 ![config](images/3.png)
 
+```
+
+```
+
 用上述命令启动/usr/local/bin/qemu-system-x86_64，然后来到GDB命令行输入界面，如下图：
 
 ![config](images/4.png)
