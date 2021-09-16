@@ -30,20 +30,78 @@ SPEC: https://jpbrucker.net/virtio-iommu/spec/
 
 
 
+KVM patchsets: https://patchwork.kernel.org/project/kvm/list/?submitter=Jean-Philippe%20Brucker&state=*&archive=both&param=2&page=3
+
 virtio-iommu: a paravirtualized IOMMU
 
+> 2017, This is the initial proposal for a paravirtualized IOMMU device using virtio transport. It contains a description of the device, a Linux driver,and a toy implementation in kvmtool. 
+> 
+> With this prototype, you can translate DMA to guest memory from emulated (virtio), or passed-through (VFIO) devices.
+> 
+> To understand the virtio-iommu, I advise to first read introduction and motivation, then skim through implementation notes and finally look at the device specification.
 
-Add virtio-iommu driver (2017 ~ 2019): 前几个版本在 kvm 中, 后面的在 pci 中
+* [RFC 0/3] : https://www.spinics.net/lists/kvm/msg147990.html
+  * [RFC 1/3] virtio-iommu: firmware description of the virtual topology: https://www.spinics.net/lists/kvm/msg147991.html
+  * [RFC 2/3] virtio-iommu: device probing and operations: https://www.spinics.net/lists/kvm/msg147992.html
+  * [RFC 3/3] virtio-iommu: future work: https://www.spinics.net/lists/kvm/msg147993.html
+* RFC 0.4: https://www.spinics.net/lists/kvm/msg153881.html
+  * [RFC] virtio-iommu v0.4 - IOMMU Device: https://www.spinics.net/lists/kvm/msg153882.html
+  * [RFC] virtio-iommu v0.4 - Implementation notes: https://www.spinics.net/lists/kvm/msg153883.html
+
+
+Scenario 1: a hardware device passed through twice via VFIO
+
+```
+   MEM____pIOMMU________PCI device________________________       HARDWARE
+            |     (2b)                                    \
+  ----------|-------------+-------------+------------------\-------------
+            |             :     KVM     :                   \
+            |             :             :                    \
+       pIOMMU drv         :         _______virtio-iommu drv   \    KERNEL
+            |             :        |    :          |           \
+          VFIO            :        |    :        VFIO           \
+            |             :        |    :          |             \
+            |             :        |    :          |             /
+  ----------|-------------+--------|----+----------|------------/--------
+            |                      |    :          |           /
+            | (1c)            (1b) |    :     (1a) |          / (2a)
+            |                      |    :          |         /
+            |                      |    :          |        /   USERSPACE
+            |___virtio-iommu dev___|    :        net drv___/
+                                        :
+  --------------------------------------+--------------------------------
+                 HOST                   :             GUEST
+```
+
+```
+(1) a. Guest userspace is running a net driver (e.g. DPDK). It allocates a
+       buffer with mmap, obtaining virtual address VA. It then send a
+       VFIO_IOMMU_MAP_DMA request to map VA to an IOVA (possibly VA=IOVA).
+    b. The maping request is relayed to the host through virtio
+       (VIRTIO_IOMMU_T_MAP).
+    c. The mapping request is relayed to the physical IOMMU through VFIO.
+
+(2) a. The guest userspace driver can now instruct the device to directly
+       access the buffer at IOVA
+    b. IOVA accesses from the device are translated into physical
+       addresses by the IOMMU.
+```
+
+
+
+
+
+Add virtio-iommu driver
+
+> (2017 ~ 2019): 前几个版本在 kvm 中, 后面的在 pci 中
+
 * RFC: https://patchwork.kernel.org/project/kvm/patch/20170407192314.26720-1-jean-philippe.brucker@arm.com/
 * RFC v2: https://patchwork.kernel.org/project/kvm/patch/20171117185211.32593-2-jean-philippe.brucker@arm.com/
 * v1: https://www.spinics.net/lists/kvm/msg164322.html , https://patchwork.kernel.org/project/kvm/patch/20180214145340.1223-2-jean-philippe.brucker@arm.com/
 * v2: https://www.spinics.net/lists/kvm/msg170655.html , https://patchwork.kernel.org/project/kvm/patch/20180621190655.56391-3-jean-philippe.brucker@arm.com/
 * v3: https://patchwork.kernel.org/project/linux-pci/cover/20181012145917.6840-1-jean-philippe.brucker@arm.com/
-
 * v4: https://patchwork.kernel.org/project/linux-pci/cover/20181115165234.43990-1-jean-philippe.brucker@arm.com/
-
 * v5: https://patchwork.kernel.org/project/linux-pci/cover/20181122193801.50510-1-jean-philippe.brucker@arm.com/
-
 * v6: https://patchwork.kernel.org/project/linux-pci/cover/20181211182104.18241-1-jean-philippe.brucker@arm.com/
 * v7: https://patchwork.kernel.org/project/linux-pci/patch/20190115121959.23763-6-jean-philippe.brucker@arm.com/
 * v8: https://patchwork.kernel.org/project/linux-pci/patch/20190530170929.19366-6-jean-philippe.brucker@arm.com/
@@ -57,7 +115,10 @@ Add virtio-iommu device specification(virtio-spce, https://github.com/oasis-tcs/
 
 
 
-virtio-iommu on non-devicetree platforms(2019 ~ 2020):
+virtio-iommu on non-devicetree platforms
+
+> (2019 ~ 2020):
+
 * RFC: [virtio-iommu on non-devicetree platforms](https://patchwork.kernel.org/project/linux-pci/cover/20191122105000.800410-1-jean-philippe@linaro.org/)
 * v1: https://patchwork.kernel.org/project/linux-pci/cover/20200214160413.1475396-1-jean-philippe@linaro.org/
 * v2: https://patchwork.kernel.org/project/linux-pci/cover/20200228172537.377327-1-jean-philippe@linaro.org/
@@ -65,7 +126,9 @@ virtio-iommu on non-devicetree platforms(2019 ~ 2020):
 
 
 
-Add support for ACPI VIOT(2021, linux-acpi), 给 acpi viot table 添加一个driver, 从而可以在non-devicetree 平台(比如x86)使用 virtio-iommu:
+Add support for ACPI VIOT
+
+> (2021, linux-acpi), 给 acpi viot table 添加一个driver, 从而可以在non-devicetree 平台(比如x86)使用 virtio-iommu
 * RFC: 
 * V1: https://patchwork.kernel.org/project/linux-acpi/cover/20210316191652.3401335-1-jean-philippe@linaro.org/
 * V2: https://patchwork.kernel.org/project/linux-acpi/cover/20210423113836.3974972-1-jean-philippe@linaro.org/
