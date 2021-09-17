@@ -1,7 +1,5 @@
 
-Virtio-IOMMU 驱动程序现在使用 Linux 5.14 内核的 x86/x86_64硬件工作。 是 Virtio - Iommu 驱动程序 （合并在 Linux 5.3）， 在几年前在树外工作后， 最初专注于 AArch64 的准虚拟 Iommu 硬件。现在，2021 年 Linux 5.14 的 VirtIO-IOMMU 代码也已调整为适用于 x86 英特尔/AMD 硬件。Virtio-IOMMU 可以处理模拟和准虚拟化设备的管理。ACPI 虚拟 I/O 翻译表 （VIOT） 用于描述准虚拟平台的拓扑，在此案例中，x86 用于描述 virtio-iommu 和端点之间的关系。 Linux 5.14 的 IOMMU 更改还包括 Arm SMMU 更新、英特尔 VT-d 现在支持异步嵌套功能以及各种其他改进。还有一个新的是"amd_iommu=force_enable"内核启动选项，用于在通常有问题的平台上强制 IOMMU。AMD 斯通尼是经常展示越野车 IOMMU 行为的平台之一。
-
-
+Virtio-IOMMU 驱动程序现在使用 Linux 5.14 内核的 x86/x86_64硬件工作。 是 Virtio - Iommu 驱动程序 （合并在 Linux 5.3）， 在几年前在树外工作后， 最初专注于 AArch64 的准虚拟 Iommu 硬件。现在，2021 年 Linux 5.14 的 VirtIO-IOMMU 代码也已调整为适用于 x86 英特尔/AMD 硬件。Virtio-IOMMU 可以处理模拟和准虚拟化设备的管理。ACPI 虚拟 I/O 翻译表 （VIOT） 用于描述准虚拟平台的拓扑，在此案例中，x86 用于描述 virtio-iommu 和端点之间的关系。 Linux 5.14 的 IOMMU 更改还包括 Arm SMMU 更新、英特尔 VT-d 现在支持异步嵌套功能以及各种其他改进。还有一个新的是"amd_iommu=force_enable"内核启动选项，用于在通常有问题的平台上强制 IOMMU。
 
 
 
@@ -134,6 +132,12 @@ virtio-iommu on non-devicetree platforms
 * 
 
 
+Add virtio-iommu built-in topology
+
+> 2020
+
+v3: https://patchwork.kernel.org/project/linux-pci/cover/20200821131540.2801801-1-jean-philippe@linaro.org/
+
 
 Add support for ACPI VIOT
 
@@ -146,9 +150,6 @@ Add support for ACPI VIOT
 * v5: https://patchwork.kernel.org/project/linux-acpi/cover/20210618152059.1194210-1-jean-philippe@linaro.org/
 * v6: 
 
-
-
-robert.moore@intel.com
 
 
 
@@ -183,6 +184,7 @@ virtio-iommu: VFIO integration
 * 
 * v10: https://patchwork.kernel.org/project/qemu-devel/cover/20201008171558.410886-1-jean-philippe@linaro.org/
 * v11: https://patchwork.kernel.org/project/qemu-devel/cover/20201030180510.747225-1-jean-philippe@linaro.org/
+
 
 
 

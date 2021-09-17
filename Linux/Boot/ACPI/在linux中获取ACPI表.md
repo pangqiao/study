@@ -3,7 +3,7 @@ ACPI, 全称又叫 Advanced Configuration and Power Management Interface， 高�
 
 所有的ACPI表位于目录“`/sys/firmware/acpi/tables/`”
 
-1. 复制 表到 `*.aml`
+1. 复制表到 `*.aml`
 
 `sudo cat /sys/firmware/acpi/tables/DSDT > DSDT.aml`
 
