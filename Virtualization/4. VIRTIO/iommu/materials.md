@@ -41,7 +41,7 @@ virtio-iommu: a paravirtualized IOMMU
 > 
 > To understand the virtio-iommu, I advise to first read introduction and motivation, then skim through implementation notes and finally look at the device specification.
 
-* [RFC 0/3] : https://www.spinics.net/lists/kvm/msg147990.html
+* [RFC 0/3] : https://www.spinics.net/lists/kvm/msg147990.html , https://lore.kernel.org/all/20170407191747.26618-1-jean-philippe.brucker__33550.5639938221$1491592770$gmane$org@arm.com/
   * [RFC 1/3] virtio-iommu: firmware description of the virtual topology: https://www.spinics.net/lists/kvm/msg147991.html
   * [RFC 2/3] virtio-iommu: device probing and operations: https://www.spinics.net/lists/kvm/msg147992.html
   * [RFC 3/3] virtio-iommu: future work: https://www.spinics.net/lists/kvm/msg147993.html
@@ -49,46 +49,6 @@ virtio-iommu: a paravirtualized IOMMU
   * [RFC] virtio-iommu v0.4 - IOMMU Device: https://www.spinics.net/lists/kvm/msg153882.html
   * [RFC] virtio-iommu v0.4 - Implementation notes: https://www.spinics.net/lists/kvm/msg153883.html
 
-
-Scenario 1: a hardware device passed through twice via VFIO
-
-```
-   MEM____pIOMMU________PCI device________________________       HARDWARE
-            |     (2b)                                    \
-  ----------|-------------+-------------+------------------\-------------
-            |             :     KVM     :                   \
-            |             :             :                    \
-       pIOMMU drv         :         _______virtio-iommu drv   \    KERNEL
-            |             :        |    :          |           \
-          VFIO            :        |    :        VFIO           \
-            |             :        |    :          |             \
-            |             :        |    :          |             /
-  ----------|-------------+--------|----+----------|------------/--------
-            |                      |    :          |           /
-            | (1c)            (1b) |    :     (1a) |          / (2a)
-            |                      |    :          |         /
-            |                      |    :          |        /   USERSPACE
-            |___virtio-iommu dev___|    :        net drv___/
-                                        :
-  --------------------------------------+--------------------------------
-                 HOST                   :             GUEST
-```
-
-
-
-```
-(1) a. Guest userspace is running a net driver (e.g. DPDK). It allocates a
-       buffer with mmap, obtaining virtual address VA. It then send a
-       VFIO_IOMMU_MAP_DMA request to map VA to an IOVA (possibly VA=IOVA).
-    b. The maping request is relayed to the host through virtio
-       (VIRTIO_IOMMU_T_MAP).
-    c. The mapping request is relayed to the physical IOMMU through VFIO.
-
-(2) a. The guest userspace driver can now instruct the device to directly
-       access the buffer at IOVA
-    b. IOVA accesses from the device are translated into physical
-       addresses by the IOMMU.
-```
 
 
 
@@ -206,6 +166,12 @@ virtio-iommu: Add ACPI support (还未合入)
 * v3: https://patchwork.kernel.org/project/qemu-devel/cover/20210914142004.2433568-1-jean-philippe@linaro.org/
 
 
+
+# 个人资料
+
+Jean-Philippe Brucker
+
+qemu branch: https://jpbrucker.net/git/qemu/log/?h=virtio-iommu/acpi
 
 
 dump viot
