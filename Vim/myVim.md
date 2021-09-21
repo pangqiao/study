@@ -57,6 +57,8 @@ apt install build-essential cmake python3-dev libclang1
 git submodule update --init --recursive
 ```
 
+两种方式支持 rust
+
 ## 4.1. rust 自定义支持
 
 对于 rust 的支持编译, 可以看: https://blog.stdio.io/1103#method4
