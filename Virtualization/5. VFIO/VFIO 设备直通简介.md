@@ -120,9 +120,18 @@ VFIO 框架中很重要的一部分是要完成 **DMA Remapping**, 即为 **Doma
 
 * **vfio_domain** 这个概念尤其需要注意, 这里绝不能把它理解成一个虚拟机 domain, 它是一个与 **DRHD**（即 IOMMU 硬件）相关的概念, 它的出现就是**为了应对多 IOMMU 硬件的场景**, 我们知道在大规格服务器上可能会有**多个 IOMMU 硬件**, 不同的 IOMMU **硬件有可能存在差异**, 例如 IOMMU 0 支持 `IOMMU_CACHE`, 而 IOMMU 1 不支持 IOMMU_CACHE（当然这种情况少见, 大部分平台上硬件功能是具备一致性的）, 这时候我们**不能**直接将分别**属于不同 IOMMU 硬件管理的设备**直接加入到**一个 container** 中, 因为它们的 IOMMU 页表 SNP bit 是不一致的. 因此, 一种合理的解决办法就是把**一个 container** 划分**多个 vfio_domain**, 当然在大多数情况下我们只需要一个 vfio_domain 就足够了. 处在**同一个 vfio_domain 中的设备共享 IOMMU 页表区域**, 不同的 vfio_domain 的页表属性又可以不一致, 这样我们就可以支持跨 IOMMU 硬件的设备直通的混合场景.
 
+```
+# ll /sys/class/iommu/
+total 0
+drwxr-xr-x  2 root root 0 Sep 19 09:09 ./
+drwxr-xr-x 76 root root 0 Sep 19 09:09 ../
+lrwxrwxrwx  1 root root 0 Sep 19 09:09 dmar0 -> ../../devices/virtual/iommu/dmar0/
+lrwxrwxrwx  1 root root 0 Sep 19 09:09 dmar1 -> ../../devices/virtual/iommu/dmar1/
+```
 
+## 互相关系
 
-经过上面的介绍和分析, 我们可以把 VFIO 各个组件直接的关系用下图表示 (点击看完整图片), 读者可以按照图中的关系去阅读相关代码实现.
+经过上面的介绍和分析, 我们可以把 VFIO 各个组件直接的关系用下图表示.
 
 ![2021-09-18-15-43-31.png](./images/2021-09-18-15-43-31.png)
 
