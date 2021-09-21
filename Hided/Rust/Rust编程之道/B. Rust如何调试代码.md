@@ -97,7 +97,9 @@ struct Person<'a> {
 # Use breakpoints in VSCode
 
 
-# 
+# debug with rust-lldb
+
+见 `.\Debug\rust-lldb.md`
 
 
 # reference
