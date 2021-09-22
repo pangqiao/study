@@ -9,7 +9,7 @@
     - [设备状态域](#设备状态域)
     - [feature bits](#feature-bits)
     - [virtqueue](#virtqueue)
-  - [](#)
+  - [transport 选项](#transport-选项)
 - [前后端数据共享](#前后端数据共享)
 - [前后端通信机制 (irqfd 与 ioeventfd)](#前后端通信机制-irqfd-与-ioeventfd)
 - [virtio 核心代码分析, 以 virtio-net 为例](#virtio-核心代码分析-以-virtio-net-为例)
@@ -87,15 +87,17 @@ virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
 1. 前端驱动将 IO 请求放到 Descriptor Table 中, 然后将索引更新到 Available Ring 中, 最后 kick 后端去取数据;
 2. 后端取出 IO 请求进行处理, 然后将结果刷新到 Descriptor Table 中再更新 Using Ring, 然后发送中断 notify 前端.
 
-## 
+## transport 选项
 
 从 virtio 协议可以了解到 virtio 设备支持 3 种设备呈现模式:
 
-* Virtio Over PCI BUS, 依旧遵循 PCI 规范, 挂在到 PCI 总线上, 作为 virtio-pci 设备呈现;
-* Virtio Over MMIO, 部分不支持 PCI 协议的虚拟化平台可以使用这种工作模式, 直接挂载到系统总线上;
+* Virtio Over PCI BUS, 依旧遵循 PCI 规范, **挂载到 PCI 总线**上, **作为 virtio-pci 设备**呈现;
+* Virtio Over MMIO, 部分**不支持 PCI 协议**的虚拟化平台可以使用这种工作模式, **直接挂载到系统总线**上;
 * Virtio Over Channel I/O: 主要用在 s390 平台上, virtio-ccw 使用这种基于 channel I/O 的机制.
 
-其中, Virtio Over PCI BUS 的使用比较广泛, 作为 PCI 设备需按照规范要通过 PCI 配置空间来向操作系统报告设备支持的特性集合, 这样操作系统才知道这是一个什么类型的 virtio 设备, 并调用对应的前端驱动和这个设备进行握手, 进而将设备驱动起来. QEMU 会给 virtio 设备模拟 PCI 配置空间, 对于 virtio 设备来说 PCI Vendor ID 固定为 0x1AF4, PCI Device ID 为 `0x1000` 到 `0x107F` 之间的是 virtio 设备. 同时, 在不支持 PCI 协议的虚拟化平台上, virtio 设备也可以直接通过 MMIO 进行呈现, [virtio-spec 4.2 Virtio Over MMIO](https://docs.oasis-open.org/virtio/virtio/v1.1/cs01/virtio-v1.1-cs01.html#x1-1440002) 有针对 virtio-mmio 设备呈现方式的详细描述, mmio 相关信息可以直接通过内核参数报告给 Linux 操作系统. 本文主要基于 virtio-pci 展开讨论.
+其中, Virtio Over PCI BUS 的使用比较广泛, **作为 PCI 设备**需**按照规范**要**通过 PCI 配置空间**来向**操作系统**报告设备支持的**特性集合**, 这样操作系统才知道这是一个**什么类型**的 virtio 设备, 并调用**对应的前端驱动**和这个设备进行握手, 进而将设备驱动起来. 
+
+**QEMU** 会给 virtio 设备**模拟 PCI 配置空间**, 对于 virtio 设备来说 **PCI Vendor ID** 固定为 `0x1AF4`, **PCI Device ID** 为 `0x1000` 到 `0x107F` 之间的是 virtio 设备. 同时, 在不支持 PCI 协议的虚拟化平台上, virtio 设备也可以直接通过 MMIO 进行呈现, [virtio-spec 4.2 Virtio Over MMIO](https://docs.oasis-open.org/virtio/virtio/v1.1/cs01/virtio-v1.1-cs01.html#x1-1440002) 有针对 virtio-mmio 设备呈现方式的详细描述, mmio 相关信息可以直接通过内核参数报告给 Linux 操作系统. 本文主要基于 virtio-pci 展开讨论.
 
 前面提到 virtio 设备有 feature bits, virtqueue 等四要素, 那么在 virtio-pci 模式下是如何呈现的呢? 从 virtio spec 来看, 老的 virtio 协议和新的 virtio 协议在这一块有很大改动. virtio legacy (virtio 0.95) 协议规定, 对应的配置数据结构 (virtio common configuration structure) 应该存放在设备的 BAR0 里面, 我们称之为 virtio legay interface, 其结构如下:
 
