@@ -8,18 +8,19 @@
 
 virtio-iommu: a paravirtualized IOMMU
 
-第一版 RFC: https://www.spinics.net/lists/kvm/msg147990.html
+第一版 RFC: https://www.spinics.net/lists/kvm/msg147990.html , https://lore.kernel.org/all/20170407191747.26618-1-jean-philippe.brucker__33550.5639938221$1491592770$gmane$org@arm.com/
 
-主要目的是将 模拟设备(virtio) 或 pass-through 设备(VFIO) 的 DMA 翻译成 guest memory
+这是使用 virtio 传输(transport)的 paravirtualized IOMMU device 的初步建议。 它包含设备描述、Linux 驱动程序和 kvmtool 中的玩具实现。 使用此原型，您可以将来自模拟设备(virtio) 或 pass-through 设备(VFIO) 的 DMA 转换为 guest 内存。
 
-包含三部分内容:
+最简单地, viommu 处理来自guest的map/unmap请求。"RFC 3/3"中提议的未来扩展将来应允许 page tables 绑定到设备上。
 
-* 一个 device 的 description
-* Linux 的 driver
-* kvmtool 中的简单实现
+在半虚拟化的移液中，与完全模拟相比，有许多优点。它是便携式的，可以重复使用不同的架构。它比完全模拟更容易实现，状态跟踪更少。在某些情况下，它可能会更有效率，上下文切换到host的更少，并且内核模拟的可能性也更少。
 
+在 kvmtool 实现中, 考虑了两个主要场景
 
 Scenario 1: a hardware device passed through twice via VFIO
+
+场景一: 硬件设备通过 VFIO 透传两次
 
 ```
    MEM____pIOMMU________PCI device________________________       HARDWARE
@@ -43,21 +44,48 @@ Scenario 1: a hardware device passed through twice via VFIO
                  HOST                   :             GUEST
 ```
 
+(1)
+* a. 虚拟机用户态有一个 net driver(比如 DPDK). 它通过 mmap 申请一个 buffer, 得到了虚拟地址(VA); 然后发送 **vfio** 请求(`VFIO_IOMMU_MAP_DMA`) 到虚拟机内核态 virtio-iommu driver 将 VA **映射**到 IOVA(可能 VA = IOVA).
+* b. 通过 **virtio** (VIRTIO_IOMMU_T_MAP), 虚拟机内核态 viommu driver 将该 mapping 请求转发到host端的 viommu(用户态后端, 比如qemu).
+* c. 通过 **vfio**, 后端 viommu 将请求转发到物理 IOMMU 上.
 
+(2)
+* a. 虚拟机用户态 driver 指示设备现在可以通过 IOVA 直接访问 buffer 了
+* b. 设备发出的 IOVA 被物理 IOMMU 翻译成 物理地址(PA)
+
+场景二: 
 
 ```
-(1) a. Guest userspace is running a net driver (e.g. DPDK). It allocates a
-       buffer with mmap, obtaining virtual address VA. It then send a
-       VFIO_IOMMU_MAP_DMA request to map VA to an IOVA (possibly VA=IOVA).
-    b. The maping request is relayed to the host through virtio
-       (VIRTIO_IOMMU_T_MAP).
-    c. The mapping request is relayed to the physical IOMMU through VFIO.
-
-(2) a. The guest userspace driver can now instruct the device to directly
-       access the buffer at IOVA
-    b. IOVA accesses from the device are translated into physical
-       addresses by the IOMMU.
+  MEM__pIOMMU___PCI device                                     HARDWARE
+         |         |
+  -------|---------|------+-------------+-------------------------------
+         |         |      :     KVM     :
+         |         |      :             :
+    pIOMMU drv     |      :             :
+             \     |      :      _____________virtio-net drv      KERNEL
+              \_net drv   :     |       :          / (1a)
+                   |      :     |       :         /
+                  tap     :     |    ________virtio-iommu drv
+                   |      :     |   |   : (1b)
+  -----------------|------+-----|---|---+-------------------------------
+                   |            |   |   :
+                   |_virtio-net_|   |   :
+                         / (2)      |   :
+                        /           |   :                      USERSPACE
+              virtio-iommu dev______|   :
+                                        :
+  --------------------------------------+-------------------------------
+                 HOST                   :             GUEST
 ```
+
+(1)
+* a. 虚拟机内核态的 virtio-net driver 发送请求给 viommu 来 map the virtio ring and a buffer
+* b. 通过 virtio, mapping 请求被转发到 host 端
+
+(2)
+* virtio-net 设备可以通过 IOMMU 来访问虚拟机内存
+
+物理 iommu 和 viommu 是完全分离的. net driver 通过 DMA/IOMMU API 来 mapping 它的 buffer, buffers 在 virtio-net 和 tap 互相拷贝.
 
 
 
