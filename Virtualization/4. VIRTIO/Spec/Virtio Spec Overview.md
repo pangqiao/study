@@ -10,6 +10,9 @@
     - [feature bits](#feature-bits)
     - [virtqueue](#virtqueue)
   - [transport 选项](#transport-选项)
+- [virtio-pci 呈现](#virtio-pci-呈现)
+  - [virtio legacy](#virtio-legacy)
+  - [virtio modern](#virtio-modern)
 - [前后端数据共享](#前后端数据共享)
 - [前后端通信机制 (irqfd 与 ioeventfd)](#前后端通信机制-irqfd-与-ioeventfd)
 - [virtio 核心代码分析, 以 virtio-net 为例](#virtio-核心代码分析-以-virtio-net-为例)
@@ -78,14 +81,14 @@ virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
 +-------------------+--------------------------------+-----------------------+
 ```
 
-* Descriptor Table: 存放 IO 传输请求信息;
-* Available Ring: 记录了 Descriptor Table 表中的 I/O 请求下发信息, 前端 Driver 可写后端只读;
-* Used Ring: 记录 Descriptor Table 表中已被提交到硬件的信息, 前端 Driver 只读后端可写.
+* **Descriptor Table**: 存放 **IO 传输请求信息**;
+* **Available Ring**: 记录了 Descriptor Table 表中的 I/O 请求下发信息, 前端 Driver 可写后端只读;
+* **Used Ring**: 记录 Descriptor Table 表中**已被提交到硬件的信息**, 前端 Driver 只读后端可写.
 
 整个 virtio 协议中设备 IO 请求的工作机制可以简单地概括为:
 
-1. 前端驱动将 IO 请求放到 Descriptor Table 中, 然后将索引更新到 Available Ring 中, 最后 kick 后端去取数据;
-2. 后端取出 IO 请求进行处理, 然后将结果刷新到 Descriptor Table 中再更新 Using Ring, 然后发送中断 notify 前端.
+1. **前端驱动**将 **IO 请求**放到 **Descriptor Table** 中, 然后将**索引**更新到 **Available Ring** 中, 最后 **kick 后端**去取数据;
+2. **后端**取出 IO 请求进行**处理**, 然后将**结果刷新到 Descriptor Table** 中再**更新 Using Ring**, 然后**发送中断 notify 前端**.
 
 ## transport 选项
 
@@ -97,9 +100,17 @@ virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
 
 其中, Virtio Over PCI BUS 的使用比较广泛, **作为 PCI 设备**需**按照规范**要**通过 PCI 配置空间**来向**操作系统**报告设备支持的**特性集合**, 这样操作系统才知道这是一个**什么类型**的 virtio 设备, 并调用**对应的前端驱动**和这个设备进行握手, 进而将设备驱动起来. 
 
-**QEMU** 会给 virtio 设备**模拟 PCI 配置空间**, 对于 virtio 设备来说 **PCI Vendor ID** 固定为 `0x1AF4`, **PCI Device ID** 为 `0x1000` 到 `0x107F` 之间的是 virtio 设备. 同时, 在不支持 PCI 协议的虚拟化平台上, virtio 设备也可以直接通过 MMIO 进行呈现, [virtio-spec 4.2 Virtio Over MMIO](https://docs.oasis-open.org/virtio/virtio/v1.1/cs01/virtio-v1.1-cs01.html#x1-1440002) 有针对 virtio-mmio 设备呈现方式的详细描述, mmio 相关信息可以直接通过内核参数报告给 Linux 操作系统. 本文主要基于 virtio-pci 展开讨论.
+**QEMU** 会给 virtio 设备**模拟 PCI 配置空间**, 对于 virtio 设备来说 **PCI Vendor ID** 固定为 `0x1AF4`, **PCI Device ID** 为 `0x1000` 到 `0x107F` 之间的是 virtio 设备. 同时, 在**不支持 PCI 协议**的虚拟化平台上, virtio 设备也可以直接通过 MMIO 进行呈现, [virtio-spec 4.2 Virtio Over MMIO](https://docs.oasis-open.org/virtio/virtio/v1.1/cs01/virtio-v1.1-cs01.html#x1-1440002) 有针对 virtio-mmio 设备呈现方式的详细描述, **mmio 相关信息**可以直接通过**内核参数**报告给 Linux 操作系统. 
 
-前面提到 virtio 设备有 feature bits, virtqueue 等四要素, 那么在 virtio-pci 模式下是如何呈现的呢? 从 virtio spec 来看, 老的 virtio 协议和新的 virtio 协议在这一块有很大改动. virtio legacy (virtio 0.95) 协议规定, 对应的配置数据结构 (virtio common configuration structure) 应该存放在设备的 BAR0 里面, 我们称之为 virtio legay interface, 其结构如下:
+本文主要基于 virtio-pci 展开讨论.
+
+# virtio-pci 呈现
+
+前面提到 virtio 设备有 feature bits, virtqueue 等四要素, 那么在 virtio-pci 模式下是如何呈现的呢? 从 virtio spec 来看, **老的 virtio 协议**和**新的 virtio 协议**在这一块有很大改动.
+
+## virtio legacy
+
+**virtio legacy** (virtio 0.95) 协议规定, 对应的**配置数据结构** (virtio common configuration structure) 应该存放在设备的 **BAR0** 里面, 我们称之为 virtio legacy interface, 其结构如下:
 
 ```
                        virtio legacy ==> Mapped into PCI BAR0
@@ -118,7 +129,9 @@ virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
     +---------------------------------+--------------------------------+
 ```
 
-对于新的 virtio modern, 协议将配置结构划分为 5 种类型:
+## virtio modern
+
+对于新的 virtio modern, 协议将配置结构划分为 **5 种类型**:
 
 ```cpp
 /* Common configuration */
@@ -133,7 +146,7 @@ virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
 #define VIRTIO_PCI_CAP_PCI_CFG           5
 ```
 
-以上的每种配置结构是直接映射到 virtio 设备的 BAR 空间内, 那么如何指定每种配置结构的位置呢? 答案是通过 PCI Capability list 方式去指定, 这和物理 PCI 设备是一样的, 体现了 virtio-pci 的协议兼容性.
+以上的每种配置结构是直接映射到 virtio 设备的 **BAR** 空间内, 那么如何指定**每种配置结构的位置**呢? 答案是通过 **PCI Capability list** 方式去指定, 这和物理 PCI 设备是一样的, 体现了 virtio-pci 的协议兼容性. 只是略微不同的是, virtio-pci 的 Capability 有一个**统一的结构**, 如下.
 
 ```cpp
 struct virtio_pci_cap {
@@ -148,7 +161,7 @@ struct virtio_pci_cap {
 };
 ```
 
-只是略微不同的是, virtio-pci 的 Capability 有一个统一的结构, 其中 cfg_type 表示 Cap 的类型, bar 表示这个配置结构被映射到的 BAR 空间号. 这样每个配置结构都可以通过 BAR 空间直接访问, 或者通过 PCI 配置空间的 VIRTIO_PCI_CAP_PCI_CFG 域进行访问. 每个 Cap 的具体结构定义可以参考 `virtio spec 4.1.4.3` 小节. 为了方便理解这里以一张 virtio-net 网卡为例:
+其中 `cfg_type` 表示 Cap 的**类型**, `bar` 表示这个配置结构被映射到的 **BAR 空间号**. 这样每个配置结构都可以**通过 BAR 空间直接访问**, 或者**通过 PCI 配置空间**的 `VIRTIO_PCI_CAP_PCI_CFG` 域进行访问. 每个 Cap 的具体结构定义可以参考 `virtio spec 4.1.4.3` 小节. 为了方便理解这里以一张 virtio-net 网卡为例:
 
 ```
 [root@localhost ~]# lspci -vvvs 04: 00.0
@@ -181,9 +194,13 @@ MSI-X 的 vector table 和 PBA 放到了 BAR1 里面, BAR4 里放了 common cfg,
 
 # 前后端数据共享
 
-传统的纯模拟设备在工作的时候, 会触发频繁的陷入陷出, 而且 IO 请求的内容要进行多次拷贝传递, 严重影响了设备的 IO 性能. virtio 为了提升设备的 IO 性能, 采用了共享内存机制, 前端驱动会提前申请好一段物理地址空间用来存放 IO 请求, 然后将这段地址的 GPA 告诉 QEMU. 前端驱动在下发 IO 请求后, QEMU 可以直接从共享内存中取出请求, 然后将完成后的结果又直接写到虚拟机对应地址上去. 整个过程中可以做到直投直取, 省去了不必要的数据拷贝开销.
+传统的纯模拟设备在工作的时候, 会触发**频繁的陷入陷出**, 而且 IO 请求的**内容**要进行**多次拷贝传递**, 严重影响了设备的 IO 性能. 
 
-Virtqueue 是整个 virtio 方案的灵魂所在. 每个 virtqueue 都包含 3 张表, Descriptor Table 存放了 IO 请求描述符, Available Ring 记录了当前哪些描述符是可用的, Used Ring 记录了哪些描述符已经被后端使用了.
+virtio 为了提升设备的 IO 性能, 采用了**共享内存机制**, **前端驱动**会提前申请好**一段物理地址空间**用来**存放 IO 请求**, 然后将这段地址的 **GPA** 告诉 **QEMU**.
+
+**前端驱动**在**下发 IO 请求**后, **QEMU** 可以直接从共享内存中**取出请求**, 然后将完成后的**结果又直接写到虚拟机对应地址**上去. 整个过程中可以做到直投直取, 省去了不必要的数据拷贝开销.
+
+Virtqueue 是整个 virtio 方案的灵魂所在. **每个 virtqueue** 都包含 **3 张表**, **Descriptor Table** 存放了 **IO 请求描述符**, **Available Ring** 记录了**当前哪些描述符是可用**的, **Used Ring** 记录了**哪些描述符已经被后端使用**了.
 
 ```
                           +------------------------------------+
@@ -214,7 +231,7 @@ Virtqueue 是整个 virtio 方案的灵魂所在. 每个 virtqueue 都包含 3 �
                            +------------------------------------+
 ```
 
-Desriptor Table 中存放的是一个一个的 virtq_desc 元素, 每个 virq_desc 元素占用 16 个字节.
+**Desriptor Table** 中存放的是一个一个的 **virtq_desc 元素**, **每个** virq_desc 元素占用 **16 个字节**(128位).
 
 ```
 +-----------------------------------------------------------+
@@ -263,7 +280,11 @@ struct virtq_used_elem {
 
 # 前后端通信机制 (irqfd 与 ioeventfd)
 
-共享内存方式解决了传统设备 IO 过程中内存拷贝带来的性能损耗问题, 除此之外前端驱动和后端驱动的通信问题也是有可以改进的地方. Virtio 前后端通信概括起来只有两个方向, 即 GuestOS 通知 QEMU 和 QEMU 通知 GuestOS. 当前端驱动准备好 IO buffer 之后, 需要通知后端 (QEMU), 告诉后端: "小老弟, 我有一波 IO 请求已经准备好了, 你帮我处理一下". 前端通知出去后, 就可以等待 IO 结果了 (操作系统可以进行一次调度), 这时候 vCPU 可以去干点其他的事情. 后端收到消息后开始处理 IO 请求, 当 IO 请求处理完成之后, 后端就通过中断机制通知 GuestOS: "老哥, 你的 IO 给你处理好了, 你来取一下". 前后端通信机制如下图所示:
+共享内存方式解决了传统设备 IO 过程中内存拷贝带来的性能损耗问题, 除此之外**前端驱动**和**后端驱动**的**通信**问题也是有可以改进的地方.
+
+Virtio 前后端通信概括起来只有两个方向, 即 **GuestOS 通知 QEMU** 和 **QEMU 通知 GuestOS**. 当**前端驱动**准备好 **IO buffer** 之后, 需要**通知后端** (QEMU), 告诉后端: "我有一波 IO 请求已经准备好了, 你帮我处理一下". 前端通知出去后, 就可以等待 IO 结果了 (**操作系统可以进行一次调度**), 这时候 vCPU 可以去干点其他的事情. 后端收到消息后开始处理 IO 请求, 当 IO 请求处理完成之后, **后端**就通过**中断机制**通知 GuestOS: "你的 IO 给你处理好了, 你来取一下".
+
+前后端通信机制如下图所示:
 
 ```
              +-------------+                +-------------+
@@ -284,7 +305,7 @@ struct virtq_used_elem {
              +--------------------------------------------+
 ```
 
-前端驱动通知后端比较简单, QEMU 设置一段特定的 MMIO 地址空间, 前端驱动访问这段 MMIO 触发 VMExit, 退出到 KVM 后利用 ioeventfd 机制通知到用户态的 QEMU, QEMU 主循环 (main_loop poll) 检测到 ioeventfd 事件后调用 callback 进行处理.
+**前端驱动通知后端**比较简单, **QEMU** 设置一段**特定的 MMIO 地址空间**, **前端驱动**访问这段 MMIO 触发 **VM-Exit**, 退出到 **KVM** 后利用 **ioeventfd** 机制**通知**到用户态的 **QEMU**, QEMU 主循环 (`main_loop poll`) 检测到 ioeventfd 事件后调用 **callback** 进行处理.
 
 ```cpp
 前端驱动通知后端:
@@ -386,7 +407,7 @@ virtnet_probe
 
 在 QEMU/KVM 这一侧, 开始模拟 MSIx 中断, 具体流程大致如下:
 
-```
+```cpp
 virtio_pci_config_write
   --> virtio_ioport_write
     --> virtio_set_status
@@ -514,7 +535,7 @@ Ok, 到这里 virtio 前后端通信机制已经明了, 最后一个小节我们
 
 ## 前后端握手流程
 
-QEM 模拟 PCI 设备对 GuestOS 进行呈现, 设备驱动加载的时候尝试去初始化设备.
+QEMU 模拟 PCI 设备对 GuestOS 进行呈现, **设备驱动**加载的时候尝试去**初始化设备**.
 
 ```cpp
 # 先在 PCI 总线上调用 probe 设备, 调用了 virtio_pci_probe, 然后再 virtio-bus 上调用 virtio_dev_probe
@@ -524,8 +545,8 @@ device_register --> device_add --> bus_probe_device --> device_initial_probe
 --> __device_attach --> bus_for_each_drv --> __device_attach_driver --> driver_probe_device -->
 virtio_dev_probe --> virtnet_probe
 
-# 在 virtio_pci_probe 里先尝试以 virtio modern 方式读取设备配置数据结构, 如果失败则尝试 virio legacy 方式.
-# 对于 virtio legacy, 我们前面提到了 virtio legacy 协议规定设备的配置数据结构放在 PCI BAR0 里面.
+// 在 virtio_pci_probe 里先尝试以 virtio modern 方式读取设备配置数据结构, 如果失败则尝试 virio legacy 方式.
+// 对于 virtio legacy, 我们前面提到了 virtio legacy 协议规定设备的配置数据结构放在 PCI BAR0 里面.
 /* the PCI probing function */
 int virtio_pci_legacy_probe (struct virtio_pci_device *vp_dev)
 {
