@@ -148,7 +148,7 @@ virtio-iommu: VFIO integration
 
 
 
-virtio-iommu: Built-in topology and x86 support
+virtio-iommu: Built-in topology and x86 support (还未合入)
 
 > 2020
 

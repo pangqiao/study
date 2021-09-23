@@ -23,3 +23,6 @@ MMIO：
 
 
 IO处理流程: http://liujunming.top/2017/06/26/QEMU-KVM-I-O-%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B/
+
+
+PCI设备的创建与初始化: https://github.com/GiantVM/doc/blob/master/pci.md
