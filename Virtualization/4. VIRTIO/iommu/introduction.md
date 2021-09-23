@@ -8,7 +8,7 @@
 
 virtio-iommu: a paravirtualized IOMMU
 
-第一版 RFC: https://www.spinics.net/lists/kvm/msg147990.html , https://lore.kernel.org/all/20170407191747.26618-1-jean-philippe.brucker__33550.5639938221$1491592770$gmane$org@arm.com/
+第一版 RFC: [spinics](https://www.spinics.net/lists/kvm/msg147990.html), [lore kernel](https://lore.kernel.org/all/20170407191747.26618-1-jean-philippe.brucker__33550.5639938221$1491592770$gmane$org@arm.com/) 
 
 这是使用 virtio 传输(transport)的 paravirtualized IOMMU device 的初步建议。 它包含设备描述、Linux 驱动程序和 kvmtool 中的玩具实现。 使用此原型，您可以将来自模拟设备(virtio) 或 pass-through 设备(VFIO) 的 DMA 转换为 guest 内存。
 
