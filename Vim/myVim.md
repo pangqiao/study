@@ -7,9 +7,9 @@
 - [2. 下载 vim 配置](#2-下载-vim-配置)
 - [3. 功能开启](#3-功能开启)
 - [4. YouCompleteMe 设置](#4-youcompleteme-设置)
-  - [4.1. rust 自定义支持](#41-rust-自定义支持)
-  - [4.2. rust 自动支持](#42-rust-自动支持)
-- [5. rust 支持](#5-rust-支持)
+  - [4.1. rust 支持](#41-rust-支持)
+- [Rust](#rust)
+- [reference](#reference)
 
 <!-- /code_chunk_output -->
 
@@ -21,9 +21,7 @@
 apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev libclang1 vim-gtk3 npm pip curl git
 ```
 
-vim-gtk 可以让 vim 有 `+clipboard` feature 支持
-
-fontconfig 用来安装字体库
+vim-gtk 可以让 vim 有 `+clipboard` feature 支持, vim-nox 没有
 
 # 2. 下载 vim 配置
 
@@ -59,32 +57,20 @@ git submodule update --init --recursive
 
 两种方式支持 rust
 
-## 4.1. rust 自定义支持
+## 4.1. rust 支持
 
-对于 rust 的支持编译, 可以看: https://blog.stdio.io/1103#method4
+安装依赖
 
 ```
 rustup +nightly component add rust-src rust-analyzer-preview
 ```
 
-C-family 的支持, 没有用 `--rust-completer`, 因为该参数会使得 install.py/build.py 自动下载特定版本的 rustup toolchain
+* rust-src 是 rust-analyzer 源码
 
-```
-cd ~/.vim/bundle/YouCompleteMe
-python3 install.py --clang-completer --system-libclang
-```
+* rust-analyzer-preview 是 rust-analyzer binary 文件
 
-然后配置 .vimrc，自定义 toolchain 目录
 
-```
-let g:ycm_rust_src_path = '/path/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
-let g:ycm_rls_binary_path = '/path/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin'
-let g:ycm_rustc_binary_path = '/path/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin'
-```
-
-## 4.2. rust 自动支持
-
-YCM 目前已经不用 rls 了, 而是使用 rust-analyzer 作为工具链
+YCM 目前已经不用 rls 了, 而是使用 rust-analyzer 作为工具链(Rust 社区也是如此)
 
 所以可以安装使用
 
@@ -92,9 +78,39 @@ YCM 目前已经不用 rls 了, 而是使用 rust-analyzer 作为工具链
 python3 install.py --clang-completer --system-libclang --rust-completer
 ```
 
+会自动下载 rust-analyzer binary 文件到 `third_party/ycmd/third_party/rust-analyzer/bin/rust-analyzer`
 
-# 5. rust 支持
+配置
+
+```
+// rc/rust.vim
+// 不自定义就会使用上面默认路径
+let g:ycm_rust_toolchain_root = '/root/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu'
+let g:ycm_rust_src_path = '/root/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
+```
+
+当然可以将 rust-analyzer 放到 PATH.
+
+# Rust
+
+持续更新: https://www.yuque.com/zhoujiping/programming/rust-vim-settings
+
+![2021-09-24-17-45-12.png](./images/2021-09-24-17-45-12.png)
+
+![2021-09-24-17-24-45.png](./images/2021-09-24-17-24-45.png)
+
+rust.vim: 提供 Rust 文件检测、语法高亮、格式设置与语法检测工具 Syntastic 集成等功能
+
+Racer: Rust Auto-Complete-er, 代码补全. `racer-rust/vim-racer` 已经停止开发, 不建议使用
+
+
+
+# reference
+
+Rust：vim 环境配置: 
+
 
 https://blog.stdio.io/1103#method4
 
 https://github.com/rust-lang/rust.vim
+
