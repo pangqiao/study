@@ -11,12 +11,14 @@
   - [3.3. 多版本](#33-多版本)
   - [3.4. rust 升级](#34-rust-升级)
   - [3.5. Rust 卸载](#35-rust-卸载)
-  - [3.6. 修改国内源](#36-修改国内源)
+  - [3.6. 国内源](#36-国内源)
 - [4. Docker 中使用 Rust](#4-docker-中使用-rust)
 - [5. Rust IDE](#5-rust-ide)
 - [6. 开发依赖工具](#6-开发依赖工具)
   - [6.1. Racer 代码补全](#61-racer-代码补全)
   - [6.2. RLS](#62-rls)
+  - [rust-analyzer](#rust-analyzer)
+    - [VS Code](#vs-code)
   - [6.3. cargo 插件](#63-cargo-插件)
     - [6.3.1. clippy](#631-clippy)
     - [6.3.2. rustfmt](#632-rustfmt)
@@ -79,6 +81,10 @@ rustc --version
 
 rustup 可以帮助管理本地的多个编译器版本.
 
+```
+rustup show
+```
+
 rustup default 查看默认的编译器版本
 
 ```
@@ -98,7 +104,7 @@ rustup default nightly
 rustup default nightly-2018-05-12
 ```
 
-rustup 会自动下载相应的编译器版本来安装.
+指定日期, rustup 会自动下载相应的编译器版本来安装.
 
 ## 3.4. rust 升级
 
@@ -114,7 +120,7 @@ rustup update
 rustup self uninstall
 ```
 
-## 3.6. 修改国内源
+## 3.6. 国内源
 
 Rustup 的服务器可以修改成 中国科学技术(USTC) 的 Rustup 镜像.
 
@@ -166,13 +172,53 @@ RUN rustup default nightly-2018-05-12
 
 ## 6.1. Racer 代码补全
 
+Racer(Rust Auto-Complete-er) 是 Rust 代码补全库.
 
+```
+cargo install racer
+
+// 使用 nightly 版源码编译安装
+rustup run nightly cargo install racer
+```
+
+racer 工具会被安装在 `$HOME/.cargo/bin/` 下面
+
+代码补全需要**标准库源码**. 以前需要手动下载并定期更新, 现在通过 rustup
+
+```
+rustup component add rust-src
+```
+
+然后配置环境变量(rust 源码):
+
+```
+export RUST_SRC_APTH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
+```
 
 ## 6.2. RLS
 
-RLS 是Rust Language Server的简写，微软提出编程语言服务器的概念，将 IDE 的一些编程语言相关的部分由单独的服务器来实现，比如代码补全、跳转定义、查看文档等。这样，不同的IDE或编辑器只需要实现客户端接口即可。
+RLS 是Rust Language Server的简写，微软提出编程语言服务器的概念，将 IDE 的一些编程语言相关的部分由单独的服务器来实现，比如代码补全、跳转定义、查看文档等。这样，**不同的IDE或编辑器只需要实现客户端接口**即可。
+
+依赖 racer 来实现, 所以需要配置 racer 的环境变量
+
+## rust-analyzer
 
 
+Rust Analyzer：一款旨在带来优秀 IDE 体验的编译器: https://www.infoq.cn/article/lvLv4lmcMzTDg7ZTOMdY, 2020 年 2 月 13 日
+
+RA 是一个模块化编译器前端, 目的是为了带来优秀的 Rust IDE 体验, 不依赖 racer?
+
+rust-analyzer 将取代 RLS.
+
+> 理论上, 针对所有编辑器, 只需要安装 rust-analyzer binary 就能直接工作. 但是目前有些编辑器还是需要特定的配置.
+
+> rust-analyzer 也是需要标准库源码的, 不存在的话会自动安装, 也可以手动添加 `rustup component add rust-src`
+
+更多细节: https://rust-analyzer.github.io/manual.html
+
+### VS Code
+
+目前 VS Code 已完美支持, 直接下载 rust-analyzer, 会和官方 Rust 冲突, 卸载官方的即可
 
 ## 6.3. cargo 插件
 

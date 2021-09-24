@@ -9,6 +9,9 @@
 - [4. YouCompleteMe 设置](#4-youcompleteme-设置)
   - [4.1. rust 支持](#41-rust-支持)
 - [Rust](#rust)
+  - [语法增强](#语法增强)
+  - [代码片段](#代码片段)
+  - [代码 补全 | 检查 | 跳转 利器](#代码-补全-检查-跳转-利器)
 - [reference](#reference)
 
 <!-- /code_chunk_output -->
@@ -55,41 +58,47 @@ apt install build-essential cmake python3-dev libclang1
 git submodule update --init --recursive
 ```
 
-两种方式支持 rust
-
 ## 4.1. rust 支持
 
-安装依赖
+* rust 源码: rust src
+* 补全工具: rust analyzer
 
-```
-rustup +nightly component add rust-src rust-analyzer-preview
-```
+YCM 目前已经不用 rls 了, 而是使用 rust-analyzer 作为工具链(因为 Rust 社区决定使用 rust-analyzer)
 
-* rust-src 是 rust-analyzer 源码
-
-* rust-analyzer-preview 是 rust-analyzer binary 文件
-
-
-YCM 目前已经不用 rls 了, 而是使用 rust-analyzer 作为工具链(Rust 社区也是如此)
-
-所以可以安装使用
+所以直接安装使用
 
 ```
 python3 install.py --clang-completer --system-libclang --rust-completer
 ```
 
-会自动下载 rust-analyzer binary 文件到 `third_party/ycmd/third_party/rust-analyzer/bin/rust-analyzer`
+* 自动下载 rust-analyzer binary 到 `./third_party/ycmd/third_party/rust-analyzer/bin/rust-analyzer`
+* 自动下载 rust src 到 `./third_party/ycmd/third_party/rust-analyzer/bin/rust-analyzer/lib/rustlib/src/rust/src`
 
-配置
+YCM 不需要额外配置, 自动识别这两个
+
+当然, 你可以指定自己的 toolchain
+
+下载:
 
 ```
-// rc/rust.vim
-// 不自定义就会使用上面默认路径
+rustup +nightly component add rust-src rust-analyzer-preview
+```
+
+* rust-src 是 rust 源码, 代码补全需要源码的. 安装在 `/root/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/`
+* rust-analyzer-preview 是 rust-analyzer binary 文件, 安装在 `/root/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/bin/` 下面
+
+修改 vimrc
+
+```
+// 指定 toolchain root
 let g:ycm_rust_toolchain_root = '/root/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu'
+```
+
+YCM 已经没有这个配置项了
+
+```
 let g:ycm_rust_src_path = '/root/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
 ```
-
-当然可以将 rust-analyzer 放到 PATH.
 
 # Rust
 
@@ -99,9 +108,41 @@ let g:ycm_rust_src_path = '/root/.rustup/toolchains/nightly-x86_64-unknown-linux
 
 ![2021-09-24-17-24-45.png](./images/2021-09-24-17-24-45.png)
 
+## 语法增强
+
 rust.vim: 提供 Rust 文件检测、语法高亮、格式设置与语法检测工具 Syntastic 集成等功能
 
-Racer: Rust Auto-Complete-er, 代码补全. `racer-rust/vim-racer` 已经停止开发, 不建议使用
+```
+" === rust.vim 配置 ===
+syntax enable
+filetype plugin indent on
+" 保存时代码自动格式化
+let g:rustfmt_autosave = 1
+
+" 手动调用格式化， Visual 模式下局部格式化，Normal 模式下当前文件内容格式化
+" 有时候代码有错误时，rust.vim 不会调用格式化，手动格式化就很方便
+vnoremap <leader>ft :RustFmtRange<CR>
+nnoremap <leader>ft :RustFmt<CR>
+" 设置编译运行 (来自 rust.vim，加命令行参数则使用命令 `:RustRun!`)
+nnoremap <M-r> :RustRun<CR>
+" 使用 `:verbose nmap <M-t>` 检测 Alt-t是否被占用
+" 使用 `:verbose nmap` 则显示所有快捷键绑定信息
+nnoremap <M-t> :RustTest<CR>
+```
+
+## 代码片段
+
+> Always async, never slows you down. 始终保持异步，永不减慢您的速度
+
+
+
+## 代码 补全 | 检查 | 跳转 利器
+
+https://rust-analyzer.github.io/manual.html#vimneovim
+
+
+
+Racer: Rust Auto-Complete-er, 代码补全. 而 vim 下的 `racer-rust/vim-racer` 插件已经停止开发, 不建议使用. 应该改用LSP插件（vim-lsp，nvim-lspconfig）, 补全用 YCM 是否就可以了?
 
 
 
