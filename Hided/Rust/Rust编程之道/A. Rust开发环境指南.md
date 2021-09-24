@@ -203,10 +203,11 @@ RLS 是Rust Language Server的简写，微软提出编程语言服务器的概�
 
 ## rust-analyzer
 
+> 不依赖 racer?
 
 Rust Analyzer：一款旨在带来优秀 IDE 体验的编译器: https://www.infoq.cn/article/lvLv4lmcMzTDg7ZTOMdY, 2020 年 2 月 13 日
 
-RA 是一个模块化编译器前端, 目的是为了带来优秀的 Rust IDE 体验, 不依赖 racer?
+RA 是一个模块化编译器前端, 目的是为了带来优秀的 Rust IDE 体验
 
 rust-analyzer 将取代 RLS.
 

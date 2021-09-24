@@ -63,6 +63,8 @@ git submodule update --init --recursive
 * rust 源码: rust src
 * 补全工具: rust analyzer
 
+> YCM使用了 rust analyzer, 所以不依赖 racer? 不用安装 racer?? `cargo install racer`
+
 YCM 目前已经不用 rls 了, 而是使用 rust-analyzer 作为工具链(因为 Rust 社区决定使用 rust-analyzer)
 
 所以直接安装使用
