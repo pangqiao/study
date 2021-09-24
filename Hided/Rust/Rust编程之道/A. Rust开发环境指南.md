@@ -168,6 +168,8 @@ RUN rustup default nightly-2018-05-12
 
 比如 Visual Studio Code、IntelliJ IDEA等。
 
+建议: 基于 linux 的 VS code, windows 环境则远程安装 rust-analyzer 插件
+
 # 6. 开发依赖工具
 
 ## 6.1. Racer 代码补全
