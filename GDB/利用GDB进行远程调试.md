@@ -13,14 +13,16 @@
 
 这里简单介绍如何交叉编译 gdb 和 gdbserver：
 
- * gdb 是调试客户端，而 gdbserver 是调试服务器。
- * 前者运行在本地机器上，但是调试的目标代码是运行在板子上的，后者本身就运行在板子上，用来调试板子上的代码，所以编译时需要分别编译，编译时通过`--host`，`--target` 等参数指定以便能够正确编译。当然，交叉编译它们之前首先得建立目标开发板的交叉编译环境。可自己编译：[《如何为嵌入式开发建立交叉编译环境》](http://www.ibm.com/developerworks/cn/linux/l-embcmpl/) 也可以直接从 Linaro 等仓库下载编译现成的。
+* gdb 是调试客户端，而 gdbserver 是调试服务器。
+* 前者运行在本地机器上，但是调试的目标代码是运行在板子上的，后者本身就运行在板子上，用来调试板子上的代码，所以编译时需要分别编译，编译时通过`--host`，`--target` 等参数指定以便能够正确编译。当然，交叉编译它们之前首先得建立目标开发板的交叉编译环境。可自己编译：[《如何为嵌入式开发建立交叉编译环境》](http://www.ibm.com/developerworks/cn/linux/l-embcmpl/) 也可以直接从 Linaro 等仓库下载编译现成的。
+
 编译目标机上的 stub 程序，即编译一个 gdbserver
 
 这个 stub 程序也应该是符合目标机处理器体系结构的，如果是 ARM，也需要用 arm-linux-gcc 来编译）并下载到目标机上去，这里直接用已经安装好的 gdbserver。
 
 编写一个简单的用于调试的程序
 
+```cpp
  /* test.c */
  #include <stdio.h>
  int main()
@@ -30,11 +32,14 @@
          printf("i = %d\n", i);
          return 0;
  }
+```
+
 编译可运行于目标板的机器代码，并下载到目标机上
 
 如果目标板是 ARM，那么应该这么编译：
 
- $ arm-linux-gcc  -g -o test test.c
+$ arm-linux-gcc  -g -o test test.c
+
 X86 直接这么编译就可以：
 
  $ gcc  -g -o test test.c

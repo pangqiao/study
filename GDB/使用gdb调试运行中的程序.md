@@ -8,103 +8,117 @@
 情景3：遇到需要查看、队列、链表、树、堆等数据结构里的变量怎么办
 
 1. 情景1：在不中止程序服务的情况下，怎么调试正在运行时的程序
-我们在生产环境或者测试环境，会遇到一些异常，我们需要知道程序中的变量或者内存的值来确定程序运行状态
-之前听过@淘宝褚霸讲过用systemstap可以实现这种功能，但systamstap写起来复杂一些，
-还有时候在低内核版本的操作系统上用stap之后，程序或者操作系统都有可能死掉。
 
-看过多隆调试程序时用pstack（修改了pstack代码，用gdb实现的，详见http://blog.yufeng.info/archives/873）查看和修改一个正在
-执行程序的全局变量，感觉很神奇，尝试用gdb实现这种功能：
+我们在生产环境或者测试环境，会遇到一些异常，我们需要知道程序中的变量或者内存的值来确定程序运行状态
+
+之前听过@淘宝褚霸讲过用systemstap可以实现这种功能，但systamstap写起来复杂一些，还有时候在低内核版本的操作系统上用stap之后，程序或者操作系统都有可能死掉。
+
+看过多隆调试程序时用pstack（修改了pstack代码，用gdb实现的，详见http://blog.yufeng.info/archives/873）查看和修改一个正在执行程序的全局变量，感觉很神奇，尝试用gdb实现这种功能：
 
 保存下面代码到文件runstack.sh
 
-    #!/bin/sh
-    if test $# -ne 2; then
-       echo "Usage: `basename $0 .sh` <process-id> cmd" 1>&2
-       echo "For exampl: `basename $0 .sh` 1000 bt" 1>&2
-       exit 1
-    fi
-    if test ! -r /proc/$1; then
-       echo "Process $1 not found." 1>&2
-       exit 1
-    fi
-    result=""
-    GDB=${GDB:-/usr/bin/gdb}
-    # Run GDB, strip out unwanted noise.
-    result=`$GDB --quiet -nx /proc/$1/exe $1 <<EOF 2>&1
-    $2
-    EOF`
-    echo "$result" | egrep -A 1000 -e "^\(gdb\)" | egrep -B 1000 -e "^\(gdb\)"
-    
+```bash
+#!/bin/sh
+if test $# -ne 2; then
+    echo "Usage: `basename $0 .sh` <process-id> cmd" 1>&2
+    echo "For exampl: `basename $0 .sh` 1000 bt" 1>&2
+    exit 1
+fi
+if test ! -r /proc/$1; then
+    echo "Process $1 not found." 1>&2
+    exit 1
+fi
+result=""
+GDB=${GDB:-/usr/bin/gdb}
+# Run GDB, strip out unwanted noise.
+result=`$GDB --quiet -nx /proc/$1/exe $1 <<EOF 2>&1
+$2
+EOF`
+echo "$result" | egrep -A 1000 -e "^\(gdb\)" | egrep -B 1000 -e "^\(gdb\)"
+```
+
 用于测试runstack.sh调试的c代码
 
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include <string.h>
-    #include <unistd.h>
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
 
-    typedef struct slist {
-        struct slist *next;
-        char         data[4096];
-    } slist;
+typedef struct slist {
+    struct slist *next;
+    char         data[4096];
+} slist;
 
-    slist input_list = {NULL, {'\0'}};
-    int count = 0;
+slist input_list = {NULL, {'\0'}};
+int count = 0;
 
-    static void stdin_read (int fd)
-    {
-        char buf[4096];
-        int ret;
+static void stdin_read (int fd)
+{
+    char buf[4096];
+    int ret;
 
-        memset(buf, 0, 4096);
+    memset(buf, 0, 4096);
 
-        fprintf(stderr, "please input string:");
+    fprintf(stderr, "please input string:");
 
-        while (ret = read(fd, buf, 4096)) {
+    while (ret = read(fd, buf, 4096)) {
 
-            slist *node = calloc(1, sizeof(slist));
-            memcpy(node->data, buf, ret);
-            node->next = input_list.next;
-            input_list.next = node;
-            count ++;
+        slist *node = calloc(1, sizeof(slist));
+        memcpy(node->data, buf, ret);
+        node->next = input_list.next;
+        input_list.next = node;
+        count ++;
 
-            if (memcmp(buf, "quit", 4) == 0) {
-                fprintf(stdout, "input quit:\n");
-                return;
-            }
-            fprintf(stderr, "ret: %d, there is %d strings, current is %s\nplease input string:", ret, count, buf);
+        if (memcmp(buf, "quit", 4) == 0) {
+            fprintf(stdout, "input quit:\n");
+            return;
         }
+        fprintf(stderr, "ret: %d, there is %d strings, current is %s\nplease input string:", ret, count, buf);
+    }
+}
+
+int main()
+{
+    fprintf(stderr, "main run!\n");
+
+    stdin_read(STDIN_FILENO);
+
+    slist *nlist;
+    slist *list = input_list.next;
+    while (list) {
+        fprintf(stderr, "%s\n", list->data);
+        nlist = list->next;
+        free(list);
+        list = nlist;
     }
 
-    int main()
-    {
-        fprintf(stderr, "main run!\n");
+    return 0;
+}
+```
 
-        stdin_read(STDIN_FILENO);
+编译c代码：`gcc -g -o read_input read_input.c`
 
-        slist *nlist;
-        slist *list = input_list.next;
-        while (list) {
-            fprintf(stderr, "%s\n", list->data);
-            nlist = list->next;
-            free(list);
-            list = nlist;
-        }
+执行 `./read_input` 我们开始使用`runstack.sh`来调试
 
-        return 0;
-    }
-    
-编译c代码：gcc -g -o read_input read_input.c
-执行./read_input 我们开始使用runstack.sh来调试
-使用方法：sh ./runstack.sh pid “command”
+使用方法：`sh ./runstack.sh pid "command"`
 
 来试验一下：
+
+```
 [shihao@xxx]$ ps aux |grep read_input|grep -v grep
 shihao 10933 0.0 0.0 3668 332 pts/4 S+ 09:41 0:00 ./read_input
+```
+
 10933是一个read_input程序的进程号
 
 1）打印代码
-sudo sh ./runstack.sh 10933 “list main”
+
+`sudo sh ./runstack.sh 10933 "list main"`
+
 结果
+
+```
 (gdb) 35 fprintf(stderr, “ret: %d, there is %d strings, current is %s\nplease input string:”, ret, count, buf);
 36 }
 37 }
@@ -116,14 +130,20 @@ sudo sh ./runstack.sh 10933 “list main”
 43 stdin_read(STDIN_FILENO);
 44
 (gdb) quit
+```
 
 2）显示程序全局变量值
+
+```
 ./runstack.sh 10933 “p count”
 (gdb) $1 = 1
 (gdb) quit
+```
 
 3）修改变量值
+
 执行下面命令前
+
 [shihao@tfs036097 gdb]$ runstack.sh 11190 “set count=100″
 结果： (gdb) (gdb) quit
 
