@@ -131,7 +131,7 @@ export RUSTUP_DIST_SERVER=http://mirrors.ustc.edu.cn/rust-static
 export RUSTUP_UPDATE_ROOT=http://mirrors.ustc.edu.cn/rust-static/rustup
 ```
 
-2. 设置cargo使用的国内镜像
+2. 设置 cargo 使用的国内镜像
 
 在`CARGO_HOME`目录下（默认是`～/.cargo`）建立一个名叫config的文件，内容如下：
 
