@@ -168,7 +168,16 @@ RUN rustup default nightly-2018-05-12
 
 比如 Visual Studio Code、IntelliJ IDEA等。
 
-建议: 基于 linux 的 VS code, windows 环境则远程安装 rust-analyzer 插件
+建议: 基于 linux 的 VS code, 插件安装 Native Debug (Debug 用) 和 rust-analyzer(编译器 + 代码增强) CodeLLDB
+
+* rust-analyzer – 新一代rls,老的可以不用安装了。
+* CodeLLDB – Debug时需要用到的插件
+* Better TOML – TOML标记语言支持
+* crates – crates.io 依赖的一个扩展，Cargo.toml管理依赖使用
+* Tabnine – 只能助手，很好用，就是有点耗费CPU/内存，可以选择安装使用
+* Auto Close Tag – 自动添加HTML/XML close tag
+
+windows 环境则远程连接 linux 且安装插件
 
 # 6. 开发依赖工具
 
