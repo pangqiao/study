@@ -179,7 +179,7 @@ Process 20123 stopped
 这都是模拟的 GDB 的命令族。LLDB 原生的则是
 
 ```
-(lldb) thead select id
+(lldb) thread select id
 (lldb) thread step-in    // The same as gdb's "step" or "s"
 (lldb) thread step-over  // The same as gdb's "next" or "n"
 (lldb) thread step-out   // The same as gdb's "finish" or "f"
