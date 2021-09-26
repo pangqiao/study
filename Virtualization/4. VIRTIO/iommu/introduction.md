@@ -117,3 +117,30 @@ Virtual I/O Translation table (VIOT) 描述了半虚设备的 I/O 拓扑信息.
 
 * 对于 non-devicetree 平台, 应该使用 ACPI Table.
 * 对于既没有 devicetree, 又没有 ACPI 的 platform, 可以在设备中内置一个使用大致相同格式的结构
+
+# virtio-iommu spec
+
+virtio-iommu 设备管理多个 endpoints 的 DMA 操作.
+
+它既可以作为物理 IOMMU 的代理来管理分配给虚拟机的物理设备(透传)，也可以作为一个虚拟 IOMMU 来管理模拟设备和半虚拟化设备。
+
+virtio-iommu 驱动程序首先使用特定于平台的机制发现由 virtio-iommu 设备管理的 endpoints。然后它发送请求为这些 endpoints 创建虚拟地址空间和虚拟地址到物理地址映射关系.
+
+在最简单的形式中，virtio-iommu 支持四种请求类型：
+
+1. 创建一个 domain 并且 attach 一个 endpoint 给它.
+
+`attach(endpoint=0x8, domain=1)`
+
+2. 创建 guest-visual address 到 guest-physical address 的 mapping 关系
+
+`map(domain=1, virt_start=0x1000, virt_end=0x1fff, phys=0xa000, flags=READ)`
+
+3. 移除 mapping 关系
+
+`unmap(domain=1, virt_start=0x1000, virt_end=0x1fff)`
+
+4. detach 一个 endpoint 并且删除 domain
+
+`detach(endpoint=0x8, domain=1)`
+
