@@ -1,15 +1,15 @@
 ;*************************************************
 ; stage3.asm                                     *
-; Copyright (c) 2009-2013 µËÖ¾                   *
+; Copyright (c) 2009-2013 é‚“å¿—                   *
 ; All rights reserved.                           *
 ;*************************************************
 
 
 
 ;;
-;; stage3 ËµÃ÷£º
-;; 1) Ç°°ë²¿·ÖÔÚ legacy 32 Î»»·¾³Ö´ĞĞ
-;; 2) ºó°ë²¿·ÖÔÚ 64-bit »·¾³ÏÂÖ´ĞĞ
+;; stage3 è¯´æ˜ï¼š
+;; 1) å‰åŠéƒ¨åˆ†åœ¨ legacy 32 ä½ç¯å¢ƒæ‰§è¡Œ
+;; 2) ååŠéƒ¨åˆ†åœ¨ 64-bit ç¯å¢ƒä¸‹æ‰§è¡Œ
 ;;
 
         bits 32
@@ -19,16 +19,16 @@
 ; input:
 ;       none
 ; output:
-;       edx:eax - 64 Î»µÄ 4K stack base£¨ĞéÄâµØÖ·£© 
-; ÃèÊö£º
-;       1)·ÖÅäÒ»¸ö4KÒ³Ãæ´óĞ¡µÄ kernel stack baseµÄ¿ÉÓÃÖµ         
-;       2)²¢¸üĞÂµ±Ç° kernel stack base ¼ÇÂ¼
+;       edx:eax - 64 ä½çš„ 4K stack baseï¼ˆè™šæ‹Ÿåœ°å€ï¼‰ 
+; æè¿°ï¼š
+;       1)åˆ†é…ä¸€ä¸ª4Ké¡µé¢å¤§å°çš„ kernel stack baseçš„å¯ç”¨å€¼         
+;       2)å¹¶æ›´æ–°å½“å‰ kernel stack base è®°å½•
 ;-----------------------------------------------------------------------
 alloc_stage3_kernel_stack_4k_base:
         mov eax, 4096
-        xor edx, edx                                            ; ·ÖÅä 4K ´óĞ¡
-        mov esi, SDA_PHYSICAL_BASE + SDA.KernelStackBase        ; ÔÚ KernelStackBase ³ØÀï·ÖÅä
-        call locked_xadd64                                      ; edx:eax ·µ»Ø kernel base
+        xor edx, edx                                            ; åˆ†é… 4K å¤§å°
+        mov esi, SDA_PHYSICAL_BASE + SDA.KernelStackBase        ; åœ¨ KernelStackBase æ± é‡Œåˆ†é…
+        call locked_xadd64                                      ; edx:eax è¿”å› kernel base
         ret
         
         
@@ -41,27 +41,27 @@ alloc_stage3_kernel_stack_4k_base:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ÔÚ½øÈë long-mode Ç°½øĞĞ×î»ù±¾µÄ³õÊ¼»¯
-;       2) ÔÚ legacy ÏÂÊ¹ÓÃ
+; æè¿°ï¼š
+;       1) åœ¨è¿›å…¥ long-mode å‰è¿›è¡Œæœ€åŸºæœ¬çš„åˆå§‹åŒ–
+;       2) åœ¨ legacy ä¸‹ä½¿ç”¨
 ;---------------------------------------------------------------
 init_longmode_basic_page32:
         ;;
-        ;; ÏÂÃæÓ³Éä PPT ±íÇøÓò£¨2M£©£¬°üÀ¨ PXT ±íÇøÓò£¨4K£©
+        ;; ä¸‹é¢æ˜ å°„ PPT è¡¨åŒºåŸŸï¼ˆ2Mï¼‰ï¼ŒåŒ…æ‹¬ PXT è¡¨åŒºåŸŸï¼ˆ4Kï¼‰
         ;;
         call map_longmode_page_transition_table32
         
         ;;
-        ;; Ó³Éä»ù±¾ÔËĞĞÇøÓò£º
-        ;; 1) compatibility Ä£Ê½ÏÂµÄ LONG_SEGMENT ÇøÓò
-        ;; 2) setup Ä£¿éÇøÓò
-        ;; 3) 64-bit Ä£Ê½ÏÂµÄ LONG_SEGMENT ÇøÓò
+        ;; æ˜ å°„åŸºæœ¬è¿è¡ŒåŒºåŸŸï¼š
+        ;; 1) compatibility æ¨¡å¼ä¸‹çš„ LONG_SEGMENT åŒºåŸŸ
+        ;; 2) setup æ¨¡å—åŒºåŸŸ
+        ;; 3) 64-bit æ¨¡å¼ä¸‹çš„ LONG_SEGMENT åŒºåŸŸ
         ;;
         
         ;;
-        ;; 1) Ó³Éä compatibility Ä£Ê½ÏÂ£¨³õÊ¼»¯Ê±£©µÄ LONG_SEGMENT ÇøÓò, Ê¹ÓÃ 4K Ò³Ãæ
+        ;; 1) æ˜ å°„ compatibility æ¨¡å¼ä¸‹ï¼ˆåˆå§‹åŒ–æ—¶ï¼‰çš„ LONG_SEGMENT åŒºåŸŸ, ä½¿ç”¨ 4K é¡µé¢
         ;;
-        mov eax, LONG_LENGTH + 0FFFh                            ; ¼ÓÉÏ±£ÁôµÄ 4K ¿Õ¼ä
+        mov eax, LONG_LENGTH + 0FFFh                            ; åŠ ä¸Šä¿ç•™çš„ 4K ç©ºé—´
         shr eax, 12
         push eax
         xor edi, edi
@@ -72,7 +72,7 @@ init_longmode_basic_page32:
         call do_prev_stage3_virtual_address_mapping32_n     
         
         ;;
-        ;; 2£©Ó³Éä SETUP_SEGMENT ÇøÓò
+        ;; 2ï¼‰æ˜ å°„ SETUP_SEGMENT åŒºåŸŸ
         ;;
         mov ecx, [SETUP_SEGMENT]
         add ecx, 0FFFh
@@ -88,7 +88,7 @@ init_longmode_basic_page32:
         
 %ifdef GUEST_ENABLE
         ;;
-        ;; Ó³Éä guest Ä£¿é
+        ;; æ˜ å°„ guest æ¨¡å—
         ;;
         mov ecx, [GUEST_BOOT_SEGMENT]
         add ecx, 0FFFh
@@ -115,9 +115,9 @@ init_longmode_basic_page32:
 
         
         ;;
-        ;; 3) Ó³Éä 64-bit Ä£Ê½ÏÂµÄ LONG_SEGMENT ÇøÓò£º
-        ;;      3.1) ĞéÄâµØÖ· ffff_ff80_4000_0000 - ffff_ff80_4000_3fffh 
-        ;;      3.2) Ó³Éäµ½ 2_0000h - 2_3000h ÎïÀíÒ³Ãæ£¬Ê¹ÓÃ 4K Ò³
+        ;; 3) æ˜ å°„ 64-bit æ¨¡å¼ä¸‹çš„ LONG_SEGMENT åŒºåŸŸï¼š
+        ;;      3.1) è™šæ‹Ÿåœ°å€ ffff_ff80_4000_0000 - ffff_ff80_4000_3fffh 
+        ;;      3.2) æ˜ å°„åˆ° 2_0000h - 2_3000h ç‰©ç†é¡µé¢ï¼Œä½¿ç”¨ 4K é¡µ
         ;; 
         mov eax, LONG_LENGTH + 0FFFh
         shr eax, 12
@@ -130,7 +130,7 @@ init_longmode_basic_page32:
         call do_prev_stage3_virtual_address_mapping32_n
 
         ;;
-        ;; Ó³Éä video ÇøÓò
+        ;; æ˜ å°„ video åŒºåŸŸ
         ;;
         mov esi, [fs: SDA.VideoBufferPtr]
         xor edi, edi
@@ -142,9 +142,9 @@ init_longmode_basic_page32:
         
 
         ;;
-        ;; Ó³Éä SDA ÇøÓò:
-        ;; 1) SDA ÇøÓòµÄ legacy stage1 ½×¶ÎÏÂµÄÎïÀíµØÖ·£¨Ò»¶ÔÒ»Ó³Éä£©
-        ;; 2) SDA ÇøÓòÎ»ÓÚ: ffff_f800_8002_0000h
+        ;; æ˜ å°„ SDA åŒºåŸŸ:
+        ;; 1) SDA åŒºåŸŸçš„ legacy stage1 é˜¶æ®µä¸‹çš„ç‰©ç†åœ°å€ï¼ˆä¸€å¯¹ä¸€æ˜ å°„ï¼‰
+        ;; 2) SDA åŒºåŸŸä½äº: ffff_f800_8002_0000h
         ;;
         mov esi, [fs: SDA.PhysicalBase]
         xor edi, edi
@@ -172,13 +172,13 @@ init_longmode_basic_page32:
         
         
         ;;
-        ;; Ó³ÉäÒ³±í³Ø PT PoolÇøÓò:
-        ;; 1) Ö÷ PT Pool ÇøÓò£º  ffff_f800_8220_0000h Ó³Éäµ½ 220_0000h
-        ;; 2) ±¸ÓÃ PT Pool ÇøÓò: ffff_f800_8020_0000h Ó³Éäµ½ 020_0000h
+        ;; æ˜ å°„é¡µè¡¨æ±  PT PoolåŒºåŸŸ:
+        ;; 1) ä¸» PT Pool åŒºåŸŸï¼š  ffff_f800_8220_0000h æ˜ å°„åˆ° 220_0000h
+        ;; 2) å¤‡ç”¨ PT Pool åŒºåŸŸ: ffff_f800_8020_0000h æ˜ å°„åˆ° 020_0000h
         ;;
         
         ;;
-        ;; 1) PT Pool ÇøÓò
+        ;; 1) PT Pool åŒºåŸŸ
         ;;
         mov esi, [fs: SDA.PtPoolBase]
         mov edi, [fs: SDA.PtPoolBase + 4]
@@ -192,7 +192,7 @@ init_longmode_basic_page32:
         call do_prev_stage3_virtual_address_mapping32_n
         
         ;;
-        ;; 2) ±¸ÓÃ PT Pool ÇøÓò
+        ;; 2) å¤‡ç”¨ PT Pool åŒºåŸŸ
         ;;
         mov esi, [fs: SDA.PtPool2Base]
         mov edi, [fs: SDA.PtPool2Base + 4]
@@ -206,9 +206,9 @@ init_longmode_basic_page32:
         call do_prev_stage3_virtual_address_mapping32_n       
 
         ;;
-        ;; Ó³Éä LAPIC Óë IAPIC
-        ;; 1) LAPIC_BASE64 = ffff_f800_fee0_0000h Ó³Éäµ½ fee0_0000h
-        ;; 2) IAPIC_BASE64 = ffff_f800_fec0_0000h Ó³Éäµ½ fec0_0000h
+        ;; æ˜ å°„ LAPIC ä¸ IAPIC
+        ;; 1) LAPIC_BASE64 = ffff_f800_fee0_0000h æ˜ å°„åˆ° fee0_0000h
+        ;; 2) IAPIC_BASE64 = ffff_f800_fec0_0000h æ˜ å°„åˆ° fec0_0000h
         ;;
         mov edi, 0FFFFF800h
         mov esi, 0FEE00000h
@@ -232,14 +232,14 @@ init_longmode_basic_page32:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ½« GDT/IDT pointer ¸üĞÂÎª paging ¹ÜÀíÏÂµÄÖµ
-;       2) ÎªÏÂ½×¶ÎÇĞ»»µ½ paging×÷×¼±¸
+; æè¿°ï¼š
+;       1) å°† GDT/IDT pointer æ›´æ–°ä¸º paging ç®¡ç†ä¸‹çš„å€¼
+;       2) ä¸ºä¸‹é˜¶æ®µåˆ‡æ¢åˆ° pagingä½œå‡†å¤‡
 ;-----------------------------------------------------
 update_stage3_gdt_idt_pointer:
         ;;
-        ;; ¸üĞÂ GDT/IDT pointer£¬Ê¹ÓÃ 64-bit ĞéÄâµØÖ·
-        ;; 1) µØÖ·ÖĞµÄ¸ß 32 Î»ÖµÎª ffff_ff800h£¬ÒÑ¾­ÔÚ stage1 ÉèÖÃ
+        ;; æ›´æ–° GDT/IDT pointerï¼Œä½¿ç”¨ 64-bit è™šæ‹Ÿåœ°å€
+        ;; 1) åœ°å€ä¸­çš„é«˜ 32 ä½å€¼ä¸º ffff_ff800hï¼Œå·²ç»åœ¨ stage1 è®¾ç½®
         ;;
         mov DWORD [fs: SDA.IdtBase], SDA_BASE + SDA.Idt
         mov DWORD [fs: SDA.IdtTop], SDA_BASE + SDA.Idt
@@ -258,37 +258,37 @@ update_stage3_gdt_idt_pointer:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Ó³Éä stage3 ½×¶ÎµÄ PCB ÇøÓò 
+; æè¿°ï¼š
+;       1) æ˜ å°„ stage3 é˜¶æ®µçš„ PCB åŒºåŸŸ 
 ;-----------------------------------------------------------------------
 map_stage3_pcb:
         push ecx
         push edx
         
         ;;
-        ;; Ó³Éä´¦ÀíÆ÷µÄ Processor Control Block ÇøÓò£¨64-bit£©
+        ;; æ˜ å°„å¤„ç†å™¨çš„ Processor Control Block åŒºåŸŸï¼ˆ64-bitï¼‰
         ;;
         mov ecx, [gs: PCB.Size]                                 ; PCB size
         add ecx, 0FFFh
         shr ecx, 12   
-        push ecx                                                ; Ò³ÃæÊıÁ¿        
+        push ecx                                                ; é¡µé¢æ•°é‡        
         mov esi, [gs: PCB.Base]
-        mov edi, [gs: PCB.Base + 4]                             ; edi:esi - 64 Î» PCB ĞéÄâµØÖ·
+        mov edi, [gs: PCB.Base + 4]                             ; edi:esi - 64 ä½ PCB è™šæ‹Ÿåœ°å€
         mov eax, [gs: PCB.PhysicalBase]
-        mov edx, [gs: PCB.PhysicalBase + 4]                     ; edx:eax - PCB ÎïÀíµØÖ·
-        mov ecx, XD | RW | P                                    ; ecx - Ò³ÊôĞÔ
+        mov edx, [gs: PCB.PhysicalBase + 4]                     ; edx:eax - PCB ç‰©ç†åœ°å€
+        mov ecx, XD | RW | P                                    ; ecx - é¡µå±æ€§
         call do_prev_stage3_virtual_address_mapping32_n
         
         ;;
-        ;; Ó³Éä´¦ÀíÆ÷µÄ LSB ÇøÓò
+        ;; æ˜ å°„å¤„ç†å™¨çš„ LSB åŒºåŸŸ
         ;;
         mov ecx, LOCAL_STORAGE_BLOCK_SIZE + 0FFFh
         shr ecx, 12
         push ecx
         mov esi, [gs: PCB.LsbBase]
-        mov edi, [gs: PCB.LsbBase + 4]                          ; edi:esi - 64 Î» LSB ĞéÄâµØÖ·
+        mov edi, [gs: PCB.LsbBase + 4]                          ; edi:esi - 64 ä½ LSB è™šæ‹Ÿåœ°å€
         mov eax, [gs: PCB.LsbPhysicalBase]
-        mov edx, [gs: PCB.LsbPhysicalBase + 4]                  ; edx:eax - 64 Î»ÎïÀíµØÖ·
+        mov edx, [gs: PCB.LsbPhysicalBase + 4]                  ; edx:eax - 64 ä½ç‰©ç†åœ°å€
         mov ecx, XD | RW | P
         call do_prev_stage3_virtual_address_mapping32_n
         
@@ -305,21 +305,21 @@ map_stage3_pcb:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) Îª paging ÔÚÊ¹ÓÃÔ­ kernel stack£¬Ğè·ÖÅäÒ»¸ö VA Ó³ÉäÔ­ stack
+; æè¿°ï¼š
+;       1) ä¸º paging åœ¨ä½¿ç”¨åŸ kernel stackï¼Œéœ€åˆ†é…ä¸€ä¸ª VA æ˜ å°„åŸ stack
 ;-----------------------------------------------------------------------
 update_stage3_kernel_stack:
         ;;
-        ;; µ÷Õû stack Öµ£º
-        ;; 1) ·ÖÅäÒ»¸ö kernel stack ĞéÄâµØÖ·Ó³Éäµ½ kernel stack ÎïÀíµØÖ·
+        ;; è°ƒæ•´ stack å€¼ï¼š
+        ;; 1) åˆ†é…ä¸€ä¸ª kernel stack è™šæ‹Ÿåœ°å€æ˜ å°„åˆ° kernel stack ç‰©ç†åœ°å€
         ;;
         call alloc_stage3_kernel_stack_4k_base
         mov esi, eax
-        mov edi, edx                                    ; edi:esi - ĞéÄâµØÖ·
+        mov edi, edx                                    ; edi:esi - è™šæ‹Ÿåœ°å€
         ;;
-        ;; ¸üĞÂ KernelStack Öµ
-        ;; 1) ´ËÇ°ÎªÎïÀíµØÖ·
-        ;; 2) µØÖ·ÖĞµÄ¸ß 32 Î»ÔÚ 64-bit Ä£Ê½ÏÂÊ¹ÓÃ
+        ;; æ›´æ–° KernelStack å€¼
+        ;; 1) æ­¤å‰ä¸ºç‰©ç†åœ°å€
+        ;; 2) åœ°å€ä¸­çš„é«˜ 32 ä½åœ¨ 64-bit æ¨¡å¼ä¸‹ä½¿ç”¨
         ;;
         mov eax, esp
         and eax, 0FFFh
@@ -330,10 +330,10 @@ update_stage3_kernel_stack:
         
         
         ;;
-        ;; Ó³Éä KernelStack µØÖ·
+        ;; æ˜ å°„ KernelStack åœ°å€
         ;;
         mov eax, esp
-        xor edx, edx                                    ; edx:eax - ÎïÀíµØÖ·
+        xor edx, edx                                    ; edx:eax - ç‰©ç†åœ°å€
         mov ecx, XD | RW | P
         call do_prev_stage3_virtual_address_mapping32
         ret
@@ -353,8 +353,8 @@ update_stage3_kernel_stack:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1) ¹¹Ôì longmode ÏÂµÄ TSS ¿é
+; æè¿°:
+;       1) æ„é€  longmode ä¸‹çš„ TSS å—
 ;-------------------------------------------------------------------
 update_stage3_tss:
         push rbx
@@ -362,13 +362,13 @@ update_stage3_tss:
         push rcx
            
         ;;
-        ;; Tss ĞéÄâµØÖ·
+        ;; Tss è™šæ‹Ÿåœ°å€
         ;;
         mov rax, [gs: PCB.TssBase]
 
         ;;
-        ;; ÖØĞÂÉèÖÃ TSS ÃèÊö·û
-        ;; 1) ÃèÊö·ûÖĞÎïÀíµØÖ·¸ÄÎªĞéÄâµØÖ·
+        ;; é‡æ–°è®¾ç½® TSS æè¿°ç¬¦
+        ;; 1) æè¿°ç¬¦ä¸­ç‰©ç†åœ°å€æ”¹ä¸ºè™šæ‹Ÿåœ°å€
         ;;
         mov rsi, rax
         mov rdx, rax
@@ -382,7 +382,7 @@ update_stage3_tss:
         or rax, rdi
 
         ;;
-        ;; Ğ´Èë GDT ÖĞ
+        ;; å†™å…¥ GDT ä¸­
         ;;
         movzx esi, WORD [gs: PCB.TssSelector]
         add rsi, [fs: SDA.GdtBase]
@@ -391,23 +391,23 @@ update_stage3_tss:
         
         
         ;;
-        ;; ĞŞ¸Ä TSS ¿éÄÚÈİ
+        ;; ä¿®æ”¹ TSS å—å†…å®¹
         ;;
         mov rbx, [gs: PCB.TssBase]
         
         ;;
-        ;; ·ÖÅäÒ»¸ö kernel Ê¹ÓÃµÄ stack ĞéÄâµØÖ·£¬Ó³ÉäÔ­ÎïÀíµØÖ·
+        ;; åˆ†é…ä¸€ä¸ª kernel ä½¿ç”¨çš„ stack è™šæ‹Ÿåœ°å€ï¼Œæ˜ å°„åŸç‰©ç†åœ°å€
         ;;
         call alloc_kernel_stack_4k_base
-        mov rsi, rax                                            ; ĞéÄâµØÖ·
-        mov edi, [rbx + tss32.esp0]                             ; Ô­ÎïÀíµØÖ·
-        add rax, 0FF0h                                          ; µ÷Õûµ½¶¥²¿
-        mov [rbx + tss64.rsp0], rax                             ; ¸üĞÂ TSS64 µÄ RSP0 Öµ
+        mov rsi, rax                                            ; è™šæ‹Ÿåœ°å€
+        mov edi, [rbx + tss32.esp0]                             ; åŸç‰©ç†åœ°å€
+        add rax, 0FF0h                                          ; è°ƒæ•´åˆ°é¡¶éƒ¨
+        mov [rbx + tss64.rsp0], rax                             ; æ›´æ–° TSS64 çš„ RSP0 å€¼
         mov r8d, XD | RW | P
         call do_virtual_address_mapping
         
         ;;
-        ;; ÖØĞÂ¼ÓÔØ TR
+        ;; é‡æ–°åŠ è½½ TR
         movzx eax, WORD [gs: PCB.TssSelector]
         ltr ax
                         
@@ -426,8 +426,8 @@ update_stage3_tss.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1) ¸üĞÂ GS ¶Î×¼±¸
+; æè¿°:
+;       1) æ›´æ–° GS æ®µå‡†å¤‡
 ;-----------------------------------------------------------------------
 update_stage3_gs_segment:
         push rcx
@@ -435,7 +435,7 @@ update_stage3_gs_segment:
         push rbx
         
         ;;
-        ;; ¸üĞÂ context ÇøÓòÖ¸Õë
+        ;; æ›´æ–° context åŒºåŸŸæŒ‡é’ˆ
         ;;
         mov rbx, [gs: PCB.Base]
         lea rax, [rbx + PCB.Context]
@@ -444,7 +444,7 @@ update_stage3_gs_segment:
         mov [gs: PCB.XMMStateImageBase], rax
 
         ;;
-        ;; ¸üĞÂ LAPIC Óë IAPIC »ùÖ·
+        ;; æ›´æ–° LAPIC ä¸ IAPIC åŸºå€
         ;; 1) LAPIC_BASE64 = ffff_f800_fee0_0000h
         ;; 2) IAPIC_BASE64 = ffff_f800_fec0_0000h
         ;;
@@ -470,8 +470,8 @@ update_stage3_gs_segment:
 ;       none
 ; output:
 ;       none
-; ÃèÊö:
-;       1) °²×°Ä¬ÈÏµÄÖĞ¶Ï·şÎñÀı³Ì
+; æè¿°:
+;       1) å®‰è£…é»˜è®¤çš„ä¸­æ–­æœåŠ¡ä¾‹ç¨‹
 ;-----------------------------------------------------
 install_default_interrupt_handler:
         push rcx
@@ -481,7 +481,7 @@ install_default_interrupt_handler:
         jne install_default_interrupt_handler.done
         
         ;;
-        ;; °²×°Òì³£·şÎñÀı³Ì
+        ;; å®‰è£…å¼‚å¸¸æœåŠ¡ä¾‹ç¨‹
         ;;
 install_default_interrupt_handler.loop:        
         mov esi, ecx
@@ -492,7 +492,7 @@ install_default_interrupt_handler.loop:
         jb install_default_interrupt_handler.loop
         
         ;;
-        ;; °²×° pic 8259 ÖĞ¶Ï·şÎñÀı³Ì
+        ;; å®‰è£… pic 8259 ä¸­æ–­æœåŠ¡ä¾‹ç¨‹
         ;;
         mov esi, PIC8259A_IRQ0_VECTOR
         mov rdi, timer_8259_handler64
@@ -503,14 +503,14 @@ install_default_interrupt_handler.loop:
         call install_kernel_interrupt_handler64
         
         ;;
-        ;; °²×°ÏµÍ³µ÷ÓÃ·şÎñÀı³Ì
+        ;; å®‰è£…ç³»ç»Ÿè°ƒç”¨æœåŠ¡ä¾‹ç¨‹
         ;;
         mov esi, [fs: SRT.ServiceRoutineVector]
         mov rdi, sys_service_routine
         call install_user_interrupt_handler64
         
         ;;
-        ;; °²×° IPI ·şÎñÀı³Ì
+        ;; å®‰è£… IPI æœåŠ¡ä¾‹ç¨‹
         ;;       
         mov esi, IPI_VECTOR
         mov rdi, dispatch_routine64
@@ -521,7 +521,7 @@ install_default_interrupt_handler.loop:
         call install_kernel_interrupt_handler64
         
         ;;
-        ;; °²×°È±Ê¡ local ÖĞ¶Ï·şÎñÀı³Ì
+        ;; å®‰è£…ç¼ºçœ local ä¸­æ–­æœåŠ¡ä¾‹ç¨‹
         ;;
         call install_default_local_interrupt_handler
         
@@ -537,8 +537,8 @@ install_default_interrupt_handler.done:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) °²×° local È±Ê¡ÖĞ¶Ï·şÎñÀı³Ì
+; æè¿°ï¼š
+;       1) å®‰è£… local ç¼ºçœä¸­æ–­æœåŠ¡ä¾‹ç¨‹
 ;-----------------------------------------------------
 install_default_local_interrupt_handler:
         mov esi, LAPIC_PERFMON_VECTOR
@@ -563,12 +563,12 @@ install_default_local_interrupt_handler:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) µÈ´ı AP Íê³É pre-stage3 ½×¶Î¹¤×÷
+; æè¿°ï¼š
+;       1) ç­‰å¾… AP å®Œæˆ pre-stage3 é˜¶æ®µå·¥ä½œ
 ;-----------------------------------------------------
 wait_for_ap_stage3_done:            
         ;;
-        ;; 1) ¿ª·Å pre-stage3 Ëø£¬ÔÊĞí AP ½øÈë pre-stage3
+        ;; 1) å¼€æ”¾ pre-stage3 é”ï¼Œå…è®¸ AP è¿›å…¥ pre-stage3
         ;;
         xor eax, eax
         mov ebx, [fs: SDA.Stage3LockPointer]        
@@ -576,10 +576,10 @@ wait_for_ap_stage3_done:
 
 
         ;;
-        ;; µÈ´ı AP Íê³É pre-stage3 ¹¤×÷:
-        ;; ¼ì²é´¦ÀíÆ÷¼ÆÊı ApInitDoneCount ÊÇ·ñµÈÓÚ LocalProcessorCount Öµ
-        ;; 1)ÊÇ£¬ËùÓĞ AP Íê³É pre-stage3 ¹¤×÷
-        ;; 2)·ñ£¬¼ÌĞøµÈ´ı
+        ;; ç­‰å¾… AP å®Œæˆ pre-stage3 å·¥ä½œ:
+        ;; æ£€æŸ¥å¤„ç†å™¨è®¡æ•° ApInitDoneCount æ˜¯å¦ç­‰äº LocalProcessorCount å€¼
+        ;; 1)æ˜¯ï¼Œæ‰€æœ‰ AP å®Œæˆ pre-stage3 å·¥ä½œ
+        ;; 2)å¦ï¼Œç»§ç»­ç­‰å¾…
         ;;
 wait_for_ap_stage3_done.@0:     
         mov eax, [fs: SDA.ApInitDoneCount]
@@ -595,19 +595,19 @@ wait_for_ap_stage3_done.@0:
 ;       none
 ; output:
 ;       none
-; ÃèÊö£º
-;       1) ½«ËùÓĞ´¦ÀíÆ÷·ÅÈë VMX root ×´Ì¬
+; æè¿°ï¼š
+;       1) å°†æ‰€æœ‰å¤„ç†å™¨æ”¾å…¥ VMX root çŠ¶æ€
 ;-----------------------------------------------------                
 put_processor_to_vmx:
         push rcx
 
         ;;
-        ;; BSP ½øÈë VMX »·¾³
+        ;; BSP è¿›å…¥ VMX ç¯å¢ƒ
         ;;
         call vmx_operation_enter
                   
         ;;
-        ;; Ê£ÓàµÄ APs ½øÈë VMX »·¾³
+        ;; å‰©ä½™çš„ APs è¿›å…¥ VMX ç¯å¢ƒ
         ;;
         mov ecx, 1
 put_processor_to_vmx.@0:
@@ -616,7 +616,7 @@ put_processor_to_vmx.@0:
         call dispatch_to_processor_with_waitting
         
         ;;
-        ;; ¶Á Status Code ¼ì²éÊÇ·ñ³É¹¦
+        ;; è¯» Status Code æ£€æŸ¥æ˜¯å¦æˆåŠŸ
         ;;
         mov eax, [fs: SDA.LastStatusCode]
         cmp eax, STATUS_SUCCESS

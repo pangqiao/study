@@ -1,11 +1,11 @@
 ;*************************************************
 ;* pci.inc                                       *
-;* Copyright (c) 2009-2013 µËÖ¾                  *
+;* Copyright (c) 2009-2013 é‚“å¿—                  *
 ;* All rights reserved.                          *
 ;*************************************************
 
 
-; Õâ¸öÄ£¿éÊÇ¹ØÓÚ PCI µÄÒ»Ğ©¿â
+; è¿™ä¸ªæ¨¡å—æ˜¯å…³äº PCI çš„ä¸€äº›åº“
 
 %ifndef PIC_INC
 %define PIC_INC
@@ -15,7 +15,7 @@
 
 
 
-; ¶¨Òå PCI ¿Õ¼ä³£Á¿
+; å®šä¹‰ PCI ç©ºé—´å¸¸é‡
 %define PCI_FEC00000            0x600000
 
 
@@ -23,7 +23,7 @@
 
 
 ;--------------------------------------------
-; MAKE_PCI_ADDRESS(): ºÏ³ÉÒ»¸ö PCI µØÖ··ÅÔÚ eax ¼Ä´æÆ÷
+; MAKE_PCI_ADDRESS(): åˆæˆä¸€ä¸ª PCI åœ°å€æ”¾åœ¨ eax å¯„å­˜å™¨
 ; args: 
 ;	bus, device, function, offset
 ;---------------------------------------------
@@ -34,7 +34,7 @@
 
 
 ;---------------------------------------------
-; READ_PCI_DWORD(): ¶ÁÒ»¸öDWORD
+; READ_PCI_DWORD(): è¯»ä¸€ä¸ªDWORD
 ; args:
 ;	bus, device, function, offset
 ;----------------------------------------------
@@ -48,7 +48,7 @@
 
 
 ;---------------------------------------------
-; READ_PCI_WORD(): ¶ÁÒ»¸öWORD
+; READ_PCI_WORD(): è¯»ä¸€ä¸ªWORD
 ; args:
 ;	bus, device, function, offset
 ;----------------------------------------------
@@ -62,7 +62,7 @@
 
 
 ;---------------------------------------------
-; READ_PCI_BYTE(): ¶ÁÒ»¸ö BYTE
+; READ_PCI_BYTE(): è¯»ä¸€ä¸ª BYTE
 ; args:
 ;	bus, device, function, offset
 ;----------------------------------------------
@@ -77,7 +77,7 @@
 
 
 ;---------------------------------------------
-; WRITE_PCI_DWORD(): Ğ´Ò»¸ö DWORD
+; WRITE_PCI_DWORD(): å†™ä¸€ä¸ª DWORD
 ; args:
 ;	bus, device, function, offset, value
 ;----------------------------------------------
@@ -92,7 +92,7 @@
 
 
 ;---------------------------------------------
-; WRITE_PCI_WORD(): Ğ´Ò»¸ö WORD
+; WRITE_PCI_WORD(): å†™ä¸€ä¸ª WORD
 ; args:
 ;	bus, device, function, offset, value
 ;----------------------------------------------
@@ -107,7 +107,7 @@
 
 
 ;---------------------------------------------
-; WRITE_PCI_BYTE(): Ğ´Ò»¸ö BYTE
+; WRITE_PCI_BYTE(): å†™ä¸€ä¸ª BYTE
 ; args:
 ;	bus, device, function, offset, value
 ;----------------------------------------------
@@ -122,31 +122,31 @@
 
 
 ;-------------------------------------
-; DO_SMI(): Ö÷¶¯·¢Æğ SMI ÖĞ¶Ï
+; DO_SMI(): ä¸»åŠ¨å‘èµ· SMI ä¸­æ–­
 ; args:
-;	%1: ´«ËÍ¸ø SMI handler µÄ²ÎÊı
+;	%1: ä¼ é€ç»™ SMI handler çš„å‚æ•°
 ;--------------------------------------
 %macro DO_SMI 1
-	mov dx, APM_CNT			; advanced power management ¿ØÖÆ¼Ä´æÆ÷
+	mov dx, APM_CNT			; advanced power management æ§åˆ¶å¯„å­˜å™¨
 	mov al, %1
-	out dx, al			; ²úÉú SMI ÖĞ¶Ï
+	out dx, al			; äº§ç”Ÿ SMI ä¸­æ–­
 %endmacro
 
 ;-------------------------------------
-; DO_SMI(): Ö÷¶¯·¢Æğ SMI ÖĞ¶Ï
+; DO_SMI(): ä¸»åŠ¨å‘èµ· SMI ä¸­æ–­
 ; args:
-;	%1: ´«ËÍ¸ø SMI handler µÄ²ÎÊı
+;	%1: ä¼ é€ç»™ SMI handler çš„å‚æ•°
 ;--------------------------------------
 %macro DO_SMI 0
-	mov dx, APM_CNT			; advanced power management ¿ØÖÆ¼Ä´æÆ÷
+	mov dx, APM_CNT			; advanced power management æ§åˆ¶å¯„å­˜å™¨
 	mov al, 0
-	out dx, al			; ²úÉú SMI ÖĞ¶Ï
+	out dx, al			; äº§ç”Ÿ SMI ä¸­æ–­
 %endmacro
 
 
 
 ;---------------------------------
-; DO_NMI(): Ö÷¶¯·¢Æğ #NMI ÖĞ¶Ï
+; DO_NMI(): ä¸»åŠ¨å‘èµ· #NMI ä¸­æ–­
 ;---------------------------------
 %macro DO_NMI 0
 	call get_TCOBASE
@@ -161,9 +161,9 @@
 
 
 ;-----------------------------------------------
-; SMRAM_OPEN() ´ò¿ª SMRAM ¿É¶Á
-; ÃèÊö£º
-;	Ê¹µÃ compatible SMM space ½âÂëÖÁ DRAM
+; SMRAM_OPEN() æ‰“å¼€ SMRAM å¯è¯»
+; æè¿°ï¼š
+;	ä½¿å¾— compatible SMM space è§£ç è‡³ DRAM
 ;-----------------------------------------------
 %macro SMRAM_OPEN 0
         push ebx
@@ -176,9 +176,9 @@
 
 
 ;-----------------------------------------------
-; SMRAM_OPEN() ¹Ø±Õ SMRAM
-; ÃèÊö£º
-;	Ê¹µÃ compatible SMM space ½âÂëÖÁ VGA
+; SMRAM_OPEN() å…³é—­ SMRAM
+; æè¿°ï¼š
+;	ä½¿å¾— compatible SMM space è§£ç è‡³ VGA
 ;-----------------------------------------------
 %macro SMRAM_CLOSE 0
 	READ_PCI_DWORD 0, 0, 0, 9Dh
@@ -190,7 +190,7 @@
 
 
 ;----------------------------------------------
-; SET_SMRAM_OPEN(): ´ò¿ªSMRAM ¿É¶Á
+; SET_SMRAM_OPEN(): æ‰“å¼€SMRAM å¯è¯»
 ;----------------------------------------------
 %macro SET_SMRAM_OPEN 0
 ;; Note: only for bochs (440FX chipset)
@@ -203,7 +203,7 @@
 %endmacro
 
 ;----------------------------------------------
-; SET_SMRAM_CLOSE(): ¹Ø±Õ SMRAM ¿É¶Á
+; SET_SMRAM_CLOSE(): å…³é—­ SMRAM å¯è¯»
 ;----------------------------------------------
 %macro SET_SMRAM_CLOSE 0
 ;; Note: only for bochs (440FX chipset)

@@ -6,64 +6,64 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÎªÁËÍê³ÉÊµÑé£¬¹Ø±ÕÊ±¼äÖĞ¶ÏºÍ¼üÅÌÖĞ¶Ï
+;; ä¸ºäº†å®Œæˆå®éªŒï¼Œå…³é—­æ—¶é—´ä¸­æ–­å’Œé”®ç›˜ä¸­æ–­
         call disable_timer
         
-;; ÉèÖÃ #PF handler
+;; è®¾ç½® #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ÉèÖÃ #DB handler
+; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
 
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; è®¾ç½® sysenter/sysexit ä½¿ç”¨ç¯å¢ƒ
         call set_sysenter
 
-;; ÉèÖÃ system_service handler
+;; è®¾ç½® system_service handler
         mov esi, SYSTEM_SERVICE_VECTOR
         mov edi, system_service
         call set_user_interrupt_handler 
 
-; ÔÊĞíÖ´ĞĞ SSE Ö¸Áî        
+; å…è®¸æ‰§è¡Œ SSE æŒ‡ä»¤        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         
         
-;ÉèÖÃ CR4.PAE
+;è®¾ç½® CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; å¼€å¯ XD åŠŸèƒ½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; åˆå§‹åŒ– paging ç¯å¢ƒ
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
+;è®¾ç½® PDPT è¡¨åœ°å€        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; ´ò¿ª¡¡paging
+; æ‰“å¼€ã€€paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax                                 
@@ -83,16 +83,16 @@ entry:
         call disable_keyboard
         sti
         
-;========= ³õÊ¼»¯ÉèÖÃÍê±Ï =================
+;========= åˆå§‹åŒ–è®¾ç½®å®Œæ¯• =================
 
 
-;; ÊµÑé¡¡ex20-5£º²âÊÔDOS compatibilityÄ£Ê½
+;; å®éªŒã€€ex20-5ï¼šæµ‹è¯•DOS compatibilityæ¨¡å¼
 
         mov esi, FPU_VECTOR
         mov edi, fpu_handler
         call set_interrupt_handler
 
-; Î´¿ªÆô CR0.NE Î»£¬Ê¹ÓÃ DOS compatibility Ä£Ê½´¦Àí
+; æœªå¼€å¯ CR0.NE ä½ï¼Œä½¿ç”¨ DOS compatibility æ¨¡å¼å¤„ç†
 ;        mov eax, cr0
 ;        bts eax, 5                        ; CR0.NE = 1
 ;        mov cr0, eax
@@ -100,7 +100,7 @@ entry:
         finit
 
        
-; Çå mask Î»
+; æ¸… mask ä½
         call clear_mask
         
         fld1
@@ -135,7 +135,7 @@ fpu_handler:
         call print_dword_value
         call println        
         
-; ÖÃ IGNNE #        
+; ç½® IGNNE #        
         mov al, 00
         out 0xf0, al
         fstenv [esp]        
@@ -144,12 +144,12 @@ fpu_handler:
         call dump_x87_status       
         call dump_data_register
 
-; ÇåimageÖĞstatus ¼Ä´æÆ÷
+; æ¸…imageä¸­status å¯„å­˜å™¨
         or WORD [esp], 0x3f              ;mask all
-        and WORD [esp + 4], 0x7f00      ; ÇåÒì³£±êÖ¾, B ±êÖ¾
+        and WORD [esp + 4], 0x7f00      ; æ¸…å¼‚å¸¸æ ‡å¿—, B æ ‡å¿—
         fldenv [esp]
 
-; EOI ÃüÁî                
+; EOI å‘½ä»¤                
         call write_slave_EOI
         call write_master_EOI
         mov esi, fh_msg2
@@ -159,11 +159,11 @@ fpu_handler:
         iret
 
 
-; ×ªµ½ long Ä£¿é
+; è½¬åˆ° long æ¨¡å—
         ;jmp LONG_SEG
                                 
                                 
-; ½øÈë ring 3 ´úÂë
+; è¿›å…¥ ring 3 ä»£ç 
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -171,7 +171,7 @@ fpu_handler:
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ç”¨æˆ·ä»£ç 
 
 user_entry:
         mov ax, user_data32_sel
@@ -189,11 +189,11 @@ user_start:
 
 %define APIC_PERFMON_HANDLER
 
-;******** include ÖĞ¶Ï handler ´úÂë ********
+;******** include ä¸­æ–­ handler ä»£ç  ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include æ¨¡å— ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -205,10 +205,10 @@ user_start:
 %include "..\lib\pic8259A.asm"
 %include "..\lib\x87.asm"
 
-;;************* º¯Êıµ¼Èë±í  *****************
+;;************* å‡½æ•°å¯¼å…¥è¡¨  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓĞÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; è¿™ä¸ª lib32 åº“å¯¼å…¥è¡¨æ”¾åœ¨ common\ ç›®å½•ä¸‹ï¼Œ
+; ä¾›æ‰€æœ‰å®éªŒçš„ protected.asm æ¨¡å—ä½¿ç”¨
 
 %include "..\common\lib32_import_table.imt"
 

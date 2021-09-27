@@ -3,7 +3,7 @@
 ; All rights reserved.
 
 ;;
-;; Õâ¶Î´úÂë½«ÇĞ»»µ½ long mode ÔËĞĞ
+;; è¿™æ®µä»£ç å°†åˆ‡æ¢åˆ° long mode è¿è¡Œ
 
 %include "..\inc\support.inc"
 %include "..\inc\long.inc"
@@ -17,7 +17,7 @@ LONG_LENGTH:        dw        LONG_END - $
         NMI_DISABLE
         cli
 
-; ¹Ø±Õ PAE paging        
+; å…³é—­ PAE paging        
         mov eax, cr0
         btr eax, 31
         mov cr0, eax
@@ -26,34 +26,34 @@ LONG_LENGTH:        dw        LONG_END - $
 
         call init_page
 
-; ¼ÓÔØ GDT ±í
+; åŠ è½½ GDT è¡¨
         lgdt [__gdt_pointer]
         
-; ÉèÖÃ CR3 ¼Ä´æÆ÷        
+; è®¾ç½® CR3 å¯„å­˜å™¨        
         mov eax, PML4T_BASE
         mov cr3, eax
         
-; ÉèÖÃ CR4 ¼Ä´æÆ÷
+; è®¾ç½® CR4 å¯„å­˜å™¨
         mov eax, cr4
         bts eax, 5                                ; CR4.PAE = 1
         mov cr4, eax
 
-; ÉèÖÃ EFER ¼Ä´æÆ÷
+; è®¾ç½® EFER å¯„å­˜å™¨
         mov ecx, IA32_EFER
         rdmsr 
         bts eax, 8                                ; EFER.LME = 1
         wrmsr
 
-; ¼¤»î long mode
+; æ¿€æ´» long mode
         mov eax, cr0
         bts eax, 31
         mov cr0, eax                              ; EFER.LMA = 1
         
-; ×ªµ½ 64 Î»´úÂë
+; è½¬åˆ° 64 ä½ä»£ç 
         jmp KERNEL_CS : entry64
 
 
-; ÏÂÃæÊÇ 64 Î»´úÂë
+; ä¸‹é¢æ˜¯ 64 ä½ä»£ç 
         
         bits 64
                 
@@ -64,13 +64,13 @@ entry64:
         mov ss, ax
         mov rsp, PROCESSOR0_KERNEL_RSP
 
-;; ÏÂÃæ½« GDT ±í¶¨Î»ÔÚ SYSTEM_DATA64_BASE µÄÏßĞÔµØÖ·¿Õ¼äÉÏ
+;; ä¸‹é¢å°† GDT è¡¨å®šä½åœ¨ SYSTEM_DATA64_BASE çš„çº¿æ€§åœ°å€ç©ºé—´ä¸Š
         mov rdi, SYSTEM_DATA64_BASE
         mov rsi, __system_data64_entry
         mov rcx, __system_data64_end - __system_data64_entry
         rep movsb
 
-;; ÏÂÃæÖØĞÂ¼ÓÔØ 64-bit »·¾³ÏÂµÄ GDT ºÍ IDT ±í
+;; ä¸‹é¢é‡æ–°åŠ è½½ 64-bit ç¯å¢ƒä¸‹çš„ GDT å’Œ IDT è¡¨
         mov rbx, SYSTEM_DATA64_BASE + (__gdt_pointer - __system_data64_entry)
         mov rax, SYSTEM_DATA64_BASE + (__global_descriptor_table - __system_data64_entry)
         mov [rbx + 2], rax
@@ -81,56 +81,56 @@ entry64:
         mov [rbx + 2], rax
         lidt [rbx]
 
-;; ÉèÖÃ TSS descriptor        
+;; è®¾ç½® TSS descriptor        
         mov rsi, tss64_sel
         mov edi, 0x67
         mov r8, SYSTEM_DATA64_BASE + (__task_status_segment - __system_data64_entry)
         mov r9, TSS64
         call set_system_descriptor
 
-; ÉèÖÃ LDT ÃèÊö·û
+; è®¾ç½® LDT æè¿°ç¬¦
         mov rsi, ldt_sel
         mov edi, __local_descriptor_table_end - __local_descriptor_table - 1
         mov r8, SYSTEM_DATA64_BASE + (__local_descriptor_table - __system_data64_entry)
         mov r9, LDT64
         call set_system_descriptor
 
-;; ¼ÓÔØ TSS Óë LDT ±í
+;; åŠ è½½ TSS ä¸ LDT è¡¨
         mov ax, tss64_sel
         ltr ax
         mov ax, ldt_sel
         lldt ax
                 
-;; ÉèÖÃ call gate descriptor
+;; è®¾ç½® call gate descriptor
         mov rsi, call_gate_sel
-        mov rdi, __lib32_service                ; call-gate ÉèÔÚ __lib32_srvice() º¯ÊıÉÏ
-        mov r8, 3                               ; call-gate µÄ DPL = 3
+        mov rdi, __lib32_service                ; call-gate è®¾åœ¨ __lib32_srvice() å‡½æ•°ä¸Š
+        mov r8, 3                               ; call-gate çš„ DPL = 3
         mov r9, KERNEL_CS                       ; code selector = KERNEL_CS
         call set_call_gate
 
         mov rsi, conforming_callgate_sel
-        mov rdi, __lib32_service                 ; call-gate ÉèÔÚ __lib32_srvice() º¯ÊıÉÏ
-        mov r8, 3                               ; call-gate µÄ DPL = 0
+        mov rdi, __lib32_service                 ; call-gate è®¾åœ¨ __lib32_srvice() å‡½æ•°ä¸Š
+        mov r8, 3                               ; call-gate çš„ DPL = 0
         mov r9, conforming_code_sel             ; code selector = conforming_code_sel
         call set_call_gate
 
-;; ÉèÖÃ system service routine
+;; è®¾ç½® system service routine
         mov rsi, SYSTEM_SERVICE_VECTOR          ; 0x40
         mov rdi, __lib32_service
         call set_user_interrupt_handler
         
-; ÉèÖÃ #GP handler
+; è®¾ç½® #GP handler
         mov rsi, GP_HANDLER_VECTOR
         mov rdi, GP_handler
         call set_interrupt_descriptor
                         
-; ÉèÖÃ #DB handler
+; è®¾ç½® #DB handler
         mov rsi, DB_HANDLER_VECTOR
         mov rdi, DB_handler
         call set_interrupt_descriptor
                                         
 
-;; ÉèÖÃ conforming code segment descriptor        
+;; è®¾ç½® conforming code segment descriptor        
         MAKE_SEGMENT_ATTRIBUTE 13, 0, 1, 0      ; type=conforming code segment, DPL=0, G=1, D/B=0
         mov r9, rax                             ; attribute
         mov rsi, conforming_code_sel            ; selector
@@ -139,14 +139,14 @@ entry64:
         call set_segment_descriptor
 
 
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; è®¾ç½® sysenter/sysexit ä½¿ç”¨ç¯å¢ƒ
 	call set_sysenter
-;; ÉèÖÃ syscall/sysret Ê¹ÓÃ»·¾³
+;; è®¾ç½® syscall/sysret ä½¿ç”¨ç¯å¢ƒ
 	call set_syscall
 	
 
 
-;; ´Ó 64 Î»ÇĞ»»µ½ compatibility mode£¨È¨ÏŞ²»¸Ä±ä£¬0 ¼¶£©¡¡        
+;; ä» 64 ä½åˆ‡æ¢åˆ° compatibility modeï¼ˆæƒé™ä¸æ”¹å˜ï¼Œ0 çº§ï¼‰ã€€        
 ;        jmp QWORD far [compatibility_pointer]
 
 ;compatibility_pointer:
@@ -154,10 +154,10 @@ entry64:
 ;                dw code32_sel
 
 
-;;        call QWORD far [conforming_pointer]           ; ²âÊÔconforimg ´úÂë
+;;        call QWORD far [conforming_pointer]           ; æµ‹è¯•conforimg ä»£ç 
 
         
-;; ÇĞ»»µ½ compatibility mode£¨½øÈë 3 ¼¶£©
+;; åˆ‡æ¢åˆ° compatibility modeï¼ˆè¿›å…¥ 3 çº§ï¼‰
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push user_code32_sel | 3
@@ -165,7 +165,7 @@ entry64:
 ;        retf64
         
 
-;; ÇĞ»»µ½ÓÃ»§´úÂë¡¡
+;; åˆ‡æ¢åˆ°ç”¨æˆ·ä»£ç ã€€
         push USER_SS | 3
         mov rax, USER_RSP
         push rax
@@ -174,7 +174,7 @@ entry64:
         retf64
 
 
-;; Ê¹ÓÃ iret ÇĞ»»µ½ compatibility mode£¨½øÈë 3 ¼¶£©
+;; ä½¿ç”¨ iret åˆ‡æ¢åˆ° compatibility modeï¼ˆè¿›å…¥ 3 çº§ï¼‰
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        pushfq
@@ -183,19 +183,19 @@ entry64:
 ;        iretq
         
 
-;; Ê¹ÓÃ iret ÇĞ»»µ½ÓÃ»§´úÂë¡¡                
+;; ä½¿ç”¨ iret åˆ‡æ¢åˆ°ç”¨æˆ·ä»£ç ã€€                
 ;        push USER_SS | 3
 ;        mov rax, USER_RSP
 ;        push rax
 ;        pushfq
 ;        push USER_CS | 3
 ;        push user_entry
-;        iretq                                             ; ·µ»Øµ½ 3 ¼¶È¨ÏŞ
+;        iretq                                             ; è¿”å›åˆ° 3 çº§æƒé™
 
 
 
 
-;;; ##### 64-bit ÓÃ»§´úÂë #########
+;;; ##### 64-bit ç”¨æˆ·ä»£ç  #########
 
 	bits 64
 	
@@ -203,17 +203,17 @@ user_entry:
 
         mov rsp, USER_RSP
 
-; Ê¹ÓÃ Call-gate µ÷ÓÃ
+; ä½¿ç”¨ Call-gate è°ƒç”¨
 	mov esi, msg1
 	mov eax, LIB32_PUTS
 	call lib32_service
 
-; Ê¹ÓÃ sysenter µ÷ÓÃ
+; ä½¿ç”¨ sysenter è°ƒç”¨
 	mov esi, msg2
 	mov eax, LIB32_PUTS
 	call sys_service_enter
 
-; Ê¹ÓÃ syscall µ÷ÓÃ	
+; ä½¿ç”¨ syscall è°ƒç”¨	
 	mov esi, msg3
 	mov eax, LIB32_PUTS
 	call sys_service_call				
@@ -222,8 +222,8 @@ user_entry:
 ;	mov rsi, msg1
 ;	call strlen
 	
-;	call QWORD far [conforming_pointer]		; ²âÊÔ conforming ´úÂë
-;	call QWORD far [gate_pointer]			; ²âÊÔ conforming gate
+;	call QWORD far [conforming_pointer]		; æµ‹è¯• conforming ä»£ç 
+;	call QWORD far [gate_pointer]			; æµ‹è¯• conforming gate
 	jmp $
 ;conforming_pointer:
 ;	dq puts64
@@ -238,11 +238,11 @@ msg2	db '---> Now: call sys_service() with SYSENTER', 10, 0
 msg3	db '---> Now: call sys_service() with SYSCALL', 10, 0
 
 
-;;; ###### ÏÂÃæÊÇ 32-bit compatibility Ä£¿é ########		
+;;; ###### ä¸‹é¢æ˜¯ 32-bit compatibility æ¨¡å— ########		
 	
 	bits 32
 
-;; 0 ¼¶µÄ compatibility ´úÂëÈë¿Ú	
+;; 0 çº§çš„ compatibility ä»£ç å…¥å£	
 compatibility_kernel_entry:
 	mov ax, data32_sel
 
@@ -252,7 +252,7 @@ compatibility_kernel_entry:
 	mov esp, COMPATIBILITY_KERNEL_ESP
 	jmp compatibility_entry
 
-;; 3 ¼¶µÄ compatibility ´úÂëÈë¿Ú	
+;; 3 çº§çš„ compatibility ä»£ç å…¥å£	
 compatibility_user_entry:
 	mov ax, user_data32_sel | 3
 	mov ds, ax
@@ -262,29 +262,29 @@ compatibility_user_entry:
 	
 	
 compatibility_entry:
-;; Í¨¹ı stub º¯Êı´ÓcompaitibilityÄ£Ê½µ÷ÓÃcall gate ½øÈë64Î»Ä£Ê½
+;; é€šè¿‡ stub å‡½æ•°ä»compaitibilityæ¨¡å¼è°ƒç”¨call gate è¿›å…¥64ä½æ¨¡å¼
 ;	mov esi, cmsg1
 ;	mov eax, LIB32_PUTS
-;	call compatibility_lib32_service			;; stub º¯ÊıĞÎÊ½
+;	call compatibility_lib32_service			;; stub å‡½æ•°å½¢å¼
 
 	mov esi, cmsg1
 	mov eax, LIB32_PUTS
-	call compatibility_sys_service_enter		; compatibility Ä£Ê½ÏÂµÄ sys_service() stub º¯Êı
+	call compatibility_sys_service_enter		; compatibility æ¨¡å¼ä¸‹çš„ sys_service() stub å‡½æ•°
 
-;; ÏÖÔÚÇĞ»»µ½ 3¼¶ 64-bit Ä£Ê½´úÂë
+;; ç°åœ¨åˆ‡æ¢åˆ° 3çº§ 64-bit æ¨¡å¼ä»£ç 
 	push USER_SS | 3
 	push COMPATIBILITY_USER_ESP
-	push USER_CS | 3				; ÔÚ 4G·¶Î§ÄÚ
+	push USER_CS | 3				; åœ¨ 4GèŒƒå›´å†…
 	push user_entry
 	retf
 
-;; Ê¹ÓÃ iretÖ¸Áî´Ó compatibility Ä£Ê½ÇĞ»»µ½ 3 ¼¶ 64-bit Ä£Ê½
+;; ä½¿ç”¨ iretæŒ‡ä»¤ä» compatibility æ¨¡å¼åˆ‡æ¢åˆ° 3 çº§ 64-bit æ¨¡å¼
 ;	push USER_SS | 3
 ;	push USER_RSP
 ;	pushf
-;	push USER_CS | 3				; ÔÚ 4G ·¶Î§ÄÚ
+;	push USER_CS | 3				; åœ¨ 4G èŒƒå›´å†…
 ;	push user_entry
-;	iret							; Ê¹ÓÃ 32 Î»²Ù×÷Êı
+;	iret							; ä½¿ç”¨ 32 ä½æ“ä½œæ•°
 	
 	jmp $
 	
@@ -301,15 +301,15 @@ compatibility_entry_end:
 
         bits 64
 
-;*** include 64-bit Ä£Ê½µÄ interrupt handler ****
+;*** include 64-bit æ¨¡å¼çš„ interrupt handler ****
 %include "..\common\handler64.asm"
 
 
-;*** include 64-bit Ä£Ê½ÏÂµÄÏµÍ³Êı¾İ *****
+;*** include 64-bit æ¨¡å¼ä¸‹çš„ç³»ç»Ÿæ•°æ® *****
 %include "..\lib\system_data64.asm"
 
 
-;*** include ÆäËü 64 Î»¿â *****
+;*** include å…¶å®ƒ 64 ä½åº“ *****
 %include "..\lib\lib64.asm"
 %include "..\lib\page64.asm"
 %include "..\lib\debug64.asm"

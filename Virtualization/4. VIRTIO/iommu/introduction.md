@@ -12,9 +12,9 @@ virtio-iommu: a paravirtualized IOMMU
 
 这是使用 virtio 传输(transport)的 paravirtualized IOMMU device 的初步建议。 它包含设备描述、Linux 驱动程序和 kvmtool 中的玩具实现。 使用此原型，您可以将来自模拟设备(virtio) 或 pass-through 设备(VFIO) 的 DMA 转换为 guest 内存。
 
-最简单地, viommu 处理来自guest的map/unmap请求。"RFC 3/3"中提议的未来扩展将来应允许 page tables 绑定到设备上。
+最简单地, viommu 处理来自 guest 的 `map/unmap` 请求。"RFC 3/3"中提议的未来扩展将来应允许 page tables 绑定到设备上。
 
-在半虚拟化的移液中，与完全模拟相比，有许多优点。它是便携式的，可以重复使用不同的架构。它比完全模拟更容易实现，状态跟踪更少。在某些情况下，它可能会更有效率，上下文切换到host的更少，并且内核模拟的可能性也更少。
+半虚拟化的 IOMMU 中，与完全模拟相比，有许多优点。它是便携式的，可以重复使用不同的架构。它比完全模拟更容易实现，状态跟踪更少。在某些情况下，它可能会更有效率，上下文切换到host的更少，并且内核模拟的可能性也更少。
 
 在 kvmtool 实现中, 考虑了两个主要场景
 
@@ -124,7 +124,7 @@ virtio-iommu 设备管理多个 endpoints 的 DMA 操作.
 
 它既可以作为物理 IOMMU 的代理来管理分配给虚拟机的物理设备(透传)，也可以作为一个虚拟 IOMMU 来管理模拟设备和半虚拟化设备。
 
-virtio-iommu 驱动程序首先使用特定于平台的机制发现由 virtio-iommu 设备管理的 endpoints。然后它发送请求为这些 endpoints 创建虚拟地址空间和虚拟地址到物理地址映射关系.
+virtio-iommu 驱动程序首先使用特定于平台的机制发现由 virtio-iommu 设备管理的 endpoints。然后 virtio-iommu 驱动发送请求为这些 endpoints 创建虚拟地址空间和虚拟地址到物理地址映射关系.
 
 在最简单的形式中，virtio-iommu 支持四种请求类型：
 
