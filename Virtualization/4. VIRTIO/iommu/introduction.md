@@ -424,7 +424,7 @@ struct virtio_iommu_req_attach {
 
 * 从 IOMMU 的角度来看, device ID 是唯一的. DMA transaction (DMA 事务) 不是由同一 IOMMU translate 的多个设备可能具有相同的设备 ID(因为 iommu 不是同一个). DMA transaction 可能由同一 IOMMU 翻译的设备必须具有不同的 device ID.
 
-* 有时 host 无法完全隔离两个设备. 例如, 在传统的 PCI 总线上, 设备可以窥探(snoop)来自其邻居(neighbour)的 DMA transaction(DMA 事务). 在这种情况下, 主机必须向 guest 传达它不能将这些设备彼此隔离. 用于传达这个的方法不在本规范的范围. IOMMU 设备必须确保无法被 host 隔离的设备具有相同的 address space(也就是多个device不能隔离则必须被同一个 iommu 管理).
+* 有时 host 无法完全隔离两个设备. 例如, 在传统的 PCI 总线上, 设备可以窥探(snoop)来自其邻居(neighbour)的 DMA transaction(DMA 事务). 在这种情况下, 主机必须向 guest 传达它不能将这些设备彼此隔离. 用于传达这个的方法不在本规范的范围. IOMMU driver 必须确保无法被 host 隔离的设备具有相同的 address space(也就是多个device不能隔离则必须被同一个 iommu 管理).
 
 多个设备可以添加到相同的 address space.一个设备不能被 attach 到多个 address space(即使用 map/unmap 接口). 对于 SVM, 请参阅 page table 和 context table 共享建议.
 
