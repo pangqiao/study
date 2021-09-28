@@ -326,11 +326,11 @@ page_size_mask 必须至少有一个 bit 设置
 
 如果不协商该功能, 虚拟映射将跨越整个 64 位地址空间(start = 0, end = 0xffffffffffffffff)
 
-4. 如果协商了 VIRTIO_IOMMU_F_BYPASS 功能, 所有从 unattached 设备来的内存访问都是被 IOMMU 允许且 translate 的. 如果没有这个功能, 任何 unattached 设备的内存访问都会失败. 
+4. 如果协商了 VIRTIO_IOMMU_F_BYPASS 功能, 所有 unattached 设备发出的内存访问也会被 IOMMU 允许且被 IOMMU 用特定方法进行 translate. 如果没有这个功能, 任何 unattached 设备的内存访问都会失败. 
 
-如果一个设备通过 bypass 模式被 attach 到一个 address space, 那么这个设备的所有内存访问都会失败, 因为这个 address space 不包含任何 mapping.
+> 允许设备绕过 iommu 的管理的意思, 所以这个功能支持的话, 没有被 attach 的设备也可以访问 guest physical address.
 
-即没有 attach 到 address space 的 IOMMU 管理的设备可以访问 guest-physical address. 否则, 访问 GPA 可能会失败.
+而如果通过 bypass 模式 attach 一个 device 到一个新的 address space, 那么这个设备的所有内存访问都会失败, 因为这时候 address space 还没有包含任何 mapping.
 
 device 被 reset, 则不会被 attach 到任何 address space.
 
@@ -445,13 +445,13 @@ struct virtio_iommu_req_detach {
 };
 ```
 
-从 address space 中 detach device。当此请求完成时，设备就不能再访问该 address space 中的任何映射。如果 device 没有被 attach 到任何地址空间，则请求将成功返回。
+从 address space 中 detach device.当此请求完成时, 设备就不能再访问该 address space 中的任何映射. 如果 device 没有被 attach 到任何地址空间, 则请求将成功返回.
 
-在所有设备从一个地址空间 detach 后，驱动程序可以将其 address space ID 重用于另一个地址空间。
+在所有设备从一个地址空间 detach 后, 驱动程序可以将其 address space ID 重用于另一个地址空间.
 
-NOENT：未找到设备。
+NOENT: 未找到设备.
 
-INVAL：设备未连接到任何地址空间。
+INVAL: 设备未连接到任何地址空间.
 
 #### map region
 
@@ -469,10 +469,67 @@ VIRTIO_IOMMU_MAP_F_WRITE	0x2
 VIRTIO_IOMMU_MAP_F_EXEC		0x4
 ```
 
-将一系列连续的虚拟地址映射到一系列连续的物理地址。大小必须始终是初始化期间协商的页面粒度的倍数。phys_addr和virt_addr必须在页面粒度上对齐。地址空间必须是用VIRTIO_IOMMU_T_ATTACH创建的。
+将一系列连续的虚拟地址映射到一系列连续的物理地址. 大小必须始终是初始化期间协商的页面粒度的倍数. phys_addr 和 virt_addr 必须在页面粒度上对齐. address space 必须是用 VIRTIO_IOMMU_T_ATTACH 创建的.
 
+(virt_addr, size) 所定义的范围必须在 input_range 规定的范围内. (phys_addr, size) 定义的范围必须在 guest 物理地址空间内. 这包括了上下限制, 以及任何 carving 的 guest physical address 供 host 使用(例如 MSI doorbell). 主机使用本规范范围之外的固件机制设置了 guest 物理边界.
 
+（请注意，此格式会阻止在单个请求（0x0 - 0xfff....ff） -> （0x0 - 0xfff...ff），因为它将得到一个 零大小。希望允许 VIRTIO_IOMMU_F_BYPASS 消除发出此类请求的需要。也不太可能符合前一段的物理范围限制）
 
+（另一个注意事项是 flags: 物理 IOMMU 不可能支持所有可能的 flag 组合。例如，（W =！R） 或 （E = W） 可能无效。我还没有花时间设计一个聪明的方法来宣传支持和隐含（例如 "W 暗示 R"）标志或组合，但我至少可以尝试研究共同的模型。请记住，我们可能很快就会想要添加更多的标志，如 privileged，device，transient，shared等，无论这些将意味着什么）
+
+只有 VIRTIO_IOMMU_F_MAP_UNMAP 协商成功这个请求才是可用的
+
+INVAL: 无效 flags.
+
+RANGE: virt_addr, phys_addr 或 range 不在协商期间规定的范围内. 比如, 没有基于页粒度对齐.
+
+NOENT: address space 不存在
+
+#### unmap region
+
+```cpp
+struct virtio_iommu_req_unmap {
+	le32	address_space;
+	le64	virt_addr;
+	le64	size;
+	le32	reserved;
+};
+```
+
+unmap 一段用 VIRTIO_IOMMU_T_MAP 映射的地址范围。这个 range 由virt_addr 和 size 定义，必须完全覆盖通过 MAP 请求创建的一个或多个连续映射。这个 range 覆盖的所有映射都已删除。驱动程序不应发送覆盖未映射区域的请求。
+
+通过单个 MAP 请求, 我们定义了一个 mapping 作为一片虚拟区域。virt_addr 应与现有映射的开始地址完全匹配。range 的 end（virt_addr + size - 1）应与现有映射的 end 完全匹配。设备必须拒绝仅作用于部分映射区域的所有请求。如果请求的范围溢出映射区域之外，则设备的行为未定义。
+
+规则定义如下:
+
+```
+	map(0, 10)
+	unmap(0, 10) -> allowed
+
+	map(0, 5)
+	map(5, 5)
+	unmap(0, 10) -> allowed
+
+	map(0, 10)
+	unmap(0, 5) -> forbidden
+
+	map(0, 10)
+	unmap(0, 15) -> undefined
+
+	map(0, 5)
+	map(10, 5)
+	unmap(0, 15) -> undefined
+```
+
+（注意：这里 unmap 的语义与 VFIO 的 type1 v2 IOMMU API 兼容。这样，充当 guest 和 VFIO 之间调解的设备就不必保留内部mapping tree。它们比 VFIO 更严格一些，因为它们不允许 unmap 到映射区域之外。溢出(spilling)目前是"undefined"，因为它在大多数情况下应该有效，但我不知道是否值得在不只是将请求传输到 VFIO 的设备中增加复杂性。拆分映射是不允许的，但请参阅 3/3 中的轻松建议，以获得更宽松的语义）
+
+此请求仅在 VIRTIO_IOMMU_F_MAP_UNMAP 已协商后提供。
+
+NOENT: address space 不存在
+
+FAULT: mapping 不存在
+
+RANGE: 请求将拆分一个mapping
 
 
 
