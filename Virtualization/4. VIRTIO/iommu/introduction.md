@@ -21,7 +21,7 @@ virtio-iommu: a paravirtualized IOMMU
 
 这是使用 virtio 传输(transport)的 paravirtualized IOMMU device 的初步建议. 它包含设备描述, Linux 驱动程序和 kvmtool 中的玩具实现. 使用此原型, 您可以将来自模拟设备(virtio) 或 pass-through 设备(VFIO) 的 DMA 转换为 guest 内存.
 
-最简单地, viommu 处理来自 guest 的 `map/unmap` 请求. "RFC 3/3"中提议的未来扩展将来应允许 page tables 绑定到设备上.
+最简单地, viommu 处理来自 guest 的 `map/unmap` 请求. "RFC 3/3"中提议的未来扩展将来会将 page tables 绑定到设备上.
 
 半虚拟化的 IOMMU 中, 与完全模拟相比, 有许多优点. 它是便携式的, 可以重复使用不同的架构. 它比完全模拟更容易实现, 状态跟踪更少. 在某些情况下, 它可能会更有效率, 上下文切换到host的更少, 并且内核模拟的可能性也更少.
 
@@ -241,7 +241,7 @@ Requests 是 guest 往 request virtqueue 中添加的小的缓冲 buffer. guest�
 一个操作流程的例子:
 
 * `attach(address space, device), kick`: 创建一个 address space 并且将 attach 一个 device 给它.
-* `map(address space, virt, phys, size, flags)`: 给 GVA 和 GPA 创建一个 mapping 关系(在 address space 中? )
+* `map(address space, virt, phys, size, flags)`: 给 GVA 和 GPA 创建一个 mapping 关系
 * map, map, map, kick
 * ...在这里, guest 中设备可以执行 DMA 到新映射的内存
 * `unmap(address space, virt, size)`: unmap, 然后再kick
@@ -267,17 +267,213 @@ Requests 是 guest 往 request virtqueue 中添加的小的缓冲 buffer. guest�
                                    :
 ```
 
-(1) driver 有一堆带有效载荷(payload)的 buffers 要通过 virtio 来发送。它会写 N 个 描述符(descriptors)来描述 N 个 sub-buffers, 并且将它们链接起来(形成描述符表), 第一个描述符(descriptor)就是这个链(chain)的头部(head).
+(1) driver 有一堆带有效载荷(payload)的 buffers 要通过 virtio 来发送. 它会写 N 个 描述符(descriptors)来描述 N 个 sub-buffers, 并且将它们链接起来(形成描述符表), 第一个描述符(descriptor)就是这个链(chain)的头部(head).
 
-(2) driver 将 head index 入队"available ring"。
+(2) driver 将 head index 入队 "available ring".
 
-(3) driver 通知设备. 由于 virtio-iommu 使用 MMIO，通知是通过写消息给 doorbell 地址完成的。KVM 将其捕获并这个通知转发给 virtio 设备。设备从"available ring"中出队head index(头部索引)。
+(3) driver 通知设备. 由于 virtio-iommu 使用 MMIO, 通知是通过写消息给 doorbell 地址完成的. KVM 将其捕获并这个通知转发给 virtio 设备. 设备从 "available ring" 中出队 head index(头部索引).
 
 (4) 设备读取链(chain)上的所有描述符, 处理 payload
 
 (5) 设备将 head index 写入"used ring", 并且通过注入中断方式通知 guest
 
-(6) driver 从 "used ring" 中 pop 这个 head, 然后选择性看是否读取 device 更新的 buffers。
+(6) driver 从 "used ring" 中 pop 这个 head, 然后选择性看是否读取 device 更新的 buffers.
+
+### 功能位
+
+VIRTIO_IOMMU_F_INPUT_RANGE (0)
+
+可用的虚拟地址范围在 input_range 中描述
+
+VIRTIO_IOMMU_F_IOASID_BITS (1)
+
+支持的 address space 数目在 ioasid_bits 中描述
+
+VIRTIO_IOMMU_F_MAP_UNMAP (2)
+
+map 和 unmap 请求是可用的. 这是为了让设备或驱动程序仅在我们引入该功能后实现页面表共享. 设备只能选择 F_MAP_UNMAP 或 F_PT_SHARING 之一. 目前, 必须始终设置此位.
+
+VIRTIO_IOMMU_F_BYPASS (3)
+
+当没有被 attach 到一个 address space时, IOMMU 管理的 device 能够访问虚拟机物理地址空间(GPA).
+
+### 设备配置布局
+
+```cpp
+struct virtio_iommu_config {
+     u64 page_size_mask;
+     struct virtio_iommu_range {
+          u64 start;
+          u64 end;
+     } input_range;
+     u8 ioasid_bits;
+};
+```
+
+### 设备初始化
+
+1. page_size_mask 包含可以映射的所有页面大小的 bitmap.最低有效位集定义了 IOMMU 映射的页面粒度. mask 中的其他位是描述 IOMMU 可以合并为单个映射(页面块)的页面大小的提示.
+
+IOMMU 支持的最小页面粒度没有下限. 如果设备通告它(`page_size_mask[0]=1`), 驱动程序一次映射一个字节是合法的.
+
+page_size_mask 必须至少有一个 bit 设置
+
+2. 如果有 VIRTIO_IOMMU_F_IOASID_BITS 功能, 则 ioasid_bits 包含 I/O Address space ID(map/unmap请求中使用的标识符)中支持的数目. 值等于 0 也是有效的, 仅仅表示支持单个地址空间(`2^0`? ).
+
+如果没有 VIRTIO_IOMMU_F_IOASID_BITS 功能, address space ID 最多有 32 位(也就是说任何 address space ID 都是有效的).
+
+3. 如果协商了 VIRTIO_IOMMU_F_INPUT_RANGE 功能, 则 input_range 包含 IOMMU 能够 translate 的虚拟地址范围. 任何访问此范围之外的虚拟地址的映射请求都将失败.
+
+如果不协商该功能, 虚拟映射将跨越整个 64 位地址空间(start = 0, end = 0xffffffffffffffff)
+
+4. 如果协商了 VIRTIO_IOMMU_F_BYPASS 功能, 所有从 unattached 设备来的内存访问都是被 IOMMU 允许且 translate 的. 如果没有这个功能, 任何 unattached 设备的内存访问都会失败. 
+
+如果一个设备通过 bypass 模式被 attach 到一个 address space, 那么这个设备的所有内存访问都会失败, 因为这个 address space 不包含任何 mapping.
+
+即没有 attach 到 address space 的 IOMMU 管理的设备可以访问 guest-physical address. 否则, 访问 GPA 可能会失败.
+
+device 被 reset, 则不会被 attach 到任何 address space.
+
+### 设备操作
+
+驱动程序在 request virtqueue (0) 上发送 requests, 通知设备并等待设备在 used ring 中返回具有状态的 request.
+
+> 遵循 virtio transport 流程
+
+所有请求被分成两部分: 一个 device-readable, 一个device-writeable.
+
+因此, **每个请求**必须至少用**两个描述符**(descriptor)来描述, 如下图所示.
+
+```
+	31                       7      0
+	+--------------------------------+ <------- RO descriptor
+	|      0 (reserved)     |  type  |
+	+--------------------------------+
+	|                                |
+	|            payload             |
+	|                                | <------- WO descriptor
+	+--------------------------------+
+	|      0 (reserved)     | status |
+	+--------------------------------+
+
+	struct virtio_iommu_req_head {
+		u8	type;
+		u8	reserved[3];
+	};
+
+	struct virtio_iommu_req_tail {
+		u8	status;
+		u8	reserved[3];
+	};
+```
+
+(关于格式选择的注意事项: 此格式强制将有效载荷(payload)拆分为两个 - 一个 read-only 的缓冲区, 一个 write-only.这对于我们的目的来说是必要且充分的, 并且不会关闭未来扩展更复杂请求的大门, 例如夹在两个 RO 之间的 WO 字段. 由于 Virtio 1.0 ring 要求, 需要用两个描述链来描述一个这样的请求, 这些描述符可能更复杂, 无法高效实现, 但仍有可能. 设备和驱动程序都必须假定请求是分段的. )
+
+type 字段可能是:
+
+```
+VIRTIO_IOMMU_T_ATTACH			1
+VIRTIO_IOMMU_T_DETACH			2
+VIRTIO_IOMMU_T_MAP			3
+VIRTIO_IOMMU_T_UNMAP			4
+```
+
+下面定义了一些通用 status code.对于无效请求, driver 不能假定返回一个特定的code.除了总是意味着 "success" 的 0 之外, 其他返回值有助于故障排除.
+
+```
+VIRTIO_IOMMU_S_OK			0
+ All good! Carry on.
+
+VIRTIO_IOMMU_S_IOERR			1
+ Virtio communication error 
+
+VIRTIO_IOMMU_S_UNSUPP			2
+ Unsupported request
+
+VIRTIO_IOMMU_S_DEVERR			3
+ Internal device error
+
+VIRTIO_IOMMU_S_INVAL			4
+ Invalid parameters
+
+VIRTIO_IOMMU_S_RANGE			5
+ Out-of-range parameters
+
+VIRTIO_IOMMU_S_NOENT			6
+ Entry not found
+
+VIRTIO_IOMMU_S_FAULT			7
+ Bad address
+```
+
+#### attach device
+
+```cpp
+struct virtio_iommu_req_attach {
+	le32	address_space;
+	le32	device;
+	le32	flags/reserved;
+};
+```
+
+将设备 attach 到 address space.对 guest 来讲, 每个 "address_space" 都是一个唯一的标识符('address_space' is an identifier unique to the guest). 如果 IOMMU 设备中不存在这个 address space, 则创建一个.
+
+> 也就是说, 一个 guest 中的 address_space 是不同的, 类似于 domain 的概念.
+
+对于 IOMMU 来说, 每个 "device" 都是一个唯一的标识符('device' is an identifier unique to the IOMMU). host 在 guest boot 期间向 guest 传达(communicate)了唯一的 device ID.用于传达此 ID 的方法不属于此规范的范围, 但必须适用以下规则:
+
+* 从 IOMMU 的角度来看, device ID 是唯一的. DMA transaction (DMA 事务) 不是由同一 IOMMU translate 的多个设备可能具有相同的设备 ID(因为 iommu 不是同一个). DMA transaction 可能由同一 IOMMU 翻译的设备必须具有不同的 device ID.
+
+* 有时 host 无法完全隔离两个设备. 例如, 在传统的 PCI 总线上, 设备可以窥探(snoop)来自其邻居(neighbour)的 DMA transaction(DMA 事务). 在这种情况下, 主机必须向 guest 传达它不能将这些设备彼此隔离. 用于传达这个的方法不在本规范的范围. IOMMU 设备必须确保无法被 host 隔离的设备具有相同的 address space(也就是多个device不能隔离则必须被同一个 iommu 管理).
+
+多个设备可以添加到相同的 address space.一个设备不能被 attach 到多个 address space(即使用 map/unmap 接口). 对于 SVM, 请参阅 page table 和 context table 共享建议.
+
+如果设备已经 attach 到另一个 address space "old", 则它将被从 "old" address space 分离并 attach 到新地址空间. 在此请求完成后, 设备无法访问旧地址空间的映射.
+
+设备要么返回 VIRTIO_IOMMU_S_OK, 要么返回错误状态. 我们建议以下错误状态, 这将有助于调试驱动程序.
+
+NOENT: 未找到设备.
+
+RANGE: address space 超出了 ioasid_bits 允许的范围.
+
+#### detach device
+
+```cpp
+struct virtio_iommu_req_detach {
+	le32	device;
+	le32	flags/reserved;
+};
+```
+
+从 address space 中 detach device。当此请求完成时，设备就不能再访问该 address space 中的任何映射。如果 device 没有被 attach 到任何地址空间，则请求将成功返回。
+
+在所有设备从一个地址空间 detach 后，驱动程序可以将其 address space ID 重用于另一个地址空间。
+
+NOENT：未找到设备。
+
+INVAL：设备未连接到任何地址空间。
+
+#### map region
+
+```cpp
+struct virtio_iommu_req_map {
+	le32	address_space;
+	le64	phys_addr;
+	le64	virt_addr;
+	le64	size;
+	le32	flags;
+};
+
+VIRTIO_IOMMU_MAP_F_READ		0x1
+VIRTIO_IOMMU_MAP_F_WRITE	0x2
+VIRTIO_IOMMU_MAP_F_EXEC		0x4
+```
+
+将一系列连续的虚拟地址映射到一系列连续的物理地址。大小必须始终是初始化期间协商的页面粒度的倍数。phys_addr和virt_addr必须在页面粒度上对齐。地址空间必须是用VIRTIO_IOMMU_T_ATTACH创建的。
+
+
+
+
 
 
 
