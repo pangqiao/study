@@ -14,3 +14,5 @@ https://biscuitos.github.io/blog/BiscuitOS_Catalogue/
 
 《Linux内核探秘：深入解析文件系统和设备驱动的架构与设计》
 
+
+在pcie设备中找到pcie的root port: https://blog.csdn.net/tiantao2012/article/details/78342433
