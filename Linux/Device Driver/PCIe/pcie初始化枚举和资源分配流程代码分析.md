@@ -70,7 +70,7 @@ ____________________________________________
 ```
 
 * arch pcie driver: 放一些和架构强相关的 pcie 的函数实现, 对应 `arch/arm64/kernel/pci.c`
-* acpi pcie driver: acpi 扫描时所涉及到的 pcie 代码, 包括 host bridge 的解析初始化, pcie bus 的创建, ecam 的映射等, 对应 `drivers/acpi/pci*. c`
+* acpi pcie driver: acpi 扫描时所涉及到的 pcie 代码, 包括 host bridge 的解析初始化, pcie bus 的创建, ecam 的映射等, 对应 `drivers/acpi/pci*.c`
 * pcie core driver: pcie 的子系统代码, 包括 pcie 的枚举流程, 资源分配流程, 中断流程等, 主要对应 `drivers/pci/*. c`
 * pcie port bus driver: 是 pcie port 的四个 service 代码的整合, 四个 service 主要指的是 pcie dpc/pme/hotplug/aer, 对应的是 `drivers/pci/pcie/*`
 * pcie ep driver: 是叶子节点的设备驱动, 比如显卡, 网卡, nvme 等.

@@ -16,3 +16,5 @@ https://biscuitos.github.io/blog/BiscuitOS_Catalogue/
 
 
 在pcie设备中找到pcie的root port: https://blog.csdn.net/tiantao2012/article/details/78342433
+
+PCIe学习笔记之MSI/MSI-x中断及代码分析: https://www.codenong.com/cs106676560/
