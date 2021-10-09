@@ -26,7 +26,7 @@
 
 整个 PCIe 是一个树形的拓扑:
 
-* Root Complex 是树的根, 它一般实现了一个主桥设备 (host bridge), 一条内部 PCIe 总线 (BUS 0), 以及通过若干个 PCI bridge 扩展出一些 root port.host bridge 可以完成 CPU 地址到 PCI 域地址的转换, pci bridge 用于系统的扩展, 没有地址转换功能;
+* Root Complex 是树的根, 它一般实现了一个主桥设备 (host bridge), 一条内部 PCIe 总线 (BUS 0), 以及通过若干个 PCI bridge 扩展出一些 root port. host bridge 可以完成 CPU 地址到 PCI 域地址的转换, pci bridge 用于系统的扩展, 没有地址转换功能;
 
 * Swich 是转接器设备, 目的是扩展 PCIe 总线. switch 中有一个 upstream port 和若干个 downstream port, 每一个端口都相当于一个 pci bridge
 

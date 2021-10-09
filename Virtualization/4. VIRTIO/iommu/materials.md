@@ -30,16 +30,9 @@ SPEC: https://jpbrucker.net/virtio-iommu/spec/
 
 KVM patchsets: https://patchwork.kernel.org/project/kvm/list/?submitter=Jean-Philippe%20Brucker&state=*&archive=both&param=2&page=3
 
-
-
+# Linux
 
 virtio-iommu: a paravirtualized IOMMU
-
-> 2017, This is the initial proposal for a paravirtualized IOMMU device using virtio transport. It contains a description of the device, a Linux driver,and a toy implementation in kvmtool. 
-> 
-> With this prototype, you can translate DMA to guest memory from emulated (virtio), or passed-through (VFIO) devices.
-> 
-> To understand the virtio-iommu, I advise to first read introduction and motivation, then skim through implementation notes and finally look at the device specification.
 
 * [RFC 0/3]: a paravirtualized IOMMU, [spinics](https://www.spinics.net/lists/kvm/msg147990.html), [lore kernel](https://lore.kernel.org/all/20170407191747.26618-1-jean-philippe.brucker__33550.5639938221$1491592770$gmane$org@arm.com/)
   * [RFC 1/3] virtio-iommu: firmware description of the virtual topology: [spinics](https://www.spinics.net/lists/kvm/msg147991.html), [lore kernel](https://lore.kernel.org/all/20170407191747.26618-2-jean-philippe.brucker__38031.8755437203$1491592803$gmane$org@arm.com/)
@@ -118,7 +111,7 @@ Add support for ACPI VIOT
 
 
 
-qemu:
+# qemu
 
 https://patchwork.kernel.org/project/qemu-devel/list/?state=*&q=virtio-iommu&archive=both&param=2&page=3
 
@@ -172,14 +165,16 @@ virtio-iommu: Add ACPI support (还未合入)
 
 
 
+
+# cloud-hypervisor
+
+可以参见 cloud-hypervisor 的代码
+
+
 # 个人资料
 
 Jean-Philippe Brucker
 
 qemu branch: https://jpbrucker.net/git/qemu/log/?h=virtio-iommu/acpi
 
-
-dump viot
-
-use viot details
 

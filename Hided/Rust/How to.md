@@ -60,7 +60,7 @@ Rust 语言 Cheat Sheet(各种很全的资料): https://cheats.rs/
 
 通过多个链表例子教会你 Rust 基本和高级编程: https://rust-unofficial.github.io/too-many-lists/
 
-通过一系列代码示例，用于说明各种 Rust 概念和标准库: [Rust by Example](https://doc.rust-lang.org/stable/rust-by-example/)
+通过一系列代码示例，用于说明各种 Rust 概念和标准库: [Rust by Example](https://doc.rust-lang.org/stable/rust-by-example/), [中文版](https://rustwiki.org/zh-CN/rust-by-example/)
 
 Rust 代码和资料的精选列表: [Awesome Rust](https://github.com/rust-unofficial/awesome-rust) , 汇集了Github上几乎全部的优秀Rust开源项目。举例几个有名的项目：Mozilla的Servo浏览器引擎，AWS的Firecracker MicroVM，Web框架actix-web，当然还有最近Facebook发布的Libra。
 

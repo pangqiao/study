@@ -222,7 +222,9 @@ IORT: IO Remapping Table, DEN0049B, http://infocenter.arm.com/help/topic/com.arm
 
 > virtio-iommu: device probing and operations
 
-在探测到了 virtio-iommu 设备并且 driver 知道要 IOMMU 管理的设备后, driver 可以开始向 virtio-iommu 设备发送请求. 此处描述的操作是简约的, 因此 vIOMMU 设备可以尽可能简单地实现, 并且可以通过功能位进行扩展.
+在探测到了 virtio-iommu 设备并且 driver 知道要 IOMMU 管理的设备后, driver 可以开始向 virtio-iommu 设备发送请求.
+
+此处描述的操作是简约的, 因此 vIOMMU 设备可以尽可能简单地实现, 并且可以通过功能位进行扩展.
 
 1. 概述Overview
 2. 功能位Feature bits
