@@ -172,7 +172,7 @@ virtio-iommu: Add ACPI support (还未合入)
 可以参见 cloud-hypervisor 的代码
 
 
-# 个人资料
+# author info
 
 Jean-Philippe Brucker
 
