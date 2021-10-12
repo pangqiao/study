@@ -587,6 +587,35 @@ RANGE: 请求将拆分一个mapping
 
 * [RFC PATCH linux] iommu: Add virtio-iommu driver, [lore kernel](https://lore.kernel.org/all/20170407192314.26720-1-jean-philippe.brucker@arm.com/), [patchwork](https://patchwork.kernel.org/project/kvm/patch/20170407192314.26720-1-jean-philippe.brucker@arm.com/)
 
+virtio IOMMU 是一个半虚设备, 可以通过 virtio-mmio transport 发送 IOMMU 请求, 比如 map/unmap. 这个 driver 会实现上面讲到的 virtio-iommu 最初方案. 它会处理 attach, detach, map 和 unmap 请求.
+
+大部分代码是在创建请求并通过 virtio 发生它们. 实现 IOMMU API 是比较简单的, 因为 virtio-iommu 的 MAP/UNMAP 接口几乎相同. 我放到了一个自定义的 map_sg() 函数中. 核心函数将发送一系列的 map 请求, 并且等待每个请求的返回. 这个优化避免在每个 map 后 yield to host，而是在 virtio ring 中准备一批请求，并 kick host 一次。
+
+It must be applied on top of the probe deferral work for IOMMU, currently under discussion. 这允许早期驱动程序检测和设备探测分割开: 早期解析 device tree 或 ACPI 从而发现 IOMMU 负责的设备, 但是 IOMMU 本身需要等核心 virtio 模块加载后才能被探测.
+
+目前, 启用 DEBUG 使得非常冗长，但在下一个版本中应该会更 calmer。
+
+```diff
+---
+ drivers/iommu/Kconfig             |  11 +
+ drivers/iommu/Makefile            |   1 +
+ drivers/iommu/virtio-iommu.c      | 980 ++++++++++++++++++++++++++++++++++++++
+ include/uapi/linux/Kbuild         |   1 +
+ include/uapi/linux/virtio_ids.h   |   1 +
+ include/uapi/linux/virtio_iommu.h | 142 ++++++
+ 6 files changed, 1136 insertions(+)
+ create mode 100644 drivers/iommu/virtio-iommu.c
+ create mode 100644 include/uapi/linux/virtio_iommu.h
+```
+
+* `drivers/iommu/Kconfig`, 增加了一个内核编译选项, guest kernel 启用
+* `drivers/iommu/Makefile`, 使内核编译时增加一个 `.o` 文件
+* `drivers/iommu/virtio-iommu.c`, 核心实现文件
+* `include/uapi/linux/Kbuild`, linux-header 增加一个头文件
+* `include/uapi/linux/virtio_ids.h`, 增加一个 virtio 类型
+* `include/uapi/linux/virtio_iommu.h`, 头文件 
+
+
 
 
 # KVM tool

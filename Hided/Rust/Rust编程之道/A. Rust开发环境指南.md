@@ -17,12 +17,12 @@
 - [6. 开发依赖工具](#6-开发依赖工具)
   - [6.1. Racer 代码补全](#61-racer-代码补全)
   - [6.2. RLS](#62-rls)
-  - [rust-analyzer](#rust-analyzer)
-    - [VS Code](#vs-code)
-  - [6.3. cargo 插件](#63-cargo-插件)
-    - [6.3.1. clippy](#631-clippy)
-    - [6.3.2. rustfmt](#632-rustfmt)
-    - [6.3.3. cargo fix](#633-cargo-fix)
+  - [6.3. rust-analyzer](#63-rust-analyzer)
+    - [6.3.1. VS Code](#631-vs-code)
+  - [6.4. cargo 插件](#64-cargo-插件)
+    - [6.4.1. clippy](#641-clippy)
+    - [6.4.2. rustfmt](#642-rustfmt)
+    - [6.4.3. cargo fix](#643-cargo-fix)
 
 <!-- /code_chunk_output -->
 
@@ -133,7 +133,7 @@ export RUSTUP_UPDATE_ROOT=http://mirrors.ustc.edu.cn/rust-static/rustup
 
 2. 设置 cargo 使用的国内镜像
 
-在`CARGO_HOME`目录下（默认是`～/.cargo`）建立一个名叫config的文件，内容如下：
+在`CARGO_HOME`目录下(默认是`～/.cargo`)建立一个名叫config的文件, 内容如下：
 
 ```
 [source.crates-io]
@@ -156,9 +156,9 @@ ENV PATH=/cargo/bin:/rust/bin:$PATH
 RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
 ```
 
-如果你不想使用Nightly版本，可以将nightly换成stable。
+如果你不想使用Nightly版本, 可以将nightly换成stable.
 
-如果你想指定固定的nightly版本，则可以再添加如下一行命令：
+如果你想指定固定的nightly版本, 则可以再添加如下一行命令：
 
 ```
 RUN rustup default nightly-2018-05-12
@@ -166,18 +166,18 @@ RUN rustup default nightly-2018-05-12
 
 # 5. Rust IDE
 
-比如 Visual Studio Code、IntelliJ IDEA等。
+比如 Visual Studio Code、IntelliJ IDEA等.
 
 官方建议是使用 Visual Studio Code, 所以我也是使用这个
 
-基于 linux 的 VS code, 插件安装下面插件
+基于 linux 的 VS code, 插件安装下面插件, 同时启用 vim
 
 * rust-analyzer – 新一代rls,老的可以不用安装了
 * Native Debug - debug 使用
 * CodeLLDB – Debug时需要用到的插件
 * Better TOML – TOML标记语言支持
-* crates – crates.io 依赖的一个扩展，Cargo.toml管理依赖使用
-* Tabnine – 智能助手，很好用，就是有点耗费CPU/内存，可以选择安装使用
+* crates – crates.io 依赖的一个扩展, Cargo.toml管理依赖使用
+* Tabnine – 智能助手, 很好用, 就是有点耗费CPU/内存, 可以选择安装使用
 * Auto Close Tag – 自动添加HTML/XML close tag
 
 在 windows 环境则远程连接 linux 且安装上述插件
@@ -211,11 +211,13 @@ export RUST_SRC_APTH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
 
 ## 6.2. RLS
 
-RLS 是Rust Language Server的简写，微软提出编程语言服务器的概念，将 IDE 的一些编程语言相关的部分由单独的服务器来实现，比如代码补全、跳转定义、查看文档等。这样，**不同的IDE或编辑器只需要实现客户端接口**即可。
+Rust 语言服务器(RLS)基于 LSP(Language Server Protocol), 即语言服务器协议, LSP 由红帽、微软和 Codenvy 联合推出, 可以让不同的程序编辑器与集成开发环境(IDE)方便地嵌入各种编程语言, 允许开发人员在最喜爱的工具中使用各种语言来编写程序.
+
+RLS 是Rust Language Server的简写, 微软提出编程语言服务器的概念, 将 IDE 的一些编程语言相关的部分由单独的服务器来实现, 比如**代码补全**、**跳转定义**、**查看文档**等. 这样, **不同的IDE或编辑器只需要实现客户端接口**即可.
 
 依赖 racer 来实现, 所以需要配置 racer 的环境变量
 
-## rust-analyzer
+## 6.3. rust-analyzer
 
 > 不依赖 racer?
 
@@ -231,13 +233,13 @@ rust-analyzer 将取代 RLS.
 
 更多细节: https://rust-analyzer.github.io/manual.html
 
-### VS Code
+### 6.3.1. VS Code
 
 目前 VS Code 已完美支持, 直接下载 rust-analyzer, 会和官方 Rust 冲突, 卸载官方的即可
 
-## 6.3. cargo 插件
+## 6.4. cargo 插件
 
-### 6.3.1. clippy
+### 6.4.1. clippy
 
 分析源码, 检查代码中的 Code Smell.
 
@@ -245,7 +247,7 @@ rust-analyzer 将取代 RLS.
 rustup component add clippy
 ```
 
-### 6.3.2. rustfmt
+### 6.4.2. rustfmt
 
 统一代码风格
 
@@ -253,6 +255,6 @@ rustup component add clippy
 rustup component add rustfmt
 ```
 
-### 6.3.3. cargo fix
+### 6.4.3. cargo fix
 
 cargo 自带子命令 cargo fix, 帮助开发者自动修复编译器中有警告的代码
