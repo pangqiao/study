@@ -3,28 +3,33 @@
 
 <!-- code_chunk_output -->
 
-- [kvm forum 2017](#kvm-forum-2017)
-- [第一版 RFC](#第一版-rfc)
-  - [整体介绍](#整体介绍)
-  - [虚拟拓扑的固件描述](#虚拟拓扑的固件描述)
-  - [设备探测和设备操作](#设备探测和设备操作)
-    - [概述](#概述)
-    - [功能位](#功能位)
-    - [设备配置布局](#设备配置布局)
-    - [设备初始化](#设备初始化)
-    - [设备操作](#设备操作)
-      - [attach device](#attach-device)
-      - [detach device](#detach-device)
-      - [map region](#map-region)
-      - [unmap region](#unmap-region)
-  - [将来内容](#将来内容)
-- [virtio-iommu on non-devicetree platforms](#virtio-iommu-on-non-devicetree-platforms)
-- [VIOT](#viot)
-- [virtio-iommu spec](#virtio-iommu-spec)
+- [1. kvm forum 2017](#1-kvm-forum-2017)
+- [2. 第一版 RFC](#2-第一版-rfc)
+- [3. 设备描述](#3-设备描述)
+  - [3.1. 整体介绍](#31-整体介绍)
+  - [3.2. 虚拟拓扑的固件描述](#32-虚拟拓扑的固件描述)
+  - [3.3. 设备探测和设备操作](#33-设备探测和设备操作)
+    - [3.3.1. 概述](#331-概述)
+    - [3.3.2. 功能位](#332-功能位)
+    - [3.3.3. 设备配置布局](#333-设备配置布局)
+    - [3.3.4. 设备初始化](#334-设备初始化)
+    - [3.3.5. 设备操作](#335-设备操作)
+      - [3.3.5.1. attach device](#3351-attach-device)
+      - [3.3.5.2. detach device](#3352-detach-device)
+      - [3.3.5.3. map region](#3353-map-region)
+      - [3.3.5.4. unmap region](#3354-unmap-region)
+  - [3.4. 将来内容](#34-将来内容)
+- [4. Linux driver](#4-linux-driver)
+- [KVM tool](#kvm-tool)
+- [5. virtio-iommu on non-devicetree platforms](#5-virtio-iommu-on-non-devicetree-platforms)
+- [6. VIOT](#6-viot)
+- [7. virtio-iommu spec](#7-virtio-iommu-spec)
 
 <!-- /code_chunk_output -->
 
-# kvm forum 2017
+这里主要讲一下作者最初的思想和相关实现
+
+# 1. kvm forum 2017
 
 virtio-iommu 最早是 2017 年提出来的
 
@@ -32,9 +37,9 @@ virtio-iommu 最早是 2017 年提出来的
 
 https://events.static.linuxfound.org/sites/events/files/slides/viommu_arm_upload_1.pdf
 
-# 第一版 RFC
+# 2. 第一版 RFC
 
-1. 最初
+这是使用 virtio 传输(transport)的 paravirtualized IOMMU device 的初步建议. 它包含设备描述, Linux 驱动程序和 kvmtool 中的玩具实现.
 
 virtio-iommu: a paravirtualized IOMMU
 
@@ -43,11 +48,19 @@ virtio-iommu: a paravirtualized IOMMU
   * [RFC 2/3] virtio-iommu: device probing and operations: [spinice](https://www.spinics.net/lists/kvm/msg147992.html), lore kernel
   * [RFC 3/3] virtio-iommu: future work: https://www.spinics.net/lists/kvm/msg147993.html
 
-## 整体介绍
+* [RFC PATCH linux] iommu: Add virtio-iommu driver, [lore kernel](https://lore.kernel.org/all/20170407192314.26720-1-jean-philippe.brucker@arm.com/), [patchwork](https://patchwork.kernel.org/project/kvm/patch/20170407192314.26720-1-jean-philippe.brucker@arm.com/)
+
+* [RFC PATCH kvmtool 00/15] Add virtio-iommu, [lore kernel](https://lore.kernel.org/all/20170407192455.26814-1-jean-philippe.brucker@arm.com/)
+
+# 3. 设备描述
+
+## 3.1. 整体介绍
 
 > cover letter: a paravirtualized IOMMU
 
-这是使用 virtio 传输(transport)的 paravirtualized IOMMU device 的初步建议. 它包含设备描述, Linux 驱动程序和 kvmtool 中的玩具实现. 使用此原型, 您可以将来自模拟设备(virtio) 或 pass-through 设备(VFIO) 的 DMA 转换为 guest 内存.
+这是使用 virtio 传输(transport)的 paravirtualized IOMMU device 的初步建议. 它包含设备描述, Linux 驱动程序和 kvmtool 中的玩具实现.
+
+使用此原型, 您可以将来自模拟设备(virtio) 或 pass-through 设备(VFIO) 的 DMA 转换为 guest 内存.
 
 最简单地, viommu 处理来自 guest 的 `map/unmap` 请求. "RFC 3/3"中提议的未来扩展将来会将 page tables 绑定到设备上.
 
@@ -133,7 +146,7 @@ Scenario 2: a virtual net device behind a virtual IOMMU.
 * GVA, GPA, HVA, HPA
 * IOVA: I/O 虚拟地址. 在 guest os 中是 GVA.
 
-## 虚拟拓扑的固件描述
+## 3.2. 虚拟拓扑的固件描述
 
 > virtio-iommu: firmware description of the virtual topology
 
@@ -172,9 +185,12 @@ vIOMMU 用 32 位 ID 来标识每个虚拟设备, 该文中称为"Device ID". "D
                   \   0x11fff           0xffff   /
 ```
 
-> 物理平台上
+> 物理平台上:
+> 
 > 同一个 PCI domain, Requester ID(可以认为是设备 BDF) 是不同的; 不同 PCI domain, Requester ID 可以相同
-> vIOMMU侧
+> 
+> vIOMMU侧:
+> 
 > 同一个 vIOMMU 中的 Device ID 不能相同, 某一个 Device ID 会和物理平台上一个设备对应
 > 不同 vIOMMU 中的 Device ID 可以相同
 
@@ -246,7 +262,7 @@ IORT: IO Remapping Table, DEN0049B, http://infocenter.arm.com/help/topic/com.arm
 
 操作系统解析 IORT 表, 以构建 IOMMU 与设备之间的 ID 关系表. ID 阵列用于查找 IOMMU ID 与 PCI 或平台设备之间的关系. 稍后, virtio-iommu 驱动程序通过"Device object name"字段找到相关的 LNRO0005 描述符, 并探测 virtio 设备以了解更多有关其功能的信息. 由于"IOMMU"的所有属性将在 virtio probe 期间获得, IORT 节点要尽量保持简单.
 
-## 设备探测和设备操作
+## 3.3. 设备探测和设备操作
 
 > virtio-iommu: device probing and operations
 
@@ -264,7 +280,7 @@ IORT: IO Remapping Table, DEN0049B, http://infocenter.arm.com/help/topic/com.arm
    5.3. Map region
    5.4. Unmap region
 
-### 概述
+### 3.3.1. 概述
 
 Requests 是 guest 往 request virtqueue 中添加的小的缓冲 buffer. guest可以在 queue 中添加一批Requests, 并向设备发送通知(kick), 以便设备处理它们.
 
@@ -309,7 +325,7 @@ Requests 是 guest 往 request virtqueue 中添加的小的缓冲 buffer. guest�
 
 (6) driver 从 "used ring" 中 pop 这个 head, 然后选择性看是否读取 device 更新的 buffers.
 
-### 功能位
+### 3.3.2. 功能位
 
 VIRTIO_IOMMU_F_INPUT_RANGE (0)
 
@@ -327,7 +343,7 @@ VIRTIO_IOMMU_F_BYPASS (3)
 
 当没有被 attach 到一个 address space时, IOMMU 管理的 device 能够访问虚拟机物理地址空间(GPA).
 
-### 设备配置布局
+### 3.3.3. 设备配置布局
 
 ```cpp
 struct virtio_iommu_config {
@@ -340,7 +356,7 @@ struct virtio_iommu_config {
 };
 ```
 
-### 设备初始化
+### 3.3.4. 设备初始化
 
 1. page_size_mask 包含可以映射的所有页面大小的 bitmap.最低有效位集定义了 IOMMU 映射的页面粒度. mask 中的其他位是描述 IOMMU 可以合并为单个映射(页面块)的页面大小的提示.
 
@@ -364,7 +380,7 @@ page_size_mask 必须至少有一个 bit 设置
 
 device 被 reset, 则不会被 attach 到任何 address space.
 
-### 设备操作
+### 3.3.5. 设备操作
 
 驱动程序在 request virtqueue (0) 上发送 requests, 通知设备并等待设备在 used ring 中返回具有状态的 request.
 
@@ -397,7 +413,7 @@ device 被 reset, 则不会被 attach 到任何 address space.
 	};
 ```
 
-(关于格式选择的注意事项: 此格式强制将有效载荷(payload)拆分为两个 - 一个 read-only 的缓冲区, 一个 write-only.这对于我们的目的来说是必要且充分的, 并且不会关闭未来扩展更复杂请求的大门, 例如夹在两个 RO 之间的 WO 字段. 由于 Virtio 1.0 ring 要求, 需要用两个描述链来描述一个这样的请求, 这些描述符可能更复杂, 无法高效实现, 但仍有可能. 设备和驱动程序都必须假定请求是分段的. )
+(关于格式选择的注意事项: 此格式强制将有效载荷(payload)拆分为两个 - 一个 read-only 的缓冲区, 一个 write-only. 这对于我们的目的来说是必要且充分的, 并且不会关闭未来扩展更复杂请求的大门, 例如夹在两个 RO 之间的 WO 字段. 由于 Virtio 1.0 ring 要求, 需要用两个描述链来描述一个这样的请求, 这些描述符可能更复杂, 无法高效实现, 但仍有可能. 设备和驱动程序都必须假定请求是分段的. )
 
 type 字段可能是:
 
@@ -408,7 +424,7 @@ VIRTIO_IOMMU_T_MAP			3
 VIRTIO_IOMMU_T_UNMAP			4
 ```
 
-下面定义了一些通用 status code.对于无效请求, driver 不能假定返回一个特定的code.除了总是意味着 "success" 的 0 之外, 其他返回值有助于故障排除.
+下面定义了一些通用 status code. 对于无效请求, driver 不能假定返回一个特定的code. 除了总是意味着 "success" 的 0 之外, 其他返回值有助于故障排除.
 
 ```
 VIRTIO_IOMMU_S_OK			0
@@ -436,7 +452,7 @@ VIRTIO_IOMMU_S_FAULT			7
  Bad address
 ```
 
-#### attach device
+#### 3.3.5.1. attach device
 
 ```cpp
 struct virtio_iommu_req_attach {
@@ -446,11 +462,11 @@ struct virtio_iommu_req_attach {
 };
 ```
 
-将设备 attach 到 address space.对 guest 来讲, 每个 "address_space" 都是一个唯一的标识符('address_space' is an identifier unique to the guest). 如果 IOMMU 设备中不存在这个 address space, 则创建一个.
+将设备 attach 到 address space. 对 guest 来讲, 每个 "address_space" 都是一个唯一的标识符('address_space' is an identifier unique to the guest). 如果 IOMMU 设备中不存在这个 address space, 则创建一个.
 
 > 也就是说, 一个 guest 中的 address_space 是不同的, 类似于 domain 的概念.
 
-对于 IOMMU 来说, 每个 "device" 都是一个唯一的标识符('device' is an identifier unique to the IOMMU). host 在 guest boot 期间向 guest 传达(communicate)了唯一的 device ID.用于传达此 ID 的方法不属于此规范的范围, 但必须适用以下规则:
+对于 IOMMU 来说, 每个 "device" 都是一个唯一的标识符('device' is an identifier unique to the IOMMU). host 在 guest boot 期间向 guest 传达(communicate)了唯一的 device ID. 用于传达此 ID 的方法不属于此规范的范围, 但必须适用以下规则:
 
 * 从 IOMMU 的角度来看, device ID 是唯一的. DMA transaction (DMA 事务) 不是由同一 IOMMU translate 的多个设备可能具有相同的设备 ID(因为 iommu 不是同一个). DMA transaction 可能由同一 IOMMU 翻译的设备必须具有不同的 device ID.
 
@@ -466,7 +482,7 @@ NOENT: 未找到设备.
 
 RANGE: address space 超出了 ioasid_bits 允许的范围.
 
-#### detach device
+#### 3.3.5.2. detach device
 
 ```cpp
 struct virtio_iommu_req_detach {
@@ -475,7 +491,7 @@ struct virtio_iommu_req_detach {
 };
 ```
 
-从 address space 中 detach device.当此请求完成时, 设备就不能再访问该 address space 中的任何映射. 如果 device 没有被 attach 到任何地址空间, 则请求将成功返回.
+从 address space 中 detach device. 当此请求完成时, 设备就不能再访问该 address space 中的任何映射. 如果 device 没有被 attach 到任何地址空间, 则请求将成功返回.
 
 在所有设备从一个地址空间 detach 后, 驱动程序可以将其 address space ID 重用于另一个地址空间.
 
@@ -483,7 +499,7 @@ NOENT: 未找到设备.
 
 INVAL: 设备未连接到任何地址空间.
 
-#### map region
+#### 3.3.5.3. map region
 
 ```cpp
 struct virtio_iommu_req_map {
@@ -505,7 +521,7 @@ VIRTIO_IOMMU_MAP_F_EXEC		0x4
 
 （请注意，此格式会阻止在单个请求（0x0 - 0xfff....ff） -> （0x0 - 0xfff...ff），因为它将得到一个 零大小。希望允许 VIRTIO_IOMMU_F_BYPASS 消除发出此类请求的需要。也不太可能符合前一段的物理范围限制）
 
-（另一个注意事项是 flags: 物理 IOMMU 不可能支持所有可能的 flag 组合。例如，（W =！R） 或 （E = W） 可能无效。我还没有花时间设计一个聪明的方法来宣传支持和隐含（例如 "W 暗示 R"）标志或组合，但我至少可以尝试研究共同的模型。请记住，我们可能很快就会想要添加更多的标志，如 privileged，device，transient，shared等，无论这些将意味着什么）
+（另一个注意事项是 flags: 物理 IOMMU 不可能支持所有可能的 flag 组合。例如，（W & !R） 或 （E & W） 可能无效。我还没有花时间设计一个聪明的方法来宣传支持和隐含（例如 "W 暗示 R"）标志或组合，但我至少可以尝试研究共同的模型。请记住，我们可能很快就会想要添加更多的标志，如 privileged，device，transient，shared等，无论这些将意味着什么）
 
 只有 VIRTIO_IOMMU_F_MAP_UNMAP 协商成功这个请求才是可用的
 
@@ -515,7 +531,7 @@ RANGE: virt_addr, phys_addr 或 range 不在协商期间规定的范围内. 比�
 
 NOENT: address space 不存在
 
-#### unmap region
+#### 3.3.5.4. unmap region
 
 ```cpp
 struct virtio_iommu_req_unmap {
@@ -561,16 +577,21 @@ FAULT: mapping 不存在
 
 RANGE: 请求将拆分一个mapping
 
-
-
-
-
-## 将来内容
+## 3.4. 将来内容
 
 > virtio-iommu: future work
 
 
 
+# 4. Linux driver
+
+* [RFC PATCH linux] iommu: Add virtio-iommu driver, [lore kernel](https://lore.kernel.org/all/20170407192314.26720-1-jean-philippe.brucker@arm.com/), [patchwork](https://patchwork.kernel.org/project/kvm/patch/20170407192314.26720-1-jean-philippe.brucker@arm.com/)
+
+
+
+# KVM tool
+
+[RFC PATCH kvmtool 00/15] Add virtio-iommu, [lore kernel](https://lore.kernel.org/all/20170407192455.26814-1-jean-philippe.brucker@arm.com/)
 
 
 
@@ -580,10 +601,7 @@ RANGE: 请求将拆分一个mapping
 
 
 
-
-
-
-# virtio-iommu on non-devicetree platforms
+# 5. virtio-iommu on non-devicetree platforms
 
 IOMMU 用来管理来自设备的内存访问. 所以 guest 需要在 endpoint 发起 DMA 之前初始化 IOMMU. 
 
@@ -600,7 +618,7 @@ IOMMU 用来管理来自设备的内存访问. 所以 guest 需要在 endpoint �
 建议将拓扑描述嵌入设备中.
 
 
-# VIOT
+# 6. VIOT
 
 Virtual I/O Translation table (VIOT) 描述了半虚设备的 I/O 拓扑信息.
 
@@ -611,7 +629,7 @@ Virtual I/O Translation table (VIOT) 描述了半虚设备的 I/O 拓扑信息.
 * 对于 non-devicetree 平台, 应该使用 ACPI Table.
 * 对于既没有 devicetree, 又没有 ACPI 的 platform, 可以在设备中内置一个使用大致相同格式的结构
 
-# virtio-iommu spec
+# 7. virtio-iommu spec
 
 virtio-iommu 设备管理多个 endpoints 的 DMA 操作.
 
