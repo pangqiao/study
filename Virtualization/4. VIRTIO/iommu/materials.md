@@ -2,7 +2,6 @@
 Virtio-IOMMU 驱动程序现在使用 Linux 5.14 内核的 x86/x86_64硬件工作。 是 Virtio - Iommu 驱动程序 （合并在 Linux 5.3）， 在几年前在树外工作后， 最初专注于 AArch64 的准虚拟 Iommu 硬件。现在，2021 年 Linux 5.14 的 VirtIO-IOMMU 代码也已调整为适用于 x86 英特尔/AMD 硬件。Virtio-IOMMU 可以处理模拟和准虚拟化设备的管理。ACPI 虚拟 I/O 翻译表 （VIOT） 用于描述准虚拟平台的拓扑，在此案例中，x86 用于描述 virtio-iommu 和端点之间的关系。 Linux 5.14 的 IOMMU 更改还包括 Arm SMMU 更新、英特尔 VT-d 现在支持异步嵌套功能以及各种其他改进。还有一个新的是"amd_iommu=force_enable"内核启动选项，用于在通常有问题的平台上强制 IOMMU。
 
 
-
 Virtio IOMMU 是一种半虚拟化设备，允许通过 virtio-mmio 发送 IOMMU 请求，如map/unmap。
 
 使用VirtIO标准实现不同虚拟化组件的跨管理程序兼容性，有一个虚拟IOMMU设备现在由Linux 5.3内核中的工作驱动程序支持。
@@ -24,13 +23,10 @@ virtio-iommu 最早是 2017 年提出来的
 
 https://events.static.linuxfound.org/sites/events/files/slides/viommu_arm_upload_1.pdf
 
-SPEC: https://jpbrucker.net/virtio-iommu/spec/
-
-
-
-KVM patchsets: https://patchwork.kernel.org/project/kvm/list/?submitter=Jean-Philippe%20Brucker&state=*&archive=both&param=2&page=3
 
 # Linux
+
+KVM patchsets: https://patchwork.kernel.org/project/kvm/list/?submitter=Jean-Philippe%20Brucker&state=*&archive=both&param=2&page=3
 
 virtio-iommu: a paravirtualized IOMMU
 
@@ -176,6 +172,9 @@ virtio-iommu: Add ACPI support (还未合入)
 
 Jean-Philippe Brucker
 
+author personal site: https://jpbrucker.net/
+
 qemu branch: https://jpbrucker.net/git/qemu/log/?h=virtio-iommu/acpi
 
+SPEC: https://jpbrucker.net/virtio-iommu/spec/
 

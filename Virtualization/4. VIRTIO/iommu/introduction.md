@@ -1,14 +1,17 @@
 
 # kvm forum 2017
 
+virtio-iommu 最早是 2017 年提出来的
 
+[2017] vIOMMU/ARM: Full Emulation and virtio-iommu Approaches by Eric Auger: https://www.youtube.com/watch?v=7aZAsanbKwI , 
 
+https://events.static.linuxfound.org/sites/events/files/slides/viommu_arm_upload_1.pdf
+
+# 第一版 RFC
 
 1. 最初
 
 virtio-iommu: a paravirtualized IOMMU
-
-# 第一版 RFC
 
 * [RFC 0/3]: a paravirtualized IOMMU, [spinics](https://www.spinics.net/lists/kvm/msg147990.html), [lore kernel](https://lore.kernel.org/all/20170407191747.26618-1-jean-philippe.brucker__33550.5639938221$1491592770$gmane$org@arm.com/)
   * [RFC 1/3] virtio-iommu: firmware description of the virtual topology: [spinics](https://www.spinics.net/lists/kvm/msg147991.html), [lore kernel](https://lore.kernel.org/all/20170407191747.26618-2-jean-philippe.brucker__38031.8755437203$1491592803$gmane$org@arm.com/)
@@ -54,7 +57,7 @@ Scenario 1: a hardware device passed through twice via VFIO
 ```
 
 (1)
-* a. 虚拟机用户态有一个 net driver(比如 DPDK). 它通过 mmap 申请一个 buffer, 得到了虚拟地址(VA); 然后发送 **vfio** 请求(`VFIO_IOMMU_MAP_DMA`) 到虚拟机内核态 virtio-iommu driver 将 VA **映射**到 IOVA(可能 VA = IOVA).
+* a. 虚拟机用户态有一个 net driver(比如 DPDK). 它通过 mmap 申请一个 buffer, 得到了虚拟地址(VA). 它会发送 **vfio** 请求(`VFIO_IOMMU_MAP_DMA`) 到虚拟机内核态 virtio-iommu driver 将 VA **映射**到 IOVA(可能 VA = IOVA).
 * b. 通过 **virtio** (VIRTIO_IOMMU_T_MAP), 虚拟机内核态 viommu driver 将该 mapping 请求转发到host端的 viommu(用户态后端, 比如qemu).
 * c. 通过 **vfio**, 后端 viommu 将请求转发到物理 IOMMU 上.
 
@@ -253,7 +256,7 @@ Requests 是 guest 往 request virtqueue 中添加的小的缓冲 buffer. guest�
 
 > [VIRTIO-v1.0] Virtual I/O Device (VIRTIO) Version 1.0.  03 December 2013. Committee Specification Draft 01 / Public Review Draft 01. http://docs.oasis-open.org/virtio/virtio/v1.0/csprd01/virtio-v1.0-csprd01.html
 
-作为快速提醒(reminder), Virtio(1.0)运输可以用下面流程来描述:
+一个快速提醒(reminder), Virtio(1.0)运输可以用下面流程来描述:
 
 ```
                              HOST  :  GUEST
