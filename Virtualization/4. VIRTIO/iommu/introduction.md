@@ -1,4 +1,29 @@
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [kvm forum 2017](#kvm-forum-2017)
+- [第一版 RFC](#第一版-rfc)
+  - [整体介绍](#整体介绍)
+  - [虚拟拓扑的固件描述](#虚拟拓扑的固件描述)
+  - [设备探测和设备操作](#设备探测和设备操作)
+    - [概述](#概述)
+    - [功能位](#功能位)
+    - [设备配置布局](#设备配置布局)
+    - [设备初始化](#设备初始化)
+    - [设备操作](#设备操作)
+      - [attach device](#attach-device)
+      - [detach device](#detach-device)
+      - [map region](#map-region)
+      - [unmap region](#unmap-region)
+  - [将来内容](#将来内容)
+- [virtio-iommu on non-devicetree platforms](#virtio-iommu-on-non-devicetree-platforms)
+- [VIOT](#viot)
+- [virtio-iommu spec](#virtio-iommu-spec)
+
+<!-- /code_chunk_output -->
+
 # kvm forum 2017
 
 virtio-iommu 最早是 2017 年提出来的
@@ -112,7 +137,7 @@ Scenario 2: a virtual net device behind a virtual IOMMU.
 
 > virtio-iommu: firmware description of the virtual topology
 
-与其他 virtio 设备不同, virtio-iommu 不能独立工作, 它与其他虚拟或分配的设备相连. 因此, 在设备操作之前, 我们需要定义一种方法, 让 guest 发现虚拟 IOMMU 及其它负责的设备.
+与其他 virtio 设备不同, virtio-iommu 设备不能独立工作, 它与其他虚拟或分配的设备相连. 因此, 在设备操作之前, 我们需要定义一种方法, 让 guest 发现虚拟 IOMMU 及其它负责的设备.
 
 host 必须通过 device-tree 或 ACPI 表给 guest 描述 IOMMU 和设备的关系.
 
