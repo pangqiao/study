@@ -213,6 +213,28 @@ export RUST_SRC_APTH="$(rustc --print sysroot)/lib/rustlib/src/rust/src"
 
 Rust 语言服务器(RLS)基于 LSP(Language Server Protocol), 即语言服务器协议, LSP 由红帽、微软和 Codenvy 联合推出, 可以让不同的程序编辑器与集成开发环境(IDE)方便地嵌入各种编程语言, 允许开发人员在最喜爱的工具中使用各种语言来编写程序.
 
+它通过用于开发工具和语言服务器间通信的 JSON-RPC 标准，能够让编程工具提供实时反馈的详细信息并以此实现多种强大功能，比如符号搜寻、语法分析、代码自动补全、移至定义、描绘轮廓与重构等。Rust 语言服务器集成了这些逻辑作为后端，并通过标准的 LSP 提供给前端工具，它被设计为与前端无关，可以被不同的编辑器和 IDE 广泛采用。
+
+RLS 就是 Rust 官方为 Visual Studio Code 提供的 Rust 语言服务器**前端参考实现**，它支持：
+
+* 代码补全
+
+* jump to definition、peek definition、find all references 与 symbol search
+
+* 类型和文档悬停提示
+
+* 代码格式化
+
+* 重构
+
+* 错误纠正并应用建议
+
+* snippets(代码片段)
+
+* 构建任务
+
+
+
 RLS 是Rust Language Server的简写, 微软提出编程语言服务器的概念, 将 IDE 的一些编程语言相关的部分由单独的服务器来实现, 比如**代码补全**、**跳转定义**、**查看文档**等. 这样, **不同的IDE或编辑器只需要实现客户端接口**即可.
 
 依赖 racer 来实现, 所以需要配置 racer 的环境变量
