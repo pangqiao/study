@@ -21,6 +21,7 @@
   - [3.4. 将来内容](#34-将来内容)
 - [4. Linux driver](#4-linux-driver)
 - [5. KVM tool](#5-kvm-tool)
+  - [virtio 设备的 vIOMMU 支持](#virtio-设备的-viommu-支持)
 - [6. virtio-iommu on non-devicetree platforms](#6-virtio-iommu-on-non-devicetree-platforms)
 - [7. VIOT](#7-viot)
 - [8. virtio-iommu spec](#8-virtio-iommu-spec)
@@ -33,7 +34,7 @@
 
 virtio-iommu 最早是 2017 年提出来的
 
-[2017] vIOMMU/ARM: Full Emulation and virtio-iommu Approaches by Eric Auger: https://www.youtube.com/watch?v=7aZAsanbKwI , 
+[2017] vIOMMU/ARM: Full Emulation and virtio-iommu Approaches by Eric Auger: https://www.youtube.com/watch?v=7aZAsanbKwI ,
 
 https://events.static.linuxfound.org/sites/events/files/slides/viommu_arm_upload_1.pdf
 
@@ -186,11 +187,11 @@ vIOMMU 用 32 位 ID 来标识每个虚拟设备, 该文中称为"Device ID". "D
 ```
 
 > 物理平台上:
-> 
+>
 > 同一个 PCI domain, Requester ID(可以认为是设备 BDF) 是不同的; 不同 PCI domain, Requester ID 可以相同
-> 
+>
 > vIOMMU侧:
-> 
+>
 > 同一个 vIOMMU 中的 Device ID 不能相同, 某一个 Device ID 会和物理平台上一个设备对应
 > 不同 vIOMMU 中的 Device ID 可以相同
 
@@ -203,17 +204,17 @@ Device-tree 已经提供了一种方法来描述这种拓扑关系. 以 vIOMMU2 
 		reg = <0x10000 0x200>;
 		dma-coherent;
 		interrupts = <0x0 0x5 0x1>;
-		
+
 		#iommu-cells = <1>
 	};
-	
+
 	/* Some platform device has Device ID 0x5 */
 	somedevice@20000 {
 		...
-		
+
 		iommus = <&viommu2 0x5>;
 	};
-	
+
 	/*
 	 * PCI domain 3 is described by its host controller node, along
 	 * with the complete relation to the IOMMU
@@ -372,7 +373,7 @@ page_size_mask 必须至少有一个 bit 设置
 
 如果不协商该功能, 虚拟映射将跨越整个 64 位地址空间(start = 0, end = 0xffffffffffffffff)
 
-4. 如果协商了 VIRTIO_IOMMU_F_BYPASS 功能, 所有 unattached 设备发出的内存访问也会被 IOMMU 允许且被 IOMMU 用特定方法进行 translate. 如果没有这个功能, 任何 unattached 设备的内存访问都会失败. 
+4. 如果协商了 VIRTIO_IOMMU_F_BYPASS 功能, 所有 unattached 设备发出的内存访问也会被 IOMMU 允许且被 IOMMU 用特定方法进行 translate. 如果没有这个功能, 任何 unattached 设备的内存访问都会失败.
 
 > 允许设备绕过 iommu 的管理的意思, 所以这个功能支持的话, 没有被 attach 的设备也可以访问 guest physical address.
 
@@ -431,7 +432,7 @@ VIRTIO_IOMMU_S_OK			0
  All good! Carry on.
 
 VIRTIO_IOMMU_S_IOERR			1
- Virtio communication error 
+ Virtio communication error
 
 VIRTIO_IOMMU_S_UNSUPP			2
  Unsupported request
@@ -519,9 +520,9 @@ VIRTIO_IOMMU_MAP_F_EXEC		0x4
 
 (virt_addr, size) 所定义的范围必须在 input_range 规定的范围内. (phys_addr, size) 定义的范围必须在 guest 物理地址空间内. 这包括了上下限制, 以及任何 carving 的 guest physical address 供 host 使用(例如 MSI doorbell). 主机使用本规范范围之外的固件机制设置了 guest 物理边界.
 
-（请注意，此格式会阻止在单个请求（0x0 - 0xfff....ff） -> （0x0 - 0xfff...ff），因为它将得到一个 零大小。希望允许 VIRTIO_IOMMU_F_BYPASS 消除发出此类请求的需要。也不太可能符合前一段的物理范围限制）
+（请注意, 此格式会阻止在单个请求（0x0 - 0xfff....ff） -> （0x0 - 0xfff...ff）, 因为它将得到一个 零大小. 希望允许 VIRTIO_IOMMU_F_BYPASS 消除发出此类请求的需要. 也不太可能符合前一段的物理范围限制）
 
-（另一个注意事项是 flags: 物理 IOMMU 不可能支持所有可能的 flag 组合。例如，（W & !R） 或 （E & W） 可能无效。我还没有花时间设计一个聪明的方法来宣传支持和隐含（例如 "W 暗示 R"）标志或组合，但我至少可以尝试研究共同的模型。请记住，我们可能很快就会想要添加更多的标志，如 privileged，device，transient，shared等，无论这些将意味着什么）
+（另一个注意事项是 flags: 物理 IOMMU 不可能支持所有可能的 flag 组合. 例如, （W & !R） 或 （E & W） 可能无效. 我还没有花时间设计一个聪明的方法来宣传支持和隐含（例如 "W 暗示 R"）标志或组合, 但我至少可以尝试研究共同的模型. 请记住, 我们可能很快就会想要添加更多的标志, 如 privileged, device, transient, shared等, 无论这些将意味着什么）
 
 只有 VIRTIO_IOMMU_F_MAP_UNMAP 协商成功这个请求才是可用的
 
@@ -542,9 +543,9 @@ struct virtio_iommu_req_unmap {
 };
 ```
 
-unmap 一段用 VIRTIO_IOMMU_T_MAP 映射的地址范围。这个 range 由virt_addr 和 size 定义，必须完全覆盖通过 MAP 请求创建的一个或多个连续映射。这个 range 覆盖的所有映射都已删除。驱动程序不应发送覆盖未映射区域的请求。
+unmap 一段用 VIRTIO_IOMMU_T_MAP 映射的地址范围. 这个 range 由virt_addr 和 size 定义, 必须完全覆盖通过 MAP 请求创建的一个或多个连续映射. 这个 range 覆盖的所有映射都已删除. 驱动程序不应发送覆盖未映射区域的请求.
 
-通过单个 MAP 请求, 我们定义了一个 mapping 作为一片虚拟区域。virt_addr 应与现有映射的开始地址完全匹配。range 的 end（virt_addr + size - 1）应与现有映射的 end 完全匹配。设备必须拒绝仅作用于部分映射区域的所有请求。如果请求的范围溢出映射区域之外，则设备的行为未定义。
+通过单个 MAP 请求, 我们定义了一个 mapping 作为一片虚拟区域. virt_addr 应与现有映射的开始地址完全匹配. range 的 end（virt_addr + size - 1）应与现有映射的 end 完全匹配. 设备必须拒绝仅作用于部分映射区域的所有请求. 如果请求的范围溢出映射区域之外, 则设备的行为未定义.
 
 规则定义如下:
 
@@ -567,9 +568,9 @@ unmap 一段用 VIRTIO_IOMMU_T_MAP 映射的地址范围。这个 range 由virt_
 	unmap(0, 15) -> undefined
 ```
 
-（注意：这里 unmap 的语义与 VFIO 的 type1 v2 IOMMU API 兼容。这样，充当 guest 和 VFIO 之间调解的设备就不必保留内部mapping tree。它们比 VFIO 更严格一些，因为它们不允许 unmap 到映射区域之外。溢出(spilling)目前是"undefined"，因为它在大多数情况下应该有效，但我不知道是否值得在不只是将请求传输到 VFIO 的设备中增加复杂性。拆分映射是不允许的，但请参阅 3/3 中的轻松建议，以获得更宽松的语义）
+（注意：这里 unmap 的语义与 VFIO 的 type1 v2 IOMMU API 兼容. 这样, 充当 guest 和 VFIO 之间调解的设备就不必保留内部mapping tree. 它们比 VFIO 更严格一些, 因为它们不允许 unmap 到映射区域之外. 溢出(spilling)目前是"undefined", 因为它在大多数情况下应该有效, 但我不知道是否值得在不只是将请求传输到 VFIO 的设备中增加复杂性. 拆分映射是不允许的, 但请参阅 3/3 中的轻松建议, 以获得更宽松的语义）
 
-此请求仅在 VIRTIO_IOMMU_F_MAP_UNMAP 已协商后提供。
+此请求仅在 VIRTIO_IOMMU_F_MAP_UNMAP 已协商后提供.
 
 NOENT: address space 不存在
 
@@ -589,11 +590,11 @@ RANGE: 请求将拆分一个mapping
 
 virtio IOMMU 是一个半虚设备, 可以通过 virtio-mmio transport 发送 IOMMU 请求, 比如 map/unmap. 这个 driver 会实现上面讲到的 virtio-iommu 最初方案. 它会处理 attach, detach, map 和 unmap 请求.
 
-大部分代码是在创建请求并通过 virtio 发生它们. 实现 IOMMU API 是比较简单的, 因为 virtio-iommu 的 MAP/UNMAP 接口几乎相同. 我放到了一个自定义的 map_sg() 函数中. 核心函数将发送一系列的 map 请求, 并且等待每个请求的返回. 这个优化避免在每个 map 后 yield to host，而是在 virtio ring 中准备一批请求，并 kick host 一次。
+大部分代码是在创建请求并通过 virtio 发生它们. 实现 IOMMU API 是比较简单的, 因为 virtio-iommu 的 MAP/UNMAP 接口几乎相同. 我放到了一个自定义的 map_sg() 函数中. 核心函数将发送一系列的 map 请求, 并且等待每个请求的返回. 这个优化避免在每个 map 后 yield to host, 而是在 virtio ring 中准备一批请求, 并 kick host 一次.
 
 It must be applied on top of the probe deferral work for IOMMU, currently under discussion. 这允许早期驱动程序检测和设备探测分割开: 早期解析 device tree 或 ACPI 从而发现 IOMMU 负责的设备, 但是 IOMMU 本身需要等核心 virtio 模块加载后才能被探测.
 
-目前, 启用 DEBUG 使得非常冗长，但在下一个版本中应该会更 calmer。
+目前, 启用 DEBUG 使得非常冗长, 但在下一个版本中应该会更 calmer.
 
 ```diff
 ---
@@ -613,7 +614,7 @@ It must be applied on top of the probe deferral work for IOMMU, currently under 
 * `drivers/iommu/virtio-iommu.c`, 核心实现文件
 * `include/uapi/linux/Kbuild`, linux-header 增加一个头文件
 * `include/uapi/linux/virtio_ids.h`, 增加一个 virtio 类型
-* `include/uapi/linux/virtio_iommu.h`, 头文件 
+* `include/uapi/linux/virtio_iommu.h`, 头文件
 
 
 Discussion 1: Same physical address is mapped with two different virtual address
@@ -639,7 +640,7 @@ https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
 
 [RFC PATCH kvmtool 00/15] Add virtio-iommu, [lore kernel](https://lore.kernel.org/all/20170407192455.26814-1-jean-philippe.brucker@arm.com/)
 
-实现 virtio-iommu 设备并转换来自 vfio 和 virtio 设备的 DMA 流量. Virtio 需要一些 rework 来支持以页面粒度对 vring 和缓冲区进行分散-聚集访问。patch 3 实现了实际的 virtio-iommu 设备。
+实现 virtio-iommu 设备并转换来自 vfio 和 virtio 设备的 DMA 流量. Virtio 需要一些 rework 来支持以页面粒度对 vring 和缓冲区进行分散-聚集访问. patch 3 实现了实际的 virtio-iommu 设备.
 
 1. virtio: synchronize virtio-iommu headers with Linux
 2. FDT: (re)introduce a dynamic phandle allocator
@@ -667,9 +668,9 @@ patch 3, virtio: add virtio-iommu
 * attach/detach: 虚拟机创建一个 address space, 使用一个唯一的 IOASID 来标识, 并且 attach 这个设备.
 * map/unmap: 虚拟机在一个 address space 中创建一个 GVA-> GPA 映射. attach 到这个 address space 的设备能够访问这个 GVA.
 
-每个子系统可以通过调用 register/unregister 来注册自己的 IOMMU. 为每个 IOMMU 分配了一个独有的 device-tree phandle. IOMMU 通过 virtqueue 接收 driver 的命令，并为**每个设备**提供一系列回调函数，允许为 pass-through 设备和 emulated 设备实行不同的 map/unmap 操作。
+每个子系统可以通过调用 register/unregister 来注册自己的 IOMMU. 为每个 IOMMU 分配了一个独有的 device-tree phandle. IOMMU 通过 virtqueue 接收 driver 的命令, 并为**每个设备**提供一系列回调函数, 允许为 pass-through 设备和 emulated 设备实行不同的 map/unmap 操作.
 
-请注意，一个 guest 对应一个 vIOMMU 就足够了，这个的多个 viommu 模型只是在这里进行实验，从而允许不同的子系统提供不同的 vIOMMU 功能。
+请注意, 一个 guest 对应一个 vIOMMU 就足够了, 这个的多个 viommu 模型只是在这里进行实验, 从而允许不同的子系统提供不同的 vIOMMU 功能.
 
 ```cpp
 static int viommu_handle_attach(struct viommu_dev *viommu,
@@ -743,17 +744,106 @@ static struct viommu_ioas *viommu_alloc_ioas(struct viommu_dev *viommu,
 }
 ```
 
-patch 12: vfio: add support for virtual IOMMU
+patch 4, Add a simple IOMMU
 
-目前，所有 pass-through 设备必须访问相同的 guest 物理地址空间。注册 IOMMU，为设备提供单独的地址空间。方法是通过给每个 group 分配一个 container，并按需添加映射。
 
-由于 guest 不能访问设备，除非这个设备被 attach 到 container，并且我们不能在运行时不重置设备就更改 container，因此此实现是有限的。要实现 bypass 模式，我们需要首先 map 整个 guest 物理内存，并在 attach 到新 address space 时取消所有内容的映射。设备也不可能连接到相同的地址空间，它们都有不同的页面表。
 
+patch 6, irq: register MSI doorbell addresses
+
+对于 vIOMMU 管理的 pass-through 设备, 我们需要将 writes 翻译为 MSI vectors. 让 IRQ 代码注册 MSI doorbells, 并添加一个简单的方法, 让其他系统检查一个地址是否是doorbell.
+
+
+
+patch 7, virtio: factor virtqueue initialization
+
+所有 virtio 设备在初始化其 virtqueue 时都执行相同的少数操作. 将这些操作移动到 virtio core, 因为在实施 vIOMMU 时, 我们必须使 vring 初始化复杂化.
+
+## virtio 设备的 vIOMMU 支持
+
+patch 8, virtio: add vIOMMU instance for virtio devices
+
+> 给 virtio 设备添加 vIOMMU 实例
+
+Virtio 设备现在可以通过设置 use_iommu 选项来选择是否使用 IOMMU. 这些都不能在当前状态下工作, 因为 virtio 设备仍然以线性的方式访问内存. 后续的 patch 会实现 sg 访问.
+
+两种类型:
+
+* virtio_pci
+* virtio_mmio
+
+以 virtio_pci 为例
+
+```diff
+diff --git a/include/kvm/virtio-pci.h b/include/kvm/virtio-pci.h
+index b70cadd8..26772f74 100644
+--- a/include/kvm/virtio-pci.h
++++ b/include/kvm/virtio-pci.h
+@@ -22,6 +22,7 @@ struct virtio_pci {
+ 	struct pci_device_header pci_hdr;
+ 	struct device_header	dev_hdr;
+ 	void			*dev;
++	struct virtio_device	*vdev;
+ 	struct kvm		*kvm;
+
+ 	u16			port_addr;
+```
+
+```cpp
+static struct iommu_ops virtio_pci_iommu_ops = {
+	.get_properties		= virtio__iommu_get_properties,
+	.alloc_address_space	= iommu_alloc_address_space,
+	.free_address_space	= iommu_free_address_space,
+	.attach			= virtio_pci_iommu_attach,
+	.detach			= virtio_pci_iommu_detach,
+	.map			= iommu_map,
+	.unmap			= iommu_unmap,
+};
+```
+
+virtio 设备初始化时候, `virtio_pci__init`, 初始化了 ops
+
+```diff
+@@ -416,6 +440,7 @@ int virtio_pci__init(struct kvm *kvm, void *dev, struct virtio_device *vdev,
+
+ 	vpci->kvm = kvm;
+ 	vpci->dev = dev;
++	vpci->vdev = vdev;
+
+ 	r = ioport__register(kvm, IOPORT_EMPTY, &virtio_pci__io_ops, IOPORT_SIZE, vdev);
+ 	if (r < 0)
+@@ -461,6 +486,7 @@ int virtio_pci__init(struct kvm *kvm, void *dev, struct virtio_device *vdev,
+ 	vpci->dev_hdr = (struct device_header) {
+ 		.bus_type		= DEVICE_BUS_PCI,
+ 		.data			= &vpci->pci_hdr,
++		.iommu_ops		= vdev->use_iommu ? &virtio_pci_iommu_ops : NULL,
+ 	};
+```
+
+patch 9, virtio: access vring and buffers through IOMMU mappings
+
+> 通过 iommu mappings 访问 vring 和 buffers
+
+教 virtio core 如何访问分散的 vring 结构. 当在 virtio 设备前向 guest 呈现了 vIOMMU, virtio ring 和 buffer 将分散在不连续的 guest 物理页面中. vIOMMU 设备必须将所有 IOVA 转换为 host 虚拟地址, 并在访问任何结构之前收集这些页面(gather the pages).
+
+vring.desc 描述的 buffers 已经通过 iovec 返回给设备. 我们仅仅只需要用更精细的粒度填充 buffers, 并希望：
+
+1. 驱动程序不会一次性提供太多的描述符descriptors，因为 iovec 只有描述符数目一样大，现在可能出现溢出。
+2. 
+
+
+patch 12, vfio: add support for virtual IOMMU
+
+目前, 所有 pass-through 设备必须访问相同的 guest 物理地址空间. 注册 IOMMU, 为设备提供单独的地址空间. 方法是通过给每个 group 分配一个 container, 并按需添加 mappings.
+
+由于 guest 不能访问设备, 除非这个设备被 attach 到 container, 并且我们不能在运行时不重置设备就更改 container, 因此此实现是有限的. 要实现 bypass 模式, 我们需要首先 map 整个 guest 物理内存, 并在 attach 到新 address space 时 unmap 所有内容. 设备也不可能被 attach 到相同的地址空间, 它们都有不同的 page tables.
+
+
+patch
 
 
 # 6. virtio-iommu on non-devicetree platforms
 
-IOMMU 用来管理来自设备的内存访问. 所以 guest 需要在 endpoint 发起 DMA 之前初始化 IOMMU. 
+IOMMU 用来管理来自设备的内存访问. 所以 guest 需要在 endpoint 发起 DMA 之前初始化 IOMMU.
 
 这是一个已解决的问题: firmware 或 hypervisor 通过 DT 或 ACPI 表描述设备依赖关系, 并且 endpoint 的探测(probe)被推迟到 IOMMU 被 probe 后. 但是:
 
