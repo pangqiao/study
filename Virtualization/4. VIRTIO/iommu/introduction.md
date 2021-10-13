@@ -20,10 +20,10 @@
       - [3.3.5.4. unmap region](#3354-unmap-region)
   - [3.4. 将来内容](#34-将来内容)
 - [4. Linux driver](#4-linux-driver)
-- [KVM tool](#kvm-tool)
-- [5. virtio-iommu on non-devicetree platforms](#5-virtio-iommu-on-non-devicetree-platforms)
-- [6. VIOT](#6-viot)
-- [7. virtio-iommu spec](#7-virtio-iommu-spec)
+- [5. KVM tool](#5-kvm-tool)
+- [6. virtio-iommu on non-devicetree platforms](#6-virtio-iommu-on-non-devicetree-platforms)
+- [7. VIOT](#7-viot)
+- [8. virtio-iommu spec](#8-virtio-iommu-spec)
 
 <!-- /code_chunk_output -->
 
@@ -45,7 +45,7 @@ virtio-iommu: a paravirtualized IOMMU
 
 * [RFC 0/3]: a paravirtualized IOMMU, [spinics](https://www.spinics.net/lists/kvm/msg147990.html), [lore kernel](https://lore.kernel.org/all/20170407191747.26618-1-jean-philippe.brucker__33550.5639938221$1491592770$gmane$org@arm.com/)
   * [RFC 1/3] virtio-iommu: firmware description of the virtual topology: [spinics](https://www.spinics.net/lists/kvm/msg147991.html), [lore kernel](https://lore.kernel.org/all/20170407191747.26618-2-jean-philippe.brucker__38031.8755437203$1491592803$gmane$org@arm.com/)
-  * [RFC 2/3] virtio-iommu: device probing and operations: [spinice](https://www.spinics.net/lists/kvm/msg147992.html), lore kernel
+  * [RFC 2/3] virtio-iommu: device probing and operations: [spinice](https://www.spinics.net/lists/kvm/msg147992.html), [lore kernel](https://lore.kernel.org/all/20170407191747.26618-3-jean-philippe.brucker@arm.com/)
   * [RFC 3/3] virtio-iommu: future work: https://www.spinics.net/lists/kvm/msg147993.html
 
 * [RFC PATCH linux] iommu: Add virtio-iommu driver, [lore kernel](https://lore.kernel.org/all/20170407192314.26720-1-jean-philippe.brucker@arm.com/), [patchwork](https://patchwork.kernel.org/project/kvm/patch/20170407192314.26720-1-jean-philippe.brucker@arm.com/)
@@ -286,10 +286,10 @@ Requests 是 guest 往 request virtqueue 中添加的小的缓冲 buffer. guest�
 
 一个操作流程的例子:
 
-* `attach(address space, device), kick`: 创建一个 address space 并且将 attach 一个 device 给它.
+* `attach(address space, device), kick`: 创建一个 address space 并且将 attach 一个 device 给它. kick
 * `map(address space, virt, phys, size, flags)`: 给 GVA 和 GPA 创建一个 mapping 关系
 * map, map, map, kick
-* ...在这里, guest 中设备可以执行 DMA 到新映射的内存
+* ...在这里, guest 中设备可以执行 DMA 操作访问新映射的内存
 * `unmap(address space, virt, size)`: unmap, 然后再kick
 * `detach(address space, device)`, kick
 
@@ -616,21 +616,142 @@ It must be applied on top of the probe deferral work for IOMMU, currently under 
 * `include/uapi/linux/virtio_iommu.h`, 头文件 
 
 
+Discussion 1: Same physical address is mapped with two different virtual address
+
+取决于是哪个驱动调用了 viommu. 任何设备驱动可以调用 DMA API, 进而调用了 iommu_map. 同一个 address space 中, 多个 IOVA 指向同一个 PA 是允许的.
+
+https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
+
+```
+ virtnet_open
+ try_fill_recv
+ add_recvbuf_mergeable
+ virtqueue_add_inbuf_ctx
+ vring_map_one_sg
+ dma_map_page
+ __iommu_dma_map
+```
 
 
-# KVM tool
+
+
+# 5. KVM tool
 
 [RFC PATCH kvmtool 00/15] Add virtio-iommu, [lore kernel](https://lore.kernel.org/all/20170407192455.26814-1-jean-philippe.brucker@arm.com/)
 
+实现 virtio-iommu 设备并转换来自 vfio 和 virtio 设备的 DMA 流量. Virtio 需要一些 rework 来支持以页面粒度对 vring 和缓冲区进行分散-聚集访问。patch 3 实现了实际的 virtio-iommu 设备。
+
+1. virtio: synchronize virtio-iommu headers with Linux
+2. FDT: (re)introduce a dynamic phandle allocator
+3. virtio: add virtio-iommu
+4. Add a simple IOMMU
+5. iommu: describe IOMMU topology in device-trees
+6. irq: register MSI doorbell addresses
+7. virtio: factor virtqueue initialization
+8. virtio: add vIOMMU instance for virtio devices
+9. virtio: access vring and buffers through IOMMU mappings
+10. virtio-pci: translate MSIs with the virtual IOMMU
+11. virtio: set VIRTIO_F_IOMMU_PLATFORM when necessary
+12. vfio: add support for virtual IOMMU
+13. virtio-iommu: debug via IPC
+14. virtio-iommu: implement basic debug commands
+15. virtio: use virtio-iommu when available
+
+
+patch 3, virtio: add virtio-iommu
+
+实现一个简单的 viommu 来处理虚拟机中的设备 address space.
+
+四种操作:
+
+* attach/detach: 虚拟机创建一个 address space, 使用一个唯一的 IOASID 来标识, 并且 attach 这个设备.
+* map/unmap: 虚拟机在一个 address space 中创建一个 GVA-> GPA 映射. attach 到这个 address space 的设备能够访问这个 GVA.
+
+每个子系统可以通过调用 register/unregister 来注册自己的 IOMMU. 为每个 IOMMU 分配了一个独有的 device-tree phandle. IOMMU 通过 virtqueue 接收 driver 的命令，并为**每个设备**提供一系列回调函数，允许为 pass-through 设备和 emulated 设备实行不同的 map/unmap 操作。
+
+请注意，一个 guest 对应一个 vIOMMU 就足够了，这个的多个 viommu 模型只是在这里进行实验，从而允许不同的子系统提供不同的 vIOMMU 功能。
+
+```cpp
+static int viommu_handle_attach(struct viommu_dev *viommu,
+				struct virtio_iommu_req_attach *attach)
+{
+    // 从 request 中获取 deviceid 和 ioasid
+    u32 device_id	= le32_to_cpu(attach->device);
+    u32 ioasid	= le32_to_cpu(attach->address_space);
+    struct device_header *device = iommu_get_device(device_id);
+
+    // 如果 ioas 不存在则创建一个
+    ioas = viommu_find_ioas(viommu, ioasid);
+    if (!ioas)  ioas = viommu_alloc_ioas(viommu, device, ioasid);
+
+    // 如果设备之前已经关联了 ioas, 则从原有 detach
+    if (vdev->ioas) ret = viommu_detach_device(viommu, vdev);
+
+    // 每种设备自定义的 attach 方法
+    ret = device->iommu_ops->attach(ioas->priv, device, 0);
+
+    // 将设备添加到 ioas 的链表中
+    viommu_ioas_add_device(ioas, vdev);
+
+    // ioas 没有设备则释放掉这个 ioas
+    if (ret && ioas->nr_devices == 0) viommu_free_ioas(viommu, ioas);
+}
+```
+
+```cpp
+static int viommu_handle_map(struct viommu_dev *viommu,
+			     struct virtio_iommu_req_map *map)
+{
+    struct viommu_ioas *ioas;
+
+    ioas = viommu_find_ioas(viommu, ioasid);
+
+    // ioas->ops 等于第一次 attach 的 device 的 iommu_ops
+    return ioas->ops->map(ioas->priv, virt_addr, phys_addr, size, prot);
+}
+
+static struct viommu_ioas *viommu_alloc_ioas(struct viommu_dev *viommu,
+					     struct device_header *device,
+					     u32 ioasid)
+{
+	struct rb_node **node, *parent = NULL;
+	struct viommu_ioas *new_ioas, *ioas;
+	// 设备的 iommu_ops
+	struct iommu_ops *ops = device->iommu_ops;
+
+	if (!ops || !ops->get_properties || !ops->alloc_address_space ||
+	    !ops->free_address_space || !ops->attach || !ops->detach ||
+	    !ops->map || !ops->unmap) {
+		/* Catch programming mistakes early */
+		pr_err("Invalid IOMMU ops");
+		return NULL;
+	}
+
+	new_ioas = calloc(1, sizeof(*new_ioas));
+	if (!new_ioas)
+		return NULL;
+
+	INIT_LIST_HEAD(&new_ioas->devices);
+	mutex_init(&new_ioas->devices_mutex);
+	new_ioas->id		= ioasid;
+	new_ioas->ops		= ops;  // ioas 的 ops 初始化
+	new_ioas->priv		= ops->alloc_address_space(device);
+
+	rb_insert_color(&new_ioas->node, &viommu->address_spaces);
+
+	return new_ioas;
+}
+```
+
+patch 12: vfio: add support for virtual IOMMU
+
+目前，所有 pass-through 设备必须访问相同的 guest 物理地址空间。注册 IOMMU，为设备提供单独的地址空间。方法是通过给每个 group 分配一个 container，并按需添加映射。
+
+由于 guest 不能访问设备，除非这个设备被 attach 到 container，并且我们不能在运行时不重置设备就更改 container，因此此实现是有限的。要实现 bypass 模式，我们需要首先 map 整个 guest 物理内存，并在 attach 到新 address space 时取消所有内容的映射。设备也不可能连接到相同的地址空间，它们都有不同的页面表。
 
 
 
-
-
-
-
-
-# 5. virtio-iommu on non-devicetree platforms
+# 6. virtio-iommu on non-devicetree platforms
 
 IOMMU 用来管理来自设备的内存访问. 所以 guest 需要在 endpoint 发起 DMA 之前初始化 IOMMU. 
 
@@ -647,7 +768,7 @@ IOMMU 用来管理来自设备的内存访问. 所以 guest 需要在 endpoint �
 建议将拓扑描述嵌入设备中.
 
 
-# 6. VIOT
+# 7. VIOT
 
 Virtual I/O Translation table (VIOT) 描述了半虚设备的 I/O 拓扑信息.
 
@@ -658,7 +779,7 @@ Virtual I/O Translation table (VIOT) 描述了半虚设备的 I/O 拓扑信息.
 * 对于 non-devicetree 平台, 应该使用 ACPI Table.
 * 对于既没有 devicetree, 又没有 ACPI 的 platform, 可以在设备中内置一个使用大致相同格式的结构
 
-# 7. virtio-iommu spec
+# 8. virtio-iommu spec
 
 virtio-iommu 设备管理多个 endpoints 的 DMA 操作.
 
