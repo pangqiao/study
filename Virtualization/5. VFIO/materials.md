@@ -8,3 +8,5 @@ https://luohao-brian.gitbooks.io/interrupt-virtualization/content/vfio-she-bei-z
 qemu-kvm: https://tcbbd.moe/linux/qemu-kvm/vfio/
 
 vfio 概述: https://www.cnblogs.com/yi-mu-xi/p/12370626.html
+
+相关实现可以看 kvmtool, 代码很简单

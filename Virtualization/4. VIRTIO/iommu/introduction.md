@@ -22,6 +22,7 @@
 - [4. Linux driver](#4-linux-driver)
 - [5. KVM tool](#5-kvm-tool)
   - [virtio 设备的 vIOMMU 支持](#virtio-设备的-viommu-支持)
+  - [vfio 设备的支持](#vfio-设备的支持)
 - [6. virtio-iommu on non-devicetree platforms](#6-virtio-iommu-on-non-devicetree-platforms)
 - [7. VIOT](#7-viot)
 - [8. virtio-iommu spec](#8-virtio-iommu-spec)
@@ -754,13 +755,13 @@ patch 6, irq: register MSI doorbell addresses
 
 
 
-patch 7, virtio: factor virtqueue initialization
+**patch 7**, virtio: factor virtqueue initialization
 
 所有 virtio 设备在初始化其 virtqueue 时都执行相同的少数操作. 将这些操作移动到 virtio core, 因为在实施 vIOMMU 时, 我们必须使 vring 初始化复杂化.
 
 ## virtio 设备的 vIOMMU 支持
 
-patch 8, virtio: add vIOMMU instance for virtio devices
+**patch 8**, virtio: add vIOMMU instance for virtio devices
 
 > 给 virtio 设备添加 vIOMMU 实例
 
@@ -819,26 +820,267 @@ virtio 设备初始化时候, `virtio_pci__init`, 初始化了 ops
  	};
 ```
 
-patch 9, virtio: access vring and buffers through IOMMU mappings
+**patch 9**, virtio: access vring and buffers through IOMMU mappings
 
 > 通过 iommu mappings 访问 vring 和 buffers
 
 教 virtio core 如何访问分散的 vring 结构. 当在 virtio 设备前向 guest 呈现了 vIOMMU, virtio ring 和 buffer 将分散在不连续的 guest 物理页面中. vIOMMU 设备必须将所有 IOVA 转换为 host 虚拟地址, 并在访问任何结构之前收集这些页面(gather the pages).
 
-vring.desc 描述的 buffers 已经通过 iovec 返回给设备. 我们仅仅只需要用更精细的粒度填充 buffers, 并希望：
+vring.desc 描述的 buffers 信息已经通过 iovec 返回给设备. 我们仅仅需要用更精细的粒度填充这些 buffers, 并希望：
 
-1. 驱动程序不会一次性提供太多的描述符descriptors，因为 iovec 只有描述符数目一样大，现在可能出现溢出。
-2. 
+1. 驱动程序不会一次性提供太多的描述符 descriptors，因为 iovec 只有描述符数目一样大，而现在可能出现溢出。
+2. 设备不会对来自 vectors 的消息框架做出假设（即, 信息现在可以被包含在比以前更多的 vectors 中）。这是virtio 1.0所禁止的（以及 legacy with ANY_LAYOUT），但我们的 virtio-net，例如，假设第一个 vector 总是包含一个完整的vnet header。实际上，这很好，但仍然非常脆弱。
+
+为了访问 vring 和间接描述表，我们现在分配一个 iovec 来描述 IOMMU 结构的 mapping，并通过此 iovec 进行所有访问。
+
+更优雅的方法是每个 address-space 创建一个子进程，并以连续的方式 remap guest 内存片段 fragments：
+
+```
+                                .---- virtio-blk process
+                               /
+           viommu process ----+------ virtio-net process
+                               \
+                                '---- some other device
+```
+
+(0) 最初，viommu 为每个模拟设备都 fork 一个进程。每个子进程都通过 `mmap(base)` 保留一大块虚拟内存，代表了 IOVA 空间，但不会填充它。
+
+(1) virtio-dev 想要访问 guest 内存, 比如读 vring. 它通过 pipe 或 socket 给父进程(viommu  process)发送一个 IOVA 的 TLB miss.
+
+(2) 父 iommu 会检查它的转换表(translation tables), 并返回 guest memory 的 offset.
+
+(3) 子进程在它的 IOVA 空间进行 mmap, 使用 `mmap(base + iova, pgsize, SHARED|FIXED, fd, offset)`
+
+这真的很酷，但我怀疑它增加了很多复杂性，因为不清楚哪些设备是完全自成一体的，哪些设备需要访问父内存。因此，请暂缓使用散射收集访问。
 
 
-patch 12, vfio: add support for virtual IOMMU
 
-目前, 所有 pass-through 设备必须访问相同的 guest 物理地址空间. 注册 IOMMU, 为设备提供单独的地址空间. 方法是通过给每个 group 分配一个 container, 并按需添加 mappings.
+**patch 10**, virtio-pci: translate MSIs with the virtual IOMMU
+
+> 使用 viommu 翻译 MSI
+
+当 virtio 设备位于 vIOMMU 后面时，guest 写入 MSI-X table 的 doorbell 地址是 IOVA，而不是物理地址。 注入 MSI 时，KVM 需要物理地址来识别 doorbell 和相关的 IRQ 芯片。将 guest 提供的地址转换为物理地址，并将其存储在辅助表中，以便于访问。
+
+
+**patch 11**, virtio: set VIRTIO_F_IOMMU_PLATFORM when necessary
+
+> 当一个设备被 viommu 管理, 则启用这个功能位
+
+Virtio 中的其他功能位不依赖于设备类型，针对 viommu, 我们也可以这样。例如，我们的 vring 实现始终支持间接描述（VIRTIO_RING_F_INDIRECT_DESC），因此我们可以同时为所有设备（目前只有 net、scsi 和 blk）进行 advertise。但是，这可能会改变guest的行为：在 Linux 中，每当驱动尝试添加一系列描述符时，它都会分配一个间接表并使用单个 ring 描述符，这可能会稍微降低性能。
+
+VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 guest 发出信号之前调用 virtio_queue__should_signal。可以说，我们可以考虑所有对 signal_vq 的调用，但让我们保持这个 patch 简单。
+
+```cpp
+/*
+ * If clear - device has the platform DMA (e.g. IOMMU) bypass quirk feature.
+ * If set - use platform DMA tools to access the memory.
+ *
+ * Note the reverse polarity (compared to most other features),
+ * this is for compatibility with legacy systems.
+ */
+#define VIRTIO_F_ACCESS_PLATFORM	33
+#ifndef __KERNEL__
+/* Legacy name for VIRTIO_F_ACCESS_PLATFORM (for compatibility with old userspace) */
+#define VIRTIO_F_IOMMU_PLATFORM		VIRTIO_F_ACCESS_PLATFORM
+#endif /* __KERNEL__ */
+```
+
+上面注释也说了:
+
+* 清位, 设备具有平台 DMA（例如 IOMMU）旁路功能。
+* 置位, 使用平台 DMA 工具(vIOMMU)访问内存
+
+```diff
+--- a/virtio/core.c
++++ b/virtio/core.c
+@@ -1,3 +1,4 @@
++#include <linux/virtio_config.h>
+ #include <linux/virtio_ring.h>
+ #include <linux/types.h>
+ #include <sys/uio.h>
+@@ -266,6 +267,11 @@ bool virtio_queue__should_signal(struct virt_queue *vq)
+ 	return false;
+ }
+ 
++u32 virtio_get_common_features(struct kvm *kvm, struct virtio_device *vdev)
++{
++	return vdev->use_iommu ? VIRTIO_F_IOMMU_PLATFORM : 0;
++}
++
+```
+
+`virtio/mmio.c`, guest 中 mmio read device config 时候会 trap 到 kvmtool, 选择是否返回这个 feature bit
+
+```diff
+--- a/virtio/mmio.c
++++ b/virtio/mmio.c
+@@ -127,9 +127,11 @@ static void virtio_mmio_config_in(struct kvm_cpu *vcpu,
+ 		ioport__write32(data, *(u32 *)(((void *)&vmmio->hdr) + addr));
+ 		break;
+ 	case VIRTIO_MMIO_HOST_FEATURES:
+-		if (vmmio->hdr.host_features_sel == 0)
++		if (vmmio->hdr.host_features_sel == 0) {
+ 			val = vdev->ops->get_host_features(vmmio->kvm,
+ 							   vmmio->dev);
++			val |= virtio_get_common_features(vmmio->kvm, vdev);
++		}
+ 		ioport__write32(data, val);
+ 		break;
+```
+
+`virtio/pci.c` 同理
+
+```diff
+--- a/virtio/pci.c
++++ b/virtio/pci.c
+@@ -126,6 +126,7 @@ static bool virtio_pci__io_in(struct ioport *ioport, struct kvm_cpu *vcpu, u16 p
+ 	switch (offset) {
+ 	case VIRTIO_PCI_HOST_FEATURES:
+ 		val = vdev->ops->get_host_features(kvm, vpci->dev);
++		val |= virtio_get_common_features(kvm, vdev);
+ 		ioport__write32(data, val);
+ 		break;
+```
+
+所以在 guest 中可以看 device 的 config 可以知道它是否 attach 到了 vIOMMU 上
+
+> 最新的代码中没有这个....
+
+## vfio 设备的支持
+
+**patch 12**, vfio: add support for virtual IOMMU
+
+目前, 所有的 pass-through 设备必须访问到相同的 guest 物理地址空间. 注册 IOMMU, 从而为每个设备提供单独的地址空间. 方法是通过给每个 group 分配一个 container, 并按需添加 mappings.
 
 由于 guest 不能访问设备, 除非这个设备被 attach 到 container, 并且我们不能在运行时不重置设备就更改 container, 因此此实现是有限的. 要实现 bypass 模式, 我们需要首先 map 整个 guest 物理内存, 并在 attach 到新 address space 时 unmap 所有内容. 设备也不可能被 attach 到相同的地址空间, 它们都有不同的 page tables.
 
+首先, 每个 vfio 设备都是属于一个 vfio group, 再给每个 group 分配一个 container
+
+```diff
+--- a/include/kvm/vfio.h
++++ b/include/kvm/vfio.h
+@@ -55,6 +55,7 @@ struct vfio_device {
+ 	struct device_header		dev_hdr;
+ 
+ 	int				fd;
++	struct vfio_group		*group;
+ 	struct vfio_device_info		info;
+ 	struct vfio_irq_info		irq_info;
+ 	struct vfio_region		*regions;
+@@ -65,6 +66,7 @@ struct vfio_device {
+ struct vfio_group {
+ 	unsigned long			id; /* iommu_group number in sysfs */
+ 	int				fd;
++	struct vfio_guest_container	*container;
+ };
+
+--- a/vfio.c
++++ b/vfio.c
++struct vfio_guest_container {
++	struct kvm		*kvm;
++	int			fd;
++
++	void			*msi_doorbells;
++};
++
++static void *viommu = NULL;
+```
+
+vfio 初始化阶段, `vfio__init()`
+
+
+
+
+
+
+当访问 msix_table 时候会发生 VM-exit, 进而返回给 kvmtool 处理. 如果 container 存在, 说明独立, 调用 `iommu_translate_msi`, 
+
+```diff
+--- a/vfio.c
++++ b/vfio.c
+@@ -68,11 +81,13 @@ static void vfio_pci_msix_pba_access(struct kvm_cpu *vcpu, u64 addr, u8 *data,
+ static void vfio_pci_msix_table_access(struct kvm_cpu *vcpu, u64 addr, u8 *data,
+ 				       u32 len, u8 is_write, void *ptr)
+ {
++	struct msi_msg msg;
+ 	struct kvm *kvm = vcpu->kvm;
+ 	struct vfio_pci_device *pdev = ptr;
+ 	struct vfio_pci_msix_entry *entry;
+ 	struct vfio_pci_msix_table *table = &pdev->msix_table;
+ 	struct vfio_device *device = container_of(pdev, struct vfio_device, pci);
++	struct vfio_guest_container *container = device->group->container;
+ 
+ 	u64 offset = addr - table->guest_phys_addr;
+ 
+@@ -88,11 +103,16 @@ static void vfio_pci_msix_table_access(struct kvm_cpu *vcpu, u64 addr, u8 *data,
+ 
+ 	memcpy((void *)&entry->config + field, data, len);
+ 
+-	if (field != PCI_MSIX_ENTRY_VECTOR_CTRL)
++	if (field != PCI_MSIX_ENTRY_VECTOR_CTRL || entry->config.ctrl & 1)
++		return;
++
++	msg = entry->config.msg;
++
++	if (container && iommu_translate_msi(container->msi_doorbells, &msg))
+ 		return;
+ 
+ 	if (entry->gsi < 0) {
+```
+
+同理, 写 pci_msi 时候也需要处理
+
+```diff
+--- a/vfio.c
++++ b/vfio.c
+@@ -122,6 +142,7 @@ static void vfio_pci_msi_write(struct kvm *kvm, struct vfio_device *device,
+ 	struct msi_msg msi;
+ 	struct vfio_pci_msix_entry *entry;
+ 	struct vfio_pci_device *pdev = &device->pci;
++	struct vfio_guest_container *container = device->group->container;
+ 	struct msi_cap_64 *msi_cap_64 = (void *)&pdev->hdr + pdev->msi.pos;
+ 
+ 	/* Only modify routes when guest sets the enable bit */
+@@ -144,6 +165,9 @@ static void vfio_pci_msi_write(struct kvm *kvm, struct vfio_device *device,
+ 		msi.data = msi_cap_32->data;
+ 	}
+ 
++	if (container && iommu_translate_msi(container->msi_doorbells, &msi))
++		return;
++
+ 	for (i = 0; i < nr_vectors; i++) {
+ 		u32 devid = device->dev_hdr.dev_num << 3;
+```
+
+同时定义了 `iommu_ops` 自定义了 iommu 的相关操作
+
+```diff
+--- a/vfio.c
++++ b/vfio.c
+
++static struct iommu_ops vfio_iommu_ops = {
++	.get_properties		= vfio_viommu_get_properties,
++	.alloc_address_space	= vfio_viommu_alloc,
++	.free_address_space	= vfio_viommu_free,
++	.attach			= vfio_viommu_attach,
++	.detach			= vfio_viommu_detach,
++	.map			= vfio_viommu_map,
++	.unmap			= vfio_viommu_unmap,
++};
++
+```
+
 
 patch
+
+
+
+
+
+
+
+
+
 
 
 # 6. virtio-iommu on non-devicetree platforms
