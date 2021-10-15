@@ -21,8 +21,10 @@
   - [3.4. 将来内容](#34-将来内容)
 - [4. Linux driver](#4-linux-driver)
 - [5. KVM tool](#5-kvm-tool)
+  - [实现 virtio-iommu](#实现-virtio-iommu)
   - [virtio 设备的 vIOMMU 支持](#virtio-设备的-viommu-支持)
   - [vfio 设备的支持](#vfio-设备的支持)
+  - [debug 相关](#debug-相关)
 - [6. virtio-iommu on non-devicetree platforms](#6-virtio-iommu-on-non-devicetree-platforms)
 - [7. VIOT](#7-viot)
 - [8. virtio-iommu spec](#8-virtio-iommu-spec)
@@ -634,6 +636,27 @@ https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
  __iommu_dma_map
 ```
 
+```diff
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+new file mode 100644
+index 000000000000..1cf4f57b7817
+--- /dev/null
++++ b/drivers/iommu/virtio-iommu.c
+@@ -0,0 +1,980 @@ 
++static struct virtio_driver virtio_iommu_drv = {
++	.driver.name		= KBUILD_MODNAME,
++	.driver.owner		= THIS_MODULE,
++	.id_table		= id_table,
++	.feature_table		= features,
++	.feature_table_size	= ARRAY_SIZE(features),
++	.probe			= viommu_probe,
++	.remove			= viommu_remove,
++	.config_changed		= viommu_config_changed,
++};
++
++module_virtio_driver(virtio_iommu_drv);
+```
+
 
 
 
@@ -642,6 +665,8 @@ https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
 [RFC PATCH kvmtool 00/15] Add virtio-iommu, [lore kernel](https://lore.kernel.org/all/20170407192455.26814-1-jean-philippe.brucker@arm.com/)
 
 实现 virtio-iommu 设备并转换来自 vfio 和 virtio 设备的 DMA 流量. Virtio 需要一些 rework 来支持以页面粒度对 vring 和缓冲区进行分散-聚集访问. patch 3 实现了实际的 virtio-iommu 设备.
+
+添加了 `--viommu` 参数可以给所有 virtio 和 vfio 设备添加一个 viommu
 
 1. virtio: synchronize virtio-iommu headers with Linux
 2. FDT: (re)introduce a dynamic phandle allocator
@@ -658,6 +683,15 @@ https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
 13. virtio-iommu: debug via IPC
 14. virtio-iommu: implement basic debug commands
 15. virtio: use virtio-iommu when available
+
+## 实现 virtio-iommu
+
+**patch 1**, virtio: synchronize virtio-iommu headers with Linux
+
+从 Linux 同步了 virtio-iommu 相关的头文件
+
+**patch 2**, FDT: (re)introduce a dynamic phandle allocator
+
 
 
 patch 3, virtio: add virtio-iommu
@@ -954,7 +988,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 
 由于 guest 不能访问设备, 除非这个设备被 attach 到 container, 并且我们不能在运行时不重置设备就更改 container, 因此此实现是有限的. 要实现 bypass 模式, 我们需要首先 map 整个 guest 物理内存, 并在 attach 到新 address space 时 unmap 所有内容. 设备也不可能被 attach 到相同的地址空间, 它们都有不同的 page tables.
 
-首先, 每个 vfio 设备都是属于一个 vfio group, 再给每个 group 分配一个 container
+数据结构方面, 每个 vfio 设备都是属于某个一个 vfio group, 再给每个 group 分配一个 container
 
 ```diff
 --- a/include/kvm/vfio.h
@@ -986,7 +1020,88 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 +static void *viommu = NULL;
 ```
 
-vfio 初始化阶段, `vfio__init()` 中会初始化 vfio container, 如果配置整体使用 vIOMMU, 则关闭vfio container, 同时调用 `viommu_register` 注册了 viommu.
+原有逻辑中, vfio 初始化阶段, `vfio__init()` 中
+
+1. vfio_container_init() 初始化 container
+* 初始化一个全局 vfio container(一个 vm 对应一个), 调用 `vfio_container = open(VFIO_DEV_NODE, O_RDWR)`; 打开 `/dev/vfio/vfio`
+* 循环初始化每个设备, `vfio_device_init(kvm, &vfio_devices[i])`;
+  * 根据 device 的 sysfs_path 中的 group_id, 遍历 vfio_groups 链表查找 group, `list_for_each_entry(group, &vfio_groups, list)`
+  * 找不到则创建一个 group 并将其加入到 container 中, `vfio_group_create(kvm, group_id)` -> `ioctl(group->fd, VFIO_GROUP_SET_CONTAINER, &vfio_container)`, `group->fd` 是 `/dev/vfio/XX(ID)`
+  * 将 vfio_group 添加到 `vfio_groups` 链表, `	list_add(&group->list, &vfio_groups)`
+* 设置 iommu type 到 container, `ioctl(vfio_container, VFIO_SET_IOMMU, iommu_type)`
+* 将虚拟机中所有 `KVM_MEM_TYPE_RAM` 类型的内存块 map 用来 DMA (`iova<gpa> -> hva`), `ioctl(vfio_container, VFIO_IOMMU_MAP_DMA, &dma_map)`
+2. vfio_configure_groups() 配置 vfio groups, 遍历每一个 vfio group
+* 将 `/sys/kernel/iommu_groups/ID/reserved_regions` 中每一行内存地址范围(gpa)进行保留, `ioctl(kvm->vm_fd, KVM_SET_USER_MEMORY_REGION, &mem)`
+3. vfio_configure_devices() 配置所有 devices, 遍历每一个 vfio device
+* 获取 fd, 调用 `ioctl(group->fd, VFIO_GROUP_GET_DEVICE_FD,vdev->params->name)`
+* reset device, `ioctl(vdev->fd, VFIO_DEVICE_RESET)`
+* bus 相关初始化, PCI 类型的调用 `vfio_pci_setup_device(kvm, vdev)`; MMIO 类型的调用 `vfio_plat_setup_device(kvm, vdev)`
+  * PCI 类型:
+    * 配置 regions, `vfio_pci_configure_dev_regions(kvm, vdev)`; 
+      * config space 信息获取, `vfio_pci_parse_cfg_space(vdev)`
+      * 创建 msix table, `vfio_pci_create_msix_table(kvm, pdev)`, 会将 msix table 和 msix pba 调用 `kvm__register_mmio` 注册为 mmio, guest 调用会发生 vm-exit 并被相应的回调处理
+      * 创建 msi capability, `vfio_pci_create_msi_cap(kvm, pdev)`
+      * 配置 bar space, `vfio_pci_configure_bar(kvm, vdev, i)`
+      * `vfio_pci_fixup_cfg_space(vdev)`
+    * 注册 vfio 设备, `device__register(&vdev->dev_hdr)`; 
+    * 配置 IRQs, `vfio_pci_configure_dev_irqs(kvm, vdev)`.
+
+对 viommu 的支持, 将所有 contianer 替换成 viommu 的 container, iommu ops 也被替换成 viommu ops
+
+首先, 将新 vfio group 加到 container 之前, 即 1.2.2
+
+```diff
++	if (kvm->cfg.viommu) {
++		container = open(VFIO_DEV_NODE, O_RDWR);
++		if (container < 0) {
++			ret = -errno;
++			pr_err("cannot initialize private container\n");
++			return ret;
++		}
++
++		group->container = malloc(sizeof(struct vfio_guest_container));
++		if (!group->container)
++			return -ENOMEM;
++
++		group->container->fd = container;
++		group->container->kvm = kvm;
++		group->container->msi_doorbells = NULL;
++	} else {
++		container = vfio_host_container;
++	}
++
+```
+
+给每个 vfio group 都进行 open 操作, 从而创建了一个新的私有 container; 再添加这个私有 container 到 group.
+
+同时将 type v2 也设置到这个 container, 因为 `unmap-all` 需要
+
+```diff
++	if (container != vfio_host_container) {
++		struct vfio_iommu_type1_info info = {
++			.argsz = sizeof(info),
++		};
++
++		/* We really need v2 semantics for unmap-all */
++		ret = ioctl(container, VFIO_SET_IOMMU, VFIO_TYPE1v2_IOMMU);
++		if (ret) {
++			ret = -errno;
++			pr_err("Failed to set IOMMU");
++			return ret;
++		}
++
++		ret = ioctl(container, VFIO_IOMMU_GET_INFO, &info);
++		if (ret)
++			pr_err("Failed to get IOMMU info");
++		else if (info.flags & VFIO_IOMMU_INFO_PGSIZES)
++			vfio_viommu_props.pgsize_mask = info.iova_pgsizes;
++	}
++
+```
+
+其次, 在配置 groups 之前, 即 2.
+
+如果配置整体使用 vIOMMU, 则关闭全局 vfio container, 同时调用 `viommu_register` 注册了 viommu.
 
 ```diff
 --- a/vfio.c
@@ -1061,10 +1176,50 @@ vfio 初始化阶段, `vfio__init()` 中会初始化 vfio container, 如果配�
  		return ret;
 ```
 
+最后, 在配置 devices 之前, 即 3.3.3 设置 `vfio_device->dev_hdr` 中的 `iommu_ops` 为 `&vfio_iommu_ops`
 
+```diff
+--- a/vfio.c
++++ b/vfio.c
+@@ -912,6 +1084,8 @@ static int vfio_configure_device(struct kvm *kvm, struct vfio_group *group,
+ 		return -ENOMEM;
+ 	}
+ 
++	device->group = group;
++
+ 	device->fd = ioctl(group->fd, VFIO_GROUP_GET_DEVICE_FD, dirent->d_name);
+ 	if (device->fd < 0) {
+ 		pr_err("Failed to get FD for device %s in group %lu",
+@@ -945,6 +1119,7 @@ static int vfio_configure_device(struct kvm *kvm, struct vfio_group *group,
+ 	device->dev_hdr = (struct device_header) {
+ 		.bus_type	= DEVICE_BUS_PCI,
+ 		.data		= &device->pci.hdr,
++		.iommu_ops	= viommu ? &vfio_iommu_ops : NULL,
+ 	};
+```
 
+这些 `vfio_iommu_ops` 自定义了 iommu 的相关操作
 
+```diff
+--- a/vfio.c
++++ b/vfio.c
 
++static struct iommu_ops vfio_iommu_ops = {
++	.get_properties		= vfio_viommu_get_properties,
++	.alloc_address_space	= vfio_viommu_alloc,
++	.free_address_space	= vfio_viommu_free,
++	.attach			= vfio_viommu_attach,
++	.detach			= vfio_viommu_detach,
++	.map			= vfio_viommu_map,
++	.unmap			= vfio_viommu_unmap,
++};
++
+```
+
+同时, 需要处理
+
+* 对 pci_msix_pba 的访问
+* 对 pci_msix_table 的访问
 
 当访问 msix_table 时候会发生 VM-exit, 进而返回给 kvmtool 处理. 如果 container 存在, 说明独立, 调用 `iommu_translate_msi`, 
 
@@ -1125,23 +1280,14 @@ vfio 初始化阶段, `vfio__init()` 中会初始化 vfio container, 如果配�
  		u32 devid = device->dev_hdr.dev_num << 3;
 ```
 
-同时定义了 `iommu_ops` 自定义了 iommu 的相关操作
+## debug 相关
 
-```diff
---- a/vfio.c
-+++ b/vfio.c
+**patch 13**, virtio-iommu: debug via IPC
 
-+static struct iommu_ops vfio_iommu_ops = {
-+	.get_properties		= vfio_viommu_get_properties,
-+	.alloc_address_space	= vfio_viommu_alloc,
-+	.free_address_space	= vfio_viommu_free,
-+	.attach			= vfio_viommu_attach,
-+	.detach			= vfio_viommu_detach,
-+	.map			= vfio_viommu_map,
-+	.unmap			= vfio_viommu_unmap,
-+};
-+
-```
+
+**patch 14**, virtio-iommu: implement basic debug commands
+
+
 
 
 patch
