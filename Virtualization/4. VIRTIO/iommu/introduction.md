@@ -986,7 +986,80 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 +static void *viommu = NULL;
 ```
 
-vfio 初始化阶段, `vfio__init()`
+vfio 初始化阶段, `vfio__init()` 中会初始化 vfio container, 如果配置整体使用 vIOMMU, 则关闭vfio container, 同时调用 `viommu_register` 注册了 viommu.
+
+```diff
+--- a/vfio.c
++++ b/vfio.c
+@@ -870,6 +894,154 @@ static int vfio_configure_dev_irqs(struct kvm *kvm, struct vfio_device *device)
+ 	return ret;
+ }
+
++static struct iommu_properties vfio_viommu_props = {
++	.name				= "viommu-vfio",
++
++	.input_addr_size		= 64,
++};
+-static int vfio_container_init(struct kvm *kvm)
++static int vfio_groups_init(struct kvm *kvm)
+ {
+ 	int api, i, ret, iommu_type;;
+ 
+-	/* Create a container for our IOMMU groups */
+-	vfio_container = open(VFIO_DEV_NODE, O_RDWR);
+-	if (vfio_container == -1) {
++	/*
++	 * Create a container for our IOMMU groups. Even when using a viommu, we
++	 * still use this one for probing capabilities.
++	 */
++	vfio_host_container = open(VFIO_DEV_NODE, O_RDWR);
++	if (vfio_host_container == -1) {
+ 		ret = errno;
+ 		pr_err("Failed to open %s", VFIO_DEV_NODE);
+ 		return ret;
+ 	}
+ 
+-	api = ioctl(vfio_container, VFIO_GET_API_VERSION);
++	api = ioctl(vfio_host_container, VFIO_GET_API_VERSION);
+ 	if (api != VFIO_API_VERSION) {
+ 		pr_err("Unknown VFIO API version %d", api);
+ 		return -ENODEV;
+@@ -1119,15 +1337,20 @@ static int vfio_container_init(struct kvm *kvm)
+ 		return iommu_type;
+ 	}
+ 
+-	/* Sanity check our groups and add them to the container */
+ 	for (i = 0; i < kvm->cfg.num_vfio_groups; ++i) {
+ 		ret = vfio_group_init(kvm, &kvm->cfg.vfio_group[i]);
+ 		if (ret)
+ 			return ret;
+ 	}
+ 
++	if (kvm->cfg.viommu) {
++		close(vfio_host_container);
++		vfio_host_container = -1;
++		return 0;
++	}
+ 	/* Finalise the container */
+@@ -1147,10 +1370,16 @@ static int vfio__init(struct kvm *kvm)
+ 	if (!kvm->cfg.num_vfio_groups)
+ 		return 0;
+ 
+-	ret = vfio_container_init(kvm);
++	ret = vfio_groups_init(kvm);
+ 	if (ret)
+ 		return ret;
+ 
++	if (kvm->cfg.viommu) {
++		viommu = viommu_register(kvm, &vfio_viommu_props);
++		if (!viommu)
++			pr_err("could not register viommu");
++	}
++
+ 	ret = vfio_configure_iommu_groups(kvm);
+ 	if (ret)
+ 		return ret;
+```
 
 
 
