@@ -707,6 +707,31 @@ patch 3, virtio: add virtio-iommu
 
 请注意, 一个 guest 对应一个 vIOMMU 就足够了, 这个的多个 viommu 模型只是在这里进行实验, 从而允许不同的子系统提供不同的 vIOMMU 功能.
 
+
+
+给 device 增加 `iommu_ops`, 从而每个设备都能有自己的 iommu 回调函数.
+
+```diff
+--- a/include/kvm/devices.h
++++ b/include/kvm/devices.h
+@@ -11,11 +11,15 @@ enum device_bus_type {
+ 	DEVICE_BUS_MAX,
+ };
+ 
++struct iommu_ops;
++
+ struct device_header {
+ 	enum device_bus_type	bus_type;
+ 	void			*data;
+ 	int			dev_num;
+ 	struct rb_node		node;
++	struct iommu_ops	*iommu_ops;
++	void			*iommu_data;
+ };
+ 
+ int device__register(struct device_header *dev);
+```
+
 ```cpp
 static int viommu_handle_attach(struct viommu_dev *viommu,
 				struct virtio_iommu_req_attach *attach)
