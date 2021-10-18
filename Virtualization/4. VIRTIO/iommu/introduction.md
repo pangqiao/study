@@ -154,7 +154,7 @@ Scenario 2: a virtual net device behind a virtual IOMMU.
 
 > virtio-iommu: firmware description of the virtual topology
 
-与其他 virtio 设备不同, virtio-iommu 设备不能独立工作, 它与其他虚拟或分配的设备相连. 因此, 在设备操作之前, 我们需要定义一种方法, 让 guest 发现虚拟 IOMMU 及其它负责的设备.
+与其他 virtio 设备不同, virtio-iommu 设备不能独立工作, 它与其他虚拟或分配的设备相连. 因此, 在设备操作之前, 我们需要定义一种方法, 让 guest 发现虚拟 IOMMU 及其它管理的设备.
 
 host 必须通过 device-tree 或 ACPI 表给 guest 描述 IOMMU 和设备的关系.
 
@@ -264,7 +264,7 @@ IORT: IO Remapping Table, DEN0049B, http://infocenter.arm.com/help/topic/com.arm
        mappings     | 20xN  | --    | ID Array.
 ```
 
-操作系统解析 IORT 表, 以构建 IOMMU 与设备之间的 ID 关系表. ID 阵列用于查找 IOMMU ID 与 PCI 或平台设备之间的关系. 稍后, virtio-iommu 驱动程序通过"Device object name"字段找到相关的 LNRO0005 描述符, 并探测 virtio 设备以了解更多有关其功能的信息. 由于"IOMMU"的所有属性将在 virtio probe 期间获得, IORT 节点要尽量保持简单.
+操作系统解析 IORT 表, 以构建 IOMMU 与设备之间的 ID 关系表. ID Array 用于查找 IOMMU ID 与 PCI 或平台设备之间的关系. 稍后, virtio-iommu 驱动程序通过"Device object name"字段找到相关的 LNRO0005 描述符, 并探测 virtio 设备以了解更多有关其功能的信息. 由于"IOMMU"的所有属性将在 virtio probe 期间获得, IORT 节点要尽量保持简单.
 
 ## 3.3. 设备探测和设备操作
 
