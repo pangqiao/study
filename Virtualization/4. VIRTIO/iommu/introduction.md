@@ -593,7 +593,7 @@ RANGE: 请求将拆分一个mapping
 
 virtio IOMMU 是一个半虚设备, 可以通过 virtio-mmio transport 发送 IOMMU 请求, 比如 map/unmap. 这个 driver 会实现上面讲到的 virtio-iommu 最初方案. 它会处理 attach, detach, map 和 unmap 请求.
 
-大部分代码是在创建请求并通过 virtio 发生它们. 实现 IOMMU API 是比较简单的, 因为 virtio-iommu 的 MAP/UNMAP 接口几乎相同. 我放到了一个自定义的 map_sg() 函数中. 核心函数将发送一系列的 map 请求, 并且等待每个请求的返回. 这个优化避免在每个 map 后 yield to host, 而是在 virtio ring 中准备一批请求, 并 kick host 一次.
+大部分代码是在创建请求并通过 virtio 发送它们. 实现 IOMMU API 是比较简单的, 因为 virtio-iommu 的 MAP/UNMAP 接口几乎相同. 我放到了一个自定义的 map_sg() 函数中. 核心函数将发送一系列的 map 请求, 并且等待每个请求的返回. 这个优化避免在每个 map 后 yield to host, 而是在 virtio ring 中准备一批请求, 并 kick host 一次.
 
 It must be applied on top of the probe deferral work for IOMMU, currently under discussion. 这允许早期驱动程序检测和设备探测分割开: 早期解析 device tree 或 ACPI 从而发现 IOMMU 负责的设备, 但是 IOMMU 本身需要等核心 virtio 模块加载后才能被探测.
 
@@ -1018,7 +1018,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 
 由于 guest 不能访问设备, 除非这个设备被 attach 到 container, 并且我们不能在运行时不重置设备就更改 container, 因此此实现是有限的. 要实现 bypass 模式, 我们需要首先 map 整个 guest 物理内存, 并在 attach 到新 address space 时 unmap 所有内容. 设备也不可能被 attach 到相同的地址空间, 它们都有不同的 page tables.
 
-数据结构方面, 每个 vfio 设备都是属于某个一个 vfio group, 再给每个 group 分配一个 container
+数据结构方面, 每个 vfio 设备都是属于某个一个 vfio group, 再给每个 group 定义了一个 container
 
 ```diff
 --- a/include/kvm/vfio.h
@@ -1056,7 +1056,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 * 初始化一个全局 vfio container(一个 vm 对应一个), 调用 `vfio_container = open(VFIO_DEV_NODE, O_RDWR)`; 打开 `/dev/vfio/vfio`
 * 循环初始化每个设备, `vfio_device_init(kvm, &vfio_devices[i])`;
   * 根据 device 的 sysfs_path 中的 group_id, 遍历 vfio_groups 链表查找 group, `list_for_each_entry(group, &vfio_groups, list)`
-  * 找不到则创建一个 group 并将其加入到 container 中, `vfio_group_create(kvm, group_id)` -> `ioctl(group->fd, VFIO_GROUP_SET_CONTAINER, &vfio_container)`, `group->fd` 是 `/dev/vfio/XX(ID)`
+  * 找不到则创建一个新的 group 并将其加入到 container 中, `vfio_group_create(kvm, group_id)` -> `ioctl(group->fd, VFIO_GROUP_SET_CONTAINER, &vfio_container)`, `group->fd` 是 `/dev/vfio/XX(ID)`
   * 将 vfio_group 添加到 `vfio_groups` 链表, `	list_add(&group->list, &vfio_groups)`
 * 设置 iommu type 到 container, `ioctl(vfio_container, VFIO_SET_IOMMU, iommu_type)`
 * 将虚拟机中所有 `KVM_MEM_TYPE_RAM` 类型的内存块 map 用来 DMA (`iova<gpa> -> hva`), `ioctl(vfio_container, VFIO_IOMMU_MAP_DMA, &dma_map)`
