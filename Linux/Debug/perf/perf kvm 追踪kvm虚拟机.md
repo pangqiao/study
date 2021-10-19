@@ -126,7 +126,7 @@ sshfs需要fuse（the Filesystem in Userspace）如果你的系统中没有安�
 
 注: 如果 `--host` 和 `--guest` 均在命令中使用，输出将被储存在 `perf.data.kvm` 中。如果只有 `--host` 被使用，文件将被命名为 `perf.data.host`。同样地，如果仅有 `--guest` 被使用，文件将被命名为 `perf.data.guest`。
 
-上面这个命令的意思是**同时记录host**和**guest**上**所有进程的性能事件**，这里默认的采样事件为**cycles**，我们可以用`-e`参数来指定我们感兴趣的采样事件。
+上面这个命令的意思是**同时记录host**和**guest**上**所有进程的性能事件**，这里默认的**采样事件**为**cycles**，我们可以用`-e`参数来指定我们感兴趣的采样事件。
 
 我们可以发送SIGINT命令结束采样，注意如果perf被非SIGINT指令结束，比如SIGTERM 或者SIGQUIT，那么perf kvm report命令将不能正确的解析采样文件。
 
@@ -174,16 +174,20 @@ tools/perf/Documentation/
 第一步, record
 
 ./perf kvm stat record --pid 9620 -a sleep 30
+
 或
+
 ./perf stat record -e kvm:* --pid 39941
 
 第二步, report
 
 ./perf kvm stat report
+
 或
+
 ./perf kvm stat report --pid 39941
 
-或单独event
+或单独 event
 
 ./perf kvm stat report --event=vmexit
 

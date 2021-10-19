@@ -11,23 +11,20 @@
   - [3.3. 设备探测和设备操作](#33-设备探测和设备操作)
     - [3.3.1. 概述](#331-概述)
     - [3.3.2. 功能位](#332-功能位)
-    - [3.3.3. 设备配置布局](#333-设备配置布局)
+    - [3.3.3. viommu 设备配置信息](#333-viommu-设备配置信息)
     - [3.3.4. 设备初始化](#334-设备初始化)
     - [3.3.5. 设备操作](#335-设备操作)
       - [3.3.5.1. attach device](#3351-attach-device)
       - [3.3.5.2. detach device](#3352-detach-device)
       - [3.3.5.3. map region](#3353-map-region)
       - [3.3.5.4. unmap region](#3354-unmap-region)
-  - [3.4. 将来内容](#34-将来内容)
+  - [3.4. 未来要进行的工作](#34-未来要进行的工作)
 - [4. Linux driver](#4-linux-driver)
 - [5. KVM tool](#5-kvm-tool)
   - [实现 virtio-iommu](#实现-virtio-iommu)
   - [virtio 设备的 vIOMMU 支持](#virtio-设备的-viommu-支持)
   - [vfio 设备的支持](#vfio-设备的支持)
   - [debug 相关](#debug-相关)
-- [6. virtio-iommu on non-devicetree platforms](#6-virtio-iommu-on-non-devicetree-platforms)
-- [7. VIOT](#7-viot)
-- [8. virtio-iommu spec](#8-virtio-iommu-spec)
 
 <!-- /code_chunk_output -->
 
@@ -39,11 +36,11 @@ virtio-iommu 最早是 2017 年提出来的
 
 [2017] vIOMMU/ARM: Full Emulation and virtio-iommu Approaches by Eric Auger: https://www.youtube.com/watch?v=7aZAsanbKwI ,
 
-https://events.static.linuxfound.org/sites/events/files/slides/viommu_arm_upload_1.pdf
+slide: https://events.static.linuxfound.org/sites/events/files/slides/viommu_arm_upload_1.pdf
 
 # 2. 第一版 RFC
 
-这是使用 virtio 传输(transport)的 paravirtualized IOMMU device 的初步建议. 它包含设备描述, Linux 驱动程序和 kvmtool 中的玩具实现.
+这是使用 virtio 传输(transport)的 paravirtualized IOMMU device 的初步说明. 它包含设备描述, Linux 驱动程序和 kvmtool 中的粗略实现.
 
 virtio-iommu: a paravirtualized IOMMU
 
@@ -74,7 +71,7 @@ virtio-iommu: a paravirtualized IOMMU
 
 Scenario 1: a hardware device passed through twice via VFIO
 
-场景一: 硬件设备通过 VFIO 透传两次
+场景一: 硬件设备通过 VFIO 透传
 
 ```
    MEM____pIOMMU________PCI device________________________       HARDWARE
@@ -276,7 +273,7 @@ IORT: IO Remapping Table, DEN0049B, http://infocenter.arm.com/help/topic/com.arm
 
 1. 概述Overview
 2. 功能位Feature bits
-3. 设备配置布局Device configuration layout
+3. 设备配置信息Device configuration layout
 4. 设备初始化Device initialization
 5. 设备操作Device operations
    5.1. Attach device
@@ -347,7 +344,7 @@ VIRTIO_IOMMU_F_BYPASS (3)
 
 当没有被 attach 到一个 address space时, IOMMU 管理的 device 能够访问虚拟机物理地址空间(GPA).
 
-### 3.3.3. 设备配置布局
+### 3.3.3. viommu 设备配置信息
 
 ```cpp
 struct virtio_iommu_config {
@@ -362,9 +359,9 @@ struct virtio_iommu_config {
 
 ### 3.3.4. 设备初始化
 
-1. page_size_mask 包含可以映射的所有页面大小的 bitmap.最低有效位集定义了 IOMMU 映射的页面粒度. mask 中的其他位是描述 IOMMU 可以合并为单个映射(页面块)的页面大小的提示.
+1. page_size_mask 包含可以 map 的所有页面大小的 bitmap. 最低有效位集定义了 IOMMU map 的页面粒度. mask 中的其他位是描述 IOMMU 可以合并为单个映射(页面块)的页面大小的提示.
 
-IOMMU 支持的最小页面粒度没有下限. 如果设备通告它(`page_size_mask[0]=1`), 驱动程序一次映射一个字节是合法的.
+IOMMU 支持的最小页面粒度没有下限. 如果设备通告它(`page_size_mask[0]=1`), 驱动程序一次 map 一个字节是合法的.
 
 page_size_mask 必须至少有一个 bit 设置
 
@@ -581,7 +578,7 @@ FAULT: mapping 不存在
 
 RANGE: 请求将拆分一个mapping
 
-## 3.4. 将来内容
+## 3.4. 未来要进行的工作
 
 > virtio-iommu: future work
 
@@ -619,22 +616,140 @@ It must be applied on top of the probe deferral work for IOMMU, currently under 
 * `include/uapi/linux/virtio_ids.h`, 增加一个 virtio 类型
 * `include/uapi/linux/virtio_iommu.h`, 头文件
 
+几个核心结构体
 
-Discussion 1: Same physical address is mapped with two different virtual address
-
-取决于是哪个驱动调用了 viommu. 任何设备驱动可以调用 DMA API, 进而调用了 iommu_map. 同一个 address space 中, 多个 IOVA 指向同一个 PA 是允许的.
-
-https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
-
+```diff
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+new file mode 100644
+index 000000000000..1cf4f57b7817
+--- /dev/null
++++ b/drivers/iommu/virtio-iommu.c
+@@ -0,0 +1,980 @@
++#include <uapi/linux/virtio_iommu.h>
++
++struct viommu_dev {
++	struct iommu_device		iommu;
++	struct device			*dev;
++	struct virtio_device		*vdev;
++
++	struct virtqueue		*vq;
++	struct list_head		pending_requests;
++	/* Serialize anything touching the vq and the request list */
++	spinlock_t			vq_lock;
++
++	struct list_head		list;
++
++	/* Device configuration */
++	u64				pgsize_bitmap;
++	u64				aperture_start;
++	u64				aperture_end;
++};
++
++struct viommu_mapping {
++	phys_addr_t			paddr;
++	struct interval_tree_node	iova;
++};
++
++struct viommu_domain {
++	struct iommu_domain		domain;
++	struct viommu_dev		*viommu;
++	struct mutex			mutex;
++	u64				id;
++
++	spinlock_t			mappings_lock;
++	struct rb_root			mappings;
++
++	/* Number of devices attached to this domain */
++	unsigned long			attached;
++};
++
++struct viommu_endpoint {
++	struct viommu_dev		*viommu;
++	struct viommu_domain		*vdomain;
++};
++
++struct viommu_request {
++	struct scatterlist		head;
++	struct scatterlist		tail;
++
++	int				written;
++	struct list_head		list;
++};
++
++/* TODO: use an IDA */
++static atomic64_t viommu_domain_ids_gen;
++
++#define to_viommu_domain(domain) container_of(domain, struct viommu_domain, domain)
++
 ```
- virtnet_open
- try_fill_recv
- add_recvbuf_mergeable
- virtqueue_add_inbuf_ctx
- vring_map_one_sg
- dma_map_page
- __iommu_dma_map
+
+* `struct viommu_dev`: viommu 设备.
+* `struct viommu_mapping`: 一个mapping, iova -> gpa
+* `struct viommu_domain`: 一个 address space. domain 指向 VM domain(per VM); viommu 指向 viommu 设备;
+* `struct viommu_endpoint`: 由 viommu 管理的一个设备. `viommu` 指向所属的 viommu 设备; `vdomain` 指向所 attached 的 address space
+* `struct viommu_request`: viommu 请求. 
+
+```diff
+diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
+new file mode 100644
+index 000000000000..ec74c9a727d4
+--- /dev/null
++++ b/include/uapi/linux/virtio_iommu.h
++#ifndef _UAPI_LINUX_VIRTIO_IOMMU_H
++#define _UAPI_LINUX_VIRTIO_IOMMU_H
+
++__packed
++struct virtio_iommu_config {
++	/* Supported page sizes */
++	__u64					page_sizes;
++	struct virtio_iommu_range {
++		__u64				start;
++		__u64				end;
++	} input_range;
++	__u8 					ioasid_bits;
++};
++
++__packed
++struct virtio_iommu_req_head {
++	__u8					type;
++	__u8					reserved[3];
++};
++
++__packed
++struct virtio_iommu_req_tail {
++	__u8					status;
++	__u8					reserved[3];
++};
++
++__packed
++struct virtio_iommu_req_attach {
++	struct virtio_iommu_req_head		head;
++
++	__le32					address_space;
++	__le32					device;
++	__le32					reserved;
++
++	struct virtio_iommu_req_tail		tail;
++};
++
+......
++
++union virtio_iommu_req {
++	struct virtio_iommu_req_head		head;
++
++	struct virtio_iommu_req_attach		attach;
++	struct virtio_iommu_req_detach		detach;
++	struct virtio_iommu_req_map		map;
++	struct virtio_iommu_req_unmap		unmap;
++};
++
++#endif
 ```
+
+* `struct virtio_iommu_config`: viommu 配置信息. page_sizes 表示 viommu 支持 map 的页面大小; input_range 表示 viommu 能够 translate 的虚拟地址范围; ioasid_bits 表示支持的 address space 的数目.
+* `struct virtio_iommu_req_XXX`: 某种请求. 按照前面说的格式组织.
+
+virtio-iommu driver 模块初始化相关代码
 
 ```diff
 diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
@@ -655,7 +770,45 @@ index 000000000000..1cf4f57b7817
 +};
 +
 +module_virtio_driver(virtio_iommu_drv);
++
++IOMMU_OF_DECLARE(viommu, "virtio,mmio", NULL);
++
++MODULE_DESCRIPTION("virtio-iommu driver");
++MODULE_AUTHOR("Jean-Philippe Brucker <jean-philippe.brucker@arm.com>");
++MODULE_LICENSE("GPL v2");
 ```
+
+重点在两个: `viommu_probe` 和 `viommu_remove`.
+
+当注册一个 viommu 设备(也是一个 virtio 设备), 调用 `viommu_probe()`
+
+* `struct viommu_dev *viommu = kzalloc(sizeof(*viommu), GFP_KERNEL);`, 生成 viommu 设备对象
+* `viommu_init_vq(viommu);`, 
+
+
+
+
+Discussion 1: Same physical address is mapped with two different virtual address
+
+取决于是哪个驱动调用了 viommu. 任何设备驱动可以调用 DMA API, 进而调用了 iommu_map. 同一个 address space 中, 多个 IOVA 指向同一个 PA 是允许的.
+
+https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
+
+```
+ virtnet_open
+ try_fill_recv
+ add_recvbuf_mergeable
+ virtqueue_add_inbuf_ctx
+ vring_map_one_sg
+ dma_map_page
+ __iommu_dma_map
+```
+
+
+
+
+
+
 
 
 
@@ -1320,74 +1473,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 
 
 
-patch
 
 
 
 
-
-
-
-
-
-
-
-# 6. virtio-iommu on non-devicetree platforms
-
-IOMMU 用来管理来自设备的内存访问. 所以 guest 需要在 endpoint 发起 DMA 之前初始化 IOMMU.
-
-这是一个已解决的问题: firmware 或 hypervisor 通过 DT 或 ACPI 表描述设备依赖关系, 并且 endpoint 的探测(probe)被推迟到 IOMMU 被 probe 后. 但是:
-
-1. ACPI 每个 vendor 有一张表(DMAR 代表 Intel, IVRS 代表 AMD, IORT 代表 Arm). 在我看来, IORT 更容易扩展, 因为我们只需要引入一个新的 node type. Linux IORT 驱动程序中没有对 Arm 架构的依赖, 因此它可以很好地与 CONFIG_X86 配合使用.
-
-然而, 有一些其他担心. 其他操作系统供应商觉得有义务实施这个新的节点, 所以Arm建议引入另一个ACPI表, 可以包装任何 DMAR, IVRS 和 IORT 扩展它与新的虚拟 node.此 VIOT 表规格的草稿可在 http://jpbrucker.net/virtio-iommu/viot/viot-v5.pdf
-
-而且这可能会增加碎片化, 因为 guest 需要实施或修改他们对所有 DMAR , IVRS 和 IORT 的支持. 如果我们最终做 VIOT, 我建议把它限制在 IORT .
-
-2. virtio 依赖 ACPI 或 DT. 目前 hypervisor (Firecracker, QEMU microsvm, kvmtool) 并没有实现.
-
-建议将拓扑描述嵌入设备中.
-
-
-# 7. VIOT
-
-Virtual I/O Translation table (VIOT) 描述了半虚设备的 I/O 拓扑信息.
-
-目前描述了 virtio-iommu 和它管理的设备的拓扑信息.
-
-经过讨论:
-
-* 对于 non-devicetree 平台, 应该使用 ACPI Table.
-* 对于既没有 devicetree, 又没有 ACPI 的 platform, 可以在设备中内置一个使用大致相同格式的结构
-
-# 8. virtio-iommu spec
-
-virtio-iommu 设备管理多个 endpoints 的 DMA 操作.
-
-它既可以作为物理 IOMMU 的代理来管理分配给虚拟机的物理设备(透传), 也可以作为一个虚拟 IOMMU 来管理模拟设备和半虚拟化设备.
-
-virtio-iommu 驱动程序首先使用特定于平台的机制发现由 virtio-iommu 设备管理的 endpoints.然后 virtio-iommu 驱动发送请求为这些 endpoints 创建虚拟地址空间和虚拟地址到物理地址映射关系.
-
-在最简单的形式中, virtio-iommu 支持四种请求类型:
-
-1. 创建一个 domain 并且 attach 一个 endpoint 给它.
-
-`attach(endpoint=0x8, domain=1)`
-
-2. 创建 guest-visual address 到 guest-physical address 的 mapping 关系
-
-`map(domain=1, virt_start=0x1000, virt_end=0x1fff, phys=0xa000, flags=READ)`
-
-> Endpoint 0x8, 一个硬件 PCI endpoint, 假设 BDF 是 `00: 01.0`, 能够读取的一个虚拟机 GVA 范围是 `0x1000 ~ 0x1fff`, 而在这个范围的访问会被 vIOMMU 翻译到 HPA 范围是 `0xa000 ~`.
-
-3. 移除 mapping 关系
-
-`unmap(domain=1, virt_start=0x1000, virt_end=0x1fff)`
-
-> Endpoint 0x8 对地址 `0x1000 ~ 0x1fff` 的访问会被拒绝.
-
-4. detach 一个 endpoint 并且删除 domain
-
-`detach(endpoint=0x8, domain=1)`
-
-> 这里的 domain 就是一个 viommu, 类似于 vfio_domain 概念, 就是最初的 RFC 中的 vIOMMU 1/2
