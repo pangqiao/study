@@ -15,6 +15,11 @@ Linux VirtIO-IOMMU驱动程序的修补程序自去年以来一直在浮动，�
 QEMU正在等待补丁来支持这个VirtIO IOMMU功能。
 
 
+# Paper
+
+https://www.usenix.org/legacy/events/atc11/tech/final_files/Amit.pdf
+
+# KVM Forum
 
 
 virtio-iommu 最早是 2017 年提出来的
