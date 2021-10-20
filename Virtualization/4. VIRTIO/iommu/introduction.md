@@ -685,7 +685,7 @@ index 000000000000..1cf4f57b7817
 
 * `struct viommu_dev`: viommu 设备.
 * `struct viommu_mapping`: 一个mapping, iova -> gpa
-* `struct viommu_domain`: 一个 address space. domain 指向 VM domain(per VM); viommu 指向 viommu 设备;
+* `struct viommu_domain`: 一个 address space(一个 group 对应一个). domain 指向 VM domain(per VM); viommu 指向 viommu 设备;
 * `struct viommu_endpoint`: 由 viommu 管理的一个设备. `viommu` 指向所属的 viommu 设备; `vdomain` 指向所 attached 的 address space
 * `struct viommu_request`: viommu 请求. 
 
@@ -747,7 +747,7 @@ index 000000000000..ec74c9a727d4
 ```
 
 * `struct virtio_iommu_config`: viommu 配置信息. page_sizes 表示 viommu 支持 map 的页面大小; input_range 表示 viommu 能够 translate 的虚拟地址范围; ioasid_bits 表示支持的 address space 的数目.
-* `struct virtio_iommu_req_XXX`: 某种请求. 按照前面说的格式组织.
+* `struct virtio_iommu_req_XXX`: 某种类型的请求. 按照前面说的格式组织.
 
 virtio-iommu driver 模块初始化相关代码
 
@@ -778,12 +778,226 @@ index 000000000000..1cf4f57b7817
 +MODULE_LICENSE("GPL v2");
 ```
 
-重点在两个: `viommu_probe` 和 `viommu_remove`.
+利用了原本的virtio框架. 重点在两个: `viommu_probe` 和 `viommu_remove`.
 
 当注册一个 viommu 设备(也是一个 virtio 设备), 调用 `viommu_probe()`
 
-* `struct viommu_dev *viommu = kzalloc(sizeof(*viommu), GFP_KERNEL);`, 生成 viommu 设备对象
-* `viommu_init_vq(viommu);`, 
+```cpp
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+new file mode 100644
+index 000000000000..1cf4f57b7817
+--- /dev/null
++++ b/drivers/iommu/virtio-iommu.c
+@@ -0,0 +1,980 @@
++static int viommu_probe(struct virtio_device *vdev)
++{
++	struct device *parent_dev = vdev->dev.parent;
++	struct viommu_dev *viommu = NULL;
++	struct device *dev = &vdev->dev;
++	int ret;
++
++	viommu = kzalloc(sizeof(*viommu), GFP_KERNEL);
++	if (!viommu)
++		return -ENOMEM;
++
++	spin_lock_init(&viommu->vq_lock);
++	INIT_LIST_HEAD(&viommu->pending_requests);
++	viommu->dev = dev;
++	viommu->vdev = vdev;
++
++	ret = viommu_init_vq(viommu);
++	if (ret)
++		goto err_free_viommu;
++
++	virtio_cread(vdev, struct virtio_iommu_config, page_sizes,
++		     &viommu->pgsize_bitmap);
++
++	viommu->aperture_end = -1UL;
++
++	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_INPUT_RANGE,
++			     struct virtio_iommu_config, input_range.start,
++			     &viommu->aperture_start);
++
++	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_INPUT_RANGE,
++			     struct virtio_iommu_config, input_range.end,
++			     &viommu->aperture_end);
++
++	if (!viommu->pgsize_bitmap) {
++		ret = -EINVAL;
++		goto err_free_viommu;
++	}
++
++	viommu_ops.pgsize_bitmap = viommu->pgsize_bitmap;
++
++	/*
++	 * Not strictly necessary, virtio would enable it later. This allows to
++	 * start using the request queue early.
++	 */
++	virtio_device_ready(vdev);
++
++	ret = iommu_device_sysfs_add(&viommu->iommu, dev, NULL, "%s",
++				     virtio_bus_name(vdev));
++	if (ret)
++		goto err_free_viommu;
++
++	iommu_device_set_ops(&viommu->iommu, &viommu_ops);
++	iommu_device_set_fwnode(&viommu->iommu, parent_dev->fwnode);
++
++	iommu_device_register(&viommu->iommu);
++
++#ifdef CONFIG_PCI
++	if (pci_bus_type.iommu_ops != &viommu_ops) {
++		pci_request_acs();
++		ret = bus_set_iommu(&pci_bus_type, &viommu_ops);
++		if (ret)
++			goto err_unregister;
++	}
++#endif
++#ifdef CONFIG_ARM_AMBA
++	if (amba_bustype.iommu_ops != &viommu_ops) {
++		ret = bus_set_iommu(&amba_bustype, &viommu_ops);
++		if (ret)
++			goto err_unregister;
++	}
++#endif
++	if (platform_bus_type.iommu_ops != &viommu_ops) {
++		ret = bus_set_iommu(&platform_bus_type, &viommu_ops);
++		if (ret)
++			goto err_unregister;
++	}
++
++	vdev->priv = viommu;
++
++	dev_info(viommu->dev, "probe successful\n");
++
++	return 0;
++
++err_unregister:
++	iommu_device_unregister(&viommu->iommu);
++
++err_free_viommu:
++	kfree(viommu);
++
++	return ret;
++}
++
++static void viommu_remove(struct virtio_device *vdev)
++{
++	struct viommu_dev *viommu = vdev->priv;
++
++	iommu_device_unregister(&viommu->iommu);
++	kfree(viommu);
++
++	dev_info(&vdev->dev, "device removed\n");
++}
+```
+
+1. `struct viommu_dev *viommu = kzalloc(sizeof(*viommu), GFP_KERNEL);`, 生成 viommu 设备对象
+2. `viommu_init_vq(viommu);`, 查找 virt queue, 应该是 virtio 框架给每个 virtio device 都实现了 vq, 确保存在. 这里的回调函数也是 NULL.
+3. `virtio_cread(vdev, struct virtio_iommu_config, page_sizes, &viommu->pgsize_bitmap);`, 获取 page_sizes 配置
+4. `virtio_cread_feature()`, 获取 input_range 的 start 和 end
+5. `iommu_device_sysfs_add()`, 初始化 `viommu->iommu` (`struct iommu_device`), 并添加到 sysfs
+6. `iommu_device_set_ops()`, 设置了 `viommu->iommu` (`struct iommu_device`) 的ops, viommu_ops. 
+7. `iommu_device_set_fwnode()`, 
+8. `iommu_device_register()`, 注册 `viommu->iommu` 到全局 `iommu_device_list`
+9. `bus_set_iommu(&pci_bus_type, &viommu_ops)`, 设置 pci bus, 下面细讲
+10. `bus_set_iommu(&platform_bus_type, &viommu_ops);`, 设置 platform bus, 下面细讲
+
+```diff
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+new file mode 100644
+index 000000000000..1cf4f57b7817
+--- /dev/null
++++ b/drivers/iommu/virtio-iommu.c
+@@ -0,0 +1,980 @@
++static struct iommu_ops viommu_ops = {
++	.capable		= viommu_capable,
++	.domain_alloc		= viommu_domain_alloc,
++	.domain_free		= viommu_domain_free,
++	.attach_dev		= viommu_attach_dev,
++	.map			= viommu_map,
++	.unmap			= viommu_unmap,
++	.map_sg			= viommu_map_sg,
++	.iova_to_phys		= viommu_iova_to_phys,
++	.add_device		= viommu_add_device,
++	.remove_device		= viommu_remove_device,
++	.device_group		= viommu_device_group,
++	.of_xlate		= viommu_of_xlate,
++	.get_resv_regions	= viommu_get_resv_regions,
++	.put_resv_regions	= viommu_put_resv_regions,
++};
+```
+
+`bus_set_iommu()`:
+
+* `bus->iommu_ops = ops;`, 设置 bus 的 iommu ops
+* `iommu_bus_init(bus, ops);`, iommu 的总线相关初始化. 调用 `bus_iommu_probe(bus)`
+  * `LIST_HEAD(group_list);`, 生成一个链表
+  * `bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group);`, 遍历总线下所有设备, 给每个设备调用回调函数 `probe_iommu_group`, 将设备添加到 iommu group (`iommu_init` 中初始化) 中. `probe_iommu_group` -> `__iommu_probe_device()`:
+    * `dev->bus->iommu_ops->add_device(struct device dev);`, 添加设备, 调用了 `viommu_add_device()`
+      * 分配了 `struct viommu_endpoint` 并初始化
+      * 查找或创建一个 iommu group, `dev->bus->iommu_ops->device_group(dev)`, 会调用 `viommu_device_group()` 分配内存空间
+      * 将这个 device add 到这个 group, `iommu_group_add_device()`. 分配 `sruct group_device`; 创建软链接(`/sys/kernel/iommu_groups/xx/devices/设备PCI号` -> `/sys/devices/pci总线ID/设备号`; 
+    * 将 group 添加到 group_list, `list_add_tail(&group->entry, group_list)`
+  * `list_for_each_entry_safe(group, next, &group_list, entry)`, 遍历整个 group_list
+    * `probe_alloc_default_domain(bus, group);`, 每个 iommu group 分配 default domain, 会调用 `viommu_domain_alloc`, 主要是分配空间并初始化
+    * `iommu_group_create_direct_mappings(group)`, 给设备做DMA映射. 将设备对应的虚拟机地址空间段映射到物理地址空间. 遍历 group 中的所有设备, 每个调用 `iommu_create_device_direct_mappings(struct iommu_group *group, struct device *dev)`
+      * `pg_size = 1UL << __ffs(domain->pgsize_bitmap);`, page size
+      * `iommu_get_resv_regions(dev, &mappings);`, 获取设备的mappings(iova), 调用 `viommu_ops.viommu_get_resv_regions`
+        * 
+      * `list_for_each_entry(entry, &mappings, list)`, 遍历设备映射的地址段
+        * `start/end = ALIGN(entry->start/end, pg_size);`, 根据 page size 对齐
+        * `for (addr = start; addr < end; addr += pg_size)`, 根据 page size 逐个操作
+          * `phys_addr = iommu_iova_to_phys(domain, addr)`, 调用 viommu_iova_to_phys
+          * `iommu_map(domain, addr, addr, pg_size, entry->prot)`, 将每段虚拟地址空间都映射到相应的物理内存页上
+    * `__iommu_attach_device(group)`, 
+
+```diff
+diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
+new file mode 100644
+index 000000000000..1cf4f57b7817
+--- /dev/null
++++ b/drivers/iommu/virtio-iommu.c
+@@ -0,0 +1,980 @@
++static int viommu_add_device(struct device *dev)
++{
++	struct iommu_group *group;
++	struct viommu_endpoint *vdev;
++	struct viommu_dev *viommu = NULL;
++	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
++
++	if (!fwspec || fwspec->ops != &viommu_ops)
++		return -ENODEV;
++
++	viommu = viommu_get_by_fwnode(fwspec->iommu_fwnode);
++	if (!viommu)
++		return -ENODEV;
++
++	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
++	if (!vdev)
++		return -ENOMEM;
++
++	vdev->viommu = viommu;
++	fwspec->iommu_priv = vdev;
++
++	/*
++	 * Last step creates a default domain and attaches to it. Everything
++	 * must be ready.
++	 */
++	group = iommu_group_get_for_dev(dev);
++
++	return PTR_ERR_OR_ZERO(group);
++}
++
++static struct iommu_group *
++viommu_device_group(struct device *dev)
++{
++	if (dev_is_pci(dev))
++		return pci_device_group(dev);
++	else
++		return generic_device_group(dev);
++}
+```
 
 
 
