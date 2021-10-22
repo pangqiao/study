@@ -882,10 +882,13 @@ bus_set_iommu()
 
 疑问 2: `struct iommu_ops viommu_ops` 中没有 `detach_dev`, 也就没有 detach request, why?
 
+ `iommu_detach_device()` -> `__iommu_detach_group` -> `iommu_group_do_attach_device()`
+
 detach 的场景: 
 
-* device delete: 会调到 `iommu_detach_device()` -> `__iommu_detach_group` -> `iommu_group_do_attach_device()`
+* device delete: unhot-plug
 * group delete: 
+* vfio release domain: 走下面逻辑
 
 首先, 每个 device 肯定属于某个 group, 而 group 有两个属性, default_domain 和 domain.
 
@@ -1669,3 +1672,6 @@ bus_set_iommu()
 ```
 
 
+qemu:
+
+` virtio_iommu_device_reset()` -> `virtio_iommu_put_endpoint(VirtIOIOMMUEndpoint)` -> `virtio_iommu_detach_endpoint_from_domain(VirtIOIOMMUEndpoint); g_free(VirtIOIOMMUEndpoint)`
