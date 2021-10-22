@@ -1031,8 +1031,18 @@ viommu_handle_attach(struct viommu_dev *viommu, struct virtio_iommu_req_attach *
  |  ├─ rb_link_node(&new_ioas->node, parent, node); 插入 rb tree
  |  └─ rb_insert_color(&new_ioas->node, &viommu->address_spaces);
  ├─ viommu_detach_device(viommu, vdev); 从原有的 as 做 detach
+ |  ├─ device->iommu_ops->detach(ioas->priv, device); 不同设备不同ops, 以 vfio 设备为例, 调用 vfio_viommu_detach
+ |  |  └─ return 0; 什么都没做, 对应的 attach 没做什么
+ |  ├─ viommu_ioas_del_device(ioas, vdev); 从 ioas 中删除 viommu_endpoint
+ |  |  ├─ list_del(&vdev->list); 从 ioas->devices 链表删除
+ |  |  ├─ ioas->nr_devices--; 
+ |  |  └─ vdev->ioas = NULL; 
+ |  └─ viommu_free_ioas(viommu, ioas); ioas->nr_devices 没有设备的话, 则删除 ioas(domain)
+ |  |  ├─ ioas->ops->free_address_space(ioas->priv); 释放 as, 上面 alloc 的逆操作
+ |  |  ├─ rb_erase(&ioas->node, &viommu->address_spaces);
+ |  |  └─ free(ioas);
  ├─ device->iommu_ops->attach(ioas->priv, device, 0); 不同设备不同ops, 以 vfio 设备为例, 调用 vfio_viommu_attach
- |  └─ 一些判断, 其他没做什么事情
+ |  └─ 一些判断, 其他没做什么事情, 对应的 detach 没做什么
  └─ viommu_ioas_add_device(ioas, vdev);
     ├─ list_add_tail(&vdev->list, &ioas->devices); 设备添加到 ioas->devices 链表中
     ├─ ioas->nr_devices++;
