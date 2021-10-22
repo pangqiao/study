@@ -984,9 +984,9 @@ bus_set_iommu()
 	       └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev);
 ```
 
-疑问 1: 先 map request, 再 attach request? 
+疑问 1: 会先有 map request, 再 attach request? 
 
-先确认下最新的实现
+
 
 
 
@@ -1758,27 +1758,42 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 ```cpp
 bus_set_iommu()
  ├─ bus->iommu_ops = ops;, 设置 bus 的 iommu ops
- └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化. 注册了 bus notifier, 回调是 `iommu_bus_notifier`. 调用 `bus_iommu_probe(bus)`
-   ├─ LIST_HEAD(group_list);, 生成一个链表
-   ├─ bus_for_each_dev(bus, NULL, &group_list, add_iommu_group);, 遍历总线下所有设备, 给每个设备调用回调函数 `add_iommu_group`, 将设备添加到 iommu group (`iommu_init` 中初始化) 中. `add_iommu_group` -> `__iommu_probe_device()`:
-   |  ├─ iommu_dev = dev->bus->iommu_ops->add_device(struct device dev);, 添加设备, 调用了 `viommu_add_device()`
-   |  |  ├─ 分配了 `struct viommu_endpoint` 并初始化
+ └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化. 注册了 bus notifier, 回调是 `iommu_bus_notifier`; 然后调用 `bus_iommu_probe(bus)`
+   ├─ LIST_HEAD(group_list);, 生成一个 group_list 链表
+   ├─ bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group);, 遍历总线下所有设备, 给每个设备调用回调函数 `probe_iommu_group`, 将设备添加到 iommu group (`iommu_init` 中初始化) 中. 会调用 `__iommu_probe_device()`:
+   |  ├─ iommu_dev = dev->bus->iommu_ops->probe_device(struct device dev);, 添加设备, 调用了 `viommu_add_device()`
+   |  |  ├─ struct viommu_endpoint *vdev = kzalloc(sizeof(*vdev), GFP_KERNEL); 结构体分配
+   |  |  ├─ vdev->viommu = viommu;
+   |  |  ├─ INIT_LIST_HEAD(&vdev->resv_regions);
+   |  |  └─ viommu_probe_endpoint(viommu, dev); viommu->probe_size 存在则会调用这个
+   |  |     ├─ viommu_send_req_sync(viommu, probe, probe_len);
+
    |  ├─ dev->iommu->iommu_dev = iommu_dev; 设置 device 的 iommu device
-   |  ├─ group = iommu_group_get_for_dev(dev);
+   |  ├─ group = iommu_group_get_for_dev(dev); 为设备查找或创建一个 iommu group
    |  |  ├─ 查找或创建一个 iommu group, `dev->bus->iommu_ops->device_group(dev)`, 会调用 `viommu_device_group()` 分配一个 group
    |  |  |  └─ pci_device_group(dev); / generic_device_group(dev);
-   |  |  ├─ iommu_group_add_device(group, dev); 将这个 device add 到这个 group, 分配 sruct group_device;
-   |  |  |  ├─ sysfs_create_link(&dev->kobj, &group->kobj, "iommu_group"); 创建软链接(`/sys/devices/pci总线ID/设备号/iommu_group -> `/sys/kernel/iommu_groups/xx`)
-   |  |  |  ├─ sysfs_create_link_nowarn(group->devices_kobj, &dev->kobj, device->name); 创建软链接(`/sys/kernel/iommu_groups/xx/devices/设备PCI号` -> `/sys/devices/pci总线ID/设备号`
-   |  |  |  ├─ dev->iommu_group = group;
-   |  |  |  ├─ if (group->domain) __iommu_attach_device(group->domain, dev); 有 domain 就 attach(这时候当然没有)
-   |  |  |  ├─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev); notifier, vfio_create_group 会注册
-   |  └─ list_add_tail(&group->entry, group_list); 将 group 添加到 group_list
+   |  |  └─ iommu_group_add_device(group, dev); 将这个 device add 到这个 group, 分配 sruct group_device;
+   |  |     ├─ sysfs_create_link(&dev->kobj, &group->kobj, "iommu_group"); 创建软链接(`/sys/devices/pci总线ID/设备号/iommu_group -> `/sys/kernel/iommu_groups/xx`)
+   |  |     ├─ sysfs_create_link_nowarn(group->devices_kobj, &dev->kobj, device->name); 创建软链接(`/sys/kernel/iommu_groups/xx/devices/设备PCI号` -> `/sys/devices/pci总线ID/设备号`
+   |  |     ├─ dev->iommu_group = group;
+   |  |     ├─ if (group->domain) __iommu_attach_device(group->domain, dev); 有 domain 就 attach(这时候当然没有)
+   |  |     └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev); group notifier, vfio_create_group 会注册
+   |  ├─ list_add_tail(&group->entry, group_list); 将 group 添加到 group_list
+   |  └─ iommu_device_link(iommu_dev, dev); sys 文件系统添加一些 软链接
    └─ list_for_each_entry_safe(group, next, &group_list, entry), 遍历整个 group_list
       ├─ probe_alloc_default_domain(bus, group);, 给每个 iommu group 分配 default domain, 会调用 viommu_domain_alloc, 主要是分配空间并初始化
-      |  ├─ struct viommu_domain *vdomain = kzalloc(sizeof(struct viommu_domain), GFP_KERNEL); 生成新的 vdomain
-      |  ├─ vdomain->id = atomic64_inc_return_relaxed(&viommu_domain_ids_gen); 分配新 id
-      |  ├─ vdomain->mappings = RB_ROOT; 每个 vdomain 的所有 mappings 构成 rb tree
+      |  ├─ __iommu_group_for_each_dev(group, &gtype, probe_get_default_domain_type); 遍历 group 中的 device, 获取每个 device 的 default domain type(一般是 IOMMU_DOMAIN_DMA)
+      |  └─ iommu_group_alloc_default_domain(bus, group, gtype.type);
+      |     ├─ struct iommu_domain *dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type); 给每个 iommu group 分配 domain
+      |     |  ├─ struct iommu_domain *domain = bus->iommu_ops->domain_alloc(type); 调用 viommu_domain_alloc, 主要是分配空间并初始化
+      |     |  |  ├─ struct viommu_domain *vdomain = kzalloc(sizeof(struct viommu_domain), GFP_KERNEL); 生成新的 vdomain
+      |     |  |  ├─ vdomain->id = atomic64_inc_return_relaxed(&viommu_domain_ids_gen); 分配新 id
+      |     |  |  └─ vdomain->mappings = RB_ROOT; 每个 vdomain 的所有 mappings 构成 rb tree
+      |     |  ├─ domain->ops  = bus->iommu_ops;
+      |     |  ├─ domain->type = type;
+      |     |  └─ domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
+      |     ├─ group->default_domain = dom;
+      |     └─ group->domain = dom;
       ├─ iommu_group_create_direct_mappings(group), 给设备做DMA映射. 将设备对应的虚拟机地址空间段映射到物理地址空间. 遍历 group 中的所有设备, 每个调用 iommu_create_device_direct_mappings(struct iommu_group *group, struct device *dev)
       |  ├─ pg_size = 1UL << __ffs(domain->pgsize_bitmap); page size
       |  ├─ iommu_get_resv_regions(dev, &mappings);, 获取设备的 mappings(iova), 调用 `viommu_ops.viommu_get_resv_regions`
@@ -1801,7 +1816,10 @@ bus_set_iommu()
       |  |  |  |  |  |  ├─ mapping->paddr = paddr; mapping->iova.start = iova; mapping->iova.last = iova + size - 1;
       |  |  |  |  |  |  ├─ interval_tree_insert(&mapping->iova, &vdomain->mappings); 插入树
       |  |  |  |  |  ├─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 map request, 忙等返回
-      ├─ __iommu_group_dma_attach(group)
+      ├─ __iommu_group_dma_attach(group);
+      └─ __iommu_group_dma_finalize(group);
+
+
 
       ├─ __iommu_attach_device(group, dev), 调用 domain->ops->attach_dev(domain, dev), viommu_attach_dev
       |  ├─ struct virtio_iommu_req_attach req; 创建 attach 请求
