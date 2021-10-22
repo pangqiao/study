@@ -21,11 +21,11 @@
   - [3.4. 未来要进行的工作](#34-未来要进行的工作)
 - [4. Linux driver](#4-linux-driver)
 - [5. KVM tool](#5-kvm-tool)
-  - [实现 virtio-iommu](#实现-virtio-iommu)
-  - [virtio 设备的 vIOMMU 支持](#virtio-设备的-viommu-支持)
-  - [vfio 设备的支持](#vfio-设备的支持)
-  - [debug 相关](#debug-相关)
-- [现有实现](#现有实现)
+  - [5.1. 实现 virtio-iommu](#51-实现-virtio-iommu)
+  - [5.2. virtio 设备的 vIOMMU 支持](#52-virtio-设备的-viommu-支持)
+  - [5.3. vfio 设备的支持](#53-vfio-设备的支持)
+  - [5.4. debug 相关](#54-debug-相关)
+- [6. 现有实现](#6-现有实现)
 
 <!-- /code_chunk_output -->
 
@@ -783,116 +783,6 @@ index 000000000000..1cf4f57b7817
 
 当注册一个 viommu 设备(也是一个 virtio 设备), 调用 `viommu_probe()`
 
-```cpp
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-new file mode 100644
-index 000000000000..1cf4f57b7817
---- /dev/null
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -0,0 +1,980 @@
-+static int viommu_probe(struct virtio_device *vdev)
-+{
-+	struct device *parent_dev = vdev->dev.parent;
-+	struct viommu_dev *viommu = NULL;
-+	struct device *dev = &vdev->dev;
-+	int ret;
-+
-+	viommu = kzalloc(sizeof(*viommu), GFP_KERNEL);
-+	if (!viommu)
-+		return -ENOMEM;
-+
-+	spin_lock_init(&viommu->vq_lock);
-+	INIT_LIST_HEAD(&viommu->pending_requests);
-+	viommu->dev = dev;
-+	viommu->vdev = vdev;
-+
-+	ret = viommu_init_vq(viommu);
-+	if (ret)
-+		goto err_free_viommu;
-+
-+	virtio_cread(vdev, struct virtio_iommu_config, page_sizes,
-+		     &viommu->pgsize_bitmap);
-+
-+	viommu->aperture_end = -1UL;
-+
-+	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_INPUT_RANGE,
-+			     struct virtio_iommu_config, input_range.start,
-+			     &viommu->aperture_start);
-+
-+	virtio_cread_feature(vdev, VIRTIO_IOMMU_F_INPUT_RANGE,
-+			     struct virtio_iommu_config, input_range.end,
-+			     &viommu->aperture_end);
-+
-+	if (!viommu->pgsize_bitmap) {
-+		ret = -EINVAL;
-+		goto err_free_viommu;
-+	}
-+
-+	viommu_ops.pgsize_bitmap = viommu->pgsize_bitmap;
-+
-+	/*
-+	 * Not strictly necessary, virtio would enable it later. This allows to
-+	 * start using the request queue early.
-+	 */
-+	virtio_device_ready(vdev);
-+
-+	ret = iommu_device_sysfs_add(&viommu->iommu, dev, NULL, "%s",
-+				     virtio_bus_name(vdev));
-+	if (ret)
-+		goto err_free_viommu;
-+
-+	iommu_device_set_ops(&viommu->iommu, &viommu_ops);
-+	iommu_device_set_fwnode(&viommu->iommu, parent_dev->fwnode);
-+
-+	iommu_device_register(&viommu->iommu);
-+
-+#ifdef CONFIG_PCI
-+	if (pci_bus_type.iommu_ops != &viommu_ops) {
-+		pci_request_acs();
-+		ret = bus_set_iommu(&pci_bus_type, &viommu_ops);
-+		if (ret)
-+			goto err_unregister;
-+	}
-+#endif
-+#ifdef CONFIG_ARM_AMBA
-+	if (amba_bustype.iommu_ops != &viommu_ops) {
-+		ret = bus_set_iommu(&amba_bustype, &viommu_ops);
-+		if (ret)
-+			goto err_unregister;
-+	}
-+#endif
-+	if (platform_bus_type.iommu_ops != &viommu_ops) {
-+		ret = bus_set_iommu(&platform_bus_type, &viommu_ops);
-+		if (ret)
-+			goto err_unregister;
-+	}
-+
-+	vdev->priv = viommu;
-+
-+	dev_info(viommu->dev, "probe successful\n");
-+
-+	return 0;
-+
-+err_unregister:
-+	iommu_device_unregister(&viommu->iommu);
-+
-+err_free_viommu:
-+	kfree(viommu);
-+
-+	return ret;
-+}
-+
-+static void viommu_remove(struct virtio_device *vdev)
-+{
-+	struct viommu_dev *viommu = vdev->priv;
-+
-+	iommu_device_unregister(&viommu->iommu);
-+	kfree(viommu);
-+
-+	dev_info(&vdev->dev, "device removed\n");
-+}
-```
-
 1. `struct viommu_dev *viommu = kzalloc(sizeof(*viommu), GFP_KERNEL);`, 生成 viommu 设备对象
 2. `viommu_init_vq(viommu);`, 查找 virt queue, 应该是 virtio 框架给每个 virtio device 都实现了 vq, 确保存在. 这里的回调函数也是 NULL.
 3. `virtio_cread(vdev, struct virtio_iommu_config, page_sizes, &viommu->pgsize_bitmap);`, 获取 page_sizes 配置
@@ -984,11 +874,17 @@ bus_set_iommu()
 	       └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev); group notifier
 ```
 
+初始化 virtio-iommu 中会涉及到两个 command, map 和 attach, backend 实现可以看 kvm tool 部分
+
 疑问 1: 会先有 map request, 再 attach request? 
 
 ??
 
-初始化 virtio-iommu 中会涉及到两个 command, map 和 attach, backend 实现可以看 kvm tool 部分
+疑问 2: `struct iommu_ops viommu_ops` 中没有 `detach_dev`, 也就没有 detach request, why?
+
+attach 是用来创建 domain 并且 attach 一个 device 到这个 domain
+
+
 
 Discussion 1: Same physical address is mapped with two different virtual address
 
@@ -1030,7 +926,7 @@ https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
 14. virtio-iommu: implement basic debug commands
 15. virtio: use virtio-iommu when available
 
-## 实现 virtio-iommu
+## 5.1. 实现 virtio-iommu
 
 **patch 1**, virtio: synchronize virtio-iommu headers with Linux
 
@@ -1078,8 +974,6 @@ patch 3, virtio: add virtio-iommu
  int device__register(struct device_header *dev);
 ```
 
-
-
 ```cpp
 static int viommu_handle_attach(struct viommu_dev *viommu,
 				struct virtio_iommu_req_attach *attach)
@@ -1106,7 +1000,6 @@ static int viommu_handle_attach(struct viommu_dev *viommu,
     if (ret && ioas->nr_devices == 0) viommu_free_ioas(viommu, ioas);
 }
 ```
-
 
 `viommu_command` -> `viommu_dispatch_commands` -> `viommu_handle_attach(viommu, &req->attach);`
 
@@ -1148,7 +1041,7 @@ viommu_handle_attach(struct viommu_dev *viommu, struct virtio_iommu_req_attach *
 
 `viommu_command` -> `viommu_dispatch_commands` -> `viommu_handle_map(viommu, &req->map);`
 
-概述:
+概述: 解析请求, 调用 MAP_DMA 类型的 ioctl (ioas 的 vfio container), GVA -> GPA
 
 ```cpp
 viommu_handle_map(struct viommu_dev *viommu, struct virtio_iommu_req_map *map)
@@ -1163,8 +1056,8 @@ viommu_handle_map(struct viommu_dev *viommu, struct virtio_iommu_req_map *map)
     ├─ struct vfio_guest_container *container = priv; 获取到 attach 阶段的 vfio container
     ├─ struct vfio_iommu_type1_dma_map map = { .iova = virt_addr, .size	= size, };
     ├─ map.vaddr = (u64)guest_flat_to_host(container->kvm, phys_addr); 获取 hva
-    ├─ if (irq__addr_is_msi_doorbell(container->kvm, phys_addr)) iommu_map(container->msi_doorbells, virt_addr, phys_addr, size, prot); hva 不存在则需要 map msi 的 virt_addr -> phys_addr
-    └─ return ioctl(container->fd, VFIO_IOMMU_MAP_DMA, &map);
+    ├─ if (irq__addr_is_msi_doorbell(container->kvm, phys_addr)) iommu_map(container->msi_doorbells, virt_addr, phys_addr, size, prot); hva 不存在则需要 map msi doorbell 的 virt_addr -> phys_addr
+    └─ return ioctl(container->fd, VFIO_IOMMU_MAP_DMA, &map); GVA -> GPA
 ```
 
 
@@ -1182,7 +1075,7 @@ patch 6, irq: register MSI doorbell addresses
 
 所有 virtio 设备在初始化其 virtqueue 时都执行相同的少数操作. 将这些操作移动到 virtio core, 因为在实施 vIOMMU 时, 我们必须使 vring 初始化复杂化.
 
-## virtio 设备的 vIOMMU 支持
+## 5.2. virtio 设备的 vIOMMU 支持
 
 **patch 8**, virtio: add vIOMMU instance for virtio devices
 
@@ -1369,7 +1262,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 
 > 最新的代码中没有这个....
 
-## vfio 设备的支持
+## 5.3. vfio 设备的支持
 
 **patch 12**, vfio: add support for virtual IOMMU
 
@@ -1669,7 +1562,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
  		u32 devid = device->dev_hdr.dev_num << 3;
 ```
 
-## debug 相关
+## 5.4. debug 相关
 
 **patch 13**, virtio-iommu: debug via IPC
 
@@ -1682,7 +1575,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 
 
 
-# 现有实现
+# 6. 现有实现
 
 > todo
 
