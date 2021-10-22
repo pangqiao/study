@@ -882,8 +882,16 @@ bus_set_iommu()
 
 疑问 2: `struct iommu_ops viommu_ops` 中没有 `detach_dev`, 也就没有 detach request, why?
 
-attach 是用来创建 domain 并且 attach 一个 device 到这个 domain
+detach 的场景: 
 
+* device delete: 会调到 `iommu_detach_device()` -> `__iommu_detach_group` -> `iommu_group_do_attach_device()`
+* group delete: 
+
+首先, 每个 device 肯定属于某个 group, 而 group 有两个属性, default_domain 和 domain.
+
+其次, detach 操作其实都是通过 re-attach 到 default domain 实现的. 而 attach request 中会将原有 domain 给 detach 掉
+
+最后, group 可能没有任何 device, 但是本身是不会删除的, 所以不需要一个因为从 group 删除而发出的 detach request.
 
 
 Discussion 1: Same physical address is mapped with two different virtual address
