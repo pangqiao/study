@@ -944,7 +944,6 @@ bus_set_iommu()
             |  └─ pci_device_group(dev); / generic_device_group(dev);
             ├─ struct iommu_domain *dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type); 给每个 iommu group 分配 IOMMU_DOMAIN_DMA 类型的 domain
 	    |  ├─ struct iommu_domain *domain = bus->iommu_ops->domain_alloc(type); 调用 viommu_domain_alloc, 主要是分配空间并初始化
-
             |  |  ├─ struct viommu_domain *vdomain = kzalloc(sizeof(struct viommu_domain), GFP_KERNEL); 生成新的 vdomain
             |  |  ├─ vdomain->id = atomic64_inc_return_relaxed(&viommu_domain_ids_gen); 分配新 id
             |  |  ├─ vdomain->mappings = RB_ROOT; 每个 vdomain 的所有 mappings 构成 rb tree
@@ -985,7 +984,12 @@ bus_set_iommu()
 	       └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev);
 ```
 
-疑问 1: 先 map request, 再 attach request.
+疑问 1: 先 map request, 再 attach request? 
+
+先确认下最新的实现
+
+
+
 
 看下 kvm tool 中 back end 的动作.
 
