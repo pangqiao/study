@@ -963,8 +963,8 @@ bus_set_iommu()
       	       |  └─ list_for_each_entry(entry, &mappings, list), 遍历设备映射的地址段
 	       |     ├─ start/end = ALIGN(entry->start/end, pg_size);, 根据 page size 对齐
 	       |     └─ for (addr = start; addr < end; addr += pg_size), 每个 domain page 逐个 map
-	       |        ├─ phys_addr = iommu_iova_to_phys(domain, addr), 看是否已经有了 iova -> pa 的 map, 如果得到物理地址, 说明已经有了 map, 则继续处理下一个 page. 调用 viommu_iova_to_phy
-	       |        |  ├─ interval_tree_iter_first(&viommu_domain->mappings, iova, iova); 在 vdomain 中查找 iova 所在的 node
+	       |        ├─ phys_addr = iommu_iova_to_phys(domain, addr), 看是否已经有了 iova -> pa 的 map, 如果得到物理地址, 说明已经有了 map, 则继续处理下一个 page. 会调用 viommu_iova_to_phy
+	       |        |  ├─ interval_tree_iter_first(&viommu_domain->mappings, iova, iova); 在 vdomain rb tree 中查找 iova 所在的 node
 	       |        |  ├─ struct viommu_mapping *mapping = container_of(node, struct viommu_mapping, iova); 得到对应的 vmapping
 	       |        |  └─ paddr = mapping->paddr + (iova - mapping->iova.start);
 	       |        └─ iommu_map(domain, addr, addr, pg_size, entry->prot), 没有 map 的则需要 map 下, 将每段虚拟地址空间都映射到相应的物理内存页上(va->pa), iova = paddr = addr, 所以初始化的 msi iova = pa
@@ -981,88 +981,14 @@ bus_set_iommu()
 	       ├─ __iommu_attach_device(group->domain, dev); 调用 domain->ops->attach_dev(domain, dev), viommu_attach_dev
 	       |  ├─ struct virtio_iommu_req_attach req; 创建 attach 请求
 	       |  └─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 attach request, 忙等返回
-	       └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev);
+	       └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev); group notifier
 ```
 
 疑问 1: 会先有 map request, 再 attach request? 
 
+??
 
-
-
-
-
-看下 kvm tool 中 back end 的动作.
-
-`viommu_command` -> `viommu_dispatch_commands` -> `viommu_handle_map(viommu, &req->map);`
-
-```cpp
-viommu_handle_map(struct viommu_dev *viommu, struct virtio_iommu_req_map *map)
- ├─ u32 ioasid	= le32_to_cpu(map->address_space); 解析 request
- ├─ struct viommu_ioas *ioas = viommu_find_ioas(viommu, ioasid); 获取 address space
- |  ├─ struct rb_node *node = viommu->address_spaces.rb_node; 从 rb tree 中查找 node
- ├─ ioas->ops->map(ioas->priv, virt_addr, phys_addr, size, prot); 调用 
-   ├─ LIST_HEAD(group_list); 生成一个链表
-```
-
-`viommu->address_spaces.rb_node` 是 `attach request -> viommu_handle_attach -> viommu_alloc_ioas` 来的
-
-
-
-
-
-```diff
-diff --git a/drivers/iommu/virtio-iommu.c b/drivers/iommu/virtio-iommu.c
-new file mode 100644
-index 000000000000..1cf4f57b7817
---- /dev/null
-+++ b/drivers/iommu/virtio-iommu.c
-@@ -0,0 +1,980 @@
-+static int viommu_add_device(struct device *dev)
-+{
-+	struct iommu_group *group;
-+	struct viommu_endpoint *vdev;
-+	struct viommu_dev *viommu = NULL;
-+	struct iommu_fwspec *fwspec = dev->iommu_fwspec;
-+
-+	if (!fwspec || fwspec->ops != &viommu_ops)
-+		return -ENODEV;
-+
-+	viommu = viommu_get_by_fwnode(fwspec->iommu_fwnode);
-+	if (!viommu)
-+		return -ENODEV;
-+
-+	vdev = kzalloc(sizeof(*vdev), GFP_KERNEL);
-+	if (!vdev)
-+		return -ENOMEM;
-+
-+	vdev->viommu = viommu;
-+	fwspec->iommu_priv = vdev;
-+
-+	/*
-+	 * Last step creates a default domain and attaches to it. Everything
-+	 * must be ready.
-+	 */
-+	group = iommu_group_get_for_dev(dev);
-+
-+	return PTR_ERR_OR_ZERO(group);
-+}
-+
-+static struct iommu_group *
-+viommu_device_group(struct device *dev)
-+{
-+	if (dev_is_pci(dev))
-+		return pci_device_group(dev);
-+	else
-+		return generic_device_group(dev);
-+}
-```
-
-
-
-
-
-
-
+初始化 virtio-iommu 中会涉及到两个 command, map 和 attach, backend 实现可以看 kvm tool 部分
 
 Discussion 1: Same physical address is mapped with two different virtual address
 
@@ -1079,15 +1005,6 @@ https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
  dma_map_page
  __iommu_dma_map
 ```
-
-
-
-
-
-
-
-
-
 
 # 5. KVM tool
 
@@ -1163,9 +1080,6 @@ patch 3, virtio: add virtio-iommu
 
 
 
-
-
-
 ```cpp
 static int viommu_handle_attach(struct viommu_dev *viommu,
 				struct virtio_iommu_req_attach *attach)
@@ -1193,50 +1107,66 @@ static int viommu_handle_attach(struct viommu_dev *viommu,
 }
 ```
 
+
+`viommu_command` -> `viommu_dispatch_commands` -> `viommu_handle_attach(viommu, &req->attach);`
+
+概述:  生成 viommu_ioas, 并加入到 viommu device 的 rb tree 中; 生成 viommu_endpoint, 并将 endpoint 添加到 ioas 链表; 初始化 vfio container, 并和 ioas 关联起来
+
 ```cpp
-static int viommu_handle_map(struct viommu_dev *viommu,
-			     struct virtio_iommu_req_map *map)
-{
-    struct viommu_ioas *ioas;
-
-    ioas = viommu_find_ioas(viommu, ioasid);
-
-    // ioas->ops 等于第一次 attach 的 device 的 iommu_ops
-    return ioas->ops->map(ioas->priv, virt_addr, phys_addr, size, prot);
-}
-
-static struct viommu_ioas *viommu_alloc_ioas(struct viommu_dev *viommu,
-					     struct device_header *device,
-					     u32 ioasid)
-{
-	struct rb_node **node, *parent = NULL;
-	struct viommu_ioas *new_ioas, *ioas;
-	// 设备的 iommu_ops
-	struct iommu_ops *ops = device->iommu_ops;
-
-	if (!ops || !ops->get_properties || !ops->alloc_address_space ||
-	    !ops->free_address_space || !ops->attach || !ops->detach ||
-	    !ops->map || !ops->unmap) {
-		/* Catch programming mistakes early */
-		pr_err("Invalid IOMMU ops");
-		return NULL;
-	}
-
-	new_ioas = calloc(1, sizeof(*new_ioas));
-	if (!new_ioas)
-		return NULL;
-
-	INIT_LIST_HEAD(&new_ioas->devices);
-	mutex_init(&new_ioas->devices_mutex);
-	new_ioas->id		= ioasid;
-	new_ioas->ops		= ops;  // ioas 的 ops 初始化
-	new_ioas->priv		= ops->alloc_address_space(device);
-
-	rb_insert_color(&new_ioas->node, &viommu->address_spaces);
-
-	return new_ioas;
-}
+viommu_handle_attach(struct viommu_dev *viommu, struct virtio_iommu_req_attach *attach)
+ ├─ u32 device_id = le32_to_cpu(attach->device); 从 request 中获取 deviceid
+ ├─ u32 ioasid	= le32_to_cpu(map->address_space); 解析 request, 获取 ioasid, 即上面的 vdomain->id, 每个 group 一个
+ ├─ struct device_header *device = iommu_get_device(device_id); 根据 device_id 获取 device 
+ |  ├─ enum device_bus_type bus = ((device_id) / BUS_SIZE)
+ |  ├─ u32 dev_num = ((device_id) % BUS_SIZE)
+ |  └─ return device__find_dev(bus, dev_num); 
+ ├─ struct viommu_endpoint *vdev = viommu_alloc_device(device); 获取 endpoint
+ ├─ viommu_alloc_device(device); 没有 endpoint, 那就分配一个
+ ├─ struct viommu_ioas *ioas = viommu_find_ioas(viommu, ioasid); 获取 address space
+ |  └─ struct rb_node *node = viommu->address_spaces.rb_node; 从 rb tree 中查找 node
+ ├─ ioas = viommu_alloc_ioas(viommu, device, ioasid); ioas 不存在, 那就创建一个(per group), 并加入 rb tree
+ |  ├─ struct viommu_ioas *new_ioas = calloc(1, sizeof(*new_ioas));
+ |  ├─ INIT_LIST_HEAD(&new_ioas->devices);
+ |  ├─ new_ioas->id = ioasid;
+ |  ├─ new_ioas->ops = device->iommu_ops;
+ |  ├─ new_ioas->priv = device->iommu_ops->alloc_address_space(device); 不同设备, 不同的 ops, 以 vfio 设备为例, 调用 vfio_viommu_alloc
+ |  |  ├─ struct vfio_device *vdev = container_of(dev_hdr, struct vfio_device, dev_hdr);
+ |  |  ├─ struct vfio_guest_container *container = vdev->group->container; 获取 group->container(per group)
+ |  |  ├─ container->msi_doorbells = iommu_alloc_address_space(NULL); 主要是 msi doorbells 分配
+ |  |  └─ return container; 会将 vfio container 返回, 作为 ioas 的 private 数据
+ |  ├─ struct rb_node **node = &viommu->address_spaces.rb_node;
+ |  ├─ rb_link_node(&new_ioas->node, parent, node); 插入 rb tree
+ |  └─ rb_insert_color(&new_ioas->node, &viommu->address_spaces);
+ ├─ viommu_detach_device(viommu, vdev); 从原有的 as 做 detach
+ ├─ device->iommu_ops->attach(ioas->priv, device, 0); 不同设备不同ops, 以 vfio 设备为例, 调用 vfio_viommu_attach
+ |  └─ 一些判断, 其他没做什么事情
+ └─ viommu_ioas_add_device(ioas, vdev);
+    ├─ list_add_tail(&vdev->list, &ioas->devices); 设备添加到 ioas->devices 链表中
+    ├─ ioas->nr_devices++;
+    └─ vdev->ioas = ioas;
 ```
+
+`viommu_command` -> `viommu_dispatch_commands` -> `viommu_handle_map(viommu, &req->map);`
+
+概述:
+
+```cpp
+viommu_handle_map(struct viommu_dev *viommu, struct virtio_iommu_req_map *map)
+ ├─ u32 ioasid	= le32_to_cpu(map->address_space); 解析 request
+ ├─ u64 virt_addr = le64_to_cpu(map->virt_addr);
+ ├─ u64 phys_addr = le64_to_cpu(map->phys_addr);
+ ├─ u64 size = le64_to_cpu(map->size);
+ ├─ prot |= IOMMU_PROT_READ/IOMMU_PROT_WRITE/IOMMU_PROT_EXEC; map region 的属性
+ ├─ struct viommu_ioas *ioas = viommu_find_ioas(viommu, ioasid); 获取 address space
+ |  └─ struct rb_node *node = viommu->address_spaces.rb_node; 从 rb tree 中查找 node
+ └─ ioas->ops->map(ioas->priv, virt_addr, phys_addr, size, prot); 不同设备不同ops, 以 vfio 设备为例, 调用 vfio_viommu_map
+    ├─ struct vfio_guest_container *container = priv; 获取到 attach 阶段的 vfio container
+    ├─ struct vfio_iommu_type1_dma_map map = { .iova = virt_addr, .size	= size, };
+    ├─ map.vaddr = (u64)guest_flat_to_host(container->kvm, phys_addr); 获取 hva
+    ├─ if (irq__addr_is_msi_doorbell(container->kvm, phys_addr)) iommu_map(container->msi_doorbells, virt_addr, phys_addr, size, prot); hva 不存在则需要 map msi 的 virt_addr -> phys_addr
+    └─ return ioctl(container->fd, VFIO_IOMMU_MAP_DMA, &map);
+```
+
 
 patch 4, Add a simple IOMMU
 
@@ -1244,7 +1174,7 @@ patch 4, Add a simple IOMMU
 
 patch 6, irq: register MSI doorbell addresses
 
-对于 vIOMMU 管理的 pass-through 设备, 我们需要将 writes 翻译为 MSI vectors. 让 IRQ 代码注册 MSI doorbells, 并添加一个简单的方法, 让其他系统检查一个地址是否是doorbell.
+对于 vIOMMU 管理的 pass-through 设备, 我们需要将 writes 翻译为 MSI vectors. 让 IRQ 代码注册 MSI doorbells, 并添加一个简单的方法, 让其他系统检查一个地址是否是 doorbell.
 
 
 
@@ -1754,6 +1684,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 
 # 现有实现
 
+> todo
 
 ```cpp
 bus_set_iommu()
