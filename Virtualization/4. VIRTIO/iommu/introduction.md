@@ -980,8 +980,6 @@ bus_set_iommu()
 	       └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev);
 ```
 
-
-
 疑问 1: 先 map request, 再 attach request.
 
 看下 kvm tool 中 back end 的动作.
