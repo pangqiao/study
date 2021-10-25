@@ -947,7 +947,7 @@ https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
 
 
 
-patch 3, virtio: add virtio-iommu
+**patch 3**, virtio: add virtio-iommu
 
 实现一个简单的 viommu 来处理虚拟机中的设备 address space.
 
