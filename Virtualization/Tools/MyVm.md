@@ -272,3 +272,5 @@ https://blog.csdn.net/chen462488588/article/details/112237950
 窗口太小: https://blog.csdn.net/teng_wu/article/details/103260703
 
 tigervncserver -geometry 1280x1024 -localhost no -xstartup /usr/bin/xterm
+
+
