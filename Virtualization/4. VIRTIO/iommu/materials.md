@@ -169,6 +169,20 @@ virtio-iommu: Add ACPI support (还未合入)
 
 
 
+
+Add dynamic iommu backed bounce buffers
+
+https://lwn.net/Articles/865617/
+
+https://lwn.net/ml/linux-kernel/20210806103423.3341285-1-stevensd@google.com/
+
+device add, 触发
+
+`iommu_bus_notifier()`("drivers/iommu/iommu.c") -> `iommu_probe_device()` -> `ops->probe_finalize` -> `iommu_setup_dma_ops()` -> `iommu_dma_init_domain`
+
+
+
+
 # cloud-hypervisor
 
 可以参见 cloud-hypervisor 的代码
