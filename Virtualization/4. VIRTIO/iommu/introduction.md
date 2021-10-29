@@ -825,21 +825,21 @@ bus_set_iommu()
  └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化.
    ├─ nb->notifier_call = iommu_bus_notifier; 
    ├─ bus_register_notifier(bus, nb); 注册 bus notifier, 回调是 `iommu_bus_notifier()`
-   ├─ bus_for_each_dev(bus, NULL, &group_list, add_iommu_group); 遍历总线下所有设备, 给每个设备调用 `add_iommu_group()`, 将设备添加到 iommu group 中
+   └─ bus_for_each_dev(bus, NULL, &group_list, add_iommu_group); 遍历总线下所有设备, 给每个设备调用 `add_iommu_group()`, 将设备添加到 iommu group 中
       └─ iommu_ops->add_device(struct device dev);, 添加设备, 调用了 `viommu_add_device()`
          ├─ struct viommu_endpoint *vdev = kzalloc(sizeof(*vdev), GFP_KERNEL); 分配了 viommu_endpoint 并初始化
          ├─ dev->iommu->iommu_dev = iommu_dev; 设置 device 的 iommu device
          └─ group = iommu_group_get_for_dev(dev); 最后一步会创建一个 domain 并 attach 这个 device
             ├─ 查找 group, 没有则创建一个 iommu group, `dev->bus->iommu_ops->device_group(dev)`, 会调用 `viommu_device_group()` 分配一个 group
-            |  └─ pci_device_group(dev); / generic_device_group(dev);
+            │  └─ pci_device_group(dev); / generic_device_group(dev);
             ├─ struct iommu_domain *dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type); 给每个 iommu group 分配 IOMMU_DOMAIN_DMA 类型的 domain
-	    |  ├─ struct iommu_domain *domain = bus->iommu_ops->domain_alloc(type); 调用 viommu_domain_alloc, 主要是分配空间并初始化
-            |  |  ├─ struct viommu_domain *vdomain = kzalloc(sizeof(struct viommu_domain), GFP_KERNEL); 生成新的 vdomain
-            |  |  ├─ vdomain->id = atomic64_inc_return_relaxed(&viommu_domain_ids_gen); 分配新 id
-            |  |  ├─ vdomain->mappings = RB_ROOT; 每个 vdomain 的所有 mappings 构成 rb tree
-	    |  ├─ domain->ops  = bus->iommu_ops;
-	    |  ├─ domain->type = type;
-	    |  └─ domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
+	    │  ├─ struct iommu_domain *domain = bus->iommu_ops->domain_alloc(type); 调用 viommu_domain_alloc, 主要是分配空间并初始化
+            │  │  ├─ struct viommu_domain *vdomain = kzalloc(sizeof(struct viommu_domain), GFP_KERNEL); 生成新的 vdomain
+            │  │  ├─ vdomain->id = atomic64_inc_return_relaxed(&viommu_domain_ids_gen); 分配新 id
+            │  │  ├─ vdomain->mappings = RB_ROOT; 每个 vdomain 的所有 mappings 构成 rb tree
+	    │  ├─ domain->ops  = bus->iommu_ops;
+	    │  ├─ domain->type = type;
+	    │  └─ domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
 	    ├─ group->default_domain = dom;
 	    ├─ group->domain = dom;
             └─ iommu_group_add_device(group, dev); 将这个 device 添加到这个 iommu group
@@ -847,30 +847,30 @@ bus_set_iommu()
 	       ├─ sysfs_create_link_nowarn(group->devices_kobj, &dev->kobj, device->name); 创建软链接(`/sys/kernel/iommu_groups/xx/devices/设备PCI号` -> `/sys/devices/pci总线ID/设备号`
 	       ├─ dev->iommu_group = group; device 结构中包含的 iommu_group 对象会指向其所在的 group
 	       ├─ iommu_group_create_direct_mappings(group), 给设备做DMA映射. 将设备对应的虚拟机地址空间段映射到物理地址空间
-	       |  ├─ pg_size = 1UL << __ffs(domain->pgsize_bitmap); domain page size
-	       |  ├─ iommu_get_resv_regions(dev, &mappings);, 获取设备的 mappings(iova), 调用 `viommu_ops.viommu_get_resv_regions`
-	       |  |  ├─ struct iommu_resv_region *msi = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH, prot, IOMMU_RESV_MSI); 初始化这个一个 region 结构体, arm 上面需要这个 region 用于 map doorbell
-      	       |  └─ list_for_each_entry(entry, &mappings, list), 遍历设备映射的地址段
-	       |     ├─ start/end = ALIGN(entry->start/end, pg_size);, 根据 page size 对齐
-	       |     └─ for (addr = start; addr < end; addr += pg_size), 每个 domain page 逐个 map
-	       |        ├─ phys_addr = iommu_iova_to_phys(domain, addr), 看是否已经有了 iova -> pa 的 map, 如果得到物理地址, 说明已经有了 map, 则继续处理下一个 page. 会调用 viommu_iova_to_phy
-	       |        |  ├─ interval_tree_iter_first(&viommu_domain->mappings, iova, iova); 在 vdomain rb tree 中查找 iova 所在的 node
-	       |        |  ├─ struct viommu_mapping *mapping = container_of(node, struct viommu_mapping, iova); 得到对应的 vmapping
-	       |        |  └─ paddr = mapping->paddr + (iova - mapping->iova.start);
-	       |        └─ iommu_map(domain, addr, addr, pg_size, entry->prot), 没有 map 的则需要 map 下, 将每段虚拟地址空间都映射到相应的物理内存页上(va->pa), iova = paddr = addr, 所以初始化的 msi iova = pa
-	       |           └─ domain->ops->map(domain, iova, paddr, pgsize, prot); 根据 iommu pgsize(pgsize), 逐个 page 进行map(当然这里是一个 page), 调用 viommu_map
-	       |              ├─ struct viommu_domain *vdomain = to_viommu_domain(domain); 获取 vdomain
-	       |              ├─ struct virtio_iommu_req_map req; 构建 map request 并初始化
-	       |              ├─ address_space	= cpu_to_le32(vdomain->id); group 初始化时候分配的
-	       |              ├─ viommu_tlb_map(vdomain, iova, paddr, size); (iova, size) 和 paddr 的 mapping 关系缓存起来
-	       |              |  ├─ struct viommu_mapping *mapping = kzalloc(sizeof(*mapping), GFP_ATOMIC);
-	       |              |  ├─ mapping->paddr = paddr; mapping->iova.start = iova; mapping->iova.last = iova + size - 1;
-	       |              |  └─ interval_tree_insert(&mapping->iova, &vdomain->mappings); 插入树
-	       |              └─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 map request, 忙等返回
+	       │  ├─ pg_size = 1UL << __ffs(domain->pgsize_bitmap); domain page size
+	       │  ├─ iommu_get_resv_regions(dev, &mappings);, 获取设备的 mappings(iova), 调用 `viommu_ops.viommu_get_resv_regions`
+	       │  │  ├─ struct iommu_resv_region *msi = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH, prot, IOMMU_RESV_MSI); 初始化这个一个 region 结构体, arm 上面需要这个 region 用于 map doorbell
+      	       │  └─ list_for_each_entry(entry, &mappings, list), 遍历设备映射的地址段
+	       │     ├─ start/end = ALIGN(entry->start/end, pg_size);, 根据 page size 对齐
+	       │     └─ for (addr = start; addr < end; addr += pg_size), 每个 domain page 逐个 map
+	       │        ├─ phys_addr = iommu_iova_to_phys(domain, addr), 看是否已经有了 iova -> pa 的 map, 如果得到物理地址, 说明已经有了 map, 则继续处理下一个 page. 会调用 viommu_iova_to_phy
+	       │        │  ├─ interval_tree_iter_first(&viommu_domain->mappings, iova, iova); 在 vdomain rb tree 中查找 iova 所在的 node
+	       │        │  ├─ struct viommu_mapping *mapping = container_of(node, struct viommu_mapping, iova); 得到对应的 vmapping
+	       │        │  └─ paddr = mapping->paddr + (iova - mapping->iova.start);
+	       │        └─ iommu_map(domain, addr, addr, pg_size, entry->prot), 没有 map 的则需要 map 下, 将每段虚拟地址空间都映射到相应的物理内存页上(va->pa), iova = paddr = addr, 所以初始化的 msi iova = pa
+	       │           └─ domain->ops->map(domain, iova, paddr, pgsize, prot); 根据 iommu pgsize(pgsize), 逐个 page 进行map(当然这里是一个 page), 调用 viommu_map
+	       │              ├─ struct viommu_domain *vdomain = to_viommu_domain(domain); 获取 vdomain
+	       │              ├─ struct virtio_iommu_req_map req; 构建 map request 并初始化
+	       │              ├─ address_space	= cpu_to_le32(vdomain->id); group 初始化时候分配的
+	       │              ├─ viommu_tlb_map(vdomain, iova, paddr, size); (iova, size) 和 paddr 的 mapping 关系缓存起来
+	       │              │  ├─ struct viommu_mapping *mapping = kzalloc(sizeof(*mapping), GFP_ATOMIC);
+	       │              │  ├─ mapping->paddr = paddr; mapping->iova.start = iova; mapping->iova.last = iova + size - 1;
+	       │              │  └─ interval_tree_insert(&mapping->iova, &vdomain->mappings); 插入树
+	       │              └─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 map request, 忙等返回
 	       ├─ list_add_tail(&device->list, &group->devices); 将 device 添加到 group 的 list 中
 	       ├─ __iommu_attach_device(group->domain, dev); 调用 domain->ops->attach_dev(domain, dev), viommu_attach_dev
-	       |  ├─ struct virtio_iommu_req_attach req; 创建 attach 请求
-	       |  └─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 attach request, 忙等返回
+	       │  ├─ struct virtio_iommu_req_attach req; 创建 attach 请求
+	       │  └─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 attach request, 忙等返回
 	       └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev); group notifier
 ```
 
@@ -1021,39 +1021,39 @@ viommu_handle_attach(struct viommu_dev *viommu, struct virtio_iommu_req_attach *
  ├─ u32 device_id = le32_to_cpu(attach->device); 从 request 中获取 deviceid
  ├─ u32 ioasid	= le32_to_cpu(map->address_space); 解析 request, 获取 ioasid, 即上面的 vdomain->id, 每个 group 一个
  ├─ struct device_header *device = iommu_get_device(device_id); 根据 device_id 获取 device 
- |  ├─ enum device_bus_type bus = ((device_id) / BUS_SIZE)
- |  ├─ u32 dev_num = ((device_id) % BUS_SIZE)
- |  └─ return device__find_dev(bus, dev_num); 
+ │  ├─ enum device_bus_type bus = ((device_id) / BUS_SIZE)
+ │  ├─ u32 dev_num = ((device_id) % BUS_SIZE)
+ │  └─ return device__find_dev(bus, dev_num); 
  ├─ struct viommu_endpoint *vdev = viommu_alloc_device(device); 获取 endpoint
  ├─ viommu_alloc_device(device); 没有 endpoint, 那就分配一个
  ├─ struct viommu_ioas *ioas = viommu_find_ioas(viommu, ioasid); 获取 address space
- |  └─ struct rb_node *node = viommu->address_spaces.rb_node; 从 rb tree 中查找 node
+ │  └─ struct rb_node *node = viommu->address_spaces.rb_node; 从 rb tree 中查找 node
  ├─ ioas = viommu_alloc_ioas(viommu, device, ioasid); ioas 不存在, 那就创建一个(per group), 并加入 rb tree
- |  ├─ struct viommu_ioas *new_ioas = calloc(1, sizeof(*new_ioas));
- |  ├─ INIT_LIST_HEAD(&new_ioas->devices);
- |  ├─ new_ioas->id = ioasid;
- |  ├─ new_ioas->ops = device->iommu_ops;
- |  ├─ new_ioas->priv = device->iommu_ops->alloc_address_space(device); 不同设备, 不同的 ops, 以 vfio 设备为例, 调用 vfio_viommu_alloc
- |  |  ├─ struct vfio_device *vdev = container_of(dev_hdr, struct vfio_device, dev_hdr);
- |  |  ├─ struct vfio_guest_container *container = vdev->group->container; 获取 group->container(per group)
- |  |  ├─ container->msi_doorbells = iommu_alloc_address_space(NULL); 主要是 msi doorbells 分配
- |  |  └─ return container; 会将 vfio container 返回, 作为 ioas 的 private 数据
- |  ├─ struct rb_node **node = &viommu->address_spaces.rb_node;
- |  ├─ rb_link_node(&new_ioas->node, parent, node); 插入 rb tree
- |  └─ rb_insert_color(&new_ioas->node, &viommu->address_spaces);
+ │  ├─ struct viommu_ioas *new_ioas = calloc(1, sizeof(*new_ioas));
+ │  ├─ INIT_LIST_HEAD(&new_ioas->devices);
+ │  ├─ new_ioas->id = ioasid;
+ │  ├─ new_ioas->ops = device->iommu_ops;
+ │  ├─ new_ioas->priv = device->iommu_ops->alloc_address_space(device); 不同设备, 不同的 ops, 以 vfio 设备为例, 调用 vfio_viommu_alloc
+ │  │  ├─ struct vfio_device *vdev = container_of(dev_hdr, struct vfio_device, dev_hdr);
+ │  │  ├─ struct vfio_guest_container *container = vdev->group->container; 获取 group->container(per group)
+ │  │  ├─ container->msi_doorbells = iommu_alloc_address_space(NULL); 主要是 msi doorbells 分配
+ │  │  └─ return container; 会将 vfio container 返回, 作为 ioas 的 private 数据
+ │  ├─ struct rb_node **node = &viommu->address_spaces.rb_node;
+ │  ├─ rb_link_node(&new_ioas->node, parent, node); 插入 rb tree
+ │  └─ rb_insert_color(&new_ioas->node, &viommu->address_spaces);
  ├─ viommu_detach_device(viommu, vdev); 从原有的 as 做 detach
- |  ├─ device->iommu_ops->detach(ioas->priv, device); 不同设备不同ops, 以 vfio 设备为例, 调用 vfio_viommu_detach
- |  |  └─ return 0; 什么都没做, 对应的 attach 没做什么
- |  ├─ viommu_ioas_del_device(ioas, vdev); 从 ioas 中删除 viommu_endpoint
- |  |  ├─ list_del(&vdev->list); 从 ioas->devices 链表删除
- |  |  ├─ ioas->nr_devices--; 
- |  |  └─ vdev->ioas = NULL; 
- |  └─ viommu_free_ioas(viommu, ioas); ioas->nr_devices 没有设备的话, 则删除 ioas(domain)
- |  |  ├─ ioas->ops->free_address_space(ioas->priv); 释放 as, 上面 alloc 的逆操作
- |  |  ├─ rb_erase(&ioas->node, &viommu->address_spaces);
- |  |  └─ free(ioas);
+ │  ├─ device->iommu_ops->detach(ioas->priv, device); 不同设备不同ops, 以 vfio 设备为例, 调用 vfio_viommu_detach
+ │  │  └─ return 0; 什么都没做, 对应的 attach 没做什么
+ │  ├─ viommu_ioas_del_device(ioas, vdev); 从 ioas 中删除 viommu_endpoint
+ │  │  ├─ list_del(&vdev->list); 从 ioas->devices 链表删除
+ │  │  ├─ ioas->nr_devices--; 
+ │  │  └─ vdev->ioas = NULL; 
+ │  └─ viommu_free_ioas(viommu, ioas); ioas->nr_devices 没有设备的话, 则删除 ioas(domain)
+ │  │  ├─ ioas->ops->free_address_space(ioas->priv); 释放 as, 上面 alloc 的逆操作
+ │  │  ├─ rb_erase(&ioas->node, &viommu->address_spaces);
+ │  │  └─ free(ioas);
  ├─ device->iommu_ops->attach(ioas->priv, device, 0); 不同设备不同ops, 以 vfio 设备为例, 调用 vfio_viommu_attach
- |  └─ 一些判断, 其他没做什么事情, 对应的 detach 没做什么
+ │  └─ 一些判断, 其他没做什么事情, 对应的 detach 没做什么
  └─ viommu_ioas_add_device(ioas, vdev);
     ├─ list_add_tail(&vdev->list, &ioas->devices); 设备添加到 ioas->devices 链表中
     ├─ ioas->nr_devices++;
@@ -1072,7 +1072,7 @@ viommu_handle_map(struct viommu_dev *viommu, struct virtio_iommu_req_map *map)
  ├─ u64 size = le64_to_cpu(map->size);
  ├─ prot |= IOMMU_PROT_READ/IOMMU_PROT_WRITE/IOMMU_PROT_EXEC; map region 的属性
  ├─ struct viommu_ioas *ioas = viommu_find_ioas(viommu, ioasid); 获取 address space
- |  └─ struct rb_node *node = viommu->address_spaces.rb_node; 从 rb tree 中查找 node
+ │  └─ struct rb_node *node = viommu->address_spaces.rb_node; 从 rb tree 中查找 node
  └─ ioas->ops->map(ioas->priv, virt_addr, phys_addr, size, prot); 不同设备不同ops, 以 vfio 设备为例, 调用 vfio_viommu_map
     ├─ struct vfio_guest_container *container = priv; 获取到 attach 阶段的 vfio container
     ├─ struct vfio_iommu_type1_dma_map map = { .iova = virt_addr, .size	= size, };
@@ -1606,69 +1606,69 @@ bus_set_iommu()
  └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化. 注册了 bus notifier, 回调是 `iommu_bus_notifier`; 然后调用 `bus_iommu_probe(bus)`
    ├─ LIST_HEAD(group_list);, 生成一个 group_list 链表
    ├─ bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group);, 遍历总线下所有设备, 给每个设备调用回调函数 `probe_iommu_group`, 将设备添加到 iommu group (`iommu_init` 中初始化) 中. 会调用 `__iommu_probe_device()`:
-   |  ├─ iommu_dev = dev->bus->iommu_ops->probe_device(struct device dev);, 添加设备, 调用了 `viommu_add_device()`
-   |  |  ├─ struct viommu_endpoint *vdev = kzalloc(sizeof(*vdev), GFP_KERNEL); 结构体分配
-   |  |  ├─ vdev->viommu = viommu;
-   |  |  ├─ INIT_LIST_HEAD(&vdev->resv_regions);
-   |  |  └─ viommu_probe_endpoint(viommu, dev); viommu->probe_size 存在则会调用这个
-   |  |     ├─ viommu_send_req_sync(viommu, probe, probe_len);
+   │  ├─ iommu_dev = dev->bus->iommu_ops->probe_device(struct device dev);, 添加设备, 调用了 `viommu_add_device()`
+   │  │  ├─ struct viommu_endpoint *vdev = kzalloc(sizeof(*vdev), GFP_KERNEL); 结构体分配
+   │  │  ├─ vdev->viommu = viommu;
+   │  │  ├─ INIT_LIST_HEAD(&vdev->resv_regions);
+   │  │  └─ viommu_probe_endpoint(viommu, dev); viommu->probe_size 存在则会调用这个
+   │  │     ├─ viommu_send_req_sync(viommu, probe, probe_len);
 
-   |  ├─ dev->iommu->iommu_dev = iommu_dev; 设置 device 的 iommu device
-   |  ├─ group = iommu_group_get_for_dev(dev); 为设备查找或创建一个 iommu group
-   |  |  ├─ 查找或创建一个 iommu group, `dev->bus->iommu_ops->device_group(dev)`, 会调用 `viommu_device_group()` 分配一个 group
-   |  |  |  └─ pci_device_group(dev); / generic_device_group(dev);
-   |  |  └─ iommu_group_add_device(group, dev); 将这个 device add 到这个 group, 分配 sruct group_device;
-   |  |     ├─ sysfs_create_link(&dev->kobj, &group->kobj, "iommu_group"); 创建软链接(`/sys/devices/pci总线ID/设备号/iommu_group -> `/sys/kernel/iommu_groups/xx`)
-   |  |     ├─ sysfs_create_link_nowarn(group->devices_kobj, &dev->kobj, device->name); 创建软链接(`/sys/kernel/iommu_groups/xx/devices/设备PCI号` -> `/sys/devices/pci总线ID/设备号`
-   |  |     ├─ dev->iommu_group = group;
-   |  |     ├─ if (group->domain) __iommu_attach_device(group->domain, dev); 有 domain 就 attach(这时候当然没有)
-   |  |     └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev); group notifier, vfio_create_group 会注册
-   |  ├─ list_add_tail(&group->entry, group_list); 将 group 添加到 group_list
-   |  └─ iommu_device_link(iommu_dev, dev); sys 文件系统添加一些 软链接
+   │  ├─ dev->iommu->iommu_dev = iommu_dev; 设置 device 的 iommu device
+   │  ├─ group = iommu_group_get_for_dev(dev); 为设备查找或创建一个 iommu group
+   │  │  ├─ 查找或创建一个 iommu group, `dev->bus->iommu_ops->device_group(dev)`, 会调用 `viommu_device_group()` 分配一个 group
+   │  │  │  └─ pci_device_group(dev); / generic_device_group(dev);
+   │  │  └─ iommu_group_add_device(group, dev); 将这个 device add 到这个 group, 分配 sruct group_device;
+   │  │     ├─ sysfs_create_link(&dev->kobj, &group->kobj, "iommu_group"); 创建软链接(`/sys/devices/pci总线ID/设备号/iommu_group -> `/sys/kernel/iommu_groups/xx`)
+   │  │     ├─ sysfs_create_link_nowarn(group->devices_kobj, &dev->kobj, device->name); 创建软链接(`/sys/kernel/iommu_groups/xx/devices/设备PCI号` -> `/sys/devices/pci总线ID/设备号`
+   │  │     ├─ dev->iommu_group = group;
+   │  │     ├─ if (group->domain) __iommu_attach_device(group->domain, dev); 有 domain 就 attach(这时候当然没有)
+   │  │     └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev); group notifier, vfio_create_group 会注册
+   │  ├─ list_add_tail(&group->entry, group_list); 将 group 添加到 group_list
+   │  └─ iommu_device_link(iommu_dev, dev); sys 文件系统添加一些 软链接
    └─ list_for_each_entry_safe(group, next, &group_list, entry), 遍历整个 group_list
       ├─ probe_alloc_default_domain(bus, group);, 给每个 iommu group 分配 default domain, 会调用 viommu_domain_alloc, 主要是分配空间并初始化
-      |  ├─ __iommu_group_for_each_dev(group, &gtype, probe_get_default_domain_type); 遍历 group 中的 device, 获取每个 device 的 default domain type(一般是 IOMMU_DOMAIN_DMA)
-      |  └─ iommu_group_alloc_default_domain(bus, group, gtype.type);
-      |     ├─ struct iommu_domain *dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type); 给每个 iommu group 分配 domain
-      |     |  ├─ struct iommu_domain *domain = bus->iommu_ops->domain_alloc(type); 调用 viommu_domain_alloc, 主要是分配空间并初始化
-      |     |  |  ├─ struct viommu_domain *vdomain = kzalloc(sizeof(struct viommu_domain), GFP_KERNEL); 生成新的 vdomain
-      |     |  |  ├─ vdomain->id = atomic64_inc_return_relaxed(&viommu_domain_ids_gen); 分配新 id
-      |     |  |  └─ vdomain->mappings = RB_ROOT; 每个 vdomain 的所有 mappings 构成 rb tree
-      |     |  ├─ domain->ops  = bus->iommu_ops;
-      |     |  ├─ domain->type = type;
-      |     |  └─ domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
-      |     ├─ group->default_domain = dom;
-      |     └─ group->domain = dom;
+      │  ├─ __iommu_group_for_each_dev(group, &gtype, probe_get_default_domain_type); 遍历 group 中的 device, 获取每个 device 的 default domain type(一般是 IOMMU_DOMAIN_DMA)
+      │  └─ iommu_group_alloc_default_domain(bus, group, gtype.type);
+      │     ├─ struct iommu_domain *dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type); 给每个 iommu group 分配 domain
+      │     │  ├─ struct iommu_domain *domain = bus->iommu_ops->domain_alloc(type); 调用 viommu_domain_alloc, 主要是分配空间并初始化
+      │     │  │  ├─ struct viommu_domain *vdomain = kzalloc(sizeof(struct viommu_domain), GFP_KERNEL); 生成新的 vdomain
+      │     │  │  ├─ vdomain->id = atomic64_inc_return_relaxed(&viommu_domain_ids_gen); 分配新 id
+      │     │  │  └─ vdomain->mappings = RB_ROOT; 每个 vdomain 的所有 mappings 构成 rb tree
+      │     │  ├─ domain->ops  = bus->iommu_ops;
+      │     │  ├─ domain->type = type;
+      │     │  └─ domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
+      │     ├─ group->default_domain = dom;
+      │     └─ group->domain = dom;
       ├─ iommu_group_create_direct_mappings(group), 给设备做DMA映射. 将设备对应的虚拟机地址空间段映射到物理地址空间. 遍历 group 中的所有设备, 每个调用 iommu_create_device_direct_mappings(struct iommu_group *group, struct device *dev)
-      |  ├─ pg_size = 1UL << __ffs(domain->pgsize_bitmap); page size
-      |  ├─ iommu_get_resv_regions(dev, &mappings);, 获取设备的 mappings(iova), 调用 `viommu_ops.viommu_get_resv_regions`
-      |  |  ├─ struct iommu_resv_region *msi = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH, prot, IOMMU_RESV_MSI); 初始化这个一个 region 结构体, arm 上面需要这个 region 用于 map doorbell
-      |  ├─ list_for_each_entry(entry, &mappings, list), 遍历设备映射的地址段
-      |  |  ├─ start/end = ALIGN(entry->start/end, pg_size);, 根据 page size 对齐
-      |  |  ├─ for (addr = start; addr < end; addr += pg_size), 每个 page 逐个 map
-      |  |  |  ├─ phys_addr = iommu_iova_to_phys(domain, addr), 看是否已经有了 iova -> pa 的 map. 调用 viommu_iova_to_phys
-      |  |  |  |  ├─ interval_tree_iter_first(&viommu_domain->mappings, iova, iova); 在 vdomain 中查找 iova 所在的 node
-      |  |  |  |  ├─ struct viommu_mapping *mapping = container_of(node, struct viommu_mapping, iova); 得到对应的 vmapping
-      |  |  |  |  └─ paddr = mapping->paddr + (iova - mapping->iova.start); 
-      |  |  |  ├─ map_size += pg_size; 如果没有得到物理地址, 说明已经还没有 map, 准备map_size, 继续处理下一个 page
-      |  |  |  ├─ iommu_map(domain, addr - map_size, addr - map_size, map_size, entry->prot), map_size 大于 0, 即有需要map的, 则将每段虚拟地址空间都映射到相应的物理内存页上, iova = paddr = addr - map_size, 所以初始化的 msi iova = pa
-      |  |  |  |  ├─ domain->ops->map(domain, iova, paddr, pgsize, prot); 根据 iommu pgsize(pgsize), 逐个 page 进行map, 调用 viommu_map
-      |  |  |  |  |  ├─ struct viommu_domain *vdomain = to_viommu_domain(domain); 获取 vdomain
-      |  |  |  |  |  ├─ struct virtio_iommu_req_map req; 构建 map request 并初始化
-      |  |  |  |  |  ├─ address_space	= cpu_to_le32(vdomain->id); group 初始化时候分配的
-      |  |  |  |  |  ├─ viommu_tlb_map(vdomain, iova, paddr, size); (iova, size) 和 paddr 的 mapping 关系缓存起来
-      |  |  |  |  |  |  ├─ struct viommu_mapping *mapping = kzalloc(sizeof(*mapping), GFP_ATOMIC);
-      |  |  |  |  |  |  ├─ mapping->paddr = paddr; mapping->iova.start = iova; mapping->iova.last = iova + size - 1;
-      |  |  |  |  |  |  ├─ interval_tree_insert(&mapping->iova, &vdomain->mappings); 插入树
-      |  |  |  |  |  ├─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 map request, 忙等返回
+      │  ├─ pg_size = 1UL << __ffs(domain->pgsize_bitmap); page size
+      │  ├─ iommu_get_resv_regions(dev, &mappings);, 获取设备的 mappings(iova), 调用 `viommu_ops.viommu_get_resv_regions`
+      │  │  ├─ struct iommu_resv_region *msi = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH, prot, IOMMU_RESV_MSI); 初始化这个一个 region 结构体, arm 上面需要这个 region 用于 map doorbell
+      │  ├─ list_for_each_entry(entry, &mappings, list), 遍历设备映射的地址段
+      │  │  ├─ start/end = ALIGN(entry->start/end, pg_size);, 根据 page size 对齐
+      │  │  ├─ for (addr = start; addr < end; addr += pg_size), 每个 page 逐个 map
+      │  │  │  ├─ phys_addr = iommu_iova_to_phys(domain, addr), 看是否已经有了 iova -> pa 的 map. 调用 viommu_iova_to_phys
+      │  │  │  │  ├─ interval_tree_iter_first(&viommu_domain->mappings, iova, iova); 在 vdomain 中查找 iova 所在的 node
+      │  │  │  │  ├─ struct viommu_mapping *mapping = container_of(node, struct viommu_mapping, iova); 得到对应的 vmapping
+      │  │  │  │  └─ paddr = mapping->paddr + (iova - mapping->iova.start); 
+      │  │  │  ├─ map_size += pg_size; 如果没有得到物理地址, 说明已经还没有 map, 准备map_size, 继续处理下一个 page
+      │  │  │  ├─ iommu_map(domain, addr - map_size, addr - map_size, map_size, entry->prot), map_size 大于 0, 即有需要map的, 则将每段虚拟地址空间都映射到相应的物理内存页上, iova = paddr = addr - map_size, 所以初始化的 msi iova = pa
+      │  │  │  │  ├─ domain->ops->map(domain, iova, paddr, pgsize, prot); 根据 iommu pgsize(pgsize), 逐个 page 进行map, 调用 viommu_map
+      │  │  │  │  │  ├─ struct viommu_domain *vdomain = to_viommu_domain(domain); 获取 vdomain
+      │  │  │  │  │  ├─ struct virtio_iommu_req_map req; 构建 map request 并初始化
+      │  │  │  │  │  ├─ address_space	= cpu_to_le32(vdomain->id); group 初始化时候分配的
+      │  │  │  │  │  ├─ viommu_tlb_map(vdomain, iova, paddr, size); (iova, size) 和 paddr 的 mapping 关系缓存起来
+      │  │  │  │  │  │  ├─ struct viommu_mapping *mapping = kzalloc(sizeof(*mapping), GFP_ATOMIC);
+      │  │  │  │  │  │  ├─ mapping->paddr = paddr; mapping->iova.start = iova; mapping->iova.last = iova + size - 1;
+      │  │  │  │  │  │  ├─ interval_tree_insert(&mapping->iova, &vdomain->mappings); 插入树
+      │  │  │  │  │  ├─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 map request, 忙等返回
       ├─ __iommu_group_dma_attach(group);
       └─ __iommu_group_dma_finalize(group);
 
 
 
       ├─ __iommu_attach_device(group, dev), 调用 domain->ops->attach_dev(domain, dev), viommu_attach_dev
-      |  ├─ struct virtio_iommu_req_attach req; 创建 attach 请求
-      |  ├─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 attach request, 忙等返回
+      │  ├─ struct virtio_iommu_req_attach req; 创建 attach 请求
+      │  ├─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 attach request, 忙等返回
 ```
 
 
