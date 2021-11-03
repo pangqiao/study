@@ -26,6 +26,7 @@
   - [5.3. vfio 设备的支持](#53-vfio-设备的支持)
   - [5.4. debug 相关](#54-debug-相关)
 - [6. 现有实现](#6-现有实现)
+  - [linux driver](#linux-driver)
 
 <!-- /code_chunk_output -->
 
@@ -1600,9 +1601,30 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 
 > todo
 
+## linux driver
+
+virtio-iommu driver 模块初始化相关代码
+
+利用了原本的virtio框架. 重点在两个: `viommu_probe` 和 `viommu_remove`.
+
+当注册一个 viommu 设备(也是一个 virtio 设备), 调用 `viommu_probe(struct virtio_device *vdev)`
+
+1. `struct viommu_dev *viommu = devm_kzalloc(struct *device, sizeof(*viommu), GFP_KERNEL);`, 生成 viommu 设备对象
+2. `viommu_init_vq(viommu);`, 查找 virt queue, 应该是 virtio 框架给每个 virtio device 都实现了 vq, 确保存在. 这里的回调函数也是 NULL.
+3. `virtio_cread_le(vdev, struct virtio_iommu_config, page_size_mask, &viommu->pgsize_bitmap);`, 获取 page_sizes 配置
+4. `virtio_cread_le_feature()`, 获取 input_range 的 start 和 end
+5. `virtio_cread_le_feature()`, 获取 domain_range 的 first_domain 和 last_domain
+6. `virtio_cread_le_feature()`, 获取 probe 的 probe_size
+7. `viommu_fill_evtq(viommu)`, 用 buffers 填充 event queue
+8. `iommu_device_sysfs_add()`, 初始化 `viommu->iommu` (`struct iommu_device`), 并添加到 sysfs
+9.  `iommu_device_register()`, 设置了 `viommu->iommu` (`struct iommu_device`) 的ops, viommu_ops; 注册 `viommu->iommu` 到全局 `iommu_device_list` 链表
+10. `bus_set_iommu(&pci_bus_type, &viommu_ops)`, 设置 pci bus, 下面细讲
+11. `bus_set_iommu(&platform_bus_type, &viommu_ops);`, 设置 platform bus, 下面细讲
+
+
 ```cpp
 bus_set_iommu()
- ├─ bus->iommu_ops = ops;, 设置 bus 的 iommu ops
+ ├─ bus->iommu_ops = ops; 设置 bus 的 iommu ops
  └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化. 注册了 bus notifier, 回调是 `iommu_bus_notifier`; 然后调用 `bus_iommu_probe(bus)`
    ├─ LIST_HEAD(group_list);, 生成一个 group_list 链表
    ├─ bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group);, 遍历总线下所有设备, 给每个设备调用回调函数 `probe_iommu_group`, 将设备添加到 iommu group (`iommu_init` 中初始化) 中. 会调用 `__iommu_probe_device()`:
@@ -1670,6 +1692,74 @@ bus_set_iommu()
       │  ├─ struct virtio_iommu_req_attach req; 创建 attach 请求
       │  ├─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 attach request, 忙等返回
 ```
+
+
+```cpp
+bus_set_iommu()
+ ├─ bus->iommu_ops = ops;, 设置 bus 的 iommu ops
+ └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化.
+   ├─ nb->notifier_call = iommu_bus_notifier; 
+   ├─ bus_register_notifier(bus, nb); 注册 bus notifier, 回调是 `iommu_bus_notifier()`
+   └─ bus_for_each_dev(bus, NULL, &group_list, add_iommu_group); 遍历总线下所有设备, 给每个设备调用 `add_iommu_group()`, 将设备添加到 iommu group 中
+      └─ iommu_ops->add_device(struct device dev);, 添加设备, 调用了 `viommu_add_device()`
+         ├─ struct viommu_endpoint *vdev = kzalloc(sizeof(*vdev), GFP_KERNEL); 分配了 viommu_endpoint 并初始化
+         ├─ dev->iommu->iommu_dev = iommu_dev; 设置 device 的 iommu device
+         └─ group = iommu_group_get_for_dev(dev); 最后一步会创建一个 domain 并 attach 这个 device
+            ├─ 查找 group, 没有则创建一个 iommu group, `dev->bus->iommu_ops->device_group(dev)`, 会调用 `viommu_device_group()` 分配一个 group
+            │  └─ pci_device_group(dev); / generic_device_group(dev);
+            ├─ struct iommu_domain *dom = __iommu_domain_alloc(dev->bus, iommu_def_domain_type); 给每个 iommu group 分配 IOMMU_DOMAIN_DMA 类型的 domain
+	    │  ├─ struct iommu_domain *domain = bus->iommu_ops->domain_alloc(type); 调用 viommu_domain_alloc, 主要是分配空间并初始化
+            │  │  ├─ struct viommu_domain *vdomain = kzalloc(sizeof(struct viommu_domain), GFP_KERNEL); 生成新的 vdomain
+            │  │  ├─ vdomain->id = atomic64_inc_return_relaxed(&viommu_domain_ids_gen); 分配新 id
+            │  │  ├─ vdomain->mappings = RB_ROOT; 每个 vdomain 的所有 mappings 构成 rb tree
+	    │  ├─ domain->ops  = bus->iommu_ops;
+	    │  ├─ domain->type = type;
+	    │  └─ domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
+	    ├─ group->default_domain = dom;
+	    ├─ group->domain = dom;
+            └─ iommu_group_add_device(group, dev); 将这个 device 添加到这个 iommu group
+	       ├─ sysfs_create_link(&dev->kobj, &group->kobj, "iommu_group"); 创建软链接(`/sys/devices/pci总线ID/设备号/iommu_group -> `/sys/kernel/iommu_groups/xx`)
+	       ├─ sysfs_create_link_nowarn(group->devices_kobj, &dev->kobj, device->name); 创建软链接(`/sys/kernel/iommu_groups/xx/devices/设备PCI号` -> `/sys/devices/pci总线ID/设备号`
+	       ├─ dev->iommu_group = group; device 结构中包含的 iommu_group 对象会指向其所在的 group
+	       ├─ iommu_group_create_direct_mappings(group), 给设备做DMA映射. 将设备对应的虚拟机地址空间段映射到物理地址空间
+	       │  ├─ pg_size = 1UL << __ffs(domain->pgsize_bitmap); domain page size
+	       │  ├─ iommu_get_resv_regions(dev, &mappings);, 获取设备的 mappings(iova), 调用 `viommu_ops.viommu_get_resv_regions`
+	       │  │  ├─ struct iommu_resv_region *msi = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH, prot, IOMMU_RESV_MSI); 初始化这个一个 region 结构体, arm 上面需要这个 region 用于 map doorbell
+      	       │  └─ list_for_each_entry(entry, &mappings, list), 遍历设备映射的地址段
+	       │     ├─ start/end = ALIGN(entry->start/end, pg_size);, 根据 page size 对齐
+	       │     └─ for (addr = start; addr < end; addr += pg_size), 每个 domain page 逐个 map
+	       │        ├─ phys_addr = iommu_iova_to_phys(domain, addr), 看是否已经有了 iova -> pa 的 map, 如果得到物理地址, 说明已经有了 map, 则继续处理下一个 page. 会调用 viommu_iova_to_phy
+	       │        │  ├─ interval_tree_iter_first(&viommu_domain->mappings, iova, iova); 在 vdomain rb tree 中查找 iova 所在的 node
+	       │        │  ├─ struct viommu_mapping *mapping = container_of(node, struct viommu_mapping, iova); 得到对应的 vmapping
+	       │        │  └─ paddr = mapping->paddr + (iova - mapping->iova.start);
+	       │        └─ iommu_map(domain, addr, addr, pg_size, entry->prot), 没有 map 的则需要 map 下, 将每段虚拟地址空间都映射到相应的物理内存页上(va->pa), iova = paddr = addr, 所以初始化的 msi iova = pa
+	       │           └─ domain->ops->map(domain, iova, paddr, pgsize, prot); 根据 iommu pgsize(pgsize), 逐个 page 进行map(当然这里是一个 page), 调用 viommu_map
+	       │              ├─ struct viommu_domain *vdomain = to_viommu_domain(domain); 获取 vdomain
+	       │              ├─ struct virtio_iommu_req_map req; 构建 map request 并初始化
+	       │              ├─ address_space	= cpu_to_le32(vdomain->id); group 初始化时候分配的
+	       │              ├─ viommu_tlb_map(vdomain, iova, paddr, size); (iova, size) 和 paddr 的 mapping 关系缓存起来
+	       │              │  ├─ struct viommu_mapping *mapping = kzalloc(sizeof(*mapping), GFP_ATOMIC);
+	       │              │  ├─ mapping->paddr = paddr; mapping->iova.start = iova; mapping->iova.last = iova + size - 1;
+	       │              │  └─ interval_tree_insert(&mapping->iova, &vdomain->mappings); 插入树
+	       │              └─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 map request, 忙等返回
+	       ├─ list_add_tail(&device->list, &group->devices); 将 device 添加到 group 的 list 中
+	       ├─ __iommu_attach_device(group->domain, dev); 调用 domain->ops->attach_dev(domain, dev), viommu_attach_dev
+	       │  ├─ struct virtio_iommu_req_attach req; 创建 attach 请求
+	       │  └─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 attach request, 忙等返回
+	       └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev); group notifier
+```
+
+初始化 virtio-iommu 中会涉及到两个 command, map 和 attach, backend 实现可以看 kvm tool 部分
+
+
+
+
+
+
+
+
+
+
 
 
 qemu:
