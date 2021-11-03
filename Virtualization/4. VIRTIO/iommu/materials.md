@@ -17,6 +17,10 @@ QEMU正在等待补丁来支持这个VirtIO IOMMU功能。
 
 # Paper
 
+vIOMMU: Efficient IOMMU Emulation, 2011
+
+https://www.usenix.org/conference/usenixatc11/viommu-efficient-iommu-emulation
+
 https://www.usenix.org/legacy/events/atc11/tech/final_files/Amit.pdf
 
 # KVM Forum
