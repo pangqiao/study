@@ -26,7 +26,7 @@
   - [5.3. vfio 设备的支持](#53-vfio-设备的支持)
   - [5.4. debug 相关](#54-debug-相关)
 - [6. 现有实现](#6-现有实现)
-  - [](#)
+  - [description 变化](#description-变化)
   - [linux driver](#linux-driver)
 
 <!-- /code_chunk_output -->
@@ -1619,7 +1619,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 
 > todo
 
-## 
+## description 变化
 
 之前的 address space, 现在叫 domain.
 
@@ -1644,6 +1644,23 @@ virtio-iommu driver 模块初始化相关代码
 11. `bus_set_iommu(&platform_bus_type, &viommu_ops);`, 设置 platform bus, 下面细讲
 
 设置总线iommu的回调操作函数以及为该总线类型的iommu做一些特别的设定
+
+```cpp
+viommu_probe()
+ ├─ alloc a viommu_dev;
+ ├─ initialize from configuration.
+ ├─ iommu_device_sysfs_add();
+ └─ bus_set_iommu(&pci_bus_type, &viommu_ops);
+    ├─ LIST_HEAD(group_list);
+    ├─ bus_for_each_dev(..,probe_iommu_group); 
+    │  ├─ iommu_ops->probe_device();
+    │  ├─ group = iommu_group_get_for_dev(dev);
+    │  ├─ list_add_tail(&group->entry, group_list);
+    │  └─ iommu_device_link(iommu_dev, dev);
+    └─ list_for_each_entry_safe(..,&group_list,..)
+       ├─ probe_alloc_default_domain();
+       └─ __iommu_group_dma_attach();
+```
 
 ```cpp
 bus_set_iommu()
@@ -1718,6 +1735,17 @@ bus_set_iommu()
       └─ __iommu_group_dma_finalize(group);
 ```
 
+```cpp
+viommu_map(domain, iova, paddr, size, prot)
+ ├─ struct viommu_domain *vdomain = to_viommu_domain(domain);
+ ├─ viommu_add_mapping(vdomain, iova, paddr, size);
+ │  ├─ alloc viommu_mapping and init
+ │  └─ interval_tree_insert(&mapping->iova, &vdomain->mappings); 
+ ├─ struct virtio_iommu_req_map req;
+ └─ viommu_send_req_sync(vdomain->viommu, &req); 
+    ├─ __viommu_add_req(viommu, buf, len, true);
+    └─ __viommu_sync_req(viommu);
+```
 
 ```cpp
 bus_set_iommu()
@@ -1778,23 +1806,6 @@ bus_set_iommu()
 初始化 virtio-iommu 中会涉及到两个 command, map 和 attach, backend 实现可以看 kvm tool 部分
 
 
-
-```cpp
-viommu_probe()
- ├─ alloc a viommu_dev;
- ├─ initialize from configuration.
- ├─ iommu_device_sysfs_add();
- └─ bus_set_iommu(&pci_bus_type, &viommu_ops);
-    ├─ LIST_HEAD(group_list);
-    ├─ bus_for_each_dev(..,probe_iommu_group); 
-    │  ├─ iommu_ops->probe_device();
-    │  ├─ group = iommu_group_get_for_dev(dev);
-    │  ├─ list_add_tail(&group->entry, group_list);
-    │  └─ iommu_device_link(iommu_dev, dev);
-    └─ list_for_each_entry_safe(..,&group_list,..)
-       ├─ probe_alloc_default_domain();
-       └─ __iommu_group_dma_attach();
-```
 
 
 
