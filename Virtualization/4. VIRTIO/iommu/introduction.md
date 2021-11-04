@@ -1693,6 +1693,7 @@ bus_set_iommu()
       │  │  ├─ struct iommu_resv_region *msi = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH, prot, IOMMU_RESV_MSI); 初始化这个一个 region 结构体, arm 上面需要这个 region 用于 map doorbell
       │  ├─ list_for_each_entry(entry, &mappings, list), 遍历设备映射的地址段
       │  │  ├─ start/end = ALIGN(entry->start/end, pg_size);, 根据 page size 对齐
+      │  │  ├─ if (entry->type != IOMMU_RESV_DIRECT) continue; mapping 类型, 这里肯定不是 direct
       │  │  ├─ for (addr = start; addr < end; addr += pg_size), 每个 page 逐个 map
       │  │  │  ├─ phys_addr = iommu_iova_to_phys(domain, addr), 看是否已经有了 iova -> pa 的 map. 调用 viommu_iova_to_phys
       │  │  │  │  ├─ interval_tree_iter_first(&viommu_domain->mappings, iova, iova); 在 vdomain 中查找 iova 所在的 node
@@ -1710,13 +1711,11 @@ bus_set_iommu()
       │  │  │  │  │  │  ├─ interval_tree_insert(&mapping->iova, &vdomain->mappings); 插入树
       │  │  │  │  │  ├─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 map request, 忙等返回
       ├─ __iommu_group_dma_attach(group);
+      │  └─ __iommu_group_for_each_dev(group, group->default_domain, iommu_group_do_dma_attach); 遍历group中所有device, 调用 iommu_group_do_dma_attach
+      │     └─ __iommu_attach_device(group, dev), 调用 domain->ops->attach_dev(domain, dev), viommu_attach_dev
+      │        ├─ struct virtio_iommu_req_attach req; 创建 attach 请求
+      │        ├─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 attach request, 忙等返回
       └─ __iommu_group_dma_finalize(group);
-
-
-
-      ├─ __iommu_attach_device(group, dev), 调用 domain->ops->attach_dev(domain, dev), viommu_attach_dev
-      │  ├─ struct virtio_iommu_req_attach req; 创建 attach 请求
-      │  ├─ viommu_send_req_sync(vdomain->viommu, &req); 同步给 back end 发送 attach request, 忙等返回
 ```
 
 
@@ -1792,18 +1791,8 @@ viommu_probe()
     │  ├─ list_add_tail(&group->entry, group_list);
     │  └─ iommu_device_link(iommu_dev, dev);
     └─ list_for_each_entry_safe(..,&group_list,..)
-
-
- ├─ viommu_init_vq();
- ├─ viommu_init_vq();
- ├─ viommu_init_vq();
-
- ├─ viommu_init_vq();
- ├─ viommu_init_vq();
-
- ├─ viommu_init_vq();
-
- └─
+       ├─ probe_alloc_default_domain();
+       └─ __iommu_group_dma_attach();
 ```
 
 
