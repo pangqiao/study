@@ -1781,11 +1781,12 @@ bus_set_iommu()
 
 ```cpp
 viommu_probe()
- ├─ alloc a viommu_dev && initialize from configuration.
+ ├─ alloc a viommu_dev;
+ ├─ initialize from configuration.
  ├─ iommu_device_sysfs_add();
  └─ bus_set_iommu(&pci_bus_type, &viommu_ops);
     ├─ LIST_HEAD(group_list);
-    ├─ bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group); 
+    ├─ bus_for_each_dev(..,probe_iommu_group); 
     │  ├─ iommu_ops->probe_device();
     │  ├─ group = iommu_group_get_for_dev(dev);
     │  ├─ list_add_tail(&group->entry, group_list);
