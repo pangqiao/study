@@ -25,6 +25,8 @@ https://www.usenix.org/legacy/events/atc11/tech/final_files/Amit.pdf
 
 # KVM Forum
 
+https://kvmforum2017.sched.com/event/BnoZ/viommuarm-full-emulation-and-virtio-iommu-approaches-eric-auger-red-hat-inc 
+
 
 virtio-iommu 最早是 2017 年提出来的
 
@@ -62,17 +64,16 @@ Add virtio-iommu driver
 
 > (2017 ~ 2019): 前几个版本在 kvm 中, 后面的在 pci 中
 
-* RFC: https://patchwork.kernel.org/project/kvm/patch/20170407192314.26720-1-jean-philippe.brucker@arm.com/
-* RFC v2: https://patchwork.kernel.org/project/kvm/patch/20171117185211.32593-2-jean-philippe.brucker@arm.com/
+* RFC: [patchwork](https://patchwork.kernel.org/project/kvm/patch/20170407192314.26720-1-jean-philippe.brucker@arm.com/), 
+* RFC v2: [patchwork](https://patchwork.kernel.org/project/kvm/patch/20171117185211.32593-2-jean-philippe.brucker@arm.com/), 
 * v1: https://www.spinics.net/lists/kvm/msg164322.html , https://patchwork.kernel.org/project/kvm/patch/20180214145340.1223-2-jean-philippe.brucker@arm.com/
 * v2: https://www.spinics.net/lists/kvm/msg170655.html , https://patchwork.kernel.org/project/kvm/patch/20180621190655.56391-3-jean-philippe.brucker@arm.com/
 * v3: https://patchwork.kernel.org/project/linux-pci/cover/20181012145917.6840-1-jean-philippe.brucker@arm.com/
 * v4: https://patchwork.kernel.org/project/linux-pci/cover/20181115165234.43990-1-jean-philippe.brucker@arm.com/
 * v5: https://patchwork.kernel.org/project/linux-pci/cover/20181122193801.50510-1-jean-philippe.brucker@arm.com/
 * v6: https://patchwork.kernel.org/project/linux-pci/cover/20181211182104.18241-1-jean-philippe.brucker@arm.com/
-* v7: https://patchwork.kernel.org/project/linux-pci/patch/20190115121959.23763-6-jean-philippe.brucker@arm.com/
-* v8: https://patchwork.kernel.org/project/linux-pci/patch/20190530170929.19366-6-jean-philippe.brucker@arm.com/
-* v9: 
+* v7: [patchwork](https://patchwork.kernel.org/project/linux-pci/patch/20190115121959.23763-6-jean-philippe.brucker@arm.com/), 
+* v8(Final version): [patchwork](https://patchwork.kernel.org/project/linux-pci/patch/20190530170929.19366-6-jean-philippe.brucker@arm.com/), 
 
 
 
@@ -83,24 +84,17 @@ Add virtio-iommu device specification(virtio-spce, https://github.com/oasis-tcs/
 
 
 
-
-virtio-iommu on non-devicetree platforms
+virtio-iommu on non-devicetree platforms/virtio-iommu on x86 and non-devicetree platforms/Add virtio-iommu built-in topology
 
 > (2019 ~ 2020):
 > 
 > Hardware platforms usually describe the IOMMU topology using either device-tree pointers or vendor-specific ACPI tables.
 
-* RFC: [virtio-iommu on non-devicetree platforms](https://patchwork.kernel.org/project/linux-pci/cover/20191122105000.800410-1-jean-philippe@linaro.org/)
-* v1: https://patchwork.kernel.org/project/linux-pci/cover/20200214160413.1475396-1-jean-philippe@linaro.org/
-* v2: https://patchwork.kernel.org/project/linux-pci/cover/20200228172537.377327-1-jean-philippe@linaro.org/
-* 
+* RFC: [virtio-iommu on non-devicetree platforms](https://patchwork.kernel.org/project/linux-pci/cover/20191122105000.800410-1-jean-philippe@linaro.org/), 
+* v1: [patchwork](https://patchwork.kernel.org/project/linux-pci/cover/20200214160413.1475396-1-jean-philippe@linaro.org/), 
+* v2: [patchwork](https://patchwork.kernel.org/project/linux-pci/cover/20200228172537.377327-1-jean-philippe@linaro.org/), 
+* v3: [patchwork](https://patchwork.kernel.org/project/linux-pci/cover/20200821131540.2801801-1-jean-philippe@linaro.org/), 
 
-
-Add virtio-iommu built-in topology
-
-> 2020
-
-v3: https://patchwork.kernel.org/project/linux-pci/cover/20200821131540.2801801-1-jean-philippe@linaro.org/
 
 
 Add support for ACPI VIOT
@@ -203,7 +197,9 @@ qemu branch: https://jpbrucker.net/git/qemu/log/?h=virtio-iommu/acpi
 SPEC: https://jpbrucker.net/virtio-iommu/spec/
 
 
+# other
 
+IOMMU(八)-vIOMMU: https://zhuanlan.zhihu.com/p/403727428
 
 
 

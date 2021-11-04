@@ -67,7 +67,7 @@ virtio-iommu: a paravirtualized IOMMU
 
 最简单地, viommu 处理来自 guest 的 `map/unmap` 请求. "RFC 3/3"中提议的未来扩展将来会将 page tables 绑定到设备上.
 
-半虚拟化的 IOMMU 中, 与完全模拟相比, 有许多优点. 它是便携式的, 可以重复使用不同的架构. 它比完全模拟更容易实现, 状态跟踪更少. 在某些情况下, 它可能会更有效率, 上下文切换到host的更少, 并且内核模拟的可能性也更少.
+半虚拟化的 IOMMU 中, 与完全模拟 (full emulation) 相比, 有许多优点. 它是便携式的, 可以在不同的架构中重复使用. 它比完全模拟更容易实现, 因为状态跟踪更少. 在某些情况下, 它可能会更有效率, 上下文切换到host的更少, 并且内核模拟的可能性也更少.
 
 在 kvmtool 实现中, 考虑了两个主要场景
 
@@ -98,7 +98,7 @@ Scenario 1: a hardware device passed through twice via VFIO
 ```
 
 (1)
-* a. 虚拟机用户态有一个 net driver(比如 DPDK). 它通过 mmap 申请一个 buffer, 得到了虚拟地址(VA). 它会发送 **vfio** 请求(`VFIO_IOMMU_MAP_DMA`) 到虚拟机内核态 virtio-iommu driver 将 VA **映射**到 IOVA(可能 VA = IOVA).
+* a. 虚拟机用户态有一个 net driver(比如 DPDK). 它通过 mmap 申请一个 buffer, 得到了虚拟地址(VA). 它会发送 **vfio** 请求(`VFIO_IOMMU_MAP_DMA`, 将iova通过IOMMU映射到vaddr对应的物理地址上去) 到虚拟机内核态 virtio-iommu driver 将 VA **映射**到 IOVA(可能 VA = IOVA).
 * b. 通过 **virtio** (VIRTIO_IOMMU_T_MAP), 虚拟机内核态 viommu driver 将该 mapping 请求转发到host端的 viommu(用户态后端, 比如qemu).
 * c. 通过 **vfio**, 后端 viommu 将请求转发到物理 IOMMU 上.
 
@@ -153,7 +153,7 @@ Scenario 2: a virtual net device behind a virtual IOMMU.
 
 > virtio-iommu: firmware description of the virtual topology
 
-与其他 virtio 设备不同, virtio-iommu 设备不能独立工作, 它与其他虚拟或分配的设备相连. 因此, 在设备操作之前, 我们需要定义一种方法, 让 guest 发现虚拟 IOMMU 及其它管理的设备.
+与其他 virtio 设备不同, virtio-iommu 设备不能独立工作, 它需要与其他虚拟或 assigned 设备相连. 因此, 在设备操作之前, 我们需要定义一种方法, 让 guest 能发现 virtio-iommu 以及它管理的设备.
 
 host 必须通过 device-tree 或 ACPI 表给 guest 描述 IOMMU 和设备的关系.
 
@@ -161,7 +161,7 @@ vIOMMU 用 32 位 ID 来标识每个虚拟设备, 该文中称为"Device ID". "D
 
 > 这里的 "Device ID" 都是 vIOMMU 定义的
 
-虚拟 IOMMU 仅使用 virtio-mmio 传输, 而不是 virtio-pci, 因为使用 PCI, IOMMU 接口本身就是一个 endpoint, 而现有的固件接口不允许描述 IOMMU <-> PCI endpoint之间的主端口之间的关系.
+虚拟 IOMMU 仅使用 virtio-mmio 传输, 而不是 virtio-pci, 因为使用 PCI, IOMMU 接口本身就是一个 endpoint, 而现有的固件接口不允许描述 PCI endpoints 之间的 IOMMU <-> master 关系.
 
 > The virtual IOMMU uses virtio-mmio transport exclusively, not virtio-pci, because with PCI the IOMMU interface would itself be an endpoint, and existing firmware interfaces don't allow to describe IOMMU<->master relations between PCI endpoints.
 
@@ -290,11 +290,22 @@ Requests 是 guest 往 request virtqueue 中添加的小的缓冲 buffer. guest�
 一个操作流程的例子:
 
 * `attach(address space, device), kick`: 创建一个 address space 并且将 attach 一个 device 给它. kick
-* `map(address space, virt, phys, size, flags)`: 给 GVA 和 GPA 创建一个 mapping 关系
+
+> attach(endpoint = 0x8, domain = 1)
+
+* `map(address space, virt, phys, size, flags)`: 给一段 GVA 和 GPA 创建一个 mapping 关系
+
+> `map(domain = 1, virt_start = 0x1000, virt_end = 0x1fff, phys = 0xa000, flags = READ)`, Endpoint 0x8(假设对应的 PCI BDF 是 00:01.0), 现在能够**读** `0x1000 ~ 0x1fff` 范围. 这些会被 IOMMU 翻译成 系统物理地址(HPA?)
+
 * map, map, map, kick
 * ...在这里, guest 中设备可以执行 DMA 操作访问新映射的内存
 * `unmap(address space, virt, size)`: unmap, 然后再kick
+
+> `unmap(domain = 1, virt_start = 0x1000, virt_end = 0x1fff)`, endpoint 0x8 访问 `0x1000 ~ 0x1fff` 范围都会被拒绝.
+
 * `detach(address space, device)`, kick
+
+> detach(endpoint = 0x8, domain = 1)
 
 以下描述尝试使用与其他 virtio 设备相同的格式. 我们不会详细了解 virtio 传输(transport), 请参阅 `[VIRTIO-v1.0]` 了解更多信息.
 
@@ -590,7 +601,9 @@ RANGE: 请求将拆分一个mapping
 
 * [RFC PATCH linux] iommu: Add virtio-iommu driver, [lore kernel](https://lore.kernel.org/all/20170407192314.26720-1-jean-philippe.brucker@arm.com/), [patchwork](https://patchwork.kernel.org/project/kvm/patch/20170407192314.26720-1-jean-philippe.brucker@arm.com/)
 
-virtio IOMMU 是一个半虚设备, 可以通过 virtio-mmio transport 发送 IOMMU 请求, 比如 map/unmap. 这个 driver 会实现上面讲到的 virtio-iommu 最初方案. 它会处理 attach, detach, map 和 unmap 请求.
+virtio IOMMU 是一个半虚设备, 可以通过 virtio-mmio transport 发送 IOMMU 请求, 比如 map/unmap. 这样就不用模拟 page fault 了.
+
+这个 driver 会实现上面讲到的 virtio-iommu 最初方案. 它会处理 attach, detach, map 和 unmap 请求.
 
 大部分代码是在创建请求并通过 virtio 发送它们. 实现 IOMMU API 是比较简单的, 因为 virtio-iommu 的 MAP/UNMAP 接口几乎相同. 我放到了一个自定义的 map_sg() 函数中. 核心函数将发送一系列的 map 请求, 并且等待每个请求的返回. 这个优化避免在每个 map 后 yield to host, 而是在 virtio ring 中准备一批请求, 并 kick host 一次.
 
