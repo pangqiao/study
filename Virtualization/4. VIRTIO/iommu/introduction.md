@@ -286,7 +286,7 @@ IORT: IO Remapping Table, DEN0049B, http://infocenter.arm.com/help/topic/com.arm
 
 ### 3.3.1. 概述
 
-Requests 是 guest 往 request virtqueue 中添加的小的缓冲 buffer. guest可以在 queue 中添加一批Requests, 并向设备发送通知(kick), 以便设备处理它们.
+requests 是 guest 往 request virtqueue 中添加的一堆小的 buffers. guest可以在 queue 中添加一批 requests, 并向设备发送通知(kick), 以便设备处理它们.
 
 virtio-iommu 设备管理来自一个或多个 endpoint 的 DMA 操作。它可以充当物理 IOMMU 的代理, 来管理分配给 guest 的设备; 也可以充当虚拟 IOMMU, 管理模拟设备和半虚设备。
 
@@ -332,7 +332,7 @@ virtio-iommu 设备管理来自一个或多个 endpoint 的 DMA 操作。它可�
                                    :
 ```
 
-(1) driver 有一堆带有效载荷(payload)的 buffers 要通过 virtio 来发送. 它会写 N 个 描述符(descriptors)来描述 N 个 sub-buffers, 并且将它们链接起来(形成描述符表), 第一个描述符(descriptor)就是这个链(chain)的头部(head).
+(1) driver 有一堆带有效载荷(payload)的 buffers 要通过 virtio 来发送. 一个 buffer 的 address 和 size 是一个 descriptor. 它会写 N 个 描述符(descriptors)来描述 N 个 sub-buffers, 并且将它们链接起来(形成描述符表), 第一个描述符(descriptor)就是这个链(chain)的头部(head).
 
 (2) driver 将 head index 入队 "available ring".
 
@@ -379,7 +379,7 @@ struct virtio_iommu_config {
 
 当 device 被 reset, endpoints 不会被 attach 到任何 address space.
 
-1. page_size_mask 包含可以 map 的所有页面大小的 bitmap. 最低有效位集定义了 IOMMU map 的页面粒度. mask 中的其他位是描述 IOMMU 可以合并为单个映射(页面块)的页面大小的提示.
+1. 设置配置信息结构中 page_size_mask 包含了可以 map 的所有页面大小的 bitmap. 最低有效位集定义了 IOMMU map 的页面粒度. mask 中的其他位是描述 IOMMU 可以合并为单个映射(页面块)的页面大小的提示.
 
 IOMMU 支持的最小页面粒度没有下限. 如果设备通告它(`page_size_mask[0]=1`), 驱动程序一次 map 一个字节是合法的.
 
@@ -389,7 +389,7 @@ page_size_mask 必须至少有一个 bit 设置
 
 如果没有 VIRTIO_IOMMU_F_IOASID_BITS 功能, address space ID 最多有 32 位(也就是说任何 address space ID 都是有效的).
 
-3. 如果协商了 VIRTIO_IOMMU_F_INPUT_RANGE 功能, 则 input_range 包含 IOMMU 能够 translate 的虚拟地址范围. 任何访问此范围之外的虚拟地址的映射请求都将失败.
+3. 如果协商了 VIRTIO_IOMMU_F_INPUT_RANGE 功能, 则设置配置信息结构中 input_range 包含 IOMMU 能够 translate 的虚拟地址范围. 任何访问此范围之外的虚拟地址的映射请求都将失败.
 
 如果不协商该功能, 虚拟映射将跨越整个 64 位地址空间(start = 0, end = 0xffffffffffffffff)
 
