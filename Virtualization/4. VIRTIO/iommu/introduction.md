@@ -26,6 +26,7 @@
   - [5.3. vfio 设备的支持](#53-vfio-设备的支持)
   - [5.4. debug 相关](#54-debug-相关)
 - [6. 现有实现](#6-现有实现)
+  - [](#)
   - [linux driver](#linux-driver)
 
 <!-- /code_chunk_output -->
@@ -287,6 +288,10 @@ IORT: IO Remapping Table, DEN0049B, http://infocenter.arm.com/help/topic/com.arm
 
 Requests 是 guest 往 request virtqueue 中添加的小的缓冲 buffer. guest可以在 queue 中添加一批Requests, 并向设备发送通知(kick), 以便设备处理它们.
 
+virtio-iommu 设备管理来自一个或多个 endpoint 的 DMA 操作。它可以充当物理 IOMMU 的代理, 来管理分配给 guest 的设备; 也可以充当虚拟 IOMMU, 管理模拟设备和半虚设备。
+
+驱动程序首先发现由 virtio-iommu 设备使用平台特定机制管理的 endpoints。然后，它会发送请求，为这些 endpoints 创建 address space 和 GVA-> GPA 的映射.
+
 一个操作流程的例子:
 
 * `attach(address space, device), kick`: 创建一个 address space 并且将 attach 一个 device 给它. kick
@@ -372,6 +377,8 @@ struct virtio_iommu_config {
 
 ### 3.3.4. 设备初始化
 
+当 device 被 reset, endpoints 不会被 attach 到任何 address space.
+
 1. page_size_mask 包含可以 map 的所有页面大小的 bitmap. 最低有效位集定义了 IOMMU map 的页面粒度. mask 中的其他位是描述 IOMMU 可以合并为单个映射(页面块)的页面大小的提示.
 
 IOMMU 支持的最小页面粒度没有下限. 如果设备通告它(`page_size_mask[0]=1`), 驱动程序一次 map 一个字节是合法的.
@@ -391,8 +398,6 @@ page_size_mask 必须至少有一个 bit 设置
 > 允许设备绕过 iommu 的管理的意思, 所以这个功能支持的话, 没有被 attach 的设备也可以访问 guest physical address.
 
 而如果通过 bypass 模式 attach 一个 device 到一个新的 address space, 那么这个设备的所有内存访问都会失败, 因为这时候 address space 还没有包含任何 mapping.
-
-device 被 reset, 则不会被 attach 到任何 address space.
 
 ### 3.3.5. 设备操作
 
@@ -1613,6 +1618,10 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 # 6. 现有实现
 
 > todo
+
+## 
+
+之前的 address space, 现在叫 domain.
 
 ## linux driver
 
