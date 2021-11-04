@@ -1643,18 +1643,20 @@ virtio-iommu driver 模块初始化相关代码
 10. `bus_set_iommu(&pci_bus_type, &viommu_ops)`, 设置 pci bus, 下面细讲
 11. `bus_set_iommu(&platform_bus_type, &viommu_ops);`, 设置 platform bus, 下面细讲
 
+设置总线iommu的回调操作函数以及为该总线类型的iommu做一些特别的设定
 
 ```cpp
 bus_set_iommu()
  ├─ bus->iommu_ops = ops; 设置 bus 的 iommu ops
  └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化. 注册了 bus notifier, 回调是 `iommu_bus_notifier`; 然后调用 `bus_iommu_probe(bus)`
-   ├─ LIST_HEAD(group_list);, 生成一个 group_list 链表
-   ├─ bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group);, 遍历总线下所有设备, 给每个设备调用回调函数 `probe_iommu_group`, 将设备添加到 iommu group (`iommu_init` 中初始化) 中. 会调用 `__iommu_probe_device()`:
+   ├─ LIST_HEAD(group_list); 生成一个 group_list 链表
+   ├─ bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group); 遍历总线下所有设备, 给每个设备调用回调函数 `probe_iommu_group`, 将设备添加到 iommu group (`iommu_init` 中初始化) 中. 会调用 `__iommu_probe_device()`
    │  ├─ iommu_dev = dev->bus->iommu_ops->probe_device(struct device dev);, 添加设备, 调用了 `viommu_add_device()`
    │  │  ├─ struct viommu_endpoint *vdev = kzalloc(sizeof(*vdev), GFP_KERNEL); 结构体分配
    │  │  ├─ vdev->viommu = viommu;
    │  │  ├─ INIT_LIST_HEAD(&vdev->resv_regions);
    │  │  └─ viommu_probe_endpoint(viommu, dev); viommu->probe_size 存在则会调用这个
+            ├─ struct virtio_iommu_req_probe *probe; 初始化 probe request
    │  │     ├─ viommu_send_req_sync(viommu, probe, probe_len);
 
    │  ├─ dev->iommu->iommu_dev = iommu_dev; 设置 device 的 iommu device
@@ -1662,13 +1664,15 @@ bus_set_iommu()
    │  │  ├─ 查找或创建一个 iommu group, `dev->bus->iommu_ops->device_group(dev)`, 会调用 `viommu_device_group()` 分配一个 group
    │  │  │  └─ pci_device_group(dev); / generic_device_group(dev);
    │  │  └─ iommu_group_add_device(group, dev); 将这个 device add 到这个 group, 分配 sruct group_device;
-   │  │     ├─ sysfs_create_link(&dev->kobj, &group->kobj, "iommu_group"); 创建软链接(`/sys/devices/pci总线ID/设备号/iommu_group -> `/sys/kernel/iommu_groups/xx`)
-   │  │     ├─ sysfs_create_link_nowarn(group->devices_kobj, &dev->kobj, device->name); 创建软链接(`/sys/kernel/iommu_groups/xx/devices/设备PCI号` -> `/sys/devices/pci总线ID/设备号`
+   │  │     ├─ sysfs_create_link(&dev->kobj, &group->kobj, "iommu_group"); 创建 iommu group 和设备关联的软链接(`/sys/devices/pci总线ID/设备号/iommu_group -> `/sys/kernel/iommu_groups/xx`)
+   │  │     ├─ sysfs_create_link_nowarn(group->devices_kobj, &dev->kobj, device->name); 创建 iommu group 和设备关联的软链接(`/sys/kernel/iommu_groups/xx/devices/设备PCI号` -> `/sys/devices/pci总线ID/设备号`
    │  │     ├─ dev->iommu_group = group;
    │  │     ├─ if (group->domain) __iommu_attach_device(group->domain, dev); 有 domain 就 attach(这时候当然没有)
    │  │     └─ blocking_notifier_call_chain(&group->notifier, IOMMU_GROUP_NOTIFY_ADD_DEVICE, dev); group notifier, vfio_create_group 会注册
    │  ├─ list_add_tail(&group->entry, group_list); 将 group 添加到 group_list
    │  └─ iommu_device_link(iommu_dev, dev); sys 文件系统添加一些 软链接
+   │      ├─ sysfs_add_link_to_group(&iommu->dev->kobj, "devices", &link->kobj, dev_name(link)); 创建 iommu 和 设备 关联的软链接(`/sys/devices/pci总线ID/iommu设备号/virtio0/iommu/iommu设备号/devices/endpoint设备号 -> `/sys/devices/pci总线ID/endpoint设备号`), 在 iommu device 的 devices 下面创建软链接
+   │      └─ sysfs_create_link_nowarn(&link->kobj, &iommu->dev->kobj, "iommu"); 创建iommu 和 设备 关联的软链接(`/sys/devices/pci总线ID/endpoint设备号/iommu` -> `/sys/devices/pci总线ID/设备号/virtio0/iommu/设备号/`)
    └─ list_for_each_entry_safe(group, next, &group_list, entry), 遍历整个 group_list
       ├─ probe_alloc_default_domain(bus, group);, 给每个 iommu group 分配 default domain, 会调用 viommu_domain_alloc, 主要是分配空间并初始化
       │  ├─ __iommu_group_for_each_dev(group, &gtype, probe_get_default_domain_type); 遍历 group 中的 device, 获取每个 device 的 default domain type(一般是 IOMMU_DOMAIN_DMA)
@@ -1718,6 +1722,7 @@ bus_set_iommu()
 
 ```cpp
 bus_set_iommu()
+ ├─ if (bus->iommu_ops != NULL) return -EBUSY, bus 已经有iommu_ops
  ├─ bus->iommu_ops = ops;, 设置 bus 的 iommu ops
  └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化.
    ├─ nb->notifier_call = iommu_bus_notifier; 
@@ -1775,7 +1780,31 @@ bus_set_iommu()
 
 
 
+```cpp
+viommu_probe()
+ ├─ alloc a viommu_dev && initialize from configuration.
+ ├─ iommu_device_sysfs_add();
+ └─ bus_set_iommu(&pci_bus_type, &viommu_ops);
+    ├─ LIST_HEAD(group_list);
+    ├─ bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group); 
+    │  ├─ iommu_ops->probe_device();
+    │  ├─ group = iommu_group_get_for_dev(dev);
+    │  ├─ list_add_tail(&group->entry, group_list);
+    │  └─ iommu_device_link(iommu_dev, dev);
+    └─ list_for_each_entry_safe(..,&group_list,..)
 
+
+ ├─ viommu_init_vq();
+ ├─ viommu_init_vq();
+ ├─ viommu_init_vq();
+
+ ├─ viommu_init_vq();
+ ├─ viommu_init_vq();
+
+ ├─ viommu_init_vq();
+
+ └─
+```
 
 
 
