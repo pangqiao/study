@@ -1579,6 +1579,18 @@ vfio__init()
 +
 ```
 
+```cpp
+static struct iommu_ops vfio_iommu_ops = {
+	.get_properties		= vfio_viommu_get_properties,
+	.alloc_address_space	= vfio_viommu_alloc,
+	.free_address_space	= vfio_viommu_free,
+	.attach			= vfio_viommu_attach,
+	.detach			= vfio_viommu_detach,
+	.map			= vfio_viommu_map,
+	.unmap			= vfio_viommu_unmap,
+};
+```
+
 同时, 需要处理
 
 * 对 pci_msix_pba 的访问
