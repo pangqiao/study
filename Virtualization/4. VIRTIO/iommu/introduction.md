@@ -1342,6 +1342,22 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 +static void *viommu = NULL;
 ```
 
+```cpp
+struct vfio_guest_container {
+    struct kvm  *kvm;
+    int         fd;
+    void        *msi_doorbells;
+};
+
+struct vfio_device {
+    struct vfio_group *group;
+}
+
+struct vfio_group {
+    struct vfio_guest_container *container;
+}
+```
+
 原有逻辑中, vfio 初始化阶段, `vfio__init()` 中
 
 1. vfio_container_init() 初始化 container
