@@ -1358,13 +1358,38 @@ struct vfio_group {
 }
 ```
 
+```cpp
+vfio__init()
+ ├─ vfio_container_init(kvm);
+ │  ├─ vfio_container = open(VFIO_DEV_NODE, O_RDWR);
+ │  ├─ ioctl(vfio_container, VFIO_GET_API_VERSION);
+ │  ├─ vfio_device_init(kvm, &vfio_devices[i]);
+ │  │  ├─ group = vfio_group_get_for_dev(kvm, vdev);
+ │  │  │  ├─ group->fd = open(group_node, O_RDWR);
+ │  │  │  └─ ioctl(group->fd, VFIO_GROUP_SET_CONTAINER, &vfio_container)
+ │  │  └─vdev->group = group;
+ │  ├─ ioctl(vfio_container, VFIO_SET_IOMMU, iommu_type);
+ │  └─ ioctl(vfio_container, VFIO_IOMMU_MAP_DMA, &dma_map)
+ ├─ vfio_configure_groups(kvm);
+ │  └─ ioctl(kvm->vm_fd, KVM_SET_USER_MEMORY_REGION, &mem)
+ └─ vfio_configure_devices(kvm);
+    ├─ ioctl(group->fd, VFIO_GROUP_GET_DEVICE_FD,vdev->params->name)
+    ├─ ioctl(vdev->fd, VFIO_DEVICE_RESET)
+    └─ vfio_pci_setup_device()
+       ├─ vfio_pci_configure_dev_regions(kvm, vdev);
+       │  ├─ vfio_pci_create_msix_table();
+       │     └─ kvm__register_mmio();
+       ├─ device__register(&vdev->dev_hdr);
+       └─ vfio_pci_configure_dev_irqs(kvm, vdev);
+```
+
 原有逻辑中, vfio 初始化阶段, `vfio__init()` 中
 
 1. vfio_container_init() 初始化 container
 * 初始化一个全局 vfio container(一个 vm 对应一个), 调用 `vfio_container = open(VFIO_DEV_NODE, O_RDWR)`; 打开 `/dev/vfio/vfio`
 * 循环初始化每个设备, `vfio_device_init(kvm, &vfio_devices[i])`;
   * 根据 device 的 sysfs_path 中的 group_id, 遍历 vfio_groups 链表查找 group, `list_for_each_entry(group, &vfio_groups, list)`
-  * 找不到则创建一个新的 group 并将其加入到 container 中, `vfio_group_create(kvm, group_id)` -> `ioctl(group->fd, VFIO_GROUP_SET_CONTAINER, &vfio_container)`, `group->fd` 是 `/dev/vfio/XX(ID)`
+  * 找不到则创建一个新的 group 并将其加入到 container 中, `vfio_group_create(kvm, group_id)` -> `group->fd = open(group_node, O_RDWR);` && `ioctl(group->fd, VFIO_GROUP_SET_CONTAINER, &vfio_container)`, `group->fd` 是 `/dev/vfio/XX(ID)`
   * 将 vfio_group 添加到 `vfio_groups` 链表, `	list_add(&group->list, &vfio_groups)`
 * 设置 iommu type 到 container, `ioctl(vfio_container, VFIO_SET_IOMMU, iommu_type)`
 * 将虚拟机中所有 `KVM_MEM_TYPE_RAM` 类型的内存块 map 用来 DMA (`iova<gpa> -> hva`), `ioctl(vfio_container, VFIO_IOMMU_MAP_DMA, &dma_map)`
