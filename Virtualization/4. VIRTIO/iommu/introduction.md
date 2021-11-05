@@ -1015,7 +1015,7 @@ static int viommu_handle_attach(struct viommu_dev *viommu,
 
     // 如果 ioas 不存在则创建一个
     ioas = viommu_find_ioas(viommu, ioasid);
-    if (!ioas)  ioas = viommu_alloc_ioas(viommu, device, ioasid);
+    if (!ioas) ioas = viommu_alloc_ioas(viommu, device, ioasid);
 
     // 如果设备之前已经关联了 ioas, 则从原有 detach
     if (vdev->ioas) ret = viommu_detach_device(viommu, vdev);
@@ -1029,6 +1029,16 @@ static int viommu_handle_attach(struct viommu_dev *viommu,
     // ioas 没有设备则释放掉这个 ioas
     if (ret && ioas->nr_devices == 0) viommu_free_ioas(viommu, ioas);
 }
+```
+
+```cpp
+viommu_handle_attach(viommu, *req_attach)
+ ├─ u32 device_id = le32_to_cpu(attach->device); 
+ ├─ u32 ioasid	= le32_to_cpu(attach->address_space);
+ ├─ viommu_alloc_ioas(viommu, device, ioasid);
+ ├─ viommu_detach_device(viommu, vdev);
+ ├─ device->iommu_ops->attach(ioas->priv, device, 0);
+ └─ viommu_ioas_add_device(ioas, vdev);
 ```
 
 `viommu_command` -> `viommu_dispatch_commands` -> `viommu_handle_attach(viommu, &req->attach);`
@@ -1097,6 +1107,22 @@ viommu_handle_map(struct viommu_dev *viommu, struct virtio_iommu_req_map *map)
     ├─ struct vfio_iommu_type1_dma_map map = { .iova = virt_addr, .size	= size, };
     ├─ map.vaddr = (u64)guest_flat_to_host(container->kvm, phys_addr); 获取 hva
     ├─ if (irq__addr_is_msi_doorbell(container->kvm, phys_addr)) iommu_map(container->msi_doorbells, virt_addr, phys_addr, size, prot); hva 不存在则需要 map msi doorbell 的 virt_addr -> phys_addr
+    └─ return ioctl(container->fd, VFIO_IOMMU_MAP_DMA, &map); GVA -> GPA
+```
+
+```cpp
+viommu_handle_map(viommu, *req_map)
+ ├─ u32 ioasid	= le32_to_cpu(map->address_space); 
+ ├─ u64 virt_addr = le64_to_cpu(map->virt_addr);
+ ├─ u64 phys_addr = le64_to_cpu(map->phys_addr);
+ ├─ u64 size = le64_to_cpu(map->size);
+ ├─ prot |= IOMMU_PROT_READ/IOMMU_PROT_WRITE/IOMMU_PROT_EXEC;
+ ├─ struct viommu_ioas *ioas = viommu_find_ioas(viommu, ioasid);
+ │  └─ struct rb_node *node = viommu->address_spaces.rb_node;
+ └─ ioas->ops->map(ioas->priv, virt_addr, phys_addr, size, prot);
+    ├─ struct vfio_guest_container *container = priv;
+    ├─ map = { .iova = virt_addr, .size	= size, };
+    ├─ map.vaddr = (u64)guest_flat_to_host(container->kvm, phys_addr);
     └─ return ioctl(container->fd, VFIO_IOMMU_MAP_DMA, &map); GVA -> GPA
 ```
 
@@ -1411,9 +1437,12 @@ vfio__init()
 
 对 viommu 的支持, 将所有 contianer 替换成 viommu 的 container, iommu ops 也被替换成 viommu ops
 
-首先, 将新 vfio group 加到 container 之前, 即 1.2.2
+首先, 将新 vfio group 加到 container 之前, 生成新的 container, 这样一个 group 一个 container, 即 1.2.2
 
 ```diff
+@@ -1066,6 +1242,25 @@ static int vfio_group_init(struct kvm *kvm, struct vfio_group *group)
+ 	snprintf(group_node, VFIO_PATH_MAX_LEN, VFIO_DEV_DIR "/%lu",
+ 		 group->id);
 +	if (kvm->cfg.viommu) {
 +		container = open(VFIO_DEV_NODE, O_RDWR);
 +		if (container < 0) {
@@ -1433,9 +1462,12 @@ vfio__init()
 +		container = vfio_host_container;
 +	}
 +
+ 	group->fd = open(group_node, O_RDWR);
+ 	if (group->fd == -1) {
+ 		ret = -errno;
 ```
 
-给每个 vfio group 都进行 open 操作, 从而创建了一个新的私有 container; 再添加这个私有 container 到 group.
+给每个 vfio group 都进行 open 操作, 从而创建了一个新的私有 container; 再添加这个私有 container 到 group. 这样一个 group 一个 container
 
 同时将 type v2 也设置到这个 container, 因为 `unmap-all` 需要
 
