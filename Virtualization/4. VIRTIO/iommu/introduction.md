@@ -1753,14 +1753,13 @@ bus_set_iommu()
  └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化. 注册了 bus notifier, 回调是 `iommu_bus_notifier`; 然后调用 `bus_iommu_probe(bus)`
    ├─ LIST_HEAD(group_list); 生成一个 group_list 链表
    ├─ bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group); 遍历总线下所有设备, 给每个设备调用回调函数 `probe_iommu_group`, 将设备添加到 iommu group (`iommu_init` 中初始化) 中. 会调用 `__iommu_probe_device()`
-   │  ├─ iommu_dev = dev->bus->iommu_ops->probe_device(struct device dev);, 添加设备, 调用了 `viommu_add_device()`
+   │  ├─ iommu_dev = dev->bus->iommu_ops->probe_device(struct device dev);, 添加设备, 调用了 `viommu_probe_device()`
    │  │  ├─ struct viommu_endpoint *vdev = kzalloc(sizeof(*vdev), GFP_KERNEL); 结构体分配
    │  │  ├─ vdev->viommu = viommu;
    │  │  ├─ INIT_LIST_HEAD(&vdev->resv_regions);
-   │  │  └─ viommu_probe_endpoint(viommu, dev); viommu->probe_size 存在则会调用这个
-            ├─ struct virtio_iommu_req_probe *probe; 初始化 probe request
+   │  │  └─ viommu_probe_endpoint(viommu, dev); viommu->probe_size 存在则会调用这个获取额外信息
+   │  │     ├─ struct virtio_iommu_req_probe *probe; 初始化 probe request
    │  │     ├─ viommu_send_req_sync(viommu, probe, probe_len);
-
    │  ├─ dev->iommu->iommu_dev = iommu_dev; 设置 device 的 iommu device
    │  ├─ group = iommu_group_get_for_dev(dev); 为设备查找或创建一个 iommu group
    │  │  ├─ 查找或创建一个 iommu group, `dev->bus->iommu_ops->device_group(dev)`, 会调用 `viommu_device_group()` 分配一个 group
