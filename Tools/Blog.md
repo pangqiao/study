@@ -9,3 +9,10 @@
 - 操作系统、BMC、UEFI等：http://blog.csdn.net/jiangwei0512/article/category/6259511
 - 全知识博客：https://blog.csdn.net/ljy1988123
 - 个人主站，主要是Linux，给community提过patch：https://consen.github.io/archives/
+
+
+
+
+
+如何评价最近CSDN的行为？ - 四猿外的回答 - 知乎
+https://www.zhihu.com/question/494519458/answer/2191335701
