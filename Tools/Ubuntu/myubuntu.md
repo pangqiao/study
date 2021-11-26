@@ -3,15 +3,15 @@
 
 <!-- code_chunk_output -->
 
-- [分区方案](#分区方案)
-- [虚拟机](#虚拟机)
-- [grub修改](#grub修改)
-- [网络代理](#网络代理)
-- [重要配置](#重要配置)
+- [1. 分区方案](#1-分区方案)
+- [2. 虚拟机](#2-虚拟机)
+- [3. grub修改](#3-grub修改)
+- [4. 网络代理](#4-网络代理)
+- [5. 重要配置](#5-重要配置)
 
 <!-- /code_chunk_output -->
 
-# 分区方案
+# 1. 分区方案
 
 https://www.jianshu.com/p/fe4e3915495e
 
@@ -65,7 +65,7 @@ https://www.jianshu.com/p/fe4e3915495e
 
 很多坑见: https://zhuanlan.zhihu.com/p/90746103
 
-# 虚拟机
+# 2. 虚拟机
 
 系统盘 和 数据盘 一定要分开
 
@@ -73,7 +73,7 @@ https://www.jianshu.com/p/fe4e3915495e
 
 数据盘 50G 起步
 
-# grub修改
+# 3. grub修改
 
 修改 `/etc/default/grub`
 
@@ -94,7 +94,7 @@ update-grub
 
 
 
-# 网络代理
+# 4. 网络代理
 
 https://blog.csdn.net/kan2016/article/details/90411137
 
@@ -102,7 +102,7 @@ https://blog.csdn.net/kan2016/article/details/90411137
 
 
 
-# 重要配置
+# 5. 重要配置
 
 * `~/.bashrc`
 * `~/.gitconfig`
