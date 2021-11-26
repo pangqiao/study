@@ -34,10 +34,11 @@
 
 qcow2 镜像改密码: https://leux.cn/doc/Debian%E5%AE%98%E6%96%B9qcow2%E9%95%9C%E5%83%8F%E4%BF%AE%E6%94%B9root%E5%AF%86%E7%A0%81.html
 
-
 # 3. 扩大根分区
 
 Linux 扩容 / 根分区(LVM+非LVM)参照: https://zhuanlan.zhihu.com/p/83340525
+
+磁盘空间扩容: https://blog.csdn.net/byn12345/article/details/88829984
 
 ## 3.1. 磁盘整体扩容
 
