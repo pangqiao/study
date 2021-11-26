@@ -19,7 +19,7 @@
 - [6. 键盘输入设置](#6-键盘输入设置)
 - [7. 虚拟机最终启动命令](#7-虚拟机最终启动命令)
 - [8. 修改 grub](#8-修改-grub)
-- [vncserver](#vncserver)
+- [9. vncserver](#9-vncserver)
 
 <!-- /code_chunk_output -->
 
@@ -265,7 +265,7 @@ GRUB_CMDLINE_LINUX=""
 
 ubuntu修改默认启动内核: https://cdmana.com/2021/03/20210328153654881n.html
 
-# vncserver
+# 9. vncserver
 
 https://blog.csdn.net/chen462488588/article/details/112237950
 
