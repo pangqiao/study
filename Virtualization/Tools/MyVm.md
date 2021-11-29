@@ -286,4 +286,5 @@ https://blog.csdn.net/chen462488588/article/details/112237950
 
 tigervncserver -geometry 1280x1024 -localhost no -xstartup /usr/bin/xterm
 
+tigervncserver -xstartup /usr/bin/mate-session -geometry 800x600 -localhost no
 
