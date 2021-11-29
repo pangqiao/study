@@ -275,6 +275,9 @@ ufw status
 
 # 10. vncserver
 
+https://www.linode.com/docs/guides/install-vnc-on-ubuntu-21-04/
+
+
 apt install tigervnc-standalone-server
 
 https://blog.csdn.net/chen462488588/article/details/112237950
