@@ -7,8 +7,8 @@
 - [2. 下载 vim 配置](#2-下载-vim-配置)
 - [3. 功能开启](#3-功能开启)
 - [4. YouCompleteMe 设置](#4-youcompleteme-设置)
-  - [4.1. rust 支持](#41-rust-支持)
-- [Rust](#rust)
+  - [4.1. rust 支持(optional)](#41-rust-支持optional)
+- [Rust(Optional)](#rustoptional)
   - [语法增强](#语法增强)
   - [代码片段](#代码片段)
   - [代码 补全 | 检查 | 跳转 利器](#代码-补全-检查-跳转-利器)
@@ -58,7 +58,11 @@ apt install build-essential cmake python3-dev libclang1
 git submodule update --init --recursive
 ```
 
-## 4.1. rust 支持
+```
+
+```
+
+## 4.1. rust 支持(optional)
 
 * rust 源码: rust src
 * 补全工具: rust analyzer
@@ -102,7 +106,7 @@ YCM 已经没有这个配置项了
 let g:ycm_rust_src_path = '/root/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
 ```
 
-# Rust
+# Rust(Optional)
 
 持续更新: https://www.yuque.com/zhoujiping/programming/rust-vim-settings
 
