@@ -55,8 +55,13 @@ apt install build-essential cmake python3-dev libclang1
 ```
 
 ```
+cd ~/.vim/bundle/YouCompleteMe
 git submodule update --init --recursive
 ```
+
+
+
+全部支持:
 
 ```
 cd ~/.vim/bundle/YouCompleteMe
