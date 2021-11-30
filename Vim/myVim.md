@@ -21,10 +21,10 @@
 # 1. 安装软件
 
 ```
-apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev libclang1 vim-gtk3 npm pip curl git
+apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev vim-gtk3 npm pip curl git
 ```
 
-vim-gtk 可以让 vim 有 `+clipboard` feature 支持, vim-nox 没有
+vim-gtk 可以让 vim 有 `+clipboard` feature 支持, 而 vim-nox 没有
 
 # 2. 下载 vim 配置
 
@@ -50,8 +50,10 @@ YouCompleteMe 相关设置在 `rc/complete.vim` 中
 
 安装参考: https://github.com/ycm-core/YouCompleteMe#linux-64-bit
 
+现在 C-family 的支持开始使用 clangd, 替换掉 libclang.
+
 ```
-apt install build-essential cmake python3-dev libclang1
+apt install build-essential cmake python3-dev
 ```
 
 ```
@@ -59,14 +61,6 @@ cd ~/.vim/bundle/YouCompleteMe
 git submodule update --init --recursive
 ```
 
-
-
-全部支持:
-
-```
-cd ~/.vim/bundle/YouCompleteMe
-python3 install.py --all
-```
 
 ## 4.1. rust 支持(optional)
 
