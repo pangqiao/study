@@ -59,7 +59,8 @@ git submodule update --init --recursive
 ```
 
 ```
-
+cd ~/.vim/bundle/YouCompleteMe
+python3 install.py --all
 ```
 
 ## 4.1. rust 支持(optional)
