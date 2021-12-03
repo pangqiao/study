@@ -5,7 +5,7 @@
 
 - [1. method](#1-method)
 - [2. materials](#2-materials)
-- [Blog](#blog)
+- [3. Blog](#3-blog)
 
 <!-- /code_chunk_output -->
 
@@ -68,7 +68,7 @@ Rust 代码和资料的精选列表: [Awesome Rust](https://github.com/rust-unof
 有些关键的概念, 如 ownership, borrowing, lifetimes 这三节请看官方一手资料, 别看博客:
 [Ownership](https://doc.rust-lang.org/book/ownership.html)
 
-# Blog
+# 3. Blog
 
 Rust 实战 - 使用套接字联网API: https://segmentfault.com/a/1190000018864788
 
