@@ -27,4 +27,15 @@ https://openbenchmarking.org/ :
 可靠性测试: https://cloud.tencent.com/developer/article/1179363
 
 
+---
+
+电源管理相关
+
 Chapter 3. Enabling CPU Frequency Scaling: https://techpubs.jurassic.nl/manuals/linux/enduser/SFS_UG/sgi_html/ch03.html
+
+Intel Turbo Boost技术和intel_pstate: https://huataihuang.gitbooks.io/cloud-atlas/content/os/linux/kernel/cpu/intel_turbo_boost_and_pstate.html
+
+
+`intel_pstate=disable intel_idle.max_cstate=0 processor.max_cstate=0`
+
+---
