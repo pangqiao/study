@@ -25,3 +25,6 @@ https://zhuanlan.zhihu.com/p/127829040 (未,)
 https://openbenchmarking.org/ : 
 
 可靠性测试: https://cloud.tencent.com/developer/article/1179363
+
+
+Chapter 3. Enabling CPU Frequency Scaling: https://techpubs.jurassic.nl/manuals/linux/enduser/SFS_UG/sgi_html/ch03.html
