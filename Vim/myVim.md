@@ -4,6 +4,7 @@
 <!-- code_chunk_output -->
 
 - [1. 安装软件](#1-安装软件)
+- [下载字体](#下载字体)
 - [2. 下载 vim 配置](#2-下载-vim-配置)
 - [3. 功能开启](#3-功能开启)
 - [4. YouCompleteMe 设置](#4-youcompleteme-设置)
@@ -25,6 +26,20 @@ apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-ess
 ```
 
 vim-gtk 可以让 vim 有 `+clipboard` feature 支持, 而 vim-nox 没有
+
+# 下载字体
+
+`https://github.com/Magnetic2014/YaHei-Consolas-Hybrid-For-Powerline/raw/master/YaHei%20Consolas%20Hybrid%201.12%20For%20Powerline.ttf`
+
+```
+mkdir /usr/share/fonts/YaHei
+
+chmod -R 755 /usr/share/fonts/YaHei
+
+fc-cache
+
+fc-list  | grep -i yahei
+```
 
 # 2. 下载 vim 配置
 
