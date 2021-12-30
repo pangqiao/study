@@ -4,7 +4,7 @@
 
 
 ;*
-;* Ϊ High Precision Event Timer ����������
+;* 为 High Precision Event Timer 功能所定义
 ;*
 
 %ifndef HPET_INC
@@ -12,14 +12,14 @@
 
 
 ;*
-;* ����߾��ȶ�ʱ���Ļ�ַ
-;* ����һ��һӳ�䷽ʽ��
-;* �����ַ 0FED00000h ӳ�䵽������ַ 0FED00000h
+;* 定义高精度定时器的基址
+;* 采用一对一映射方式：
+;* 虚拟地址 0FED00000h 映射到物理地址 0FED00000h
 ;
 %define HPET_BASE                       0FED00000h
 
 ;*
-;* ���� HPET �ļĴ�����ַ
+;* 定义 HPET 的寄存器地址
 ;*
 %define HPET_COUNTER                    0FED000F0h
 
@@ -44,29 +44,29 @@
 
 
 ;-----------------------------------------------+
-;  Ϊ HPET ���� count ֵ                        |
+;  为 HPET 定义 count 值                        |
 ;                                               |
-;  HPET �������Ƶ���м�����                    |
-;       1) 1��          = Լ 14318179 ��        |
-;       2) 1����(ms)    = Լ 14318 ��           |
-;       3) 1΢��(us)    = Լ 14 ��              |
-;       4) 1����(ns)    = Լ 0.014 ��           |
+;  HPET 按下面的频进行计数：                    |
+;       1) 1秒          = 约 14318179 次        |
+;       2) 1毫秒(ms)    = 约 14318 次           |
+;       3) 1微秒(us)    = 约 14 次              |
+;       4) 1纳秒(ns)    = 约 0.014 次           |
 ;-----------------------------------------------+
 
-%define HPET_COUNT_SECOND               14318179                ; 1 �� count ֵ
-%define HPET_COUNT_MILLISECOND          14318                   ; 1 ���� count ֵ
-%define HPET_COUNT_MICROSECOND          14                      ; 1 ΢�� count ֵ
+%define HPET_COUNT_SECOND               14318179                ; 1 秒 count 值
+%define HPET_COUNT_MILLISECOND          14318                   ; 1 毫秒 count 值
+%define HPET_COUNT_MICROSECOND          14                      ; 1 微秒 count 值
 
 
 
 ;----------------------------------------------------
-; �� START_HPET_TIMER()��������ʱ��
+; 宏 START_HPET_TIMER()：开启定时器
 ; input:
 ;       %1 - timer
-;       %2 - ʱ�䵥λ
-;       %3 - ��λֵ
+;       %2 - 时间单位
+;       %3 - 单位值
 ;
-; ʾ����
+; 示例：
 ;       START_HPET_TIMER  0, HPET_COUNT_MILLISECOND, 100
 ;--------------------------------------------------------
 %macro START_HPET_TIMER 3
@@ -80,11 +80,11 @@
 
 
 ;----------------------------------------------------
-; �� STOP_HPET_TIMER()���رն�ʱ��
+; 宏 STOP_HPET_TIMER()：关闭定时器
 ; input:
 ;       %1 - timer
 ;
-; ʾ����
+; 示例：
 ;       STOP_HPET_TIMER  0
 ;--------------------------------------------------------
 %macro STOP_HPET_TIMER 1
@@ -94,8 +94,8 @@
 
 
 ;------------------------------------------
-; ʹ�� HPET timer 1 ������ʱ
-; ������ʹ��΢�뼶��
+; 使用 HPET timer 1 进行延时
+; 描述：使用微秒级别
 ;------------------------------------------
 %macro DELAY_WITH_US 1
         mov esi, [HPET_TIMER1_CONFIG]
@@ -114,8 +114,8 @@
 %endmacro
 
 ;------------------------------------------
-; ʹ�� HPET timer 1 ������ʱ
-; ������ʹ�ú��뼶��
+; 使用 HPET timer 1 进行延时
+; 描述：使用毫秒级别
 ;------------------------------------------
 %macro DELAY_WITH_MS 1
         mov esi, [HPET_TIMER1_CONFIG]
