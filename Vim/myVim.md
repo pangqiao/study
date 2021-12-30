@@ -7,13 +7,13 @@
 - [下载字体](#下载字体)
 - [2. 下载 vim 配置](#2-下载-vim-配置)
 - [3. 功能开启](#3-功能开启)
+- [功能](#功能)
 - [4. YouCompleteMe 设置](#4-youcompleteme-设置)
   - [4.1. rust 支持(optional)](#41-rust-支持optional)
 - [Rust(Optional)](#rustoptional)
   - [语法增强](#语法增强)
   - [代码片段](#代码片段)
   - [代码 补全 | 检查 | 跳转 利器](#代码-补全-检查-跳转-利器)
-- [功能](#功能)
 - [reference](#reference)
 
 <!-- /code_chunk_output -->
@@ -57,6 +57,32 @@ git clone https://github.com/haiwei-li/vinux.git ~/.vim
 ```
 let g:feat_enable_fun=0
 ```
+
+# 功能
+
+内嵌终端: 
+
+空格av, 悬浮
+
+空格as，下面
+
+空格ns, 新buffer
+
+悬浮窗口有限制不能跳转, 非悬浮的可以用alt-k
+
+easy motion:
+
+normal模式按下大写W, 然后按对应的字母就能跳过去。按下空格jw 是整个文件
+
+LSP:
+
+当然lsp的话，vim就换asynccomplete了
+
+`let g:complete_plugin_type.cur_val='asyncomplete'`
+
+`let g:fuzzysearcher_plugin_name.cur_val='fzf'`, 启用悬浮窗口
+
+ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4.8
 
 # 4. YouCompleteMe 设置
 
@@ -168,29 +194,6 @@ Racer: Rust Auto-Complete-er, 代码补全. 而 vim 下的 `racer-rust/vim-racer
 
 
 
-# 功能
-
-内嵌终端: 
-
-空格av, 悬浮
-
-空格as，下面
-
-空格ns, 新buffer
-
-悬浮窗口有限制不能跳转, 非悬浮的可以用alt-k
-
-easy motion:
-
-normal模式按下大写W, 然后按对应的字母就能跳过去。按下空格jw 是整个文件
-
-LSP:
-
-当然lsp的话，vim就换asynccomplete了
-
-`let g:complete_plugin_type.cur_val='asyncomplete'`
-
-`let g:fuzzysearcher_plugin_name.cur_val='fzf'`, 启用悬浮窗口
 
 # reference
 
