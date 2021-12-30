@@ -8,9 +8,9 @@
 - [2. 下载 vim 配置](#2-下载-vim-配置)
 - [3. 功能开启](#3-功能开启)
 - [complete 插件](#complete-插件)
-- [功能](#功能)
-- [4. YouCompleteMe 设置](#4-youcompleteme-设置)
-  - [4.1. rust 支持(optional)](#41-rust-支持optional)
+  - [Lsp](#lsp)
+  - [4. YouCompleteMe 设置](#4-youcompleteme-设置)
+    - [4.1. rust 支持(optional)](#41-rust-支持optional)
 - [Rust(Optional)](#rustoptional)
   - [语法增强](#语法增强)
   - [代码片段](#代码片段)
@@ -59,22 +59,39 @@ git clone https://github.com/haiwei-li/vinux.git ~/.vim
 
 `let g:fuzzysearcher_plugin_name.cur_val='fzf'`, 启用悬浮窗口
 
-# complete 插件
-
-LSP: `let g:feat_enable_lsp=1`
-
-当然lsp的话，complete 就要换成 asynccomplete 了
-
-`let g:complete_plugin_type.cur_val='asyncomplete'`
-
 ```
-
+let g:vinux_coding_style.cur_val='linux'
+let g:feat_enable_writing=1
+let g:feat_enable_tools=1
+let g:feat_enable_airline=1
+let g:vinux_plugin_dir.cur_val='/root/.vim/bundle/'
+let g:feat_enable_frontend=1
+let g:fuzzy_matcher_type.cur_val='py-matcher'
+let g:enable_auto_plugin_install.cur_val='on'
+let g:feat_enable_lsp=1
+let g:feat_enable_vim=1
+let g:git_plugin_name.cur_val='vim-fugitive'
+let g:enable_powerline_fonts.cur_val='on'
+let g:feat_enable_edit=1
+let g:grepper_plugin.cur_val='neomake-multiprocess'
+let g:feat_enable_c=1
+let g:tagging_program.cur_val='cscope'
+let g:feat_enable_jump=1
+let g:feat_enable_basic=1
+let g:ctrlp_caching_type.cur_val='limit'
+let g:feat_enable_fun=0
+let g:enable_sexy_mode.cur_val='off'
+let g:feat_enable_gui=1
+let g:feat_enable_tmux=1
+let g:fuzzysearcher_plugin_name.cur_val='fzf'
+let g:complete_plugin_type.cur_val='asyncomplete'
+let g:feat_enable_complete=1
+let g:feat_enable_markdown=1
+let g:feat_enable_zsh=1
+let g:feat_enable_git=1
+let g:feat_enable_help=1
+let g:vinux_version='vinux V1.2.0-dev @8.2.2434'
 ```
-
-ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4.8
-
-
-# 功能
 
 内嵌终端: 
 
@@ -90,7 +107,23 @@ easy motion:
 
 normal模式按下大写W, 然后按对应的字母就能跳过去。按下空格jw 是整个文件
 
-# 4. YouCompleteMe 设置
+# complete 插件
+
+## Lsp
+
+LSP: `let g:feat_enable_lsp=1`
+
+当然lsp的话，complete 就要换成 asynccomplete 了
+
+`let g:complete_plugin_type.cur_val='asyncomplete'`
+
+需要`:LspInstallServer`
+
+ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4.8
+
+叫做.clang_xxxx之类的
+
+## 4. YouCompleteMe 设置
 
 补全功能使用了 YouCompleteMe, 但是这个比较难以编译，所以只是安装没有编译.
 
@@ -109,8 +142,7 @@ cd ~/.vim/bundle/YouCompleteMe
 git submodule update --init --recursive
 ```
 
-
-## 4.1. rust 支持(optional)
+### 4.1. rust 支持(optional)
 
 * rust 源码: rust src
 * 补全工具: rust analyzer
