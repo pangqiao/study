@@ -59,6 +59,20 @@ git clone https://github.com/haiwei-li/vinux.git ~/.vim
 
 `let g:fuzzysearcher_plugin_name.cur_val='fzf'`, 启用悬浮窗口
 
+内嵌终端: 
+
+空格av, 悬浮
+
+空格as，下面
+
+空格ns, 新buffer
+
+悬浮窗口有限制不能跳转, 非悬浮的可以用alt-k
+
+easy motion:
+
+normal模式按下大写W, 然后按对应的字母就能跳过去。按下空格jw 是整个文件
+
 ```
 let g:vinux_coding_style.cur_val='linux'
 let g:feat_enable_writing=1
@@ -92,20 +106,6 @@ let g:feat_enable_git=1
 let g:feat_enable_help=1
 let g:vinux_version='vinux V1.2.0-dev @8.2.2434'
 ```
-
-内嵌终端: 
-
-空格av, 悬浮
-
-空格as，下面
-
-空格ns, 新buffer
-
-悬浮窗口有限制不能跳转, 非悬浮的可以用alt-k
-
-easy motion:
-
-normal模式按下大写W, 然后按对应的字母就能跳过去。按下空格jw 是整个文件
 
 # complete 插件
 
