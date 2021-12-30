@@ -13,6 +13,7 @@
   - [语法增强](#语法增强)
   - [代码片段](#代码片段)
   - [代码 补全 | 检查 | 跳转 利器](#代码-补全-检查-跳转-利器)
+- [功能](#功能)
 - [reference](#reference)
 
 <!-- /code_chunk_output -->
@@ -166,6 +167,30 @@ https://rust-analyzer.github.io/manual.html#vimneovim
 Racer: Rust Auto-Complete-er, 代码补全. 而 vim 下的 `racer-rust/vim-racer` 插件已经停止开发, 不建议使用. 应该改用LSP插件（vim-lsp，nvim-lspconfig）, 补全用 YCM 是否就可以了?
 
 
+
+# 功能
+
+内嵌终端: 
+
+空格av, 悬浮
+
+空格as，下面
+
+空格ns, 新buffer
+
+悬浮窗口有限制不能跳转, 非悬浮的可以用alt-k
+
+easy motion:
+
+normal模式按下大写W, 然后按对应的字母就能跳过去。按下空格jw 是整个文件
+
+LSP:
+
+当然lsp的话，vim就换asynccomplete了
+
+`let g:complete_plugin_type.cur_val='asyncomplete'`
+
+`let g:fuzzysearcher_plugin_name.cur_val='fzf'`, 启用悬浮窗口
 
 # reference
 
