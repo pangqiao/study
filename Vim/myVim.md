@@ -7,6 +7,7 @@
 - [下载字体](#下载字体)
 - [2. 下载 vim 配置](#2-下载-vim-配置)
 - [3. 功能开启](#3-功能开启)
+- [complete 插件](#complete-插件)
 - [功能](#功能)
 - [4. YouCompleteMe 设置](#4-youcompleteme-设置)
   - [4.1. rust 支持(optional)](#41-rust-支持optional)
@@ -52,11 +53,26 @@ git clone https://github.com/haiwei-li/vinux.git ~/.vim
 
 打开任意文件，会下载一部分插件，然后 `<SPC>fe`, 输入 all, 打开所有的，会自动下载插件
 
-结束后，修改 `~/.vim/feature.vim`, 关闭番茄时钟
+结束后，修改 `~/.vim/feature.vim`
+
+`let g:feat_enable_fun=0`, 关闭番茄时钟
+
+`let g:fuzzysearcher_plugin_name.cur_val='fzf'`, 启用悬浮窗口
+
+# complete 插件
+
+LSP: `let g:feat_enable_lsp=1`
+
+当然lsp的话，complete 就要换成 asynccomplete 了
+
+`let g:complete_plugin_type.cur_val='asyncomplete'`
 
 ```
-let g:feat_enable_fun=0
+
 ```
+
+ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4.8
+
 
 # 功能
 
@@ -73,16 +89,6 @@ let g:feat_enable_fun=0
 easy motion:
 
 normal模式按下大写W, 然后按对应的字母就能跳过去。按下空格jw 是整个文件
-
-LSP:
-
-当然lsp的话，vim就换asynccomplete了
-
-`let g:complete_plugin_type.cur_val='asyncomplete'`
-
-`let g:fuzzysearcher_plugin_name.cur_val='fzf'`, 启用悬浮窗口
-
-ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4.8
 
 # 4. YouCompleteMe 设置
 
