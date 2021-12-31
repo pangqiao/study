@@ -10,4 +10,4 @@ arm32启动过程的介绍文章https://people.kernel.org/linusw/
 
 初步了解计算机与操作系统启动原理: https://www.jianshu.com/p/26e184605952
 
-为 Linux 添加自定义内核参数: https://www.timqi.com/2015/01/13/boot-para/
+为 Linux 添加自定义内核参数: https://www.timqi.com/2015/01/13/boot-para/调查
