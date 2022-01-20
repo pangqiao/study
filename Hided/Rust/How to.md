@@ -23,7 +23,7 @@
 
 第三步：Rust 语言学习
 
-* 到了这一步才真正开始 Rust 的学习，关于任何编程语言的学习，都是从阅读官方文档开始。Rust 社区发行了一个简明的开源教程：[The Rust Programming Language](https://doc.rust-lang.org/book/#the-rust-programming-language) , 强烈推荐阅读。
+* 到了这一步才真正开始 Rust 的学习，关于任何编程语言的学习，都是从阅读官方文档开始。Rust 社区发行了一个简明的开源教程：[The Rust Programming Language](https://doc.rust-lang.org/book/#the-rust-programming-language) / [中文版](https://rustwiki.org/zh-CN/book/), 强烈推荐阅读。
 * 如果不太适应英文教材的阅读，可以看这本书的中文翻译版本：[Rust 程序设计语言（第二版 & 2018 edition）简体中文版](https://kaisery.gitbooks.io/trpl-zh-cn/content/)。
 * 在阅读官方文档的时候，就可以根据上述的进行一些编程练习了。不过 Rust 的**官方文档**相对于其他编程语言文档来说，比较注重的是 Rust 的**几个编程特性**：零成本抽象，所有权特性等，在阅读这些的时候不推荐自己瞎写练习，应该对比阅读文档和其他的开源 Rust 代码。
 * 推荐辅助阅读张汉东的《Rust 编程之道》
@@ -34,7 +34,7 @@
 第四步：Rust编程练习
 
 * 在充分感受 Rust 的编程范式以后，应该进入一定量的练习阶段。
-* 这个时候推荐学习的材料是：[Rust by Example](https://doc.rust-lang.org/rust-by-example/), 直接通过在线修改代码阅读样例来学习。
+* 这个时候推荐学习的材料是：[Rust by Example](https://doc.rust-lang.org/rust-by-example/) / [中文版](https://rustwiki.org/zh-CN/rust-by-example/index.html), 直接通过在线修改代码阅读样例来学习。
 * 快速过一遍 Rust by Example 之后，相信现在至少可以开始上手写一些 Rust 代码了，个人喜欢把以前的一些小项目用新学习的编程语言重写，例如实现一个最简单的 DBMS，通过这样的行为不仅可以加深对新学语言的熟练度，还可以通过与原有实现的对比，感受 Rust 语言特性。
 * 有系列文章叫 [Learning Rust With Entirely Too Many Linked Lists](https://rust-unofficial.github.io/too-many-lists/) 非常推荐。写的很有趣也很实用。
 
