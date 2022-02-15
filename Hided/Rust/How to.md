@@ -76,3 +76,5 @@ Rust 中的异步编程: https://huangjj27.github.io/async-book/01_getting_start
 Rust 实战 - 使用套接字联网API: https://segmentfault.com/a/1190000018864788
 
 Rust 学习之 Some、Option、Result: https://blog.vgot.net/archives/rust-some.html
+
+一文读懂Rust的async: https://blog.csdn.net/tianlangstudio/article/details/107310211
