@@ -78,3 +78,5 @@ Rust 实战 - 使用套接字联网API: https://segmentfault.com/a/1190000018864
 Rust 学习之 Some、Option、Result: https://blog.vgot.net/archives/rust-some.html
 
 一文读懂Rust的async: https://blog.csdn.net/tianlangstudio/article/details/107310211
+
+Rust 学习心得＜4＞：async/await 如何工作: https://blog.csdn.net/m0_37889044/article/details/107949836
