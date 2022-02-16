@@ -81,3 +81,6 @@ Rust 学习之 Some、Option、Result: https://blog.vgot.net/archives/rust-some.
 Rust 学习心得＜4＞：async/await 如何工作: https://blog.csdn.net/m0_37889044/article/details/107949836
 
 生成器（Generator）和 async/await（译）: https://planetmeow.net/futures-explained/4-generators-async-await/
+
+Rust async/await 内部是怎么实现的: http://liubin.org/blog/2021/04/15/async-slash-await-internal/
+
