@@ -67,7 +67,7 @@ tokio::runtime::Builder::new_multi_thread().enable_all().build().unwrap().block_
 
 Future 在 tokio 里就“是”一个 task（确切说是 future.await？），tokio runtime 负责调度 task ，task 有些像 goroutine，不过 Rust 本身不自带 runtime 的实现。
 
-根据[这里](https://rust-lang.github.io/rfcs/2394-async_await.html#generators-and-streams)对 `await!` 宏的说明：
+根据[这里](https://rust-lang.github.io/rfcs/2394-async_await.html#the-expansion-of-await)对 `await!` 宏的说明：
 
 ```rust
 let mut future = IntoFuture::into_future($expression);
@@ -80,7 +80,7 @@ loop {
 }
 ```
 
-以及这里
+以及[这里](https://rust-lang.github.io/rfcs/2033-experimental-coroutines.html)
 
 ```rust
 #[async]
