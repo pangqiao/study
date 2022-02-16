@@ -78,11 +78,6 @@ Rust 实战 - 使用套接字联网API: https://segmentfault.com/a/1190000018864
 
 Rust 学习之 Some、Option、Result: https://blog.vgot.net/archives/rust-some.html
 
-一文读懂Rust的async: https://blog.csdn.net/tianlangstudio/article/details/107310211
-
-Rust 学习心得＜4＞：async/await 如何工作: https://blog.csdn.net/m0_37889044/article/details/107949836
-
-生成器（Generator）和 async/await（译）: https://planetmeow.net/futures-explained/4-generators-async-await/
 
 为什么Rust 标准库的 TreeMap 采用B+树实现，而不是常用的红黑树？ - NecoKeine的回答 - 知乎
 https://www.zhihu.com/question/516912481/answer/2350931515
