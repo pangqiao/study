@@ -98,6 +98,50 @@ fn print_lines() -> io::Result<()> {
 }
 ```
 
+上面代码经过“翻译”后，会类似这样：
+
+```rust
+fn print_lines() -> impl Future<Item = (), Error = io::Error> {
+    CoroutineToFuture(|| {
+        let addr = "127.0.0.1:8080".parse().unwrap();
+        let tcp = {
+            let mut future = TcpStream::connect(&addr);
+            loop {
+                match future.poll() {
+                    Ok(Async::Ready(e)) => break Ok(e),
+                    Ok(Async::NotReady) => yield,
+                    Err(e) => break Err(e),
+                }
+            }
+        }?;
+
+        let io = BufReader::new(tcp);
+
+        let mut stream = io.lines();
+        loop {
+            let line = {
+                match stream.poll()? {
+                    Async::Ready(Some(e)) => e,
+                    Async::Ready(None) => break,
+                    Async::NotReady => {
+                        yield;
+                        continue
+                    }
+                }
+            };
+            println!("{}", line);
+        }
+
+        Ok(())
+    })
+}
+```
+
+Note: 上面代码 poll 结果还有 NotReady，应该是 RFC 更新不及时吧，最新版的 Future 应该都是 Pendding了。
+
+从上面两处说明，我们也可以大概了解这种 generator 机制了：Ready 的时候返回结果，Pending 的时候让出调度。
+
+今天只是大致搜了下资料，抛出了这样一个问题。下一步计划再确认下 tokio 的实现，看看它到底是怎么做的。
 
 # Reference
 
