@@ -84,5 +84,6 @@ Rust 学习心得＜4＞：async/await 如何工作: https://blog.csdn.net/m0_37
 
 生成器（Generator）和 async/await（译）: https://planetmeow.net/futures-explained/4-generators-async-await/
 
-
+为什么Rust 标准库的 TreeMap 采用B+树实现，而不是常用的红黑树？ - NecoKeine的回答 - 知乎
+https://www.zhihu.com/question/516912481/answer/2350931515
 
