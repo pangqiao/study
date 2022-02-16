@@ -47,6 +47,8 @@
 
 # 2. materials
 
+RFC: https://rust-lang.github.io/rfcs/
+
 官方快速配置 Rust 开发环境并编写一个小应用！: [Getting started](https://www.rust-lang.org/learn/get-started)
 
 Cargo 书籍: [The Cargo Book](https://doc.rust-lang.org/cargo/index.html)
