@@ -1,9 +1,24 @@
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. 概述](#1-概述)
+- [2. 系统启动(System startup)](#2-系统启动system-startup)
+- [3. Stage 1 bootloader](#3-stage-1-bootloader)
+- [4. Stage 2 bootloader](#4-stage-2-bootloader)
+- [5. Kernel 阶段](#5-kernel-阶段)
+- [6. Init](#6-init)
+- [7. 总结](#7-总结)
+- [8. reference](#8-reference)
+
+<!-- /code_chunk_output -->
+
 在最早期的时候, 引导一台计算机意味着需要给计算机提供一个带有启动程序的纸带或者需要手动调整前端仪表盘中的地址/数据/控制开关来加载启动程序. 而如今的计算机则自带有启动设备用于简化启动过程, 但是这并不意味着启动过程就变得简单.
 
 我们先从总体上看Linux启动过程的各个阶段, 然后再深入各个阶段, 分别对其进行介绍. 在这个过程中, 对Linux内核源码的引用将帮助你查找和理解内核源码.
 
-# 概述
+# 1. 概述
 
 下图给出了Linux启动的总体过程.
 
@@ -17,7 +32,7 @@
 
 这就是 Linux 启动的大致流程. 下面我们再详细看看 Linux 启动的各个阶段.
 
-# 系统启动(System startup)
+# 2. 系统启动(System startup)
 
 系统启动阶段根据系统硬件平台的变化而变化. 在嵌入式平台中, 当系统上电或者复位的时候, 它使用的是引导环境(bootstrap environment), 如 U-Boot, RedBoot 和 Lucent 的 MicroMonitor. 嵌入式平台一般都会内置一个这种程序, 统一称作 boot monitor, boot monitor 位于目标硬件的 flash memory 的特殊区域, 为用户提供了加载 Linux 内核镜像并执行的功能. 除此之外, boot monitor 还提供了系统检测和硬件初始化的功能. 对于嵌入式系统而言, 这些 boot monitor 通常覆盖了 Stage 1 bootloader 和 Stage 2 bootloader.
 
@@ -38,35 +53,35 @@ od -xa mbr.bin
 
 dd 命令读取了 `/dev/sda`(第一个IDE磁盘)的前 512 字节, 并将其写入 `mbr.bin` 文件中. od 命令将二进制文件以 16 进制和 ASCII 码的形式将 `mbr.bin` 文件打印出来.
 
-# Stage 1 bootloader
+# 3. Stage 1 bootloader
 
 位于 MBR 中的 primary bootloader 是一个位于 512 字节 image 中, 该 image 包含了 primary bootloader 的可执行代码, 同时也包含了一个分区表(partition table). 如下图所示:
 
 ![2022-02-19-22-02-36.png](./images/2022-02-19-22-02-36.png)
 
-前446字节是primary bootloader, 包含了可执行代码和错误信息字符串. 接下去64字节是磁盘的分区表, 该分区表中包含了四条分区记录, 每条分区记录为16字节, 分区记录可以为空, 若为空则表示分区不存在. 最后是2个字节的magic number, 这两个字节是固定的0xAA55, 这两个字节的magic number可以用于判断该MBR记录是否存在.
+前 446 字节是 primary bootloader, 包含了可执行代码和错误信息字符串. 接下去64字节是磁盘的分区表, 该分区表中包含了四条分区记录, 每条分区记录为16字节, 分区记录可以为空, 若为空则表示分区不存在. 最后是 2 个字节的 magic number, 这两个字节是固定的0xAA55, 这两个字节的 magic number 可以用于判断该MBR记录是否存在.
 
-primary bootloader的作用就是用于寻找并定位secondary bootloader, 也就是Stage 2 bootloader. 它通过遍历分区表寻找可用的分区, 当它发现可用的分区的时候, 还是会继续扫描其他分区, 确保其他分区是不可用的. 然后从可用的分区中读取secondary bootloader到内存中, 并执行.
+primary bootloader 的作用就是用于寻找并定位 secondary bootloader, 也就是 Stage 2 bootloader. 它通过遍历分区表寻找可用的分区, 当它发现可用的分区的时候, 还是会继续扫描其他分区, 确保其他分区是不可用的. 然后从可用的分区中读取 secondary bootloader 到内存中, 并执行.
 
-Stage 2 bootloader
+# 4. Stage 2 bootloader
 
-Stage 2 bootloader也称作secondary bootloader, 也可以更恰当地称作kernel loader, 它的任务就是将Linux内核加载到内存中, 并根据设置, 有选择性地将initial RAM disk也加载到内存中.
+Stage 2 bootloader 也称作 secondary bootloader, 也可以更恰当地称作 kernel loader, 它的任务就是将 Linux 内核加载到内存中, 并根据设置, 有选择性地将 initial RAM disk 也加载到内存中.
 
-在x86 PC环境中, Stage 1 bootloader和Stage 2 bootloader合并起来就是 LILO (Linux Loader)或者GRUB(GRand Unified Bootloader). 因为LILO中存在一些缺点, 并且这些缺点在GRUB中得到了比较好的解决, 所以这里将会以GRUB为准进行讲解.
+在 x86 PC 环境中, Stage 1 bootloader 和 Stage 2 bootloader 合并起来就是 LILO(`Linux Loader`)或者 GRUB(GRand Unified Bootloader). 因为 LILO 中存在一些缺点, 并且这些缺点在 GRUB 中得到了比较好的解决, 所以这里将会以GRUB为准进行讲解.
 
-GRUB的一大优点是, 它能够正确识别到Linux文件系统. 相对于像LILO那样只能读取原始扇区数据, GRUB则可以从ext2和ext3的文件系统中读取到Linux内核. 为了实现这个功能, GRUB将原本2个步骤的bootloader变成了3个步骤, 多了Stage 1.5 bootloader, 即在Stage 1 bootloader和Stage 2 bootload中间加载一个可以识别Linux文件系统的bootloader(Stage 1.5 bootloader), 例如reiserfs_stage1_5(用于识别Reiser日志文件系统)或者e2fs_stage1_5(用于识别ext2和ext3文件系统). 当Stage 1.5 bootloader被加载和执行后, 就可以继续Stage 2 bootloader的加载和执行了.
+GRUB 的一大优点是, 它能够正确识别到 Linux 文件系统. 相对于像LILO那样只能读取原始扇区数据, GRUB 则可以从 ext2 和 ext3 的文件系统中读取到 Linux 内核. 为了实现这个功能, GRUB 将原本 2 个步骤的 bootloader 变成了 3 个步骤, 多了 Stage 1.5 bootloader, 即在 Stage 1 bootloader 和 Stage 2 bootloader 中间加载一个可以识别 Linux 文件系统的 bootloader(`Stage 1.5 bootloader`), 例如 reiserfs_stage1_5 (用于识别Reiser日志文件系统)或者 e2fs_stage1_5 (用于识别 ext2 和 ext3 文件系统). 当 Stage 1.5 bootloader 被加载和执行后, 就可以继续 Stage 2 bootloader 的加载和执行了.
 
-当Stage 2 bootloader被加载到内存后, GRUB就能够显示一系列可启动的内核(这些可启动的内核定义于/etc/grub.conf文件中, 该文件是指向/etc/grub/menu.lst和/etc/grub.conf的软链接). 你可以在这些文件中配置, 让系统自己默认选择某一个内核启动, 并且可以配置内核启动的相应参数.
+当 Stage 2 bootloader 被加载到内存后, GRUB 就能够显示一系列可启动的内核(这些可启动的内核定义于 `/etc/grub.conf` 文件中, 该文件是指向 `/etc/grub/menu.lst` 和 `/etc/grub.conf` 的软链接). 你可以在这些文件中配置, 让系统自己默认选择某一个内核启动, 并且可以配置内核启动的相应参数.
 
-当Stage 2 bootloader已经被加载到内存中, 文件系统被识别到, 并且默认的内核镜像和initrd镜像被加载到内存中, 这就意味着镜像都已经准备好了, 可以直接调用内核镜像开始内核的启动了.
+当 `Stage 2 bootloader` 已经被加载到内存中, 文件系统被识别到, 并且默认的内核镜像和 initrd 镜像被加载到内存中, 这就意味着镜像都已经准备好了, 可以直接调用内核镜像开始内核的启动了.
 
-在Ubuntu中bootloader的相关信息可以在/boot/grub/目录下找到, 主要是/boot/grub/grub.cfg, 但是该文件是自读的, 需要在其他地方(如/etc/default/grub)更改, 然后执行update-grub.
+在 Ubuntu 中 bootloader 的相关信息可以在 `/boot/grub/` 目录下找到, 主要是 `/boot/grub/grub.cfg`, 但是该文件是自读的, 需要在其他地方(如 `/etc/default/grub` )更改, 然后执行 update-grub.
 
-Kernel阶段
+# 5. Kernel 阶段
 
-既然内核镜像已经准备好, 并且控制权已经从Stage 2 bootloader传递过来, 启动过程的Kernel阶段就可以开始了. 内核镜像并非直接可以运行, 而是一个被压缩过的. 通常情况下, 它是一个通过zlib压缩的zImage(compressed image小于51KB)或者bzImage(big compressed image, 大于512KB)文件. 在内核镜像的开头是一个小程序, 该程序对硬件进行简单的配置并将压缩过的内核解压到高内存地址空间中. 如果initial RAM disk存在, 则它将initial RAM disk加载到内存中, 做好标记等待后面使用. 这个时候, 就可以真正调用内核, 开始真正的内核启动了.
+既然内核镜像已经准备好, 并且控制权已经从 `Stage 2 bootloader` 传递过来, 启动过程的 Kernel 阶段就可以开始了. 内核镜像并非直接可以运行, 而是一个被压缩过的. 通常情况下, 它是一个通过 zlib 压缩的 zImage(compressed image 小于 51KB)或者 bzImage(big compressed image, 大于 512KB)文件. 在内核镜像的开头是一个小程序, 该程序对硬件进行简单的配置并将压缩过的内核解压到高内存地址空间中. 如果 initial RAM disk 存在, 则它将 initial RAM disk 加载到内存中, 做好标记等待后面使用. 这个时候, 就可以真正调用内核, 开始真正的内核启动了.
 
-在GRUB中可以通过以下方法手动启动内核:
+在 GRUB 中可以通过以下方法手动启动内核:
 
 ```
 grub> kernel /bzImage-2.6.14.2
@@ -78,9 +93,9 @@ grub> boot
 Uncompressing Linux... Ok, booting the kernel.
 ```
 
-如果不知道要启动的内核名字, 只需要出入/, 然后按Tab键让它自动补齐, 或者切换可用的内核.
+如果不知道要启动的内核名字, 只需要出入 `/`, 然后按Tab键让它自动补齐, 或者切换可用的内核.
 
-GRUB 2上加载内核的命令已经由kernel变成了linux, 所以需要用到的是下面的命令
+GRUB 2 上加载内核的命令已经由 kernel 变成了 linux, 所以需要用到的是下面的命令
 
 ```
 grub> linux /vmlinuz
@@ -105,21 +120,21 @@ bzImage(对于i386镜像而言)被调用的入口点位于 `./arch/i386/boot/hea
 
 在 `./init/main.c:start_kernl()` 函数中, 一长串的初始化函数将会被调用到用于设置中断、执行更详细的内存配置、加载initial RAM disk等. 接着, 将会调用 `./arch/i386/kernel/process.c:kernel_thread()` 函数来启动第一个用户空间进程, 该进程的执行函数是init. 最后, idle 进程(`cpu_idle`)将会被启动, 并且调度器其将接管整个系统. 当中断使能时, 可抢占的调度器周期性地接管系统, 用于提供多任务同时运行的能力.
 
-在内核启动的时候, 原本由Stage 2 bootloader加载到内核的initial RAM disk(initrd)将会被挂载上. 这个位于RAM里面的initrd将会临时充当根文件系统, 并且允许内核直接启动, 而不需要挂载任何的物理磁盘. 因为那些用于跟外设交互的内核模块可以被放置到initrd中, 所以内核可以做得非常小, 并且还能支持很多的外设配置. 当内核启动起来后, 这个临时的根文件系统将会被丢弃(通过pivot_root()函数), 即initrd文件系统将会被卸载, 而真正的根文件系统将会被挂载.
+在内核启动的时候, 原本由 `Stage 2 bootloader` 加载到内核的 `initial RAM disk`(initrd)将会被挂载上. 这个位于 RAM 里面的 initrd 将会临时充当根文件系统, 并且允许内核直接启动, 而不需要挂载任何的物理磁盘. 因为那些用于跟外设交互的内核模块可以被放置到 initrd 中, 所以内核可以做得非常小, 并且还能支持很多的外设配置. 当内核启动起来后, 这个临时的根文件系统将会被丢弃(通过 `pivot_root()` 函数), 即 initrd 文件系统将会被卸载, 而真正的根文件系统将会被挂载.
 
-initrd功能让驱动不需要直接整合到内存中, 而是以可加载的模块存在, 从而让Linux内核能够做到很小. 这些可加载模块为内核提供访问磁盘和文件系统的方法, 同时也提供了访问其他硬件设备的方法. 因为根文件系统其实是位于磁盘的一个文件系统, initrd提供了访问磁盘和挂载真正根文件系统的方法. 在没有磁盘的嵌入式文件系统中, initrd可以作为最终的根文件系统, 或者最终的根文件系统可以通过NFS(Network File System)挂载.
+initrd 功能让驱动不需要直接整合到内存中, 而是以可加载的模块存在, 从而让 Linux 内核能够做到很小. 这些可加载模块为内核提供访问磁盘和文件系统的方法, 同时也提供了访问其他硬件设备的方法. 因为根文件系统其实是位于磁盘的一个文件系统, initrd 提供了访问磁盘和挂载真正根文件系统的方法. 在没有磁盘的嵌入式文件系统中, initrd 可以作为最终的根文件系统, 或者最终的根文件系统可以通过 NFS(`Network File System`)挂载.
 
-Init
+# 6. Init
 
 当内核启动并初始化完毕后, 内核就会开始启动第一个用户空间程序, 这个被调用的程序是第一个使用标准C库编译的程序, 在这之前, 所有的程序都不是使用标准C库编译得到的.
 
 在Linux桌面系统中, 虽然不是强制规定的, 但是第一个启动的应用程序通常是`/sbin/init`. 嵌入式系统中通常很少要求init程序通过 `/etc/inittab` 提供大量的初始化工作. 很多情况下, 用户可以通过调用一个简单的shell脚本来启动所需的应用程序.
 
-总结
+# 7. 总结
 
 就像Linux本身一样, Linux启动过程也是一个特别灵活的过程, 该过程支持了各种各样的处理器和硬件平台. 最早的时候, loadlin bootloader提供了最简单直接的方法来启动Linux. 后来 LILO bootloader 扩展强化了启动的能力, 但是却还是没法获取文件系统的信息. 最新的bootloader, 比如GRUB, 则允许从一些列的文件系统(从 Minix 到Reiser)中启动 Linux.
 
-# reference
+# 8. reference
 
 https://zhuanlan.zhihu.com/p/49877275
 
