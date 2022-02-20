@@ -14,3 +14,7 @@ arm32启动过程的介绍文章https://people.kernel.org/linusw/
 
 启动时间统计: https://chromium.googlesource.com/chromiumos/third_party/autotest/+/HEAD/client/site_tests/platform_BootPerf/control
 
+
+Linux启动时如何定位BIOS提供的ACPI表 - 河马的文章 - https://zhuanlan.zhihu.com/p/49500489
+
+Linux如何定位BIOS提供的SMBIOS表 - 河马的文章 - https://zhuanlan.zhihu.com/p/49714322
