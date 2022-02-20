@@ -8,6 +8,6 @@ huge tlb/page:
 
 Linux 操作系统原理 — 内存 — 大页内存: https://blog.csdn.net/Jmilk/article/details/106871256
 
+Linux内存管理：大页内存原理 - Yann的文章 - https://zhuanlan.zhihu.com/p/356338438
 
-
-
+《Linux内核深度解析》 3.13 巨型页
