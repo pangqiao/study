@@ -89,10 +89,6 @@ GRUB 的一大优点是, 它能够**正确识别到 Linux 文件系统**. 相对
 
 在 Ubuntu 中 bootloader 的相关信息可以在 `/boot/grub/` 目录下找到, 主要是 `/boot/grub/grub.cfg`, 但是该文件是自读的, 需要在其他地方(如 `/etc/default/grub` )更改, 然后执行 update-grub.
 
-# 5. Kernel 阶段
-
-既然内核镜像已经准备好, 并且控制权已经从 `Stage 2 bootloader` 传递过来, 启动过程的 Kernel 阶段就可以开始了. 内核镜像并非直接可以运行, 而是一个**被压缩过的**. 通常情况下, 它是一个通过 zlib 压缩的 zImage(compressed image 小于 51KB)或者 **bzImage**(`big compressed image`, 大于 512KB)文件. 在**内核镜像的开头**是一个**小程序**, 该程序**对硬件进行简单的配置**并**将压缩过的内核解压到高内存地址空间**中. 如果 **initial RAM disk** 存在, 则它**将 initial RAM disk 加载到内存**中, 做好标记**等待后面使用**. 这个时候, 就可以真正调用内核, 开始真正的内核启动了.
-
 在 GRUB 中可以通过以下方法**手动启动内核**:
 
 ```
@@ -124,15 +120,21 @@ lrwxrwxrwx   1 root root    30 8月  10 06:48 vmlinuz -> boot/vmlinuz-4.15.0-30-
 lrwxrwxrwx   1 root root    30 8月  10 06:48 vmlinuz.old -> boot/vmlinuz-4.15.0-29-generic
 ```
 
-**bzImage** (对于 i386 镜像而言)被调用的**入口点**位于 `./arch/i386/boot/head.S` 的**汇编函数 start**. 这个函数先进行一个**基本的硬件设置**然后调用 `./arch/i386/boot/compressed/head.S` 中的 `startup_32` 函数. `startup_32` 函数建立一个基本的**运行环境**(堆栈、寄存器等), 并且**清除 BSS**(`Block Started by Symbol`). 然后内核调用 `./arch/i386/boot/compressed/misc.c:decompress_kernel()` 函数对内核进行解压缩. 当内核解压缩完毕后, 就会调用另外一个 `startup_32` 函数开始内核的启动, 该函数为 `./arch/i386/kernel/head.S:startup_32`.
+# 5. Kernel 阶段
 
-在新的 `startup_32` 函数(也叫做 swapper 或者 `process 0`), 页表将被初始化并且内存的分页机制将会被使能. 物理CPU的类型将会被检测, 并且 **FPU**(`floating-point unit`)也会被检测以便后面使用. 然后 `./init/main.c:start_kernel()` 函数将会被调用, 开始通用的内核初始化(不针对某一具体的处理器架构). 其基本流程留下所示:
+既然内核镜像已经准备好, 并且控制权已经从 `Stage 2 bootloader` 传递过来, 启动过程的 Kernel 阶段就可以开始了. 内核镜像并非直接可以运行, 而是一个**被压缩过的**. 通常情况下, 它是一个通过 zlib 压缩的 zImage(compressed image 小于 51KB)或者 **bzImage**(`big compressed image`, 大于 512KB)文件. 在**内核镜像的开头**是一个**小程序**, 该程序**对硬件进行简单的配置**并**将压缩过的内核解压到高内存地址空间**中. 如果 **initial RAM disk** 存在, 则它**将 initial RAM disk 加载到内存**中, 做好标记**等待后面使用**. 这个时候, 就可以真正调用内核, 开始真正的内核启动了.
+
+**bzImage** (对于 i386 镜像而言)被调用的**入口点**位于 `./arch/i386/boot/head.S` 的**汇编函数 start**. 这个函数先进行一个**基本的硬件设置**然后调用 `./arch/i386/boot/compressed/head.S` 中的 `startup_32` 函数. `startup_32` 函数建立一个基本的**运行环境**(堆栈、寄存器等), 并且**清除 BSS**(`Block Started by Symbol`). 然后内核调用 `./arch/i386/boot/compressed/misc.c:decompress_kernel()` 函数**对内核进行解压缩**. 当内核解压缩完毕后, 就会调用另外一个 `startup_32` 函数开始内核的启动, 该函数为 `./arch/i386/kernel/head.S:startup_32`.
+
+在**新**的 `startup_32` 函数(也叫做 swapper 或者 `process 0`), **页表将被初始化**并且**内存的分页机制将会被使能**. **物理 CPU 的类型将会被检测**, 并且 **FPU**(`floating-point unit`)也会被检测以便后面使用. 然后 `./init/main.c:start_kernel()` 函数将会被调用, 开始**通用的内核初始化**(不针对某一具体的处理器架构).
+
+基本流程如下所示:
 
 ![2022-02-19-22-02-51.png](./images/2022-02-19-22-02-51.png)
 
-在 `./init/main.c:start_kernl()` 函数中, 一长串的初始化函数将会被调用到用于设置中断、执行更详细的内存配置、加载initial RAM disk等. 接着, 将会调用 `./arch/i386/kernel/process.c:kernel_thread()` 函数来启动第一个用户空间进程, 该进程的执行函数是init. 最后, idle 进程(`cpu_idle`)将会被启动, 并且调度器其将接管整个系统. 当中断使能时, 可抢占的调度器周期性地接管系统, 用于提供多任务同时运行的能力.
+在 `./init/main.c:start_kernl()` 函数中, 一长串的初始化函数将会被调用到用于设置中断、执行更详细的内存配置、**加载initial RAM disk**等. 接着, 将会调用 `./arch/i386/kernel/process.c:kernel_thread()` 函数来**启动第一个用户空间进程**, 该进程的执行函数是 init. 最后, idle 进程(`cpu_idle`)将会被启动, 并且调度器其将接管整个系统. 当中断使能时, 可抢占的调度器周期性地接管系统, 用于提供多任务同时运行的能力.
 
-在内核启动的时候, 原本由 `Stage 2 bootloader` 加载到内核的 `initial RAM disk`(initrd)将会被挂载上. 这个位于 RAM 里面的 initrd 将会临时充当根文件系统, 并且允许内核直接启动, 而不需要挂载任何的物理磁盘. 因为那些用于跟外设交互的内核模块可以被放置到 initrd 中, 所以内核可以做得非常小, 并且还能支持很多的外设配置. 当内核启动起来后, 这个临时的根文件系统将会被丢弃(通过 `pivot_root()` 函数), 即 initrd 文件系统将会被卸载, 而真正的根文件系统将会被挂载.
+在内核启动的时候, 原本由 `Stage 2 bootloader` 加载到内核的 `initial RAM disk`(**initrd**)将会**被挂载**上. 这个位于 RAM 里面的 initrd 将会**临时充当根文件系统**, 并且允许内核直接启动, 而不需要挂载任何的物理磁盘. 因为那些用于跟外设交互的内核模块可以被放置到 initrd 中, 所以内核可以做得非常小, 并且还能支持很多的外设配置. 当内核启动起来后, 这个临时的根文件系统将会被丢弃(通过 `pivot_root()` 函数), 即 initrd 文件系统将会被卸载, 而真正的根文件系统将会被挂载.
 
 initrd 功能让驱动不需要直接整合到内存中, 而是以可加载的模块存在, 从而让 Linux 内核能够做到很小. 这些可加载模块为内核提供访问磁盘和文件系统的方法, 同时也提供了访问其他硬件设备的方法. 因为根文件系统其实是位于磁盘的一个文件系统, initrd 提供了访问磁盘和挂载真正根文件系统的方法. 在没有磁盘的嵌入式文件系统中, initrd 可以作为最终的根文件系统, 或者最终的根文件系统可以通过 NFS(`Network File System`)挂载.
 
