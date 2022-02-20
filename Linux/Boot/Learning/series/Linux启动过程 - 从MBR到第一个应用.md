@@ -81,11 +81,11 @@ Stage 2 bootloader 也称作 **secondary bootloader**, 也可以更恰当地称�
 
 在 x86 PC 环境中, **Stage 1 bootloader** 和 **Stage 2 bootloader** 合并起来就是 **LILO**(`Linux Loader`)或者 **GRUB**(`GRand Unified Bootloader`). 因为 LILO 中存在一些缺点, 并且这些缺点在 GRUB 中得到了比较好的解决, 所以这里将会以GRUB为准进行讲解.
 
-GRUB 的一大优点是, 它能够**正确识别到 Linux 文件系统**. 相对于像LILO那样只能读取原始扇区数据, GRUB 则可以从 ext2 和 ext3 的文件系统中读取到 Linux 内核. 为了实现这个功能, GRUB 将原本 2 个步骤的 bootloader 变成了 3 个步骤, 多了 Stage 1.5 bootloader, 即在 Stage 1 bootloader 和 Stage 2 bootloader 中间加载一个可以识别 Linux 文件系统的 bootloader(`Stage 1.5 bootloader`), 例如 reiserfs_stage1_5 (用于识别Reiser日志文件系统)或者 e2fs_stage1_5 (用于识别 ext2 和 ext3 文件系统). 当 Stage 1.5 bootloader 被加载和执行后, 就可以继续 Stage 2 bootloader 的加载和执行了.
+GRUB 的一大优点是, 它能够**正确识别到 Linux 文件系统**. 相对于像 **LILO** 那样**只能读取原始扇区数据**, **GRUB** 则可以从 **ext2** 和 **ext3** 的**文件系统**中读取到 **Linux 内核**. 为了实现这个功能, **GRUB** 将原本 2 个步骤的 bootloader 变成了 3 个步骤, 多了 Stage 1.5 bootloader, 即在 **Stage 1 bootloader** 和 **Stage 2 bootloader** 中间加载一个**可以识别 Linux 文件系统**的 **bootloader**(`Stage 1.5 bootloader`), 例如 `reiserfs_stage1_5` (用于识别 Reiser 日志文件系统)或者 `e2fs_stage1_5` (用于识别 **ext2** 和 **ext3** 文件系统). 当 `Stage 1.5 bootloader` 被加载和执行后, 就可以继续 Stage 2 bootloader 的加载和执行了.
 
-当 Stage 2 bootloader 被加载到内存后, GRUB 就能够显示一系列可启动的内核(这些可启动的内核定义于 `/etc/grub.conf` 文件中, 该文件是指向 `/etc/grub/menu.lst` 和 `/etc/grub.conf` 的软链接). 你可以在这些文件中配置, 让系统自己默认选择某一个内核启动, 并且可以配置内核启动的相应参数.
+当 Stage 2 bootloader 被加载到内存后, **GRUB** 就能够**显示一系列可启动的内核**(这些可启动的内核定义于 `/etc/grub.conf` 文件中, 该文件是指向 `/etc/grub/menu.lst` 和 `/etc/grub.conf` 的软链接). 你可以在这些文件中配置, 让系统自己默认选择某一个内核启动, 也可以在这时候选择一个 kernel, 甚至可以设置内核启动的相应参数. 同时, 你可以使用 shell 命令行来手动控制启动过程.
 
-当 `Stage 2 bootloader` 已经被加载到内存中, 文件系统被识别到, 并且默认的内核镜像和 initrd 镜像被加载到内存中, 这就意味着镜像都已经准备好了, 可以直接调用内核镜像开始内核的启动了.
+当 `Stage 2 bootloader` 已经**被加载到内存**中, **文件系统被识别到**, 并且**默认的内核镜像**和 **initrd** 镜像被加载到内存中, 这就意味着镜像都已经准备好了, stage 2 bootloader 会直接调用内核镜像开始内核的启动.
 
 在 Ubuntu 中 bootloader 的相关信息可以在 `/boot/grub/` 目录下找到, 主要是 `/boot/grub/grub.cfg`, 但是该文件是自读的, 需要在其他地方(如 `/etc/default/grub` )更改, 然后执行 update-grub.
 
