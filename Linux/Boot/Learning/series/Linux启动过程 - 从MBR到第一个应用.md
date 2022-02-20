@@ -24,25 +24,35 @@
 
 ![2022-02-19-22-02-21.png](./images/2022-02-19-22-02-21.png)
 
-当系统第一次启动或者重启的时候, 处理器将会从一个规定好的位置开始执行. 对于PC而言, 这个位置对应到主板 flash 芯片中的 BIOS(`Basic Input/Output System`). 对于嵌入式系统而言, CPU 的 reset vector 是一个已知的地址, 该地址指向 `flash/ROM` 的内部. 不管怎样, 结果都是一样的, 即初始化系统硬件, 并启动操作系统. 由于PC具有很高的灵活性, 所以 BIOS 需要寻找并决定哪些设备是可以启动的, 并且从哪个设备启动. 我们将会在后面进行详细的介绍.
+当系统第一次启动或者重启的时候, **CPU** 将会从一个**规定好的位置**开始执行.
+* 对于 **PC** 而言, 这个位置对应到**主板 flash 芯片**中的 **BIOS**(`Basic Input/Output System`).
+* 对于**嵌入式系统**而言, CPU 的 reset vector 是一个已知的地址, 该地址指向 `flash/ROM` 的内部.
 
-当一个启动设备被发现时, **Stage 1 bootloader** 将会被加载到内存中并执行. 这个 bootloader 位于设备的第一个 sector, 其长度少于 512B, 它的作用就是加载 **Stage 2 bootloader**.
+不管怎样, 结果都是一样的, 即**初始化系统硬件**, 并**启动操作系统**. 由于 **PC** 具有很高的灵活性, 所以 **BIOS** 需要寻找并决定**哪些设备是可以启动的**, 并且从哪个设备启动. 我们将会在后面进行详细的介绍.
 
-当 Stage 2 bootloader 被加载到内存并执行的时候, 屏幕将会显示 boot splash 界面, Linux 内核和可选的 initial RAM disk (临时根文件系统)将会被加载到内存. 当内核镜像加载完毕, Stage 2 bootloader 会把控制权交给 Linux 内核, Linux 内核这时候会将内核解压并执行, 对系统进行初始化. 这时候, 内核将会检测系统硬件, 枚举连接到系统的硬件设备, 挂载根设备, 并加载必要的内核模块. 当内核初始化完毕后, 第一个用户空间程序(init)被启动, 更上层的系统初始化将被执行.
+当**一个启动设备**被发现时, **Stage 1 bootloader** 将会被加载到**内存**中并执行. 这个 bootloader 位于设备的**第一个 sector**, 其长度少于 **512B**, 它的作用就是**加载 Stage 2 bootloader**.
+
+当 **Stage 2 bootloader** 被**加载到内存并执行**的时候, 屏幕将会显示 **boot splash** 界面, **Linux 内核**和可选的 **initial RAM disk** (**临时根文件系统**)将会被加载到**内存**. 当**内核镜像加载**完毕, Stage 2 bootloader 会把控制权交给 Linux 内核, Linux 内核这时候会将**内核解压并执行**, 对系统进行初始化. 这时候, 内核将会检测系统硬件, 枚举连接到系统的硬件设备, 挂载根设备, 并加载必要的内核模块. 当内核初始化完毕后, 第一个用户空间程序(init)被启动, 更上层的系统初始化将被执行.
 
 这就是 Linux 启动的大致流程. 下面我们再详细看看 Linux 启动的各个阶段.
 
 # 2. 系统启动(System startup)
 
-系统启动阶段根据系统硬件平台的变化而变化. 在嵌入式平台中, 当系统上电或者复位的时候, 它使用的是引导环境(bootstrap environment), 如 U-Boot, RedBoot 和 Lucent 的 MicroMonitor. 嵌入式平台一般都会内置一个这种程序, 统一称作 boot monitor, boot monitor 位于目标硬件的 flash memory 的特殊区域, 为用户提供了加载 Linux 内核镜像并执行的功能. 除此之外, boot monitor 还提供了系统检测和硬件初始化的功能. 对于嵌入式系统而言, 这些 boot monitor 通常覆盖了 Stage 1 bootloader 和 Stage 2 bootloader.
+系统启动阶段根据系统硬件平台的变化而变化.
 
-在 PC 环境中, 系统启动开始于地址 0xFFFF0, 该地址位于 BIOS 中. BIOS 程序的第一阶段任务就是上电自检 POST(Power On Self Test), 对系统硬件进行基本的检测, 确保正常工作. 第二阶段的任务就是本地设备枚举和初始化.
+在**嵌入式平台**中, 当系统上电或者复位的时候, 它使用的是引导环境(bootstrap environment), 如 U-Boot, RedBoot 和 Lucent 的 MicroMonitor. 嵌入式平台一般都会内置一个这种程序, 统一称作 boot monitor, boot monitor 位于目标硬件的 flash memory 的特殊区域, 为用户提供了加载 Linux 内核镜像并执行的功能. 除此之外, boot monitor 还提供了系统检测和硬件初始化的功能. 对于嵌入式系统而言, 这些 boot monitor 通常覆盖了 Stage 1 bootloader 和 Stage 2 bootloader.
 
-从 BIOS 程序功能的角度来看, BIOS由两部分组成: POST 代码和 runtime services. 当POST结束时, 内存中 POST 相关的代码将会被丢弃, 但是 runtime services 代码将继续保持在内存中, 为操作系统提供一些必要的信息和服务直到系统关闭.
+在 **PC** 环境中, 系统启动开始于地址 `0xFFFF0`, 该地址位于 **BIOS** 中.
+* BIOS 程序的第一阶段任务就是**上电自检 POST**(`Power On Self Test`), 对**系统硬件**进行**基本的检测**, 确保正常工作.
+* 第二阶段的任务就是**本地设备枚举和初始化**.
 
-为了启动操作系统, BIOS runtime 会根据用户设定的偏好顺序检测可启动的设备, 并尝试启动存放在设备中的操作系统. 典型的可启动设备可以是软盘、CD-ROM、硬盘的某个分区、网络设备或者是USB磁盘.
+从 BIOS 程序功能的角度来看, **BIOS** 由**两部分**组成: **POST 代码**和 **runtime services**.
+* 当POST结束时, 内存中 POST 相关的代码将会被丢弃;
+* 而 runtime services 代码将继续**保持在内存中**, 为操作系统提供一些**必要的信息和服务**直到**系统关闭**.
 
-通常 Linux 会从磁盘启动, 而该磁盘的 MBR(Master Boot Record)会包含有 primary bootloader, 也就是 Stage 1 bootloader. MBR 是一个 512 字节的扇区, 该扇区为磁盘的第一个扇区(`sector 1, cylinder 0, head 0`). 当将 MBR 读取到内存后, BIOS 就会尝试执行该 primary bootloader, 并将控制权交给它.
+为了启动操作系统, BIOS **runtime！！！** 会根据**用户设定的偏好顺序**检测**可启动的设备**, 并尝试**启动**存放在设备中的**操作系统**. 典型的可启动设备可以是软盘、CD-ROM、硬盘的某个分区、网络设备或者是USB磁盘.
+
+通常 Linux 会从**磁盘启动**, 而该磁盘的 **MBR**(`Master Boot Record`)会包含有 **primary bootloader**, 也就是 `Stage 1 bootloader`. MBR 是一个 512 字节的扇区, 该扇区为磁盘的**第一个扇区**(`sector 1, cylinder 0, head 0`). 当将 MBR 读取到内存后, BIOS 就会尝试执行该 primary bootloader, 并将控制权交给它.
 
 为了查看 MBR 的内容, 在 Linux 中可以通过以下命令获取:
 
