@@ -91,9 +91,9 @@ GRUB 的一大优点是, 它能够**正确识别到 Linux 文件系统**. 相对
 
 # 5. Kernel 阶段
 
-既然内核镜像已经准备好, 并且控制权已经从 `Stage 2 bootloader` 传递过来, 启动过程的 Kernel 阶段就可以开始了. 内核镜像并非直接可以运行, 而是一个被压缩过的. 通常情况下, 它是一个通过 zlib 压缩的 zImage(compressed image 小于 51KB)或者 bzImage(big compressed image, 大于 512KB)文件. 在内核镜像的开头是一个小程序, 该程序对硬件进行简单的配置并将压缩过的内核解压到高内存地址空间中. 如果 initial RAM disk 存在, 则它将 initial RAM disk 加载到内存中, 做好标记等待后面使用. 这个时候, 就可以真正调用内核, 开始真正的内核启动了.
+既然内核镜像已经准备好, 并且控制权已经从 `Stage 2 bootloader` 传递过来, 启动过程的 Kernel 阶段就可以开始了. 内核镜像并非直接可以运行, 而是一个**被压缩过的**. 通常情况下, 它是一个通过 zlib 压缩的 zImage(compressed image 小于 51KB)或者 **bzImage**(`big compressed image`, 大于 512KB)文件. 在**内核镜像的开头**是一个**小程序**, 该程序**对硬件进行简单的配置**并**将压缩过的内核解压到高内存地址空间**中. 如果 **initial RAM disk** 存在, 则它**将 initial RAM disk 加载到内存**中, 做好标记**等待后面使用**. 这个时候, 就可以真正调用内核, 开始真正的内核启动了.
 
-在 GRUB 中可以通过以下方法手动启动内核:
+在 GRUB 中可以通过以下方法**手动启动内核**:
 
 ```
 grub> kernel /bzImage-2.6.14.2
@@ -105,9 +105,9 @@ grub> boot
 Uncompressing Linux... Ok, booting the kernel.
 ```
 
-如果不知道要启动的内核名字, 只需要出入 `/`, 然后按Tab键让它自动补齐, 或者切换可用的内核.
+如果不知道要启动的内核名字, 只需要 `/`, 然后按Tab键让它自动补齐, 或者切换可用的内核.
 
-GRUB 2 上加载内核的命令已经由 kernel 变成了 linux, 所以需要用到的是下面的命令
+**GRUB 2** 上加载内核的命令已经由 kernel 变成了 **linux**, 所以需要用到的是下面的命令
 
 ```
 grub> linux /vmlinuz
@@ -115,7 +115,7 @@ grub> initrd /initrd.img
 grub> boot
 ```
 
-而 `/vmlinuz和/initrd.img` 其实是链接到了 `/boot/` 目录下特定版本的内核
+而 `/vmlinuz` 和 `/initrd.img` 其实是链接到了 `/boot/` 目录下**特定版本的内核**
 
 ```
 lrwxrwxrwx   1 root root    33 8月  10 06:48 initrd.img -> boot/initrd.img-4.15.0-30-generic
@@ -124,7 +124,7 @@ lrwxrwxrwx   1 root root    30 8月  10 06:48 vmlinuz -> boot/vmlinuz-4.15.0-30-
 lrwxrwxrwx   1 root root    30 8月  10 06:48 vmlinuz.old -> boot/vmlinuz-4.15.0-29-generic
 ```
 
-bzImage(对于i386镜像而言)被调用的入口点位于 `./arch/i386/boot/head.S` 的汇编函数 start. 这个函数先进行一个基本的硬件设置然后调用 `./arch/i386/boot/compressed/head.S` 中的 `startup_32` 函数. `startup_32` 函数建立一个基本的运行环境(堆栈、寄存器等), 并且清除BSS(Block Started by Symbol). 然后内核调用 `./arch/i386/boot/compressed/misc.c:decompress_kernel()` 函数对内核进行解压缩. 当内核解压缩完毕后, 就会调用另外一个 `startup_32` 函数开始内核的启动, 该函数为 `./arch/i386/kernel/head.S:startup_32`.
+**bzImage** (对于 i386 镜像而言)被调用的**入口点**位于 `./arch/i386/boot/head.S` 的**汇编函数 start**. 这个函数先进行一个**基本的硬件设置**然后调用 `./arch/i386/boot/compressed/head.S` 中的 `startup_32` 函数. `startup_32` 函数建立一个基本的**运行环境**(堆栈、寄存器等), 并且**清除 BSS**(`Block Started by Symbol`). 然后内核调用 `./arch/i386/boot/compressed/misc.c:decompress_kernel()` 函数对内核进行解压缩. 当内核解压缩完毕后, 就会调用另外一个 `startup_32` 函数开始内核的启动, 该函数为 `./arch/i386/kernel/head.S:startup_32`.
 
 在新的 `startup_32` 函数(也叫做 swapper 或者 `process 0`), 页表将被初始化并且内存的分页机制将会被使能. 物理CPU的类型将会被检测, 并且 **FPU**(`floating-point unit`)也会被检测以便后面使用. 然后 `./init/main.c:start_kernel()` 函数将会被调用, 开始通用的内核初始化(不针对某一具体的处理器架构). 其基本流程留下所示:
 
