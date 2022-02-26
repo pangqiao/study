@@ -10,3 +10,4 @@ Linux 操作系统原理 — 内存 — 大页内存: https://blog.csdn.net/Jmil
 
 Linux内存管理：大页内存原理 - Yann的文章 - https://zhuanlan.zhihu.com/p/356338438
 
+hugepage_note_大页内存笔记: https://blog.csdn.net/yk_wing4/article/details/88080442
