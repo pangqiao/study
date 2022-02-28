@@ -87,6 +87,7 @@ int hugepage_open(struct hugepage *hugepage, key_t key, size_t size)
 
         /* create */
         /* 创建了一个共享内存区域 */
+        /* 在特殊文件系统shm中，创建并打开一个同名文件 */
         id = shmget(key
                         , size
                         , SHM_HUGETLB | IPC_CREAT | SHM_R | SHM_W
