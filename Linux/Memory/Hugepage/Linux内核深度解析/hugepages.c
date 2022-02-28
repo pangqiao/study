@@ -86,6 +86,7 @@ int hugepage_open(struct hugepage *hugepage, key_t key, size_t size)
         }
 
         /* create */
+        /* 创建了一个共享内存区域 */
         id = shmget(key
                         , size
                         , SHM_HUGETLB | IPC_CREAT | SHM_R | SHM_W
@@ -96,6 +97,7 @@ int hugepage_open(struct hugepage *hugepage, key_t key, size_t size)
         }
 
         /* get address */
+        /* 将共享内存区域映射到进程地址空间 */
         address = shmat(id, NULL, 0);
         if ((void *)-1 == address) {
                 goto fail_get_address;
