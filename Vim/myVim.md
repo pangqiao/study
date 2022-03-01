@@ -27,7 +27,7 @@
 apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev vim-gtk3 npm pip curl git
 ```
 
-vim-gtk 可以让 vim 有 `+clipboard` feature 支持, 而 vim-nox 没有
+`vim-gtk` 可以让 vim 有 `+clipboard` feature 支持, 而 vim-nox 没有
 
 # 下载字体
 
