@@ -34,3 +34,5 @@ https://blog.csdn.net/weixin_37825861/article/details/78659575
 
 
 专业详细(必看): https://zhuanlan.zhihu.com/p/148968991
+
+https://richardweiyang-2.gitbook.io/kernel-exploring/00-memory_a_bottom_up_view/11-users_of_buddy
