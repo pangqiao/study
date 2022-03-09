@@ -110,7 +110,7 @@ static void prep_compound_gigantic_page(struct page *page, unsigned int order)
 
 `set_compound_order` 函数, 把 `page[1].compound_order` 设置为相应的 order
 
-然后, 从第 `[1]` 个**page**开始, 依次标记为**尾页**, 然后将 _refcount 设置为0, 然后, 把 `page[1].compound_mapcount` 设置为 `-1`.
+然后, 从第 `[1]` 个**page**开始, 依次标记为**尾页**, 然后将 `_refcount` 设置为0, 然后, 把 `page[1].compound_mapcount` 设置为 `-1`.
 
 可以看到, **大页与普通页相比**, 首个 page 大部分是一样的, 但因为**大页**有**多个 page 结构体可以使用**, 从而会在**第二个 page 开始**的结构体**相关成员标记某些信息**, 这是与普通页的最大区别, 这也可以从 **page 结构体**的**第一个 union** 中看的出来。
 
