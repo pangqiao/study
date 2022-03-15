@@ -57,6 +57,10 @@ Rust 有一个安装工具: rustup. 类似于 Ruby 的 rbenv、Python 的 pyenv,
 curl https://sh.rustup.rs -sSf | sh
 ```
 
+```
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
 也可指定默认使用nightly版本
 
 ```
