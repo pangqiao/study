@@ -4,18 +4,18 @@
 <!-- code_chunk_output -->
 
 - [1. 安装软件](#1-安装软件)
-- [下载字体](#下载字体)
-- [2. 下载 vim 配置](#2-下载-vim-配置)
-- [3. 功能开启](#3-功能开启)
-- [complete 插件](#complete-插件)
-  - [Lsp](#lsp)
-  - [4. YouCompleteMe 设置](#4-youcompleteme-设置)
-    - [4.1. rust 支持(optional)](#41-rust-支持optional)
-- [Rust(Optional)](#rustoptional)
-  - [语法增强](#语法增强)
-  - [代码片段](#代码片段)
-  - [代码 补全 | 检查 | 跳转 利器](#代码-补全-检查-跳转-利器)
-- [reference](#reference)
+- [2. 下载字体](#2-下载字体)
+- [3. 下载 vim 配置](#3-下载-vim-配置)
+- [4. 功能开启](#4-功能开启)
+- [5. complete 插件](#5-complete-插件)
+  - [5.1. Lsp](#51-lsp)
+  - [5.2. YouCompleteMe 设置](#52-youcompleteme-设置)
+    - [5.2.1. rust 支持(optional)](#521-rust-支持optional)
+- [6. Rust(Optional)](#6-rustoptional)
+  - [6.1. 语法增强](#61-语法增强)
+  - [6.2. 代码片段](#62-代码片段)
+  - [6.3. 代码 补全 | 检查 | 跳转 利器](#63-代码-补全-检查-跳转-利器)
+- [7. reference](#7-reference)
 
 <!-- /code_chunk_output -->
 
@@ -29,7 +29,7 @@ apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-ess
 
 `vim-gtk` 可以让 vim 有 `+clipboard` feature 支持, 而 vim-nox 没有
 
-# 下载字体
+# 2. 下载字体
 
 `https://github.com/Magnetic2014/YaHei-Consolas-Hybrid-For-Powerline/raw/master/YaHei%20Consolas%20Hybrid%201.12%20For%20Powerline.ttf`
 
@@ -43,13 +43,13 @@ fc-cache
 fc-list  | grep -i yahei
 ```
 
-# 2. 下载 vim 配置
+# 3. 下载 vim 配置
 
 ```
 git clone https://github.com/haiwei-li/vinux.git ~/.vim
 ```
 
-# 3. 功能开启
+# 4. 功能开启
 
 打开任意文件，会下载一部分插件，然后 `<SPC>fe`, 输入 all, 打开所有的，会自动下载插件
 
@@ -59,7 +59,7 @@ git clone https://github.com/haiwei-li/vinux.git ~/.vim
 
 `let g:fuzzysearcher_plugin_name.cur_val='fzf'`, 启用悬浮窗口
 
-内嵌终端: 
+内嵌终端:
 
 空格av, 悬浮
 
@@ -99,6 +99,7 @@ let g:feat_enable_gui=1
 let g:feat_enable_tmux=1
 #let g:fuzzysearcher_plugin_name.cur_val='ctrlp'
 let g:fuzzysearcher_plugin_name.cur_val='fzf'
+#let g:complete_plugin_type.cur_val='YouCompleteMe'
 let g:complete_plugin_type.cur_val='asyncomplete.vim'
 let g:feat_enable_complete=1
 let g:feat_enable_markdown=1
@@ -108,9 +109,9 @@ let g:feat_enable_help=1
 let g:vinux_version='vinux V1.2.0-dev @8.2.2434'
 ```
 
-# complete 插件
+# 5. complete 插件
 
-## Lsp
+## 5.1. Lsp
 
 LSP: `let g:feat_enable_lsp=1`
 
@@ -124,7 +125,7 @@ ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4
 
 叫做.clang_xxxx之类的
 
-## 4. YouCompleteMe 设置
+## 5.2. YouCompleteMe 设置
 
 补全功能使用了 YouCompleteMe, 但是这个比较难以编译，所以只是安装没有编译.
 
@@ -143,7 +144,7 @@ cd ~/.vim/bundle/YouCompleteMe
 git submodule update --init --recursive
 ```
 
-### 4.1. rust 支持(optional)
+### 5.2.1. rust 支持(optional)
 
 * rust 源码: rust src
 * 补全工具: rust analyzer
@@ -187,7 +188,7 @@ YCM 已经没有这个配置项了
 let g:ycm_rust_src_path = '/root/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
 ```
 
-# Rust(Optional)
+# 6. Rust(Optional)
 
 持续更新: https://www.yuque.com/zhoujiping/programming/rust-vim-settings
 
@@ -195,7 +196,7 @@ let g:ycm_rust_src_path = '/root/.rustup/toolchains/nightly-x86_64-unknown-linux
 
 ![2021-09-24-17-24-45.png](./images/2021-09-24-17-24-45.png)
 
-## 语法增强
+## 6.1. 语法增强
 
 rust.vim: 提供 Rust 文件检测、语法高亮、格式设置与语法检测工具 Syntastic 集成等功能
 
@@ -217,13 +218,13 @@ nnoremap <M-r> :RustRun<CR>
 nnoremap <M-t> :RustTest<CR>
 ```
 
-## 代码片段
+## 6.2. 代码片段
 
 > Always async, never slows you down. 始终保持异步，永不减慢您的速度
 
 
 
-## 代码 补全 | 检查 | 跳转 利器
+## 6.3. 代码 补全 | 检查 | 跳转 利器
 
 https://rust-analyzer.github.io/manual.html#vimneovim
 
@@ -234,9 +235,9 @@ Racer: Rust Auto-Complete-er, 代码补全. 而 vim 下的 `racer-rust/vim-racer
 
 
 
-# reference
+# 7. reference
 
-Rust：vim 环境配置: 
+Rust：vim 环境配置:
 
 
 https://blog.stdio.io/1103#method4
