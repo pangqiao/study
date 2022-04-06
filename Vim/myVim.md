@@ -97,6 +97,7 @@ let g:feat_enable_fun=0
 let g:enable_sexy_mode.cur_val='off'
 let g:feat_enable_gui=1
 let g:feat_enable_tmux=1
+#let g:fuzzysearcher_plugin_name.cur_val='ctrlp'
 let g:fuzzysearcher_plugin_name.cur_val='fzf'
 let g:complete_plugin_type.cur_val='asyncomplete.vim'
 let g:feat_enable_complete=1
