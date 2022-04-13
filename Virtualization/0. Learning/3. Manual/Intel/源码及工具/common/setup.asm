@@ -47,7 +47,7 @@ MMap.Type:      DD 0                            ; 内存区域的类型:
 ;;
         bits 16
         
-SetupEntry:                                             ; 这是模块代码的入口点。
+SetupEntry:                                             ; 这是模块代码的入口点. 
         cli
         cld
         NMI_DISABLE

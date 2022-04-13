@@ -18,7 +18,7 @@
 
 # 1. k8s
 
-k8s是用go语言写的，看k8s的源码首先要安装go的环境，然后下载源码，使用开发工具打开，最后进行分析。
+k8s是用go语言写的，看k8s的源码首先要安装go的环境，然后下载源码，使用开发工具打开，最后进行分析. 
 
 # 2. 物料准备
 
@@ -28,7 +28,7 @@ k8s是用go语言写的，看k8s的源码首先要安装go的环境，然后下�
 
 # 3. go环境安装
 
-进入golang官网下载页面https://golang.org/dl/ ，选择合适的go版本下载。
+进入golang官网下载页面https://golang.org/dl/ ，选择合适的go版本下载. 
 
 具体安装见GoLang下内容
 
@@ -46,17 +46,17 @@ k8s是用go语言写的，看k8s的源码首先要安装go的环境，然后下�
 * vscode(go插件)
 * Intellij IDEA for golang
 
-注: 刚开始Intellij idea支持go开发是使用的一个go插件，后来推出了专门的GoLand, 这个有个优点: 每一个打开的工程都可以设置自己的GOPATH。
+注: 刚开始Intellij idea支持go开发是使用的一个go插件，后来推出了专门的GoLand, 这个有个优点: 每一个打开的工程都可以设置自己的GOPATH. 
 
 # 5. k8s源码下载
 
-到k8s github主页上下载k8s的代码。
+到k8s github主页上下载k8s的代码. 
 
 # 6. k8s源码整理
 
-k8s的源码下载后是无法直接编译和查看啊，k8s也依赖很多golang的开源代码，而且如果用ide打开后有很多依赖是无法找到的，所以要现整理一下。
+k8s的源码下载后是无法直接编译和查看啊，k8s也依赖很多golang的开源代码，而且如果用ide打开后有很多依赖是无法找到的，所以要现整理一下. 
 
-在上面我们设置的**GOPATH目录**下，新建文件夹: \$**GOPATH/src/k8s.io/kubernetes**；
+在上面我们设置的**GOPATH目录**下，新建文件夹: \$**GOPATH/src/k8s.io/kubernetes**; 
 
 ```
 # mkdir -p $GOPATH/src/k8s.io/kubernetes
@@ -78,7 +78,7 @@ k8s的源码下载后是无法直接编译和查看啊，k8s也依赖很多golan
 
 * 命令行进入$GOPATH/src/k8s.io/kubernetes/cmd/kube\-proxy目录
 
-* 执行go build命令；
+* 执行go build命令; 
 
 * 命令执行过程中没有报错，且执行完成后文件中多了一个可执行文件，说明编译成功了
 

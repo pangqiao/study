@@ -6,7 +6,7 @@
 
 **整个ACPI表**以**RSDP**(Root System Descriptor Pointer Table)为**入口点**，每个非叶子节点都会包含指向其他子表的指针，各个表都会有一个表头，在该表头中包含了相应的Signature，用于标识该表，有点类似与该表的ID，除此之外，在表头中还会包含Checksum、Revision、OEM ID等信息。所以查找ACPI表的关键就是在内存中定位到RSDP表。
 
-对于基于Legacy BIOS的系统而言，RSDP表所在的物理地址并不固定，要么位于EBDA(Extended BIOS Data Area)(位于物理地址0x40E)的前1KB范围内；要么位于0x000E0000 到0x000FFFFF的物理地址范围内。Linux kernel在启动的时候，会去这两个物理地址范围，通过遍历物理地址空间的方法寻找RSDP表，即通过寻找RSDP表的Signature(RSD PTR)来定位RSDP的位置，并通过该表的length和checksum来确保找到的表是正确的。
+对于基于Legacy BIOS的系统而言，RSDP表所在的物理地址并不固定，要么位于EBDA(Extended BIOS Data Area)(位于物理地址0x40E)的前1KB范围内; 要么位于0x000E0000 到0x000FFFFF的物理地址范围内。Linux kernel在启动的时候，会去这两个物理地址范围，通过遍历物理地址空间的方法寻找RSDP表，即通过寻找RSDP表的Signature(RSD PTR)来定位RSDP的位置，并通过该表的length和checksum来确保找到的表是正确的。
 
 用RW读取的RSD PTR表
 

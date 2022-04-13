@@ -4,7 +4,7 @@
 
 # 用途
 
-perf trace类似于strace，但增加了其他系统事件的分析，比如pagefaults、task lifetime事件、scheduling事件等。
+perf trace类似于strace，但增加了其他系统事件的分析，比如pagefaults、task lifetime事件、scheduling事件等. 
 
 # 2. 使用方法
 

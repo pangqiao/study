@@ -64,7 +64,7 @@ struct page {
     struct {
         union {
             pgoff_t index;      /* Our offset within mapping.
-            在映射的虚拟空间(vma_area)内的偏移；
+            在映射的虚拟空间(vma_area)内的偏移; 
             一个文件可能只映射一部分，假设映射了1M的空间，
             index指的是在1M空间内的偏移，而不是在整个文件内的偏移.  */
             void *freelist;     /* sl[aou]b first free object */

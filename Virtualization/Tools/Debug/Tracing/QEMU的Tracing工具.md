@@ -36,7 +36,7 @@ QEME是模拟处理器的自由软件, 可以实现虚拟机, Android的虚拟�
 
 4, 正常运行QEMU, 为了调试可以在运行QEMU的时候加入monitor功能, 即在运行的命令中加入 -monitor stdio, 这样就启动了monitor并且和用户在console中进行交互
 
-5, 可以在console中运行(qemu)info trace-events 参考那些event已经被trace, 其中state为1的是已经enable的； 运行(qemu)info trace查看缓存的trace
+5, 可以在console中运行(qemu)info trace-events 参考那些event已经被trace, 其中state为1的是已经enable的;  运行(qemu)info trace查看缓存的trace
 
 6, 退出QEMU, 可以输入quit进行退出
 

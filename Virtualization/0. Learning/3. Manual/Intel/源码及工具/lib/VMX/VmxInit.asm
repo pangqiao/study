@@ -1659,12 +1659,12 @@ init_vm_execution_control_fields:
         ;; PCB.PinBasedCtls 值说明: 
         ;; 1) [31:0]  - allowed 0-setting 位
         ;;              当 bit 为 1 时，Pin-based VM-execution control 位为 0，则出错!
-        ;;              当 bit 为 0 时，Pin-based VM-execution control 位可为 0 值。
+        ;;              当 bit 为 0 时，Pin-based VM-execution control 位可为 0 值. 
         ;;     因此:    当 bit 为 1 时，Pin-based VM-execution control 必须为 1 值!!!    
         ;;              
         ;; 2) [63:32] - allowed 1-setting 位
         ;;              当 bit 为 0 时，Pin-based VM-execution control 位为 1，则出错！
-        ;;              当 bit 为 1 时，Pin-based VM-execution control 位可为 1 值。
+        ;;              当 bit 为 1 时，Pin-based VM-execution control 位可为 1 值. 
         ;;     因此:    当 bit 为 0 时，Pin-based VM-execution control 必须为 0 值!!!
         ;;
         ;; 3) 当 [31:0] 的位为 0，而 [63:32] 的相应位同时为 1 时，

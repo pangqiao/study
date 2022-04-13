@@ -48,7 +48,7 @@ mov ax,bx                     汇编指令
 
 ### 控制转移指令
 
-这部分包括无条件转移指令JMP、条件转移指令Jcc/JCXZ、循环指令LOOP/LOOPE/LOOPNE、过程调用指令CALL、子过程返回指令RET、中断指令INTn、INT3、INTO、IRET等。注意，Jcc是一个指令簇，包含了很多指令，用于根据EFLAGS寄存器的某些位状态来决定是否转移；INT n是软中断指令，n可以是0到255之间的数，用于指示中断向量号。
+这部分包括无条件转移指令JMP、条件转移指令Jcc/JCXZ、循环指令LOOP/LOOPE/LOOPNE、过程调用指令CALL、子过程返回指令RET、中断指令INTn、INT3、INTO、IRET等。注意，Jcc是一个指令簇，包含了很多指令，用于根据EFLAGS寄存器的某些位状态来决定是否转移; INT n是软中断指令，n可以是0到255之间的数，用于指示中断向量号。
 
 ### 串操作指令
 

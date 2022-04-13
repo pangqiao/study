@@ -6,17 +6,17 @@ http://blog.csdn.net/fwenzhou/article/details/8742838
 参考: 
 http://www.jianshu.com/p/a379fc18b7a1
 
-在python用import或者from...import来导入相应的模块。模块其实就是一些函数和类的集合文件，它能实现一些相应的功能，当我们需要使用这些功能的时候，直接把相应的模块导入到我们的程序中，我们就可以使用了。这类似于C语言中的include头文件，Python中我们用import导入我们需要的模块。
+在python用import或者from...import来导入相应的模块. 模块其实就是一些函数和类的集合文件，它能实现一些相应的功能，当我们需要使用这些功能的时候，直接把相应的模块导入到我们的程序中，我们就可以使用了. 这类似于C语言中的include头文件，Python中我们用import导入我们需要的模块. 
 
 ```
-_*: 这种标示符不会被 from module import *导入。
-在交互式解释器中，它被用来保存最后一次求值的结果。它被保存在__builtin__模块中。当处于非交互式模式时，名称"_"并无特殊含义，也未被定义。
-注意，"_"经常与国际化一起使用。
+_*: 这种标示符不会被 from module import *导入. 
+在交互式解释器中，它被用来保存最后一次求值的结果. 它被保存在__builtin__模块中. 当处于非交互式模式时，名称"_"并无特殊含义，也未被定义. 
+注意，"_"经常与国际化一起使用. 
 ```
 
 ### import
 
-导入/引入一个python标准模块，其中包括.py文件、带有```__init__.py```文件的目录。
+导入/引入一个python标准模块，其中包括.py文件、带有```__init__.py```文件的目录. 
 
 e.g: 
 
@@ -27,7 +27,7 @@ from module import *|child[,child1,...]
 ```
 
 说明: 
-多次重复使用import语句时，不会重新加载被指定的模块，只是把对该模块的内存地址给引用到本地变量环境。
+多次重复使用import语句时，不会重新加载被指定的模块，只是把对该模块的内存地址给引用到本地变量环境. 
 
 测试: 
 
@@ -53,7 +53,7 @@ import a  #第二次不会打印a里面的语句，因为没有重新加载
 > 
 参考: http://www.cnblogs.com/huazi/archive/2012/11/30/2796237.html
 
-作用: 同import语句同样的功能，但```__import__```是一个函数，并且只接收字符串作为参数，所以它的作用就可想而知了。其实import语句就是调用这个函数进行导入工作的，```import sys <==>sys = __import__('sys')```
+作用: 同import语句同样的功能，但```__import__```是一个函数，并且只接收字符串作为参数，所以它的作用就可想而知了. 其实import语句就是调用这个函数进行导入工作的，```import sys <==>sys = __import__('sys')```
 
 ```
 e.g: 
@@ -63,13 +63,13 @@ __import__('os',globals(),locals(),['path','pip'])  #等价于from os import pat
 ```
 
 说明: 
-通常在动态加载时可以使用到这个函数，比如你希望加载某个文件夹下的所用模块，但是其下的模块名称又会经常变化时，就可以使用这个函数动态加载所有模块了，最常见的场景就是插件功能的支持。
+通常在动态加载时可以使用到这个函数，比如你希望加载某个文件夹下的所用模块，但是其下的模块名称又会经常变化时，就可以使用这个函数动态加载所有模块了，最常见的场景就是插件功能的支持. 
 扩展: 
-既然可以通过字符串来动态导入模块，那么是否可以通过字符串动态重新加载模块吗？试试reload('os')直接报错，是不是没有其他方式呢?虽然不能直接reload但是可以先unimport一个模块，然后再__import__来重新加载模块。现在看看unimport操作如何实现，在Python解释里可以通过globals(),locals(),vars(),dir()等函数查看到当前环境下加载的模块及其位置，但是这些都只能看不能删除，所以无法unimport；不过除此之外还有一个地方是专门存放模块的，这就是sys.modules，通过sys.modules可以查看所有的已加载并且成功的模块，而且比globals要多，说明默认会加载一些额外的模块，接下来就是unimport了。
+既然可以通过字符串来动态导入模块，那么是否可以通过字符串动态重新加载模块吗？试试reload('os')直接报错，是不是没有其他方式呢?虽然不能直接reload但是可以先unimport一个模块，然后再__import__来重新加载模块. 现在看看unimport操作如何实现，在Python解释里可以通过globals(),locals(),vars(),dir()等函数查看到当前环境下加载的模块及其位置，但是这些都只能看不能删除，所以无法unimport; 不过除此之外还有一个地方是专门存放模块的，这就是sys.modules，通过sys.modules可以查看所有的已加载并且成功的模块，而且比globals要多，说明默认会加载一些额外的模块，接下来就是unimport了. 
 
 ### reload
 
-作用: 对已经加载的模块进行重新加载，一般用于原模块有变化等特殊情况，reload前该模块必须已经import过。
+作用: 对已经加载的模块进行重新加载，一般用于原模块有变化等特殊情况，reload前该模块必须已经import过. 
 
 ```
 e.g: 
@@ -77,7 +77,7 @@ import os
 reload(os)
 ```
 
-说明: reload会重新加载已加载的模块，但原来已经使用的实例还是会使用旧的模块，而新生产的实例会使用新的模块；reload后还是用原来的内存地址；不能支持from。。import。。格式的模块进行重新加载。
+说明: reload会重新加载已加载的模块，但原来已经使用的实例还是会使用旧的模块，而新生产的实例会使用新的模块; reload后还是用原来的内存地址; 不能支持from. . import. . 格式的模块进行重新加载. 
 
 测试
 
@@ -99,7 +99,7 @@ print id(a) #reload后a的内存地址，和原来一样
 
 ### import和from ... import xx
 
-import和from import都是将其他模块导入当前模块中。刚开始一直以为import和from import唯一的区别，就是from import可以少写一些模块名。虽然from XX import会污染当前名字空间，但似乎仅限如此。但其实from import还有一个相当严重的陷阱。
+import和from import都是将其他模块导入当前模块中. 刚开始一直以为import和from import唯一的区别，就是from import可以少写一些模块名. 虽然from XX import会污染当前名字空间，但似乎仅限如此. 但其实from import还有一个相当严重的陷阱. 
 
 举例来说: 
 
@@ -169,11 +169,11 @@ in a
 4
 ```
 
-如果，我们把a.py中的test = 2修改为 test = [2]，后面对test的修改改为对test[0]的修改，则会发现，import和from import的结果完全一致。
+如果，我们把a.py中的test = 2修改为 test = [2]，后面对test的修改改为对test[0]的修改，则会发现，import和from import的结果完全一致. 
 
-通过以上的分析。基本可以得到这样的结论: 
+通过以上的分析. 基本可以得到这样的结论: 
 
-1 重复import或from import多次都只会作用一次。import和from  import语句可以出现在程序中的任何位置。但是有一点是: 无论import语句被使用了多少次，每个模块中的代码仅加载和执行一次，后续的import语句仅将模块名称绑定到前一次导入所创建的模块对象上。
+1 重复import或from import多次都只会作用一次. import和from  import语句可以出现在程序中的任何位置. 但是有一点是: 无论import语句被使用了多少次，每个模块中的代码仅加载和执行一次，后续的import语句仅将模块名称绑定到前一次导入所创建的模块对象上. 
 
 2 import和from import的作用机制完全不同
 
@@ -181,12 +181,12 @@ in a
 
 4 from import的机制则是通过引入新的变量名的形式，将目标模块的对象的引用拷贝到新的变量名下的方式引入当前模块
 
-5 在Python解释里可以通过globals(),locals(),vars(),dir()等函数查看到当前环境下加载的模块及其位置，使用sys.modules可查看当前加载的所有模块(比globals多，默认会加载一些额外的模块)。
+5 在Python解释里可以通过globals(),locals(),vars(),dir()等函数查看到当前环境下加载的模块及其位置，使用sys.modules可查看当前加载的所有模块(比globals多，默认会加载一些额外的模块). 
 
 这样描述可能有点抽象，根据上面的例子来说就是: 
 
 1. 当使用import时，只存在一个名为a.test变量，且只有这一个，无论是在b模块，还是c模块中
-2. 当使用from import时，在b模块中，存在一个新的变量b.test，开始时，b.test=a.test(它们共同指向同一个对象)，当发生赋值时，b.test指向了一个新的对象，但a.test仍指向原来的对象。
+2. 当使用from import时，在b模块中，存在一个新的变量b.test，开始时，b.test=a.test(它们共同指向同一个对象)，当发生赋值时，b.test指向了一个新的对象，但a.test仍指向原来的对象. 
 
 具体来说就是: 
 
@@ -233,7 +233,7 @@ t = two()
 
 ### 关于Import中的路径搜索问题
 
-系统就会在```sys.path```的路径列表中搜索相应的文件，可以自行添加要搜索路径。
+系统就会在```sys.path```的路径列表中搜索相应的文件，可以自行添加要搜索路径. 
 
 ```
 import sys
@@ -246,10 +246,10 @@ sys.append('D:/xx/code')
 - 将module对象加入到sys.modules，后续对该module的导入将直接从该dict中获得
 - 将module对象加入到globals dict中
 
-当我们引用一个模块时，将会从globals中查找。这里如果要替换掉一个标准模块，我们得做以下两件事情
+当我们引用一个模块时，将会从globals中查找. 这里如果要替换掉一个标准模块，我们得做以下两件事情
 
-1. 将我们自己的module加入到sys.modules中，替换掉原有的模块。如果被替换模块还没加载，那么我们得先对其进行加载，否则第一次加载时，还会加载标准模块。(这里有一个import hook可以用，不过这需要我们自己实现该hook，可能也可以使用该方法hook module import)
-2. 如果被替换模块引用了其他模块，那么我们也需要进行替换，但是这里我们可以修改globals dict，将我们的module加入到globals以hook这些被引用的模块。
+1. 将我们自己的module加入到sys.modules中，替换掉原有的模块. 如果被替换模块还没加载，那么我们得先对其进行加载，否则第一次加载时，还会加载标准模块. (这里有一个import hook可以用，不过这需要我们自己实现该hook，可能也可以使用该方法hook module import)
+2. 如果被替换模块引用了其他模块，那么我们也需要进行替换，但是这里我们可以修改globals dict，将我们的module加入到globals以hook这些被引用的模块. 
 
 ### cannot import XXX
 
@@ -304,4 +304,4 @@ b-------- a, b
 ```
 
 分析过程: 
-Python是一个解析性语言，执行b.py，第一次输出模块时候，没有a和b，因为没有存在导入。然后从a里面导入vara，加载a模块，将a加入到sys.modules，所以a里面打印sys.modules是有a的，但是此时a里面globals除了内置变量其余都没有，解析a，a又从b里面导入变量varb，加载b模块，将b加入到sys.modules，所以打印包括a和b，然后解析b，b导入a模块的vara，因为a模块已经在sys.modules了，所以不再导入，但是a此时的globals不存在vara，所以报错。
+Python是一个解析性语言，执行b.py，第一次输出模块时候，没有a和b，因为没有存在导入. 然后从a里面导入vara，加载a模块，将a加入到sys.modules，所以a里面打印sys.modules是有a的，但是此时a里面globals除了内置变量其余都没有，解析a，a又从b里面导入变量varb，加载b模块，将b加入到sys.modules，所以打印包括a和b，然后解析b，b导入a模块的vara，因为a模块已经在sys.modules了，所以不再导入，但是a此时的globals不存在vara，所以报错. 

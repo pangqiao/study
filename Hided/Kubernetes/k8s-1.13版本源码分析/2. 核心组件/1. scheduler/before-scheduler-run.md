@@ -4,11 +4,11 @@
 
 ## 概述
 
-前面提到过scheduler程序可以分为三层，第一层是调度器启动前的逻辑，包括命令行参数解析、参数校验、调度器初始化等一系列逻辑。这个部分我不会太详细地介绍，因为这些代码位于调度框架之前，相对比较枯燥无趣，讲多了磨灭大伙对源码的兴趣～
+前面提到过scheduler程序可以分为三层，第一层是调度器启动前的逻辑，包括命令行参数解析、参数校验、调度器初始化等一系列逻辑. 这个部分我不会太详细地介绍，因为这些代码位于调度框架之前，相对比较枯燥无趣，讲多了磨灭大伙对源码的兴趣～
 
 ## cobra和main
 
-剧透一下先，如果你之前没有用过cobra，那么在第一次见到cobra之后，很可能以后你自己写的程序，开发的小工具会全部变成cobra风格。我最近半年写的命令行程序就全部是基于cobra+pflag的。cobra有多优雅呢，且听我慢慢道来～
+剧透一下先，如果你之前没有用过cobra，那么在第一次见到cobra之后，很可能以后你自己写的程序，开发的小工具会全部变成cobra风格. 我最近半年写的命令行程序就全部是基于cobra+pflag的. cobra有多优雅呢，且听我慢慢道来～
 
 ### cobra是啥
 
@@ -18,7 +18,7 @@
 
 > Cobra is both a library for creating powerful modern CLI applications as well as a program to generate applications and command files.
 
-也就是这个意思: Cobra既是一个创建强大的现代化命令行程序的库，又是一个用于生成应用和命令行文件的程序。有很多流行的Go项目用了Cobra，其中当然包括我们最最熟知的k8s和docker，大致列出来有这些: 
+也就是这个意思: Cobra既是一个创建强大的现代化命令行程序的库，又是一个用于生成应用和命令行文件的程序. 有很多流行的Go项目用了Cobra，其中当然包括我们最最熟知的k8s和docker，大致列出来有这些: 
 
 - Kubernetes
 - Hugo
@@ -45,7 +45,7 @@
 下面我们实践一下cobra，先下载这个项目编译一下: 
 
 ```shell
-# 如果你的网络很给力，那么下面这个命令就够了；
+# 如果你的网络很给力，那么下面这个命令就够了; 
 go get -u github.com/spf13/cobra/cobra
 # 如果你的网络不给力，那就下载cobra的zip包，丢到GOPATH下对应目录，然后解决依赖，再build
 
@@ -91,7 +91,7 @@ func main() {
 
 ![1550806123357](./image/before-scheduler-run/1550806123357.png)
 
-如上图，在`main.go`里面import了`myapp/cmd`，也就是这个`root.go`文件。所以Execute()函数就很好找了。在`Execute`里面调用了`rootCmd.Execute()`方法，这个`rootCmd`是`*cobra.Command`类型的。我们关注一下这个类型。
+如上图，在`main.go`里面import了`myapp/cmd`，也就是这个`root.go`文件. 所以Execute()函数就很好找了. 在`Execute`里面调用了`rootCmd.Execute()`方法，这个`rootCmd`是`*cobra.Command`类型的. 我们关注一下这个类型. 
 
 下面我们继续使用cobra命令给myapp添加一个子命令: 
 
@@ -101,7 +101,7 @@ func main() {
 
 ![1550809447903](./image/before-scheduler-run/1550809447903.png)
 
-多了一个`version.go`，在这个源文件的init()函数里面调用了一个`rootCmd.AddCommand(versionCmd)`，这里可以猜到是根命令下添加一个子命令的意思，根命令表示的就是我们直接执行这个可执行文件，子命令就是version，放在一起的感觉就类似大家使用`kubectl version`的感觉。
+多了一个`version.go`，在这个源文件的init()函数里面调用了一个`rootCmd.AddCommand(versionCmd)`，这里可以猜到是根命令下添加一个子命令的意思，根命令表示的就是我们直接执行这个可执行文件，子命令就是version，放在一起的感觉就类似大家使用`kubectl version`的感觉. 
 
 另外注意到这里的Run属性是一个匿名函数，这个函数中输出了“version called”字样，也就是说我们执行version子命令的时候其实是调用到了这里的Run.
 
@@ -113,7 +113,7 @@ func main() {
 
 套路也就这样，通过`serverCmd.AddCommand(createCmd)`调用后就能够把`*cobra.Command`类型的createCmd变成serverCmd的子命令了，这个时候我们玩起来就像`kubectl get pods`.
 
-行，看到这里我们回头看一下scheduler的源码就能找到main的逻辑了。
+行，看到这里我们回头看一下scheduler的源码就能找到main的逻辑了. 
 
 ## Scheduler的main
 
@@ -131,7 +131,7 @@ func main() {
 }
 ```
 
-看到这里猜都能猜到`kube-scheduler`这个二进制文件在运行的时候是调用了`command.Execute()`函数背后的那个Run，那个Run躲在`command := app.NewSchedulerCommand()`这行代码调用的`NewSchedulerCommand()`方法里，这个方法一定返回了一个`*cobra.Command`类型的对象。我们跟进去这个函数，看一下是不是这个样子: 
+看到这里猜都能猜到`kube-scheduler`这个二进制文件在运行的时候是调用了`command.Execute()`函数背后的那个Run，那个Run躲在`command := app.NewSchedulerCommand()`这行代码调用的`NewSchedulerCommand()`方法里，这个方法一定返回了一个`*cobra.Command`类型的对象. 我们跟进去这个函数，看一下是不是这个样子: 
 
 !FILENAME cmd/kube-scheduler/app/server.go:70
 
@@ -209,9 +209,9 @@ func Run(cc schedulerserverconfig.CompletedConfig, stopCh <-chan struct{}) error
 }
 ```
 
-可以看到这里最终是要跑`sched.Run()`这个方法来启动scheduler，`sched.Run()`方法已经在pkg下，具体位置是`pkg/scheduler/scheduler.go:276`，也就是scheduler框架真正运行的逻辑了。于是我们已经从main出发，找到了scheduler主框架的入口，具体的scheduler逻辑我们下一讲再来仔细分析。
+可以看到这里最终是要跑`sched.Run()`这个方法来启动scheduler，`sched.Run()`方法已经在pkg下，具体位置是`pkg/scheduler/scheduler.go:276`，也就是scheduler框架真正运行的逻辑了. 于是我们已经从main出发，找到了scheduler主框架的入口，具体的scheduler逻辑我们下一讲再来仔细分析. 
 
-最后我们来看一下sched的定义，在linux里我们经常会看到一些软件叫做什么什么d，d也就是daemon，守护进程的意思，也就是一直跑在后台的一个程序。这里的sched也就是“scheduler daemon”的意思。sched的其实是`*Scheduler`类型，定义在: 
+最后我们来看一下sched的定义，在linux里我们经常会看到一些软件叫做什么什么d，d也就是daemon，守护进程的意思，也就是一直跑在后台的一个程序. 这里的sched也就是“scheduler daemon”的意思. sched的其实是`*Scheduler`类型，定义在: 
 
 !FILENAME pkg/scheduler/scheduler.go:58
 
@@ -259,6 +259,6 @@ type Config struct {
 }
 ```
 
-如上，同样我只保留了一些好理解的字段，我们随便扫一下可以看到譬如: SchedulingQueue、NextPod、NodeLister这些很容易从字面上理解的字段，也就是Scheduler对象在工作(完成调度这件事)中需要用到的一些对象。
+如上，同样我只保留了一些好理解的字段，我们随便扫一下可以看到譬如: SchedulingQueue、NextPod、NodeLister这些很容易从字面上理解的字段，也就是Scheduler对象在工作(完成调度这件事)中需要用到的一些对象. 
 
 ok，下一讲我们开始聊Scheduler的工作过程！

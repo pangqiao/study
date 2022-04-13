@@ -37,7 +37,7 @@ Intel从奔腾4开始的CPU中增加了一种机制，称为MCA——Machine Che
 
 当CPU检测到**不可纠正的MCE(Machine Check Error**)时，就会触发`#MC`(**Machine Check Exception**, 中断号是十进制18)，通常**软件**会**注册相关的函数**来处理\#MC，在这个函数中会通过读取MSR来收集MCE的错误信息，但是**不被允许重启处理器**。
 
-- 当然由于发生的**MCE**可能是**非常致命**的，**CPU直接重启**了，**没有办法完成MCE处理函数**；
+- 当然由于发生的**MCE**可能是**非常致命**的，**CPU直接重启**了，**没有办法完成MCE处理函数**; 
 
 - 甚至有可能在**MCE处理函数**中又触发了**不可纠正的MCE**，也会导致**系统直接重启**。
 
@@ -86,25 +86,25 @@ MCA通过若干Bank的MSR寄存器来表示各种类型的MCE。
 
 ![](./images/2019-04-28-14-31-53.png)
 
-BIT0-7: 表示的是特定CPU支持可用的**硬件单元错误报告库的个数(hardware unit error-reporting banks**)；
+BIT0-7: 表示的是特定CPU支持可用的**硬件单元错误报告库的个数(hardware unit error-reporting banks**); 
 
-BIT8: 1表示**IA32\_MCG\_CTL**有效，如果是**0的话表示无效**，读取该IA32\_MCG\_CTL这个MSR可能发生Exception(至少在UEFI下是这样)；
+BIT8: 1表示**IA32\_MCG\_CTL**有效，如果是**0的话表示无效**，读取该IA32\_MCG\_CTL这个MSR可能发生Exception(至少在UEFI下是这样); 
 
-BIT9: 1表示**IA32\_MCG\_EXT\_CTL**有效，反之无效，这个与BIT8的作用类似；
+BIT9: 1表示**IA32\_MCG\_EXT\_CTL**有效，反之无效，这个与BIT8的作用类似; 
 
-BIT10: 1表示**支持CMCI**，但是CMCI是否能用还需要通过**IA32\_MCi\_CTL2**这个MSR的**BIT30来使能**；
+BIT10: 1表示**支持CMCI**，但是CMCI是否能用还需要通过**IA32\_MCi\_CTL2**这个MSR的**BIT30来使能**; 
 
-BIT11: 1表示IA32\_MCi\_STATUS这个MSR的BIT56\-55是保留的，BIT54-53是用来上报Threshold-based Error状态的；
+BIT11: 1表示IA32\_MCi\_STATUS这个MSR的BIT56\-55是保留的，BIT54-53是用来上报Threshold-based Error状态的; 
 
-BIT16-23: 表示存在的Extended Machine Check State寄存器的个数；
+BIT16-23: 表示存在的Extended Machine Check State寄存器的个数; 
 
-BIT24: 1表示CPU支持Software Error Recovery；
+BIT24: 1表示CPU支持Software Error Recovery; 
 
-BIT25: 1表示CPU支持**增强版的MCA**；
+BIT25: 1表示CPU支持**增强版的MCA**; 
 
-BIT26: 1表示支持更多的错误记录(需要UEFI、ACPI的支持)；
+BIT26: 1表示支持更多的错误记录(需要UEFI、ACPI的支持); 
 
-BIT27: 1表示支持Local Machine Check Exception；
+BIT27: 1表示支持Local Machine Check Exception; 
 
 ### 2.1.2. IA32_MCG_STATUS MSR
 
@@ -151,7 +151,7 @@ LMCE的预期用途需要平台软件和系统软件的正确配置。 平台软
 
 这些寄存器的第一个是IA32\_MC0\_CTL，它的地址一般都是400H。
 
-之后接着的是IA32\_MC0\_STATUS，IA32\_MC0\_ADDR，IA32\_MC0\_MISC，但是在之后并不是IA32\_MC0\_CTL2，而是IA32\_MC1\_CTL；对于IA32\_MCi\_CTL2来说，它的地址跟上面的这些不在一起，第一个IA32\_MC0\_CTL2是在280H，之后是IA32\_MC1\_CTL2在281H，以此类推。
+之后接着的是IA32\_MC0\_STATUS，IA32\_MC0\_ADDR，IA32\_MC0\_MISC，但是在之后并不是IA32\_MC0\_CTL2，而是IA32\_MC1\_CTL; 对于IA32\_MCi\_CTL2来说，它的地址跟上面的这些不在一起，第一个IA32\_MC0\_CTL2是在280H，之后是IA32\_MC1\_CTL2在281H，以此类推。
 
 ### 2.2.1. IA32_MCi_CTL MSRs
 
@@ -171,15 +171,15 @@ IA32\_MCi\_CTL MSR控制\#MC的信号，以发现由特定硬件单元(或硬件
 
 注意只有当VAL这个BIT位(BIT63)为1时才表示发生了对应这个Bank的MCE。当MCE发生了，软件需要给这个VAL位写0来清零(如果有可能的话，因为对于不可纠正的MCE可能软件会 来不及写)，不能往这位写1，会出现Exception。
 
-BIT0-15，BIT16-31: 这个两个部分都表示MCE的错误类型，前者是通用的，后者是跟CPU有关的；
+BIT0-15，BIT16-31: 这个两个部分都表示MCE的错误类型，前者是通用的，后者是跟CPU有关的; 
 
-BIT58: 1表示IA32_MCi_ADDR这个MSR是有效的，反之无效；
+BIT58: 1表示IA32_MCi_ADDR这个MSR是有效的，反之无效; 
 
-BIT59: 1表示IA32_MCi_MISC这个MSR是有效的，反之无效；这两个BIT是因为不同MCE错误并不是都需要ADDR和MSIC这样的MSR；
+BIT59: 1表示IA32_MCi_MISC这个MSR是有效的，反之无效; 这两个BIT是因为不同MCE错误并不是都需要ADDR和MSIC这样的MSR; 
 
-BIT60: 这个位于IA32_MCi_CTL中的位是对应的，那边使能了，这里就是1；
+BIT60: 这个位于IA32_MCi_CTL中的位是对应的，那边使能了，这里就是1; 
 
-BIT61: 表示MCE是不可纠正的；
+BIT61: 表示MCE是不可纠正的; 
 
 BIT62: 表示发生了二次的MCE，这个时候到底这个Bank表示的是哪一次的MCE信息，需要根据一定的规则来确定: 
 
@@ -235,7 +235,7 @@ BIT62: 表示发生了二次的MCE，这个时候到底这个Bank表示的是哪
 
 另外**CMCI默认是关闭的**，需要通过IA32\_MCi\_CTL2的BIT30来打开，并设置BIT0-14的阈值，注意 **每个Bank都要设置！！！**。
 
-设置的时候首先**写1**到**IA32\_MCi\_CTL2**的**BIT30**，再**读取**这个值，如果值变成了1，说明CMCI使能了，否则就是CPU不支持CMCI；之后再写阈值到BIT0-14，如果读出来的值是0，表示不支持阈值，否则就是成功设置了阈值。
+设置的时候首先**写1**到**IA32\_MCi\_CTL2**的**BIT30**，再**读取**这个值，如果值变成了1，说明CMCI使能了，否则就是CPU不支持CMCI; 之后再写阈值到BIT0-14，如果读出来的值是0，表示不支持阈值，否则就是成功设置了阈值。
 
 CMCI是通过Local ACPI来实现的，具体的示意图如下: 
 
@@ -245,13 +245,13 @@ CMCI是通过Local ACPI来实现的，具体的示意图如下:
 
 ![](./images/2019-04-28-20-14-38.png)
 
-BIT0-7: 中断向量；
+BIT0-7: 中断向量; 
 
-BIT8-10: Delivery Mode，比如SMI，NMI等；
+BIT8-10: Delivery Mode，比如SMI，NMI等; 
 
-BIT12: Delivery Status，0表示没有中断，1表示中断正在发生；
+BIT12: Delivery Status，0表示没有中断，1表示中断正在发生; 
 
-BIT17: Interrupt Mask，0表示接收中断，1表示屏蔽中断；
+BIT17: Interrupt Mask，0表示接收中断，1表示屏蔽中断; 
 
 关于CMCI的初始化和CMCI处理函数的实现，手册上有部分的介绍，不过没有什么源代码可以借鉴，这个不展开了。
 

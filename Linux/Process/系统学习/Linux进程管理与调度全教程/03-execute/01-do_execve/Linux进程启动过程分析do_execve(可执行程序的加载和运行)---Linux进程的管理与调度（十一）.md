@@ -216,11 +216,11 @@ sys\_execve是调用**do\_execve实现**的. do\_execve则是调用do\_execveat\
 
 5. 根据获取的信息, **填充struct linux\_binprm结构体**中的**file**、**filename**、**interp**成员
 
-6. 调用**bprm\_mm\_init**()创建进程的**内存地址空间**, 为**新程序初始化内存管理**.并调用**init\_new\_context**()检查当前进程是否使用**自定义的局部描述符表**；如果是, 那么**分配和准备一个新的LDT(！！！**)
+6. 调用**bprm\_mm\_init**()创建进程的**内存地址空间**, 为**新程序初始化内存管理**.并调用**init\_new\_context**()检查当前进程是否使用**自定义的局部描述符表**; 如果是, 那么**分配和准备一个新的LDT(！！！**)
 
 7. 填充struct linux\_binprm结构体中的**argc**、**envc**成员
 
-8. 调用**prepare\_binprm**()检查该二进制文件的**可执行权限**；最后, **kernel\_read**()读取二进制文件的**头128字节**(这些字节用于**识别二进制文件的格式及其他信息**, 后续会使用到)
+8. 调用**prepare\_binprm**()检查该二进制文件的**可执行权限**; 最后, **kernel\_read**()读取二进制文件的**头128字节**(这些字节用于**识别二进制文件的格式及其他信息**, 后续会使用到)
 
 9. 调用**copy\_strings\_kernel**()从**内核空间**获取二进制文件的**路径名称**
 
@@ -267,14 +267,14 @@ static int do_execveat_common(int fd, struct filename *filename,
      * further execve() calls fail. */
     current->flags &= ~PF_NPROC_EXCEEDED;
 
-    //  1.	调用unshare_files()为进程复制一份文件表；
+    //  1.	调用unshare_files()为进程复制一份文件表; 
     retval = unshare_files(&displaced);
     if (retval)
             goto out_ret;
 
     retval = -ENOMEM;
 
-    //	2、调用kzalloc()在堆上分配一份structlinux_binprm结构体；
+    //	2、调用kzalloc()在堆上分配一份structlinux_binprm结构体; 
     bprm = kzalloc(sizeof(*bprm), GFP_KERNEL);
     if (!bprm)
             goto out_files;
@@ -286,16 +286,16 @@ static int do_execveat_common(int fd, struct filename *filename,
     check_unsafe_exec(bprm);
     current->in_execve = 1;
 
-    //	3、调用open_exec()查找并打开二进制文件；
+    //	3、调用open_exec()查找并打开二进制文件; 
     file = do_open_execat(fd, filename, flags);
     retval = PTR_ERR(file);
     if (IS_ERR(file))
             goto out_unmark;
 
-	//	4、调用sched_exec()找到最小负载的CPU, 用来执行该二进制文件；
+	//	4、调用sched_exec()找到最小负载的CPU, 用来执行该二进制文件; 
     sched_exec();
 
-    //	5、根据获取的信息, 填充struct linux_binprm结构体中的file、filename、interp成员；
+    //	5、根据获取的信息, 填充struct linux_binprm结构体中的file、filename、interp成员; 
     bprm->file = file;
     if (fd == AT_FDCWD || filename->name[0] == '/') {
             bprm->filename = filename->name;
@@ -321,8 +321,8 @@ static int do_execveat_common(int fd, struct filename *filename,
     bprm->interp = bprm->filename;
 
     //	6、调用bprm_mm_init()创建进程的内存地址空间, 
-    // 并调用init_new_context()检查当前进程是否使用自定义的局部描述符表；
-    // 如果是, 那么分配和准备一个新的LDT；
+    // 并调用init_new_context()检查当前进程是否使用自定义的局部描述符表; 
+    // 如果是, 那么分配和准备一个新的LDT; 
     retval = bprm_mm_init(bprm);
     if (retval)
             goto out_unmark;
@@ -336,13 +336,13 @@ static int do_execveat_common(int fd, struct filename *filename,
     if ((retval = bprm->envc) < 0)
             goto out;
 
-    //	8、调用prepare_binprm()检查该二进制文件的可执行权限；
-    // 最后, kernel_read()读取二进制文件的头128字节(这些字节用于识别二进制文件的格式及其他信息, 后续会使用到)；
+    //	8、调用prepare_binprm()检查该二进制文件的可执行权限; 
+    // 最后, kernel_read()读取二进制文件的头128字节(这些字节用于识别二进制文件的格式及其他信息, 后续会使用到); 
     retval = prepare_binprm(bprm);
     if (retval < 0)
             goto out;
 
-	//	9、调用copy_strings_kernel()从内核空间获取二进制文件的路径名称；
+	//	9、调用copy_strings_kernel()从内核空间获取二进制文件的路径名称; 
     retval = copy_strings_kernel(1, &bprm->filename, bprm);
     if (retval < 0)
             goto out;
@@ -354,12 +354,12 @@ static int do_execveat_common(int fd, struct filename *filename,
     if (retval < 0)
             goto out;
 
-    //	10.2、调用copy_string()从用户空间拷贝命令行参数；
+    //	10.2、调用copy_string()从用户空间拷贝命令行参数; 
     retval = copy_strings(bprm->argc, argv, bprm);
     if (retval < 0)
             goto out;
 	/*
-	    至此, 二进制文件已经被打开, struct linux_binprm结构体中也记录了重要信息；
+	    至此, 二进制文件已经被打开, struct linux_binprm结构体中也记录了重要信息; 
 
         下面需要识别该二进制文件的格式并最终运行该文件
     */
@@ -404,7 +404,7 @@ out_ret:
 
 ## 3.4 exec\_binprm()识别并加载二进程程序
 
-**每种格式的二进制文件**对应一个struct **linux\_binprm结构体**, 每种可执行的程序类型都对应一个数据结构struct linux\_binfmt,**load\_binary成员**负责**识别该二进制文件的格式**；
+**每种格式的二进制文件**对应一个struct **linux\_binprm结构体**, 每种可执行的程序类型都对应一个数据结构struct linux\_binfmt,**load\_binary成员**负责**识别该二进制文件的格式**; 
 
 内核使用**链表组织这些struct linux\_binfmt结构体**, **链表头是formats**. 
 

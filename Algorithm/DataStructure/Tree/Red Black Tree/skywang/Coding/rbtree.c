@@ -242,7 +242,7 @@ static void rbtree_left_rotate(RBRoot *root, Node *x)
     // 设置x的右孩子为y
     Node *y = x->right;
 
-    // 将 “y的左孩子” 设为 “x的右孩子”；
+    // 将 “y的左孩子” 设为 “x的右孩子”; 
     // 如果y的左孩子非空，将 “x” 设为 “y的左孩子的父亲”
     x->right = y->left;
     if (y->left != NULL)
@@ -288,7 +288,7 @@ static void rbtree_right_rotate(RBRoot *root, Node *y)
     // 设置x是当前节点的左孩子。
     Node *x = y->left;
 
-    // 将 “x的右孩子” 设为 “y的左孩子”；
+    // 将 “x的右孩子” 设为 “y的左孩子”; 
     // 如果"x的右孩子"不为空的话，将 “y” 设为 “x的右孩子的父亲”
     y->left = x->right;
     if (x->right != NULL)
@@ -320,7 +320,7 @@ static void rbtree_right_rotate(RBRoot *root, Node *y)
 /*
  * 红黑树插入修正函数
  *
- * 在向红黑树中插入节点之后(失去平衡)，再调用该函数；
+ * 在向红黑树中插入节点之后(失去平衡)，再调用该函数; 
  * 目的是将它重新塑造成一颗红黑树。
  *
  * 参数说明: 
@@ -500,7 +500,7 @@ int insert_rbtree(RBRoot *root, Type key)
 /*
  * 红黑树删除修正函数
  *
- * 在从红黑树中删除插入节点之后(红黑树失去平衡)，再调用该函数；
+ * 在从红黑树中删除插入节点之后(红黑树失去平衡)，再调用该函数; 
  * 目的是将它重新塑造成一颗红黑树。
  *
  * 参数说明: 
@@ -542,7 +542,7 @@ static void rbtree_delete_fixup(RBRoot *root, Node *node, Node *parent)
                     rbtree_right_rotate(root, other);
                     other = parent->right;
                 }
-                // Case 4: x的兄弟w是黑色的；并且w的右孩子是红色的，左孩子任意颜色。
+                // Case 4: x的兄弟w是黑色的; 并且w的右孩子是红色的，左孩子任意颜色。
                 rb_set_color(other, rb_color(parent));
                 rb_set_black(parent);
                 rb_set_black(other->right);
@@ -580,7 +580,7 @@ static void rbtree_delete_fixup(RBRoot *root, Node *node, Node *parent)
                     rbtree_left_rotate(root, other);
                     other = parent->left;
                 }
-                // Case 4: x的兄弟w是黑色的；并且w的右孩子是红色的，左孩子任意颜色。
+                // Case 4: x的兄弟w是黑色的; 并且w的右孩子是红色的，左孩子任意颜色。
                 rb_set_color(other, rb_color(parent));
                 rb_set_black(parent);
                 rb_set_black(other->left);

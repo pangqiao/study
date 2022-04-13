@@ -44,7 +44,7 @@
 
 Kubernetes包含许多项目, 组织成SIG. 一些交流已经被移入到了特定于SIG的channel, 详细信息查看SIG子目录
 
-不过, 下面会列出专门讨论Kubernetes的general channel、groups和meetings。
+不过, 下面会列出专门讨论Kubernetes的general channel、groups和meetings. 
 
 ## 2.2. 社交媒体
 
@@ -58,12 +58,12 @@ http://slack.k8s.io/
 
 ## 2.4. Mailing lists
 
-Kubernetes邮件列表通过谷歌组托管。要接收这些列表的电子邮件，加入相关的组即可.
+Kubernetes邮件列表通过谷歌组托管. 要接收这些列表的电子邮件，加入相关的组即可.
 
 * [kubernets-announce](https://groups.google.com/forum/#!forum/kubernetes-announce): 广播主要的项目公告，如release和安全问题
 * [kubernetes-dev](https://groups.google.com/forum/#!forum/kubernetes-dev): 围绕开发kubernetes进行讨论
 * [Discuss Kubernetes](https://discuss.kubernetes.io/): Kubernetes用户交流讨论的地方
-* 存在额外的谷歌组，并且可以加入到与每个团体和工作组相关的讨论中。这些链接来自SIG列表。
+* 存在额外的谷歌组，并且可以加入到与每个团体和工作组相关的讨论中. 这些链接来自SIG列表. 
 
 ## 2.5. Issues
 
@@ -79,7 +79,7 @@ Google Docs中有很多工作文档和笔记, 有必要的话会放到这个repo
 
 ## 2.7. Office Hours
 
-Office Hours每月举行一次。参照 [这个](https://github.com/kubernetes/community/blob/master/events/office-hours.md) 获取更多信息.
+Office Hours每月举行一次. 参照 [这个](https://github.com/kubernetes/community/blob/master/events/office-hours.md) 获取更多信息.
 
 是个定期安排的直播, 在 [YouTube频道](https://www.youtube.com/c/KubernetesCommunity/) 回答用户的实时问题, 获得有关如何使用Kubernetes的反馈.
 
@@ -87,7 +87,7 @@ Office Hours每月举行一次。参照 [这个](https://github.com/kubernetes/c
 
 直播地址: https://www.youtube.com/c/KubernetesCommunity/live
 
-您可以在Slack 上的 [\#office-hours频道](https://kubernetes.slack.com/messages/office-hours) 上发布问题，或者可以将问题提交给Stack Overflow。
+您可以在Slack 上的 [\#office-hours频道](https://kubernetes.slack.com/messages/office-hours) 上发布问题，或者可以将问题提交给Stack Overflow. 
 
 所有会议的档案都保存在这里: 
 
@@ -96,21 +96,21 @@ Office Hours每月举行一次。参照 [这个](https://github.com/kubernetes/c
 
 ## 2.8. Weekly Meeting
 
-每周四美国太平洋时间上午10点举行公开会议, 并且会记录。即北京时间周三凌晨1:00
+每周四美国太平洋时间上午10点举行公开会议, 并且会记录. 即北京时间周三凌晨1:00
 
 查看所有K8s的会议安排: https://calendar.google.com/calendar/embed?src=cgnt364vd8s86hr2phapfjc6uk@group.calendar.google.com&ctz=America/Los_Angeles&pli=1
 
-在[calendar.google.com](https://calendar.google.com/calendar/embed?src=cgnt364vd8s86hr2phapfjc6uk%40group.calendar.google.com&ctz=America/Los_Angeles)网站上查看，或将[此iCal网址](https://calendar.google.com/calendar/ical/cgnt364vd8s86hr2phapfjc6uk%40group.calendar.google.com/public/basic.ics)粘贴到任何iCal客户端。
+在[calendar.google.com](https://calendar.google.com/calendar/embed?src=cgnt364vd8s86hr2phapfjc6uk%40group.calendar.google.com&ctz=America/Los_Angeles)网站上查看，或将[此iCal网址](https://calendar.google.com/calendar/ical/cgnt364vd8s86hr2phapfjc6uk%40group.calendar.google.com/public/basic.ics)粘贴到任何iCal客户端. 
 
-要添加到日历项目，请加入Google [网上论坛kubernetes-community-video-chat](https://groups.google.com/forum/#!forum/kubernetes-community-video-chat)以获取进一步说明。
+要添加到日历项目，请加入Google [网上论坛kubernetes-community-video-chat](https://groups.google.com/forum/#!forum/kubernetes-community-video-chat)以获取进一步说明. 
 
-如果您有想要讨论或想要讨论的主题，请在[Kubernetes社区会议议程](https://docs.google.com/document/d/1VQDIAB0OqiSjIHI8AWMvSdceWhnz56jNpZrLs6o7NJY/edit#)上提出具体日期。
+如果您有想要讨论或想要讨论的主题，请在[Kubernetes社区会议议程](https://docs.google.com/document/d/1VQDIAB0OqiSjIHI8AWMvSdceWhnz56jNpZrLs6o7NJY/edit#)上提出具体日期. 
 
 ## 2.9. 会议
 
-Kubernetes是KubeCon + CloudNativeCon的主要焦点，每年春季在欧洲，夏季在中国，冬季在北美举行。
+Kubernetes是KubeCon + CloudNativeCon的主要焦点，每年春季在欧洲，夏季在中国，冬季在北美举行. 
 
-有关这些和其他社区活动的信息可在[CNCF 活动页面](https://www.cncf.io/events/)上找到。
+有关这些和其他社区活动的信息可在[CNCF 活动页面](https://www.cncf.io/events/)上找到. 
 
 # 3. Governance(管理/治理)
 
@@ -147,9 +147,9 @@ SIG可以有自己贡献策略, 在这个repo(https://github.com/kubernetes/comm
 
 # 6. 会员
 
-我们鼓励所有贡献者成为会员。我们的目标是发展一个由贡献者、评审人员和代码所有者组成的活跃、健康的社区。
+我们鼓励所有贡献者成为会员. 我们的目标是发展一个由贡献者、评审人员和代码所有者组成的活跃、健康的社区. 
 
-在我们的[社区会员](https://github.com/kubernetes/community/blob/master/community-membership.md)页面了解更多关于会员的要求和职责。
+在我们的[社区会员](https://github.com/kubernetes/community/blob/master/community-membership.md)页面了解更多关于会员的要求和职责. 
 
 # 7. 相关链接
 
@@ -283,7 +283,7 @@ add a new metrics to kubernetes code.
 运行a fast and lightweight local cluster deployment for development
 Kuberntes API的开发
 REST API文档
-Annotations: 用于将任意的非识别元数据附加到对象。 自动化Kubernetes对象的程序可能会使用注释来存储少量的状态。
+Annotations: 用于将任意的非识别元数据附加到对象.  自动化Kubernetes对象的程序可能会使用注释来存储少量的状态. 
 API conventions(约定)
 插件开发
 Authentication　认证插件　

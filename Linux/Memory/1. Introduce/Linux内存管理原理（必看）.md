@@ -58,7 +58,7 @@ buddy算法举例描述:
 
 order(0)bimap有8个bit位(页面最多16个页面, 所以16/2)
 
-order(1)bimap有4个bit位(order(0)bimap有8个bit位, 所以8/2)；
+order(1)bimap有4个bit位(order(0)bimap有8个bit位, 所以8/2); 
 
 也就是order(1)第一块由两个页框page1 与page2组成与order(1)第2块由两个页框page3 与page4组成, 这两个块之间有一个bit位
 

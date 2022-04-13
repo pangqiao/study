@@ -37,21 +37,21 @@ Boot Loader可以指定**使用哪个核心文件来启动**，并实际**加载
 
 简单来说，系统启动流程如下: 
 
-1. 加载BIOS的硬件信息并进行自我检测，并根据配置获取第一个可启动的装置(硬盘、光驱、PXE等)；
+1. 加载BIOS的硬件信息并进行自我检测，并根据配置获取第一个可启动的装置(硬盘、光驱、PXE等); 
 
-2. 读取并运行第一个启动装置中MBR的Boot Loader(即grub、grub2、LILO等)；
+2. 读取并运行第一个启动装置中MBR的Boot Loader(即grub、grub2、LILO等); 
 
-3. 根据Boot Loader的配置加载kernel，kernel会检测硬件和加载驱动程序；
+3. 根据Boot Loader的配置加载kernel，kernel会检测硬件和加载驱动程序; 
 
-4. 硬件驱动成功后，kernel会主动调用systemd程序，并以default.target流程开机；
+4. 硬件驱动成功后，kernel会主动调用systemd程序，并以default.target流程开机; 
 
-    - systemd执行sysinit.target初始化系统及basic.target准备OS；
+    - systemd执行sysinit.target初始化系统及basic.target准备OS; 
     
-    - systemd启动multi-user.target下的服务；
+    - systemd启动multi-user.target下的服务; 
     
-    - systemd执行multi-user.target下的/etc/rc.d/rc.local程序；
+    - systemd执行multi-user.target下的/etc/rc.d/rc.local程序; 
     
-    - systemd执行multi-user.target下的getty.target以及登录服务；
+    - systemd执行multi-user.target下的getty.target以及登录服务; 
     
     - systemd执行graphical需要的服务。
 
@@ -59,7 +59,7 @@ Boot Loader可以指定**使用哪个核心文件来启动**，并实际**加载
 
 ## 1.2 BIOS, boot loader 与 kernel 加载
 
-BIOS: 无论传统BIOS或UEFI BIOS都称为BIOS；
+BIOS: 无论传统BIOS或UEFI BIOS都称为BIOS; 
 
 MBR: 分割表有传统的MBR以及新式GPT，不过GPT也保留了一块相容MBR的块。因此，下面说的在安装boot loader的部分，也称MBR！MBR就代表了该磁盘最前面的可安装boot loader的那块。
 
@@ -89,9 +89,9 @@ MBR: 分割表有传统的MBR以及新式GPT，不过GPT也保留了一块相容
 
 boot loader功能如下: 
 
-- 提供菜单: 使用者可以选择不同启动项目，即多重启动；
+- 提供菜单: 使用者可以选择不同启动项目，即多重启动; 
 
-- 加载核心文件: 直接指向可启动的程序区段来开始操作系统；
+- 加载核心文件: 直接指向可启动的程序区段来开始操作系统; 
 
 - 转交到其他loader: 将启动管理功能转交给其他loader负责。
 
@@ -99,7 +99,7 @@ boot loader功能如下:
 
 ![启动管理程序的菜单功能与控制权转交功能示意图](images/2.png)
 
-如上图，MBR 使用 Linux 的 grub 这个启动管理程序，并且里面假设已经有了三个菜单， 第一个菜单可以直接指向 Linux 的核心文件并且直接加载核心来启动；第二个菜单可以将启动管理程序控制权交给 Windows 来管理，此时 Windows 的 loader 会接管启动流程，这个时候他就能够启动 windows 了。第三个菜单则是使用 Linux 在 boot sector 内的启动管理程序，此时就会跳出另一个 grub 的菜单啦！
+如上图，MBR 使用 Linux 的 grub 这个启动管理程序，并且里面假设已经有了三个菜单， 第一个菜单可以直接指向 Linux 的核心文件并且直接加载核心来启动; 第二个菜单可以将启动管理程序控制权交给 Windows 来管理，此时 Windows 的 loader 会接管启动流程，这个时候他就能够启动 windows 了。第三个菜单则是使用 Linux 在 boot sector 内的启动管理程序，此时就会跳出另一个 grub 的菜单啦！
 
 ### 1.2.3 加载核心检测硬件与 initrd 的功能
 
@@ -372,7 +372,7 @@ backup.timer         libvirtd.service        sshd2.service
 
 简要分析一下『 systemctl list-dependencies graphical.target 』，基本上我们 CentOS 7.x 的 systemd 开机流程大约是这样: 
 
-- local-fs.target + swap.target: 这两个 target 主要加载本机 /etc/fstab 里所定义的文件系统和相关的内存置换空间；
+- local-fs.target + swap.target: 这两个 target 主要加载本机 /etc/fstab 里所定义的文件系统和相关的内存置换空间; 
 
 - sysinit.target: 这个 target 主要在检测硬件，加载所需要的核心模块等动作。
 
@@ -388,11 +388,11 @@ backup.timer         libvirtd.service        sshd2.service
 
 『 systemctl list-dependencies sysinit.target 』，这些服务应该一个一个看脚本。基本上，可以将这些服务归类成几个大类: 
 
-- 特殊文件系统设备的挂载: 包括 dev-hugepages.mount dev-mqueue.mount 等挂载服务，主要挂载与hugepage、消息队列相关功能。挂载成功后，会在 /dev 底下建立 /dev/hugepages/, /dev/mqueue/ 等目录；
+- 特殊文件系统设备的挂载: 包括 dev-hugepages.mount dev-mqueue.mount 等挂载服务，主要挂载与hugepage、消息队列相关功能。挂载成功后，会在 /dev 底下建立 /dev/hugepages/, /dev/mqueue/ 等目录; 
 
-- 特殊文件系统的启用: 包括磁盘阵列、网络磁盘(iscsi)、LVM文件系统、文件系统对照服务 (multipath) 等等；
+- 特殊文件系统的启用: 包括磁盘阵列、网络磁盘(iscsi)、LVM文件系统、文件系统对照服务 (multipath) 等等; 
 
-- 开机过程的信息传递与动画执行: 使用 plymouthd 服务搭配 plymouth 指令传递；
+- 开机过程的信息传递与动画执行: 使用 plymouthd 服务搭配 plymouth 指令传递; 
 
 - 日志式登录档的使用: 即systemd-journald 服务的启用
 
@@ -408,11 +408,11 @@ backup.timer         libvirtd.service        sshd2.service
 
 执行完 sysinit.target 之后，再来则是 basic.target 这个项目了。 sysinit.target 在初始化系统。这个 basic.target 的阶段主要启动的服务大概有这些: 
 
-- 载入 alsa 音效驱动程式: 这个 alsa 是个音效相关的驱动程序；
+- 载入 alsa 音效驱动程式: 这个 alsa 是个音效相关的驱动程序; 
 
 - 载入 firewalld 防火墙: CentOS 7.x 以后使用 firewalld 取代 iptables 的防火墙设定，虽然最终都是使用 iptables 的架构， 不过在设定上面差很多喔！
 
-- 载入 CPU 的微指令功能；
+- 载入 CPU 的微指令功能; 
 
 - 启动与设定 SELinux 的安全本文: 如果由 disable 的状态改成 enable 的状态，或者是管理员设定强制重新设定一次 SELinux 的安全本文，也在这个阶段处理！
 
@@ -420,7 +420,7 @@ backup.timer         libvirtd.service        sshd2.service
 
 - 由 /etc/sysconfig/modules/*.modules 及 /etc/rc.modules 载入管理员指定的模块！
 
-- 载入 systemd 支援的 timer 功能；
+- 载入 systemd 支援的 timer 功能; 
 
 在这个阶段完成之后，你的系统已经可以顺利的运作！就差一堆你需要的登入服务、网路服务、本机认证服务等等的 service 类别。
 
@@ -515,7 +515,7 @@ graphical.target
 
 还记得我们在 sysinit.target 系统初始化当中谈到的载入使用者自定义程序的地方吗？其实有两个地方可以处理模块载入的问题，包括: 
 
-- /etc/modules-load.d/*.conf: 单纯要核心载入模块的位置；
+- /etc/modules-load.d/*.conf: 单纯要核心载入模块的位置; 
 
 - /etc/modprobe.d/*.conf: 可以加上模块参数的位置
 
@@ -560,7 +560,7 @@ nf_conntrack          105702  1 nf_conntrack_ftp
 
 - **authconfig**:   
 
-    这个文件主要在规范使用者的身份认证的机制，包括是否使用本机的 /etc/passwd, /etc/shadow 等， 以及 /etc/shadow 密码记录使用何种加密演算法，还有是否使用外部密码伺服器提供的帐号验证 (NIS, LDAP) 等。 系统预设使用 SHA512 加密演算法，并且不使用外部的身份验证机制；另外，不建议手动修改这个文件！你应该使用『 authconfig-tui 』指令来修改较佳！
+    这个文件主要在规范使用者的身份认证的机制，包括是否使用本机的 /etc/passwd, /etc/shadow 等， 以及 /etc/shadow 密码记录使用何种加密演算法，还有是否使用外部密码伺服器提供的帐号验证 (NIS, LDAP) 等。 系统预设使用 SHA512 加密演算法，并且不使用外部的身份验证机制; 另外，不建议手动修改这个文件！你应该使用『 authconfig-tui 』指令来修改较佳！
 
 - **cpupower**: 
 

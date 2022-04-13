@@ -39,9 +39,9 @@ source /etc/profile
 
 source \~/.bashrc
 
-让修改生效。
+让修改生效. 
 
-第二步, 修改vim配置文件，让vim支持256位颜色。
+第二步, 修改vim配置文件，让vim支持256位颜色. 
 
 打开\~/.vim/vimrc文件，添加:
 
@@ -49,4 +49,4 @@ source \~/.bashrc
 set t_Co=256
 ```
 
-好了，执行tput colors看一下吧，如果输出256，表示配置生效，可以尽情的使用vim下的配色方案了。
+好了，执行tput colors看一下吧，如果输出256，表示配置生效，可以尽情的使用vim下的配色方案了. 

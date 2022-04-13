@@ -381,11 +381,11 @@ static inline int task_has_dl_policy(struct task_struct *p)
 
 实际的原因是这样的, 对于一个**实时进程(！！！**), 他有**两个参数来表明优先级(！！！**)——**prio** 和 **rt\_priority**, 
 
-**prio才是调度所用的最终优先级数值(！！！**), 这个**值越小**, **优先级越高**；
+**prio才是调度所用的最终优先级数值(！！！**), 这个**值越小**, **优先级越高**; 
 
 而**rt\_priority**被称作**实时进程优先级**, prio要经过转化——**prio=MAX\_RT\_PRIO \- 1 \- p\->rt\_priority**; 
 
-**MAX\_RT\_PRIO = 100**;这样意味着**rt\_priority值越大, 优先级越高**；
+**MAX\_RT\_PRIO = 100**;这样意味着**rt\_priority值越大, 优先级越高**; 
 
 而**内核提供的修改优先级的函数**, 是**修改rt\_priority的值**, 所以**越大**, 优先级**越高**. 
 

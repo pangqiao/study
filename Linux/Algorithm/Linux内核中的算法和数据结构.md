@@ -116,7 +116,7 @@ sudo rmmod linked-list
 
 ![config](images/1.gif)
 
-通过设计前驱和后继两个指针域，双链表可以从两个方向遍历，这是它区别于单链表的地方。如果打乱前驱、后继的依赖关系，就可以构成"二叉树"；如果再让首节点的前驱指向链表尾节点、尾节点的后继指向首节点(如图2中虚线部分)，就构成了循环链表；如果设计更多的指针域，就可以构成各种复杂的树状数据结构。
+通过设计前驱和后继两个指针域，双链表可以从两个方向遍历，这是它区别于单链表的地方。如果打乱前驱、后继的依赖关系，就可以构成"二叉树"; 如果再让首节点的前驱指向链表尾节点、尾节点的后继指向首节点(如图2中虚线部分)，就构成了循环链表; 如果设计更多的指针域，就可以构成各种复杂的树状数据结构。
 
 ![config](images/2.gif)
 
@@ -314,7 +314,7 @@ static inline struct llist_node *llist_del_all(struct llist_head *head)
 struct llist_node *llist_del_first(struct llist_head *head)
 ```
 
-llist\_add、llist\_add\_batch、llist\_del\_first都是基于cmpxchg原子操作来实现，整个操作是原子的；llist\_del\_all是基于xchg来实现的。
+llist\_add、llist\_add\_batch、llist\_del\_first都是基于cmpxchg原子操作来实现，整个操作是原子的; llist\_del\_all是基于xchg来实现的。
 
 cmpxchg(void\* ptr, int old, int new)，如果ptr和old的值一样，则把new写到ptr内存，否则返回ptr的值，整个操作是原子的。在Intel平台下，会用lock cmpxchg来实现，这里的lock个人理解是锁住内存总线，这样如果有另一个线程想访问ptr的内存，就会被block住。
 
@@ -330,8 +330,8 @@ B树诞生的背景:
 
 几个算法时间复杂度度量: 
 
-O(n) 表示某函数值(未列出)是 n 的常数倍；亦即他们增长的速度相当.称 大O,big O (发音 "欧" 英文字母 O )
-同理:O(logN):是 logN 的常数倍；O(nlogn):是 nlogn 的常数倍
+O(n) 表示某函数值(未列出)是 n 的常数倍; 亦即他们增长的速度相当.称 大O,big O (发音 "欧" 英文字母 O )
+同理:O(logN):是 logN 的常数倍; O(nlogn):是 nlogn 的常数倍
 
 # 4 优先排序列表
 
@@ -342,7 +342,7 @@ plist有两个重要结构体struct plist\_head和struct plist\_node，分别用
 ```cpp
 struct plist_head {
     struct list_head node_list;
-}；
+}; 
 
 struct plist_node {
     int prio;
@@ -486,7 +486,7 @@ static int  __init plist_test(void)
 [22051.491271] end plist test
 ```
 
-可以看出node\_list上的节点按照优先级由高到低排序，优先级可能会重复；在prio\_list上是不同优先级的节点。如下所示: 
+可以看出node\_list上的节点按照优先级由高到低排序，优先级可能会重复; 在prio\_list上是不同优先级的节点。如下所示: 
 
 ```
 * pl:prio_list (only for plist_node)

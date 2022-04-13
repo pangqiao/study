@@ -59,7 +59,7 @@ Unified Extensible Firmware Interface，统一可扩展固件接口, 架设在�
 - EFI高层应用
 - [GUID磁盘分区表](https://link.zhihu.com/?target=https%3A//zh.wikipedia.org/wiki/%25E5%2585%25A8%25E5%25B1%2580%25E5%2594%25AF%25E4%25B8%2580%25E6%25A8%2599%25E8%25AD%2598%25E5%2588%2586%25E5%258D%2580%25E8%25A1%25A8)(GPT)
 
-通常初始化模块和DXE被集成在一个ROM中；EFI驱动程序一般在设备的ROM中，或者ESP中；EFI高层应用一般在ESP中。CSM用于给不具备UEFI引导能力的操作系统提供类似于传统BIOS的系统服务。
+通常初始化模块和DXE被集成在一个ROM中; EFI驱动程序一般在设备的ROM中，或者ESP中; EFI高层应用一般在ESP中。CSM用于给不具备UEFI引导能力的操作系统提供类似于传统BIOS的系统服务。
 
 ## 2. 启动方式
 
@@ -135,8 +135,8 @@ Bootloader即上文中提到的引导程序，用于启动操作系统或者其�
 
 GNU的开源引导程序，可以用于引导Linux等操作系统，或者用于链式引导其它引导程序(比如Windows Boot Manager)，分为三个部分，分别称为步骤1、1.5、2，看名字就可以知道，步骤1.5是可有可没有的，这三个步骤对应的文件分别是: 
 
-- Boot.img: 步骤1对应的文件，446个字节大小，步骤1可以引导步骤1.5也可以引导步骤2。MBR分区格式的磁盘中，放在MBR里(446也是为了符合MBR的启动代码区大小)； GPT分区格式的磁盘中，放在Protective MBR中。
-- Core.img: 步骤1.5对应的文件，32256字节大小。MBR分区格式的磁盘中，放在紧邻MBR的若干扇区中；GPT分区格式的磁盘中，则放在34号扇区开始的位置(第一个分区所处的位置)，而对应的GPT分区表中的第一个分区的entry被置空。通常其中包含文件系统驱动以便load步骤2的文件。
+- Boot.img: 步骤1对应的文件，446个字节大小，步骤1可以引导步骤1.5也可以引导步骤2。MBR分区格式的磁盘中，放在MBR里(446也是为了符合MBR的启动代码区大小);  GPT分区格式的磁盘中，放在Protective MBR中。
+- Core.img: 步骤1.5对应的文件，32256字节大小。MBR分区格式的磁盘中，放在紧邻MBR的若干扇区中; GPT分区格式的磁盘中，则放在34号扇区开始的位置(第一个分区所处的位置)，而对应的GPT分区表中的第一个分区的entry被置空。通常其中包含文件系统驱动以便load步骤2的文件。
 - /boot/grub: 步骤2对应的文件目录，放在系统分区或者单独的Boot分区中
 
 ![config](images/18.jpg)
@@ -145,7 +145,7 @@ GNU的开源引导程序，可以用于引导Linux等操作系统，或者用于
 
 是从Windows Vista开始引进的新一代开机管理程序，用以取代NTLDR。
 
-当电脑运行完开机自检后，传统型BIOS会根据引导扇区查找开机硬盘中标记"引导"分区下的BOOTMGR文件；若是UEFI则是Bootmgfw.efi文件和Bootmgr.efi文件，接着管理程序会读取开机配置数据库(BCD, Boot Configuration Database)下的引导数据，接着根据其中的数据加载与默认或用户所选择的操作系统。
+当电脑运行完开机自检后，传统型BIOS会根据引导扇区查找开机硬盘中标记"引导"分区下的BOOTMGR文件; 若是UEFI则是Bootmgfw.efi文件和Bootmgr.efi文件，接着管理程序会读取开机配置数据库(BCD, Boot Configuration Database)下的引导数据，接着根据其中的数据加载与默认或用户所选择的操作系统。
 
 ### 5.3 NTLDR
 

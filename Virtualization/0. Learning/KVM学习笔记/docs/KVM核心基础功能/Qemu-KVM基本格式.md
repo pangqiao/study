@@ -201,7 +201,7 @@ Recognized CPUID flags:
 
 ### qemu -smp选项-模拟SMP多处理器架构的CPU数量
 
-* SMP的全称是"对称多处理"(Symmetrical Multi-Processing)技术，是指在一个计算机上汇集了一组处理器(多CPU),各CPU之间共享内存子系统以及总线结构。
+* SMP的全称是"对称多处理"(Symmetrical Multi-Processing)技术，是指在一个计算机上汇集了一组处理器(多CPU),各CPU之间共享内存子系统以及总线结构. 
 * 不指定SMP则默认使用一个逻辑CPU
 
 ![1532077356807.png](image/1532077356807.png)
@@ -234,8 +234,8 @@ qemu-system-x86_64 -kernel ./arch/x86_64/boot/bzImage -k en-us -smp 16,maxcpus=1
 
 16个逻辑CPU
 
-1. 具有相同core id的cpu是同一个core的超线程。
-2. 具有相同physical id的cpu是同一颗cpu封装的线程或者cores。
+1. 具有相同core id的cpu是同一个core的超线程. 
+2. 具有相同physical id的cpu是同一颗cpu封装的线程或者cores. 
 
 16个CPU，每个CPU四个核心，每个核心跑2个线程=每个CPU跑八个线程，16*8=108个线程
 
@@ -255,7 +255,7 @@ cat /proc/cpuinfo | grep "cpu cores" | uniq | awk -F: '{print $2}'
 cat /proc/cpuinfo | grep "core id"
 
  #是否为超线程？
- #如果有两个逻辑CPU具有相同的”core id”，那么超线程是打开的。
+ #如果有两个逻辑CPU具有相同的”core id”，那么超线程是打开的. 
  #每个物理CPU中逻辑CPU(可能是core, threads或both)的个数: 
 cat /proc/cpuinfo | grep "siblings"
 ```
@@ -274,11 +274,11 @@ cat /proc/cpuinfo | grep "siblings"
 
 
 
-1. 拥有相同 physical id 的所有逻辑处理器共享同一个物理插座。每个 physical id 代表一个唯一的物理封装。
-2. Siblings 表示位于这一物理封装上的逻辑处理器的数量。
-3. 每个 core id 均代表一个唯一的处理器内核。
-4. 如果有一个以上逻辑处理器拥有相同的 core id 和 physical id，证明一个core上有多个线程，则说明系统支持超线程(HT)技术。
-5. core id不同的逻辑处理器physical id相同，则说明这是一个多内核处理器。cpu cores 条目也可以表示是否支持多内核。
+1. 拥有相同 physical id 的所有逻辑处理器共享同一个物理插座. 每个 physical id 代表一个唯一的物理封装. 
+2. Siblings 表示位于这一物理封装上的逻辑处理器的数量. 
+3. 每个 core id 均代表一个唯一的处理器内核. 
+4. 如果有一个以上逻辑处理器拥有相同的 core id 和 physical id，证明一个core上有多个线程，则说明系统支持超线程(HT)技术. 
+5. core id不同的逻辑处理器physical id相同，则说明这是一个多内核处理器. cpu cores 条目也可以表示是否支持多内核. 
 
 
 ```
@@ -287,7 +287,7 @@ qemu-system-x86_64: cpu topology: sockets (32) * cores (4) * threads (2) > maxcp
 
 sockets指定模拟多少个CPU插槽
 cores CPU个数
-threads 单个CPU线程数。超线程技术
+threads 单个CPU线程数. 超线程技术
 
 CPU插槽 * CPU个数 * 单个CPU可以跑线程数 < maxcpus
 ```
@@ -297,8 +297,8 @@ CPU插槽 * CPU个数 * 单个CPU可以跑线程数 < maxcpus
 ### 四核8线程与八核的区别
 
 
-* 四核八线程是指使用了超线程技术 , 把一个物理核心,模拟成两个逻辑核心, 理论上要像八颗物理核心一样在同一时间执行八个线程，所以设备管理器和任务管理器中会显示出八个核心，但事实上并不是真正的八个核心，四核八线程就是真四核，虚拟八核；
-* 四核八线程在有些情况下比如任务量不大能让CPU利用率提高很多从而使其性能接近八核CPU的水平，而在另外一些情况比如CPU占用100%满负荷工作的情况下，这时候四核八线程和八核的性能表现差距明显，其实质就是虽然采用超线程技术能同时执行两个线程，但它并不象两个真正的CPU那样，每个CPU都具有独立的资源。当两个线程都同时需要某一个资源时，其中一个要暂时停止，并让出资源，直到这些资源闲置后才能继续。因此超线程的性能并不等于两颗CPU的性能。这也是四核八线程和八核的最大区别。
+* 四核八线程是指使用了超线程技术 , 把一个物理核心,模拟成两个逻辑核心, 理论上要像八颗物理核心一样在同一时间执行八个线程，所以设备管理器和任务管理器中会显示出八个核心，但事实上并不是真正的八个核心，四核八线程就是真四核，虚拟八核; 
+* 四核八线程在有些情况下比如任务量不大能让CPU利用率提高很多从而使其性能接近八核CPU的水平，而在另外一些情况比如CPU占用100%满负荷工作的情况下，这时候四核八线程和八核的性能表现差距明显，其实质就是虽然采用超线程技术能同时执行两个线程，但它并不象两个真正的CPU那样，每个CPU都具有独立的资源. 当两个线程都同时需要某一个资源时，其中一个要暂时停止，并让出资源，直到这些资源闲置后才能继续. 因此超线程的性能并不等于两颗CPU的性能. 这也是四核八线程和八核的最大区别. 
 * 总而言之四核8线程是4个物理核心模拟成8个**逻辑核心**，8核是8个物理核心
 
 ### qemu -m选项-设置内存大小
@@ -329,11 +329,11 @@ qemu-system-x86_64 -mem-path /dev/hugepages -kernel ./arch/x86_64/boot/bzImage -
 
 ![1532419673470.png](image/1532419673470.png)
 
-HugePages是linux内核的一个特性，使用hugepage可以用更大的内存页来取代传统的4K页面。使用HugePage主要带来如下好处
+HugePages是linux内核的一个特性，使用hugepage可以用更大的内存页来取代传统的4K页面. 使用HugePage主要带来如下好处
 
-1. 没有swap。Notswappable: HugePages are not swappable. Therefore there is no page-in/page-outmechanism overhead.HugePages are universally regarded as pinned.
-2. 减轻快表压力。Reliefof TLB pressure:TLB表格的更小了，效率提高
-3. 减轻换页表的负载。每个表单需64字节，如果管理50GB的物理内存，如果使用传统4K页面pagetable需要800M大小,而是用HugePages仅需要40M
+1. 没有swap. Notswappable: HugePages are not swappable. Therefore there is no page-in/page-outmechanism overhead.HugePages are universally regarded as pinned.
+2. 减轻快表压力. Reliefof TLB pressure:TLB表格的更小了，效率提高
+3. 减轻换页表的负载. 每个表单需64字节，如果管理50GB的物理内存，如果使用传统4K页面pagetable需要800M大小,而是用HugePages仅需要40M
 4. 提高内存的性能，降低CPU负载，原理同上
 
 HugePages和oracle AMM(自动内存管理)是互斥的，所有使用HugePages必须设置内存参数MEMORY_TARGET / MEMORY_MAX_TARGET 为0
@@ -341,7 +341,7 @@ HugePages和oracle AMM(自动内存管理)是互斥的，所有使用HugePages�
 ### qemu -numa选项-模拟多接点NUMA设备
 
 ```
-NUMA(Non Uniform Memory Access Architecture)技术可以使众多服务器像单一系统那样运转，同时保留小系统便于编程和管理的优点。基于电子商务应用对内存访问提出的更高的要求，NUMA也向复杂的结构设计提出了挑战。
+NUMA(Non Uniform Memory Access Architecture)技术可以使众多服务器像单一系统那样运转，同时保留小系统便于编程和管理的优点. 基于电子商务应用对内存访问提出的更高的要求，NUMA也向复杂的结构设计提出了挑战. 
 ```
 
 ![1532416142683.png](image/1532416142683.png)
@@ -486,13 +486,13 @@ qemu-img resize filename [+ | -]size
 * size可以不用放在-o中
 * 默认不启用压缩
 * backing_file后端镜像-神奇的东西 -b filename 或 -o backing_file=filename
-	- 创建了文件并且指定后端镜像，那么只记录与后端镜像差异的部分。且跟后端镜像强依赖
+	- 创建了文件并且指定后端镜像，那么只记录与后端镜像差异的部分. 且跟后端镜像强依赖
 	- 如果需要提交的话要用qemi-img commit好似git一样
 
 ```
 qemu-img commit [-f fmt] filename
 
-提交filename文件中的更改到后端支持镜像文件(创建时通过backing_file指定的)中去。
+提交filename文件中的更改到后端支持镜像文件(创建时通过backing_file指定的)中去. 
 ```
 
 ![1532421110265.png](image/1532421110265.png)
@@ -540,9 +540,9 @@ qemu向客户机提供了如下四种不同模式的网络
 ### 网桥模式
 
 
-* 网桥模式1、可以让客户机和宿主机共享一个物理网络设备连接网络，2、也可以让客户机有自己的IP直连与宿主机一摸一样的网络。
+* 网桥模式1、可以让客户机和宿主机共享一个物理网络设备连接网络，2、也可以让客户机有自己的IP直连与宿主机一摸一样的网络. 
 * 这里介绍一下共享一个物理网络设备连接网络的情况，具体示意图如下图所示
-基本原理就是创建一个桥接接口br0，在物理网卡和虚拟网络接口之间传递数据，具体做法为: 虚拟出一个bridge，将这个bridge绑定到物理网卡上并分配一个对外的地址，再将对应的虚拟机网络设备绑定到这个虚拟bridge的一个端口上。
+基本原理就是创建一个桥接接口br0，在物理网卡和虚拟网络接口之间传递数据，具体做法为: 虚拟出一个bridge，将这个bridge绑定到物理网卡上并分配一个对外的地址，再将对应的虚拟机网络设备绑定到这个虚拟bridge的一个端口上. 
 
 ![1532422403673.png](image/1532422403673.png)
 
@@ -563,7 +563,7 @@ dhclient br0             #将br0网络配置好
 
 ### NAT模式
 
-network address translation， 网络地址转换，将内网IP数据包包头中的源IP地址转换为一个外网的IP地址，因此内部IP对外是不可见的，隐藏了内部结构更加安全，但对外提供服务则是其局限性，目前通常采用iptables工具进行端口映射解决。具体示意图如下所示
+network address translation， 网络地址转换，将内网IP数据包包头中的源IP地址转换为一个外网的IP地址，因此内部IP对外是不可见的，隐藏了内部结构更加安全，但对外提供服务则是其局限性，目前通常采用iptables工具进行端口映射解决. 具体示意图如下所示
 
 ![1532422493878.png](image/1532422493878.png)
 

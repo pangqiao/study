@@ -17,7 +17,7 @@
 
 # 1. 简介
 
-要使用 KGDB 来调试内核，首先需要修改 config 配置文件，打开相应的配置，配置内核启动参数，甚至修改串口驱动添加 poll 支持，然后才能通过**串口远程调试内核**。
+要使用 KGDB 来调试内核，首先需要修改 config 配置文件，打开相应的配置，配置内核启动参数，甚至修改串口驱动添加 poll 支持，然后才能通过**串口远程调试内核**. 
 
 # 2. 配置内核
 
@@ -49,17 +49,17 @@ CONFIG_KGDB_TESTS |
 
 ## 2.3. 启动参数
 
-打开相应的选项后，需要配置 kernel 启动参数，使 **KGDB** 和**内核**能够找到正确的**通信接口**。如果是使用串口，则需要配置如下选项: 
+打开相应的选项后，需要配置 kernel 启动参数，使 **KGDB** 和**内核**能够找到正确的**通信接口**. 如果是使用串口，则需要配置如下选项: 
 
 ```
 console=ttySAC3,115200 kgdboc=ttySAC3,115200
 ```
 
-如果需要**调试内核的启动过程**，则需要在 **kgdboc** 后面加入 **kgdbwait** 。
+如果需要**调试内核的启动过程**，则需要在 **kgdboc** 后面加入 **kgdbwait** . 
 
-在其他板子上，若使用**以太网口**来和 **KGDB** 进行通信，则要把 **kgdboc** 换成 `kgdboe(kgdb over ethernet)`。
+在其他板子上，若使用**以太网口**来和 **KGDB** 进行通信，则要把 **kgdboc** 换成 `kgdboe(kgdb over ethernet)`. 
 
-配置完后，就可以正常编译，然后把**内核下载到目标板**上面。
+配置完后，就可以正常编译，然后把**内核下载到目标板**上面. 
 
 # 3. 串口驱动修改
 
@@ -69,13 +69,13 @@ console=ttySAC3,115200 kgdboc=ttySAC3,115200
 kgdb: Unregistered I/O driver, debugger disabled.
 ```
 
-则需要根据这一部分，**修改串口驱动程序**，若能正常进入 kgdb ，则忽略该节，直接进入下一节使用 KGDB 。
+则需要根据这一部分，**修改串口驱动程序**，若能正常进入 kgdb ，则忽略该节，直接进入下一节使用 KGDB . 
 
-在 `drivers/tty/serial/kgdboc.c` 中的 `configure_kgdboc` 函数，会通过 `tty_find_polling_driver(cptr, &tty_line)` 来找寻内核启动参数中指定的串口驱动。然后通过 `kgdboc_get_char()` 和 `kgdboc_put_char()` 来和主机串口正常通信。
+在 `drivers/tty/serial/kgdboc.c` 中的 `configure_kgdboc` 函数，会通过 `tty_find_polling_driver(cptr, &tty_line)` 来找寻内核启动参数中指定的串口驱动. 然后通过 `kgdboc_get_char()` 和 `kgdboc_put_char()` 来和主机串口正常通信. 
 
-可以看到在 config 配置文件的 `CONFIG_CONSOLE_POLL` 就是使能串口与 kgdboc 的接口。如果 `tty_find_polling_driver` 没有找到对应的串口通信接口，则会调用 `kernel/debug/debug_core.c` 中的 `kgdb_unregister_io_module` 进行错误处理。
+可以看到在 config 配置文件的 `CONFIG_CONSOLE_POLL` 就是使能串口与 kgdboc 的接口. 如果 `tty_find_polling_driver` 没有找到对应的串口通信接口，则会调用 `kernel/debug/debug_core.c` 中的 `kgdb_unregister_io_module` 进行错误处理. 
 
-有的板子的串口驱动并没有加入对 kgdboc 通信的支持，例如 Samsung 的串口驱动需要在 `drivers/tty/serial/samsung.c` 中手动添加。 添加与 kgdboc 通信的接口，只需添加一个发送函数和接收函数，然后在驱动操作结构体中加入对应的函数就可以了。具体的 PATCH 如下: 
+有的板子的串口驱动并没有加入对 kgdboc 通信的支持，例如 Samsung 的串口驱动需要在 `drivers/tty/serial/samsung.c` 中手动添加.  添加与 kgdboc 通信的接口，只需添加一个发送函数和接收函数，然后在驱动操作结构体中加入对应的函数就可以了. 具体的 PATCH 如下: 
 
 ```
 drivers/tty/serial/samsung.c | 22 ++++++++++++++++++++++
@@ -121,7 +121,7 @@ static struct uart_ops s3c24xx_serial_ops = {
 
 # 4. gdb 远程调试
 
-如果在内核启动参数中加入了 **kgdbwait** ，则内核会在完成基本的初始化之后，停留在 kgdb 的调试陷阱中，等待主机的 gdb 的远程连接。
+如果在内核启动参数中加入了 **kgdbwait** ，则内核会在完成基本的初始化之后，停留在 kgdb 的调试陷阱中，等待主机的 gdb 的远程连接. 
 
 由于大部分的板子只有一个调试串口，所以你需要把之前与串口通信的 minicom 退出来，然后在内核源码的目录下，执行以下命令: 
 
@@ -133,7 +133,7 @@ $ arm-linux-gnueabi-gcc vmlinux
 (gdb) c
 ```
 
-当然，你也可以 `agent-proxy` 来复用一个串口，通过虚拟出两个 TCP 端口。这时候， gdb 就需要用 target remote 命令连接 kgdb ，例如: 
+当然，你也可以 `agent-proxy` 来复用一个串口，通过虚拟出两个 TCP 端口. 这时候， gdb 就需要用 target remote 命令连接 kgdb ，例如: 
 
 ```
 (gdb) target remote localhost:5551
@@ -145,19 +145,19 @@ agent-proxy 可这样下载:
 git clone git://git.kernel.org/pub/scm/utils/kernel/kgdb/agent-proxy.git
 ```
 
-具体用法，请看该 repo 下的 README 。
+具体用法，请看该 repo 下的 README . 
 
-在用 **gdb** 来**调试内核**的时候，由于内核在**初始化**的时候，会**创建很多子线程**。而**默认 gdb** 会**接管所有的线程**，如果你从一个线程切换到另外一个线程， gdb 会马上把原先的线程暂停。但是这样很容易导致 kernel 死掉，所以需要设置一下 gdb 。一般用 gdb 进行多线程调试，需要注意两个参数:  `follow-fork-mode` 和 `detach-on-fork`。
+在用 **gdb** 来**调试内核**的时候，由于内核在**初始化**的时候，会**创建很多子线程**. 而**默认 gdb** 会**接管所有的线程**，如果你从一个线程切换到另外一个线程， gdb 会马上把原先的线程暂停. 但是这样很容易导致 kernel 死掉，所以需要设置一下 gdb . 一般用 gdb 进行多线程调试，需要注意两个参数:  `follow-fork-mode` 和 `detach-on-fork`. 
 
 - `detach-on-fork` 参数，指示 GDB 在 **fork** 之后**是否断开**(detach)某个进程的调试，或者都交由 GDB 控制:  `set detach-on-fork [on|off]`
 
-    - on: 断开调试 `follow-fork-mode` 指定的进程。
-    - off: gdb将控制父进程和子进程。
+    - on: 断开调试 `follow-fork-mode` 指定的进程. 
+    - off: gdb将控制父进程和子进程. 
 
-- `follow-fork-mode` 指定的进程将被调试，另一个进程置于暂停(suspended)状态。`follow-fork-mode` 的用法为: `set follow-fork-mode [parent|child]`
+- `follow-fork-mode` 指定的进程将被调试，另一个进程置于暂停(suspended)状态. `follow-fork-mode` 的用法为: `set follow-fork-mode [parent|child]`
 
-    - parent: fork之后继续调试父进程，子进程不受影响。 
-    - child: fork之后调试子进程，父进程不受影响。
+    - parent: fork之后继续调试父进程，子进程不受影响.  
+    - child: fork之后调试子进程，父进程不受影响. 
 
 # 5. 参考资料
 

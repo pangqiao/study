@@ -1,1 +1,1 @@
-Cobra 是一个创建 CLI 命令行的 golang 库。
+Cobra 是一个创建 CLI 命令行的 golang 库. 

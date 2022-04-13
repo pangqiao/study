@@ -1,16 +1,16 @@
 HTTP协议相关
 
-HTTP诞生于1991年，是互联网领域一个基石性的协议。全世界电脑上的内容能互联起来，全拜HTTP所赐。
+HTTP诞生于1991年，是互联网领域一个基石性的协议. 全世界电脑上的内容能互联起来，全拜HTTP所赐. 
 
-程序员主要通过HTTP来传输XML, JSON等数据。日常使用的就是GET、POST方法，但HTTP可不仅仅只有这些，它的细节相当多， 我觉得程序员至少应该掌握这些: 
+程序员主要通过HTTP来传输XML, JSON等数据. 日常使用的就是GET、POST方法，但HTTP可不仅仅只有这些，它的细节相当多， 我觉得程序员至少应该掌握这些: 
 
 Cookie:  domain, path, expiration
 
 HTTP状态码
 
-HTTP长连接  ，由此扩展到websocket。
+HTTP长连接  ，由此扩展到websocket. 
 
-HTTP重定向 ，非常有用的技术，对理解OAuth, CAS(SSO)很有帮助。
+HTTP重定向 ，非常有用的技术，对理解OAuth, CAS(SSO)很有帮助. 
 
 缓存 : Last-Modified和ETag
 

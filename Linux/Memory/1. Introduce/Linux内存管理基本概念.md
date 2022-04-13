@@ -108,7 +108,7 @@ DMA mapping是内存管理的辅助模块, 注要提供dma\_alloc\_xxx(申请可
 
 最后是DMA buffer sharing的机制, 用于在不同设备之间共享内存, 一般包括两种方法: 
 
-- 传统的、利用CPU虚拟地址中转的方法, 例如scatterlist；
+- 传统的、利用CPU虚拟地址中转的方法, 例如scatterlist; 
 
 - dma buffer sharing framework, 位于drivers/dma-buf/dma-buf.c中. 
 

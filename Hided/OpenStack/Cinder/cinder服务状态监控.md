@@ -19,7 +19,7 @@ class ServiceController(wsgi.Controller):
         svcs = []
         for svc in services:
             updated_at = svc['updated_at']
-            delta = now - (svc['updated_at'] or svc['created_at']) # 获取 updated_at，不存在的话，获取 created_at。并和当前时间计算时间差
+            delta = now - (svc['updated_at'] or svc['created_at']) # 获取 updated_at，不存在的话，获取 created_at. 并和当前时间计算时间差
             delta_sec = delta.total_seconds() # 转换成秒
             ...
             alive = abs(delta_sec) <= CONF.service_down_time # 检查是否小于配置的 server_down_time，该配置项默认是60秒
@@ -37,7 +37,7 @@ class ServiceController(wsgi.Controller):
         return {'services': svcs}
 ```
 
-可见，service返回结果状态是否为up，取决于now - updated_at 与CONF.service_down_time 谁大谁小。
+可见，service返回结果状态是否为up，取决于now - updated_at 与CONF.service_down_time 谁大谁小. 
 
 # 2 cinder updated_at更新机制
 
@@ -132,7 +132,7 @@ class Service(service.Service):
                 LOG.exception(_LE('DBError encountered: '))
 ```
 
-report_state 方法会更新 db 中serive 的各个属性，其中 updated_at 的值就是所在节点上执行一次该方法的时刻。
+report_state 方法会更新 db 中serive 的各个属性，其中 updated_at 的值就是所在节点上执行一次该方法的时刻. 
 
 再来看看循环的类FixedIntervalLoopingCall,上面的代码可以看到，FixedIntervalLoopingCall初始化的时候传入了self.report_state， 然后执行了start方法
 
@@ -198,9 +198,9 @@ class FixedIntervalLoopingCall(LoopingCallBase):
 
 如果发现某个服务的状态为down,在启动日志没有出错的情况下，可以按照下面的步骤进行定位: 
 
-(1)看看是不是在 cinder.conf 中 report_interval 配置项的值是多少，如果超过了 service_down_time 配置项默认的 60 秒，那么该service 的状态肯定就是 'down' 了。
+(1)看看是不是在 cinder.conf 中 report_interval 配置项的值是多少，如果超过了 service_down_time 配置项默认的 60 秒，那么该service 的状态肯定就是 'down' 了. 
 
-(2)看 service 所在节点的时间，它的时间和 controller 节点的时间误差必须在 [service_down_time - report_interval ] 之内，也就是在使用默认配置情况下，时间差必须在 50 秒之内。
+(2)看 service 所在节点的时间，它的时间和 controller 节点的时间误差必须在 [service_down_time - report_interval ] 之内，也就是在使用默认配置情况下，时间差必须在 50 秒之内. 
 
-(3)看看 service 的 log 文件中，确认 report_state  方法是不是都按时被调用了，不方便看的话，在代码中加个注释吧。
+(3)看看 service 的 log 文件中，确认 report_state  方法是不是都按时被调用了，不方便看的话，在代码中加个注释吧. 
 

@@ -19,7 +19,7 @@
 
 # 1. 用途
 
-利用kvm子工具，我们可以在host上监测guest的性能事件。
+利用kvm子工具，我们可以在host上监测guest的性能事件. 
 
 # 2. 使用方法
 
@@ -70,7 +70,7 @@ perf kvm有几个变体:
 
 # 3. 获取guest的kallsyms和modules文件
 
-为了能够让kvm子工具正确解析guest的符号，我们首先需要把guest系统的/proc/kallsyms和 /proc/modules文件拷贝到host中。
+为了能够让kvm子工具正确解析guest的符号，我们首先需要把guest系统的/proc/kallsyms和 /proc/modules文件拷贝到host中. 
 
 在host中运行下面命令: 
 
@@ -80,15 +80,15 @@ perf kvm有几个变体:
 # ssh guest “cat /proc/modules” > /tmp/guest.modules
 ```
 
-其中guest为host中guest os的名字，我们也可以用IP地址来代替guest的名字。
+其中guest为host中guest os的名字，我们也可以用IP地址来代替guest的名字. 
 
-注意: 我们这里不用scp命令拷贝文件的原因是因为有时scp在拷贝guest的modules文件时会返回空文件。
+注意: 我们这里不用scp命令拷贝文件的原因是因为有时scp在拷贝guest的modules文件时会返回空文件. 
 
 # 4. 利用sshfs自动读取guest的kallsyms和modules文件
 
-perf kvm可以利用sshfs来挂载guest的根文件系统，这样它就可以直接读取guest的kallsyms和modules文件了。
+perf kvm可以利用sshfs来挂载guest的根文件系统，这样它就可以直接读取guest的kallsyms和modules文件了. 
 
-sshfs需要fuse(the Filesystem in Userspace)如果你的系统中没有安装fuse，需要首先安装fuse。
+sshfs需要fuse(the Filesystem in Userspace)如果你的系统中没有安装fuse，需要首先安装fuse. 
 
 在host中运行下列命令: 
 
@@ -100,7 +100,7 @@ sshfs需要fuse(the Filesystem in Userspace)如果你的系统中没有安装fus
 # sshfs -o allow_other,direct_io guest:/ /tmp/guestmount/24764
 ```
 
-这样我们就可以利用perf kvm的—guestmount参数来指定guest的文件系统了。
+这样我们就可以利用perf kvm的—guestmount参数来指定guest的文件系统了. 
 
 当我们用完perf kvm后需要卸载guest的文件系统: 
 
@@ -124,15 +124,15 @@ sshfs需要fuse(the Filesystem in Userspace)如果你的系统中没有安装fus
 ./perf kvm stat record -a sleep 1
 ```
 
-注: 如果 `--host` 和 `--guest` 均在命令中使用，输出将被储存在 `perf.data.kvm` 中。如果只有 `--host` 被使用，文件将被命名为 `perf.data.host`。同样地，如果仅有 `--guest` 被使用，文件将被命名为 `perf.data.guest`。
+注: 如果 `--host` 和 `--guest` 均在命令中使用，输出将被储存在 `perf.data.kvm` 中. 如果只有 `--host` 被使用，文件将被命名为 `perf.data.host`. 同样地，如果仅有 `--guest` 被使用，文件将被命名为 `perf.data.guest`. 
 
-上面这个命令的意思是**同时记录host**和**guest**上**所有进程的性能事件**，这里默认的**采样事件**为**cycles**，我们可以用`-e`参数来指定我们感兴趣的采样事件。
+上面这个命令的意思是**同时记录host**和**guest**上**所有进程的性能事件**，这里默认的**采样事件**为**cycles**，我们可以用`-e`参数来指定我们感兴趣的采样事件. 
 
-我们可以发送SIGINT命令结束采样，注意如果perf被非SIGINT指令结束，比如SIGTERM 或者SIGQUIT，那么perf kvm report命令将不能正确的解析采样文件。
+我们可以发送SIGINT命令结束采样，注意如果perf被非SIGINT指令结束，比如SIGTERM 或者SIGQUIT，那么perf kvm report命令将不能正确的解析采样文件. 
 
-默认情况下，如果我们只记录host的性能事件那么生成的采样文件的名字为: perf.data.host，如果我们只记录guest的性能事件，那么生成的采样文件的名字为: perf.data.guest。如果我们同时记录host和guest的性能事件，那么生成的采样文件的名字为: perf.data.kvm。
+默认情况下，如果我们只记录host的性能事件那么生成的采样文件的名字为: perf.data.host，如果我们只记录guest的性能事件，那么生成的采样文件的名字为: perf.data.guest. 如果我们同时记录host和guest的性能事件，那么生成的采样文件的名字为: perf.data.kvm. 
 
-按 Ctrl-C 停止纪录。
+按 Ctrl-C 停止纪录. 
 
 # 6. 分析guest上的性能事件
 
@@ -150,13 +150,13 @@ perf kvm --host --guest --guestmodules=guest-modules report -i perf.data.kvm --f
 
 ![2020-01-29-00-44-46.png](./images/2020-01-29-00-44-46.png)
 
-其中**模块名前有guest前缀**的都是**guest中发生的采样事件**，模块名为unknown的为guest中运行的workload，因为没有该workload的符号表，所以此处不能解析出workload的名字。其余都是host中的采样事件。
+其中**模块名前有guest前缀**的都是**guest中发生的采样事件**，模块名为unknown的为guest中运行的workload，因为没有该workload的符号表，所以此处不能解析出workload的名字. 其余都是host中的采样事件. 
 
-如果我们仔细观察我们用来记录guest采样事件的命令就会发现，我们**只能**提供**一个guest**的**kallsyms**和**modules**文件。所以，也就只能解析一个guest的符号，当host有多个guest时，可能符号解析会出错。当然，我们也可以同时监测多个guest的性能事件，然后根据各个guest的kallsyms和modules文件**手动解析**这些符号。
+如果我们仔细观察我们用来记录guest采样事件的命令就会发现，我们**只能**提供**一个guest**的**kallsyms**和**modules**文件. 所以，也就只能解析一个guest的符号，当host有多个guest时，可能符号解析会出错. 当然，我们也可以同时监测多个guest的性能事件，然后根据各个guest的kallsyms和modules文件**手动解析**这些符号. 
 
-将来perf kvm可能通过增加guest的PID的方式来分别指定每个guest的kallsyms和modules文件，那么，就可以正确解析每个guest的符号。
+将来perf kvm可能通过增加guest的PID的方式来分别指定每个guest的kallsyms和modules文件，那么，就可以正确解析每个guest的符号. 
 
-通过上面的介绍，我们可以看到，利用perf kvm子工具，我们可以方便的在host中监测guest中的性能事件，这对于我们分析guest的性能是非常方便的。Perf kvm子工具还支持其它的perf的命令，比如: stat等。
+通过上面的介绍，我们可以看到，利用perf kvm子工具，我们可以方便的在host中监测guest中的性能事件，这对于我们分析guest的性能是非常方便的. Perf kvm子工具还支持其它的perf的命令，比如: stat等. 
 
 
 # 7. perf kvm stat record/report 使用

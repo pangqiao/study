@@ -26,7 +26,7 @@ BCC--用于Linux性能监视, 网络和更多的动态跟踪工具
 
 *	支持观察软件执行.
 
-*	包括几个性能分析工具与示例文件和手册页。
+*	包括几个性能分析工具与示例文件和手册页. 
 
 >建议阅读 :
 >
@@ -34,7 +34,7 @@ BCC--用于Linux性能监视, 网络和更多的动态跟踪工具
 >
 >[Suggested Read: 20 Command Line Tools to Monitor Linux Performance](https://www.tecmint.com/command-line-tools-to-monitor-linux-performance/)
 
-最适合用于高级 `Linux` 用户, `BCC` 可以很容易地编写使用内核仪表用`C`, `BPF` 程序和 `Python` 和 `Lua`编写的前端分析脚本。 此外， 它支持多个任务， 如性能分析, 监控, 网络流量控制等.
+最适合用于高级 `Linux` 用户, `BCC` 可以很容易地编写使用内核仪表用`C`, `BPF` 程序和 `Python` 和 `Lua`编写的前端分析脚本.  此外， 它支持多个任务， 如性能分析, 监控, 网络流量控制等.
 
 # 如何在 `Linux` 系统中安装 `BCC`
 
@@ -62,7 +62,7 @@ CONFIG_BPF_EVENTS=y
 grep -E "CONFIG_BPF=|CONFIG_BPF_SYSCALL=|CONFIG_BPF_SYSCALL=y|CONFIG_NET_CLS_BPF|CONFIG_NET_CLS_BPF=m|CONFIG_NET_ACT_BPF=|CONFIG_NET_ACT_BPF=m|CONFIG_BPF_JIT=|CONFIG_BPF_JIT=y|CONFIG_HAVE_BPF_JIT=|CONFIG_HAVE_BPF_JIT=y|CONFIG_BPF_EVENTS=|CONFIG_BPF_EVENTS=y /boot/config-`uname -r`
 ```
 
-验证内核标志后, 它的时间在 `Linux` 系统中安装 `BCC` 工具。
+验证内核标志后, 它的时间在 `Linux` 系统中安装 `BCC` 工具. 
 
 
 ##2.2	Ubuntu使用源安装
@@ -104,7 +104,7 @@ sudo apt-get install binutils bcc bcc-tools libbcc-examples python-bcc
 -------
 
 
-安装从4.2+内核http://alt.fedoraproject.org/pub/alt/rawhide-kernel-nodebug ，如果您的系统具有比需要什么更低版本。下面是一个如何做的例子: 
+安装从4.2+内核http://alt.fedoraproject.org/pub/alt/rawhide-kernel-nodebug ，如果您的系统具有比需要什么更低版本. 下面是一个如何做的例子: 
 $ sudo dnf config-manager --add-repo=http://alt.fedoraproject.org/pub/alt/rawhide-kernel-nodebug/fedora-rawhide-kernel-nodebug.repo
 $ sudo dnf update
 $ reboot 在此之后，添加BBC工具库，更新你的系统，并执行下一个命令系列的安装工具: 
@@ -113,10 +113,10 @@ $ sudo dnf update
 $ sudo dnf install bcc-tools
 Arch Linux - AUR
 
-您应该将内核升级到至少4.3.1-1版本开始，随后安装使用以下任何拱包管理器，如包pacaur，yaourt， 畏缩等。
+您应该将内核升级到至少4.3.1-1版本开始，随后安装使用以下任何拱包管理器，如包pacaur，yaourt， 畏缩等. 
 bcc bcc-tools python-bcc python2-bcc
 如何在Linux系统中使用BCC工具
-所有BCC工具将被安装/usr/share/bcc/tools目录下。 但是，您可以替代地根据BCC Github上库运行它们/tools在那里他们有结束.py扩展。
+所有BCC工具将被安装/usr/share/bcc/tools目录下.  但是，您可以替代地根据BCC Github上库运行它们/tools在那里他们有结束.py扩展. 
 $ ls /usr/share/bcc/tools
 argdist       capable     filetop         offwaketime  stackcount  vfscount
 bashreadline  cpudist     funccount       old          stacksnoop  vfsstat
@@ -127,10 +127,10 @@ bitesize      execsnoop   killsnoop       profile      tcpconnect  zfsdist
 btrfsdist     ext4dist    mdflush         runqlat      tcpconnlat  zfsslower
 btrfsslower   ext4slower  memleak         softirqs     tcpretrans
 cachestat     filelife    mysqld_qslower  solisten     tplist
-cachetop      fileslower  offcputime      sslsniff     trace 我们应包括以下几个例子-监测的一般Linux系统的性能和网络。
+cachetop      fileslower  offcputime      sslsniff     trace 我们应包括以下几个例子-监测的一般Linux系统的性能和网络. 
 跟踪open()系统调用
 
-让我们通过追踪所有启动open()使用opensnoop系统调用。这使我们能够通过识别他们的数据文件，配置文件等等告诉我们各种应用程序如何工作: 
+让我们通过追踪所有启动open()使用opensnoop系统调用. 这使我们能够通过识别他们的数据文件，配置文件等等告诉我们各种应用程序如何工作: 
 $ cd /usr/share/bcc/tools
 $ sudo ./opensnoop
 PID    COMM               FD ERR PATH
@@ -166,7 +166,7 @@ PID    COMM               FD ERR PATH
 ....
 总结块设备I / O延迟
 
-在本示例中，它显示使用生物分解的磁盘I / O延迟的汇总分布。执行该命令后，等待几分钟，然后按Ctrl-C来结束它，并查看输出。
+在本示例中，它显示使用生物分解的磁盘I / O延迟的汇总分布. 执行该命令后，等待几分钟，然后按Ctrl-C来结束它，并查看输出. 
 $ sudo ./biolatecncy
 Tracing block device I/O... Hit Ctrl-C to end.
 ^C
@@ -183,7 +183,7 @@ usecs               : count     distribution
 512 -> 1023       : 1        |*************                           |
 通过exec()Syscalls跟踪新进程
 
-在本节中，我们将移动到使用execsnoop工具执行跟踪新工艺。 每一个过程是由两岔时间fork()和exec()系统调用，它示出在输出中。但是，并非所有进程都被捕获。
+在本节中，我们将移动到使用execsnoop工具执行跟踪新工艺.  每一个过程是由两岔时间fork()和exec()系统调用，它示出在输出中. 但是，并非所有进程都被捕获. 
 $ sudo ./execsnoop
 PCOMM            PID    PPID   RET ARGS
 gnome-screensho  14882  14881    0 /usr/bin/gnome-screenshot --gapplication-service
@@ -210,7 +210,7 @@ basename         14903  14899    0 /usr/bin/basename /usr/bin/libreoffice
 ...
 跟踪慢ext4操作
 
-使用ext4slower跟踪ext4文件系统是大于10ms较慢的常用操作，帮助我们通过文件系统识别独立较慢的磁盘I / O。
+使用ext4slower跟踪ext4文件系统是大于10ms较慢的常用操作，帮助我们通过文件系统识别独立较慢的磁盘I / O. 
 建议阅读:  13 Linux的性能监视工具
 
 它只输出超过阈值的操作: 
@@ -258,7 +258,7 @@ TIME(s)        COMM           PID    DISK    T  SECTOR    BYTES   LAT(ms)
 ...
 跟踪页面缓存命中/未命中比率
 
-此后，我们继续使用cachestat到显示器汇总统计的一行从系统缓存每一秒。这通过指出低缓存命中率和高错失率来实现系统调整操作: 
+此后，我们继续使用cachestat到显示器汇总统计的一行从系统缓存每一秒. 这通过指出低缓存命中率和高错失率来实现系统调整操作: 
 $ sudo ./cachestat
 HITS   MISSES  DIRTIES  READ_HIT% WRITE_HIT%   BUFFERS_MB  CACHED_MB
 0        0        0       0.0%       0.0%           19        544
@@ -274,7 +274,7 @@ HITS   MISSES  DIRTIES  READ_HIT% WRITE_HIT%   BUFFERS_MB  CACHED_MB
 ...
 跟踪TCP活动连接
 
-监测TCP连接，每秒使用tcpconnect。其输出包括源和目标地址以及端口号。此工具可用于跟踪意外的TCP连接，从而帮助我们识别应用程序配置或攻击者的低效率。
+监测TCP连接，每秒使用tcpconnect. 其输出包括源和目标地址以及端口号. 此工具可用于跟踪意外的TCP连接，从而帮助我们识别应用程序配置或攻击者的低效率. 
 $ sudo ./tcpconnect
 PID    COMM         IP SADDR            DADDR            DPORT
 15272  Socket Threa 4  10.0.2.15        91.189.89.240    80
@@ -340,12 +340,12 @@ PID    COMM               FD ERR PATH
 ...
 跟踪特定的过程函数
 
-下面的最后一个示例演示了如何执行自定义跟踪操作。我们正在使用其PID跟踪特定进程。
+下面的最后一个示例演示了如何执行自定义跟踪操作. 我们正在使用其PID跟踪特定进程. 
 建议阅读:  Netdata -适用于Linux的实时性能监控工具
 
 首先确定进程ID: 
 $ pidof firefox
-15437 后来，运行定制trace命令。 在下面的命令:  -p指定的进程ID， do_sys_open()是动态跟踪包括它的第二个参数是一个字符串核函数。
+15437 后来，运行定制trace命令.  在下面的命令:  -p指定的进程ID， do_sys_open()是动态跟踪包括它的第二个参数是一个字符串核函数. 
 $ sudo ./trace -p 4095 'do_sys_open "%s", arg2'
 TIME     PID    COMM         FUNC             -
 12:17:14 15437  firefox      do_sys_open      /run/user/1000/dconf/user
@@ -371,7 +371,7 @@ TIME     PID    COMM         FUNC             -
 12:18:15 15437  firefox      do_sys_open      /dev/urandom
 ....
 概要
-BCC是各种系统管理任务，例如追踪系统性能监控，跟踪块设备一个功能强大且易于使用的工具包I / O，TCP的功能，文件系统操作，系统调用，Node.js的探头，再加上其它更多地方。重要的是，它提供了几个示例文件和手册页的工具来指导你，使其用户友好和可靠。 最后但同样重要的是，您可以通过下面的评论部分分享您对主题的想法，提出问题，提出有用的建议或任何建设性的反馈，以回复我们。 欲了解更多信息和使用情况，请访问:  https://iovisor.github.io/bcc/
+BCC是各种系统管理任务，例如追踪系统性能监控，跟踪块设备一个功能强大且易于使用的工具包I / O，TCP的功能，文件系统操作，系统调用，Node.js的探头，再加上其它更多地方. 重要的是，它提供了几个示例文件和手册页的工具来指导你，使其用户友好和可靠.  最后但同样重要的是，您可以通过下面的评论部分分享您对主题的想法，提出问题，提出有用的建议或任何建设性的反馈，以回复我们.  欲了解更多信息和使用情况，请访问:  https://iovisor.github.io/bcc/
 
 #参见
 -------

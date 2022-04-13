@@ -386,7 +386,7 @@ struct sched_class {
     void (*enqueue_task) (struct rq *rq, struct task_struct *p, int flags);
     /*  从运行队列中删除进程, 并对 nr_running 变量中减1  */
     void (*dequeue_task) (struct rq *rq, struct task_struct *p, int flags);
-    /*  放弃CPU, 在 compat_yield sysctl 关闭的情况下, 该函数实际上执行先出队后入队；在这种情况下, 它将调度实体放在红黑树的最右端  */
+    /*  放弃CPU, 在 compat_yield sysctl 关闭的情况下, 该函数实际上执行先出队后入队; 在这种情况下, 它将调度实体放在红黑树的最右端  */
     void (*yield_task) (struct rq *rq);
     bool (*yield_to_task) (struct rq *rq, struct task_struct *p, bool preempt);
 	/*   检查当前进程是否可被新进程抢占 */
@@ -424,7 +424,7 @@ struct sched_class {
 #endif
 	/* 当进程改变它的调度类或进程组时被调用 */
     void (*set_curr_task) (struct rq *rq);
-	/* 该函数通常调用自 time tick 函数；它可能引起进程切换. 这将驱动运行时(running)抢占 */
+	/* 该函数通常调用自 time tick 函数; 它可能引起进程切换. 这将驱动运行时(running)抢占 */
     void (*task_tick) (struct rq *rq, struct task_struct *p, int queued);
 	/* 在进程创建时调用, 不同调度策略的进程初始化不一样 */
     void (*task_fork) (struct task_struct *p);
@@ -458,12 +458,12 @@ struct sched_class {
 | ------------- |:-------------:|
 | enqueue\_task | 向**就绪队列**中**添加一个进程**,某个任务**进入可运行状态时**, 该函数将得到**调用**. 它将调度实体(进程)**放入红黑树**中, 并对**nr\_running**变量加 1 |
 | dequeue\_task | 将一个进程从**就就绪队列**中**删除**,当某个任务**退出可运行状态**时调用该函数, 它将**从红黑树中去掉对应的调度实体**, 并从 **nr\_running** 变量中减 1 |
-| yield\_task | 在进程想要资源**放弃对处理器的控制权**的时, 可使用在**sched\_yield系统调用**, 会调用内核API yield\_task完成此工作. **compat\_yield sysctl关闭**的情况下, 该函数实际上执行**先出队后入队**；在这种情况下, 它将调度实体放在**红黑树的最右端** |
+| yield\_task | 在进程想要资源**放弃对处理器的控制权**的时, 可使用在**sched\_yield系统调用**, 会调用内核API yield\_task完成此工作. **compat\_yield sysctl关闭**的情况下, 该函数实际上执行**先出队后入队**; 在这种情况下, 它将调度实体放在**红黑树的最右端** |
 | check\_preempt\_curr | 该函数将**检查当前运行的任务是否被抢占**. 在**实际抢占正在运行的任务之前**, CFS 调度程序模块将**执行公平性测试**. 这**将驱动唤醒式(wakeup)抢占** |
 | pick\_next\_task | 该函数**选择**接下来要运行的最合适的进程 |
 | put\_prev\_task | 用另一个进程**代替当前运行的进程** |
 | set\_curr\_task | 当任务**修改其调度类或修改其任务组**时, 将调用这个函数 |
-| task\_tick | 在**每次激活周期调度器**时, 由**周期性调度器调用**, 该函数通常调用自 time tick 函数；它**可能引起进程切换**. 这将驱动运行时(running)抢占 |
+| task\_tick | 在**每次激活周期调度器**时, 由**周期性调度器调用**, 该函数通常调用自 time tick 函数; 它**可能引起进程切换**. 这将驱动运行时(running)抢占 |
 | task\_new | 内核调度程序为调度模块提供了管理新任务启动的机会,用于建立fork系统调用和调度器之间的关联, 每次**新进程建立**后,则用**new\_task通知调度器**,CFS调度模块使用它进行组调度, 而用于**实时任务的调度模块则不会使用**这个函数 |
 
 对于各个调度器类, 都必须提供struct sched\_class的一个实例, 目前内核中有实现以下五种:
@@ -627,7 +627,7 @@ struct rq {
     并会在每次调用scheduler_tick时通过函数update_rq_clock更新目前rq clock值. 
 	函数sched_clock_cpu会通过sched_clock_local或ched_clock_remote取得
     对应的sched_clock_data,而处理的sched_clock_data值, 
-    会通过函数sched_clock_tick在每次调用scheduler_tick时进行更新；
+    会通过函数sched_clock_tick在每次调用scheduler_tick时进行更新; 
 	*/
 	u64 clock;
     u64 clock_task;
@@ -1222,7 +1222,7 @@ struct sched_dl_entity {
 
 我们知道, linux是一个**多用户系统**, 如果有**两个进程分别属于两个用户**, 而进程的**优先级不同**, 会导致**两个用户所占用的CPU时间不同**, 这样显然是**不公平！！！**的(如果优先级差距很大, 低优先级进程所属用户使用CPU的时间就很小), 所以内核引入组调度. 如果**基于用户分组**, 即使进程优先级不同, 这两个用户使用的CPU时间都为50%. 
 
-如果**task\_group**中的**运行时间还没有使用完**, 而**当前进程运行时间使用完**后, 会**调度task\_group中的下一个被调度进程**；相反, 如果task\_group的运行时间使用结束, 则调用上一层的下一个被调度进程. 需要注意的是, **一个组调度**中可能会有**一部分是实时进程**, **一部分是普通进程**, 这也导致这种组要能够满足即能在实时调度中进行调度, 又可以在CFS调度中进行调度. 
+如果**task\_group**中的**运行时间还没有使用完**, 而**当前进程运行时间使用完**后, 会**调度task\_group中的下一个被调度进程**; 相反, 如果task\_group的运行时间使用结束, 则调用上一层的下一个被调度进程. 需要注意的是, **一个组调度**中可能会有**一部分是实时进程**, **一部分是普通进程**, 这也导致这种组要能够满足即能在实时调度中进行调度, 又可以在CFS调度中进行调度. 
 
 linux可以以以下**两种方式进行进程的分组**: 
 

@@ -15,7 +15,7 @@
 
 HHKB 全称 Happy Hacking Keyboard ，于 1996 年 12 月 20 日诞生于日本，由和田英一教授和株式会社 PFU 共同开发。
 
-HHKB键盘大体分为HHKB 、 HHKB Lite 、HKKB Lite 2 、 HHKB Lite 2 for Mac 、 HHKB Professional 、 HHKB Professional 2 、 HHKB Professional JP 、 HHKB Professional 2 Type-s 、HHKB Professional BT九大系列；具体到系列内，有的键帽有刻印，有的键帽无刻印；有的键盘是白色，有的键盘是黑色；有的是日本版，有的是北美版。目前在国行市面上销售的主要有三款，分别是HHKB Professional 2、HHKB Professional 2 Type-S、HHKB Professional BT。
+HHKB键盘大体分为HHKB 、 HHKB Lite 、HKKB Lite 2 、 HHKB Lite 2 for Mac 、 HHKB Professional 、 HHKB Professional 2 、 HHKB Professional JP 、 HHKB Professional 2 Type-s 、HHKB Professional BT九大系列; 具体到系列内，有的键帽有刻印，有的键帽无刻印; 有的键盘是白色，有的键盘是黑色; 有的是日本版，有的是北美版。目前在国行市面上销售的主要有三款，分别是HHKB Professional 2、HHKB Professional 2 Type-S、HHKB Professional BT。
 
 ![config](./images/1.png)
 

@@ -183,7 +183,7 @@ get_ept_pt_virtual_address:
 %endif
         ;;
         ;; 说明: 
-        ;; 1) EPT 的 PDT 和 PT 表物理地址从 kernel pool 里分配。
+        ;; 1) EPT 的 PDT 和 PT 表物理地址从 kernel pool 里分配. 
         ;; 2) 需要减去 KernelPoolPhysicalBase 值(物理地址)
         ;; 2) 加上 KernelPoolBase 值(虚拟地址)
         ;;
@@ -850,8 +850,8 @@ check_fix_misconfiguration:
         
         ;;
         ;; misconfiguration 原因: 
-        ;; 1) [2:0] = 010B(write-only) 或 110B(execute/write)时。
-        ;; 2) [2:0] = 100B(execute-only)，但 VMX 并不支持 execute-only 时。
+        ;; 1) [2:0] = 010B(write-only) 或 110B(execute/write)时. 
+        ;; 2) [2:0] = 100B(execute-only)，但 VMX 并不支持 execute-only 时. 
         ;; 3) [2:0] = 000B(not present)时，下面的保留位不为 0
         ;;    3.1) 表项内的物理地址宽度不能超过 MAXPHYADDR 位(即在 MAXPHYADDR 范围内)
         ;;    3.2) EPT memory type 为保留的类型(即 2,3 或 7)

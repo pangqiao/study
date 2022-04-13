@@ -80,7 +80,7 @@ Linux 内核提供了一组来自头文件 [include/linux/init.h](https://github
 
 我们可以看到，这些宏只是从同一个头文件的 `__define_initcall` 宏的调用扩展而来. 此外，`__define_initcall` 宏有两个参数: 
 
-* `fn` - 在调用某个级别 `initcalls` 时调用的回调函数；
+* `fn` - 在调用某个级别 `initcalls` 时调用的回调函数; 
 * `id` - 识别 `initcall` 的标识符，用来防止两个相同的 `initcalls` 指向同一个处理函数时出现错误. 
 
 `__define_initcall` 宏的实现如下所示: 

@@ -39,12 +39,12 @@ perf lock [<options>] {record|report|script|info}
 &newf->file_lock...         41          0               0               0               0
 ```
 
-* Name: 内核锁的名字。
-* aquired: 该锁被直接获得的次数，因为没有其它内核路径占用该锁，此时不用等待。
-* contended: 该锁等待后获得的次数，此时被其它内核路径占用，需要等待。
-* total wait: 为了获得该锁，总共的等待时间。
-* max wait: 为了获得该锁，最大的等待时间。
-* min wait: 为了获得该锁，最小的等待时间。
+* Name: 内核锁的名字. 
+* aquired: 该锁被直接获得的次数，因为没有其它内核路径占用该锁，此时不用等待. 
+* contended: 该锁等待后获得的次数，此时被其它内核路径占用，需要等待. 
+* total wait: 为了获得该锁，总共的等待时间. 
+* max wait: 为了获得该锁，最大的等待时间. 
+* min wait: 为了获得该锁，最小的等待时间. 
 
 最后还有一个Summary: 
 

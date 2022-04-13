@@ -6,10 +6,10 @@
      
  iscsiadmin
 
-    iscsiadmin是提供给用户使用的命令行程序, 主要功能就是设置iSCSI的一些相关功能属性, 比如发现iqn；设置认证模式、用户名、密码；连接SCSI设备等等. 但是iscsiadm又不做具体的工作, 它只是把这些信息通过IPC调用传递给iscsid这个服务程序, 由iscsid来执行真正的操作. 而这里的IPC实际上就是一个本地的socket, iscsid监听这个本地socket, iscsiadm通过这个socket和iscsid交互. 
+    iscsiadmin是提供给用户使用的命令行程序, 主要功能就是设置iSCSI的一些相关功能属性, 比如发现iqn; 设置认证模式、用户名、密码; 连接SCSI设备等等. 但是iscsiadm又不做具体的工作, 它只是把这些信息通过IPC调用传递给iscsid这个服务程序, 由iscsid来执行真正的操作. 而这里的IPC实际上就是一个本地的socket, iscsid监听这个本地socket, iscsiadm通过这个socket和iscsid交互. 
 iscsid
 
-    iscsid可以看做是用户和内核的一个桥梁, 它通过mgmt_ipc(本地socket)这个东西和iscsiadm交互, 响应用户的请求；利用control_fd(netlink)和内核交互, 把用户的指令发送给内核. 
+    iscsid可以看做是用户和内核的一个桥梁, 它通过mgmt_ipc(本地socket)这个东西和iscsiadm交互, 响应用户的请求; 利用control_fd(netlink)和内核交互, 把用户的指令发送给内核. 
 scsi_transport_iscsi
 
     这是iscsi传输层, 一个内核模块. Linux在设计的时候, 非常好的利用了面向对象的设计思想, 这个模块就可以看做是一个对scsi传输层的抽象, 它仅实现一些传输层通用的流程, 具体的实现由它的子类们完成. 

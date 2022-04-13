@@ -338,7 +338,7 @@ Linux把**物理内存**划分为**三个层次**来管理
 | **管理区(Zone**)   | **每个物理内存节点node**被划分为**多个内存管理区域**, 用于表示**不同范围的内存**, 内核可以使用**不同的映射方式(！！！**)映射物理内存 |
 | **页面(Page**) | 内存被细分为**多个页面帧**, **页面**是**最基本的页面分配的单位**　｜
 
-`pg_data_t`对应一个node, `node_zones`包含了不同zone；**zone**下又**定义了per_cpu_pageset**, 将**page和cpu绑定**. 
+`pg_data_t`对应一个node, `node_zones`包含了不同zone; **zone**下又**定义了per_cpu_pageset**, 将**page和cpu绑定**. 
 
 ## 4.1. Node
 
@@ -699,7 +699,7 @@ struct zoneref {
 
 NUMA系统中存在**多个节点**, **每个结点**中可以包含**多个zone**.
 
-- Legacy方式, **每个节点只排列自己的zone**；
+- Legacy方式, **每个节点只排列自己的zone**; 
 
 ![Legacy方式](./images/10.jpg)
 
@@ -746,7 +746,7 @@ mapping不仅能够保存一个指针,而且还能包含一些额外的信息,�
 #define PAGE_MAPPING_FLAGS	(PAGE_MAPPING_ANON | PAGE_MAPPING_MOVABLE)
 ```
 
-1. 如果`page->mapping == NULL`, 说明该**page**属于**交换高速缓存页**(**swap cache**)；当需要使用地址空间时会指定**交换分区的地址空间**`swapper_space`. 
+1. 如果`page->mapping == NULL`, 说明该**page**属于**交换高速缓存页**(**swap cache**); 当需要使用地址空间时会指定**交换分区的地址空间**`swapper_space`. 
 
 2. 如果`page->mapping != NULL`, 第0位`bit[0] = 0`, 说明该page属于**页缓存**或**文件映射**, mapping指向**文件的地址空间**`address_space`. 
 
@@ -774,19 +774,19 @@ UMA体系结构中, **free_area_init**函数在系统唯一的struct node对象*
 
 # 5. Linux分页机制
 
-分页的基本方法是将**地址空间**人为地等分成**某一个固定大小的页**；每一**页大小**由**硬件来决定**, 或者是由**操作系统来决定**(如果**硬件支持多种大小的页**). 目前, 以大小为4KB的分页是绝大多数PC操作系统的选择. 
+分页的基本方法是将**地址空间**人为地等分成**某一个固定大小的页**; 每一**页大小**由**硬件来决定**, 或者是由**操作系统来决定**(如果**硬件支持多种大小的页**). 目前, 以大小为4KB的分页是绝大多数PC操作系统的选择. 
 
-- **逻辑空间(线性空间！！！**)等分为**页**；并**从0开始编号**
-- **内存空间(物理空间！！！**)等分为**块**, **与页面大小相同**；**从0开始编号**
+- **逻辑空间(线性空间！！！**)等分为**页**; 并**从0开始编号**
+- **内存空间(物理空间！！！**)等分为**块**, **与页面大小相同**; **从0开始编号**
 - **分配内存**时, **以块为单位**将进程中的**若干个页**分别装入内存空间
 
-关于进程分页. 当我们把进程的**虚拟地址空间按页**来分割, **常用的数据和代码**会被装在到**内存**；**暂时没用到的是数据和代码**则保存在**磁盘**中, 需要用到的时候, 再从磁盘中加载到内存中即可. 
+关于进程分页. 当我们把进程的**虚拟地址空间按页**来分割, **常用的数据和代码**会被装在到**内存**; **暂时没用到的是数据和代码**则保存在**磁盘**中, 需要用到的时候, 再从磁盘中加载到内存中即可. 
 
 这里需要了解三个概念: 
 
-1. **虚拟页**(VP, Virtual Page), **虚拟空间**中的**页**；
+1. **虚拟页**(VP, Virtual Page), **虚拟空间**中的**页**; 
 
-2. **物理页**(PP, Physical Page), **物理内存**中的**页**；
+2. **物理页**(PP, Physical Page), **物理内存**中的**页**; 
 
 3. **磁盘页**(DP, Disk Page), **磁盘**中的**页**. 
 
@@ -814,9 +814,9 @@ UMA体系结构中, **free_area_init**函数在系统唯一的struct node对象*
 | 页表	        | Page Table 			|
 | 页内偏移      | Page Offset		    |
 
-- **页全局目录**包含若干**页上级目录**的**地址**；
-- **页上级目录**又依次包含若干**页中间目录**的**地址**；
-- 而**页中间目录**又包含若干****页表****的**地址**；
+- **页全局目录**包含若干**页上级目录**的**地址**; 
+- **页上级目录**又依次包含若干**页中间目录**的**地址**; 
+- 而**页中间目录**又包含若干****页表****的**地址**; 
 - 每一个**页表项**指向一个**页框**. 
 
 **Linux页表管理**分为两个部分,第一个部分**依赖于体系结构**,第二个部分是**体系结构无关的**.
@@ -825,8 +825,8 @@ UMA体系结构中, **free_area_init**函数在系统唯一的struct node对象*
 
 对于不同的体系结构, Linux采用的**四级页表目录**的大小有所不同(**页大小**都是**4KB**情况下): 
 
-- 对于**i386**而言, 仅采用**二级页表**, 即**页上层目录**和**页中层目录**长度为0；`10(PGD)+0(PUD)+0(PMD)+10(PTE)+12(offset)`. 
-- 对于启用**PAE**的**i386**, 采用了**三级页表**, 即**页上层目录**长度为0；`2(PGD)+0(PUD)+9(PMD)+9(PTE)+12(offset)`. 
+- 对于**i386**而言, 仅采用**二级页表**, 即**页上层目录**和**页中层目录**长度为0; `10(PGD)+0(PUD)+0(PMD)+10(PTE)+12(offset)`. 
+- 对于启用**PAE**的**i386**, 采用了**三级页表**, 即**页上层目录**长度为0; `2(PGD)+0(PUD)+9(PMD)+9(PTE)+12(offset)`. 
 - 对于**64位**体系结构, 可以采用三级或四级页表, 具体选择由**硬件决定**. **x86_64**下, `9(PGD)+9(PUD)+9(PMD)+9(PTE)+12(offset)`. 
 
 对于**没有启用物理地址扩展(PAE**)的**32位系统**, **两级页表**已经足够了. 从本质上说Linux通过使“**页上级目录**”位和“**页中间目录**”位**全为0(！！！**), 彻底取消了页上级目录和页中间目录字段. 不过, 页上级目录和页中间目录在**指针序列中**的位置被**保留**, 以便同样的代码在32位系统和64位系统下都能使用. 内核为**页上级目录**和**页中间目录**保留了一个位置, 这是通过把它们的**页目录项数**设置为**1**, 并把这**两个目录项**映射到**页全局目录**的一个合适的**目录项**而实现的. 
@@ -863,7 +863,7 @@ linux中使用下列宏简化了页表处理, 对于**每一级页表**都使用
 
 | 字段| 描述 |
 | ------------- |:-------------|
-| PMD_SHIFT| 指定**线性地址的Offset和Table字段**的总位数；换句话说, 是**页中间目录项**可以映射的**区域大小的位数** |
+| PMD_SHIFT| 指定**线性地址的Offset和Table字段**的总位数; 换句话说, 是**页中间目录项**可以映射的**区域大小的位数** |
 | PMD_SIZE| 用于计算由页中间目录的**一个单独表项**所映射的区域大小, 也就是一个**页表的大小** |
 | PMD_MASK| 用于**屏蔽Offset字段与Table字段的所有位** |
 
@@ -923,7 +923,7 @@ linux中使用下列宏简化了页表处理, 对于**每一级页表**都使用
 
 当使用**两级页表**时, 创建或删除一个**页中间目录项**是不重要的. 如本节前部分所述, **页中间目录仅含有一个指向下属页表的目录项**. 所以, **页中间目录项**只是**页全局目录中的一项**而已. 然而当处理页表时, **创建一个页表项**可能很复杂, 因为包含页表项的那个页表可能就不存在. 在这样的情况下, 有必要**分配一个新页框, 把它填写为0, 并把这个表项加入**. 
 
-如果**PAE**被激活, 内核使用**三级页表**. 当内核创建一个新的**页全局目录**时, 同时也**分配四个相应的页中间目录**；只有当**父页全局目录被释放**时, 这**四个页中间目录才得以释放**. 当使用**两级**或**三级**分页时, **页上级目录项**总是被映射为**页全局目录**中的**一个单独项**. 与以往一样, 下表中列出的函数描述是针对80x86构架的. 
+如果**PAE**被激活, 内核使用**三级页表**. 当内核创建一个新的**页全局目录**时, 同时也**分配四个相应的页中间目录**; 只有当**父页全局目录被释放**时, 这**四个页中间目录才得以释放**. 当使用**两级**或**三级**分页时, **页上级目录项**总是被映射为**页全局目录**中的**一个单独项**. 与以往一样, 下表中列出的函数描述是针对80x86构架的. 
 
 | 函数名称 | 说明 |
 | ------------- |:-------------|
@@ -1181,13 +1181,13 @@ void __init setup_arch(char **cmdline_p)
 
 几乎所有的内存初始化工作都是在setup_arch()中完成的, 主要的工作包括: 
 
-(1)**建立内存图**: setup_memory_map()；
+(1)**建立内存图**: setup_memory_map(); 
 
 (2)调用**e820_end_of_ram_pfn**()找出**最大可用页帧号max_pfn**, 32位情况下调用**find_low_pfn_range**()找出**低端内存区**的**最大可用页帧号max_low_pfn**. 
 
-(3)初始化**memblock内存分配器**: memblock_x86_fill()；
+(3)初始化**memblock内存分配器**: memblock_x86_fill(); 
 
-(4)**初始化低端内存和高端内存固定映射区的页表**: init_mem_mapping()；
+(4)**初始化低端内存和高端内存固定映射区的页表**: init_mem_mapping(); 
 
 (5)**内存管理node节点设置**: initmem_init()
 
@@ -1327,9 +1327,9 @@ void __init early_alloc_pgt_buf(void)
 
 也就是**24Kbyte**, 同时将_brk_end标识的位置后移. 里面涉及的几个全局变量作用: 
 
-- pgt_buf_start: 标识**该缓冲空间的起始页框号**；
+- pgt_buf_start: 标识**该缓冲空间的起始页框号**; 
 
-- pgt_buf_end: 当前和pgt_buf_start等值, 但是它用于表示该空间**未被申请使用的空间起始页框号**；
+- pgt_buf_end: 当前和pgt_buf_start等值, 但是它用于表示该空间**未被申请使用的空间起始页框号**; 
 
 - pgt_buf_top: 则是用来表示**缓冲空间的末尾**, 存放的是该末尾的**页框号**. 
 
@@ -1647,9 +1647,9 @@ linux**页表映射机制**的建立分为**两个阶段**,
 
 #### 9.4.2.1. 相关变量与宏的定义
 
-- max_pfn: **最大物理内存页面帧号**；
+- max_pfn: **最大物理内存页面帧号**; 
 
-- max_low_pfn: **低端内存区(直接映射空间区的内存)的最大可用页帧号**；
+- max_low_pfn: **低端内存区(直接映射空间区的内存)的最大可用页帧号**; 
 
 在**setup_arch**(), 首先调用arch/x86/kernel/e820.c:**e820_end_of_ram_pfn**()找出**最大可用页帧号(即总页面数**), 并保存在**全局变量max_pfn**中, 这个变量定义可以在mm/bootmem.c中找到. 它直接调用e820.c中的e820_end_pfn()完成工作. 
 
@@ -1880,7 +1880,7 @@ int __init_memblock memblock_set_node(phys_addr_t base, phys_addr_t size,
 
 **memblock_isolate_range**主要做**分割操作**, 在**memblock算法建立时**, 只是**判断了flags是否相同**, 然后将**连续内存做合并**操作, 而**此时建立node节点**, 则根据**入参base和size标记节点内存范围**将**内存划分开来**. 
 
-如果**memblock中的region**恰好以**该节点内存范围末尾划分开来**的话, 那么则将region的索引记录至start_rgn, 索引加1记录至end_rgn返回回去；
+如果**memblock中的region**恰好以**该节点内存范围末尾划分开来**的话, 那么则将region的索引记录至start_rgn, 索引加1记录至end_rgn返回回去; 
 
 如果**memblock中的region**跨越了**该节点内存末尾分界**, 那么将会把**当前的region边界调整为node节点内存范围边界**, 另一部分通过**memblock_insert_region**()函数**插入到memblock管理regions当中**, 以完成拆分. 
 
@@ -2037,7 +2037,7 @@ void __paginginit free_area_init_node(int nid, unsigned long *zones_size,
 
 设置了内存管理节点的管理结构体, 包括pgdat_resize_init()初始化**锁**资源、init_waitqueue_head()初始**内存队列**、pgdat_page_cgroup_init()**控制组群初始化**. 
 
-循环遍历统计**各个管理区**最大跨度间相差的**页面数size**以及**除去内存“空洞**”**后的实际页面数realsize**,然后通过**calc_memmap_size**()计算出**该管理区**所需的**页面管理结构**占用的**页面数memmap_pages**, 最后可以计算得除高端内存外的系统内存共有的**内存页面数nr_kernel_pages(用于统计所有一致映射的页**)；此外循环体内的操作则是**初始化内存管理区的管理结构(zone的初始化**), 例如各类锁的初始化、队列初始化. 值得注意的是**zone_pcp_init**()是初始化**冷热页分配器**的, mod_zone_page_state()用于**计算更新管理区的状态统计**, lruvec_init()则是**初始化LRU算法使用的链表和保护锁**, 而set_pageblock_order()用于在CONFIG_HUGETLB_PAGE_SIZE_VARIABLE配置下设置pageblock_order值的；此外**setup_usemap**()函数则是主要是为了给zone管理结构体中的**pageblock_flags**申请**内存空间**, pageblock_flags与**伙伴系统的碎片迁移算法有关**. 而init_currently_empty_zone()则主要初始化管理区的**等待队列哈希表**和**等待队列**, 同时还初始化了**与伙伴系统相关的free_aera列表**; memmap_init: 根据页框号pfn通过pfn_to_page()查找到页面管理结构page, 然后对其进行初始化.
+循环遍历统计**各个管理区**最大跨度间相差的**页面数size**以及**除去内存“空洞**”**后的实际页面数realsize**,然后通过**calc_memmap_size**()计算出**该管理区**所需的**页面管理结构**占用的**页面数memmap_pages**, 最后可以计算得除高端内存外的系统内存共有的**内存页面数nr_kernel_pages(用于统计所有一致映射的页**); 此外循环体内的操作则是**初始化内存管理区的管理结构(zone的初始化**), 例如各类锁的初始化、队列初始化. 值得注意的是**zone_pcp_init**()是初始化**冷热页分配器**的, mod_zone_page_state()用于**计算更新管理区的状态统计**, lruvec_init()则是**初始化LRU算法使用的链表和保护锁**, 而set_pageblock_order()用于在CONFIG_HUGETLB_PAGE_SIZE_VARIABLE配置下设置pageblock_order值的; 此外**setup_usemap**()函数则是主要是为了给zone管理结构体中的**pageblock_flags**申请**内存空间**, pageblock_flags与**伙伴系统的碎片迁移算法有关**. 而init_currently_empty_zone()则主要初始化管理区的**等待队列哈希表**和**等待队列**, 同时还初始化了**与伙伴系统相关的free_aera列表**; memmap_init: 根据页框号pfn通过pfn_to_page()查找到页面管理结构page, 然后对其进行初始化.
 
 中间有部分记录可以通过demesg查到
 
@@ -2659,7 +2659,7 @@ static unsigned long __init free_low_memory_core_early(void)
 }
 ```
 
-该函数通过for_each_free_mem_range()**遍历memblock算法中的空闲内存空间(！！！**), 并调用__**free_memory_core**()来释放；
+该函数通过for_each_free_mem_range()**遍历memblock算法中的空闲内存空间(！！！**), 并调用__**free_memory_core**()来释放; 
 
 而后面的get_allocated_memblock_reserved_regions_info()和get_allocated_memblock_memory_regions_info()用于获取**通过申请(alloc而得的memblock管理算法空间**, 然后**释放**, 其中如果其算法管理空间是**系统定义**的memblock_reserved_init_regions和memblock_memory_init_regions则仍**保留不予以释放**. 
 
@@ -2870,9 +2870,9 @@ enum {
 
 |  宏  | 类型 |
 |:----:|:-----|
-| MIGRATE_UNMOVABLE | 不可移动页. 在内存当中有固定的位置, 不能移动. 内核的核心分配的内存大多属于这种类型； |
-| MIGRATE_MOVABLE | 可移动页. 可以随意移动, 用户空间应用程序所用到的页属于该类别. 它们通过页表来映射, 如果他们复制到新的位置, 页表项也会相应的更新, 应用程序不会注意到任何改变； |
-| MIGRATE_RECLAIMABLE | 可回收页. 不能直接移动, 但可以删除, 其内容页可以从其他地方重新生成, 例如, 映射自文件的数据属于这种类型, 针对这种页, 内核有专门的页面回收处理； |
+| MIGRATE_UNMOVABLE | 不可移动页. 在内存当中有固定的位置, 不能移动. 内核的核心分配的内存大多属于这种类型;  |
+| MIGRATE_MOVABLE | 可移动页. 可以随意移动, 用户空间应用程序所用到的页属于该类别. 它们通过页表来映射, 如果他们复制到新的位置, 页表项也会相应的更新, 应用程序不会注意到任何改变;  |
+| MIGRATE_RECLAIMABLE | 可回收页. 不能直接移动, 但可以删除, 其内容页可以从其他地方重新生成, 例如, 映射自文件的数据属于这种类型, 针对这种页, 内核有专门的页面回收处理;  |
 | MIGRATE_PCPTYPES | 是per_cpu_pageset,即用来表示**每CPU页框高速缓存**的数据结构中的链表的迁移类型数目 |
 | MIGRATE_HIGHATOMIC |  =MIGRATE_PCPTYPES,在罕见的情况下, 内核需要分配一个高阶的页面块而不能休眠.如果向具有特定可移动性的列表请求分配内存失败, 这种紧急情况下可从MIGRATE_HIGHATOMIC中分配内存 |
 | MIGRATE_CMA | Linux内核最新的**连续内存分配器**(CMA), 用于**避免预留大块内存**. 连续内存分配, 用于避免预留大块内存导致系统可用内存减少而实现的, 即当驱动不使用内存时, 将其分配给用户使用, 而需要时则通过回收或者迁移的方式将内存腾出来.  |
@@ -3406,7 +3406,7 @@ struct alloc_context {
 |:-----:|:-----|
 | zonelist | 当**perferred_zone**上**没有合适的页**可以分配时, 就要**按zonelist中的顺序**扫描该zonelist中**备用zone列表**, 一个个的**试用** |
 | nodemask | 表示**节点的mask**, 就是**是否能在该节点上分配内存**, 这是个**bit位数组** |
-| **preferred_zoneref** | 表示从**high_zoneidx**后找到的**合适的zone**, 一般会从**该zone分配**；**分配失败**的话, 就会在**zonelist**再找一个**preferred_zone = 合适的zone** |
+| **preferred_zoneref** | 表示从**high_zoneidx**后找到的**合适的zone**, 一般会从**该zone分配**; **分配失败**的话, 就会在**zonelist**再找一个**preferred_zone = 合适的zone** |
 | migratetype | **迁移类型**, 在**zone->free_area.free_list[XXX**] 作为**分配下标**使用, 这个是用来**反碎片化**的, 修改了以前的free_area结构体, 在该结构体中再添加了一个数组, 该数组以迁移类型为下标, 每个数组元素都挂了对应迁移类型的页链表 |
 | **high_zoneidx** | 是表示该分配时, **所能分配的最高zone**, 一般从high-->normal-->dma 内存越来越昂贵, 所以一般从high到dma分配依次分配 |
 | spread_dirty_pages | |
@@ -3514,7 +3514,7 @@ struct page *__rmqueue_smallest(struct zone *zone, unsigned int order,
 }
 ```
     
-- __rmqueue_smallest: 分配算法的核心功能. 从指定的order阶开始循环, 如果**该阶的链表不为空**, 则直接通过**list_del**()从**该链表**中**获取空闲页面**以满足申请需要；如果**该阶的链表为空**, 则往**更高一阶的链表查找**, 直到找到链表不为空的一阶, 至于若找到了**最高阶仍为空链表**, 则**申请失败**；否则将在找到**链表不为空的一阶**后, 将**空闲页面块通过list_del**()从**链表中摘除**出来, 然后通过**expand**()将其**对等拆分开**, 并将**拆分出来的一半空闲**部分**挂接至低一阶的链表**中, 直到**拆分至恰好满足申请需要的order阶**, 最后将得到的满足要求的页面返回回去. 至此, 页面已经分配到了. 
+- __rmqueue_smallest: 分配算法的核心功能. 从指定的order阶开始循环, 如果**该阶的链表不为空**, 则直接通过**list_del**()从**该链表**中**获取空闲页面**以满足申请需要; 如果**该阶的链表为空**, 则往**更高一阶的链表查找**, 直到找到链表不为空的一阶, 至于若找到了**最高阶仍为空链表**, 则**申请失败**; 否则将在找到**链表不为空的一阶**后, 将**空闲页面块通过list_del**()从**链表中摘除**出来, 然后通过**expand**()将其**对等拆分开**, 并将**拆分出来的一半空闲**部分**挂接至低一阶的链表**中, 直到**拆分至恰好满足申请需要的order阶**, 最后将得到的满足要求的页面返回回去. 至此, 页面已经分配到了. 
 - __rmqueue_fallback: 其主要是向**其他迁移类型中获取内存**. 较正常的伙伴算法不同, 其向迁移类型的内存申请内存页面时, 是从**最高阶开始查找**的, 主要是从大块内存中申请可以避免更少的碎片. 
 
 
@@ -3606,11 +3606,11 @@ gfpflags_to_migratetype(gfp_mask)转换申请页面的类型为**迁移类型**.
 
 如果申请页面传入的**gfp_mask掩码**携带__GFP_DIRECT_RECLAIM标识, 表示允许页面申请时休眠, 则会进入might_sleep_if()检查是否需要休眠等待以及重新调度
 
-if (unlikely(!zonelist->_zonerefs->zone))用于检查**当前申请页面的内存管理区zone是否为空**；
+if (unlikely(!zonelist->_zonerefs->zone))用于检查**当前申请页面的内存管理区zone是否为空**; 
 
 read_mems_allowed_begin()用于获得当前对被顺序计数保护的共享资源进行读访问的顺序号, 用于避免并发的情况下引起的失败
 
-**first_zones_zonelist**()则是用于根据**nodemask**, 找到合适的**不大于high_zoneidx**的**内存管理区preferred_zone**；
+**first_zones_zonelist**()则是用于根据**nodemask**, 找到合适的**不大于high_zoneidx**的**内存管理区preferred_zone**; 
 
 最后分配内存页面的关键函数**get_page_from_freelist**()和__**alloc_pages_slowpath**()
 
@@ -3657,17 +3657,17 @@ void __free_pages(struct page *page, unsigned int order)
 }
 ```
 
-__free_pages()函数会分两种情况, 对于order等于0的情况, 做特殊处理；对于order大于0 的情况, 属于正常处理流程. 
+__free_pages()函数会分两种情况, 对于order等于0的情况, 做特殊处理; 对于order大于0 的情况, 属于正常处理流程. 
 
 put_page_testzero()是对page结构的_count引用计数做**原子减及测试**, 用于**检查内存页面是否仍被使用**, 如果不再使用, 则进行释放. 
 
-其中**order**表示**页面数量**, 如果释放的是单页, 则会调用free_hot_cold_page()将**页面释放**至**per-cpu page缓存**中, 而**不是伙伴管理算法**；真正的**释放至伙伴管理算法**的是__free_pages_ok(), 同时也是用于多个页面释放的情况. 
+其中**order**表示**页面数量**, 如果释放的是单页, 则会调用free_hot_cold_page()将**页面释放**至**per-cpu page缓存**中, 而**不是伙伴管理算法**; 真正的**释放至伙伴管理算法**的是__free_pages_ok(), 同时也是用于多个页面释放的情况. 
 
 ### 11.5.1. free_hot_cold_page()释放至per-cpu缓存(冷热页)
 
 检查页面是否允许释放
 
-get_pfnblock_migratetype()和set_freepage_migratetype()分别是获取和设置**页面的迁移类型**, 即设置到page->index；
+get_pfnblock_migratetype()和set_freepage_migratetype()分别是获取和设置**页面的迁移类型**, 即设置到page->index; 
 
 **local_irq_save**()和末尾的**local_irq_restore**()则用于**保存恢复中断请求标识**. 
 
@@ -3760,7 +3760,7 @@ while大循环用于计数释放**指定批量数**的**页面**. 其中释放�
 
 对释放的页面进行检查校验操作. 
 
-while (order < MAX_ORDER-1)循环, 通过__find_buddy_index()获取**与当前释放的页面**处于**同一阶的伙伴页面索引值**, 同时藉此**索引值**计算出**伙伴页面地址**, 并做**伙伴页面检查**以确定其**是否可以合并**, 若否则退出；接着if (page_is_guard(buddy))用于对页面的debug_flags成员做检查, 由于未配置CONFIG_DEBUG_PAGEALLOC, page_is_guard()固定返回false；则剩下的操作主要就是**将页面**从**分配链中摘除**, 同时**将页面合并**并**将其处于的阶提升一级**. 
+while (order < MAX_ORDER-1)循环, 通过__find_buddy_index()获取**与当前释放的页面**处于**同一阶的伙伴页面索引值**, 同时藉此**索引值**计算出**伙伴页面地址**, 并做**伙伴页面检查**以确定其**是否可以合并**, 若否则退出; 接着if (page_is_guard(buddy))用于对页面的debug_flags成员做检查, 由于未配置CONFIG_DEBUG_PAGEALLOC, page_is_guard()固定返回false; 则剩下的操作主要就是**将页面**从**分配链中摘除**, 同时**将页面合并**并**将其处于的阶提升一级**. 
 
 退出while循环后, 通过**set_page_order**()设置页面**最终可合并成为的管理阶**. 最后判断**当前合并的页面**是否为**最大阶**, **否则**将**页面**放至**伙伴管理链表的末尾**, **避免其过早被分配**, 得以机会进一步**与高阶页面进行合并**. 末了, 将最后的**挂入的阶的空闲计数加1**. 
 
@@ -3818,13 +3818,13 @@ Linux系统内存管理中存在着一个称之为OOM killer(Out-Of-Memory kille
 
 ### 13.1.1. out_of_memory()
 
-首先调用**blocking_notifier_call_chain**()进行**OOM的内核通知链回调处理**；
+首先调用**blocking_notifier_call_chain**()进行**OOM的内核通知链回调处理**; 
 
-接着的if (fatal_signal_pending(current) || current->flags & PF_EXITING)判断则是用于检查**是否有SIGKILL信号挂起或者正在信号处理**中, 如果有则退出；
+接着的if (fatal_signal_pending(current) || current->flags & PF_EXITING)判断则是用于检查**是否有SIGKILL信号挂起或者正在信号处理**中, 如果有则退出; 
 
-再接着通过**constrained_alloc**()检查**内存分配限制**以及check_panic_on_oom()检查**是否报linux内核panic**；
+再接着通过**constrained_alloc**()检查**内存分配限制**以及check_panic_on_oom()检查**是否报linux内核panic**; 
 
-继而判断**sysctl_oom_kill_allocating_task**变量及进程检查, 如果符合条件判断, 则**将当前分配的进程kill掉**；否则最后, 将通过**select_bad_process**()选出**最佳的进程**, 进而调用**oom_kill_process**()对其**进行kill操作**. 
+继而判断**sysctl_oom_kill_allocating_task**变量及进程检查, 如果符合条件判断, 则**将当前分配的进程kill掉**; 否则最后, 将通过**select_bad_process**()选出**最佳的进程**, 进而调用**oom_kill_process**()对其**进行kill操作**. 
 
 #### 13.1.1.1. select_bad_process()选择进程
 
@@ -3832,9 +3832,9 @@ Linux系统内存管理中存在着一个称之为OOM killer(Out-Of-Memory kille
 
 **oom_badness**()计算出**进程的分值**:
 
-计算进程分值的函数中, 首先**排除了不可OOM kill的进程**以及**oom_score_adj值((long)task->signal->oom_score_adj**)为**OOM_SCORE_ADJ_MIN(即-1000)的进程**, 其中**oom_score_adj取值范围**是-**1000到1000**；
+计算进程分值的函数中, 首先**排除了不可OOM kill的进程**以及**oom_score_adj值((long)task->signal->oom_score_adj**)为**OOM_SCORE_ADJ_MIN(即-1000)的进程**, 其中**oom_score_adj取值范围**是-**1000到1000**; 
 
-接着就是**计算进程的RSS**、**页表**以及**SWAP空间**的**使用量**占RAM的**比重**, 如果该进程是**超级进程**, 则**去除3%的权重**；
+接着就是**计算进程的RSS**、**页表**以及**SWAP空间**的**使用量**占RAM的**比重**, 如果该进程是**超级进程**, 则**去除3%的权重**; 
 
 最后将oom_score_adj和points归一后, 但凡**小于0值的都返回1**, 其他的则返回原值. 
 
@@ -3842,11 +3842,11 @@ Linux系统内存管理中存在着一个称之为OOM killer(Out-Of-Memory kille
 
 #### 13.1.1.2. oom_kill_process()进行kill操作
 
-判断**当前被kill的进程情况**, 如果该进程处于**退出状态**, 则设置**TIF_MEMDIE标志**, 不做kill操作；
+判断**当前被kill的进程情况**, 如果该进程处于**退出状态**, 则设置**TIF_MEMDIE标志**, 不做kill操作; 
 
-接着会通过**list_for_each_entry**()遍历该**进程的子进程信息**, 如果**某个子进程**拥有**不同的mm**且**合适被kill掉**, 将会**优先考虑**将该**子进程替代父进程kill掉**, 这样可以避免kill掉父进程带来的接管子进程的工作开销；
+接着会通过**list_for_each_entry**()遍历该**进程的子进程信息**, 如果**某个子进程**拥有**不同的mm**且**合适被kill掉**, 将会**优先考虑**将该**子进程替代父进程kill掉**, 这样可以避免kill掉父进程带来的接管子进程的工作开销; 
 
-再往下通过find_lock_task_mm()找到**持有mm锁的进程**, 如果进程处于**退出状态**, 则return, 否则继续处理, 若此时的进程与传入的不是同一个时则更新victim；
+再往下通过find_lock_task_mm()找到**持有mm锁的进程**, 如果进程处于**退出状态**, 则return, 否则继续处理, 若此时的进程与传入的不是同一个时则更新victim; 
 
 继而接着通过**for_each_process**()查找与**当前被kill进程**使用到了**同样的共享内存的进程**进行**一起kill掉**, **kill之前**将**对应的进程**添加**标识TIF_MEMDIE**, 而kill的动作则是通过**发送SICKILL信号给对应进程(！！！**), 由被kill进程从**内核态返回用户态时进行处理(！！！**). 
 
@@ -3877,7 +3877,7 @@ slab分配器还有**两个**更进一步的**好处**
 - 操作系统分配内存是以页为单位进行, 也可以称为内存块或堆. 内核对象远小于页的大小, 而这些对象在操作系统的生命周期中会被频繁的申请和释放, 并且实验发现, 这些**对象初始化**的时间超过了**分配内存和释放内存的总时间**, 所以需要一种更细粒度的针对内核对象的分配算法, 于是SLAB诞生. **SLAB缓存**已经释放的**内核对象**, 以便**下次申请**时不需要再次**初始化和分配空间**, 类似对象池的概念. 并且没有修改通用的内存分配算法, 以保证不影响大内存块分配时的性能. 由于**SLAB**按照**对象的大小**进行了**分组**, 在分配的时候**不会产生堆分配方式的碎片**, 也**不会产生Buddy分配算法中的空间浪费**, 并且支持**硬件缓存对齐**来提高**TLB的性能**, 堪称完美. 
 
 
-- 后来被改进适用于**嵌入式设备**, 以满足**内存较少的情况**下的使用, 它围绕一个简单的**内存块链表**展开(因此而得名).在分配内存时,使用了同样简单的**最先适配算法**. 其被称之为**slob内存分配算法**；
+- 后来被改进适用于**嵌入式设备**, 以满足**内存较少的情况**下的使用, 它围绕一个简单的**内存块链表**展开(因此而得名).在分配内存时,使用了同样简单的**最先适配算法**. 其被称之为**slob内存分配算法**; 
 
 - SLUB 不包含SLAB这么复杂的结构. 
 	* **SLAB**不但有**队列**, 而且**每个SLAB**开头保存了该SLAB对象的**metadata**. 
@@ -3895,7 +3895,7 @@ slab分配器还有**两个**更进一步的**好处**
 struct kmem_cache *kmem_cache_create(const char *name, size_t size, size_t align, unsigned long flags, void (*ctor)(void *))
 ```
 
-其中**name**为**slab的名称**, size为**slab**中**每个对象的大小**, **align**为**内存对齐基值**, **flags**为使用的**标志(即分配掩码**), 而**ctor**为**构造函数**；
+其中**name**为**slab的名称**, size为**slab**中**每个对象的大小**, **align**为**内存对齐基值**, **flags**为使用的**标志(即分配掩码**), 而**ctor**为**构造函数**; 
 
 **销毁slab**的API为: 
 
@@ -3949,7 +3949,7 @@ static void *buf;
 // 举例: 创建名为"figo_object"的slab描述符, 大小为20Byte, 8字节Byte
 static int —init fcache_init(void)
 {
-    fcache = kmem_cache_create("figo_object", 20, 8, 0, NULL) ；
+    fcache = kmem_cache_create("figo_object", 20, 8, 0, NULL) ; 
     if (!fcache) {
         kmem_cache_destroy (fcache);
         return -ENOMEM;
@@ -4563,19 +4563,19 @@ struct kmem_cache_node {
 
 该结构是**每个node节点**都会有的一个结构, 主要是用于**管理node节点**的**slab缓存区**. 
 
-Slub分配管理中, **每个CPU都有自己的缓存管理**, 也就是**kmem_cache_cpu数据结构管理**；而**每个node节点**也有**自己的缓存管理**, 也就是**kmem_cache_node数据结构**管理. 
+Slub分配管理中, **每个CPU都有自己的缓存管理**, 也就是**kmem_cache_cpu数据结构管理**; 而**每个node节点**也有**自己的缓存管理**, 也就是**kmem_cache_node数据结构**管理. 
 
 **对象分配**时: 
 
-1、**当前CPU缓存**有**满足申请要求的对象**时, 将会首先从**kmem_cache_cpu的空闲链表freelist**将对象分配出去；
+1、**当前CPU缓存**有**满足申请要求的对象**时, 将会首先从**kmem_cache_cpu的空闲链表freelist**将对象分配出去; 
 
-2、如果**对象不够**时, 将会向**伙伴管理算法中申请内存页面**, 申请来的页面将会**先填充到node节点**中, 然后从**node节点**取出对象到**CPU的缓存空闲链表**中；
+2、如果**对象不够**时, 将会向**伙伴管理算法中申请内存页面**, 申请来的页面将会**先填充到node节点**中, 然后从**node节点**取出对象到**CPU的缓存空闲链表**中; 
 
 3、如果**原来申请的node节点A**的对象, 现在改为**申请node节点B**的, 那么将会把**node节点A的对象释放后再申请**. 
 
 **对象释放**时: 
 
-1、会先**将对象释放到CPU上**面, 如果**释放的对象**恰好与**CPU的缓存**来自**相同的页面**, 则**直接添加到列表**中；
+1、会先**将对象释放到CPU上**面, 如果**释放的对象**恰好与**CPU的缓存**来自**相同的页面**, 则**直接添加到列表**中; 
 
 2、如果释放的对象**不是当前CPU缓存的页面**, 则会把**当前的CPU的缓存对象**放到**node上**面, 然后再**把该对象释放到本地的cache**中. 
 
@@ -4629,7 +4629,7 @@ void __init kmem_cache_init(void)
 }
 ```
 
-register_hotmemory_notifier()和register_cpu_notifier()主要是用于注册内核通知链回调的；
+register_hotmemory_notifier()和register_cpu_notifier()主要是用于注册内核通知链回调的; 
 
 create_boot_cache()用于创建分配算法缓存, 主要是把**boot_kmem_cache_node结构初始化**了. 其内部的calculate_alignment()主要用于**计算内存对齐值**, 而__**kmem_cache_create**()则是创建缓存的核心函数, 其主要是把**kmem_cache结构初始化**了. 具体的__kmem_cache_create()实现将在后面的slab创建部分进行详细分析. 
 
@@ -4639,7 +4639,7 @@ bootstrap()函数主要是将临时kmem_cache向最终kmem_cache迁移, 并修�
 
 ..........
 
-至此, Slub分配框架初始化完毕. 稍微总结一下kmem_cache_init()函数流程, 该函数首先是**create_boot_cache**()创建**kmem_cache_node对象**的slub管理框架, 然后register_hotmemory_notifier()注册热插拔内存内核通知链回调函数用于热插拔内存处理；值得关注的是此时slab_state设置为PARTIAL, 表示将**分配算法状态改为PARTIAL**, 意味着已经可以分配kmem_cache_node对象了；再往下则是**create_boot_cache**()创建**kmem_cache对象的slub管理框架**, 至此整个slub分配算法所需的管理结构对象的slab已经初始化完毕；不过由于前期的管理很多都是借用临时变量空间的, 所以将会通过bootstrap()将kmem_cache_node和kmem_cache的管理结构迁入到slub管理框架的对象空间中, 实现自管理；最后就是通过**create_kmalloc_caches**()初始化一批后期内存分配中需要使用到的**不同大小的slab缓存**. 
+至此, Slub分配框架初始化完毕. 稍微总结一下kmem_cache_init()函数流程, 该函数首先是**create_boot_cache**()创建**kmem_cache_node对象**的slub管理框架, 然后register_hotmemory_notifier()注册热插拔内存内核通知链回调函数用于热插拔内存处理; 值得关注的是此时slab_state设置为PARTIAL, 表示将**分配算法状态改为PARTIAL**, 意味着已经可以分配kmem_cache_node对象了; 再往下则是**create_boot_cache**()创建**kmem_cache对象的slub管理框架**, 至此整个slub分配算法所需的管理结构对象的slab已经初始化完毕; 不过由于前期的管理很多都是借用临时变量空间的, 所以将会通过bootstrap()将kmem_cache_node和kmem_cache的管理结构迁入到slub管理框架的对象空间中, 实现自管理; 最后就是通过**create_kmalloc_caches**()初始化一批后期内存分配中需要使用到的**不同大小的slab缓存**. 
 
 ## 16.3. 创建缓存kmem_cache_create()
 
@@ -4720,7 +4720,7 @@ EXPORT_SYMBOL(kmem_cache_create);
 
 4. 没找到可合并的slab, 则创建新的slab, 将通过**do_kmem_cache_create**()申请一个**kmem_cache结构对象**并初始化
 
-5. **out_unlock标签**主要是用于处理slab创建的**收尾工作**, 如果**创建失败**, 将会进入**err分支**进行失败处理；最后的**out_free_cache标签**主要是用于初始化kmem_cache失败时将申请的空间进行释放, 然后跳转至out_unlock进行失败后处理. 
+5. **out_unlock标签**主要是用于处理slab创建的**收尾工作**, 如果**创建失败**, 将会进入**err分支**进行失败处理; 最后的**out_free_cache标签**主要是用于初始化kmem_cache失败时将申请的空间进行释放, 然后跳转至out_unlock进行失败后处理. 
 
 ### 16.3.1. __kmem_cache_alias()检查是否与已创建的slab匹配
 
@@ -4738,15 +4738,15 @@ __**kmem_cache_alias**()的实现:
 
 - 获取将要创建的slab的内存对齐值及创建slab的内存标识
 
-- 经由list_for_each_entry()遍历整个slab_caches链表；通过**slab_unmergeable**()判断**遍历的kmem_cache是否允许合并**, 主要依据主要是**缓冲区属性的标识**及**slab的对象**是否有**特定的初始化构造函数**, 如果不允许合并则跳过；判断**当前的kmem_cache的对象大小**是否**小于(！！！不是非得相等！！！**)要查找的, 是则跳过；再接着if ((flags & SLUB_MERGE_SAME) != (s->flags & SLUB_MERGE_SAME))  判断**当前的kmem_cache**与查找的**标识类型是否一致**, 不是则跳过；往下就是if ((s->size & ~(align - 1)) != s->size)判断**对齐量是否匹配**, if (s->size - size >= sizeof(void *))判断大小相差是否超过指针类型大小, if (!cache_match_memcg(s, memcg))判断memcg是否匹配. 经由多层判断检验, 如果找到**可合并的slab**, 则返回回去, 否则返回NULL. 
+- 经由list_for_each_entry()遍历整个slab_caches链表; 通过**slab_unmergeable**()判断**遍历的kmem_cache是否允许合并**, 主要依据主要是**缓冲区属性的标识**及**slab的对象**是否有**特定的初始化构造函数**, 如果不允许合并则跳过; 判断**当前的kmem_cache的对象大小**是否**小于(！！！不是非得相等！！！**)要查找的, 是则跳过; 再接着if ((flags & SLUB_MERGE_SAME) != (s->flags & SLUB_MERGE_SAME))  判断**当前的kmem_cache**与查找的**标识类型是否一致**, 不是则跳过; 往下就是if ((s->size & ~(align - 1)) != s->size)判断**对齐量是否匹配**, if (s->size - size >= sizeof(void *))判断大小相差是否超过指针类型大小, if (!cache_match_memcg(s, memcg))判断memcg是否匹配. 经由多层判断检验, 如果找到**可合并的slab**, 则返回回去, 否则返回NULL. 
 
 ### 16.3.2. do_kmem_cache_create()
 
 do_kmem_cache_create()的实现:
 
-调用**kmem_cache_zalloc**申请一个**kmem_cache结构对象**(注意和**kmem_cache_alloc区分**), 然后初始化该结构的**对象大小(包括slab对象纯大小以及包括元数据大小**)、**对齐值**及**对象的初始化构造函数**等数据成员信息；
+调用**kmem_cache_zalloc**申请一个**kmem_cache结构对象**(注意和**kmem_cache_alloc区分**), 然后初始化该结构的**对象大小(包括slab对象纯大小以及包括元数据大小**)、**对齐值**及**对象的初始化构造函数**等数据成员信息; 
 
-接着的**init_memcg_params**()主要是申请**kmem_cache**的**memcg_params**成员结构空间并初始化；
+接着的**init_memcg_params**()主要是申请**kmem_cache**的**memcg_params**成员结构空间并初始化; 
 
 __**kmem_cache_create**()则主要是**申请并创建slub的管理结构**及kmem_cache**其他数据的初始化**; 
 
@@ -4786,7 +4786,7 @@ int __kmem_cache_create(struct kmem_cache *s, unsigned long flags)
 
 kmem_cache_open()主要是**初始化slub结构**. 
 
-而后在调用**sysfs_slab_add**()前会**先解锁slab_mutex**, 这主要是因为sysfs函数会做大量的事情, 为了避免调用sysfs函数中持有该锁从而导致阻塞等情况；
+而后在调用**sysfs_slab_add**()前会**先解锁slab_mutex**, 这主要是因为sysfs函数会做大量的事情, 为了避免调用sysfs函数中持有该锁从而导致阻塞等情况; 
 
 而sysfs_slab_add()主要是**将kmem_cache添加到sysfs**. 如果出错, 将会通过kmem_cache_close()将slub销毁. 
 
@@ -4795,9 +4795,9 @@ kmem_cache_open()主要是**初始化slub结构**.
 kmem_cache_open()的实现:
 
 - 获取设置**缓存描述的标识**
-- 调用calculate_sizes()计算并初始化kmem_cache结构的各项数据: 将slab对象的大小舍入对与sizeof(void *)指针大小对齐, 其为了能够将空闲指针存放至对象的边界中；根据size做对齐操作并更新到kmem_cache结构中, 根据入参forced_order为-1, 其将通过**calculate_order**()计算**单slab**的**页框阶数**, 同时得出kmem_cache结构的oo、min、max等相关信息. 
+- 调用calculate_sizes()计算并初始化kmem_cache结构的各项数据: 将slab对象的大小舍入对与sizeof(void *)指针大小对齐, 其为了能够将空闲指针存放至对象的边界中; 根据size做对齐操作并更新到kmem_cache结构中, 根据入参forced_order为-1, 其将通过**calculate_order**()计算**单slab**的**页框阶数**, 同时得出kmem_cache结构的oo、min、max等相关信息. 
 - set_min_partial()是用于设置partial链表的最小值, 主要是由于对象的大小越大, 则需挂入的partial链表的页面则容易越多, 设置最小值是为了避免过度使用页面分配器造成冲击. 
-- 根据对象的大小以及配置的情况, 对cpu_partial进行设置；**cpu_partial**表示的是**每个CPU**在**partial链表**中的**最多对象个数**, 该数据决定了: 1)当**使用到了极限**时, **每个CPU的partial slab**释放到**每个管理节点链表的个数**；2)当**使用完每个CPU的对象数**时, **CPU的partial slab**来自**每个管理节点的对象数**. 
+- 根据对象的大小以及配置的情况, 对cpu_partial进行设置; **cpu_partial**表示的是**每个CPU**在**partial链表**中的**最多对象个数**, 该数据决定了: 1)当**使用到了极限**时, **每个CPU的partial slab**释放到**每个管理节点链表的个数**; 2)当**使用完每个CPU的对象数**时, **CPU的partial slab**来自**每个管理节点的对象数**. 
 - **init_kmem_cache_nodes**(): **for_each_node_state**遍历**每个管理节点**, 并向**kmem_cache_node全局管理控制块**为所遍历的节点**申请一个kmem_cache_node结构空间对象(！！！struct kmem_cache->struct kmem_cache_node *node[MAX_NUMNODES]！！！**), 并将**kmem_cache的成员node初始化**. 
 - **alloc_kmem_cache_cpus**(): 通过__alloc_percpu()为**每个CPU申请空间**, 然后通过init_kmem_cache_cpus()将**申请空间初始化至每个CPU**上(**！！！struct kmem_cache->struct kmem_cache_cpu __percpu *cpu_slab！！！**). 
 
@@ -4830,11 +4830,11 @@ static __always_inline void *slab_alloc(struct kmem_cache *s,
 
 2. 循环: 通过__this_cpu_read(kmem_cache->cpu_slab->tid)获取当前CPU的kmem_cache_cpu结构的tid值, 随后通过raw_cpu_ptr(s->cpu_slab)取得**当前CPU的kmem_cache_cpu结构**
 
-3. `if (unlikely(!object || !node_match(page, node)))`判断**当前CPU的slab空闲列表(kmem_cache_cpu->freelist**)是否为**空**或者**当前slab使用内存页面与管理节点是否不匹配**. 如果其中某一条件为否定, 则将通过__slab_alloc()进行slab分配；否则将进入**else分支**进行**分配操作**. 
+3. `if (unlikely(!object || !node_match(page, node)))`判断**当前CPU的slab空闲列表(kmem_cache_cpu->freelist**)是否为**空**或者**当前slab使用内存页面与管理节点是否不匹配**. 如果其中某一条件为否定, 则将通过__slab_alloc()进行slab分配; 否则将进入**else分支**进行**分配操作**. 
 
 4. __slab_alloc()进行slab分配, 后续详细
 
-5. else分支: 先经**get_freepointer_safe**()取得**slab中空闲对象地址**, 接着使用this_cpu_cmpxchg_double()原子指令操作**取得该空闲对象**, 如果获取成功将**使用prefetch_freepointer()刷新数据**, 否则将经note_cmpxchg_failure()记录日志后重回步骤2再次尝试分配. 这里面的关键是**this_cpu_cmpxchg_double**()原子指令操作. 该原子操作主要做了三件事情: 1)**重定向首指针指向当前CPU的空间**；2)**判断tid和freelist未被修改**；3)如果**未被修改**, 也就是相等, 确信**此次slab分配未被CPU迁移**, 接着将**新的tid**和**freelist数据覆盖过去以更新**. 
+5. else分支: 先经**get_freepointer_safe**()取得**slab中空闲对象地址**, 接着使用this_cpu_cmpxchg_double()原子指令操作**取得该空闲对象**, 如果获取成功将**使用prefetch_freepointer()刷新数据**, 否则将经note_cmpxchg_failure()记录日志后重回步骤2再次尝试分配. 这里面的关键是**this_cpu_cmpxchg_double**()原子指令操作. 该原子操作主要做了三件事情: 1)**重定向首指针指向当前CPU的空间**; 2)**判断tid和freelist未被修改**; 3)如果**未被修改**, 也就是相等, 确信**此次slab分配未被CPU迁移**, 接着将**新的tid**和**freelist数据覆盖过去以更新**. 
 
 6. 完了分配到对象后, 将会根据申请标志__GFP_ZERO将该对象进行格式化操作, 然后经由slab_post_alloc_hook()进行对象分配后处理. 
 
@@ -4844,17 +4844,17 @@ __slab_alloc()是slab申请的慢路径, 这是由于**freelist是空**的或者
 
 1. 先行**local_irq_save**()**禁止本地处理器的中断**并且**记住它们之前的状态**. 
 
-2. 如果**配置CONFIG_PREEMPT**了, 为了**避免因调度切换到不同的CPU**, 该函数会**重新(！！！)通过this_cpu_ptr**(kmem_cache->cpu_slab)获取当前缓存的**CPU域指针kmem_cache_cpu**；
+2. 如果**配置CONFIG_PREEMPT**了, 为了**避免因调度切换到不同的CPU**, 该函数会**重新(！！！)通过this_cpu_ptr**(kmem_cache->cpu_slab)获取当前缓存的**CPU域指针kmem_cache_cpu**; 
 
 3. 如果**kmem_cache_cpu->page页面为空**, 也就是**cpu local slab不存在**就跳转到**new_slab标签**分支新**分配一个slab**. 
 
-4. 如果**kmem_cache_cpu->page页面不为空**, 会经**node_match**()判断**页面与节点是否匹配**, 如果**节点不匹配**就通过**deactivate_slab**(kmem_cache, page, kmem_cache_cpu->freelist)去**激活cpu本地slab**, 设置kmem_cache_cpu->page为NULL, 设置kmem_cache_cpu->freelist为NULL, 跳转到**new_slab标签**分支新**分配一个slab**；
+4. 如果**kmem_cache_cpu->page页面不为空**, 会经**node_match**()判断**页面与节点是否匹配**, 如果**节点不匹配**就通过**deactivate_slab**(kmem_cache, page, kmem_cache_cpu->freelist)去**激活cpu本地slab**, 设置kmem_cache_cpu->page为NULL, 设置kmem_cache_cpu->freelist为NULL, 跳转到**new_slab标签**分支新**分配一个slab**; 
 
 5. 再然后通过**pfmemalloc_match**()判断**当前页面属性是否为pfmemalloc**, 如果**不是**则同样去激活, 设置kmem_cache_cpu->page为NULL, 设置kmem_cache_cpu->freelist为NULL, 跳转到**new_slab标签**分支新**分配一个slab**
 
 6. 再次检查**空闲对象指针freelist**是否**为空**, **避免**在**禁止本地处理器中断前**因发生了**CPU迁移或者中断**, 导致**本地的空闲对象指针不为空**. 如果不为空的情况下, 将会跳转至**load_freelist**, 这里将会把**对象从空闲队列中取出**, 并**更新数据信息**, 然后**恢复中断使能**, 返回**对象地址**. 如果为空, 将会**更新慢路径申请对象的统计信息**, 并通过**get_freelist**()从**页面**中获取**空闲队列**. if (!freelist)表示获取空闲队列失败, 此时则需要**创建新的slab**, 否则**更新统计信息进入load_freelist分支取得对象并返回**. 
 
-7. new_slab标签: 首先会**if(c->partial**)判断**partial是否为空**, 不为空则从partial中取出, 然后跳转回步骤4重试分配. 如果**partial为空**, 意味着**当前所有的slab都已经满负荷使用**, 那么则需使用**new_slab_objects**()创建**新的slab**. 如果创建失败, 那么将if (!(gfpflags & __GFP_NOWARN) && printk_ratelimit())判断申请页面是否配置为无告警, 并且送往控制台的消息数量在临界值内, 则调用slab_out_of_memory()记录日志后使能中断并返回NULL表示申请失败. 否则将会if (likely(!kmem_cache_debug(s) && pfmemalloc_match(page, gfpflags)))判断是否未开启调试且页面属性匹配pfmemalloc, 是则跳转至**load_freelist**分支进行**slab对象分配**；否则将会经if (kmem_cache_debug(s) && !alloc_debug_processing(s, page, freelist, addr)) 判断, 若开启调试并且调试初始化失败, 则返回创建新的slab. 如果未开启调试或page调试初始化失败, 都将会deactivate_slab()去激活该page, 使能中断并返回. 
+7. new_slab标签: 首先会**if(c->partial**)判断**partial是否为空**, 不为空则从partial中取出, 然后跳转回步骤4重试分配. 如果**partial为空**, 意味着**当前所有的slab都已经满负荷使用**, 那么则需使用**new_slab_objects**()创建**新的slab**. 如果创建失败, 那么将if (!(gfpflags & __GFP_NOWARN) && printk_ratelimit())判断申请页面是否配置为无告警, 并且送往控制台的消息数量在临界值内, 则调用slab_out_of_memory()记录日志后使能中断并返回NULL表示申请失败. 否则将会if (likely(!kmem_cache_debug(s) && pfmemalloc_match(page, gfpflags)))判断是否未开启调试且页面属性匹配pfmemalloc, 是则跳转至**load_freelist**分支进行**slab对象分配**; 否则将会经if (kmem_cache_debug(s) && !alloc_debug_processing(s, page, freelist, addr)) 判断, 若开启调试并且调试初始化失败, 则返回创建新的slab. 如果未开启调试或page调试初始化失败, 都将会deactivate_slab()去激活该page, 使能中断并返回. 
 
 new_slab_objects()函数实现: 
 
@@ -4894,7 +4894,7 @@ static inline void *new_slab_objects(struct kmem_cache *s, gfp_t flags,
 }
 ```
 
-该函数在尝试创建新的slab前, 将先通过**get_partial**()获取存在**空闲对象的slab**并将对象返回；否则继而通过**new_slab()创建slab**, 如果创建好slab后, 将**空闲对象链表摘下并返回**. 
+该函数在尝试创建新的slab前, 将先通过**get_partial**()获取存在**空闲对象的slab**并将对象返回; 否则继而通过**new_slab()创建slab**, 如果创建好slab后, 将**空闲对象链表摘下并返回**. 
 
 ## 16.5. kmem_cache_free()对象释放
 
@@ -4937,7 +4937,7 @@ static inline struct kmem_cache *cache_from_obj(struct kmem_cache *s, void *x)
 }
 ```
 
-**kmem_cache**在kmem_cache_free()的**入参已经传入**了, 但是这里仍然要去**重新判断获取该结构**, 主要是由于当**内核将各缓冲区链起来**的时候, 其通过**对象地址**经**virt_to_head_page**()转换后**获取的page页面结构**远比用户传入的值得可信. 所以在该函数中则先会if (!memcg_kmem_enabled() && !unlikely(s->flags & SLAB_DEBUG_FREE))判断是否memcg未开启且kmem_cache未设置SLAB_DEBUG_FREE, 如果是的话, 接着通过virt_to_head_page()经由对象地址获得其页面page管理结构；再经由**slab_equal_or_root**()判断调用者传入的kmem_cache是否与释放的对象所属的cache相匹配, 如果匹配, 则将由对象得到kmem_cache返回；否则最后只好将调用者传入的kmem_cache返回. 
+**kmem_cache**在kmem_cache_free()的**入参已经传入**了, 但是这里仍然要去**重新判断获取该结构**, 主要是由于当**内核将各缓冲区链起来**的时候, 其通过**对象地址**经**virt_to_head_page**()转换后**获取的page页面结构**远比用户传入的值得可信. 所以在该函数中则先会if (!memcg_kmem_enabled() && !unlikely(s->flags & SLAB_DEBUG_FREE))判断是否memcg未开启且kmem_cache未设置SLAB_DEBUG_FREE, 如果是的话, 接着通过virt_to_head_page()经由对象地址获得其页面page管理结构; 再经由**slab_equal_or_root**()判断调用者传入的kmem_cache是否与释放的对象所属的cache相匹配, 如果匹配, 则将由对象得到kmem_cache返回; 否则最后只好将调用者传入的kmem_cache返回. 
 
 ### 16.5.2. slab_free()将对象回收
 
@@ -4979,7 +4979,7 @@ redo:
 }
 ```
 
-函数最先的是slab_free_hook()对象释放处理钩子调用处理, 主要是用于去注册kmemleak中的对象；接着是redo的标签, 该标签主要是用于释放过程中出现因抢占而发生CPU迁移的时候, 跳转重新处理的点；在redo里面, 将先通过preempt_disable()禁止抢占, 然后__this_cpu_ptr()获取本地CPU的kmem_cache_cpu管理结构以及其中的事务ID(tid), 然后preempt_enable()恢复抢占；if(likely(page == c->page))如果当前释放的对象与本地CPU的缓存区相匹配, 将会set_freepointer()设置该对象尾随的空闲对象指针数据, 然后类似分配时, 经由this_cpu_cmpxchg_double()原子操作, 将对象归还回去；但是如果当前释放的对象与本地CPU的缓存区不匹配, 意味着不可以快速释放对象, 此时将会通过__slab_free()慢通道将对象释放. 
+函数最先的是slab_free_hook()对象释放处理钩子调用处理, 主要是用于去注册kmemleak中的对象; 接着是redo的标签, 该标签主要是用于释放过程中出现因抢占而发生CPU迁移的时候, 跳转重新处理的点; 在redo里面, 将先通过preempt_disable()禁止抢占, 然后__this_cpu_ptr()获取本地CPU的kmem_cache_cpu管理结构以及其中的事务ID(tid), 然后preempt_enable()恢复抢占; if(likely(page == c->page))如果当前释放的对象与本地CPU的缓存区相匹配, 将会set_freepointer()设置该对象尾随的空闲对象指针数据, 然后类似分配时, 经由this_cpu_cmpxchg_double()原子操作, 将对象归还回去; 但是如果当前释放的对象与本地CPU的缓存区不匹配, 意味着不可以快速释放对象, 此时将会通过__slab_free()慢通道将对象释放. 
 
 #### 16.5.2.1. __slab_free()
 
@@ -5161,37 +5161,37 @@ static __always_inline void *kmalloc(size_t size, gfp_t flags)
 
 kmalloc()的参数**size**表示**申请的空间大小**, 而**flags**则表示**分配标志**. kamlloc的分配标志众多, 各标志都分配标识特定的bit位, 藉此可以多样组合. 
 
-GFP_USER: 用于表示为用户空间分配内存, 可能会引起休眠；
+GFP_USER: 用于表示为用户空间分配内存, 可能会引起休眠; 
 
-GFP_KERNEL: 内核内存的常规分配, 可能会引起休眠；
+GFP_KERNEL: 内核内存的常规分配, 可能会引起休眠; 
 
-GFP_ATOMIC: 该分配不会引起休眠, 但可能会使用应急内存资源, 通常用于中断处理中；
+GFP_ATOMIC: 该分配不会引起休眠, 但可能会使用应急内存资源, 通常用于中断处理中; 
 
-GFP_HIGHUSER: 使用高端内存进行分配；
+GFP_HIGHUSER: 使用高端内存进行分配; 
 
-GFP_NOIO: 分配内存时, 禁止任何IO操作；
+GFP_NOIO: 分配内存时, 禁止任何IO操作; 
 
-GFP_NOFS: 分配内存时, 禁止任何文件系统操作；
+GFP_NOFS: 分配内存时, 禁止任何文件系统操作; 
 
-GFP_NOWAIT: 分配内存时禁止休眠；
+GFP_NOWAIT: 分配内存时禁止休眠; 
 
-__GFP_THISNODE: 分配内存时, 仅从本地节点内存中分配；
+__GFP_THISNODE: 分配内存时, 仅从本地节点内存中分配; 
 
-GFP_DMA: 从DMA内存中分配合适的内存, 应仅使用于kmalloc的cache分配；
+GFP_DMA: 从DMA内存中分配合适的内存, 应仅使用于kmalloc的cache分配; 
 
-__GFP_COLD: 用于请求分配冷热页中的冷页；
+__GFP_COLD: 用于请求分配冷热页中的冷页; 
 
-__GFP_HIGH: 用于表示该分配优先级较高并可能会使用应急内存资源；
+__GFP_HIGH: 用于表示该分配优先级较高并可能会使用应急内存资源; 
 
-__GFP_NOFAIL: 用于指示该分配不允许分配失败, 该标志需要慎用；
+__GFP_NOFAIL: 用于指示该分配不允许分配失败, 该标志需要慎用; 
 
-__GFP_NORETRY: 如果分配内存未能够直接获取到, 则不再尝试分配, 直接放弃；
+__GFP_NORETRY: 如果分配内存未能够直接获取到, 则不再尝试分配, 直接放弃; 
 
-__GFP_NOWARN: 如果分配过程中失败, 不上报任何告警；
+__GFP_NOWARN: 如果分配过程中失败, 不上报任何告警; 
 
-__GFP_REPEAT: 如果分配过程中失败, 则尝试再次申请；
+__GFP_REPEAT: 如果分配过程中失败, 则尝试再次申请; 
 
-函数入口if判断内的__builtin_constant_p是**Gcc内建函数**, 用于判断一个值是否为**编译时常量**, 是则返回true, 否则返回false. 也就意味着如果调用kmalloc()传入**常量**且该值**大于KMALLOC_MAX_CACHE_SIZE**(即申请空间超过kmalloc()所能分配**最大cache的大小**), 那么将会通过**kmalloc_large**()进行分配；否则都将通过__**kmalloc**()进行分配. 
+函数入口if判断内的__builtin_constant_p是**Gcc内建函数**, 用于判断一个值是否为**编译时常量**, 是则返回true, 否则返回false. 也就意味着如果调用kmalloc()传入**常量**且该值**大于KMALLOC_MAX_CACHE_SIZE**(即申请空间超过kmalloc()所能分配**最大cache的大小**), 那么将会通过**kmalloc_large**()进行分配; 否则都将通过__**kmalloc**()进行分配. 
 
 如果通过**kmalloc_large**()进行内存分配, 将会经`kmalloc_large()->kmalloc_order()->__get_free_pages()`, 最终通过**Buddy伙伴算法**申请所需内存. 
 
@@ -5214,9 +5214,9 @@ void *__kmalloc(size_t size, gfp_t flags)
 }
 ```
 
-判断申请**是否超过最大cache大小**, 如果是则通过**kmalloc_large**()进行分配；
+判断申请**是否超过最大cache大小**, 如果是则通过**kmalloc_large**()进行分配; 
 
-接着通过**申请大小**及**申请标志**调用**kmalloc_slab**()查找**适用的kmem_cache**；
+接着通过**申请大小**及**申请标志**调用**kmalloc_slab**()查找**适用的kmem_cache**; 
 
 最后通过**slab_alloc**()进行**slab分配**. 
 
@@ -5277,7 +5277,7 @@ static s8 size_index[24] = {
 };
 ```
 
-申请的大小超过KMALLOC_MAX_SIZE最大值, 则返回NULL表示失败；如果**申请大小小于192,且不为0**, 将通过**size_index_elem宏**转换为**下标**后, 经**size_index全局数组**取得索引值, 否则将**直接通过fls()取得索引值**；最后如果**开启了DMA内存配置**且设置了**GFP_DMA标志**, 将**结合索引值**通过**kmalloc_dma_caches**返回**kmem_cache管理结构信息**, 否则将通过**kmalloc_caches**[]返回该结构. 
+申请的大小超过KMALLOC_MAX_SIZE最大值, 则返回NULL表示失败; 如果**申请大小小于192,且不为0**, 将通过**size_index_elem宏**转换为**下标**后, 经**size_index全局数组**取得索引值, 否则将**直接通过fls()取得索引值**; 最后如果**开启了DMA内存配置**且设置了**GFP_DMA标志**, 将**结合索引值**通过**kmalloc_dma_caches**返回**kmem_cache管理结构信息**, 否则将通过**kmalloc_caches**[]返回该结构. 
 
 由此可以看出kmalloc()实现较为简单, 其分配所得的**内存**不仅是**虚拟地址上的连续**存储空间, 同时也是**物理地址上的连续**存储空间. 这是有别于后面将会分析到的vmalloc()申请所得的内存. 
 
@@ -5310,9 +5310,9 @@ void kfree(const void *x)
 
 经过trace_kfree()记录kfree轨迹, 然后if (unlikely(ZERO_OR_NULL_PTR(x)))对**地址做非零判断**, 
 
-接着virt_to_head_page(x)将**虚拟地址转换到页面**；
+接着virt_to_head_page(x)将**虚拟地址转换到页面**; 
 
-再是判断if (unlikely(!PageSlab(page)))**判断该页面是否作为slab分配管理**, 如果是的话则转为通过**slab_free()进行释放**, 否则将进入if分支中；
+再是判断if (unlikely(!PageSlab(page)))**判断该页面是否作为slab分配管理**, 如果是的话则转为通过**slab_free()进行释放**, 否则将进入if分支中; 
 
 在if分支中, 将会kfree_hook()做释放前kmemleak处理(该函数主要是封装了kmemleak_free()), 完了之后将会__free_memcg_kmem_pages()将页面释放, 同时该函数内也将cgroup释放处理. 
 
@@ -5342,7 +5342,7 @@ kmemcheck的设计思路是**分配内存页面**的同时**分配等量的影�
 
 ## 18.4. 错误处理
 
-**kmemcheck** 用了一个**循环缓冲区**(包含了 **CONFIG_KMEMCHECK_QUEUE_SIZE 个元素**)来记录**每次的警告信息**, 包括**警告类型**, 引发警告的**内存地址**及其**访问长度**, **各寄存器的值**和 **stack trace**, 同时还将访问地址附近(起始地址: 以 2 的 CONFIG_KMEMCHECK_SHADOW_COPY_SHIFT 次幂大小对该地址进行圆整后的值；大小: 2 的 CONFIG_KMEMCHECK_SHADOW_COPY_SHIFT 次幂)的数据页面和其对应影子页面中的内容保存在记录中(由同一指令地址引发的相邻的两次警告不会被重复记录). 当前文中注册的 tasklet 被调度执行时, 会将循环缓冲区中所有的记录都打印出来. 
+**kmemcheck** 用了一个**循环缓冲区**(包含了 **CONFIG_KMEMCHECK_QUEUE_SIZE 个元素**)来记录**每次的警告信息**, 包括**警告类型**, 引发警告的**内存地址**及其**访问长度**, **各寄存器的值**和 **stack trace**, 同时还将访问地址附近(起始地址: 以 2 的 CONFIG_KMEMCHECK_SHADOW_COPY_SHIFT 次幂大小对该地址进行圆整后的值; 大小: 2 的 CONFIG_KMEMCHECK_SHADOW_COPY_SHIFT 次幂)的数据页面和其对应影子页面中的内容保存在记录中(由同一指令地址引发的相邻的两次警告不会被重复记录). 当前文中注册的 tasklet 被调度执行时, 会将循环缓冲区中所有的记录都打印出来. 
 
 ................
 
@@ -5354,11 +5354,11 @@ kmemleak的工作原理很简单, 主要是对**kmalloc**()、**vmalloc**()、**
 
 内存扫描的算法实现也很简单: 
 
-1、 将**所有跟踪的内存对象标识为白色**, 如果经过**内存扫描**后, **内存对象管理树**中仍标志为**白色**的则会被判定为**孤立**的；
+1、 将**所有跟踪的内存对象标识为白色**, 如果经过**内存扫描**后, **内存对象管理树**中仍标志为**白色**的则会被判定为**孤立**的; 
 
-2、 自**数据段**以及**调用栈空间**开始扫描内存, 检测**是否内存空间数据**, 判断是否**存在数值**与kmemleak的**PRIO搜索树**所记录的**内存地址相邻近**. 如果查找到存在指针值指向被标记为白色的跟踪对象, 那么该跟踪对象将会被添加到**灰色链表**中(标记为**灰色**)；
+2、 自**数据段**以及**调用栈空间**开始扫描内存, 检测**是否内存空间数据**, 判断是否**存在数值**与kmemleak的**PRIO搜索树**所记录的**内存地址相邻近**. 如果查找到存在指针值指向被标记为白色的跟踪对象, 那么该跟踪对象将会被添加到**灰色链表**中(标记为**灰色**); 
 
-3、 扫描完**灰色链表中的对象**, 检查是否存在与kmemleak的**PRIO搜索树**管理的**跟踪内存地址匹配**的, 因为某些标记为**白色的对象**可能变成了灰色的并被添加到链表的末端；
+3、 扫描完**灰色链表中的对象**, 检查是否存在与kmemleak的**PRIO搜索树**管理的**跟踪内存地址匹配**的, 因为某些标记为**白色的对象**可能变成了灰色的并被添加到链表的末端; 
 
 4、 经过以上步骤后, **仍标记为白色的对象**将会被认定为**孤立的**, 将会上报记录到/**sys/kernel/debug/kmemleak文件**中. 
 
@@ -5447,7 +5447,7 @@ void __init vmalloc_init(void)
 
 先是**遍历每CPU的vmap_block_queue**和**vfree_deferred**变量并进行**初始化**. 
 
-- 其中**vmap_block_queue**是**非连续内存块队列管理结构**, 主要是**队列**以及**对应的保护锁**；
+- 其中**vmap_block_queue**是**非连续内存块队列管理结构**, 主要是**队列**以及**对应的保护锁**; 
 
 - 而**vfree_deferred**是**vmalloc**的**内存延迟释放管理**, 除了**队列初始**外, 还创建了一个**free_work**()工作队列用于**异步释放内存**. 
 
@@ -5586,13 +5586,13 @@ fail:
 }
 ```
 
-首先对**申请内存的大小做对齐**后, 如果大小为0或者大于总内存, 则返回失败；
+首先对**申请内存的大小做对齐**后, 如果大小为0或者大于总内存, 则返回失败; 
 
-继而调用__**get_vm_area_node**()向内核请求一个**空间大小相匹配**的**虚拟地址空间(！！！**), 返回**管理信息结构vm_struct**；
+继而调用__**get_vm_area_node**()向内核请求一个**空间大小相匹配**的**虚拟地址空间(！！！**), 返回**管理信息结构vm_struct**; 
 
-而调用__**vmalloc_area_node**()将根据**vm_struct的信息**进行**内存空间申请**；
+而调用__**vmalloc_area_node**()将根据**vm_struct的信息**进行**内存空间申请**; 
 
-接着通过**clear_vm_uninitialized_flag**()标示**内存空间初始化**；
+接着通过**clear_vm_uninitialized_flag**()标示**内存空间初始化**; 
 
 最后调用**kmemleak_alloc**()进行**内存分配泄漏调测**. 
 
@@ -5633,15 +5633,15 @@ static struct vm_struct *__get_vm_area_node(unsigned long size,
 }
 ```
 
-如果标记为**VM_IOREMAP**, 表示它是用于**特殊架构修正内存对齐**；
+如果标记为**VM_IOREMAP**, 表示它是用于**特殊架构修正内存对齐**; 
 
-通过PAGE_ALIGN对**内存进行对齐操作**, 如果**申请的内存空间大小小于内存页面大小**, 那么将返回NULL；
+通过PAGE_ALIGN对**内存进行对齐操作**, 如果**申请的内存空间大小小于内存页面大小**, 那么将返回NULL; 
 
-接着通过**kzalloc_node**()申请**vmap_area数据结构空间**；
+接着通过**kzalloc_node**()申请**vmap_area数据结构空间**; 
 
 **不连续内存页面**的**申请**, 将会**新增一页内存作为保护页(！！！**)
 
-继而调用**alloc_vmap_area**()申请**指定的虚拟地址范围**内的未映射空间, 说白了就是**申请不连续的物理内存(！！！**)；
+继而调用**alloc_vmap_area**()申请**指定的虚拟地址范围**内的未映射空间, 说白了就是**申请不连续的物理内存(！！！**); 
 
 最后**setup_vmalloc_vm**()设置**vm_struct**和**vmap_area**收尾, 用于将**分配的虚拟地址空间信息返回**出去. 
 
@@ -5655,15 +5655,15 @@ static struct vmap_area *alloc_vmap_area(unsigned long size,
 				int node, gfp_t gfp_mask)
 ```
 
-通过kmalloc_node()申请**vmap_area空间**, 仅使用GFP_RECLAIM_MASK标识；
+通过kmalloc_node()申请**vmap_area空间**, 仅使用GFP_RECLAIM_MASK标识; 
 
-接着调用kmemleak_scan_area()将**该内存空间添加扫描区域内的内存块**中；
+接着调用kmemleak_scan_area()将**该内存空间添加扫描区域内的内存块**中; 
 
-**加锁vmap_area_lock**之后紧接着的条件判断中, 如果**free_vmap_cache**为**空**, 意味着是**首次进行vmalloc内存分配**, 而**cached_hole_size**记录**最大空洞空间大小**, 如果size小于最大空洞那么表示存在着可以复用的空洞, 其余的则是cached_vstart起始位置和cached_align对齐大小的比较, 只要最终条件判断结果为true的情况下, 那么都将会**自vmalloc空间起始**去查找**合适的内存空间进行分配**；
+**加锁vmap_area_lock**之后紧接着的条件判断中, 如果**free_vmap_cache**为**空**, 意味着是**首次进行vmalloc内存分配**, 而**cached_hole_size**记录**最大空洞空间大小**, 如果size小于最大空洞那么表示存在着可以复用的空洞, 其余的则是cached_vstart起始位置和cached_align对齐大小的比较, 只要最终条件判断结果为true的情况下, 那么都将会**自vmalloc空间起始**去查找**合适的内存空间进行分配**; 
 
 往下记录cached_vstart和cached_align的最小合适的参数. 
 
-继而判断free_vmap_cache是否为空, **free_vmap_cache**记录着**最近释放的**或**最近注册使用**的**不连续内存页面空间**, 是用以**加快空间的搜索速度**的. 如果**free_vmap_cache不为空**的情况下, 将**对申请的空间进行检查**, 当**申请的内存空间**超出范围将**不使用cache**, 而当空间溢出时将直接跳转至**overflow退出申请**. 如果free_vmap_cache为空的情况下, 将先做溢出检验, 接着**循环查找vmap_area_root红黑树**, 尝试找到vstart附件已经分配出去的虚拟地址空间. 若能找到的话, first将不为空, 否则在first为空的情况下, 表示vstart为起始的虚拟地址空间未被使用过, 将会直接对该虚拟地址空间进行分配；若first不为空, 意味着该空间曾经分配过, 那么将会进入**while分支**进行处理, 该循环是**从first为起点遍历vmap_area_list链表**管理的**虚拟地址空间链表**进行查找, 如果**找合适的未使用的虚拟地址空间**或者遍历到了**链表末尾**, 除非空间溢出, 否则都表示找到了该空间. 
+继而判断free_vmap_cache是否为空, **free_vmap_cache**记录着**最近释放的**或**最近注册使用**的**不连续内存页面空间**, 是用以**加快空间的搜索速度**的. 如果**free_vmap_cache不为空**的情况下, 将**对申请的空间进行检查**, 当**申请的内存空间**超出范围将**不使用cache**, 而当空间溢出时将直接跳转至**overflow退出申请**. 如果free_vmap_cache为空的情况下, 将先做溢出检验, 接着**循环查找vmap_area_root红黑树**, 尝试找到vstart附件已经分配出去的虚拟地址空间. 若能找到的话, first将不为空, 否则在first为空的情况下, 表示vstart为起始的虚拟地址空间未被使用过, 将会直接对该虚拟地址空间进行分配; 若first不为空, 意味着该空间曾经分配过, 那么将会进入**while分支**进行处理, 该循环是**从first为起点遍历vmap_area_list链表**管理的**虚拟地址空间链表**进行查找, 如果**找合适的未使用的虚拟地址空间**或者遍历到了**链表末尾**, 除非空间溢出, 否则都表示找到了该空间. 
 
 找到了**合适的虚拟地址空间**后, 对**地址空间进行分配**, 并将**分配信息**记录到**vmap_area结构**中, 最后将**该管理结构**通过__insert_vmap_area()插入到**vmap_area_root红黑树**中, 以及**vmap_area_list链表**中. 
 
@@ -5754,7 +5754,7 @@ vmalloc不连续内存页面空间的申请分析完毕.
 
 **用户进程**通常会多次调用**malloc**()或使用**mmap**()接口**映射文件**到**用户空间**来进行**读写等操作**, 这些操作都会要求在**虚拟地址空间(！！！**)中**分配内存块**, 这些内存块基本上都是**离散的(！！！**). 
 
-- **malloc**()是**用户态**常用的**分配内存的接口 API**函数, 后面详细介绍其内核实现机制；
+- **malloc**()是**用户态**常用的**分配内存的接口 API**函数, 后面详细介绍其内核实现机制; 
 
 - **mmap**()是**用户态**常用的用于**建立文件映射**或**匿名映射**的函数, 后面详细介绍其内核实现机制. 
 
@@ -7151,7 +7151,7 @@ LRU链表实现先进先出(FIFO)算法. 最先进入LRU链表的页面, 在LRU�
 
 第二次机会算法的改进是为了避免把经常使用的页面置换出去. 当**选择置换页面**时, 依然和LRU算法一样, 选择最早置入链表的页面, 即在**链表末尾的页面**. 
 
-**二次机会法**设置了一个**访问状态位(硬件控制的比特位**),所以要**检查页面的访问位**. 如果**访问位是0**, 就**淘汰**这页面；如果**访问位是1**, 就给它**第二次机会**, 并**选择下一个页面来换出**. 当该页面得到**第二次机会**时, 它的**访问位被清0**, 如果**该页**在此期间**再次被访问**过, 则访问位**置为1**. 这样给了第二次机会的页面将不会被淘汰, 直至所有其他页面被淘汰过(或者也给了第二次机会). 因此, 如果**一个页面经常被使用**, 其访问位总保持为1, 它一直不会被淘汰出去. 
+**二次机会法**设置了一个**访问状态位(硬件控制的比特位**),所以要**检查页面的访问位**. 如果**访问位是0**, 就**淘汰**这页面; 如果**访问位是1**, 就给它**第二次机会**, 并**选择下一个页面来换出**. 当该页面得到**第二次机会**时, 它的**访问位被清0**, 如果**该页**在此期间**再次被访问**过, 则访问位**置为1**. 这样给了第二次机会的页面将不会被淘汰, 直至所有其他页面被淘汰过(或者也给了第二次机会). 因此, 如果**一个页面经常被使用**, 其访问位总保持为1, 它一直不会被淘汰出去. 
 
 Linux内核使用**PG_active**和**PG_referenced**这两个标志位来实现**第二次机会法**. 
 
@@ -7464,9 +7464,9 @@ long migrate_pages (int pid, unsigned long maxnode,
 
 ## 30.2. 小结
 
-核心思想是把**内存页面**按照**可移动**、**可回收**、**不可移动**等特性进行分类. **可移动的页面**通常是指**用户态程序分配的内存**, **移动这些页面**仅仅是**修改页表映射关系**, 代价很低；**可回收的页面**是指**不可以移动**但**可以释放的页面**. 按照这些类型来分类页面后, 就容易释放出大块的连续物理内存. 
+核心思想是把**内存页面**按照**可移动**、**可回收**、**不可移动**等特性进行分类. **可移动的页面**通常是指**用户态程序分配的内存**, **移动这些页面**仅仅是**修改页表映射关系**, 代价很低; **可回收的页面**是指**不可以移动**但**可以释放的页面**. 按照这些类型来分类页面后, 就容易释放出大块的连续物理内存. 
 
-内存规整机制归纳起来也比较简单, 如图所示. 有**两个方向的扫描者**, 一个是**从zone头部向zone尾部方向扫描**, 查找**哪些页面是可以迁移的**；另一个是**从zone尾部**向**zone头部方面扫描**, 查找**哪些页面是空闲页面**. 当**这两个扫描者在zone中间碰头**时, 或者**己经满足分配大块内存的需求**时(能**分配出所需要的大块内存**并且**满足最低的水位要求**), 就可以**退出扫描**了. 
+内存规整机制归纳起来也比较简单, 如图所示. 有**两个方向的扫描者**, 一个是**从zone头部向zone尾部方向扫描**, 查找**哪些页面是可以迁移的**; 另一个是**从zone尾部**向**zone头部方面扫描**, 查找**哪些页面是空闲页面**. 当**这两个扫描者在zone中间碰头**时, 或者**己经满足分配大块内存的需求**时(能**分配出所需要的大块内存**并且**满足最低的水位要求**), 就可以**退出扫描**了. 
 
 内存规整机制除了**人为地主动触发**以外, 一般是在**分配大块内存失败时**, 首先**尝试内存规整机制**去尝试整理出大块连续的物理内存, 然后才**调用直接内存回收机制(Direct Reclaim**). 
 
@@ -7626,7 +7626,7 @@ Slab技术不但避免了内存内部分片带来的不便, 而且可以很好�
 
 **内存管理系统**和 **VFS** 只与 **Page Cache 交互**, 
 
-- **内存管理系统**负责维护**每项 Page Cache** 的**分配**和**回收**, 同时在使用 **memory map 方式**访问时负责**建立映射**；
+- **内存管理系统**负责维护**每项 Page Cache** 的**分配**和**回收**, 同时在使用 **memory map 方式**访问时负责**建立映射**; 
 - **VFS** 负责 **Page Cache** 与**用户空间**的**数据交换**. 
 
 而**具体文件系统**则一般只与 **Buffer Cache 交互**, 它们负责在**外围存储设备**和 **Buffer Cache 之间交换数据**. **读缓存**以**Page Cache为单位**, 每次读取若干个Page Cache, **回写磁盘**以**Buffer Cache**为单位, 每次回写若干个Buffer Cache. 
@@ -7779,7 +7779,7 @@ TestSetPageXXXO
 TestClearPageXXX()
 void lock_page(struct page *page)
 int trylock_page(struct page *page)
-void wait_on_page_bit(struct page *page, int bit_nr ) ；
+void wait_on_page_bit(struct page *page, int bit_nr ) ; 
 void wake_up_page(struct page *page, int bit)
 static inline void wait_on_page_locked(struct page *page)
 static inline void wait_on_page_writeback(struct page *page)

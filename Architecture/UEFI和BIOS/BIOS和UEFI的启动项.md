@@ -74,7 +74,7 @@ UEFI启动的时候，经过一系列初始化(SEC、CAR、DXE什么的，SEC、
 
 **设备**也是一样的，先有**设备驱动**，然后才能**读取设备**。
 
-原版的WinXP只带了IDE驱动，没有SATA驱动；原版Win7只带了IDE和SATA驱动，没带NVMe驱动；Win8/Win10则带了IDE/SATA和NVMe三种驱动；macOS10.12带了SATA驱动以及苹果专用NVMe磁盘的驱动；macOS10.13带了SATA和标准NVMe驱动。
+原版的WinXP只带了IDE驱动，没有SATA驱动; 原版Win7只带了IDE和SATA驱动，没带NVMe驱动; Win8/Win10则带了IDE/SATA和NVMe三种驱动; macOS10.12带了SATA驱动以及苹果专用NVMe磁盘的驱动; macOS10.13带了SATA和标准NVMe驱动。
 
 UEFI作为一个模糊了**固件**和**操作系统界限**的东西，作为一个设计之初就考虑到了扩展性的东西，它也是**有驱动程序**的。启动过程中的**DXE阶段**，全称叫Driver eXecution Environment，就是**加载驱动**用的。
 
@@ -207,7 +207,7 @@ Ubuntu安装盘ISO镜像内的UEFI启动文件:
 
 ## 6.5. 默认grub
 
-> 装个Linux，但我希望默认还是Windows；重装Windows，可是我开机不再默认Grub，怎么回Linux？
+> 装个Linux，但我希望默认还是Windows; 重装Windows，可是我开机不再默认Grub，怎么回Linux？
 
 如果是UEFI模式，那就跟之前一样，改启动项顺序就行了。
 

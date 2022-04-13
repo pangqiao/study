@@ -8,7 +8,7 @@ memory policy是决定在NUMA系统上从哪个节点分配内存的策略, 它�
 
 Linux分四种类型policy, 分别是: 
 
-- `System Default Policy`, 它是在没用应用下面其他policy时的**默认policy**, 具体行为是: **系统启动过程中**, 采用**interleave策略**分配内存, 即在所有**可满足需求的节点**上**交叉分配**, 防止启动时在**某个节点上负载过重**；在**系统启动后**, 采用**local allocation**, 即在task运行的cpu所在的node上进行内存分配.
+- `System Default Policy`, 它是在没用应用下面其他policy时的**默认policy**, 具体行为是: **系统启动过程中**, 采用**interleave策略**分配内存, 即在所有**可满足需求的节点**上**交叉分配**, 防止启动时在**某个节点上负载过重**; 在**系统启动后**, 采用**local allocation**, 即在task运行的cpu所在的node上进行内存分配.
 
 - `Task/Process Policy`, 它是**task用来制定其内存分配时的策略**, 如果**没有定义**, 将fall back到system default policy. fork()等可继承(inheritable), 父进程创建子进程时可以建立policy, 见`Memory Policy APIs <memory_policy_apis>`节. 多线程任务, 只有拥有policy的线程以及该线程创建的子线程才有task policy. 任务策略仅适用于在安装策略后分配的页面
 

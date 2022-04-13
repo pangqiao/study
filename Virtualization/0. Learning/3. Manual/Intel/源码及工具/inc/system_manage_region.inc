@@ -403,7 +403,7 @@ struc PCB
         .Vendor                 RESD            1               ; 处理器的厂商
 
         ;;
-        ;; 记录处理器的频率,单位 MHz。即: 每次/us(每us内ticks次数)!
+        ;; 记录处理器的频率,单位 MHz. 即: 每次/us(每us内ticks次数)!
         ;; 1) ProcessorFrequency: 处理器显示出来的频率
         ;; 2) TicksFrequency: 测量出来的处理器频率
         ;; 注意:
@@ -1198,7 +1198,7 @@ endstruc
 
 
 ;;
-;; LSB(Local Storage Block，本地存储块)，每个处理器拥有自己的 LSB 区域。
+;; LSB(Local Storage Block，本地存储块)，每个处理器拥有自己的 LSB 区域. 
 ;; 每个 LSB 结构为 8K，保存处理器的 local video buffer, local keyboard buffer 等
 ;;
 

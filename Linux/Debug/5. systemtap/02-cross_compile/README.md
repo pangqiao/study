@@ -3,8 +3,8 @@
 
 
 `systemtap` 里面有三个重要的工具: translator，compiler，staprun。
-translator负责将stp脚本翻译为c代码；
-compiler根据runtime环境和内核路径来生成module；
+translator负责将stp脚本翻译为c代码; 
+compiler根据runtime环境和内核路径来生成module; 
 staprun负责装载、卸载模块，输出模块探测的信息。
 
 translator和compiler都是在宿主机上运行，staprun在目标板上运行。

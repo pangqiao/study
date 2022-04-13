@@ -142,7 +142,7 @@ ulimit -c unlimited 不限制core文件大小
 
 ## 打开core dump
 
-方法一:   配置profile文件，打开/etc/profile文件，在里面可以找到【ulimit -S -c 0 > /dev/null 2>&1】，将它改成【ulimit -S -c unlimited > /dev/null 2>&1】；或者下面命令
+方法一:   配置profile文件，打开/etc/profile文件，在里面可以找到【ulimit -S -c 0 > /dev/null 2>&1】，将它改成【ulimit -S -c unlimited > /dev/null 2>&1】; 或者下面命令
 
 ```
 echo "ulimit -c unlimited"  >> /etc/profile

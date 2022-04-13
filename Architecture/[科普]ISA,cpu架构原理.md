@@ -86,11 +86,11 @@ CPU pipeline
 
 上图里面还有OOO(out of order)，x86里面，real mode可以用的general register只有8个，eax，ebx，之类的，64位之后增加了8个。流水线工作，如果
 
-mov eax，1；
+mov eax，1; 
 
-add eax，1；
+add eax，1; 
 
-sub eax，2；
+sub eax，2; 
 
 你们发现问题了没，eax用了再用，但是流水线做add的时候，eax是1，sub在等add retire之前，是不能做的，那么你就不得不等。那么流水线的效率就体现不出来了。因为这里有一个write after write 的dependency，就是同一个register，你两个pipeline stage要用同一个register，而且x86在传统模式只有8个register，eax,ebx等等，64位模式增加了一些。所以这中情况是非常常见的。为了解决这个问题，就有了out of order execute， in order commit。就是不按顺序来运行指令，但是按顺序完成指令。
 

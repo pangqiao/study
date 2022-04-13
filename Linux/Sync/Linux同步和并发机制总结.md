@@ -149,7 +149,7 @@ struct optimistic_spin_queue {
 [include/linux/mutex.h]
 struct mutex {
 	/* 1: unlocked, 0: locked, negative: locked, possible waiters */
-	// 1表示没人持有锁；0表示锁被持有；负数表示锁被持有且有人在等待队列中等待
+	// 1表示没人持有锁; 0表示锁被持有; 负数表示锁被持有且有人在等待队列中等待
 	atomic_t		count; 
 	// 保护wait_list睡眠等待队列
 	spinlock_t		wait_lock;
@@ -309,7 +309,7 @@ static void myrcu_writer_thread(void *p)    //写者线程
 
 static int __init my_test_init(void){
     struct task_struct *reader_thread;
-    struct task_struct *writer_thread ；
+    struct task_struct *writer_thread ; 
     int value = 5;
     
     printk("figo: my module init\n");

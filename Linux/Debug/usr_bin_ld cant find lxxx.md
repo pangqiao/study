@@ -13,8 +13,8 @@
 /usr/bin/ld: cannot find -lXtst
 ```
 
-其中xxx即表示函式库文件名称，如上例的: libc.so、libltdl.so、libXtst.so。
-其命名规则是: lib+库名(即xxx)+.so。
+其中xxx即表示函式库文件名称，如上例的: libc.so、libltdl.so、libXtst.so. 
+其命名规则是: lib+库名(即xxx)+.so. 
 
 会发生这样的原因有以下三种情形: 
 1. 系统没有安装相对应的lib
@@ -28,9 +28,9 @@
 
 解决方法: 
 (1)先判断在/usr/lib 下的相对应的函式库文件(.so) 的symbolic link 是否正确
-若不正确改成正确的连结目标即可解决问题。
+若不正确改成正确的连结目标即可解决问题. 
 
-(2)若不是symbolic link 的问题引起，而是系统缺少相对应的lib安装lib即可解决。
+(2)若不是symbolic link 的问题引起，而是系统缺少相对应的lib安装lib即可解决. 
 
 (3)如何安装缺少的lib: 
 
@@ -66,7 +66,7 @@ cd /usr/lib
 ln -s libXtst.so.6 libXtst.so
 ```
 
-如果在/usr/lib的目录下找不到libXtst.so档，那么就表示系统没有安装libXtst的函式库。
+如果在/usr/lib的目录下找不到libXtst.so档，那么就表示系统没有安装libXtst的函式库. 
 
 解法如下: 
 
@@ -76,15 +76,15 @@ apt-get install libxtst-dev
 
 ## 2. 通常在软件编译时出现的usr/bin/ld: cannot find -lxxx的错误
 
-主要的原因是库文件并没有导入的ld检索目录中。
+主要的原因是库文件并没有导入的ld检索目录中. 
 
 解决方式: 
 
 1. 确认库文件是否存在，比如-l123, 在/usr/lib, /usr/local/lib,或者其他自定义的lib下有无lib123.so, 如果只是存在lib123.so.1,那么可以通过ln \-sv lib123.so.1   lib123.so，建立一个连接重建lib123.so.
 
-2. 检查/etc/ld.so.conf中的库文件路径是否正确，如果库文件不是使用系统路径，/usr/lib, /usr/local/lib, 那么必须在文件中加入。
+2. 检查/etc/ld.so.conf中的库文件路径是否正确，如果库文件不是使用系统路径，/usr/lib, /usr/local/lib, 那么必须在文件中加入. 
 
-3.ldconfig 重建ld.so.cache文件，ld的库文件检索目录存放文件。尤其刚刚编译安装的软件，必须运行ldconfig，才能将新安装的
+3.ldconfig 重建ld.so.cache文件，ld的库文件检索目录存放文件. 尤其刚刚编译安装的软件，必须运行ldconfig，才能将新安装的
 库文件导入ld.so.cache.
 
 4.测试，gcc \-l123 \-\-verbose. 

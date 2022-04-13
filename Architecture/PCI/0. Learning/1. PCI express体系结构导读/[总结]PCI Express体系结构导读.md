@@ -93,7 +93,7 @@ x86处理器将PCI总线作为标准的局部总线连接各类外部设备，Po
 
 1) 在PCI总线中有三类设备，PCI主设备、PCI从设备和桥设备。
 
-其中PCI从设备只能被动地接收来自HOST主桥，或者其他PCI设备的读写请求；
+其中PCI从设备只能被动地接收来自HOST主桥，或者其他PCI设备的读写请求; 
 
 而PCI主设备可以通过总线仲裁获得PCI总线的使用权，主动地向其他PCI设备或者主存储器发起存储器读写请求。
 
@@ -145,7 +145,7 @@ RapidIO总线是用于解决背板互连的外部总线
 
 总线号由系统软件决定，与主桥相连的PCI总线编号为0
 
-设备号由设备的IDSEL信号与总线地址线的连接关系确定；
+设备号由设备的IDSEL信号与总线地址线的连接关系确定; 
 
 功能号与设备的具体设计相关，大多只有一个功能设备
 
@@ -165,7 +165,7 @@ x86有两个I/O端口寄存器，分别为CONFIG\_ADDRSS和CONFIG\_DATA，0xCF8�
 
 x86处理器采用小端地址模式，南北桥升级为MCH和ICH，MCH基础存储器控制器、显卡芯片、HOST\-to\-PCIe主桥
 
-ICH包括LPC、IDE、USB总线；而最新的nehalem I7中，MCH一分为二，存储控制器和图形控制器与CPU内核集成，剩下与ICH合并为PCH
+ICH包括LPC、IDE、USB总线; 而最新的nehalem I7中，MCH一分为二，存储控制器和图形控制器与CPU内核集成，剩下与ICH合并为PCH
 
 ## 2.3 桥和设备的配置空间
 
@@ -173,7 +173,7 @@ ICH包括LPC、IDE、USB总线；而最新的nehalem I7中，MCH一分为二，�
 
 PCI桥不需要驱动来设置，被称为透明桥，还有种非透明的PCI桥
 
-PCI设备将配置信息存放在E2PROM中，上电初始化时，把E2PROM读到配置空间中作为初始值，由硬件逻辑完成；然后系统会根据DFS算法初始化配置空间。
+PCI设备将配置信息存放在E2PROM中，上电初始化时，把E2PROM读到配置空间中作为初始值，由硬件逻辑完成; 然后系统会根据DFS算法初始化配置空间。
 
 2) PCI agent配置
 
@@ -227,7 +227,7 @@ letency timer， 控制PCI设备占用总线的时间
 
 1) 系统使用DFS遍历PCI总线时会初始化BAR等寄存器，然后就可以进行数据传递
 
-2) powerPC中通过inbound和outbound实现两域之间的转换；x86没有这个机制，而是直接相等，但还是是不同域的地址
+2) powerPC中通过inbound和outbound实现两域之间的转换; x86没有这个机制，而是直接相等，但还是是不同域的地址
 
 ## 3.2 设备的数据传递
 
@@ -251,9 +251,9 @@ x86使用MTRR寄存器设置
 
 ![config](./images/1.png)
 
-1) PCI是并行连接，一条总线上的多个设备共享总线带宽；
+1) PCI是并行连接，一条总线上的多个设备共享总线带宽; 
 
-PCIe是差分总线，端到端连接，频率更高；
+PCIe是差分总线，端到端连接，频率更高; 
 
 2) 一个数据通路(Lane),有两组差分信号，即4根信号线，TX部件和RX部件相连(这为一组)
 
@@ -354,7 +354,7 @@ Gbps —— Giga Bits Per Second (千兆位/秒)。
 
 GT/s 与Gbps 之间不存在成比例的换算关系。GT/s着重描述端口的速率属性，可以不和链路宽度等关联，这样来描述“可以进行链路宽度扩展”的高速串行接口更为合适一些。 需要**结合具体的物理层通信协议**来分析。
 
-例如: **PCI\-e2.0** 协议支持**5.0 GT/s**, 即**每一条Lane 上支持每秒钟内传输 5G个bit(5Gbps**)；但这**并不意味着 PCIe 2.0协议的每一条Lane支持 5Gbps 的速率(！！！**)。为什么这么说呢？ 因为PCIe 2.0 的物理层协议中使用的是 **8b/10b的编码机制**。 即**每传输8个bit，需要发送10个bit**；这**多出的2个bit**并**不是对上层有意义的信息**。 那么，**PCIe 2.0**协议的**每一条Lane支持 5 \* 8 / 10 = 4Gbps 的速率(！！！**)。 以一个PCIe 2.0 x8的通道为例，x8的可用带宽为 4 \* 8 = 32 Gbps。
+例如: **PCI\-e2.0** 协议支持**5.0 GT/s**, 即**每一条Lane 上支持每秒钟内传输 5G个bit(5Gbps**); 但这**并不意味着 PCIe 2.0协议的每一条Lane支持 5Gbps 的速率(！！！**)。为什么这么说呢？ 因为PCIe 2.0 的物理层协议中使用的是 **8b/10b的编码机制**。 即**每传输8个bit，需要发送10个bit**; 这**多出的2个bit**并**不是对上层有意义的信息**。 那么，**PCIe 2.0**协议的**每一条Lane支持 5 \* 8 / 10 = 4Gbps 的速率(！！！**)。 以一个PCIe 2.0 x8的通道为例，x8的可用带宽为 4 \* 8 = 32 Gbps。
  
 4) PCIE使用的信号
 
@@ -386,7 +386,7 @@ PRSNT1#，PRSNT2#, 热插拔相关
 
 7) pcie设备的初始化
 
-传统复位convertional reset: 包括fundametal 和 non-fundametal, fundametal 又分cold和warm reset； non\-fundametal指的是hot reset
+传统复位convertional reset: 包括fundametal 和 non-fundametal, fundametal 又分cold和warm reset;  non\-fundametal指的是hot reset
 
 FLR复位只复位与PCIE链路相关的部分逻辑
 

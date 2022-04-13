@@ -4,7 +4,7 @@
 
 ## 概述
 
-今天我们要做一些琐碎的知识点分析，比如调度器启动的时候默认配置是怎么来的？默认生效了哪些调度算法？自定义的算法是如何注入的？诸如这些问题，我们顺带会看一下调度器相关的一些数据结构的含义。看完前面这些节的分析后再看完本篇文章你可能会有一种醍醐灌顶的感觉哦～
+今天我们要做一些琐碎的知识点分析，比如调度器启动的时候默认配置是怎么来的？默认生效了哪些调度算法？自定义的算法是如何注入的？诸如这些问题，我们顺带会看一下调度器相关的一些数据结构的含义. 看完前面这些节的分析后再看完本篇文章你可能会有一种醍醐灌顶的感觉哦～
 
 ## 从 --config 开始
 
@@ -39,8 +39,8 @@ func (o *Options) Flags() (nfs apiserverflag.NamedFlagSets) {
 
 上述代码中有几个点可以关注到: 
 
-1. FlagSet 的含义，命令行输出的分组和这里的分组是对应的；
-2. 除了认证授权、选举等“非关键”配置外，其他配置基本 Deprecated 了，也就意味着建议使用 config file；
+1. FlagSet 的含义，命令行输出的分组和这里的分组是对应的; 
+2. 除了认证授权、选举等“非关键”配置外，其他配置基本 Deprecated 了，也就意味着建议使用 config file; 
 
 上面代码中可以看到`o.ConfigFile`接收了**config**配置，我们看看Option类型是什么样子的~
 
@@ -108,7 +108,7 @@ func (o *Options) ApplyTo(c *schedulerappconfig.Config) error {
 }
 ```
 
-这个函数中可以看到用 **--config** 和不用 **--config** 两种情况下 **options** 是如何应用到`schedulerappconfig.Config`中的。那么这里提到的 **Config** 对象又是什么呢？
+这个函数中可以看到用 **--config** 和不用 **--config** 两种情况下 **options** 是如何应用到`schedulerappconfig.Config`中的. 那么这里提到的 **Config** 对象又是什么呢？
 
 ### config.Config对象
 
@@ -137,7 +137,7 @@ type Config struct {
 }
 ```
 
-所以前面的`c.ComponentConfig = o.ComponentConfig`这行代码也就是把 **Options** 中的 **ComponentConfig** 赋值给了 **Config** 中的 **ComponentConfig**；是哪里的逻辑让 **Options** 和 **Config** 对象产生了关联呢？(也就是说前面提到的 `ApplyTo()` 方法是再哪里被调用的？)
+所以前面的`c.ComponentConfig = o.ComponentConfig`这行代码也就是把 **Options** 中的 **ComponentConfig** 赋值给了 **Config** 中的 **ComponentConfig**; 是哪里的逻辑让 **Options** 和 **Config** 对象产生了关联呢？(也就是说前面提到的 `ApplyTo()` 方法是再哪里被调用的？)
 
 继续跟下去可以找到`Config()`函数，从这个函数的返回值`*schedulerappconfig.Config`可以看到它的目的，是需要得到一个 **schedulerappconfig.Config**，代码不长: 
 
@@ -256,7 +256,7 @@ func ApplyFeatureGates() {
 到这里分2条路: 
 
 - import defaults 这个 package 的时候有一个`init()`函数调用的逻辑
-- `defaults.ApplyFeatureGates()` 函数调用本身。
+- `defaults.ApplyFeatureGates()` 函数调用本身. 
 
 ### 默认算法注册
 
@@ -283,7 +283,7 @@ func registerAlgorithmProvider(predSet, priSet sets.String) {
 }
 ```
 
-看到这里可以关注到 **AlgorithmProvider** 这个概念，后面会讲到。
+看到这里可以关注到 **AlgorithmProvider** 这个概念，后面会讲到. 
 
 先看一下里面调用的注册函数是怎么实现的: 
 
@@ -310,7 +310,7 @@ func RegisterAlgorithmProvider(name string, predicateKeys, priorityKeys sets.Str
 - "DefaultProvider"
 - "ClusterAutoscalerProvider"
 
-混合云场景用得到 ClusterAutoscalerProvider，大家感兴趣可以研究一下 ClusterAutoscaler 特性，这块我们先不说。默认的情况是生效的 DefaultProvider，这块逻辑后面还会提到。
+混合云场景用得到 ClusterAutoscalerProvider，大家感兴趣可以研究一下 ClusterAutoscaler 特性，这块我们先不说. 默认的情况是生效的 DefaultProvider，这块逻辑后面还会提到. 
 
 然后这个 map 的 value 的类型是一个简单的 struct: 
 
@@ -347,7 +347,7 @@ func defaultPredicates() sets.String {
 }
 ```
 
-这个函数里面就2中类型的玩法，简化一些可以理解成上面这个样子，我们一个个来看。
+这个函数里面就2中类型的玩法，简化一些可以理解成上面这个样子，我们一个个来看. 
 
 先认识一下 `sets.NewString()`函数要干嘛: 
 
@@ -372,9 +372,9 @@ func (s String) Insert(items ...string) {
 }
 ```
 
-如上，很简单的类型封装。里面的Empty是: `type Empty struct{}`，所以本质上就是要用`map[string]struct{}`这个类型罢了。
+如上，很简单的类型封装. 里面的Empty是: `type Empty struct{}`，所以本质上就是要用`map[string]struct{}`这个类型罢了. 
 
-因此上面`defaultPredicates()`函数中`sets.NewString()`内每一个参数本质上就是一个 **string** 类型了，我们来看这一个个 **string** 是怎么来的。
+因此上面`defaultPredicates()`函数中`sets.NewString()`内每一个参数本质上就是一个 **string** 类型了，我们来看这一个个 **string** 是怎么来的. 
 
 !FILENAME pkg/scheduler/factory/plugins.go:195
 
@@ -390,7 +390,7 @@ func RegisterFitPredicateFactory(name string, predicateFactory FitPredicateFacto
 }
 ```
 
-这个函数要返回一个 **string** 我们已经知道了，里面的逻辑也只有这一行需要我们关注: `fitPredicateMap[name] = predicateFactory`，这个 **map** 类型也是一个包级变量: `fitPredicateMap = make(map[string]FitPredicateFactory)`，所以前面讲的注册本质也就是在填充这个变量而已。理解`fitPredicateMap[name] = predicateFactory`中 **fitPredicateMap** 的 **key** 和 **value**，也就知道了这里的 **Register** 要做什么。
+这个函数要返回一个 **string** 我们已经知道了，里面的逻辑也只有这一行需要我们关注: `fitPredicateMap[name] = predicateFactory`，这个 **map** 类型也是一个包级变量: `fitPredicateMap = make(map[string]FitPredicateFactory)`，所以前面讲的注册本质也就是在填充这个变量而已. 理解`fitPredicateMap[name] = predicateFactory`中 **fitPredicateMap** 的 **key** 和 **value**，也就知道了这里的 **Register** 要做什么. 
 
 `defaultPredicates()`中的第二种注册方式 **RegisterFitPredicate** 区别不大，函数体也是调用的 **RegisterFitPredicateFactory()**: 
 
@@ -432,9 +432,9 @@ func ApplyFeatureGates() {
 }
 ```
 
-这个函数看着几十行，实际上只在重复一件事情，增加或删除一些预选和优选算法。我们看一下这里的一些逻辑: 
+这个函数看着几十行，实际上只在重复一件事情，增加或删除一些预选和优选算法. 我们看一下这里的一些逻辑: 
 
-`utilfeature.DefaultFeatureGate.Enabled()` 函数要做的事情是判断一个 feature 是否开启；函数参数本质只是一个字符串: 
+`utilfeature.DefaultFeatureGate.Enabled()` 函数要做的事情是判断一个 feature 是否开启; 函数参数本质只是一个字符串: 
 
 !FILENAME pkg/features/kube_features.go:25
 
@@ -463,13 +463,13 @@ var defaultKubernetesFeatureGates = map[utilfeature.Feature]utilfeature.FeatureS
 }
 ```
 
-所以回到前面`ApplyFeatureGates()`的逻辑，`utilfeature.DefaultFeatureGate.Enabled(features.TaintNodesByCondition)`要判断的是 **TaintNodesByCondition** 这个特性是否开启了，如果开启了就把 predicates 中 **"CheckNodeCondition", "CheckNodeMemoryPressure", "CheckNodePIDPressurePred", "CheckNodeDiskPressure"** 这几个算法去掉，把 **"PodToleratesNodeTaints", "CheckNodeUnschedulable"** 加上。接着对于特性 **"ResourceLimitsPriorityFunction"** 的处理也是同一个逻辑。
+所以回到前面`ApplyFeatureGates()`的逻辑，`utilfeature.DefaultFeatureGate.Enabled(features.TaintNodesByCondition)`要判断的是 **TaintNodesByCondition** 这个特性是否开启了，如果开启了就把 predicates 中 **"CheckNodeCondition", "CheckNodeMemoryPressure", "CheckNodePIDPressurePred", "CheckNodeDiskPressure"** 这几个算法去掉，把 **"PodToleratesNodeTaints", "CheckNodeUnschedulable"** 加上. 接着对于特性 **"ResourceLimitsPriorityFunction"** 的处理也是同一个逻辑. 
 
 ## Scheduler 的创建
 
-我们换一条线，从 Scheduler 对象的创建再来看另外几个知识点。
+我们换一条线，从 Scheduler 对象的创建再来看另外几个知识点. 
 
-前面分析到`runCommand()`函数的时候我们说到了需要关注最后一行`return Run(cc, stopCh)`的逻辑，在`Run()`函数中主要的逻辑就是创建 Scheduler 和启动 Scheduler；现在我们来看创建逻辑: 
+前面分析到`runCommand()`函数的时候我们说到了需要关注最后一行`return Run(cc, stopCh)`的逻辑，在`Run()`函数中主要的逻辑就是创建 Scheduler 和启动 Scheduler; 现在我们来看创建逻辑: 
 
 !FILENAME cmd/kube-scheduler/app/server.go:174
 
@@ -496,7 +496,7 @@ sched, err := scheduler.New(cc.Client,
    scheduler.WithBindTimeoutSeconds(*cc.ComponentConfig.BindTimeoutSeconds))
 ```
 
-这里调用了一个`New()`函数，传了很多参数进去。`New()`函数的定义如下: 
+这里调用了一个`New()`函数，传了很多参数进去. `New()`函数的定义如下: 
 
 !FILENAME pkg/scheduler/scheduler.go:131
 
@@ -575,7 +575,7 @@ func WithName(schedulerName string) Option {
 }
 ```
 
-这种方式设置一个对象的属性还是挺有意思的。
+这种方式设置一个对象的属性还是挺有意思的. 
 
 ### 调度算法源
 
@@ -722,11 +722,11 @@ type Scheduler struct {
 }
 ```
 
-Config 结构体的属性不外乎 Scheduler 在落实调度、抢占等动作时所需要的一系列方法(或对象)；在`New()`函数的最后有一行`sched := NewFromConfig(config)`，实现是简单地实例化 Scheduler，然后将 config 赋值给 Scheduler 的 config 属性，然后返回 Scheduler 对象的地址。
+Config 结构体的属性不外乎 Scheduler 在落实调度、抢占等动作时所需要的一系列方法(或对象); 在`New()`函数的最后有一行`sched := NewFromConfig(config)`，实现是简单地实例化 Scheduler，然后将 config 赋值给 Scheduler 的 config 属性，然后返回 Scheduler 对象的地址. 
 
 ## 默认生效的算法
 
-我们最后还是单独拎出来强调一下生效了哪些算法的具体逻辑吧，前面有提到一些了，我相信肯定有人很关注这个知识点。
+我们最后还是单独拎出来强调一下生效了哪些算法的具体逻辑吧，前面有提到一些了，我相信肯定有人很关注这个知识点. 
 
 前面提到 Scheduler 创建的时候使用的 `New()`函数，函数中 switch 判断 **schedulerAlgorithmSource** 是 Provider 还是 Policy，然后做了具体的初始化逻辑，我们具体看其中一个初始化， 串一下这些点: 
 
@@ -759,9 +759,9 @@ type AlgorithmProviderConfig struct {
 }
 ```
 
-看到这个返回值类型，心里就明朗了。
+看到这个返回值类型，心里就明朗了. 
 
-我们继续看比较重要的`CreateFromKeys()`方法调用的具体逻辑，这个函数的实参中 **provider.FitPredicateKeys, provider.PriorityFunctionKeys** 很明显和具体的 provider 相关，不同 provider 定义的预置算法不同。继续来看函数实现: 
+我们继续看比较重要的`CreateFromKeys()`方法调用的具体逻辑，这个函数的实参中 **provider.FitPredicateKeys, provider.PriorityFunctionKeys** 很明显和具体的 provider 相关，不同 provider 定义的预置算法不同. 继续来看函数实现: 
 
 !FILENAME pkg/scheduler/factory/factory.go:1255
 
@@ -777,7 +777,7 @@ func (c *configFactory) CreateFromKeys(predicateKeys, priorityKeys sets.String, 
     
     // ……
     
-    // 创建一个 genericScheduler，这个对象我们很熟悉。algo 也就是 Algorithm 的简写；
+    // 创建一个 genericScheduler，这个对象我们很熟悉. algo 也就是 Algorithm 的简写; 
    algo := core.NewGenericScheduler(
       c.schedulerCache,
       c.equivalencePodCache,
@@ -798,9 +798,9 @@ func (c *configFactory) CreateFromKeys(predicateKeys, priorityKeys sets.String, 
 }
 ```
 
-上面的`NewGenericScheduler()`函数接收了这些参数之后丢给了 **genericScheduler** 对象，这个对象中 predicates 属性对应参数 predicateFuncs，prioritizers 属性对应参数 priorityConfigs；
+上面的`NewGenericScheduler()`函数接收了这些参数之后丢给了 **genericScheduler** 对象，这个对象中 predicates 属性对应参数 predicateFuncs，prioritizers 属性对应参数 priorityConfigs; 
 
-从这里的代码可以看出来我们配置的算法源可以影响到 Scheduler 的初始化，最终体现在改变了 Scheduler 对象的 config 属性的 Algorithm 属性的 prioritizers 和 prioritizers 上。我们最后回顾一下这2个属性的类型，就和以前的预选、优选过程分析的时候关注的点对上了: 
+从这里的代码可以看出来我们配置的算法源可以影响到 Scheduler 的初始化，最终体现在改变了 Scheduler 对象的 config 属性的 Algorithm 属性的 prioritizers 和 prioritizers 上. 我们最后回顾一下这2个属性的类型，就和以前的预选、优选过程分析的时候关注的点对上了: 
 
 - predicates --> map[string]algorithm.FitPredicate
 - prioritizers --> []algorithm.PriorityConfig

@@ -4,7 +4,7 @@
 
 ## 进入Scheduler的第三层逻辑
 
-今天分析的代码，就已经算kube-scheduler的第三层逻辑了，我们要找到预选和优选的入口，讲完太长，干脆后面单独分2节讲预选和优选过程。所以本小节会比较简短哦～
+今天分析的代码，就已经算kube-scheduler的第三层逻辑了，我们要找到预选和优选的入口，讲完太长，干脆后面单独分2节讲预选和优选过程. 所以本小节会比较简短哦～
 
 今天我们从`pkg/scheduler/core/generic_scheduler.go:139`开始，也就是从这个**generic scheduler的Schedule()方法**下手！
 
@@ -26,9 +26,9 @@ func (g *genericScheduler) Schedule(pod *v1.Pod, nodeLister algorithm.NodeLister
 
 如上，我手一抖就删的只剩下这几行了，大伙应该从这不到十行的代码里找到3个步骤: 
 
-1. "Computing predicates": 调用findNodesThatFit()方法；
-2. "Prioritizing": 调用PrioritizeNodes()方法；
-3. "Selecting host": 调用selectHost()方法。
+1. "Computing predicates": 调用findNodesThatFit()方法; 
+2. "Prioritizing": 调用PrioritizeNodes()方法; 
+3. "Selecting host": 调用selectHost()方法. 
 
 接着当然是先浏览一下这3步分别完成了哪些工作咯～
 
@@ -102,4 +102,4 @@ func (g *genericScheduler) selectHost(priorityList schedulerapi.HostPriorityList
 
 这个selectHost()方法大家应该都已经猜到了，就是从上一步的优选过程的结果集中选出一个Score最高的Host，并且返回这个Host的name.
 
-genericScheduler的Schedule()方法主要就是这3个过程，下一讲我们开始分析predicates过程。
+genericScheduler的Schedule()方法主要就是这3个过程，下一讲我们开始分析predicates过程. 

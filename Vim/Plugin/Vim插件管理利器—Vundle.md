@@ -16,7 +16,7 @@
 <!-- /code_chunk_output -->
 ## 1. 简介
 
-Vundle是基于Git仓库的插件管理软件。Vundle将插件的安装简化为类似yum软件安装的过程，只要:BundleInstall插件就安装完了，:BundleClean之后插件就卸载了。
+Vundle是基于Git仓库的插件管理软件. Vundle将插件的安装简化为类似yum软件安装的过程，只要:BundleInstall插件就安装完了，:BundleClean之后插件就卸载了. 
 
 - 在.vimrc中跟踪和管理插件
 - 安装特定格式的插件(a.k.a. scripts/bundle)
@@ -58,7 +58,7 @@ $ git clone https://github.com/VundleVim/Vundle.vim.git  ~/.vim/bundle/vundle
 
 添加的配置信息(样例) 
 
-注: 以后安装新插件就直接编辑vimrc，添加plugin就行了，在这里我们添加的plugin只是例子，你可以不安装这些插件，换上自己需要安装的插件。
+注: 以后安装新插件就直接编辑vimrc，添加plugin就行了，在这里我们添加的plugin只是例子，你可以不安装这些插件，换上自己需要安装的插件. 
 
 ```
 set nocompatible              " 去除VI一致性,必须要添加

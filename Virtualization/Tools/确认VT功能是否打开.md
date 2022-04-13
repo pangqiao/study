@@ -168,5 +168,5 @@ VT-d技术可下载<Intel Virtualization Technology for Directed I/O Architectur
 
 指Intel的**I/O设备**相关的虚拟化技术支持, 主要包含**两个技术**: 
 
-- 一个是借助**虚拟机设备队列(VMDq**)最大限度提高I/O吞吐率, VMDq由**Intel网卡！！！** 中的**专用硬件**来完成；
+- 一个是借助**虚拟机设备队列(VMDq**)最大限度提高I/O吞吐率, VMDq由**Intel网卡！！！** 中的**专用硬件**来完成; 
 - 另一个是借助**虚拟机直接互连(VMDc**)大幅提升虚拟化性能, VMDc主要就是**基于SR\-IOV标准**将**单个Intel网卡**产生**多个VF设备**, 用来**直接分配**给客户机. 

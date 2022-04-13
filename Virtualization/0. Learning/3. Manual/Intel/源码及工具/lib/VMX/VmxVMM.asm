@@ -386,7 +386,7 @@ DoTaskSwitch:
 
         ;;
         ;; step 1: 处理当前的 TSS 描述符
-        ;; a) JMP， IRET 指令发起: 则清 busy 位。
+        ;; a) JMP， IRET 指令发起: 则清 busy 位. 
         ;; b) CALL, 中断或异常发起: 则 busy 位保持不变(原 busy 为 1)
         ;;        
 DoTaskSwitch.Step1:
