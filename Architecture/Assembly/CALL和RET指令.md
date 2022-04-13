@@ -28,19 +28,19 @@ call和ret指令都是转移指令，它们都修改IP，或同时修改CS和IP�
 
 # 1. call指令
 
-当执行**call指令**时，进行两步操作：
+当执行**call指令**时，进行两步操作: 
 
-1）将**当前的IP**或**CS和IP**压入栈中
+1)将**当前的IP**或**CS和IP**压入栈中
 
-2）转移
+2)转移
 
 call指令**不能实现短转移**，它的书写格式同**jmp指令**
 
 ## 1.1. 依据标号进行转移的call指令
 
-语法格式：call 标号(将当前的IP压栈后，转到标号处执行指令)
+语法格式: call 标号(将当前的IP压栈后，转到标号处执行指令)
 
-汇编解释：(1) push IP (2) jmp near ptr 标号
+汇编解释: (1) push IP (2) jmp near ptr 标号
 
 ```
 1. (sp)=(sp)−2(sp)=(sp)−2
@@ -65,9 +65,9 @@ call指令**不能实现短转移**，它的书写格式同**jmp指令**
 
 ## 1.2. 依据目的地址在指令中的call指令
 
-语法格式：call far ptr 标号, 实现段间转移
+语法格式: call far ptr 标号, 实现段间转移
 
-汇编解释：(1) push CS (2) push IP (3) jmp far ptr 标号
+汇编解释: (1) push CS (2) push IP (3) jmp far ptr 标号
 
 ```
 1. (sp)=(sp)−2(sp)=(sp)−2
@@ -92,9 +92,9 @@ call指令**不能实现短转移**，它的书写格式同**jmp指令**
 
 ## 1.3. 转移地址在寄存器中的call指令
 
-语法格式：call 16位reg
+语法格式: call 16位reg
 
-汇编解释：(1) push IP (2) jmp 16位reg
+汇编解释: (1) push IP (2) jmp 16位reg
 
 ```
 1. (sp)=(sp)−2
@@ -116,17 +116,17 @@ call指令**不能实现短转移**，它的书写格式同**jmp指令**
 
 ## 1.4. 转移地址在内存中的call指令
 
-语法格式一：call word ptr 内存单元地址
+语法格式一: call word ptr 内存单元地址
 
-汇编解释一：(1) push IP (2) jmp word ptr 内存单元地址
+汇编解释一: (1) push IP (2) jmp word ptr 内存单元地址
 
-语法格式二：call dword ptr 内存单元地址
+语法格式二: call dword ptr 内存单元地址
 
-汇编解释二：(1) push CS (2) push IP (3) jmp dword ptr 内存单元地址
+汇编解释二: (1) push CS (2) push IP (3) jmp dword ptr 内存单元地址
 
 ### 1.4.1. 检测点
 
-(1) 下面的程序执行后，ax中的数值为多少？(注意：用call指令的原理来分析，不要在Debug中单步跟踪来验证你的结论。对于此程序，在Debug中单步跟踪的结果，不能代表CPU的实际执行结果)
+(1) 下面的程序执行后，ax中的数值为多少？(注意: 用call指令的原理来分析，不要在Debug中单步跟踪来验证你的结论。对于此程序，在Debug中单步跟踪的结果，不能代表CPU的实际执行结果)
 
 ```assembly
 assume cs:code
@@ -154,7 +154,7 @@ end start
 
 这真的很奇怪的程序，会懵！
 
-（2）下面的程序执行后，ax和bx中的数值为多少？
+(2)下面的程序执行后，ax和bx中的数值为多少？
 
 ```assembly
 assume cs:code
@@ -182,7 +182,7 @@ code ends
 end start
 ```
 
-实验结果如下：
+实验结果如下: 
 
 ![2020-04-16-23-32-41.png](./images/2020-04-16-23-32-41.png)
 
@@ -191,7 +191,7 @@ end start
 - **ret指令**用栈中的数据，修改**IP**的内容，从而实现**近转移**
 - **retf**指令用栈的数据，修改**CS和IP**的内容，从而实现**远转移**
 
-CPU执行**ret指令**时, 进行下面2步操作(相当于pop IP)：
+CPU执行**ret指令**时, 进行下面2步操作(相当于pop IP): 
 
 ```
 pop IP
@@ -204,7 +204,7 @@ pop IP
 (sp)=(sp)+2
 ```
 
-CPU执行**retf指令**时，进行下面4步操作(相当于pop IP AND pop CS)：：
+CPU执行**retf指令**时，进行下面4步操作(相当于pop IP AND pop CS): : 
 
 ```
 (IP)=((ss)∗16+(sp))(IP)=((ss)∗16+(sp))
@@ -247,7 +247,7 @@ code ends
 end start
 ```
 
-实验结果如下：
+实验结果如下: 
 
 ![2020-04-16-23-13-43.png](./images/2020-04-16-23-13-43.png)
 
@@ -277,7 +277,7 @@ code ends
 end start
 ```
 
-具有子程序的源程序框架如下：
+具有子程序的源程序框架如下: 
 
 ```
 assume cs:code

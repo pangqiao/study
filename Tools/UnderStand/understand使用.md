@@ -108,7 +108,7 @@ Assembly、C/C\+\+、Python、Web
 
 ## 3.3. 制图
 
-了解提供图表，使您可以查看代码连接（依赖关系），流程如何（控制流程图），使用哪些函数调用其他函数（调用图表）等等。有许多自定义选项可轻松让您仅显示您感兴趣的内容，因此该图最适合您的需求。
+了解提供图表，使您可以查看代码连接(依赖关系)，流程如何(控制流程图)，使用哪些函数调用其他函数(调用图表)等等。有许多自定义选项可轻松让您仅显示您感兴趣的内容，因此该图最适合您的需求。
 
 ![](./images/2019-05-31-11-11-04.png)
 
@@ -148,7 +148,7 @@ Assembly、C/C\+\+、Python、Web
 
 ![](./images/2019-05-31-10-15-15.png)
 
-2. 在打开的文件中搜索: 将鼠标定位到右侧代码中，点击command + F，会弹出搜索框，输入方法回车即可：
+2. 在打开的文件中搜索: 将鼠标定位到右侧代码中，点击command + F，会弹出搜索框，输入方法回车即可: 
 
 ![](./images/2019-05-31-10-18-33.png)
 
@@ -166,31 +166,31 @@ Assembly、C/C\+\+、Python、Web
 
 视图查看方式有两种，
 
-一种是鼠标点击你要查看的类或者方法等上面，然后右键弹出菜单，鼠标移动到Graphical Views，然后弹出二级菜单，如下图所示：
+一种是鼠标点击你要查看的类或者方法等上面，然后右键弹出菜单，鼠标移动到Graphical Views，然后弹出二级菜单，如下图所示: 
 
 ![](./images/2019-05-31-10-33-33.png)
 
-另一种方式是点击要查看的类或者方法，然后找到代码上面菜单栏中的如下图标：
+另一种方式是点击要查看的类或者方法，然后找到代码上面菜单栏中的如下图标: 
 
 ![](./images/2019-05-31-10-36-18.png)
 
-然后点击图标右下角的下拉箭头，弹出如下菜单，即可选择查看相关视图：
+然后点击图标右下角的下拉箭头，弹出如下菜单，即可选择查看相关视图: 
 
 ## 5.1. 层级关系视图分类
 
-1. Butterfly：如果两个实体间存在关系，就显示这两个实体间的调用和被调用关系；
+1. Butterfly: 如果两个实体间存在关系，就显示这两个实体间的调用和被调用关系；
 
-如下图为Activity中的一个方法的关系图：
+如下图为Activity中的一个方法的关系图: 
 
 ![](./images/2019-05-31-11-21-18.png)
 
-2. Calls：展示从你选择的这个方法开始的整个调用链条；
+2. Calls: 展示从你选择的这个方法开始的整个调用链条；
 
-3. Called By：展示了这个实体被哪些代码调用，这个结构图是从底部向上看或者从右到左看；
+3. Called By: 展示了这个实体被哪些代码调用，这个结构图是从底部向上看或者从右到左看；
 
 ![](./images/2019-05-31-11-24-57.png)
 
-4. Calls Relationship/Calledby Relationship:展示了两个实体之间的调用和被调用关系，操作方法：首先右键你要选择的第一个实体，然后点击另一个你要选择的实体，如果选择错误，可以再次点击其他正确即可，然后点击ok；
+4. Calls Relationship/Calledby Relationship:展示了两个实体之间的调用和被调用关系，操作方法: 首先右键你要选择的第一个实体，然后点击另一个你要选择的实体，如果选择错误，可以再次点击其他正确即可，然后点击ok；
 
 ![](./images/2019-05-31-11-25-12.png)
 
@@ -204,19 +204,19 @@ Assembly、C/C\+\+、Python、Web
 
 ![](./images/2019-05-31-11-25-45.png)
 
-7. Extends:展示这个类继承自那个类：
+7. Extends:展示这个类继承自那个类: 
 
 ![](./images/2019-05-31-11-25-59.png)
 
 ## 5.2. 结构关系视图分类
 
-1.Graph Architecture：展示一个框架节点的结构关系；
+1.Graph Architecture: 展示一个框架节点的结构关系；
 
-2.Declaration:展示一个实体的结构关系，例如：展示参数，则返回类型和被调用函数，对于类，则展示私有成员变量（谁继承这个类，谁基于这个类）
+2.Declaration:展示一个实体的结构关系，例如: 展示参数，则返回类型和被调用函数，对于类，则展示私有成员变量(谁继承这个类，谁基于这个类)
 
 3.Parent Declaration:展示这个实体在哪里被声明了的结构关系；
 
-4.Declaration File:展示所选的文件中所有被定义的实体（例如函数，类型，变量，常量等）；
+4.Declaration File:展示所选的文件中所有被定义的实体(例如函数，类型，变量，常量等)；
 
 5.Declaration Type:展示组成类型；
 
@@ -252,7 +252,7 @@ Assembly、C/C\+\+、Python、Web
 
 An architecture is a hierarchical aggregation of source code units (entities). An architecture can be user created or automatically generated. Architectures need not be complete (that is, an architecture’s flattened expansion need not reference every source entity in the database), nor unique (that is, an architecture’s flattened expansion need not maintain the set property).
 
-层级表示代码单元（或者实体）组成的层次结构，可以由用户手动创建，也可由本软件自动生成。一个层级可以不完整（例如一个层级的扁平化扩展有可能不会关联数据库中的所有代码实体），也可能不唯一（扁平化扩展的层级可能不会处理其预设属性）。
+层级表示代码单元(或者实体)组成的层次结构，可以由用户手动创建，也可由本软件自动生成。一个层级可以不完整(例如一个层级的扁平化扩展有可能不会关联数据库中的所有代码实体)，也可能不唯一(扁平化扩展的层级可能不会处理其预设属性)。
 
 ## 6.2. Database 数据库
 
@@ -298,31 +298,31 @@ Generally a Perl script. These can be run from within Understand’s GUI, or ext
 
 代码编辑窗口的右键菜单提供了很多浏览编辑操作的快捷方式，也提供了相关实体的特定信息。
 
-以下介绍了右键菜单包含的典型的浏览操作（与点击对象有关）：
+以下介绍了右键菜单包含的典型的浏览操作(与点击对象有关): 
 
-View Information 信息查看（参见信息浏览器）
+View Information 信息查看(参见信息浏览器)
 
-Graphic Views 图形视图（参见）
+Graphic Views 图形视图(参见)
 
-Edit Source/Definition 代码编辑（参见）
+Edit Source/Definition 代码编辑(参见)
 
-User Tools 用户工具（参见）
+User Tools 用户工具(参见)
 
-Explore 浏览（参见层级查看）
+Explore 浏览(参见层级查看)
 
-Find In… 查找（参见多文件查找）
+Find In… 查找(参见多文件查找)
 
-Add Favorite 添加到收藏夹（参见收藏夹）
+Add Favorite 添加到收藏夹(参见收藏夹)
 
-Metrics Chart 度量图表（参见）
+Metrics Chart 度量图表(参见)
 
-以下介绍了右键菜单包含的典型的编辑操作（与点击对象有关）：
+以下介绍了右键菜单包含的典型的编辑操作(与点击对象有关): 
 
 Undo/Redo 撤销/重做
 
-Cut/Copy/Past 剪切/复制/粘贴（参见文本选择和拷贝）
+Cut/Copy/Past 剪切/复制/粘贴(参见文本选择和拷贝)
 
-Select All 全选（参见文本选择和拷贝）
+Select All 全选(参见文本选择和拷贝)
 
 Jump to Marching Brace 跳到块末
 
@@ -348,59 +348,59 @@ Add Bookmark 添加书签活动
 
 ![](./images/2019-05-31-11-37-32.png)
 
-C\+\+\>Option配置页面包括如下区域：
+C\+\+\>Option配置页面包括如下区域: 
 
-Compiler： 
+Compiler:  
 
 选择当前工程使用的编译器或者平台，编译器相关的宏定义根据选择自动设置。需要注意的是，编译器的某些特性有可能没有得到很好的支持。
 
-Compiler Include Paths： 
+Compiler Include Paths:  
 
 输入编译器使用的头文件的所在路径，如\%include\%。
 
-Allow nested comments：>>默认情况下，该选项禁止。打开的状态下，Understand允许C语言的注释符（/**/）可以嵌套使用（这种风格被ANSI禁止，但是有一些编译器支持）。
+Allow nested comments: >>默认情况下，该选项禁止。打开的状态下，Understand允许C语言的注释符(/**/)可以嵌套使用(这种风格被ANSI禁止，但是有一些编译器支持)。
 
-Prepend the names of externally linkable entities with： 
+Prepend the names of externally linkable entities with:  
 
 使用一个随意的字符串作为工程中其他语言编写的代码中定义的实体的前缀。
 
-Append the names of externally linkable entities with： 
+Append the names of externally linkable entities with:  
 
 使用一个随意的字符串作为工程中其他语言编写的代码中定义的实体的后缀。
 
-Create implicit special member functions： 
+Create implicit special member functions:  
 
 源代码没有类和结构实体的相关语句时，Understand数据库自动创建默认构造函数，析构函数和隐式声明引用，从而为分析时提供相关的引用实体。该选项默认禁止。
 
-Create references in inactive code： 
+Create references in inactive code:  
 
 如果希望将条件编译控制的非激活代码排除在外，需要取消该选项，默认选中。
 
-Create references to local objects： 
+Create references to local objects:  
 
 默认情况下，Understand数据库包含所有局部对象，如果希望不包含函数中声明的变量需要取消该选项。Understand 2.5的主窗口可以选择是否需要在HTML报告中包含局部对象。
 
-Create references to macros during macro expansion： 
+Create references to macros during macro expansion:  
 
 选中情况下，数据库保存宏解析时的引用关系。有时候，该选择有用。注意，该选项选中导致数据库增加很多引用关系，会变得很慢。默认关闭。
 
-Create references to parameters： 
+Create references to parameters:  
 
 关闭该选项取消参数的引用关系，默认开启。
 
-Save comments associated with entities： 
+Save comments associated with entities:  
 
 此选项控制代码实体前后注释与实体的关联。
 
-Save duplicate references： 
+Save duplicate references:  
 
 默认情况下，引用关系只在数据库保存一份，选中该选项，会记录重复的引用关系。
 
-Save macro expansion text： 
+Save macro expansion text:  
 
 选中该选项的情况下，可以在选中宏的右键菜单下选择Expanded Macro Text来查看宏定义值。
 
-Use Include cache： 
+Use Include cache:  
 
 由于头文件通常被多个源文件使用，默认情况下，分析阶段头文件都采用高速缓存，这样能够加速分析过程，但是需要更多的内存，如果分析过程碰到内存问题，可以将此选项关闭。同时需要注意的是，高速缓存的使用会影响到分析结果。
 
@@ -410,29 +410,29 @@ Use Include cache：
 
 根过滤器
 
-Root Calls： 
+Root Calls:  
 
-仅显示调用而不被调用的实体，如上层代码（mains），硬件调用的代码（中断处理函数）以及哑（不被使用）代码。
+仅显示调用而不被调用的实体，如上层代码(mains)，硬件调用的代码(中断处理函数)以及哑(不被使用)代码。
 
-Root CallBys： 
+Root CallBys:  
 
 仅显示只被调用而不调用其他实体的实体，即最底层的函数。
 
-Root IncludeBys： 
+Root IncludeBys:  
 
 仅显示被其他文件包含的文件，即基础头文件。
 
-Root Classes： 
+Root Classes:  
 
 仅显示不依赖于其他类的类，包括底层类和库类。
 
-Root Decls： 
+Root Decls:  
 
-仅显示最高层的声明过程（Ada）。
+仅显示最高层的声明过程(Ada)。
 
-Root Withs： 
+Root Withs:  
 
-仅显示被其他单元使用，而不使用其他单元的程序单元（包括包，任务，子程序等）（Ada）。
+仅显示被其他单元使用，而不使用其他单元的程序单元(包括包，任务，子程序等)(Ada)。
 
 # 11. 信息浏览器
 
@@ -448,7 +448,7 @@ Root Withs：
 
 # 12. 引用查看
 
-信息浏览器的“References”区域显示了所有引用选中实体的相关信息：
+信息浏览器的“References”区域显示了所有引用选中实体的相关信息: 
 
 ![](./images/2019-05-31-11-41-10.png)
 
@@ -460,7 +460,7 @@ Root Withs：
 
 ![](./images/2019-05-31-11-41-32.png)
 
-显示当前激活的编辑窗口的结构和信息，标签页包含了以下信息：
+显示当前激活的编辑窗口的结构和信息，标签页包含了以下信息: 
 
 # 15. Structure Browser
 
@@ -476,17 +476,17 @@ Scope Information
 
 Context Browser 
 
-在左侧显示当前实体在层级结构中的位置，右侧显示当前实体包含的其他实体。文件信息标签页右上角的图标（或者使用Ctrl+,）可以将编辑窗口和CIS 中的文件替换为同目录下同名但不同扩展名的文件。例如，使用这种方法可以在.p/.cpp 和.h 文件之间快速切换。
+在左侧显示当前实体在层级结构中的位置，右侧显示当前实体包含的其他实体。文件信息标签页右上角的图标(或者使用Ctrl+,)可以将编辑窗口和CIS 中的文件替换为同目录下同名但不同扩展名的文件。例如，使用这种方法可以在.p/.cpp 和.h 文件之间快速切换。
 
 右键菜单也提供了多种快捷的操作选择。
 
 # 16. 大小写修改
 
-Understand 2.5代码编辑器支持选中文本进行快速的大小写修改，方法如下：
+Understand 2.5代码编辑器支持选中文本进行快速的大小写修改，方法如下: 
 
 1. 选中代码中的一个或者多个单词。
 2. 通过菜单栏Edit\>Change Case，或者右键菜单中选择Change Case。
-3. 选择需要使用的大小写修改方式，选项包括： 
+3. 选择需要使用的大小写修改方式，选项包括:  
 
 ![](./images/2019-05-31-11-42-32.png)
 
@@ -496,22 +496,22 @@ Understand 2.5代码编辑器支持选中文本进行快速的大小写修改，
 
 ![](./images/2019-05-31-11-43-44.png)
 
-层级结构节点（如文件系统目录节点和本季度修改节点）的右键菜单包含了以下一些其他对象的右键菜单没有提供的额外选项：
+层级结构节点(如文件系统目录节点和本季度修改节点)的右键菜单包含了以下一些其他对象的右键菜单没有提供的额外选项: 
 
-Graphical Views>Dependency Graphs： 显示层级结构各节点的依赖关系，参见。
+Graphical Views>Dependency Graphs:  显示层级结构各节点的依赖关系，参见。
 
-Metrics Summary：提供选中节点各实体的度量数据，这些度量数据基于当前节点下的实体，不包括子节点中的实体，参见。
+Metrics Summary: 提供选中节点各实体的度量数据，这些度量数据基于当前节点下的实体，不包括子节点中的实体，参见。
 
-Metrics Export：将度量总结导出到一个CSV 文件，参见。
+Metrics Export: 将度量总结导出到一个CSV 文件，参见。
 
-XML Export：将层级结构中选中节点及子节点包含的实体以XML 格式导出，参见。
+XML Export: 将层级结构中选中节点及子节点包含的实体以XML 格式导出，参见。
 
-Edit Architecutre：为用户自己创建的层级结构打开一个层级结构构建器，Understand 
+Edit Architecutre: 为用户自己创建的层级结构打开一个层级结构构建器，Understand 
 自动构建的层级结构不能被修改，参见。
 
-Rename Architecture：为用户自己创建的层级结构或者节点打开一个层级结构重命名窗口供用户对其中名称进行修改，Understand 2.5 自动构建的层级结构不能被重命名，参见。
+Rename Architecture: 为用户自己创建的层级结构或者节点打开一个层级结构重命名窗口供用户对其中名称进行修改，Understand 2.5 自动构建的层级结构不能被重命名，参见。
 
-Duplicate Architecture：打开层级结构复制窗口对选中层级结构的副本进行命名，参见。
+Duplicate Architecture: 打开层级结构复制窗口对选中层级结构的副本进行命名，参见。
 
-Manage Architecture：打开层级结构管理窗口，参见。
+Manage Architecture: 打开层级结构管理窗口，参见。
 

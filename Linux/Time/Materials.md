@@ -18,7 +18,7 @@ https://www.cnblogs.com/suzhou/archive/2013/06/04/3638986.html
 
 
 
-【Linux操作系统分析】定时测量——RTC，TSC，PIT，jiffies，计时体系结构，延迟函数, 概念: https://www.cnblogs.com/suzhou/archive/2013/06/04/3638986.html
+【Linux操作系统分析】定时测量——RTC, TSC, PIT, jiffies, 计时体系结构, 延迟函数, 概念: https://www.cnblogs.com/suzhou/archive/2013/06/04/3638986.html
 
 
 实时时钟、系统时钟和CPU时钟的区别: https://www.cnblogs.com/jingzhishen/p/4225765.html

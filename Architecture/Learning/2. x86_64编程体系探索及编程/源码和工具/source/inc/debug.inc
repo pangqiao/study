@@ -36,8 +36,8 @@
 %define PEBS_BUFFER_BASE		0x400400
 
 ;* 
-;* 定义 BTS 与 PEBS 最大记录数(maximum 与 threshold值）
-;* 缺省情况下，最多可容纳 10 条记录
+;* 定义 BTS 与 PEBS 最大记录数(maximum 与 threshold值)
+;* 缺省情况下, 最多可容纳 10 条记录
 ;*
 %define BTS_RECORD_MAXIMUM			10
 %define BTS_RECORD_INT_THRESHOLD		(BTS_RECORD_MAXIMUM)
@@ -108,11 +108,11 @@
 
 
 ;-----------------------------------------------------------
-; ENABLE_DEBUGCTL 宏：开启 IA32_DEBUGCTL 寄存器的功能
+; ENABLE_DEBUGCTL 宏: 开启 IA32_DEBUGCTL 寄存器的功能
 ; input:
 ;       参数是功能位
 ; 示例:
-;       ENABLE_DEBUGCTL (TR | BTS | BTINT)：开启 BTS 与 BTINT 功能
+;       ENABLE_DEBUGCTL (TR | BTS | BTINT): 开启 BTS 与 BTINT 功能
 ;------------------------------------------------------------
 %macro ENABLE_DEBUGCTL 1
         mov ecx, IA32_DEBUGCTL
@@ -123,7 +123,7 @@
 
 
 ;-------------------------------------------------------------
-; DISABLE_DEBUGCTL 宏：关闭 IA32_DEBUGCTL 功能
+; DISABLE_DEBUGCTL 宏: 关闭 IA32_DEBUGCTL 功能
 ; input:
 ;       参数是功能位
 ; 示例:
@@ -139,7 +139,7 @@
 
 
 ;-----------------------------------------
-; ENABLE_LBR() 宏：开启 LBR
+; ENABLE_LBR() 宏: 开启 LBR
 ;-----------------------------------------
 %macro ENABLE_LBR 0
         ENABLE_DEBUGCTL (LBR)
@@ -147,7 +147,7 @@
 
 
 ;-----------------------------------
-; ENABLE_BTS() 宏：开启 bts, 环状回路 
+; ENABLE_BTS() 宏: 开启 bts, 环状回路 
 ;-----------------------------------
 %macro ENABLE_BTS 0
         ENABLE_DEBUGCTL (TR | BTS)	
@@ -164,7 +164,7 @@
 
 
 ;--------------------------------------------
-; ENABLE_BTS_BTINT() 宏：开启 bts, 并且使用 BTINT
+; ENABLE_BTS_BTINT() 宏: 开启 bts, 并且使用 BTINT
 ;--------------------------------------------
 %macro ENABLE_BTS_BTINT 0
         ENABLE_DEBUGCTL (TR | BTS | BTINT)
@@ -180,7 +180,7 @@
 
 
 ;-----------------------------------------
-; DISABLE_LBR() 宏：关闭 LBR
+; DISABLE_LBR() 宏: 关闭 LBR
 ;-----------------------------------------
 %macro DISABLE_LBR 0
         DISABLE_DEBUGCTL (LBR)
@@ -188,7 +188,7 @@
 
 
 ;-------------------------------－－－－－－－－------------
-; DISABLE_TR(): 如果 TR 是开启就关闭 TR，同时 BTS 功能也无效
+; DISABLE_TR(): 如果 TR 是开启就关闭 TR, 同时 BTS 功能也无效
 ;----------------------------------------------------------
 %macro DISABLE_TR 0
 	mov ecx, IA32_DEBUGCTL
@@ -204,7 +204,7 @@
 
 
 ;--------------------------
-; DISABLE_BTS() 宏：关闭 bts
+; DISABLE_BTS() 宏: 关闭 bts
 ;---------------------------
 %macro DISABLE_BTS 0
         DISABLE_DEBUGCTL (TR | BTS)
@@ -219,7 +219,7 @@
 %endmacro
 
 ;--------------------------------------------
-; DISABLE_BTS_BTINT() 宏：关闭 bts
+; DISABLE_BTS_BTINT() 宏: 关闭 bts
 ;--------------------------------------------
 %macro DISABLE_BTS_BTINT 0
         DISABLE_DEBUGCTL (TR | BTS | BTINT)
@@ -246,8 +246,8 @@
 
 ;---------------------------------------------------
 ; 宏 SET_DS_AREA() 
-; 描述：
-;	用来设置完整的 DS 区域（环形回路 buffer 类型）
+; 描述: 
+;	用来设置完整的 DS 区域(环形回路 buffer 类型)
 ;----------------------------------------------------
 %macro SET_DS_AREA 0
 	;;; 设置 IA32_DS_AERA 寄存器
@@ -260,7 +260,7 @@
 
 ;------------------------------------------------
 ; 宏 SET_INT_DS_AREA()
-; 描述：
+; 描述: 
 ;	用来设置当 buffer 满时产生 DS buffer 中断
 ;------------------------------------------------
 %macro SET_INT_DS_AREA 0
@@ -279,8 +279,8 @@
 
 ;---------------------------------------------------
 ; 宏 SET_DS_AREA64() 
-; 描述：
-;	用来设置完整的 DS 区域（环形回路 buffer 类型）
+; 描述: 
+;	用来设置完整的 DS 区域(环形回路 buffer 类型)
 ;----------------------------------------------------
 %macro SET_DS_AREA64 0
 	;;; 设置 IA32_DS_AERA 寄存器
@@ -294,7 +294,7 @@
 
 ;------------------------------------------------
 ; 宏 SET_INT_DS_AREA64()
-; 描述：
+; 描述: 
 ;	用来设置当 buffer 满时产生 DS buffer 中断
 ;------------------------------------------------
 %macro SET_INT_DS_AREA64 0

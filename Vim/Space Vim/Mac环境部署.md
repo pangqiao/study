@@ -24,16 +24,16 @@ brew update
 
 ## 1.2 Homebrew的使用
 
-- 安装软件：brew install 软件名，例：brew install wget
-- 搜索软件：brew search 软件名，例：brew search wget
-- 卸载软件：brew uninstall 软件名，例：brew uninstall wget
-- 更新所有软件：brew update
+- 安装软件: brew install 软件名，例: brew install wget
+- 搜索软件: brew search 软件名，例: brew search wget
+- 卸载软件: brew uninstall 软件名，例: brew uninstall wget
+- 更新所有软件: brew update
 
 >通过 update 可以把包信息更新到最新，不过包更新是通过git命令，所以要先通过 brew install git 命令安装git。
 
-- 更新具体软件：brew upgrade 软件名 ，例：brew upgrade git
-- 显示已安装软件：brew list
-- 查看软件信息：brew info／home 软件名 ，例：brew info git ／ brew home git
+- 更新具体软件: brew upgrade 软件名 ，例: brew upgrade git
+- 显示已安装软件: brew list
+- 查看软件信息: brew info／home 软件名 ，例: brew info git ／ brew home git
 
 >brew home指令是用浏览器打开官方网页查看软件信息
 

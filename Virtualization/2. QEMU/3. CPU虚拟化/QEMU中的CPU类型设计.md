@@ -10,11 +10,11 @@
 
 <!-- /code_chunk_output -->
 
-CPU也是一种设备，因此CPU类继承自Device类。CPU这种设备相比其他设备来说种类非常繁杂。首先，CPU有着不同的架构，而对于每一种架构的CPU来说，随着时间的推移，CPU厂商也会给该架构的CPU不断地增加新特性和更新换代，这种更新换代造成该架构的CPU也有了各种不同的CPU模型。
+CPU也是一种设备，因此CPU类继承自Device类. CPU这种设备相比其他设备来说种类非常繁杂. 首先，CPU有着不同的架构，而对于每一种架构的CPU来说，随着时间的推移，CPU厂商也会给该架构的CPU不断地增加新特性和更新换代，这种更新换代造成该架构的CPU也有了各种不同的CPU模型. 
 
-以x86 CPU为例，QEMU中可以支持的CPU的模型就包括以下几种，我们可以通过qemu-system-x86_64 \-cpu \?命令查看QEMU支持的X86 CPU类型。其中一些CPU模型是QEMU自己定义的，另外一些类型则是直接来自厂商。其中host类型是指将物理机上的CPU特性全部暴露给虚拟机，这样可以全面发挥CPU的性能，但是另一方面，由于全部特性被暴露给虚拟机，会造成具有不同特性的CPU架构或CPU模型的物理机之间动态迁移虚拟机会变得不可靠。
+以x86 CPU为例，QEMU中可以支持的CPU的模型就包括以下几种，我们可以通过qemu-system-x86_64 \-cpu \?命令查看QEMU支持的X86 CPU类型. 其中一些CPU模型是QEMU自己定义的，另外一些类型则是直接来自厂商. 其中host类型是指将物理机上的CPU特性全部暴露给虚拟机，这样可以全面发挥CPU的性能，但是另一方面，由于全部特性被暴露给虚拟机，会造成具有不同特性的CPU架构或CPU模型的物理机之间动态迁移虚拟机会变得不可靠. 
 
-如此众多的CPU架构、CPU模型，而**CPU架构**、**CPU模型**天然具有**父类和子类的关系**。使用面向对象编程模型对它们进行设计是再合适不过了。但是目前对于X86CPU中不同的CPU模型（其他的架构没有仔细看），QEMU只是使用一个描述X86CPU定义的数据结构的数组来表示的。QEMU的代码注释中说明，**未来**要将**所有的CPU模型**最终定义为**X86CPU的子类**。
+如此众多的CPU架构、CPU模型，而**CPU架构**、**CPU模型**天然具有**父类和子类的关系**. 使用面向对象编程模型对它们进行设计是再合适不过了. 但是目前对于X86CPU中不同的CPU模型(其他的架构没有仔细看)，QEMU只是使用一个描述X86CPU定义的数据结构的数组来表示的. QEMU的代码注释中说明，**未来**要将**所有的CPU模型**最终定义为**X86CPU的子类**. 
 
 ```
 x86           qemu64  QEMU Virtual CPU version 2.5+
@@ -50,15 +50,15 @@ x86             host  KVM processor with all supported host features (only avail
 
 # 所有CPU的基类
 
-要定义所有CPU的基类，需要定义CPU的类的数据结构和CPU的对象的数据结构，然后给对应的TypeInfo中的函数指针赋值即可。
+要定义所有CPU的基类，需要定义CPU的类的数据结构和CPU的对象的数据结构，然后给对应的TypeInfo中的函数指针赋值即可. 
 
-其中**CPU类的数据结构**名为**CPUClass**、**CPU对象**的数据结构名为**CPUState**，它们被定义在include/qom/cpu.h中，而**对应的TypeInfo的赋值工作**则在**qom/cpu.c**中进行。
+其中**CPU类的数据结构**名为**CPUClass**、**CPU对象**的数据结构名为**CPUState**，它们被定义在include/qom/cpu.h中，而**对应的TypeInfo的赋值工作**则在**qom/cpu.c**中进行. 
 
-这里只说明CPUClass、CPUState数据结构。
+这里只说明CPUClass、CPUState数据结构. 
 
 ## CPUClass
 
-CPUClass的数据结构如下，其中最主要的内容，是与CPU相关的大量的回调函数，通过给这些回调函数的指针赋值，**对应的CPUState**就可以**调用这些函数**实现相应的功能。
+CPUClass的数据结构如下，其中最主要的内容，是与CPU相关的大量的回调函数，通过给这些回调函数的指针赋值，**对应的CPUState**就可以**调用这些函数**实现相应的功能. 
 
 ```c
 typedef struct CPUClass {
@@ -121,7 +121,7 @@ typedef struct CPUClass {
 
 ## CPUState
 
-CPUState是**CPU对象**的数据结构，**一个CPUState**就表示**一个虚拟机的CPU**。在QEMU中，任何CPU的操作的大部分都是对以CPUState形式出现的CPU来进行的。
+CPUState是**CPU对象**的数据结构，**一个CPUState**就表示**一个虚拟机的CPU**. 在QEMU中，任何CPU的操作的大部分都是对以CPUState形式出现的CPU来进行的. 
 
 ```c
 struct CPUState {
@@ -204,7 +204,7 @@ struct CPUState {
     /* Used to keep track of an outstanding cpu throttle thread for migration
      * autoconverge
      */
-    bool throttle_thread_scheduled;  //跟踪CPU运行，当热迁移时可以自动减慢CPU运行速度，保证热迁移顺利完成。
+    bool throttle_thread_scheduled;  //跟踪CPU运行，当热迁移时可以自动减慢CPU运行速度，保证热迁移顺利完成. 
 
     /* Note that this is accessed at the start of every TB via a negative
        offset from AREG0.  Leave this field at the end so as to make the

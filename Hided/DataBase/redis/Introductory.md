@@ -15,7 +15,7 @@
 
 #### 1.2 优缺点
 
-非常非常的快，有测评说比Memcached还快（当都是单CPU的时候），而且是无短板的快，读写都一样快，所有API都差不多，也没有MySQL Cluster/MongoDB那样更新同一条记录如Counter时候慢下去的毛病。  
+非常非常的快，有测评说比Memcached还快(当都是单CPU的时候)，而且是无短板的快，读写都一样快，所有API都差不多，也没有MySQL Cluster/MongoDB那样更新同一条记录如Counter时候慢下去的毛病。  
 
 丰富的数据结构，超越了一般的Key-Value数据库而被认为是一个数据结构服务器。组合各种结构，限制Redis用途的是你的想象力，作者自己写的[用途入门](http://oldblog.antirez.com/post/take-advantage-of-redis-adding-it-to-your-stack.html)。
 
@@ -31,16 +31,16 @@ Redis不是什么？
 #### 1.3 Feature速览
 
 - 所有数据都在内存中
-- 五种数据结构：String/Hash/List/Set/Ordered Set
+- 五种数据结构: String/Hash/List/Set/Ordered Set
 - 数据过期时间支持
 - 不完全的事务支持
-- 服务端脚本：使用Lua Script编写，作用类似于存储过程
-- PubSub：消息一对多发布订阅功能，起码Redis-Sentinel在使用
-- 持久化：支持定期导出内存的Snapshot与记录写操作日志的Append Only File两种模式
-- Replication：Master-Slave模式，Master可连接多个只读Slave，Geographic Replication也只支持Active-Standby。
-- Fail-Over：Redis-Sentinel节点负责监控Master节点，在master失效时提升slave。
-- Sharing：开发中的Redis-Cluster。
-- 动态配置：所有参数可用命令行动态配置不需要重启，2.8版本可以重新写回配置文件中，对云上的大规模部署非常合适。
+- 服务端脚本: 使用Lua Script编写，作用类似于存储过程
+- PubSub: 消息一对多发布订阅功能，起码Redis-Sentinel在使用
+- 持久化: 支持定期导出内存的Snapshot与记录写操作日志的Append Only File两种模式
+- Replication: Master-Slave模式，Master可连接多个只读Slave，Geographic Replication也只支持Active-Standby。
+- Fail-Over: Redis-Sentinel节点负责监控Master节点，在master失效时提升slave。
+- Sharing: 开发中的Redis-Cluster。
+- 动态配置: 所有参数可用命令行动态配置不需要重启，2.8版本可以重新写回配置文件中，对云上的大规模部署非常合适。
 
 #### 1.4 八卦
 - 作者是意大利的Salvatore Sanfilippo(antirez)，又是VMWare大善人聘请了他专心写Redis。
@@ -62,9 +62,9 @@ Redis不是什么？
 
 [Incr/IncrBy/IncrByFloat/Decr/DecrBy](http://redis.readthedocs.org/en/latest/string/decr.html)，可以用来做计数器，做自增序列。key不存在时会创建并贴心的设原值为0。IncrByFloat专门针对float，没有对应的decrByFloat版本？用负数啊。
 
-[SetNx](http://redis.readthedocs.org/en/latest/string/setnx.html)， 仅当key不存在时才Set。可以用来选举Master或做分布式锁：所有Client不断尝试使用SetNx master myName抢注Master，成功的那位不断使用Expire刷新它的过期时间。如果Master倒掉了key就会失效，剩下的节点又会发生新一轮抢夺。
+[SetNx](http://redis.readthedocs.org/en/latest/string/setnx.html)， 仅当key不存在时才Set。可以用来选举Master或做分布式锁: 所有Client不断尝试使用SetNx master myName抢注Master，成功的那位不断使用Expire刷新它的过期时间。如果Master倒掉了key就会失效，剩下的节点又会发生新一轮抢夺。
 
-其他Set指令：
+其他Set指令: 
 
 - SetEx， Set + Expire 的简便写法，p字头版本以毫秒为单位。
 GetSet， 设置新值，返回旧值。比如一个按小时计算的计数器，可以用GetSet获取计数并重置为0。这种指令在服务端做起来是举手之劳，客户端便方便很多。

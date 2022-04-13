@@ -181,7 +181,7 @@ entry64:
         call dump_long_page
         LIB32_PRINTLN_CALL
 
-; 2) 写 virtual address 0xfffffff810001000，将它load into TLB
+; 2) 写 virtual address 0xfffffff810001000, 将它load into TLB
         mov rax, 0xfffffff810001000
         mov DWORD [rax], 0x55aa55aa
         
@@ -204,7 +204,7 @@ entry64:
 
         
 ; 5) 第一次读 virtual address 0xfffffff810001000
-        ; 注意：这个读取在未刷新 TLB 之前读取，观察是否成功
+        ; 注意: 这个读取在未刷新 TLB 之前读取, 观察是否成功
         mov esi, msg2
         LIB32_PUTS_CALL
         mov rax, 0xfffffff810001000
@@ -217,12 +217,12 @@ entry64:
         mov esi, msg3
         LIB32_PUTS_CALL     
 ; 6) 刷新 TLB
-        ; 现在：主动发起刷新 virutal address 对应的 TLB 
+        ; 现在: 主动发起刷新 virutal address 对应的 TLB 
         mov rax, 0xfffffff810001000
         invlpg [rax]
 
 ; 7) 第二次读 virtual address 0xfffffff810001000
-        ; 注意：这个读取是在刷新 TLB 之后进行
+        ; 注意: 这个读取是在刷新 TLB 之后进行
         mov esi, msg4
         LIB32_PUTS_CALL
         mov rax, 0xfffffff810001000
@@ -244,21 +244,21 @@ msg4    db 'again, read memory: [0xfffffff8_10001000]=0x', 0
         
         ;call QWORD far [conforming_pointer]                        ; 测试conforimg 代码
         
-;; 从 64 位切换到 compatibility mode（权限不改变，0 级）　        
+;; 从 64 位切换到 compatibility mode(权限不改变, 0 级)　        
         ;jmp QWORD far [compatibility_pointer]
 
 ;compatibility_pointer:
 ;                dq compatibility_kernel_entry              ; 64 bit offset on Intel64
 ;                dw code32_sel
 
-;; 切换到 compatibility mode（进入 3 级）
+;; 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push user_code32_sel | 3
 ;        push compatibility_user_entry
 ;        retf64
 
-;; 使用 iret 切换到 compatibility mode（进入 3 级）
+;; 使用 iret 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push 02h

@@ -50,7 +50,7 @@ static int my_proc_open(struct inode *inode, struct file *file)
 {
     /*4,在open函数中调用single_open绑定seq_show函数指针
       需要说明的是，ldd3中介绍的seq接口用该调用seq_open函数
-      其调用形式如下：
+      其调用形式如下: 
       return sep_open(file, &scull_seq_ops);
       scull_seq_ops为struct seq_operations结构体
       在该结构体中绑定show函数指针
@@ -58,10 +58,10 @@ static int my_proc_open(struct inode *inode, struct file *file)
       而调用single_open函数只需直接指定show的函数指针即可
       个人猜测可能是在single_open函数中实现了seq_operations结构体
       至于是不是就不知道了，没有查看具体实现
-      有兴趣的同学可以参考文档：Documentation\filesystems\seq_file.txt
+      有兴趣的同学可以参考文档: Documentation\filesystems\seq_file.txt
       关于第三个参数，其类型应为viod*,
       内核中有些地方传入的NULL，有些地方传入的inode->i_private，也有传入其他值的
-      来看看data在single_open函数中如何被使用的：
+      来看看data在single_open函数中如何被使用的: 
         if (!res)
          ((struct seq_file *)file->private_data)->private = data;
       data是seq_file结构体的private成员。

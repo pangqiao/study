@@ -18,7 +18,7 @@
 
 
 ;;
-;; ####### VMB(VM Manage Block）结构 #######
+;; ####### VMB(VM Manage Block)结构 #######
 ;;
 
 struc VMB
@@ -221,7 +221,7 @@ endstruc
 
 
 ;;
-;; VSB（VM Storage Block，虚拟机存储块）
+;; VSB(VM Storage Block，虚拟机存储块)
 ;;
 struc VSB
         .Base                   RESQ            1
@@ -276,7 +276,7 @@ struc VSB
         .FpuStackImage:         RESB            80
 
         ;;
-        ;; XMM image 区域，使用于 FXSAVE/FXRSTOR 指令（512字节）
+        ;; XMM image 区域，使用于 FXSAVE/FXRSTOR 指令(512字节)
         ;;
         ALIGNB 16
         .XMMStateImage:         RESB            512
@@ -448,7 +448,7 @@ struc GUEST_STATE
         .Rflags                         RESQ            1
 
         ;;
-        ;; 16 位 selector 值（CS, SS, DS, ES, FS, GS, LDTR 和 TR）
+        ;; 16 位 selector 值(CS, SS, DS, ES, FS, GS, LDTR 和 TR)
         ;;
         .CsSelector                     RESW            1
         .SsSelector                     RESW            1
@@ -460,7 +460,7 @@ struc GUEST_STATE
         .TrSelector                     RESW            1
         
         ;;
-        ;; base 值（64 位值）
+        ;; base 值(64 位值)
         ;;
         .CsBase                         RESQ            1
         .SsBase                         RESQ            1
@@ -496,7 +496,7 @@ struc GUEST_STATE
         .TrAccessRight                  RESD            1
 
         ;;
-        ;; GDTR/IDTR base（64位） 和 limit（32位）
+        ;; GDTR/IDTR base(64位) 和 limit(32位)
         ;;
         .GdtrBase                       RESQ            1
         .IdtrBase                       RESQ            1
@@ -563,7 +563,7 @@ struc HOST_STATE
         .Rip                            RESQ            1
 
         ;;
-        ;; 16 位 selector 值（CS, SS, DS, ES, FS, GS 和 TR）
+        ;; 16 位 selector 值(CS, SS, DS, ES, FS, GS 和 TR)
         ;;
         .CsSelector                     RESW            1
         .SsSelector                     RESW            1
@@ -574,7 +574,7 @@ struc HOST_STATE
         .TrSelector                     RESW            1
         
         ;;
-        ;; 64 位 base 值（FS, GS 和 TR)
+        ;; 64 位 base 值(FS, GS 和 TR)
         ;;
         .FsBase                         RESQ            1
         .GsBase                         RESQ            1
@@ -582,7 +582,7 @@ struc HOST_STATE
 
 
         ;;
-        ;; GDTR/IDTR base（64位）
+        ;; GDTR/IDTR base(64位)
         ;;
         .GdtrBase                       RESQ            1
         .IdtrBase                       RESQ            1
@@ -753,7 +753,7 @@ endstruc
 ; input:
 ;       %1 - control bit
 ; 描述:
-;       1）置 Pinbased VM-execution control 位
+;       1)置 Pinbased VM-execution control 位
 ;-------------------------------------------------------
 %macro SET_PINBASED_CTLS 1
         GetVmcsField    CONTROL_PINBASED
@@ -777,7 +777,7 @@ endstruc
 ; input:
 ;       %1 - control bit
 ; 描述:
-;       1）清 Pinbased VM-execution control 位
+;       1)清 Pinbased VM-execution control 位
 ;-------------------------------------------------------
 %macro CLEAR_PINBASED_CTLS 1
         GetVmcsField    CONTROL_PINBASED
@@ -801,7 +801,7 @@ endstruc
 ; input:
 ;       %1 - control bit
 ; 描述:
-;       1）置 primary processor-based VM-execution control 位
+;       1)置 primary processor-based VM-execution control 位
 ;-------------------------------------------------------
 %macro SET_PRIMARY_PROCBASED_CTLS 1
         GetVmcsField    CONTROL_PROCBASED_PRIMARY
@@ -825,7 +825,7 @@ endstruc
 ; input:
 ;       %1 - control bit
 ; 描述:
-;       1）清 primary processor-based VM-execution control 位
+;       1)清 primary processor-based VM-execution control 位
 ;-------------------------------------------------------
 %macro CLEAR_PRIMARY_PROCBASED_CTLS 1
         GetVmcsField    CONTROL_PROCBASED_PRIMARY
@@ -849,7 +849,7 @@ endstruc
 ; input:
 ;       %1 - control bit
 ; 描述:
-;       1）置 secondary processor-based VM-execution control 位
+;       1)置 secondary processor-based VM-execution control 位
 ;-------------------------------------------------------
 %macro SET_SECONDARY_PROCBASED_CTLS 1
         GetVmcsField    CONTROL_PROCBASED_SECONDARY
@@ -872,7 +872,7 @@ endstruc
 ; input:
 ;       %1 - control bit
 ; 描述:
-;       1）清 secondary processor-based VM-execution control 位
+;       1)清 secondary processor-based VM-execution control 位
 ;-------------------------------------------------------
 %macro CLEAR_SECONDARY_PROCBASED_CTLS 1
         GetVmcsField    CONTROL_PROCBASED_SECONDARY
@@ -895,7 +895,7 @@ endstruc
 ; input:
 ;       %1 - control bit
 ; 描述:
-;       1）置 VM-exit control 位
+;       1)置 VM-exit control 位
 ;-------------------------------------------------------
 %macro SET_VM_EXIT_CTLS 1
         GetVmcsField    VMEXIT_CONTROL
@@ -918,7 +918,7 @@ endstruc
 ; input:
 ;       %1 - control bit
 ; 描述:
-;       1）清 VM-exit control 位
+;       1)清 VM-exit control 位
 ;-------------------------------------------------------
 %macro CLEAR_VM_EXIT_CTLS 1
         GetVmcsField    VMEXIT_CONTROL
@@ -941,7 +941,7 @@ endstruc
 ; input:
 ;       %1 - control bit
 ; 描述:
-;       1）置 VM-entry control 位
+;       1)置 VM-entry control 位
 ;-------------------------------------------------------
 %macro SET_VM_ENTRY_CTLS 1
         GetVmcsField    VMENTRY_CONTROL
@@ -965,7 +965,7 @@ endstruc
 ; input:
 ;       %1 - control bit
 ; 描述:
-;       1）清 VM-entry control 位
+;       1)清 VM-entry control 位
 ;-------------------------------------------------------
 %macro CLEAR_VM_ENTRY_CTLS 1
         GetVmcsField    VMENTRY_CONTROL
@@ -989,7 +989,7 @@ endstruc
 ; SET_EXCEPTION_BITMAP
 ; input:
 ;       %1 - vector
-; 描述：
+; 描述: 
 ;       1) 设置 Exception Bitmap 位
 ;-------------------------------------------------------
 %macro SET_EXCEPTION_BITMAP 1
@@ -1003,7 +1003,7 @@ endstruc
 ; CLEAR_EXCEPTION_BITMAP
 ; input:
 ;       %1 - vector
-; 描述：
+; 描述: 
 ;       1) 清 Exception Bitmap 位
 ;-------------------------------------------------------
 %macro CLEAR_EXCEPTION_BITMAP 1
@@ -1018,7 +1018,7 @@ endstruc
 ; MAKE_SEGMENT_UNUSABLE
 ; input:
 ;       %1 - vector
-; 描述：
+; 描述: 
 ;       1) 清 Exception Bitmap 位
 ;-------------------------------------------------------
 %macro MAKE_SEGMENT_UNUSABLE    1

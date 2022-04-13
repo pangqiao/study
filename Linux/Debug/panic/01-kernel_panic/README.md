@@ -30,7 +30,7 @@ The original panic() function was essentially unchanged from Fifth Edition UNIX 
 Kernel panic-not syncing fatal exception in interrupt
 kernel panic – not syncing: Attempted to kill the idle task!
 kernel panic – not syncing: killing interrupt handler!
-Kernel Panic – not syncing：Attempted to kill init !
+Kernel Panic – not syncing: Attempted to kill init !
 ```
 
 一般出现下面的情况，就认为是发生了 `kernel panic` :
@@ -39,7 +39,7 @@ Kernel Panic – not syncing：Attempted to kill init !
 
 * 数字键(Num Lock)，大写锁定键(Caps Lock)，滚动锁定键(Scroll Lock)不停闪烁。
 
-* 如果在终端下，应该可以看到内核dump出来的信息（包括一段"Aieee"信息或者"Oops"信息）
+* 如果在终端下，应该可以看到内核dump出来的信息(包括一段"Aieee"信息或者"Oops"信息)
 
 * 和Windows蓝屏相似
 
@@ -69,7 +69,7 @@ Kernel Panic – not syncing：Attempted to kill init !
 
 1.	如果在图形界面，切换到终端界面，dump信息是不会出现在图形界面的，甚至都不会在图形模式下的虚拟终端里.
 
-2.	确保屏幕不黑屏，可以使用下面的几个方法：
+2.	确保屏幕不黑屏，可以使用下面的几个方法: 
 
 ```cpp
 setterm -blank 0
@@ -119,7 +119,7 @@ KDB编译到内核里，panic发生时，他将内核引导到一个shell环境�
 
 *	从 `/var/log/messages` 里找到的堆栈跟踪文本信息保存为一个新文件。确保删除了时间戳(`timestamp`)，否则 `ksymoops` 会失败.
 
-*	运行 `ksymoops` 程序（如果没有，请安装）
+*	运行 `ksymoops` 程序(如果没有，请安装)
 
 详细的`ksymoops`执行用法，可以参考`ksymoops(8)`手册。
 

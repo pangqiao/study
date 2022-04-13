@@ -46,9 +46,9 @@ $ git clone https://github.com/VundleVim/Vundle.vim.git  ~/.vim/bundle/vundle
 2. Github上非vim-scripts仓库的插件 
 3. 不在Github上的插件 
 
-对于不同的插件，vundle自动管理和下载插件的时候，有不同的地址填写方法，有如下三类： 
+对于不同的插件，vundle自动管理和下载插件的时候，有不同的地址填写方法，有如下三类:  
 
-1. 在Github上vim-scripts用户下的仓库,只需要写出repos（仓库）名称 
+1. 在Github上vim-scripts用户下的仓库,只需要写出repos(仓库)名称 
 2. 在Github其他用户下的repos, 需要写出”用户名/repos名” 
 3. 不在Github上的插件，需要写出git全路径
 
@@ -56,9 +56,9 @@ $ git clone https://github.com/VundleVim/Vundle.vim.git  ~/.vim/bundle/vundle
 
 可以在终端通过vim打开~/.vimrc文件
 
-添加的配置信息（样例） 
+添加的配置信息(样例) 
 
-注：以后安装新插件就直接编辑vimrc，添加plugin就行了，在这里我们添加的plugin只是例子，你可以不安装这些插件，换上自己需要安装的插件。
+注: 以后安装新插件就直接编辑vimrc，添加plugin就行了，在这里我们添加的plugin只是例子，你可以不安装这些插件，换上自己需要安装的插件。
 
 ```
 set nocompatible              " 去除VI一致性,必须要添加

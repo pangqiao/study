@@ -16,7 +16,7 @@
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       更新内存类型管理信息
 ;-----------------------------------------------------
 update_memory_type_manage_info:
@@ -61,7 +61,7 @@ enable_mtrr:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       初始化内存类型管理记录
 ;-----------------------------------------------------
 init_memory_type_manage_record:
@@ -98,7 +98,7 @@ init_memory_type_manage_record.loop:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       初始化内存类型管理功能
 ;-----------------------------------------------------
 init_memory_type_manage:
@@ -117,7 +117,7 @@ init_memory_type_manage:
 ;       edi - 内存类型
 ; output:
 ;       1 - successful, 0 - failure
-; 描述：
+; 描述: 
 ;       设置某个内存范围的 cache 类型
 ;-----------------------------------------------------------
 set_memory_range_type:
@@ -140,7 +140,7 @@ set_memory_range_type:
         and esi, 0FFFFF000h
         
         ;;
-        ;; Rang Mask 的计算方法（以 8K 长度例）
+        ;; Rang Mask 的计算方法(以 8K 长度例)
         ;;
         ;; 1) 长度值(8k) - 1 = 2000h - 1 = 1FFFh
         ;; 2) MaxPhyAddrSelectMask 低 32 位 - 1FFFh = FFFFE000h

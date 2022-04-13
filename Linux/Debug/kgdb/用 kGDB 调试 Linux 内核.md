@@ -23,7 +23,7 @@
 
 ## 2.1. 基本配置
 
-在内核配置文件 `.config` 中，需要打开如下选项：
+在内核配置文件 `.config` 中，需要打开如下选项: 
 
 配置项 | 说明
 ------- | -------
@@ -49,7 +49,7 @@ CONFIG_KGDB_TESTS |
 
 ## 2.3. 启动参数
 
-打开相应的选项后，需要配置 kernel 启动参数，使 **KGDB** 和**内核**能够找到正确的**通信接口**。如果是使用串口，则需要配置如下选项：
+打开相应的选项后，需要配置 kernel 启动参数，使 **KGDB** 和**内核**能够找到正确的**通信接口**。如果是使用串口，则需要配置如下选项: 
 
 ```
 console=ttySAC3,115200 kgdboc=ttySAC3,115200
@@ -63,7 +63,7 @@ console=ttySAC3,115200 kgdboc=ttySAC3,115200
 
 # 3. 串口驱动修改
 
-如果在内核启动的过程中出现如下错误提示：
+如果在内核启动的过程中出现如下错误提示: 
 
 ```
 kgdb: Unregistered I/O driver, debugger disabled.
@@ -75,7 +75,7 @@ kgdb: Unregistered I/O driver, debugger disabled.
 
 可以看到在 config 配置文件的 `CONFIG_CONSOLE_POLL` 就是使能串口与 kgdboc 的接口。如果 `tty_find_polling_driver` 没有找到对应的串口通信接口，则会调用 `kernel/debug/debug_core.c` 中的 `kgdb_unregister_io_module` 进行错误处理。
 
-有的板子的串口驱动并没有加入对 kgdboc 通信的支持，例如 Samsung 的串口驱动需要在 `drivers/tty/serial/samsung.c` 中手动添加。 添加与 kgdboc 通信的接口，只需添加一个发送函数和接收函数，然后在驱动操作结构体中加入对应的函数就可以了。具体的 PATCH 如下：
+有的板子的串口驱动并没有加入对 kgdboc 通信的支持，例如 Samsung 的串口驱动需要在 `drivers/tty/serial/samsung.c` 中手动添加。 添加与 kgdboc 通信的接口，只需添加一个发送函数和接收函数，然后在驱动操作结构体中加入对应的函数就可以了。具体的 PATCH 如下: 
 
 ```
 drivers/tty/serial/samsung.c | 22 ++++++++++++++++++++++
@@ -123,7 +123,7 @@ static struct uart_ops s3c24xx_serial_ops = {
 
 如果在内核启动参数中加入了 **kgdbwait** ，则内核会在完成基本的初始化之后，停留在 kgdb 的调试陷阱中，等待主机的 gdb 的远程连接。
 
-由于大部分的板子只有一个调试串口，所以你需要把之前与串口通信的 minicom 退出来，然后在内核源码的目录下，执行以下命令：
+由于大部分的板子只有一个调试串口，所以你需要把之前与串口通信的 minicom 退出来，然后在内核源码的目录下，执行以下命令: 
 
 ```
 $ arm-linux-gnueabi-gcc vmlinux
@@ -133,13 +133,13 @@ $ arm-linux-gnueabi-gcc vmlinux
 (gdb) c
 ```
 
-当然，你也可以 `agent-proxy` 来复用一个串口，通过虚拟出两个 TCP 端口。这时候， gdb 就需要用 target remote 命令连接 kgdb ，例如：
+当然，你也可以 `agent-proxy` 来复用一个串口，通过虚拟出两个 TCP 端口。这时候， gdb 就需要用 target remote 命令连接 kgdb ，例如: 
 
 ```
 (gdb) target remote localhost:5551
 ```
 
-agent-proxy 可这样下载：
+agent-proxy 可这样下载: 
 
 ```
 git clone git://git.kernel.org/pub/scm/utils/kernel/kgdb/agent-proxy.git
@@ -147,14 +147,14 @@ git clone git://git.kernel.org/pub/scm/utils/kernel/kgdb/agent-proxy.git
 
 具体用法，请看该 repo 下的 README 。
 
-在用 **gdb** 来**调试内核**的时候，由于内核在**初始化**的时候，会**创建很多子线程**。而**默认 gdb** 会**接管所有的线程**，如果你从一个线程切换到另外一个线程， gdb 会马上把原先的线程暂停。但是这样很容易导致 kernel 死掉，所以需要设置一下 gdb 。一般用 gdb 进行多线程调试，需要注意两个参数： `follow-fork-mode` 和 `detach-on-fork`。
+在用 **gdb** 来**调试内核**的时候，由于内核在**初始化**的时候，会**创建很多子线程**。而**默认 gdb** 会**接管所有的线程**，如果你从一个线程切换到另外一个线程， gdb 会马上把原先的线程暂停。但是这样很容易导致 kernel 死掉，所以需要设置一下 gdb 。一般用 gdb 进行多线程调试，需要注意两个参数:  `follow-fork-mode` 和 `detach-on-fork`。
 
-- `detach-on-fork` 参数，指示 GDB 在 **fork** 之后**是否断开**（detach）某个进程的调试，或者都交由 GDB 控制： `set detach-on-fork [on|off]`
+- `detach-on-fork` 参数，指示 GDB 在 **fork** 之后**是否断开**(detach)某个进程的调试，或者都交由 GDB 控制:  `set detach-on-fork [on|off]`
 
     - on: 断开调试 `follow-fork-mode` 指定的进程。
     - off: gdb将控制父进程和子进程。
 
-- `follow-fork-mode` 指定的进程将被调试，另一个进程置于暂停（suspended）状态。`follow-fork-mode` 的用法为：`set follow-fork-mode [parent|child]`
+- `follow-fork-mode` 指定的进程将被调试，另一个进程置于暂停(suspended)状态。`follow-fork-mode` 的用法为: `set follow-fork-mode [parent|child]`
 
     - parent: fork之后继续调试父进程，子进程不受影响。 
     - child: fork之后调试子进程，父进程不受影响。

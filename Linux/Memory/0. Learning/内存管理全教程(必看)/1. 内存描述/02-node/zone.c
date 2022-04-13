@@ -71,7 +71,7 @@ struct zone {
      * recalculated at runtime if the sysctl_lowmem_reserve_ratio sysctl
      * changes.
      * 分别为各种内存域指定了若干页
-     * 用于一些无论如何都不能失败的关键性内存分配。  
+     * 用于一些无论如何都不能失败的关键性内存分配.   
      */
     long lowmem_reserve[MAX_NR_ZONES];
 
@@ -83,14 +83,14 @@ struct zone {
      * The target ratio of ACTIVE_ANON to INACTIVE_ANON pages on
      * this zone's LRU.  Maintained by the pageout code.
      * 不活动页的比例, 
-     * 接着是一些很少使用或者大部分情况下是只读的字段：
+     * 接着是一些很少使用或者大部分情况下是只读的字段: 
      * wait_table wait_table_hash_nr_entries wait_table_bits
      * 形成等待列队，可以等待某一页可供进程使用  */
     unsigned int inactive_ratio;
 
     /*  指向这个zone所在的pglist_data对象  */
     struct pglist_data      *zone_pgdat;
-    /*/这个数组用于实现每个CPU的热/冷页帧列表。内核使用这些列表来保存可用于满足实现的“新鲜”页。但冷热页帧对应的高速缓存状态不同：有些页帧很可能在高速缓存中，因此可以快速访问，故称之为热的；未缓存的页帧与此相对，称之为冷的。*/
+    /*/这个数组用于实现每个CPU的热/冷页帧列表. 内核使用这些列表来保存可用于满足实现的“新鲜”页. 但冷热页帧对应的高速缓存状态不同: 有些页帧很可能在高速缓存中，因此可以快速访问，故称之为热的；未缓存的页帧与此相对，称之为冷的. */
     struct per_cpu_pageset __percpu *pageset;
 
     /*
@@ -221,7 +221,7 @@ struct zone {
        以下是供页帧回收扫描器(page reclaim scanner)访问的字段
        scanner会跟据页帧的活动情况对内存域中使用的页进行编目
        如果页帧被频繁访问，则是活动的，相反则是不活动的，
-       在需要换出页帧时，这样的信息是很重要的：   */
+       在需要换出页帧时，这样的信息是很重要的:    */
     struct free_area    free_area[MAX_ORDER];
 
     /* zone flags, see below 描述当前内存的状态, 参见下面的enum zone_flags结构 */
@@ -244,7 +244,7 @@ struct zone {
      * drift allowing watermarks to be breached
      * 在空闲页的数目少于这个点percpu_drift_mark的时候
      * 当读取和空闲页数一样的内存页时，系统会采取额外的工作，
-     * 防止单CPU页数漂移，从而导致水印被破坏。
+     * 防止单CPU页数漂移，从而导致水印被破坏. 
      */
     unsigned long percpu_drift_mark;
 

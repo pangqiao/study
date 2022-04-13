@@ -1,12 +1,12 @@
-1. git远程操作详解：
+1. git远程操作详解: 
 
 http://www.ruanyifeng.com/blog/2014/06/git_remote.html  
 
-2. 图解Git：
+2. 图解Git: 
 
 https://marklodato.github.io/visual-git-guide/index-zh-cn.html
 
-3. Git使用：
+3. Git使用: 
 
 https://www.git-scm.com/book/zh/v1/Git-%E5%9F%BA%E7%A1%80
 
@@ -23,7 +23,7 @@ git log日期问题:
 https://www.chengweiyang.cn/2018/05/04/git-log-filter-by-date/
 
 
-git丢弃本地修改的所有文件（新增、删除、修改）
+git丢弃本地修改的所有文件(新增、删除、修改)
 
 https://blog.csdn.net/leedaning/article/details/51304690
 

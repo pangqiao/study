@@ -33,9 +33,9 @@ Linux gerrylee 3.10.0-957.21.3.el7.x86_64 #1 SMP Tue Jun 18 16:35:19 UTC 2019 x8
 
 ## 2.1 从官网下载
 
-源代码的官网：http://vault.centos.org/
+源代码的官网: http://vault.centos.org/
 
-进入官网后，依次是进入 7.6.1810/，进入os/，进入Source/，进入SPackages/，找到kernel-3.10.0-957.el7.src.rpm，下载就行了。
+进入官网后, 依次是进入 7.6.1810/, 进入os/, 进入Source/, 进入SPackages/, 找到kernel-3.10.0-957.el7.src.rpm, 下载就行了. 
 
 ## 2.2 通过yum下载
 

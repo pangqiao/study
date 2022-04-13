@@ -49,10 +49,10 @@ http://www.ibm.com/developerworks/cn/linux/l-cn-bfs/
 
 rifs进程调度比起bfs cfs好在哪差在哪
 
-交互性极佳，特别是在大负载，那种交互性差距很明显
-吞吐量比bfs和cfs低一半，但还是比windows高1/3
+交互性极佳, 特别是在大负载, 那种交互性差距很明显
+吞吐量比bfs和cfs低一半, 但还是比windows高1/3
 
-要测试交互性的差距请用mplayer测，
-要体验交互性大可以开make -j512然后看网页，听音乐，移动窗口。
+要测试交互性的差距请用mplayer测, 
+要体验交互性大可以开make -j512然后看网页, 听音乐, 移动窗口. 
 
 

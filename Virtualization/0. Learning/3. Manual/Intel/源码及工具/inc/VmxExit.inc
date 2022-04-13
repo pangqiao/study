@@ -11,7 +11,7 @@
 
 
 ;;
-;; 由下列指令引发 VM-exit 的明细信息：
+;; 由下列指令引发 VM-exit 的明细信息: 
 ;; 1) INVEPT, INVPCID, INVVPID, VMCLEAR, VMPTRLD, VMPTRST
 ;;    VMREAD, VMWRITE, VMXON
 ;; 2) LGDT, SGDT, LIDT, SIDT, LLDT, SLDT, LTR, STR
@@ -198,7 +198,7 @@ struc TASK_SWITCH_INFO
         .GuestIdtLimit          RESD            1
 
         ;;
-        ;; NewTask TSS 的地址值（线性地址）
+        ;; NewTask TSS 的地址值(线性地址)
         ;;
         .NewTaskTssBase         RESD            1
 endstruc
@@ -326,11 +326,11 @@ struc IO_INSTRUCTION_INFO
         .InstructionLength      RESD            1               ;; 指令长度
 
         ;;
-        ;; 如果由 INS/OUTS 引发 VM-exit 时：
+        ;; 如果由 INS/OUTS 引发 VM-exit 时: 
         ;; 1) 记录 ES:EDI 或者 DS:ESI 线性地址！
         ;; 2) 记录 address size
         ;; 3) 记录 segment
-        ;; 4) 记录 count（存在时）
+        ;; 4) 记录 count(存在时)
         ;;
         .LinearAddress          RESQ            1
         .AddressSize            RESD            1

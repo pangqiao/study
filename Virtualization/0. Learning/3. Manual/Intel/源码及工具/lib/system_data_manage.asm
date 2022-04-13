@@ -9,28 +9,28 @@
 
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 ; 物理地址空间说明:
-;; 1) 8000h - FFFFh：setup 模块使用
-;; 2) 1_0000h - 1_FFFFh：保留未用
-;; 3) 2_0000h - 2_FFFFh：preccted/long 模块使用
-;; 4) 10_0000h - 11_FFFFh：PCB 区域（共128K）
-;; 5) 12_0000h - 14_FFFFh：SDA 区域（共192K）
-;; 6) 20_0000h - 9F_FFFFh：Legacy 模式下的 PT 区域（共8M）
-;; 7) 200_0000h - 21F_FFFFh：Longmode 下的 PPT 区域（共2M）
-;; 8) 220_0000h - 2FF_FFFFh：PT pool 区域（共14M）
-;; 9) 101_0000h ~ ：User Stack Base 区域
-;; 10) 104_0000h ~：Kernel Stack Base 区域
-;; 11) 300_1000h ~：User Pool Base 区域
-;; 12) 320_0000h ~：Kernel Pool Base 区域
+;; 1) 8000h - FFFFh: setup 模块使用
+;; 2) 1_0000h - 1_FFFFh: 保留未用
+;; 3) 2_0000h - 2_FFFFh: preccted/long 模块使用
+;; 4) 10_0000h - 11_FFFFh: PCB 区域(共128K)
+;; 5) 12_0000h - 14_FFFFh: SDA 区域(共192K)
+;; 6) 20_0000h - 9F_FFFFh: Legacy 模式下的 PT 区域(共8M)
+;; 7) 200_0000h - 21F_FFFFh: Longmode 下的 PPT 区域(共2M)
+;; 8) 220_0000h - 2FF_FFFFh: PT pool 区域(共14M)
+;; 9) 101_0000h ~ : User Stack Base 区域
+;; 10) 104_0000h ~: Kernel Stack Base 区域
+;; 11) 300_1000h ~: User Pool Base 区域
+;; 12) 320_0000h ~: Kernel Pool Base 区域
 ;; 13) A0_0000h ~ BF_FFFFh : EPT PPT 区域
-;; 14) C0_0000h ~ FF_FFFFh ：保留未用
+;; 14) C0_0000h ~ FF_FFFFh : 保留未用
 ;;
 ;;
 ;; 假设物理内存为256M，地址从 0000_0000h - 0FFF_FFFFh
 ;;
-;; VM 内存 domain 分配说明：
+;; VM 内存 domain 分配说明: 
 ;; 1) VM 0: 0000_0000h - 087F_FFFFh
 ;; 2) VM 1: 0880_0000 - 08FF_FFFFh (8M)
-;; 3) VM 2: 0900_0000 - 097F_FFFFh (8M）
+;; 3) VM 2: 0900_0000 - 097F_FFFFh (8M)
 ;; 4) VM 3: 0980_0000 - 09FF_FFFFh (8M)
 ;; 5) VM 4: 0A00_0000 - 0A7F_FFFFh (8M)
 ;; 6) VM 5: 0A80_0000 - 0AFF_FFFFh (8M)
@@ -40,36 +40,36 @@
 ;; 10) ... ...
 ;;
 
-;; 虚拟地址空间说明：
-;; 一. legacy 模式下：
-;; 1) 8000h - FFFFh：setup 模块使用
-;; 2) 1_0000h - 1_FFFFh：保留未用
-;; 3) 2_0000h - 2_FFFFh：protected/long 模块使用
-;; 4) 8000_0000h - 8001_FFFFh：PCB 区域（映射到 10_0000h - 11_FFFFh）
-;; 5) 8002_0000h - 8003_FFFFh：SDA 区域（映射到 12_0000h - 13_FFFFh）
-;; 6) 7FE0_0000h ~：User Stack Base 区域
-;; 7) FFE0_0000h ~：Kernel Stack Base 区域
-;; 8) 8320_0000h ~：Kernel Pool Base 区域
-;; 9) 7300_1000h ~：User Pool Base  区域
-;; 10) C000_0000h - C07F_FFFFh：PT 表区域（8M）
-;; 11) C0A0_0000h - C0BF_FFFFh：EPT PPT 区域（2M)
-;; 12) 8800_0000h ~ 8xxxx_xxxx：VM domain 区域
+;; 虚拟地址空间说明: 
+;; 一. legacy 模式下: 
+;; 1) 8000h - FFFFh: setup 模块使用
+;; 2) 1_0000h - 1_FFFFh: 保留未用
+;; 3) 2_0000h - 2_FFFFh: protected/long 模块使用
+;; 4) 8000_0000h - 8001_FFFFh: PCB 区域(映射到 10_0000h - 11_FFFFh)
+;; 5) 8002_0000h - 8003_FFFFh: SDA 区域(映射到 12_0000h - 13_FFFFh)
+;; 6) 7FE0_0000h ~: User Stack Base 区域
+;; 7) FFE0_0000h ~: Kernel Stack Base 区域
+;; 8) 8320_0000h ~: Kernel Pool Base 区域
+;; 9) 7300_1000h ~: User Pool Base  区域
+;; 10) C000_0000h - C07F_FFFFh: PT 表区域(8M)
+;; 11) C0A0_0000h - C0BF_FFFFh: EPT PPT 区域(2M)
+;; 12) 8800_0000h ~ 8xxxx_xxxx: VM domain 区域
 ;;
-;; 二. longmode 下：
-;; 1) 8000h - FFFFh：setup 模块使用
-;; 2) 1_0000h - 1_FFFFh：保留未用
-;; 3) 2_0000h - 2_FFFFh：long 模块使用
-;; 4) FFFF_F800_8000_0000h ~：PCB 区域
-;; 5) FFFF_F800_8002_0000h ~：SDA 区域
-;; 6) 7FE0_0000h ~：User Stack Base 区域
-;; 7) FFFF_FF80_FFE0_0000h ~：Kernel Stack Base 区域
-;; 8) FFFF_F800_8320_0000h ~：Kernel Pool Base 区域
-;; 9) 7300_1000h ~：User Pool Base  区域
-;; 10) FFFF_F6FB_7DA0_0000h ~：PPT 表区域（8M）
-;; 11) FFFF_F800_8220_0000h ~：PT Pool 区域
-;; 12) FFFF_F800_8020_0000h ~：备用 PT Pool 区域
-;; 13) FFFF_F800_C0A0_0000h ~ FFFF_F800_C0BF_FFFFh：EPT PXT 区域（2M）
-;; 14) FFFF_F800_8800_0000h ~ FFFF_F800_8xxx_xxxx：VM domain 区域
+;; 二. longmode 下: 
+;; 1) 8000h - FFFFh: setup 模块使用
+;; 2) 1_0000h - 1_FFFFh: 保留未用
+;; 3) 2_0000h - 2_FFFFh: long 模块使用
+;; 4) FFFF_F800_8000_0000h ~: PCB 区域
+;; 5) FFFF_F800_8002_0000h ~: SDA 区域
+;; 6) 7FE0_0000h ~: User Stack Base 区域
+;; 7) FFFF_FF80_FFE0_0000h ~: Kernel Stack Base 区域
+;; 8) FFFF_F800_8320_0000h ~: Kernel Pool Base 区域
+;; 9) 7300_1000h ~: User Pool Base  区域
+;; 10) FFFF_F6FB_7DA0_0000h ~: PPT 表区域(8M)
+;; 11) FFFF_F800_8220_0000h ~: PT Pool 区域
+;; 12) FFFF_F800_8020_0000h ~: 备用 PT Pool 区域
+;; 13) FFFF_F800_C0A0_0000h ~ FFFF_F800_C0BF_FFFFh: EPT PXT 区域(2M)
+;; 14) FFFF_F800_8800_0000h ~ FFFF_F800_8xxx_xxxx: VM domain 区域
 ;;
 ;;
 ;$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -96,11 +96,11 @@ PCB_PHYSICAL_POOL       EQU     100000h
 
 ;;
 ;; PCB 与 SDA 虚拟基址
-;; 在 32 位下：
+;; 在 32 位下: 
 ;; 1) PCB_BASE  =  8000_0000h
 ;; 2) SDA_BASE  =  8002_0000h (PCB_BASE + PCB_POOL_SIZE)
 ;;
-;; 在 64 位下：
+;; 在 64 位下: 
 ;; 1) PCB_BASE64  = ffff_f800_8000_0000h
 ;; 2) SDA_BASE64  = ffff_f800_8002_0000h (PCB_BASE64 + PCB_POOL_SIZE)
 ;;
@@ -129,7 +129,7 @@ SDA_PHYSICAL_BASE       EQU     (PCB_PHYSICAL_POOL + PCB_POOL_SIZE)
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       通过 apic 的开启，否则处理器进入 HLT 状态
 ;---------------------------------------------------
 init_apic:
@@ -175,7 +175,7 @@ init_apic.error:
 ;       edx:eax - 64 位描述符
 ; output:
 ;       eax - 返回 selector 值
-; 描述：
+; 描述: 
 ;       1) 添加一个描述符，并更新 GDTR 
 ;-------------------------------------------------------------------
 append_gdt_descriptor:
@@ -421,7 +421,7 @@ clear_iomap_bit:
 ; output:
 ;       none
 ;
-; 注意：
+; 注意: 
 ;       此函数在开启 paging 前调用
 ;-------------------------------------------------------------------
 init_processor_basic_info:
@@ -461,7 +461,7 @@ init_processor_basic_info:
         mov ebx, [gs: PCB.CpuidLeaf01Ebx]
         mov ecx, ebx
         and ecx, 0FF00h
-        shr ecx, 5                                      ; cache line = EBX[15:08] * 8（bytes)
+        shr ecx, 5                                      ; cache line = EBX[15:08] * 8(bytes)
         mov [gs: PCB.CacheLineSize], ecx       
         mov ecx, ebx
         shr ecx, 16
@@ -546,7 +546,7 @@ init_processor_basic_info.@2:
         setc BYTE [gs: PCB.IsBsp]
         and eax, 0FFFFF000h
         mov [gs: PCB.LapicPhysicalBase], eax            ; local APIC 物理基址
-        mov DWORD [gs: PCB.LapicBase], LAPIC_BASE       ; local APIC 基址（virutal address）
+        mov DWORD [gs: PCB.LapicBase], LAPIC_BASE       ; local APIC 基址(virutal address)
         mov ecx, [gs: PCB.ProcessorIndex]
         mov edx, 01000000h
         shl edx, cl                                     ; 生成处理器逻辑 ID
@@ -693,7 +693,7 @@ get_vendor_id:
         mov eax, VENDOR_UNKNOWN
         
         ;;
-        ;; 检查：
+        ;; 检查: 
         ;; 1) Intel: "GenuineIntel"
         ;; 2) AMD: "AuthenticAMD"
         ;;
@@ -725,7 +725,7 @@ get_vendor_id.unknown:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 读取处理器 CPUID 信息
 ;-------------------------------------------------------------------
 update_cpuid_info:
@@ -770,13 +770,13 @@ update_cpuid_info.@0:
 ; get_maxphyaddr_select_mask(): 计数出 MAXPHYADDR 值的 SELECT MASK
 ; output:
 ;       edx:eax - maxphyaddr select mask
-; 描述：
+; 描述: 
 ;       select mask 值用于取得 MAXPHYADDR 对应的物理地址值
-; 例如：
-;       MAXPHYADDR = 32 时：select mask = 00000000_FFFFFFFFh
+; 例如: 
+;       MAXPHYADDR = 32 时: select mask = 00000000_FFFFFFFFh
 ;       MAXPHYADDR = 36 时: select mask = 0000000F_FFFFFFFFh
 ;       MAXPHYADDR = 40 时: select mask = 000000FF_FFFFFFFFh
-;       MAXPHYADDR = 52 时：select mask = 000FFFFF_FFFFFFFFh
+;       MAXPHYADDR = 52 时: select mask = 000FFFFF_FFFFFFFFh
 ;-----------------------------------------------------------------
 get_maxphyaddr_select_mask:
         push ecx
@@ -784,7 +784,7 @@ get_maxphyaddr_select_mask:
         xor eax, eax
         xor edx, edx
         and ecx, 1Fh                                    ; 取除 32 的余数
-        dec eax                                         ; eax = -1（FFFFFFFFh)
+        dec eax                                         ; eax = -1(FFFFFFFFh)
         shld edx, eax, cl                               ; edx = n1
         pop ecx
         ret
@@ -829,7 +829,7 @@ get_sse_level.done:
 ;---------------------------------------------------------------------
 ; get_display_family_model(): 获得 DisplayFamily 与 DisplayModel
 ; input:
-;       esi - processor version（from CPUID.01H）
+;       esi - processor version(from CPUID.01H)
 ; output:
 ;       ax - DisplayFamily_DisplayModel
 ;--------------------------------------------------------------------
@@ -881,7 +881,7 @@ get_display_family_model.done:
 ;       none
 ; output:
 ;       1 - yes, 0 - no
-; 描述：
+; 描述: 
 ;       检查处理器是否支持多线程
 ;-----------------------------------------------------------------------
 check_multi_threading_support:
@@ -908,8 +908,8 @@ check_multi_threading_support.done:
 ;       none
 ; output:
 ;       none
-; 描述：
-;       获取处理器 Cache 信息（在开启 paging 前调用）
+; 描述: 
+;       获取处理器 Cache 信息(在开启 paging 前调用)
 ;-----------------------------------------------------------------------
 update_cache_info:
         push ecx
@@ -1058,7 +1058,7 @@ get_cache_size:
 ;       none
 ; 描述:
 ;       1) 计数处理器频率
-; 权限说明：
+; 权限说明: 
 ;       1) 该函数来自 Intel 的 CPUFREQ.ASM 代码
 
 ; Filename: CPUFREQ.ASM
@@ -1146,13 +1146,13 @@ init_processor_frequency.@0:
         
         ;;
         ;; 设置 timer 中断延时计数值
-        ;; 1) 设置 5 秒的延时值：18.2 * 5 = 91（PIT 每秒中断18.2次，5秒内产生91次中断）
+        ;; 1) 设置 5 秒的延时值: 18.2 * 5 = 91(PIT 每秒中断18.2次，5秒内产生91次中断)
         ;; 2) 增加 1 次的延时
         ;;
         
         ;;
-        ;; 修改：
-        ;; 1）现在修改为 1 秒的延时值：约为 19 次
+        ;; 修改: 
+        ;; 1)现在修改为 1 秒的延时值: 约为 19 次
         ;;
         add ebx, INTERVAL_IN_TICKS + 1
         
@@ -1210,7 +1210,7 @@ init_processor_frequency.@2:
         
         ;;
         ;; 设置 timer 中断延时计数值
-        ;; 1) 设置 5 秒的延时值：18.2 * 5 = 91（PIT 每秒中断18.2次）
+        ;; 1) 设置 5 秒的延时值: 18.2 * 5 = 91(PIT 每秒中断18.2次)
         ;; 2) 增加 1 次的延时
         ;;
         add ebx, INTERVAL_IN_TICKS + 1
@@ -1231,7 +1231,7 @@ init_processor_frequency.@3:
 init_processor_frequency.next:       
         ;;
         ;; 下面计算 CPU 频率
-        ;; 1) MHz 单位值：54945 = (1 / 18.2) * 1,000,000，即：55ms产生一次中断，100万次中断需要54945秒
+        ;; 1) MHz 单位值: 54945 = (1 / 18.2) * 1,000,000，即: 55ms产生一次中断，100万次中断需要54945秒
         ;; 2) tick_interval = 54945 * INTERVAL_IN_TICKS
         ;; 3) CpuFreq = TSC / tick_interval
         ;;
@@ -1353,7 +1353,7 @@ useNearest50Mhz:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 读取 VMX 相关信息
 ;       2) 在 stage1 阶段调用
 ;------------------------------------------------------
@@ -1428,7 +1428,7 @@ get_vmx_global_data.@5:
         ;;
         ;; ### step 5: 读取 4 个 VMX TRUE capability 寄存器 ###
         ;;
-        ;; 如果 bit55 of IA32_VMX_BASIC 为 1 时, 支持 4 个 capability 寄存器：
+        ;; 如果 bit55 of IA32_VMX_BASIC 为 1 时, 支持 4 个 capability 寄存器: 
         ;; 1) IA32_VMX_TRUE_PINBASED_CTLS  = 48Dh
         ;; 2) IA32_VMX_TRUE_PROCBASED_CTLS = 48Eh
         ;; 3) IA32_VMX_TRUE_EXIT_CTLS      = 48Fh   
@@ -1466,7 +1466,7 @@ get_vmx_global_data.@5:
                 
 get_vmx_global_data.@6:
         ;;
-        ;; ### step 6: 设置 CR0 与 CR4 的 mask 值（固定为1值）
+        ;; ### step 6: 设置 CR0 与 CR4 的 mask 值(固定为1值)
         ;; 1) Cr0FixedMask = Cr0Fixed0 & Cr0Fixed1
         ;; 2) Cr4FixedMask = Cr4Fixed0 & Cr4Fxied1
         ;;
@@ -1484,7 +1484,7 @@ get_vmx_global_data.@6:
         mov [gs: PCB.Cr4FixedMask + 4], edx
         
         ;;
-        ;; 关于 IA32_FEATURE_CONTROL.lock 位：
+        ;; 关于 IA32_FEATURE_CONTROL.lock 位: 
         ;; 1) 当 lock = 0 时，执行 VMXON 产生 #GP 异常
         ;; 2) 当 lock = 1 时，写 IA32_FEATURE_CONTROL 寄存器产生 #GP 异常
         ;;
@@ -1498,9 +1498,9 @@ get_vmx_global_data.@6:
         bts eax, 0                                                      ; 检查 lock 位，并上锁
         jc get_vmx_global_data.@7
         
-        ;; lock 未上锁时：
-        ;; 1) 对 lock 置位（锁上 IA32_FEATURE_CONTROL 寄存器）
-        ;; 2) 对 bit 2 置位（启用 enable VMXON outside SMX）
+        ;; lock 未上锁时: 
+        ;; 1) 对 lock 置位(锁上 IA32_FEATURE_CONTROL 寄存器)
+        ;; 2) 对 bit 2 置位(启用 enable VMXON outside SMX)
         ;; 3) 如果支持 enable VMXON inside SMX 时，对 bit 1 置位!
         ;; 
         mov esi, 6                                                      ; enable VMX outside SMX = 1, enable VMX inside SMX = 1
@@ -1526,12 +1526,12 @@ get_vmx_global_data.@7:
         ;; ### step 7: 设置 Cr4FixedMask 的 CR4.SMXE 位 ###
         ;;
         ;; 再次读取 IA32_FEATURE_CONTROL 寄存器
-        ;; 1) 检查 enable VMX inside SMX 位（bit1）
-        ;;    1.1) 如果是 inside SMX（即 bit1 = 1），则设置 CR4FixedMask 位的相应位
+        ;; 1) 检查 enable VMX inside SMX 位(bit1)
+        ;;    1.1) 如果是 inside SMX(即 bit1 = 1)，则设置 CR4FixedMask 位的相应位
         ;; 
         rdmsr
-        and eax, 2                                                      ; 取 enable VMX inside SMX 位的值（bit1）
-        shl eax, 13                                                     ; 对应在 CR4 寄存器的 bit 14 位（即 CR4.SMXE 位）
+        and eax, 2                                                      ; 取 enable VMX inside SMX 位的值(bit1)
+        shl eax, 13                                                     ; 对应在 CR4 寄存器的 bit 14 位(即 CR4.SMXE 位)
         or DWORD [ebp + PCB.Cr4FixedMask], eax                          ; 在 Cr4FixedMask 里设置 enable VMX inside SMX 位的值　        
         
 %endif
@@ -1573,7 +1573,7 @@ get_vmx_global_data.done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 开启 CR4.PAE
 ;---------------------------------------------
 pae_enable:
@@ -1598,7 +1598,7 @@ pae_enable_done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 开启 XD 位
 ;-------------------------------------------------
 xd_page_enable:
@@ -1627,7 +1627,7 @@ xd_page_enable.done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 开启 SEMP 功能
 ;----------------------------------------------
 smep_enable:

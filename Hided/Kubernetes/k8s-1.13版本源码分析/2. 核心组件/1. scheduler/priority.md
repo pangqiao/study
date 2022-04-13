@@ -14,12 +14,12 @@ priorityList, err := PrioritizeNodes(pod, g.cachedNodeInfoMap, metaPrioritiesInt
 
 `PrioritizeNodes`要做的事情是给已经通过predicate的nodes赋上一个分值，从而抉出一个最优node用于运行当前pod. 第一次看priority可能会一脸蒙，和predicate中的逻辑不太一样；大伙得耐下性子多思考，实在有障碍也可以先不求甚解，整体过完后再二刷代码，再不行三刷，总会大彻大悟的！
 
-从注释中可以找到关于**PrioritizeNodes**的原理(`pkg/scheduler/core/generic_scheduler.go:624`)：
+从注释中可以找到关于**PrioritizeNodes**的原理(`pkg/scheduler/core/generic_scheduler.go:624`): 
 
 > - PrioritizeNodes通过并发调用一个个priority函数来给node排优先级。每一个priority函数会给一个1-10之间的分值，0最低10最高。
 > - 每一个priority函数可以有自己的权重，单个函数返回的分值*权重后得到一个加权分值，最终所有的加权分值加在一起就是这个node的最终分值。
 
-然后我们先函数签名入手：
+然后我们先函数签名入手: 
 
 !FILENAME pkg/scheduler/core/generic_scheduler.go:624
 
@@ -34,7 +34,7 @@ func PrioritizeNodes(
 ) (schedulerapi.HostPriorityList, error) 
 ```
 
-形参定义和返回值：
+形参定义和返回值: 
 
 - `pod *v1.Pod*` // pod就不用说了；
 - `*nodeNameToInfo map[string]*schedulercache.NodeInfo` // 这个也不需要讲，字面意思代表一切；
@@ -43,7 +43,7 @@ func PrioritizeNodes(
 - `nodes []*v1.Node` // node集合，不需要解释了；
 - `extenders []algorithm.SchedulerExtender` // extender逻辑放到后面单独讲。
 
-meta实参长这个样子：
+meta实参长这个样子: 
 
 ![1552984658572](image/priority/1552984658572.png)
 
@@ -59,7 +59,7 @@ type HostPriority struct {
 type HostPriorityList []HostPriority
 ```
 
-着重分析一下这2个type，虽然很简单，还是有必要啰嗦一下，必须记在心里。**HostPriority**这个struct的属性是*Host*和*Score*，一个是string一个是int，所以很明显**HostPriority**所能够保存的信息是一个节点的名字和分值，再仔细一点说就是这个结构保存的是一个node在一个priority算法计算后所得到的结果；然后看**HostPriorityList**类型，这个类型是上一个类型的“集合”，集合表达的是一个node多个算法还是多个node一个算法呢？稍微思考一下可以知道**HostPriorityList**中存的是多个Host和Score的组合，所以**HostPriorityList**这个结构是要保存一个算法作用于所有node之后，得到的所有node的Score信息的。（这里我们先理解成一个算法的结果，作为函数返回值这里肯定是要保留所有算法作用后的最终node的Score，所以函数后半部分肯定有combine分值的步骤。）
+着重分析一下这2个type，虽然很简单，还是有必要啰嗦一下，必须记在心里。**HostPriority**这个struct的属性是*Host*和*Score*，一个是string一个是int，所以很明显**HostPriority**所能够保存的信息是一个节点的名字和分值，再仔细一点说就是这个结构保存的是一个node在一个priority算法计算后所得到的结果；然后看**HostPriorityList**类型，这个类型是上一个类型的“集合”，集合表达的是一个node多个算法还是多个node一个算法呢？稍微思考一下可以知道**HostPriorityList**中存的是多个Host和Score的组合，所以**HostPriorityList**这个结构是要保存一个算法作用于所有node之后，得到的所有node的Score信息的。(这里我们先理解成一个算法的结果，作为函数返回值这里肯定是要保留所有算法作用后的最终node的Score，所以函数后半部分肯定有combine分值的步骤。)
 
 ## PrioritizeNodes整体流程
 
@@ -73,12 +73,12 @@ PrioritizeNodes()函数开头的逻辑很简单，我们先从第一行看到res
 
 ```go
 if len(priorityConfigs) == 0 && len(extenders) == 0 {
-    // 这个if很明显是处理特殊场景的，就是优选算法一个都没有配置（extenders同样没有配置）的时候怎么做；
+    // 这个if很明显是处理特殊场景的，就是优选算法一个都没有配置(extenders同样没有配置)的时候怎么做；
     // 这个result是要当作返回值的，HostPriorityList类型前面唠叨了很多了，大家得心里有数；
    result := make(schedulerapi.HostPriorityList, 0, len(nodes))
    for i := range nodes {
        // 这一行代码是唯一的“逻辑了”，下面直到for结束都是简单代码；所以我们看一下EqualPriorityMap
-       // 函数的作用就行了。这里我不贴代码，这个函数很短，作用就是设置每个node的Score相同（都为1）
+       // 函数的作用就行了。这里我不贴代码，这个函数很短，作用就是设置每个node的Score相同(都为1)
        // hostPriority的类型也就是schedulerapi.HostPriority类型，再次强调这个类型是要烂熟于心的；
       hostPriority, err := EqualPriorityMap(pod, meta, nodeNameToInfo[nodes[i].Name])
       if err != nil {
@@ -111,13 +111,13 @@ results := make([]schedulerapi.HostPriorityList, len(priorityConfigs), len(prior
 
 ### Old Priority Function
 
-我们既然讲到“老式”，后面肯定有对应的“新式”。虽然这种函数已经DEPRECATED了，不过对于我们学习掌握优选流程还是很有帮助的。默认的优选算法里其实也只有1个是这在old形式的了：
+我们既然讲到“老式”，后面肯定有对应的“新式”。虽然这种函数已经DEPRECATED了，不过对于我们学习掌握优选流程还是很有帮助的。默认的优选算法里其实也只有1个是这在old形式的了: 
 
 ![1552985082506](image/priority/1552985082506.png)
 
-贴这块代码之前我们先关注一下多次出现的`priorityConfigs`这个变量的类型：
+贴这块代码之前我们先关注一下多次出现的`priorityConfigs`这个变量的类型: 
 
-函数形参中有写到：`priorityConfigs []algorithm.PriorityConfig`，所以我们直接看**PriorityConfig**是什么类型：
+函数形参中有写到: `priorityConfigs []algorithm.PriorityConfig`，所以我们直接看**PriorityConfig**是什么类型: 
 
 !FILENAME pkg/scheduler/algorithm/types.go:62
 
@@ -134,7 +134,7 @@ type PriorityConfig struct {
 }
 ```
 
-**PriorityConfig**中有一个Name，一个Weight，很好猜到意思，名字和权重嘛。剩下的Map、Reduce和Function目测代表的就是优选函数的新旧两种表达方式了。我们先看旧的Function属性的类型PriorityFunction是什么：
+**PriorityConfig**中有一个Name，一个Weight，很好猜到意思，名字和权重嘛。剩下的Map、Reduce和Function目测代表的就是优选函数的新旧两种表达方式了。我们先看旧的Function属性的类型PriorityFunction是什么: 
 
 !FILENAME pkg/scheduler/algorithm/types.go:59
 
@@ -144,7 +144,7 @@ type PriorityFunction func(pod *v1.Pod, nodeNameToInfo map[string]*schedulercach
 
 很明显这个类型代表了一个priority函数，入参是pod、nodeNameToInfo和nodes，返回值是HostPriorityList，也就是我们前面提到的1个priority函数作用于每个node后得到了Score信息，存结果的结构就是这个HostPriorityList；看起来很和谐～
 
-然后讲回**PrioritizeNodes**过程：
+然后讲回**PrioritizeNodes**过程: 
 
 !FILENAME pkg/scheduler/core/generic_scheduler.go:661
 
@@ -176,11 +176,11 @@ for i := range priorityConfigs {
 
 ### Map-Reduce
 
-关于map-reduce思想我就不在这里赘述了，大数据行业很流行的一个词汇，百度一下（如果你能够google，自然更好咯）可以找到一大堆介绍的文章。
+关于map-reduce思想我就不在这里赘述了，大数据行业很流行的一个词汇，百度一下(如果你能够google，自然更好咯)可以找到一大堆介绍的文章。
 
-简单说map-reduce就是：Map是映射，Reduce是归约；map是统计一本书中的一页出现了多少次k8s这个词，reduce是将这些map结果汇总在一起得到最终结果。（map一般都是将一个算法作用于一堆数据集的每一个元素，得到一个结果集，reduce有各种形式，可以是累加这些结果，或者是对这个结果集做其他复杂的f(x)操作。
+简单说map-reduce就是: Map是映射，Reduce是归约；map是统计一本书中的一页出现了多少次k8s这个词，reduce是将这些map结果汇总在一起得到最终结果。(map一般都是将一个算法作用于一堆数据集的每一个元素，得到一个结果集，reduce有各种形式，可以是累加这些结果，或者是对这个结果集做其他复杂的f(x)操作。
 
-看看在Scheduler里面是怎么用Map-Reduce的吧：
+看看在Scheduler里面是怎么用Map-Reduce的吧: 
 
 ```go
 // 这个并发逻辑之前介绍过了，我们直接看ParallelizeUntil的最后一个参数就行，这里直接写了一个匿名函数；
@@ -236,7 +236,7 @@ if len(errs) != 0 {
 
 ### Combine Scores
 
-这块的代码很简单，我们先抛开extender的逻辑，剩下的代码如下：
+这块的代码很简单，我们先抛开extender的逻辑，剩下的代码如下: 
 
 ```go
 // Summarize all scores.
@@ -266,7 +266,7 @@ return result, nil
 
 这个算法做的是Pod间亲和性优选，也就是亲和pod越多的节点分值越高，反亲和pod越多分值越低。
 
-我们撇开具体的亲和性计算规则，从优选函数的形式上看一下这段代码的逻辑：
+我们撇开具体的亲和性计算规则，从优选函数的形式上看一下这段代码的逻辑: 
 
 !FILENAME pkg/scheduler/algorithm/priorities/interpod_affinity.go:119
 
@@ -312,7 +312,7 @@ func (ipa *InterPodAffinity) CalculateInterPodAffinityPriority(pod *v1.Pod, node
 
 ### CalculateNodeAffinityPriorityMap(Map)
 
-这个算法和上一个类似，上一个是Pod的Affinity，这个是Node的Affinity；我们来看代码：
+这个算法和上一个类似，上一个是Pod的Affinity，这个是Node的Affinity；我们来看代码: 
 
 !FILENAME pkg/scheduler/algorithm/priorities/node_affinity.go:34
 
@@ -393,7 +393,7 @@ func (s *ServiceAntiAffinity) CalculateAntiAffinityPriorityMap(pod *v1.Pod, meta
 
 ### CalculateNodeAffinityPriorityReduce(Reduce)
 
-和上面这个Map对应的Reduce函数其实没有单独实现，通过`NormalizeReduce`函数做了一个通用的Reduce处理：
+和上面这个Map对应的Reduce函数其实没有单独实现，通过`NormalizeReduce`函数做了一个通用的Reduce处理: 
 
 !FILENAME pkg/scheduler/algorithm/priorities/node_affinity.go:77
 
@@ -431,7 +431,7 @@ func NormalizeReduce(maxPriority int, reverse bool) algorithm.PriorityReduceFunc
 
 		for i := range result {
 			score := result[i].Score
-            // 举个例子：10*(5/20)
+            // 举个例子: 10*(5/20)
 			score = maxPriority * score / maxCount
 			if reverse {
                 // 如果score是3，得到7；如果score是4，得到6，结果反转；
@@ -447,7 +447,7 @@ func NormalizeReduce(maxPriority int, reverse bool) algorithm.PriorityReduceFunc
 
 ### 小结
 
-- Function：一个算法一次性计算出所有node的Score，这个Score的范围是规定的[0-10]；
-- Map-Reduce：一个Map算法计算1个node的Score，这个Score可以灵活处理，可能是20，可能是-3；Map过程并发进行；最终得到的结果result通过Reduce归约，将这个算法对应的所有node的分值归约为[0-10]；
+- Function: 一个算法一次性计算出所有node的Score，这个Score的范围是规定的[0-10]；
+- Map-Reduce: 一个Map算法计算1个node的Score，这个Score可以灵活处理，可能是20，可能是-3；Map过程并发进行；最终得到的结果result通过Reduce归约，将这个算法对应的所有node的分值归约为[0-10]；
 
 本节有几张图是goland debug的截图，我们目前还没有提到如何debug；不过本节内容的阅读基本是不影响的。下一节源码分析内容发出来前我会在“环境准备”这一章中增加如何开始debug的内容，大家可以选择开始debug的时机。

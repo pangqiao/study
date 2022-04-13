@@ -106,7 +106,7 @@
 ///08: 按照LSB格式把一个Word转化为两个字节
 #define FLOPW(ray,val) (ray)[0] = ((val)/256); (ray)[1] = ((val) & 0xFF)
 
-///09: 得到一个变量的地址（word宽度）
+///09: 得到一个变量的地址(word宽度)
 #define B_PTR(var)  ((byte *) (void *) &(var))
 #define W_PTR(var)  ((word *) (void *) &(var))
 

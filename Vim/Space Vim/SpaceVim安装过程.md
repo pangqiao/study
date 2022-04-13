@@ -39,7 +39,7 @@ cd vim8/src
 
 其中要是没有lua.h文件, 需要源码重装 https://blog.csdn.net/feinifi/article/details/80078721 , 如果没有安装readline依赖包
 
-lua解决办法：
+lua解决办法: 
 
 ```
 yum install libtermcap-devel ncurses-devel libevent-devel readline-devel -y
@@ -100,7 +100,7 @@ curl -sLf https://spacevim.org/cn/install.sh | bash -s -- -h
 
 7. 安装Powerline font
 
-SpaceVim 默认启用了Powerline 字体，默认的的字体文件是：[SourceCodePro Nerd Font Mono](https://github.com/ryanoasis/nerd-fonts/releases/download/v2.0.0/SourceCodePro.zip), 推荐个人也使用这个
+SpaceVim 默认启用了Powerline 字体，默认的的字体文件是: [SourceCodePro Nerd Font Mono](https://github.com/ryanoasis/nerd-fonts/releases/download/v2.0.0/SourceCodePro.zip), 推荐个人也使用这个
 
 当然如果终端不识别这个, 可以使用 Source Code Pro for Powerline或者DejaVu Sans Mono for PowerLine 字体
 

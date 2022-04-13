@@ -21,8 +21,8 @@ dump_x87fpu:
 	ret
 
 ;------------------------------------------------
-; dump_x87env()：打印 x87 FPU 环境值
-; 描述：
+; dump_x87env(): 打印 x87 FPU 环境值
+; 描述: 
 ;	使用 protected 模式 32位 operand size 形式
 ;-------------------------------------------------
 dump_x87env:
@@ -124,19 +124,19 @@ dump_data_register_loop:
 
 ; *** 下面代码计算 stack 寄存器指针信息 ***
 ;;  
-;; 计数方式是：offset = TOP - 物理寄存器编号
-;              ST(i) = |8 - offset| （8-offset的绝对值）
+;; 计数方式是: offset = TOP - 物理寄存器编号
+;              ST(i) = |8 - offset| (8-offset的绝对值)
 ;
-; 示例：当 TOP = 3 时，那么 R7寄存器的 ST(i)值是：
+; 示例: 当 TOP = 3 时, 那么 R7寄存器的 ST(i)值是: 
 ;	offset = 3 - 7 = -4
 ;	8 - (-4) = 12 = 00001100B
-;	12 & 7 = 4（即：R7 寄存器为 ST(4)
+;	12 & 7 = 4(即: R7 寄存器为 ST(4)
 ;	
 	mov ecx, 8
 	mov eax, [top_value]
 	sub eax, ebx			; offset = TOP - R 的编号
 	sub ecx, eax			; 8 - offset
-	and ecx, 0x7			; 求 8 - offset 的绝对值（即去掉符号位）
+	and ecx, 0x7			; 求 8 - offset 的绝对值(即去掉符号位)
 	mov esi, [st_msg_set + ecx * 4] ; 得到正确的 ST(i) 信息
 	call puts
 
@@ -174,7 +174,7 @@ do_get_data_register_value:
 	mov edx, eax
 	mov ecx, 8
 
-; 使用 no-wait 版本，在 x87 FPU 异常 handler 里可以使用
+; 使用 no-wait 版本, 在 x87 FPU 异常 handler 里可以使用
 	fnstenv [x87env32]			; 保存原环境信息
         fnclex                                  ; 清异常标志位
 get_data_register_value_loop:
@@ -227,7 +227,7 @@ top_msg		db 'TOP:', 0
 condition_msg	db ' condition:', 0
 status_value	dd 0
 do_dump_x87_status:
-;;; 注意：使用 no-wait 版本的 FSTSW 指令，允许在 floating-point excepiton handler 里使用
+;;; 注意: 使用 no-wait 版本的 FSTSW 指令, 允许在 floating-point excepiton handler 里使用
 ;;;
 	fnstsw WORD [status_value]
 	mov esi, status_msg
@@ -289,7 +289,7 @@ opcode		dw 0
 op_offset	dd 0
 op_selector	dd 0
 
-;; FSAVE/FNSAVE，FRSTOR 指令的附加映像
+;; FSAVE/FNSAVE, FRSTOR 指令的附加映像
 ;; 定义 8 个 80 位的内存地址保存 data 寄存器值
 r0_value	dt 0.0
 r1_value	dt 0.0

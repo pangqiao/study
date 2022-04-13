@@ -288,9 +288,9 @@ IORT: IO Remapping Table, DEN0049B, http://infocenter.arm.com/help/topic/com.arm
 
 requests 是 guest 往 request virtqueue 中添加的一堆小的 buffers. guest可以在 queue 中添加一批 requests, 并向设备发送通知(kick), 以便设备处理它们.
 
-virtio-iommu 设备管理来自一个或多个 endpoint 的 DMA 操作。它可以充当物理 IOMMU 的代理, 来管理分配给 guest 的设备; 也可以充当虚拟 IOMMU, 管理模拟设备和半虚设备。
+virtio-iommu 设备管理来自一个或多个 endpoint 的 DMA 操作. 它可以充当物理 IOMMU 的代理, 来管理分配给 guest 的设备; 也可以充当虚拟 IOMMU, 管理模拟设备和半虚设备. 
 
-驱动程序首先发现由 virtio-iommu 设备使用平台特定机制管理的 endpoints。然后，它会发送请求，为这些 endpoints 创建 address space 和 GVA-> GPA 的映射.
+驱动程序首先发现由 virtio-iommu 设备使用平台特定机制管理的 endpoints. 然后, 它会发送请求, 为这些 endpoints 创建 address space 和 GVA-> GPA 的映射.
 
 一个操作流程的例子:
 
@@ -538,9 +538,9 @@ VIRTIO_IOMMU_MAP_F_EXEC		0x4
 
 (virt_addr, size) 所定义的范围必须在 input_range 规定的范围内. (phys_addr, size) 定义的范围必须在 guest 物理地址空间内. 这包括了上下限制, 以及任何 carving 的 guest physical address 供 host 使用(例如 MSI doorbell). 主机使用本规范范围之外的固件机制设置了 guest 物理边界.
 
-（请注意, 此格式会阻止在单个请求（0x0 - 0xfff....ff） -> （0x0 - 0xfff...ff）, 因为它将得到一个 零大小. 希望允许 VIRTIO_IOMMU_F_BYPASS 消除发出此类请求的需要. 也不太可能符合前一段的物理范围限制）
+(请注意, 此格式会阻止在单个请求(0x0 - 0xfff....ff) -> (0x0 - 0xfff...ff), 因为它将得到一个 零大小. 希望允许 VIRTIO_IOMMU_F_BYPASS 消除发出此类请求的需要. 也不太可能符合前一段的物理范围限制)
 
-（另一个注意事项是 flags: 物理 IOMMU 不可能支持所有可能的 flag 组合. 例如, （W & !R） 或 （E & W） 可能无效. 我还没有花时间设计一个聪明的方法来宣传支持和隐含（例如 "W 暗示 R"）标志或组合, 但我至少可以尝试研究共同的模型. 请记住, 我们可能很快就会想要添加更多的标志, 如 privileged, device, transient, shared等, 无论这些将意味着什么）
+(另一个注意事项是 flags: 物理 IOMMU 不可能支持所有可能的 flag 组合. 例如, (W & !R) 或 (E & W) 可能无效. 我还没有花时间设计一个聪明的方法来宣传支持和隐含(例如 "W 暗示 R")标志或组合, 但我至少可以尝试研究共同的模型. 请记住, 我们可能很快就会想要添加更多的标志, 如 privileged, device, transient, shared等, 无论这些将意味着什么)
 
 只有 VIRTIO_IOMMU_F_MAP_UNMAP 协商成功这个请求才是可用的
 
@@ -563,7 +563,7 @@ struct virtio_iommu_req_unmap {
 
 unmap 一段用 VIRTIO_IOMMU_T_MAP 映射的地址范围. 这个 range 由virt_addr 和 size 定义, 必须完全覆盖通过 MAP 请求创建的一个或多个连续映射. 这个 range 覆盖的所有映射都已删除. 驱动程序不应发送覆盖未映射区域的请求.
 
-通过单个 MAP 请求, 我们定义了一个 mapping 作为一片虚拟区域. virt_addr 应与现有映射的开始地址完全匹配. range 的 end（virt_addr + size - 1）应与现有映射的 end 完全匹配. 设备必须拒绝仅作用于部分映射区域的所有请求. 如果请求的范围溢出映射区域之外, 则设备的行为未定义.
+通过单个 MAP 请求, 我们定义了一个 mapping 作为一片虚拟区域. virt_addr 应与现有映射的开始地址完全匹配. range 的 end(virt_addr + size - 1)应与现有映射的 end 完全匹配. 设备必须拒绝仅作用于部分映射区域的所有请求. 如果请求的范围溢出映射区域之外, 则设备的行为未定义.
 
 规则定义如下:
 
@@ -586,7 +586,7 @@ unmap 一段用 VIRTIO_IOMMU_T_MAP 映射的地址范围. 这个 range 由virt_a
 	unmap(0, 15) -> undefined
 ```
 
-（注意：这里 unmap 的语义与 VFIO 的 type1 v2 IOMMU API 兼容. 这样, 充当 guest 和 VFIO 之间调解的设备就不必保留内部mapping tree. 它们比 VFIO 更严格一些, 因为它们不允许 unmap 到映射区域之外. 溢出(spilling)目前是"undefined", 因为它在大多数情况下应该有效, 但我不知道是否值得在不只是将请求传输到 VFIO 的设备中增加复杂性. 拆分映射是不允许的, 但请参阅 3/3 中的轻松建议, 以获得更宽松的语义）
+(注意: 这里 unmap 的语义与 VFIO 的 type1 v2 IOMMU API 兼容. 这样, 充当 guest 和 VFIO 之间调解的设备就不必保留内部mapping tree. 它们比 VFIO 更严格一些, 因为它们不允许 unmap 到映射区域之外. 溢出(spilling)目前是"undefined", 因为它在大多数情况下应该有效, 但我不知道是否值得在不只是将请求传输到 VFIO 的设备中增加复杂性. 拆分映射是不允许的, 但请参阅 3/3 中的轻松建议, 以获得更宽松的语义)
 
 此请求仅在 VIRTIO_IOMMU_F_MAP_UNMAP 已协商后提供.
 
@@ -1208,14 +1208,14 @@ virtio 设备初始化时候, `virtio_pci__init`, 初始化了 ops
 
 教 virtio core 如何访问分散的 vring 结构. 当在 virtio 设备前向 guest 呈现了 vIOMMU, virtio ring 和 buffer 将分散在不连续的 guest 物理页面中. vIOMMU 设备必须将所有 IOVA 转换为 host 虚拟地址, 并在访问任何结构之前收集这些页面(gather the pages).
 
-vring.desc 描述的 buffers 信息已经通过 iovec 返回给设备. 我们仅仅需要用更精细的粒度填充这些 buffers, 并希望：
+vring.desc 描述的 buffers 信息已经通过 iovec 返回给设备. 我们仅仅需要用更精细的粒度填充这些 buffers, 并希望: 
 
-1. 驱动程序不会一次性提供太多的描述符 descriptors，因为 iovec 只有描述符数目一样大，而现在可能出现溢出。
-2. 设备不会对来自 vectors 的消息框架做出假设（即, 信息现在可以被包含在比以前更多的 vectors 中）。这是virtio 1.0所禁止的（以及 legacy with ANY_LAYOUT），但我们的 virtio-net，例如，假设第一个 vector 总是包含一个完整的vnet header。实际上，这很好，但仍然非常脆弱。
+1. 驱动程序不会一次性提供太多的描述符 descriptors, 因为 iovec 只有描述符数目一样大, 而现在可能出现溢出. 
+2. 设备不会对来自 vectors 的消息框架做出假设(即, 信息现在可以被包含在比以前更多的 vectors 中). 这是virtio 1.0所禁止的(以及 legacy with ANY_LAYOUT), 但我们的 virtio-net, 例如, 假设第一个 vector 总是包含一个完整的vnet header. 实际上, 这很好, 但仍然非常脆弱. 
 
-为了访问 vring 和间接描述表，我们现在分配一个 iovec 来描述 IOMMU 结构的 mapping，并通过此 iovec 进行所有访问。
+为了访问 vring 和间接描述表, 我们现在分配一个 iovec 来描述 IOMMU 结构的 mapping, 并通过此 iovec 进行所有访问. 
 
-更优雅的方法是每个 address-space 创建一个子进程，并以连续的方式 remap guest 内存片段 fragments：
+更优雅的方法是每个 address-space 创建一个子进程, 并以连续的方式 remap guest 内存片段 fragments: 
 
 ```
                                 .---- virtio-blk process
@@ -1225,7 +1225,7 @@ vring.desc 描述的 buffers 信息已经通过 iovec 返回给设备. 我们仅
                                 '---- some other device
 ```
 
-(0) 最初，viommu 为每个模拟设备都 fork 一个进程。每个子进程都通过 `mmap(base)` 保留一大块虚拟内存，代表了 IOVA 空间，但不会填充它。
+(0) 最初, viommu 为每个模拟设备都 fork 一个进程. 每个子进程都通过 `mmap(base)` 保留一大块虚拟内存, 代表了 IOVA 空间, 但不会填充它. 
 
 (1) virtio-dev 想要访问 guest 内存, 比如读 vring. 它通过 pipe 或 socket 给父进程(viommu  process)发送一个 IOVA 的 TLB miss.
 
@@ -1233,7 +1233,7 @@ vring.desc 描述的 buffers 信息已经通过 iovec 返回给设备. 我们仅
 
 (3) 子进程在它的 IOVA 空间进行 mmap, 使用 `mmap(base + iova, pgsize, SHARED|FIXED, fd, offset)`
 
-这真的很酷，但我怀疑它增加了很多复杂性，因为不清楚哪些设备是完全自成一体的，哪些设备需要访问父内存。因此，请暂缓使用散射收集访问。
+这真的很酷, 但我怀疑它增加了很多复杂性, 因为不清楚哪些设备是完全自成一体的, 哪些设备需要访问父内存. 因此, 请暂缓使用散射收集访问. 
 
 
 
@@ -1241,16 +1241,16 @@ vring.desc 描述的 buffers 信息已经通过 iovec 返回给设备. 我们仅
 
 > 使用 viommu 翻译 MSI
 
-当 virtio 设备位于 vIOMMU 后面时，guest 写入 MSI-X table 的 doorbell 地址是 IOVA，而不是物理地址。 注入 MSI 时，KVM 需要物理地址来识别 doorbell 和相关的 IRQ 芯片。将 guest 提供的地址转换为物理地址，并将其存储在辅助表中，以便于访问。
+当 virtio 设备位于 vIOMMU 后面时, guest 写入 MSI-X table 的 doorbell 地址是 IOVA, 而不是物理地址.  注入 MSI 时, KVM 需要物理地址来识别 doorbell 和相关的 IRQ 芯片. 将 guest 提供的地址转换为物理地址, 并将其存储在辅助表中, 以便于访问. 
 
 
 **patch 11**, virtio: set VIRTIO_F_IOMMU_PLATFORM when necessary
 
 > 当一个设备被 viommu 管理, 则启用这个功能位
 
-Virtio 中的其他功能位不依赖于设备类型，针对 viommu, 我们也可以这样。例如，我们的 vring 实现始终支持间接描述（VIRTIO_RING_F_INDIRECT_DESC），因此我们可以同时为所有设备（目前只有 net、scsi 和 blk）进行 advertise。但是，这可能会改变guest的行为：在 Linux 中，每当驱动尝试添加一系列描述符时，它都会分配一个间接表并使用单个 ring 描述符，这可能会稍微降低性能。
+Virtio 中的其他功能位不依赖于设备类型, 针对 viommu, 我们也可以这样. 例如, 我们的 vring 实现始终支持间接描述(VIRTIO_RING_F_INDIRECT_DESC), 因此我们可以同时为所有设备(目前只有 net、scsi 和 blk)进行 advertise. 但是, 这可能会改变guest的行为: 在 Linux 中, 每当驱动尝试添加一系列描述符时, 它都会分配一个间接表并使用单个 ring 描述符, 这可能会稍微降低性能. 
 
-VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 guest 发出信号之前调用 virtio_queue__should_signal。可以说，我们可以考虑所有对 signal_vq 的调用，但让我们保持这个 patch 简单。
+VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能, 但需要设备在向 guest 发出信号之前调用 virtio_queue__should_signal. 可以说, 我们可以考虑所有对 signal_vq 的调用, 但让我们保持这个 patch 简单. 
 
 ```cpp
 /*
@@ -1269,7 +1269,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能，但需要设备在向 gue
 
 上面注释也说了:
 
-* 清位, 设备具有平台 DMA（例如 IOMMU）旁路功能。
+* 清位, 设备具有平台 DMA(例如 IOMMU)旁路功能. 
 * 置位, 使用平台 DMA 工具(vIOMMU)访问内存
 
 ```diff

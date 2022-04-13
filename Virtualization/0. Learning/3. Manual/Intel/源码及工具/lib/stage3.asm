@@ -7,7 +7,7 @@
 
 
 ;;
-;; stage3 说明：
+;; stage3 说明: 
 ;; 1) 前半部分在 legacy 32 位环境执行
 ;; 2) 后半部分在 64-bit 环境下执行
 ;;
@@ -19,8 +19,8 @@
 ; input:
 ;       none
 ; output:
-;       edx:eax - 64 位的 4K stack base（虚拟地址） 
-; 描述：
+;       edx:eax - 64 位的 4K stack base(虚拟地址) 
+; 描述: 
 ;       1)分配一个4K页面大小的 kernel stack base的可用值         
 ;       2)并更新当前 kernel stack base 记录
 ;-----------------------------------------------------------------------
@@ -41,25 +41,25 @@ alloc_stage3_kernel_stack_4k_base:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 在进入 long-mode 前进行最基本的初始化
 ;       2) 在 legacy 下使用
 ;---------------------------------------------------------------
 init_longmode_basic_page32:
         ;;
-        ;; 下面映射 PPT 表区域（2M），包括 PXT 表区域（4K）
+        ;; 下面映射 PPT 表区域(2M)，包括 PXT 表区域(4K)
         ;;
         call map_longmode_page_transition_table32
         
         ;;
-        ;; 映射基本运行区域：
+        ;; 映射基本运行区域: 
         ;; 1) compatibility 模式下的 LONG_SEGMENT 区域
         ;; 2) setup 模块区域
         ;; 3) 64-bit 模式下的 LONG_SEGMENT 区域
         ;;
         
         ;;
-        ;; 1) 映射 compatibility 模式下（初始化时）的 LONG_SEGMENT 区域, 使用 4K 页面
+        ;; 1) 映射 compatibility 模式下(初始化时)的 LONG_SEGMENT 区域, 使用 4K 页面
         ;;
         mov eax, LONG_LENGTH + 0FFFh                            ; 加上保留的 4K 空间
         shr eax, 12
@@ -72,7 +72,7 @@ init_longmode_basic_page32:
         call do_prev_stage3_virtual_address_mapping32_n     
         
         ;;
-        ;; 2）映射 SETUP_SEGMENT 区域
+        ;; 2)映射 SETUP_SEGMENT 区域
         ;;
         mov ecx, [SETUP_SEGMENT]
         add ecx, 0FFFh
@@ -115,7 +115,7 @@ init_longmode_basic_page32:
 
         
         ;;
-        ;; 3) 映射 64-bit 模式下的 LONG_SEGMENT 区域：
+        ;; 3) 映射 64-bit 模式下的 LONG_SEGMENT 区域: 
         ;;      3.1) 虚拟地址 ffff_ff80_4000_0000 - ffff_ff80_4000_3fffh 
         ;;      3.2) 映射到 2_0000h - 2_3000h 物理页面，使用 4K 页
         ;; 
@@ -143,7 +143,7 @@ init_longmode_basic_page32:
 
         ;;
         ;; 映射 SDA 区域:
-        ;; 1) SDA 区域的 legacy stage1 阶段下的物理地址（一对一映射）
+        ;; 1) SDA 区域的 legacy stage1 阶段下的物理地址(一对一映射)
         ;; 2) SDA 区域位于: ffff_f800_8002_0000h
         ;;
         mov esi, [fs: SDA.PhysicalBase]
@@ -173,7 +173,7 @@ init_longmode_basic_page32:
         
         ;;
         ;; 映射页表池 PT Pool区域:
-        ;; 1) 主 PT Pool 区域：  ffff_f800_8220_0000h 映射到 220_0000h
+        ;; 1) 主 PT Pool 区域:   ffff_f800_8220_0000h 映射到 220_0000h
         ;; 2) 备用 PT Pool 区域: ffff_f800_8020_0000h 映射到 020_0000h
         ;;
         
@@ -232,7 +232,7 @@ init_longmode_basic_page32:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将 GDT/IDT pointer 更新为 paging 管理下的值
 ;       2) 为下阶段切换到 paging作准备
 ;-----------------------------------------------------
@@ -258,7 +258,7 @@ update_stage3_gdt_idt_pointer:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 映射 stage3 阶段的 PCB 区域 
 ;-----------------------------------------------------------------------
 map_stage3_pcb:
@@ -266,7 +266,7 @@ map_stage3_pcb:
         push edx
         
         ;;
-        ;; 映射处理器的 Processor Control Block 区域（64-bit）
+        ;; 映射处理器的 Processor Control Block 区域(64-bit)
         ;;
         mov ecx, [gs: PCB.Size]                                 ; PCB size
         add ecx, 0FFFh
@@ -305,12 +305,12 @@ map_stage3_pcb:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 为 paging 在使用原 kernel stack，需分配一个 VA 映射原 stack
 ;-----------------------------------------------------------------------
 update_stage3_kernel_stack:
         ;;
-        ;; 调整 stack 值：
+        ;; 调整 stack 值: 
         ;; 1) 分配一个 kernel stack 虚拟地址映射到 kernel stack 物理地址
         ;;
         call alloc_stage3_kernel_stack_4k_base
@@ -537,7 +537,7 @@ install_default_interrupt_handler.done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 安装 local 缺省中断服务例程
 ;-----------------------------------------------------
 install_default_local_interrupt_handler:
@@ -563,7 +563,7 @@ install_default_local_interrupt_handler:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 等待 AP 完成 pre-stage3 阶段工作
 ;-----------------------------------------------------
 wait_for_ap_stage3_done:            
@@ -595,7 +595,7 @@ wait_for_ap_stage3_done.@0:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将所有处理器放入 VMX root 状态
 ;-----------------------------------------------------                
 put_processor_to_vmx:

@@ -1,16 +1,16 @@
 # Leetcode
 
 > 
-参考：  
-书籍下载（各种格式）：https://www.gitbook.com/book/siddontang/leetcode-solution/details  
-书籍下载（PDF书）https://github.com/soulmachine/leetcode  
-答案查询：https://www.jiuzhang.com/solutions/
+参考:   
+书籍下载(各种格式): https://www.gitbook.com/book/siddontang/leetcode-solution/details  
+书籍下载(PDF书)https://github.com/soulmachine/leetcode  
+答案查询: https://www.jiuzhang.com/solutions/
 
-LeetCode题解：https://github.com/Gerry-Lee/leetcode
+LeetCode题解: https://github.com/Gerry-Lee/leetcode
 
-题解C/C\+\+：https://github.com/Gerry-Lee/LeetCode-2
+题解C/C\+\+: https://github.com/Gerry-Lee/LeetCode-2
 
-LeetCode（C语言）：https://github.com/Gerry-Lee/leetcode-1
+LeetCode(C语言): https://github.com/Gerry-Lee/leetcode-1
 
 我是按Tag来刷的。链表，二叉树，回溯，深度宽度优先遍历，图，贪心，动规，数组，哈希表……每个tag由easy到hard，每道题先自己思考，不会的参考了一个开源的解答或者参考Discuss或者博客。开始的时候自己独立思考的时间比较长，后来没了耐心，不会的题目就马上看解答了。一般题目解法有多种，这时候最好尝试一下其他的做法，至少要知道思路。比如有关图的题目就会有DFS和BFS两种解法。Discuss里一般都会有高质量的解答。关键是每道题都要弄明白。一开始用IDE，跑出正确结果，再在线默写代码。后来写的多了，直接在线写代码了。这是一个自然的过程，做的多了就有“手感”了。总结一下，按tag由易到难，每道题弄清楚，知道其他的解法，这是核心！搞定了核心，其他的技巧都是锦上添花了。
 
@@ -20,7 +20,7 @@ LeetCode（C语言）：https://github.com/Gerry-Lee/leetcode-1
 
 - 首先，我不建议题主在自己的本地编译器上先进行编译再上传结果。很多时候，特别是面试的时候，面试官一般都只会直接扔给你一张白纸，让你直接在白纸上写代码，如果题主一直用编译器进行编辑的话，突然被要求在白纸上写代码一定会觉得全身都废了、各种代码写不习惯。而且过度依赖编译器、特别是那些功能比较齐全的编译器的话，突然自己写代码一定会犯各种各样你想都想不到的错误，题主也不希望到时候面试官看到的是一个存在各种低级错误的代码吧。
 
-- 另外，建议楼主做完一道题目之后上参考网站上看看参考答案。很多参考答案相比较于我们自己的代码还是很棒很简洁的，看过之后会有一种豁然开朗的感觉。这里安利一个可以查答案的网址：LeetCode / LintCode 答案查询。我自己在刷题的时候经常用，学着参考答案对自己的代码进行修改，效果还是很赞的。现在回过头来看看自己以前的代码，颇有点不忍直视的感觉。
+- 另外，建议楼主做完一道题目之后上参考网站上看看参考答案。很多参考答案相比较于我们自己的代码还是很棒很简洁的，看过之后会有一种豁然开朗的感觉。这里安利一个可以查答案的网址: LeetCode / LintCode 答案查询。我自己在刷题的时候经常用，学着参考答案对自己的代码进行修改，效果还是很赞的。现在回过头来看看自己以前的代码，颇有点不忍直视的感觉。
 
 - 要想有效率的刷题就要对题目进行选择。就是说你不能每天看到什么题目就刷什么题目，而是要有计划的对题目进行先后排序。当时我刷题是在Lintcode上面进行的，就是先利用他的分类功能对题目进行类型分类，再根据难易进行排序，一段时间就专注在一种题目类型上，然后根据自己的水平，从容易或者中等难度开始刷起，一点点增加难度值。这样子的话更容易对一种类型的题目进行掌握，刷题不管速度还是效率都会有所提高。
 

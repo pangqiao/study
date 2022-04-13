@@ -820,11 +820,11 @@
 <text transform="matrix(1 0 0 1 201.3622 191.5911)" class="st79 st81">文件系统及块设备</text>
 <text transform="matrix(1 0 0 1 237.42 246.5)" class="st79 st81">驱动程序</text>
 <text transform="matrix(1 0 0 1 14 192.2325)" class="st79 st81">KVM 客户内核</text>
-<text transform="matrix(1 0 0 1 508.5014 173.3649)"><tspan x="0" y="0" class="st79 st81">硬件模拟</tspan><tspan x="0" y="25.2" class="st79 st81">（QEMU）</tspan></text>
+<text transform="matrix(1 0 0 1 508.5014 173.3649)"><tspan x="0" y="0" class="st79 st81">硬件模拟</tspan><tspan x="0" y="25.2" class="st79 st81">(QEMU)</tspan></text>
 <text transform="matrix(1 0 0 1 368.407 697)" class="st79 st80">硬件</text>
 <text transform="matrix(1 0 0 1 308.3669 546.0623)" class="st79 st81">文件系统及块设备</text>
 <text transform="matrix(1 0 0 1 325.392 592.7189)" class="st79 st81">物理驱动程序</text>
-<text transform="matrix(1 0 0 1 649.029 149.655)"><tspan x="0" y="0" class="st79 st81">仅有一个线程可</tspan><tspan x="0" y="25.2" class="st79 st81">随时运行 QEMU </tspan><tspan x="0" y="50.4" class="st79 st81">代码</tspan><tspan x="0" y="75.6" class="st79 st81">（qemu_mutex）</tspan></text>
+<text transform="matrix(1 0 0 1 649.029 149.655)"><tspan x="0" y="0" class="st79 st81">仅有一个线程可</tspan><tspan x="0" y="25.2" class="st79 st81">随时运行 QEMU </tspan><tspan x="0" y="50.4" class="st79 st81">代码</tspan><tspan x="0" y="75.6" class="st79 st81">(qemu_mutex)</tspan></text>
 <text transform="matrix(1 0 0 1 634.0358 316.4241)"><tspan x="0" y="0" class="st79 st81">以客户的名义向宿主</tspan><tspan x="0" y="25.2" class="st79 st81">生成 I/O 请求并处理</tspan><tspan x="0" y="50.4" class="st79 st81">事件</tspan></text>
 <text transform="matrix(1 0 0 1 549.0248 561.9517)"><tspan x="0" y="0" class="st79 st80">Linux</tspan><tspan x="0" y="28.8" class="st79 st80"> 内核</tspan></text>
 <text transform="matrix(1 0 0 1 549.0248 826.3444)" class="st79 st81">磁盘</text>
@@ -834,5 +834,5 @@
 <text transform="matrix(1 0 0 1 201.7253 340.012)" class="st79 st82">虚拟 CPU 0</text>
 <text transform="matrix(1 0 0 1 344.477 338.5811)" class="st79 st82">虚拟 CPU N</text>
 <text transform="matrix(1 0 0 1 513.7412 340.0121)" class="st79 st81">I/O 线程</text>
-<text transform="matrix(1 0 0 1 309.8919 467)" class="st79 st80">KVM （kvm.ko）</text>
+<text transform="matrix(1 0 0 1 309.8919 467)" class="st79 st80">KVM (kvm.ko)</text>
 </svg>

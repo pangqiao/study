@@ -89,7 +89,7 @@ Office Hours每月举行一次。参照 [这个](https://github.com/kubernetes/c
 
 您可以在Slack 上的 [\#office-hours频道](https://kubernetes.slack.com/messages/office-hours) 上发布问题，或者可以将问题提交给Stack Overflow。
 
-所有会议的档案都保存在这里：
+所有会议的档案都保存在这里: 
 
 * [播放列表](https://www.youtube.com/playlist?list=PL69nYSiGNLP3azFUvYJjGn45YbF6C-uIg)
 * [会议记录](http://bit.ly/k8s-office-hours-notes)
@@ -171,7 +171,7 @@ kuberntes.io　－－教程
 
 kubeweekly －－－案例分享 
 
-design-proposal 设计方案说明（https://github.com/kubernetes/community/blob/master/contributors/design-proposals/），同样可以用来学习插件的开发． 
+design-proposal 设计方案说明(https://github.com/kubernetes/community/blob/master/contributors/design-proposals/)，同样可以用来学习插件的开发． 
 
 kubernets项目更好的参与 https://github.com/kubernetes/community/tree/master/contributors/devel
 
@@ -232,7 +232,7 @@ https://github.com/kubernetes/community/blob/master/contributors/guide/github-wo
 ## 9.2. 建立你的开发环境，coding以及debugging
 
 * 建立开发环境
-* 测试（unit, integration and e2e test）
+* 测试(unit, integration and e2e test)
 
 ```
 unit测试
@@ -283,7 +283,7 @@ add a new metrics to kubernetes code.
 运行a fast and lightweight local cluster deployment for development
 Kuberntes API的开发
 REST API文档
-Annotations：用于将任意的非识别元数据附加到对象。 自动化Kubernetes对象的程序可能会使用注释来存储少量的状态。
+Annotations: 用于将任意的非识别元数据附加到对象。 自动化Kubernetes对象的程序可能会使用注释来存储少量的状态。
 API conventions(约定)
 插件开发
 Authentication　认证插件　

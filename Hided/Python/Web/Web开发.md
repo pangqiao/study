@@ -1,7 +1,7 @@
 # Web开发
 
 > 
-参考：[廖雪峰](http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/001386832648091917b035146084c43b05754ec9408dfaf000)
+参考: [廖雪峰](http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/001386832648091917b035146084c43b05754ec9408dfaf000)
 
 最早的软件都是运行在大型机上的，软件使用者通过“哑终端”登陆到大型机上去运行软件。后来随着PC机的兴起，软件开始主要运行在桌面上，而数据库这样的软件运行在服务器端，这种Client/Server模式简称CS架构。
 
@@ -13,15 +13,15 @@
 
 今天，除了重量级的软件如Office，Photoshop等，大部分软件都以Web形式提供。比如，新浪提供的新闻、博客、微博等服务，均是Web应用。
 
-Web应用开发可以说是目前软件开发中最重要的部分。Web开发也经历了好几个阶段：
+Web应用开发可以说是目前软件开发中最重要的部分。Web开发也经历了好几个阶段: 
 
-静态Web页面：由文本编辑器直接编辑并生成静态的HTML页面，如果要修改Web页面的内容，就需要再次编辑HTML源文件，早期的互联网Web页面就是静态的；
+静态Web页面: 由文本编辑器直接编辑并生成静态的HTML页面，如果要修改Web页面的内容，就需要再次编辑HTML源文件，早期的互联网Web页面就是静态的；
 
-CGI：由于静态Web页面无法与用户交互，比如用户填写了一个注册表单，静态Web页面就无法处理。要处理用户发送的动态数据，出现了Common Gateway Interface，简称CGI，用C/C++编写。
+CGI: 由于静态Web页面无法与用户交互，比如用户填写了一个注册表单，静态Web页面就无法处理。要处理用户发送的动态数据，出现了Common Gateway Interface，简称CGI，用C/C++编写。
 
-ASP/JSP/PHP：由于Web应用特点是修改频繁，用C/C++这样的低级语言非常不适合Web开发，而脚本语言由于开发效率高，与HTML结合紧密，因此，迅速取代了CGI模式。ASP是微软推出的用VBScript脚本编程的Web开发技术，而JSP用Java来编写脚本，PHP本身则是开源的脚本语言。
+ASP/JSP/PHP: 由于Web应用特点是修改频繁，用C/C++这样的低级语言非常不适合Web开发，而脚本语言由于开发效率高，与HTML结合紧密，因此，迅速取代了CGI模式。ASP是微软推出的用VBScript脚本编程的Web开发技术，而JSP用Java来编写脚本，PHP本身则是开源的脚本语言。
 
-MVC：为了解决直接用脚本语言嵌入HTML导致的可维护性差的问题，Web应用也引入了Model-View-Controller的模式，来简化Web开发。ASP发展为ASP.Net，JSP和PHP也有一大堆MVC框架。
+MVC: 为了解决直接用脚本语言嵌入HTML导致的可维护性差的问题，Web应用也引入了Model-View-Controller的模式，来简化Web开发。ASP发展为ASP.Net，JSP和PHP也有一大堆MVC框架。
 
 目前，Web开发技术仍在快速发展中，异步开发、新的MVVM前端技术层出不穷。
 
@@ -31,7 +31,7 @@ Python有上百种Web开发框架，有很多成熟的模板技术，选择Pytho
 
 ## HTTP协议简介
 
-在Web应用中，服务器把网页传给浏览器，实际上就是把网页的HTML代码发送给浏览器，让浏览器显示出来。而浏览器和服务器之间的传输协议是HTTP，所以：
+在Web应用中，服务器把网页传给浏览器，实际上就是把网页的HTML代码发送给浏览器，让浏览器显示出来。而浏览器和服务器之间的传输协议是HTTP，所以: 
 
 HTML是一种用来定义网页的文本，会HTML，就可以编写网页；
 
@@ -49,11 +49,11 @@ Elements显示网页的结构，Network显示浏览器和服务器的通信。�
 
 ![network](images/web1.jpg)
 
-当我们在地址栏输入www.sina.com.cn时，浏览器将显示新浪的首页。在这个过程中，浏览器都干了哪些事情呢？通过Network的记录，我们就可以知道。在Network中，定位到第一条记录，点击，右侧将显示Request Headers，点击右侧的view source，我们就可以看到浏览器发给新浪服务器的请求：
+当我们在地址栏输入www.sina.com.cn时，浏览器将显示新浪的首页。在这个过程中，浏览器都干了哪些事情呢？通过Network的记录，我们就可以知道。在Network中，定位到第一条记录，点击，右侧将显示Request Headers，点击右侧的view source，我们就可以看到浏览器发给新浪服务器的请求: 
 
 ![新浪首页](images/web2.jpg)
 
-最主要的头两行分析如下，第一行：
+最主要的头两行分析如下，第一行: 
 
 ```
 GET / HTTP/1.1
@@ -61,7 +61,7 @@ GET / HTTP/1.1
 
 GET表示一个读取请求，将从服务器获得网页数据，/表示URL的路径，URL总是以/开头，/就表示首页，最后的HTTP/1.1指示采用的HTTP协议版本是1.1。目前HTTP协议的版本就是1.1，但是大部分服务器也支持1.0版本，主要区别在于1.1版本允许多个HTTP请求复用一个TCP连接，以加快传输速度。
 
-从第二行开始，每一行都类似于Xxx: abcdefg：
+从第二行开始，每一行都类似于Xxx: abcdefg: 
 
 ```
 Host: www.sina.com.cn
@@ -69,17 +69,17 @@ Host: www.sina.com.cn
 
 表示请求的域名是 www.sina.com.cn。如果一台服务器有多个网站，服务器就需要通过Host来区分浏览器请求的是哪个网站。
 
-继续往下找到Response Headers，点击view source，显示服务器返回的原始响应数据：
+继续往下找到Response Headers，点击view source，显示服务器返回的原始响应数据: 
 
 ![新浪首页](images/web3.jpg)
 
-HTTP响应分为Header和Body两部分（Body是可选项），我们在Network中看到的Header最重要的几行如下：
+HTTP响应分为Header和Body两部分(Body是可选项)，我们在Network中看到的Header最重要的几行如下: 
 
 ```
 200 OK
 ```
 
-200表示一个成功的响应，后面的OK是说明。失败的响应有404 Not Found：网页不存在，500 Internal Server Error：服务器内部出错，等等。
+200表示一个成功的响应，后面的OK是说明。失败的响应有404 Not Found: 网页不存在，500 Internal Server Error: 服务器内部出错，等等。
 
 ```
 Content-Type: text/html
@@ -87,7 +87,7 @@ Content-Type: text/html
 
 Content-Type指示响应的内容，这里是text/html表示HTML网页。请注意，浏览器就是依靠Content-Type来判断响应的内容是网页还是图片，是视频还是音乐。浏览器并不靠URL来判断响应的内容，所以，即使URL是http://example.com/abc.jpg，它也不一定就是图片。
 
-HTTP响应的Body就是HTML源码，我们在菜单栏选择“视图”，“开发者”，“查看网页源码”就可以在浏览器中直接查看HTML源码：
+HTTP响应的Body就是HTML源码，我们在菜单栏选择“视图”，“开发者”，“查看网页源码”就可以在浏览器中直接查看HTML源码: 
 
 ![新浪首页](images/web4.jpg)
 
@@ -95,31 +95,31 @@ HTTP响应的Body就是HTML源码，我们在菜单栏选择“视图”，“�
 
 ## HTTP请求
 
-跟踪了新浪的首页，我们来总结一下HTTP请求的流程：
+跟踪了新浪的首页，我们来总结一下HTTP请求的流程: 
 
-步骤1：浏览器首先向服务器发送HTTP请求，请求包括：
+步骤1: 浏览器首先向服务器发送HTTP请求，请求包括: 
 
-方法：GET还是POST，GET仅请求资源，POST会附带用户数据；
+方法: GET还是POST，GET仅请求资源，POST会附带用户数据；
 
-路径：/full/url/path；
+路径: /full/url/path；
 
-域名：由Host头指定：Host: www.sina.com.cn
+域名: 由Host头指定: Host: www.sina.com.cn
 
 以及其他相关的Header；
 
 如果是POST，那么请求还包括一个Body，包含用户数据。
 
-步骤2：服务器向浏览器返回HTTP响应，响应包括：
+步骤2: 服务器向浏览器返回HTTP响应，响应包括: 
 
-响应代码：200表示成功，3xx表示重定向，4xx表示客户端发送的请求有错误，5xx表示服务器端处理时发生了错误；
+响应代码: 200表示成功，3xx表示重定向，4xx表示客户端发送的请求有错误，5xx表示服务器端处理时发生了错误；
 
-响应类型：由Content-Type指定；
+响应类型: 由Content-Type指定；
 
 以及其他相关的Header；
 
 通常服务器的HTTP响应会携带内容，也就是有一个Body，包含响应的内容，网页的HTML源码就在Body中。
 
-步骤3：如果浏览器还需要继续向服务器请求其他资源，比如图片，就再次发出HTTP请求，重复步骤1、2。
+步骤3: 如果浏览器还需要继续向服务器请求其他资源，比如图片，就再次发出HTTP请求，重复步骤1、2。
 
 Web采用的HTTP协议采用了非常简单的请求-响应模式，从而大大简化了开发。当我们编写一个页面时，我们只需要在HTTP请求中把HTML发送出去，不需要考虑如何附带图片、视频等，浏览器如果需要请求图片和视频，它会发送另一个HTTP请求，因此，一个HTTP请求只处理一个资源。
 
@@ -129,7 +129,7 @@ HTTP协议同时具备极强的扩展性，虽然浏览器请求的是http://www
 
 每个HTTP请求和响应都遵循相同的格式，一个HTTP包含Header和Body两部分，其中Body是可选的。
 
-HTTP协议是一种文本协议，所以，它的格式也非常简单。HTTP GET请求的格式：
+HTTP协议是一种文本协议，所以，它的格式也非常简单。HTTP GET请求的格式: 
 
 ```
 GET /path HTTP/1.1
@@ -140,7 +140,7 @@ Header3: Value3
 
 每个Header一行一个，换行符是\r\n。
 
-HTTP POST请求的格式：
+HTTP POST请求的格式: 
 
 ```
 POST /path HTTP/1.1
@@ -152,7 +152,7 @@ Header3: Value3
 body data goes here...
 当遇到连续两个\r\n时，Header部分结束，后面的数据全部是Body。
 
-HTTP响应的格式：
+HTTP响应的格式: 
 
 ```
 200 OK
@@ -167,13 +167,13 @@ HTTP响应如果包含body，也是通过\r\n\r\n来分隔的。请再次注意�
 
 当存在Content-Encoding时，Body数据是被压缩的，最常见的压缩方式是gzip，所以，看到Content-Encoding: gzip时，需要将Body数据先解压缩，才能得到真正的数据。压缩的目的在于减少Body的大小，加快网络传输。
 
-要详细了解HTTP协议，推荐“[HTTP: The Definitive Guide](http://shop.oreilly.com/product/9781565925090.do)”一书，非常不错，有中文译本：
+要详细了解HTTP协议，推荐“[HTTP: The Definitive Guide](http://shop.oreilly.com/product/9781565925090.do)”一书，非常不错，有中文译本: 
 
 [HTTP权威指南](http://t.cn/R7FguRq)
 
 ## WSGI接口
 
-了解了HTTP协议和HTML文档，我们其实就明白了一个Web应用的本质就是：
+了解了HTTP协议和HTML文档，我们其实就明白了一个Web应用的本质就是: 
 
 浏览器发送一个HTTP请求；
 
@@ -189,9 +189,9 @@ HTTP响应如果包含body，也是通过\r\n\r\n来分隔的。请再次注意�
 
 正确的做法是底层代码由专门的服务器软件实现，我们用Python专注于生成HTML文档。因为我们不希望接触到TCP连接、HTTP原始请求和响应格式，所以，需要一个统一的接口，让我们专心用Python编写Web业务。
 
-这个接口就是WSGI：Web Server Gateway Interface。
+这个接口就是WSGI: Web Server Gateway Interface。
 
-WSGI接口定义非常简单，它只要求Web开发者实现一个函数，就可以响应HTTP请求。我们来看一个最简单的Web版本的“Hello, web!”：
+WSGI接口定义非常简单，它只要求Web开发者实现一个函数，就可以响应HTTP请求。我们来看一个最简单的Web版本的“Hello, web!”: 
 
 ```
 def application(environ, start_response):
@@ -199,13 +199,13 @@ def application(environ, start_response):
     return '<h1>Hello, web!</h1>'
 ```
 
-上面的application()函数就是符合WSGI标准的一个HTTP处理函数，它接收两个参数：
+上面的application()函数就是符合WSGI标准的一个HTTP处理函数，它接收两个参数: 
 
-- environ：一个包含所有HTTP请求信息的dict对象；
+- environ: 一个包含所有HTTP请求信息的dict对象；
 
-- start_response：一个发送HTTP响应的函数。
+- start_response: 一个发送HTTP响应的函数。
 
-在application()函数中，调用：
+在application()函数中，调用: 
 
 ```
 start_response('200 OK', [('Content-Type', 'text/html')])
@@ -229,7 +229,7 @@ start_response('200 OK', [('Content-Type', 'text/html')])
 
 ### 运行WSGI服务
 
-我们先编写 hello.py，实现Web应用程序的WSGI处理函数：
+我们先编写 hello.py，实现Web应用程序的WSGI处理函数: 
 
 ```
 # hello.py
@@ -239,7 +239,7 @@ def application(environ, start_response):
     return '<h1>Hello, web!</h1>'
 ```
 
-然后，再编写一个 server.py，负责启动WSGI服务器，加载application()函数：
+然后，再编写一个 server.py，负责启动WSGI服务器，加载application()函数: 
 
 ```
 # server.py
@@ -255,23 +255,23 @@ print "Serving HTTP on port 8000..."
 httpd.serve_forever()
 ```
 
-确保以上两个文件在同一个目录下，然后在命令行输入python server.py来启动WSGI服务器：
+确保以上两个文件在同一个目录下，然后在命令行输入python server.py来启动WSGI服务器: 
 
 ![WSGI服务器](images/web.png)
 
-注意：如果8000端口已被其他程序占用，启动将失败，请修改成其他端口。
+注意: 如果8000端口已被其他程序占用，启动将失败，请修改成其他端口。
 
-启动成功后，打开浏览器，输入http://localhost:8000/，就可以看到结果了：
+启动成功后，打开浏览器，输入http://localhost:8000/，就可以看到结果了: 
 
 ![WSGI服务器](images/web5.jpg)
 
-在命令行可以看到wsgiref打印的log信息：
+在命令行可以看到wsgiref打印的log信息: 
 
 ![WSGI服务器](images/web6.jpg)
 
 按Ctrl+C终止服务器。
 
-如果你觉得这个Web应用太简单了，可以稍微改造一下，从environ里读取PATH_INFO，这样可以显示更加动态的内容：
+如果你觉得这个Web应用太简单了，可以稍微改造一下，从environ里读取PATH_INFO，这样可以显示更加动态的内容: 
 
 ```
 # hello.py
@@ -279,7 +279,7 @@ httpd.serve_forever()
 def application(environ, start_response):
     start_response('200 OK', [('Content-Type', 'text/html')])
     return '<h1>Hello, %s!</h1>' % (environ['PATH_INFO'][1:] or 'web')
-你可以在地址栏输入用户名作为URL的一部分，将返回Hello, xxx!：
+你可以在地址栏输入用户名作为URL的一部分，将返回Hello, xxx!: 
 ```
 
 ![WSGI服务器](images/web7.jpg)
@@ -292,13 +292,13 @@ def application(environ, start_response):
 
 ## 使用Web框架
 
-了解了WSGI框架，我们发现：其实一个Web App，就是写一个WSGI的处理函数，针对每个HTTP请求进行响应。
+了解了WSGI框架，我们发现: 其实一个Web App，就是写一个WSGI的处理函数，针对每个HTTP请求进行响应。
 
 但是如何处理HTTP请求不是问题，问题是如何处理100个不同的URL。
 
 每一个URL可以对应GET和POST请求，当然还有PUT、DELETE等请求，但是我们通常只考虑最常见的GET和POST请求。
 
-一个最简单的想法是从environ变量里取出HTTP请求的信息，然后逐个判断：
+一个最简单的想法是从environ变量里取出HTTP请求的信息，然后逐个判断: 
 
 ```
 def application(environ, start_response):
@@ -317,23 +317,23 @@ def application(environ, start_response):
 
 由于用Python开发一个Web框架十分容易，所以Python有上百个开源的Web框架。这里我们先不讨论各种Web框架的优缺点，直接选择一个比较流行的Web框架——Flask来使用。
 
-用Flask编写Web App比WSGI接口简单（这不是废话么，要是比WSGI还复杂，用框架干嘛？），我们先用easy_install或者pip安装Flask：
+用Flask编写Web App比WSGI接口简单(这不是废话么，要是比WSGI还复杂，用框架干嘛？)，我们先用easy_install或者pip安装Flask: 
 
 ```
 $ easy_install flask
 ```
 
-然后写一个app.py，处理3个URL，分别是：
+然后写一个app.py，处理3个URL，分别是: 
 
-- GET /：首页，返回Home；
+- GET /: 首页，返回Home；
 
-- GET /signin：登录页，显示登录表单；
+- GET /signin: 登录页，显示登录表单；
 
-- POST /signin：处理登录表单，显示登录结果。
+- POST /signin: 处理登录表单，显示登录结果。
 
 注意噢，同一个URL/signin分别有GET和POST两种请求，映射到两个处理函数中。
 
-Flask通过Python的装饰器在内部自动地把URL和函数给关联起来，所以，我们写出来的代码就像这样：
+Flask通过Python的装饰器在内部自动地把URL和函数给关联起来，所以，我们写出来的代码就像这样: 
 
 ```
 from flask import Flask
@@ -355,7 +355,7 @@ def signin_form():
 
 @app.route('/signin', methods=['POST'])
 def signin():
-    # 需要从request对象读取表单内容：
+    # 需要从request对象读取表单内容: 
     if request.form['username']=='admin' and request.form['password']=='password':
         return '<h3>Hello, admin!</h3>'
     return '<h3>Bad username or password.</h3>'
@@ -364,42 +364,42 @@ if __name__ == '__main__':
     app.run()
 ```
 
-运行python app.py，Flask自带的Server在端口5000上监听：
+运行python app.py，Flask自带的Server在端口5000上监听: 
 
 ```
 $ python app.py 
  * Running on http://127.0.0.1:5000/
 ```
 
-打开浏览器，输入首页地址http://localhost:5000/：
+打开浏览器，输入首页地址http://localhost:5000/: 
 
 ![flask-home](images/web9.jpg)
 
 首页显示正确！
 
-再在浏览器地址栏输入http://localhost:5000/signin，会显示登录表单：
+再在浏览器地址栏输入http://localhost:5000/signin，会显示登录表单: 
 
 ![flask-signin-form](images/web10.jpg)
 
-输入预设的用户名admin和口令password，登录成功：
+输入预设的用户名admin和口令password，登录成功: 
 
 ![flask-signin-ok](images/web11.jpg)
 
-输入其他错误的用户名和口令，登录失败：
+输入其他错误的用户名和口令，登录失败: 
 
 ![flask-signin-failed](images/web12.jpg)
 
 实际的Web App应该拿到用户名和口令后，去数据库查询再比对，来判断用户是否能登录成功。
 
-除了Flask，常见的Python Web框架还有：
+除了Flask，常见的Python Web框架还有: 
 
-- Django：全能型Web框架；
+- Django: 全能型Web框架；
 
-- web.py：一个小巧的Web框架；
+- web.py: 一个小巧的Web框架；
 
-- Bottle：和Flask类似的Web框架；
+- Bottle: 和Flask类似的Web框架；
 
-- Tornado：Facebook的开源异步Web框架。
+- Tornado: Facebook的开源异步Web框架。
 
 当然了，因为开发Python的Web框架也不是什么难事，我们后面也会自己开发一个Web框架。
 

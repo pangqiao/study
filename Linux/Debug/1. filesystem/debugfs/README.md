@@ -11,7 +11,7 @@
 
 [Linux Debugfs文件系统介绍及使用](http://blog.sina.com.cn/s/blog_40d2f1c80100p7u2.html)
 
-[Linux 文件系统：procfs, sysfs, debugfs 用法简介](http://www.tinylab.org/show-the-usage-of-procfs-sysfs-debugfs/)
+[Linux 文件系统: procfs, sysfs, debugfs 用法简介](http://www.tinylab.org/show-the-usage-of-procfs-sysfs-debugfs/)
 
 [用户空间与内核空间数据交换的方式(1)------debugfs](http://www.cnblogs.com/hoys/archive/2011/04/10/2011124.html)
 

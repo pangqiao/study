@@ -6,10 +6,10 @@
 ;
 ; 编译命令是: nasm boot.asm -o boot (用floppy启动)
 ;             nasm boot.asm -o boot -d UBOOT (用U盘启动)
-; 注意：
-;      当使用 U盘或硬盘启动时，请务必使用 -d UBOOT 选项重新编译 boot.asm 模块 !!!
+; 注意: 
+;      当使用 U盘或硬盘启动时, 请务必使用 -d UBOOT 选项重新编译 boot.asm 模块 !!!
 ;
-; 生成 boot 模块然后，写入 demo.img（磁盘映像）的第 0 扇区(MBR)
+; 生成 boot 模块然后, 写入 demo.img(磁盘映像)的第 0 扇区(MBR)
 ;
 
 
@@ -181,7 +181,7 @@ check_int13h_extension:
         setnz al                                ; 不支持
         jnz do_check_int13h_extension_done
         test cx, 1
-        setz al                                 ; 不支持扩展功能号：AH=42h-44h,47h,48h
+        setz al                                 ; 不支持扩展功能号: AH=42h-44h,47h,48h
 do_check_int13h_extension_done:        
         pop bx
         movzx ax, al
@@ -276,7 +276,7 @@ load_module:
         setz al
         jz do_load_module_done
         add cx, 512 - 1
-        shr cx, 9                                 ; 计算 block（sectors）
+        shr cx, 9                                 ; 计算 block(sectors)
   
 do_load_module_loop:  
 ;        call dot

@@ -34,7 +34,7 @@ fontconfig用来安装字体库
 
 /usr/share目录就可以看到fonts和fontconfig目录
 
-ttmkfdir用来搜索目录中所有的字体信息，并汇总生成fonts.scale文件
+ttmkfdir用来搜索目录中所有的字体信息, 并汇总生成fonts.scale文件
 
 # 3. 添加字体
 
@@ -56,7 +56,7 @@ ttmkfdir用来搜索目录中所有的字体信息，并汇总生成fonts.scale�
 
 # 5. 处理字体信息
 
-安装ttmkfdir来搜索目录中所有的字体信息，并汇总生成fonts.scale文件
+安装ttmkfdir来搜索目录中所有的字体信息, 并汇总生成fonts.scale文件
 
 ```
 # yum -y install ttmkfdir

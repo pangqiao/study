@@ -6,8 +6,8 @@
 * [1 概述](#1-概述)
 * [2 kolla\-ansible命令](#2-kolla-ansible命令)
 * [2 ansible](#2-ansible)
-	* [2.1 Host Inventory（主机清单）](#21-host-inventory主机清单)
-	* [2.2 Module（模块）](#22-module模块)
+	* [2.1 Host Inventory(主机清单)](#21-host-inventory主机清单)
+	* [2.2 Module(模块)](#22-module模块)
 		* [2.2.1 一个例子: ping](#221-一个例子-ping)
 		* [2.2.2 自定义模块](#222-自定义模块)
 		* [2.2.3 action moudle](#223-action-moudle)
@@ -114,7 +114,7 @@ process_cmd
 
 # 2 ansible
 
-一个简单的ansible命令示例如下：
+一个简单的ansible命令示例如下: 
 
 ```
 # ansible -i /root/myhosts ha01 -m setup
@@ -122,11 +122,11 @@ process_cmd
 
 这个命令的作用是，对/root/hosts文件中的所有属于ha01分类的主机，执行setup模块收集该主机的信息，它包括两种元素，主机清单和模块，下面分别介绍这两种元素。
 
-## 2.1 Host Inventory（主机清单）
+## 2.1 Host Inventory(主机清单)
 
 host inventory 是一个文件，存放了所有被ansible管理的主机，可以在调用anabile命令时，通过\-i参数指定。
 
-1. 下面是一个最简单的hosts file的例子，包含1个主机ip和两个主机名：
+1. 下面是一个最简单的hosts file的例子，包含1个主机ip和两个主机名: 
 ```
 193.192.168.1.50
 ha01
@@ -160,7 +160,7 @@ compute03
 ```
 
 
-如果主机数量比较多，也可以用正则表达，示例如下：
+如果主机数量比较多，也可以用正则表达，示例如下: 
 
 ```
 deploy-node
@@ -197,9 +197,9 @@ ha
 ansible -i $file common -m ping
 ```
 
-## 2.2 Module（模块）
+## 2.2 Module(模块)
 
-ansible封装了很多**python脚本**作为**module**提供给使用者，如：yum、copy、template，command，etc. 
+ansible封装了很多**python脚本**作为**module**提供给使用者，如: yum、copy、template，command，etc. 
 
 当我们给特定主机执行某个module时，**ansible**会把**这个module**对应的**python脚本**，**拷贝到目标主机上执行**。可以使用ansible\-doc \-l来查看ansible支持的所有module。
 
@@ -207,7 +207,7 @@ ansible封装了很多**python脚本**作为**module**提供给使用者，如�
 
 ### 2.2.1 一个例子: ping
 
-上文的例子，**使用了\-m ping参数**，意思是对这些主机，执行**ping模块**，ping 模块是一个**python脚本**，作用是用来判断：目标机器是否能够通过ssh连通并且已经安装了python。
+上文的例子，**使用了\-m ping参数**，意思是对这些主机，执行**ping模块**，ping 模块是一个**python脚本**，作用是用来判断: 目标机器是否能够通过ssh连通并且已经安装了python。
 
 ```python
 # ping module主要源码
@@ -242,11 +242,11 @@ if __name__ == '__main__':
 
 ### 2.2.2 自定义模块
 
-example：[Ansible模块开发-自定义模块](https://zhuanlan.zhihu.com/p/27512427)
+example: [Ansible模块开发-自定义模块](https://zhuanlan.zhihu.com/p/27512427)
 
 如果默认模块不能满足需求，可以自定义模块放到ansible指定的目录，默认的ansible配置文件是/etc/ansible/ansible.cfg，library配置项是自定义模块的目录。
 
-openstack的**kolla\-ansbile**项目的**ansible/library目录**下面存放着kolla**自定义的module**,这个目录下每一个文件都是一个自定义moudle。可以使用如下的命令来查看自定义module的使用方法：
+openstack的**kolla\-ansbile**项目的**ansible/library目录**下面存放着kolla**自定义的module**,这个目录下每一个文件都是一个自定义moudle。可以使用如下的命令来查看自定义module的使用方法: 
 
 ```
 ansible-doc -M /usr/share/kolla-ansible/ansible/library -v merge_configs
@@ -266,9 +266,9 @@ kolla\-ansible的**action module**存放的位置是**ansible/action\_plugins**.
 
 不建议深入去学，太多了，用到的时候一个个去查就好了
 
-- 这篇文章介绍了ansible常用模块的用法：http://blog.csdn.net/iloveyin/article/details/46982023
-- ansible官网提供了所有module的用法：http://docs.ansible.com/ansible/latest/modules_by_category.html
-- ansible 所有module源码存放路径：/usr/lib/python2.7/site-packages/ansible/modules/
+- 这篇文章介绍了ansible常用模块的用法: http://blog.csdn.net/iloveyin/article/details/46982023
+- ansible官网提供了所有module的用法: http://docs.ansible.com/ansible/latest/modules_by_category.html
+- ansible 所有module源码存放路径: /usr/lib/python2.7/site-packages/ansible/modules/
 
 # 3 ansible\-playbook
 
@@ -276,13 +276,13 @@ kolla\-ansible的**action module**存放的位置是**ansible/action\_plugins**.
 
 # 4 Playbook(剧本)
 
-前文提到的**ansible命令**，都是一些**类似shell命令**的功能，如果要做一些比较**复杂的操作**，比如说：部署一个**java应用**到**10台服务器**上，一个模块显然是无法完成的，需要**安装模块**，**配置模块**，**文件传输模块**，**服务状态管理模块等**模块**联合工作**才能完成。
+前文提到的**ansible命令**，都是一些**类似shell命令**的功能，如果要做一些比较**复杂的操作**，比如说: 部署一个**java应用**到**10台服务器**上，一个模块显然是无法完成的，需要**安装模块**，**配置模块**，**文件传输模块**，**服务状态管理模块等**模块**联合工作**才能完成。
 
 把这些**模块的组合使用**，按**特定格式记录到一个文件**上，并且使**该文件具备可复用性**，这就是**ansible的playbook**。
 
 如果说**ansible模块**类似于**shell命令**，那**playbook**类似于**shell脚本**的功能。
 
-这里举一个使用playbook集群的例子，kolla\-ansible deploy 实际上就是调用了：
+这里举一个使用playbook集群的例子，kolla\-ansible deploy 实际上就是调用了: 
 
 ```
 ansible-playbook -i /usr/share/kolla-ansible/ansible/inventory/all-in-one -e @/etc/kolla/globals.yml -e @/etc/kolla/passwords.yml -e CONFIG_DIR=/etc/kolla  -e action=deploy /usr/share/kolla-ansible/ansible/site.yml
@@ -348,7 +348,7 @@ task是要在目标机器上执行的一个最小任务，一个play可以包含
 比如说上面的例子中，如果**template module重写/etc/httpd.conf文件**后，该文件内容发生了变化，就会触发task中notify部分定义的handler重启apache服务，如果**文件内容未发生变化**，则**不触发handler**。
 
 
-也可以通过listen来触发想要的handler，示例如下：
+也可以通过listen来触发想要的handler，示例如下: 
 
 ```
 handlers:
@@ -406,7 +406,7 @@ roles/
      templates/
 ```
 
-**role的使用方法**，可以参考下面的例子，下面的playbook作用是：对**所有的webservers**机器，执行common，weservers，foo\_app\_instance对应的task，执行最后一个role时，传递了dir和app_port两个参数。
+**role的使用方法**，可以参考下面的例子，下面的playbook作用是: 对**所有的webservers**机器，执行common，weservers，foo\_app\_instance对应的task，执行最后一个role时，传递了dir和app_port两个参数。
 
 ```
 ---
@@ -419,7 +419,7 @@ roles/
 
 ### 4.3.2 include
 
-可以考虑这样两个问题：
+可以考虑这样两个问题: 
 
 1. 上文我们定义webserver role作用是在指定服务器上安装并确保apache服务运行，那么如果我们**想要升级**，**关闭或者卸载apache服务**呢，该怎么办，再定义新的role，webserver\-upgrade看起来似乎太蠢笨了。能不能像面向对象那样，**一个对象支持不同的操作**？
 2. 上文中的webserver服务安装比较简单，所以我们的playbook也比较简单，但是有时候会遇到比较麻烦的需求，比如说**安装openstack的neutron服务**，它需要**先检查设置**，**再生成配置文件**，**同步数据库**，等步骤，这项功能如果都写成一个playbook，这个playbook是不是太大了，很难维护。可不可以把**检查**，**配置**，**同步**等功能做成**不同的playbook**，然后从一个主playbook中看情况调用？
@@ -470,7 +470,7 @@ deploy playbook又由**多个不同的playbook组成**，根据用户的配置�
 
 # 5 kolla\-ansible中常见的ansible语法
 
-kolla-ansible中的play都比上面的例子复杂很多，它很多时候都不直接调用module，而是加了很多判断，循环，错误处理之类的逻辑，一个例子：
+kolla-ansible中的play都比上面的例子复杂很多，它很多时候都不直接调用module，而是加了很多判断，循环，错误处理之类的逻辑，一个例子: 
 
 ```ansible
 ansible.roles.prechecks.tasks.package_checks.yml
@@ -484,9 +484,9 @@ ansible.roles.prechecks.tasks.package_checks.yml
                result.stdout | version_compare(docker_py_version_min, '<')
 ```
 
-这个playbook的功能是：
+这个playbook的功能是: 
 
-1. 开始**执行book**中的**第一个play**：Checking docker SDK version
+1. 开始**执行book**中的**第一个play**: Checking docker SDK version
 2. 判断**目标主机inventory\_hostname**是否属于**主机清单中的baremetal组**
 3. 如果**属于**，到这台主机上执行**command module**，**参数**是"/usr/bin/python -c "import docker; print docker.\_\_version\_\_""
 4. 将**执行的结果**赋值给**result变量**(register)
@@ -500,7 +500,7 @@ ansible.roles.prechecks.tasks.package_checks.yml
 
 ## 5.1 条件语句
 
-when，faild\_when, change_when 后面可以接入一个条件语句，条件语句的值是true或者false，条件语句示例如下：
+when，faild\_when, change_when 后面可以接入一个条件语句，条件语句的值是true或者false，条件语句示例如下: 
 
 ```
 ansible_os_family == "Debian" 
@@ -516,7 +516,7 @@ ansible除了上文的==, or, in来进行判断外，**ansible**还支持通过*
 
 ## 5.2 迭代
 
-with\_itmes 是ansible的迭代语句，作用类似python的 for item in {}, 用法示例：
+with\_itmes 是ansible的迭代语句，作用类似python的 for item in {}, 用法示例: 
 
 ```
 - name: test list
@@ -569,7 +569,7 @@ delegate_to可以配合run_once使用，可以在playbook中指定数据库任�
     - "{{ nova_api_database_name }}"
 ```
 
-delegate_to指定的机器可以当前任务的机器没有任何关系，比如，在部署nova服务时，可以delegate_to的目标不限于nova机器，可以到delegate_to ansible控制节点或者存储机器上执行任务。例如：
+delegate_to指定的机器可以当前任务的机器没有任何关系，比如，在部署nova服务时，可以delegate_to的目标不限于nova机器，可以到delegate_to ansible控制节点或者存储机器上执行任务。例如: 
 
 hosts: app_servers
 tasks:
@@ -591,12 +591,12 @@ webservers组中的3台机器完全完成play后, 其他3台机器才会开始�
 
 ## 5.7 until
 
-这种循环由三个指令完成：
+这种循环由三个指令完成: 
 
 until是一个条件表达式，如果满足条件循环结束
 retry是重试的次数
 delay是延迟时间
-示例如下：
+示例如下: 
 
 action: shell /usr/bin/foo
 register: result
@@ -608,8 +608,8 @@ delay:
 
 wait_for 可以让ansible等待一段时间，直到条件满足，再继续向下执行，这个模块主要用来等待之前的操作完成，比如服务启动成功，锁释放。
 
-下面是一个kolla-ansible判断murano-api服务是否启动成功的例子：
-在murano-api[0]节点上, 尝试和api_interface_address:murano_api_port建立链接，如果成功建立连接，结束等待。如果1秒（connect_timeout）内未建立成功，放弃，休眠1秒（参数sleep，未配置，默认值）后重试，如果60秒（timeout）内没有成功创建链接，任务失败。
+下面是一个kolla-ansible判断murano-api服务是否启动成功的例子: 
+在murano-api[0]节点上, 尝试和api_interface_address:murano_api_port建立链接，如果成功建立连接，结束等待。如果1秒(connect_timeout)内未建立成功，放弃，休眠1秒(参数sleep，未配置，默认值)后重试，如果60秒(timeout)内没有成功创建链接，任务失败。
 
 - name: Waiting for Murano API service to be ready on first node
   wait_for:
@@ -623,9 +623,9 @@ wait_for 可以让ansible等待一段时间，直到条件满足，再继续向�
 # 6 参考
 
 - https://www.cnblogs.com/zhangyufei/p/7645804.html
-- ansible入门书：https://ansible-book.gitbooks.io/ansible-first-book/content/begin/basic_module/module_list_details.html
-- ansible循环用法：http://www.cnblogs.com/PythonOrg/p/6593910.html
+- ansible入门书: https://ansible-book.gitbooks.io/ansible-first-book/content/begin/basic_module/module_list_details.html
+- ansible循环用法: http://www.cnblogs.com/PythonOrg/p/6593910.html
 - 自定义过滤器:http://rfyiamcool.blog.51cto.com/1030776/1440686/
-- 异步和轮询：http://www.mamicode.com/info-detail-1202005.html
-- ansible 语法：http://blog.csdn.net/ggz631047367/article/details/50359127
-- ansible官网：http://docs.ansible.com/ansible/latest/
+- 异步和轮询: http://www.mamicode.com/info-detail-1202005.html
+- ansible 语法: http://blog.csdn.net/ggz631047367/article/details/50359127
+- ansible官网: http://docs.ansible.com/ansible/latest/

@@ -5,14 +5,14 @@
 
 
 ;------------------------------------
-; enable_hpet(): 开启 HPET（高精度定时器）
+; enable_hpet(): 开启 HPET(高精度定时器)
 ;------------------------------------
 enable_hpet:
       
 ;* 
 ;* 读取 HPET 配置寄存器
-;* Address Enable 位置位，开启 HPET 地址
-;* Address Select 域设置为 00B，HPET 基址位于 0FED00000h
+;* Address Enable 位置位, 开启 HPET 地址
+;* Address Select 域设置为 00B, HPET 基址位于 0FED00000h
 ;
         call get_root_complex_base_address
         mov esi, [eax + 3404h]
@@ -53,7 +53,7 @@ init_hpet_timer:
 ;*
 
         ;*
-        ;* timer 0 配置为：周期性中断, 64 位的 comparator 值
+        ;* timer 0 配置为: 周期性中断, 64 位的 comparator 值
         ;*
         mov DWORD [HPET_TIMER0_CONFIG], 0000004Ch
         mov DWORD [HPET_TIMER0_CONFIG + 4], 0

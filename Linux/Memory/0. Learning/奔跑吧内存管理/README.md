@@ -1,23 +1,23 @@
 《奔跑吧Linux内核》内存管理旗舰篇
 
-- 序言一：Linux内核学习方法论
-- 序言二：学习前准备
+- 序言一: Linux内核学习方法论
+- 序言二: 学习前准备
     - 序言2.1 Linux发行版和开发版的选择
     - 序言2.2 搭建QEMU+GDB单步调试内核
     - 序言2.3 搭建Eclipse图形调试内核
-    - 实战运维1 查看系统内存信息的工具（一）
-    - 实战运维2 查看系统内存信息的工具（二）
+    - 实战运维1 查看系统内存信息的工具(一)
+    - 实战运维2 查看系统内存信息的工具(二)
     - 实战运维3 读懂内核log中内存管理信息
     - 实战运维4 读懂proc meminfo
     - 实战运维5 Linux运维能力进阶线路图
-    - 实战运维6 Linux内存管理参数调优（一）
-    - 实战运维7 Linux内存管理参数调优（二）
-    - 实战运维8 Linux内存管理参数调优（三）
+    - 实战运维6 Linux内存管理参数调优(一)
+    - 实战运维7 Linux内存管理参数调优(二)
+    - 实战运维8 Linux内存管理参数调优(三)
     - 运维高级 如何单步调试RHEL-CENTOS7的内核一
     - 运维高级 如何单步调试RHEL-CENTOS7的内核二
-    - vim：打造比source insight更强更好的IDE（一）
-    - vim：打造比source insight更强更好的IDE（二）
-    - vim：打造比source insight更强更好的IDE（三）
+    - vim: 打造比source insight更强更好的IDE(一)
+    - vim: 打造比source insight更强更好的IDE(二)
+    - vim: 打造比source insight更强更好的IDE(三)
     - 实战Git项目和社区patch的管理
 - 2.0 Linux内存管理背景知识介绍
 - 2.1 Linux内存初始化

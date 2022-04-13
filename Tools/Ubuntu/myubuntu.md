@@ -45,7 +45,7 @@ https://www.jianshu.com/p/fe4e3915495e
 
 6. 不要boot分区了
 
-> /boot ：启动分区，系统的启动文件，大小一般分200M
+> /boot : 启动分区，系统的启动文件，大小一般分200M
 
 > efi逻辑分区作用相当于/boot分区
 

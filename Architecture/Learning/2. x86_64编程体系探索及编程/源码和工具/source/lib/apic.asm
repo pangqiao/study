@@ -6,7 +6,7 @@
 
 
 ;-----------------------------------------------------
-; support_apic()：检测是否支持 APIC on Chip的 local APIC
+; support_apic(): 检测是否支持 APIC on Chip的 local APIC
 ;----------------------------------------------------
 support_apic:
 	mov eax, 1
@@ -105,7 +105,7 @@ set_apic:
 ;------------------------------------
 ; set_apic_base(): 设置 APIC base地址
 ; input:
-;		esi: 低 32 位， edi: 高半部分
+;		esi: 低 32 位,  edi: 高半部分
 ;------------------------------------
 set_apic_base:
 	call get_MAXPHYADDR						; 得到 MAXPHYADDR 值
@@ -125,7 +125,7 @@ set_apic_base:
 ;--------------------------------------
 ; get_apic_base(): 
 ; output:
-;		edx: 高半部分，　eax：低32位
+;		edx: 高半部分, 　eax: 低32位
 ;--------------------------------------	
 get_apic_base:
 	mov ecx, IA32_APIC_BASE
@@ -135,7 +135,7 @@ get_apic_base:
 
 
 ;-----------------------------------------------------------------------------
-; get_logical_processor_count(): 获得 package（处理器）中的逻辑 processor 数量
+; get_logical_processor_count(): 获得 package(处理器)中的逻辑 processor 数量
 ;-----------------------------------------------------------------------------
 get_logical_processor_count:
 	mov eax, 1
@@ -186,18 +186,18 @@ enumerate_loop:
 	movzx eax, cl			; ECX[7:0]
 	shr ecx, 8
 	and ecx, 0xff			; 测试 ECX[15:8]
-	jnz enumerate_loop		; ECX[15:8] != 0 时，重复迭代
+	jnz enumerate_loop		; ECX[15:8] != 0 时, 重复迭代
 	ret
 	
 ;-----------------------------------------------------
-; get_mask_width(): 得到 mask width，使用于 xAPIC ID中
+; get_mask_width(): 得到 mask width, 使用于 xAPIC ID中
 ; input:
-;		esi: maximum count（SMT 或 core 的最大 count 值）
+;		esi: maximum count(SMT 或 core 的最大 count 值)
 ; output:
 ;		eax: mask width
 ;-------------------------------------------------------
 get_mask_width:
-	xor eax, eax			; 清目标寄存器，用于MSB不为1时
+	xor eax, eax			; 清目标寄存器, 用于MSB不为1时
 	bsr eax, esi			; 查找 count 中的 MSB 位
 	ret
 	
@@ -520,7 +520,7 @@ dump_lvt:
 
 
 ;------------------------------
-; dump_apic()：打印 apic寄存器信息
+; dump_apic(): 打印 apic寄存器信息
 ;--------------------------------
 dump_apic:
 	mov esi, apicid

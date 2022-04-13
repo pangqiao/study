@@ -180,7 +180,7 @@
 ;       none
 ; output:
 ;       eax - Lapic base
-; 描述：
+; 描述: 
 ;       1) 读取 lapic base 值
 ;---------------------------------------------
 %macro GET_LAPIC_BASE   0
@@ -194,8 +194,8 @@
 %else
         ;;
         ;; 如果在 32 位下编译，则使用硬编码方式。
-        ;; 1) 定义了 __X64 符号则是：mov rax, [gs: rax]
-        ;; 2) 否则为：mov eax, [gs: eax]
+        ;; 1) 定义了 __X64 符号则是: mov rax, [gs: rax]
+        ;; 2) 否则为: mov eax, [gs: eax]
         ;;
         PREFIX_GS
         REX.Wrxb
@@ -210,7 +210,7 @@
 ; input:
 ;       %1 - 目标处理器
 ;       %2 - 内容
-; 描述：
+; 描述: 
 ;       1) 给目标处理器发送 IPI
 ;---------------------------------------------
 %macro SEND_IPI_TO_PROCESSOR 2
@@ -299,7 +299,7 @@
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 发送 EOI 命令
 ;---------------------------------------------
 %macro LAPIC_EOI_COMMAND 0

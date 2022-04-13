@@ -95,8 +95,8 @@
 | [`sysctl_sched_min_granularity`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/fair.c#L75) | `/proc/sys/kernel/sched_min_granularity_ns` | `4000000ns` | 表示进程最少运行时间, 防止频繁的切换, 对于交互系统(如桌面), 该值可以设置得较小, 这样可以保证交互得到更快的响应(见周期调度器的 `check_preempt_tick` 过程) |
 | [`sysctl_sched_latency`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/fair.c#L54) | `/proc/sys/kernel/sched_latency_ns` | `20000000ns` | 表示一个运行队列所有进程运行一次的周期, 当前这个与运行队列的进程数有关, 如果进程数超过 `sched_nr_latency` (这个变量不能通过 `/proc` 设置, 它是由 `(sysctl_sched_latency+ sysctl_sched_min_granularity-1)/sysctl_sched_min_granularity` 确定的), 那么调度周期就是 `sched_min_granularity_ns*运行队列里的进程数`, 与 `sysctl_sched_latency` 无关; 否则队列进程数小于sched_nr_latency, 运行周期就是sysctl_sched_latency. 显然这个数越小, 一个运行队列支持的sched_nr_latency越少, 而且当sysctl_sched_min_granularity越小时能支持的sched_nr_latency越多, 那么每个进程在这个周期内能执行的时间也就越少, 这也与上面sysctl_sched_min_granularity变量的讨论一致. 其实sched_nr_latency也可以当做我们cpu load的基准值, 如果cpu的load大于这个值, 那么说明cpu不够使用了 |
 | [`sysctl_sched_wakeup_granularity`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/fair.c#L98) | `/proc/sys/kernel/sched_wakeup_granularity_ns` | `4000000ns` | 该变量表示进程被唤醒后至少应该运行的时间的基数, 它只是用来判断某个进程是否应该抢占当前进程, 并不代表它能够执行的最小时间(sysctl_sched_min_granularity), 如果这个数值越小, 那么发生抢占的概率也就越高(见wakeup_gran、wakeup_preempt_entity函数) |
-| [`sysctl_sched_child_runs_first`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/fair.c#L87) | `/proc/sys/kernel/sched_child_runs_first` | 0 | 该变量表示在创建子进程的时候是否让子进程抢占父进程, 即使父进程的vruntime小于子进程, 这个会减少公平性, 但是可以降低write_on_copy, 具体要根据系统的应用情况来考量使用哪种方式（见task_fork_fair过程） |
-| [`sysctl_sched_migration_cost`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/fair.c#L101) | `/proc/sys/kernel/sched_migration_cost` | `500000ns` | 该变量用来判断一个进程是否还是hot, 如果进程的运行时间（now - p->se.exec_start）小于它, 那么内核认为它的code还在cache里, 所以该进程还是hot, 那么在迁移的时候就不会考虑它 |
+| [`sysctl_sched_child_runs_first`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/fair.c#L87) | `/proc/sys/kernel/sched_child_runs_first` | 0 | 该变量表示在创建子进程的时候是否让子进程抢占父进程, 即使父进程的vruntime小于子进程, 这个会减少公平性, 但是可以降低write_on_copy, 具体要根据系统的应用情况来考量使用哪种方式(见task_fork_fair过程) |
+| [`sysctl_sched_migration_cost`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/fair.c#L101) | `/proc/sys/kernel/sched_migration_cost` | `500000ns` | 该变量用来判断一个进程是否还是hot, 如果进程的运行时间(now - p->se.exec_start)小于它, 那么内核认为它的code还在cache里, 所以该进程还是hot, 那么在迁移的时候就不会考虑它 |
 | [`sysctl_sched_tunable_scaling`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/fair.c#L68) | `/proc/sys/kernel/sched_tunable_scaling` | 1 | 当内核试图调整sched_min_granularity, sched_latency和sched_wakeup_granularity这三个值的时候所使用的更新方法, 0为不调整, 1为按照cpu个数以2为底的对数值进行调整, 2为按照cpu的个数进行线性比例的调整 |
 | [`sysctl_sched_cfs_bandwidth_slice`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/fair.c#L124) | `/proc/sys/kernel/sched_cfs_bandwidth_slice_us` | 5000us | |
 
@@ -106,7 +106,7 @@
 
 | 内核参数 | 位置 | 内核默认值 | 描述 |
 |:------------:|:------:|:---------------:|:------:|
-| [`sysctl_sched_rt_period`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/core.c#L76) | `/proc/sys/kernel/sched_rt_period_us` | `1000000us` | 该参数与下面的sysctl_sched_rt_runtime一起决定了实时进程在以sysctl_sched_rt_period为周期的时间内, 实时进程最多能够运行的总的时间不能超过sysctl_sched_rt_runtime（代码见sched_rt_global_constraints |
+| [`sysctl_sched_rt_period`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/core.c#L76) | `/proc/sys/kernel/sched_rt_period_us` | `1000000us` | 该参数与下面的sysctl_sched_rt_runtime一起决定了实时进程在以sysctl_sched_rt_period为周期的时间内, 实时进程最多能够运行的总的时间不能超过sysctl_sched_rt_runtime(代码见sched_rt_global_constraints |
 | [`sysctl_sched_rt_runtime`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/core.c#L84) | `/proc/sys/kernel/sched_rt_runtime_us` | `950000us` | 见上 `sysctl_sched_rt_period` 变量的解释 |
 | [`sysctl_sched_compat_yield`]() | `/proc/sys/kernel/sched_compat_yield` | 0 | 该参数可以让sched_yield()系统调用更加有效, 让它使用更少的cpu, 对于那些依赖sched_yield来获得更好性能的应用可以考虑设置它为1 |
 
@@ -936,7 +936,7 @@ static struct ctl_table kern_table[] = {
 
 | 内核参数 | 位置 | 内核默认值 | 描述 |
 |:------------:|:------:|:---------------:|:------:|
-| [`sysctl_sched_child_runs_first`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/fair.c#L87) | `/proc/sys/kernel/sched_child_runs_first` | 0 | 该变量表示在创建子进程的时候是否让子进程抢占父进程, 即使父进程的vruntime小于子进程, 这个会减少公平性, 但是可以降低write_on_copy, 具体要根据系统的应用情况来考量使用哪种方式（见task_fork_fair过程） |
+| [`sysctl_sched_child_runs_first`](http://elixir.free-electrons.com/linux/v4.14.14/source/kernel/sched/fair.c#L87) | `/proc/sys/kernel/sched_child_runs_first` | 0 | 该变量表示在创建子进程的时候是否让子进程抢占父进程, 即使父进程的vruntime小于子进程, 这个会减少公平性, 但是可以降低write_on_copy, 具体要根据系统的应用情况来考量使用哪种方式(见task_fork_fair过程) |
 
 
 ##6.1   参数背景
@@ -946,7 +946,7 @@ static struct ctl_table kern_table[] = {
 一般来说, 通过父进程通过 `fork` 创建子进程的时候, 内核并不保证谁先运行, 但是有时候我们更希望约定父子进之间运行的顺序. 因此 `sysctl_sched_child_runs_first` 应运而生.
 
 
-该变量表示在创建子进程的时候是否让子进程抢占父进程, 即使父进程的 `vruntime` 小于子进程, 这个会减少公平性, 但是可以降低 `write_on_copy`, 具体要根据系统的应用情况来考量使用哪种方式（见 `task_fork_fair` 过程）
+该变量表示在创建子进程的时候是否让子进程抢占父进程, 即使父进程的 `vruntime` 小于子进程, 这个会减少公平性, 但是可以降低 `write_on_copy`, 具体要根据系统的应用情况来考量使用哪种方式(见 `task_fork_fair` 过程)
 
 
 ##6.2   `sysctl_sched_child_runs_first` 保证子进程先运行
@@ -2075,7 +2075,7 @@ pick_next_entity(struct cfs_rq *cfs_rq, struct sched_entity *curr)
 >
 >  如果 `last` 和 `next` 同时被设置且都满足唤醒条件, 那么将使用的是 `next` 指针指向的调度实体.
 >
->  可见如果内核希望某个进程实体 `se` 下一次立马投入运行的时候, 可以通过 `set_next_buddy(se)` 将其设置为 `next`, 这样 `CFS` 调度器在选择的时候会有限选择它投入运行, 但是前提是满足唤醒条件, 即当前 `se` 不能唤醒 `left'`（红黑树中最左节点和 `curr` 中虚拟运行时间最小的那个.）
+>  可见如果内核希望某个进程实体 `se` 下一次立马投入运行的时候, 可以通过 `set_next_buddy(se)` 将其设置为 `next`, 这样 `CFS` 调度器在选择的时候会有限选择它投入运行, 但是前提是满足唤醒条件, 即当前 `se` 不能唤醒 `left'`(红黑树中最左节点和 `curr` 中虚拟运行时间最小的那个.)
 
 
 从设置中可以看出一些端倪.

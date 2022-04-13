@@ -14,14 +14,14 @@
 
 ![config](./images/4.png)
 
-xshell默认的配色是8位的，土黑色，很不好看，我们可以用命令tput colors查看：
+xshell默认的配色是8位的，土黑色，很不好看，我们可以用命令tput colors查看: 
 
 ```
 [root@localhost ~]# tput colors
 8
 ```
 
-第一步, 修改/etc/profile 文件或者\~/.bashrc文件，再最后面添加如下代码：
+第一步, 修改/etc/profile 文件或者\~/.bashrc文件，再最后面添加如下代码: 
 
 ```c
 if [ -e /usr/share/terminfo/x/xterm-256color ]; then
@@ -31,7 +31,7 @@ else
 fi
 ```
 
-然后执行：
+然后执行: 
 
 source /etc/profile
 

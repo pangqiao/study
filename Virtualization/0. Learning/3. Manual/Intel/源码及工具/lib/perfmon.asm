@@ -16,7 +16,7 @@
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 检查是否属于 Intel 平台
 ;       2) 清所有 counter
 ;--------------------------------------------
@@ -104,7 +104,7 @@ get_unhalted_cpi:
 ;       esi - 需测的函数代码
 ; outpu:
 ;       eax - CPI 值
-; 描述：
+; 描述: 
 ;       使用 CPU_CLK_UNHALTED.REF 事件
 ;-------------------------------------------
 get_nominal_cpi:

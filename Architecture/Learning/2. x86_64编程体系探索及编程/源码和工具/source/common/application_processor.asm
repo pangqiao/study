@@ -64,7 +64,7 @@ application_processor_enter:
         cmp DWORD [long_flag], 1
         je LONG_SEG
 
-;释放 lock，允许其它 AP 进入
+;释放 lock, 允许其它 AP 进入
         lock btr DWORD [20100h], 0
 
 ;发送 IPI 消息通知 bsp
@@ -92,7 +92,7 @@ application_processor_long_enter:
 ; 设置 LVT error
         mov DWORD [APIC_BASE + LVT_ERROR], APIC_ERROR_VECTOR
 
-        ;释放 lock，允许其它 AP 进入
+        ;释放 lock, 允许其它 AP 进入
      ;   lock btr DWORD [20100h], 0
 
 ;============== Ap 处理器 long-mode 初始化完成 ======================
@@ -145,7 +145,7 @@ application_processor_user_enter:
         mov eax, SYSTEM_SERVICE_USER9
         int 40h
 
-        ;释放 lock，允许其它 AP 进入
+        ;释放 lock, 允许其它 AP 进入
         lock btr DWORD [20100h], 0
 
         mov eax, SYSTEM_SERVICE_USER8
@@ -166,7 +166,7 @@ user_send_ipi_routine:
         ret
 
 ;---------------------------------
-; 在用户级代码里开启中断，和停机
+; 在用户级代码里开启中断, 和停机
 ;---------------------------------
 user_hlt_routine:
         sti
@@ -179,7 +179,7 @@ user_hlt_routine:
 
 ;*------------------------------------------------------
 ;* 下面是 starup routine 代码
-;* 引导 AP 处理器执行 setup模块，执行 protected 模块
+;* 引导 AP 处理器执行 setup模块, 执行 protected 模块
 ;* 使所有 AP 处理器进入protected模式
 ;*------------------------------------------------------
 startup_routine:
@@ -194,19 +194,19 @@ startup_routine:
         mov ss, ax
 
 ;*
-;* 测试 lock，只允许 1 个 local processor 访问
+;* 测试 lock, 只允许 1 个 local processor 访问
 ;*
 
 test_ap_lock:        
         ;*
-        ;* 测试 lock，lock 信号在 20100h 位置上
+        ;* 测试 lock, lock 信号在 20100h 位置上
         ;* 以 CS + offset 值的形式使用 lock
         ;*
         lock bts DWORD [cs:100h], 0
         jc get_ap_lock
 
 ;*
-;* 获得 lock 后，转入执行 setup --> protected --> long 序列
+;* 获得 lock 后, 转入执行 setup --> protected --> long 序列
 ;*
         jmp WORD 0:SETUP_SEG
 
@@ -248,8 +248,8 @@ bp_ipi_handler_done:
 ;******** 数据区 **************
 
 ;* 
-;* 这个变量指示，是否进入 long-mode 
-;* 由 bsp 处理器设置，当置1时，ap处理器转入到 long-mode
+;* 这个变量指示, 是否进入 long-mode 
+;* 由 bsp 处理器设置, 当置1时, ap处理器转入到 long-mode
 ;* 
 long_flag       dd      0
 

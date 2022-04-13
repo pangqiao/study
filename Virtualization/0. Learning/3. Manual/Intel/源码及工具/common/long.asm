@@ -24,8 +24,8 @@
 
 
         ;;
-        ;; 说明：
-        ;; 1) 此时，处理器处于 stage1 阶段（即，未分页保护模式）
+        ;; 说明: 
+        ;; 1) 此时，处理器处于 stage1 阶段(即，未分页保护模式)
         ;; 2) stage3 阶段将切换到 longmode         
         ;;
         bits 32        
@@ -33,14 +33,14 @@
 BspLongEntry:               
         ;;
         ;; 进入 longmode 前准备工作, 初始化 stage3 阶段的基本页表结构
-        ;; 包括：
+        ;; 包括: 
         ;;      1) compatibility 模式基本运行区域: LONG_SEGMENT
-        ;;      2) setup 模块运行区域：SETUP_SEGMENT
+        ;;      2) setup 模块运行区域: SETUP_SEGMENT
         ;;      3) 64-bit 基本运行区域: ffff_ff80_4000_0000h
-        ;;      4) video 区域：b_8000h                
-        ;;      5) SDA 区域映射到：ffff_f800_8002_0000h
+        ;;      4) video 区域: b_8000h                
+        ;;      5) SDA 区域映射到: ffff_f800_8002_0000h
         ;;      6) 映射页表池 PT Pool 和备用 PT Pool 区域
-        ;;      7) LAPIC 与 IAPIC 基址（所有logical processor 地址一致）
+        ;;      7) LAPIC 与 IAPIC 基址(所有logical processor 地址一致)
         ;;
         call init_longmode_basic_page32
         
@@ -82,7 +82,7 @@ ApLongEntry:
 
         ;;
         ;; 下面将切换到 longmode !
-        ;; 说明：
+        ;; 说明: 
         ;; 1) longmode_enter() 函数将切换到 64-bit 模式
         ;; 2) longmode_enter() 返回后处于 64-bit 的执行环境
         ;; 3) 更新 GS base 
@@ -176,7 +176,7 @@ ApLongEntry:
 %ifndef DBG               
         ;;
         ;; stage3 阶段最后工作，检查是否为 BSP        
-        ;; 1) 是，则等待 AP 完成 stage3 阶段工作（即：等待所有 AP 完成切换到 long mode）
+        ;; 1) 是，则等待 AP 完成 stage3 阶段工作(即: 等待所有 AP 完成切换到 long mode)
         ;; 2) 否，则转入 ApStage3End
         ;;
         cmp BYTE [gs: PCB.IsBsp], 1
@@ -252,7 +252,7 @@ ApLongEntry:
 
 ;;
 ;; 下面是 APs 的 pre-stage3 入口
-;; 说明：
+;; 说明: 
 ;;      1) 每个 AP 在 stage2 阶段里，需要等待 stage3 lock 有效后才允许进入
 ;;      2) ApStage3Routine 跳转到 ApLongEntry 执行属于 APs 流程
 ;;
@@ -275,7 +275,7 @@ ApStage3Routine:
 
 ;;
 ;; 下面是 APs 在 stage3 阶段的最后工作
-;; 说明：
+;; 说明: 
 ;       1) 增加处理器计数
 ;;      2) 开放 stage3 lock，允许其它的 APs 进入执行
 ;;      3) 将 AP 放入 HLT 状态
@@ -326,7 +326,7 @@ ApStage3End:
         
        
         ;;
-        ;; AP 进入 stage3 阶段最终状态： HLT 状态
+        ;; AP 进入 stage3 阶段最终状态:  HLT 状态
         ;;
         sti
                 

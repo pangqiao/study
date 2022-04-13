@@ -32,7 +32,7 @@ if the IPI target vCPU is preempted
 smp_call_function_many(const struct cpumask *mask, smp_call_func_t func, void *info, bool wait) 
 ```
 
-通过 `smp_call_function_many()` 机制，向其它核发送ipi，使其执行指定的函数(func)，最后一个入参表示是否wait，此处传入1，表示需要阻塞等待, 所有核都执行完成后才继续后面的流程。
+通过 `smp_call_function_many()` 机制, 向其它核发送ipi, 使其执行指定的函数(func), 最后一个入参表示是否wait, 此处传入1, 表示需要阻塞等待, 所有核都执行完成后才继续后面的流程. 
 
 ```cpp
 smp_call_function_many(cpu_online_mask, handle_ipi, NULL, 1);

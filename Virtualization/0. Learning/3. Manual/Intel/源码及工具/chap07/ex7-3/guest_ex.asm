@@ -11,8 +11,8 @@
         
         
         ;;
-        ;; 例子 ex7-3：实现 local APIC 虚拟化
-        ;; 编译命令可以为：
+        ;; 例子 ex7-3: 实现 local APIC 虚拟化
+        ;; 编译命令可以为: 
         ;;      1) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE -D__X64 -DGUEST_X64
         ;;      2) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE -D__X64
         ;;      3) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE

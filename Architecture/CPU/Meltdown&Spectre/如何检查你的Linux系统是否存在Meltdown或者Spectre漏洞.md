@@ -18,6 +18,6 @@ grep . /sys/devices/system/cpu/vulnerabilities/*
 #./spectre-meltdown-checker.sh
 ```
 
-首先，脚本检查你的硬件，然后运行三个漏洞检查：Specter v1、Spectre v2 和 Meltdown。每个漏洞都有自己的部分。在这之间，脚本明确地告诉你是否受到这三个漏洞的影响。
+首先，脚本检查你的硬件，然后运行三个漏洞检查: Specter v1、Spectre v2 和 Meltdown。每个漏洞都有自己的部分。在这之间，脚本明确地告诉你是否受到这三个漏洞的影响。
 
 ![config](./images/11.png)

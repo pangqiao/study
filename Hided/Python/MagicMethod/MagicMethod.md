@@ -1,21 +1,21 @@
-Python中的魔术方法：https://blog.windrunner.me/python/magic-methods-in-python.html
+Python中的魔术方法: https://blog.windrunner.me/python/magic-methods-in-python.html
 
 PYTHON-进阶-魔术方法小结(方法运算符重载):http://www.wklken.me/posts/2012/10/29/python-base-magic.html
 
-Python魔术方法指南：http://pycoders-weekly-chinese.readthedocs.io/en/latest/issue6/a-guide-to-pythons-magic-methods.html
+Python魔术方法指南: http://pycoders-weekly-chinese.readthedocs.io/en/latest/issue6/a-guide-to-pythons-magic-methods.html
 
-Python魔术方法指南：http://pyzh.readthedocs.io/en/latest/python-magic-methods-guide.html
+Python魔术方法指南: http://pyzh.readthedocs.io/en/latest/python-magic-methods-guide.html
 
-Python的Magic Methods指南：https://www.oschina.net/translate/python-magicmethods
+Python的Magic Methods指南: https://www.oschina.net/translate/python-magicmethods
 
-Python常用魔术方法：http://www.pydevops.com/2016/01/25/python-%E5%B8%B8%E7%94%A8%E7%9A%84%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95/
+Python常用魔术方法: http://www.pydevops.com/2016/01/25/python-%E5%B8%B8%E7%94%A8%E7%9A%84%E9%AD%94%E6%9C%AF%E6%96%B9%E6%B3%95/
 
-1. 关于__reduce__方法：
+1. 关于__reduce__方法: 
 
 ``` 
-相关：http://stackoverflow.com/questions/19855156/whats-the-exact-usage-of-reduce-in-pickler
+相关: http://stackoverflow.com/questions/19855156/whats-the-exact-usage-of-reduce-in-pickler
 
-官方：https://docs.python.org/2/library/pickle.html
+官方: https://docs.python.org/2/library/pickle.html
 
 object.__reduce__()
 When the Pickler encounters an object of a type it knows nothing about — such as an extension type — it looks in two places for a hint of how to pickle it. One alternative is for the object to implement a __reduce__() method. If provided, at pickling time __reduce__() will be called with no arguments, and it must return either a string or a tuple.
@@ -91,7 +91,7 @@ if __name__ == '__main__':
     print exception_loads
     
 ```
-注：Python认为一个元素的元组，例如(123)的类型是int，而不是元组类型；(123,)是tuple
+注: Python认为一个元素的元组，例如(123)的类型是int，而不是元组类型；(123,)是tuple
 
 ```
 >>> type((123,))
@@ -103,7 +103,7 @@ if __name__ == '__main__':
 可以查看dumps的结果，reduce是用来序列化时候返回的内容，该内容在反序列化时候，会作为函数参数传递进去。所以类ParameterError
 
 
-注意下面情况：
+注意下面情况: 
 ```
 class Test(Exception):
     def __init__(self, *args, **kwargs):
@@ -151,7 +151,7 @@ print loads_test
 
 ```
 
-还有：
+还有: 
 ```
 try:
     import cPickle as pickle
@@ -219,7 +219,7 @@ end
 {'args': [], '--------------errorCode': None}
 ```
 
-以及：
+以及: 
 ```
 try:
     import cPickle as pickle
@@ -291,7 +291,7 @@ init code None
 end
 {'args': [], '--------------errorCode': '123456'}
 ```
-默认情况下，reduce传递的是对象本身，所以能识别出来‘123456’，自己定义的话返回self.__class__，返回的是类。（涉及dumps以及loads的具体实现，建议看源码）
+默认情况下，reduce传递的是对象本身，所以能识别出来‘123456’，自己定义的话返回self.__class__，返回的是类。(涉及dumps以及loads的具体实现，建议看源码)
 
 ```
 def construct_Error(cls, arg, kw):

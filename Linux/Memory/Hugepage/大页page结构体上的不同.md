@@ -46,11 +46,11 @@ static struct page *alloc_fresh_huge_page(struct hstate *h,
 }
 ```
 
-可以看到, 大页的话, 在普通页分配函数 `alloc_buddy_huge_page`(本质是调用 `__alloc_pages_nodemask` 函数)初始化后的基础上, 又进行了 `prep_compound_gigantic_page` (如果是 gigantic 页)以及 `prep_new_huge_page` 两个函数的初始化。
+可以看到, 大页的话, 在普通页分配函数 `alloc_buddy_huge_page`(本质是调用 `__alloc_pages_nodemask` 函数)初始化后的基础上, 又进行了 `prep_compound_gigantic_page` (如果是 gigantic 页)以及 `prep_new_huge_page` 两个函数的初始化. 
 
-**普通页**的**初始化**位于函数 `prep_new_page` 中, 需要注意 `__GFP_COMP` 字段, 这里不做过多分析。
+**普通页**的**初始化**位于函数 `prep_new_page` 中, 需要注意 `__GFP_COMP` 字段, 这里不做过多分析. 
 
-下面来看 `prep_new_huge_page` 函数, **所有大页**都会调用这个函数进行**初始化**。
+下面来看 `prep_new_huge_page` 函数, **所有大页**都会调用这个函数进行**初始化**. 
 
 ```cpp
 static void prep_new_huge_page(struct hstate *h, struct page *page, int nid)
@@ -66,7 +66,7 @@ static void prep_new_huge_page(struct hstate *h, struct page *page, int nid)
 }
 ```
 
-第一行, 初始化 lru 成员, **与普通页相同**。
+第一行, 初始化 lru 成员, **与普通页相同**. 
 
 第二行, 调用 `set_compound_page_dtor` 设置 `page[1].compound_dtor = HUGETLB_PAGE_DTOR;` 注意, 是`page[1]`的 `compound_dtor` 成员
 
@@ -74,7 +74,7 @@ static void prep_new_huge_page(struct hstate *h, struct page *page, int nid)
 
 第五行, 设置 `(head + 4).private` 为0
 
-下面再看 `prep_compound_gigantic_page` 函数, x86 上只有 1G 大页会调用这个函数进行初始化。
+下面再看 `prep_compound_gigantic_page` 函数, x86 上只有 1G 大页会调用这个函数进行初始化. 
 
 ```cpp
 static void prep_compound_gigantic_page(struct page *page, unsigned int order)
@@ -112,9 +112,9 @@ static void prep_compound_gigantic_page(struct page *page, unsigned int order)
 
 然后, 从第 `[1]` 个**page**开始, 依次标记为**尾页**, 然后将 `_refcount` 设置为0, 然后, 把 `page[1].compound_mapcount` 设置为 `-1`.
 
-可以看到, **大页与普通页相比**, 首个 page 大部分是一样的, 但因为**大页**有**多个 page 结构体可以使用**, 从而会在**第二个 page 开始**的结构体**相关成员标记某些信息**, 这是与普通页的最大区别, 这也可以从 **page 结构体**的**第一个 union** 中看的出来。
+可以看到, **大页与普通页相比**, 首个 page 大部分是一样的, 但因为**大页**有**多个 page 结构体可以使用**, 从而会在**第二个 page 开始**的结构体**相关成员标记某些信息**, 这是与普通页的最大区别, 这也可以从 **page 结构体**的**第一个 union** 中看的出来. 
 
-细节就不写了, 用到的时候才能记住。
+细节就不写了, 用到的时候才能记住. 
 
 # reference
 

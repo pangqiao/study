@@ -21,7 +21,7 @@ DRS_AREA_SIZE                   EQU     0
 
 
 ;;
-;; DES（DEBUG_RECORD_STRUCTURE）结构用来保存 debug 信息，跟踪执行
+;; DES(DEBUG_RECORD_STRUCTURE)结构用来保存 debug 信息，跟踪执行
 ;;
 struc DRS
         .ProcessorIndex         RESD            1
@@ -93,10 +93,10 @@ endstruc
 ;       msg - 附注信息
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 插入一条 debug 记录到 DRS 区域
 ;       2) %1 参数是附注信息
-; 使用示例：
+; 使用示例: 
 ;       DEBUG_RECORD "hello, world"
 ;-----------------------------------------------------
 %macro DEBUG_RECORD  1
@@ -437,10 +437,10 @@ endstruc
 ;       msg - 附注信息
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 插入一条 debug 记录到 DRS 区域
 ;       2) DEBUG_RECORD 的 stack 版本，DRS 记录保存在当前栈里
-; 使用示例：
+; 使用示例: 
 ;       DEBUG_RECORD_S "hello, world"
 ;-----------------------------------------------------
 %macro DEBUG_RECORD_S  1
@@ -697,10 +697,10 @@ endstruc
 ;       msg - 附注信息
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 插入一条 debug 记录到 DRS 区域
 ;       2) DEBUG_RECORD_S 的 User 版本，供 USER 权限下使用
-; 使用示例：
+; 使用示例: 
 ;       DEBUG_RECORD_USER_S "hello, world"
 ;-----------------------------------------------------
 %macro DEBUG_RECORD_USER_S      1

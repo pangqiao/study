@@ -15,7 +15,7 @@
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 guest-state 段寄存器
 ;-------------------------------------------------
 %macro  DUMP_GUEST_STATE_SEGMENT 1
@@ -56,7 +56,7 @@
 ;       none
 ; output:
 ;       1 - support, 0 - unsupport
-; 描述：
+; 描述: 
 ;       1) 检查是否支持 Intel VT-x 技术
 ;------------------------------------------------
 support_intel_vmx:
@@ -375,7 +375,7 @@ dump_vmx_entry:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 CR0 Fixed 信息
 ;---------------------------------------        
 dump_vmx_fixed_cr0:
@@ -408,7 +408,7 @@ dump_vmx_fixed_cr0:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 CR4 Fixed 信息
 ;---------------------------------------           
 dump_vmx_fixed_cr4:
@@ -440,7 +440,7 @@ dump_vmx_fixed_cr4:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 VMCS enum 信息
 ;--------------------------------------- 
 dump_vmx_vmcs_enum:
@@ -468,7 +468,7 @@ dump_vmx_vmcs_enum:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 VMX 杂项信息
 ;---------------------------------------  
 dump_vmx_misc:
@@ -821,7 +821,7 @@ dump_vmcs.@3:
 ;       none
 ; output:
 ;       none
-; 描述：　
+; 描述: 　
 ;       1) 打印 VM-exit information 域信息        
 ;--------------------------------------------------------------
 dump_exit_info:
@@ -955,7 +955,7 @@ dump_exit_info.done:
 ;       none
 ; output:
 ;       none
-; 描述：　
+; 描述: 　
 ;       1) 打印 VM 指令错误信息
 ;--------------------------------------------------------------
 dump_instruction_error_detail:
@@ -983,7 +983,7 @@ dump_instruction_error_detail:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 guest state 信息
 ;--------------------------------------------------------------
 dump_guest_state:
@@ -1239,7 +1239,7 @@ dump_guest_state.@2:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 host state 信息
 ;--------------------------------------------------------------
 dump_host_state:
@@ -1462,7 +1462,7 @@ dump_host_state.@2:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 VM-execution control 信息
 ;--------------------------------------------------------------
 dump_execution_control:
@@ -1720,7 +1720,7 @@ dump_execution_control:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 VM-exit control 信息
 ;--------------------------------------------------------------
 dump_exit_control:
@@ -1776,7 +1776,7 @@ dump_exit_control:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 VM-entry control 信息
 ;--------------------------------------------------------------
 dump_entry_control:
@@ -1834,7 +1834,7 @@ dump_entry_control:
 ;       esi - guest physical address
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 在 VMM 里打印 GPA 的页表结构
 ;--------------------------------------------------------------
 dump_ept_paging:
@@ -1928,7 +1928,7 @@ dump_detail_of_mtf:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印由 access GDTR 或 IDTR 引发的 VM-exit 信息
 ;--------------------------------------------------------------
 dump_detail_of_gdtr:

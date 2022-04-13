@@ -86,7 +86,7 @@ static void qemu_kvm_start_vcpu(CPUState *cpu)
     qemu_thread_create(cpu->thread, thread_name, qemu_kvm_cpu_thread_fn,
                        cpu, QEMU_THREAD_JOINABLE);
 
-    //如果线程没有创建成功，则一直在此处循环阻塞。说明多核vcpu的创建是顺序的
+    //如果线程没有创建成功，则一直在此处循环阻塞. 说明多核vcpu的创建是顺序的
     // 注意: 使用QemuCond的一个特点，在while循环中判断真正的条件，因为可能其他线程也被唤醒，如果条件不满足，继续等待
     while (!cpu->created) {
         qemu_cond_wait(&qemu_cpu_cond, &qemu_global_mutex);

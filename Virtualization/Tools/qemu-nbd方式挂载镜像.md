@@ -3,15 +3,15 @@
 
 <!-- code_chunk_output -->
 
-- [1. 查看NBD（Network Block Device）信息](#1-查看nbdnetwork-block-device信息)
-- [2. 将镜像映射为网络设备（NBD）](#2-将镜像映射为网络设备nbd)
+- [1. 查看NBD(Network Block Device)信息](#1-查看nbdnetwork-block-device信息)
+- [2. 将镜像映射为网络设备(NBD)](#2-将镜像映射为网络设备nbd)
 - [3. 挂载镜像中的分区](#3-挂载镜像中的分区)
-- [4. umount分区，解除镜像与nbd设备的关联](#4-umount分区解除镜像与nbd设备的关联)
+- [4. umount分区, 解除镜像与nbd设备的关联](#4-umount分区解除镜像与nbd设备的关联)
 - [5. 参考](#5-参考)
 
 <!-- /code_chunk_output -->
 
-# 1. 查看NBD（Network Block Device）信息
+# 1. 查看NBD(Network Block Device)信息
 
 ```
 [root@localhost ~]# modinfo nbd
@@ -34,7 +34,7 @@ parm:           debugflags:flags for controlling debug output (int)
 nbd                    17554  0 
 ```
 
-# 2. 将镜像映射为网络设备（NBD）
+# 2. 将镜像映射为网络设备(NBD)
 
 ```
 [root@localhost ~]# qemu-nbd -c /dev/n
@@ -81,7 +81,7 @@ drwxr-xr-x. 12 root root  4096 May 27 08:55 var
 lrwxrwxrwx.  1 root root    30 May 26 18:25 vmlinuz -> boot/vmlinuz-3.13.0-24-generic
 ```
 
-# 4. umount分区，解除镜像与nbd设备的关联
+# 4. umount分区, 解除镜像与nbd设备的关联
 
 ```
 [root@localhost ~]# umount /imgage 

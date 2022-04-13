@@ -10,7 +10,7 @@
 
         
 ;-----------------------------------------
-; void clear_4K_page()：清4K页面
+; void clear_4K_page(): 清4K页面
 ; input:  
 ;                esi: address
 ;------------------------------------------        
@@ -97,8 +97,8 @@ smep_enable_done:
 init_pae_paging:
 ; 1) 0x000000-0x3fffff 映射到 000000h page frame, 使用 2个 2M 页面
 ; 2) 0x400000-0x400fff 映射到 400000h page frame 使用 4K 页面
-; 3) 0x600000-0x7fffff 映射到 0FEC00000h 物理地址上，使用 2M 页面
-; 4) 0x800000-0x9fffff 映射到 0FEE00000h 物理地址上，使用 2M 页面
+; 3) 0x600000-0x7fffff 映射到 0FEC00000h 物理地址上, 使用 2M 页面
+; 4) 0x800000-0x9fffff 映射到 0FEE00000h 物理地址上, 使用 2M 页面
 ;
 ;** 400000h 使用于 DS save 区域
 ;** 600000h 使用于 LPC 控制器
@@ -111,7 +111,7 @@ PT2_BASE        equ                PDT_BASE + 0x2000
 PT3_BASE        equ                PDT_BASE + 0x3000
 
 
-;; 清内存页面（解决一个很难查的 bug）
+;; 清内存页面(解决一个很难查的 bug)
         mov esi, PDPT_BASE
         call clear_4K_page
         mov esi, PDT_BASE
@@ -141,8 +141,8 @@ PT3_BASE        equ                PDT_BASE + 0x3000
 
 ;; 2) 设置 PDE[0], PDE[1] 以及 PDE[2]
         ; PDE[0] 对应 virtual address: 0x0 到 0x1fffff (2M页)
-        ; PDE[1] 对应 virtual address: 0x200000 到 0x3fffff (2M页）
-        ; PDE[2] 对应 virtual address: 0x400000 到 0x400fff (4K页）
+        ; PDE[1] 对应 virtual address: 0x200000 到 0x3fffff (2M页)
+        ; PDE[2] 对应 virtual address: 0x400000 到 0x400fff (4K页)
         mov DWORD [PDT_BASE + 0 * 8], PS | RW | US | P                                ; base=0, PS=1
         mov DWORD [PDT_BASE + 0 * 8 + 4], 0
         mov DWORD [PDT_BASE + 1 * 8], 200000h | PS | P                                ; base=0x200000
@@ -155,14 +155,14 @@ PT3_BASE        equ                PDT_BASE + 0x3000
         mov eax, [xd_bit]
         mov DWORD [PDT_BASE + 4 * 8 + 4], eax                                        ; XD位
         
-; 0x600000 映射到 0xFEC00000(LPC控制器）
+; 0x600000 映射到 0xFEC00000(LPC控制器)
         mov DWORD [PDT_BASE + 3 * 8], 0xFEC00000 | PCD | PWT | PS | RW | P        ; PCD=1,PWT=1
         mov DWORD [PDT_BASE + 3 * 8 + 4], eax                                        ; XD位        
 
         mov DWORD [110000h + 1FFh * 8], 112000h | RW | US | P
         mov DWORD [110000h + 1FFh * 8 + 4], eax
 
-        ; virutal address 0FEC00000h 映射到物理地址 0FEC00000h 上（2M）
+        ; virutal address 0FEC00000h 映射到物理地址 0FEC00000h 上(2M)
         mov DWORD [111000h + 1F6h * 8], 0FEC00000h | PS | PCD | PWT | RW | P
         mov DWORD [111000h + 1F6h * 8 + 4], eax
 
@@ -170,7 +170,7 @@ PT3_BASE        equ                PDT_BASE + 0x3000
         mov DWORD [111000h + 1FFh * 8 + 4], eax
 
 ;; 3) 设置 PTE[0]
-        ; PTE[0] 对应 virtual address: 0x400000 到 0x400fff (4K页）
+        ; PTE[0] 对应 virtual address: 0x400000 到 0x400fff (4K页)
         mov DWORD [PT1_BASE + 0 * 8], 400000h | RW | P                                ; base=0x400000, P=1, R/W=1
         mov eax, [xd_bit]
         mov DWORD [PT1_BASE + 0 * 8 + 4], eax                                        ; 设置 XD　位
@@ -217,8 +217,8 @@ PT3_BASE        equ                PDT_BASE + 0x3000
 ; dump_pae_page(): 打印 PAE paging 模式页转换表信息
 ; input:
 ;                esi: virtual address(linear address)
-; 注意：
-;                这个函数是在一对一映射的情况下（virtual address和physical address 一致）
+; 注意: 
+;                这个函数是在一对一映射的情况下(virtual address和physical address 一致)
 ;-------------------------------------------
 dump_pae_page:
         push ecx
@@ -386,8 +386,8 @@ dump_pae_page_done:
 ; dump_page(): 打印页转换表信息
 ; input:
 ;                esi: virtual address(linear address)
-; 注意：
-;                这个函数是在一对一映射的情况下（virtual address和physical address 一致）
+; 注意: 
+;                这个函数是在一对一映射的情况下(virtual address和physical address 一致)
 ;-------------------------------------------        
 dump_page:
         push ecx
@@ -498,12 +498,12 @@ __get_32bit_paging_pde_index:
 ; get_maxphyaddr_select_mask(): 计数出 MAXPHYADDR 值的 SELECT MASK
 ; output:
 ;       rax-maxphyaddr select mask
-; 描述：
+; 描述: 
 ;       select mask 值用于取得 MAXPHYADDR 对应的物理地址值
-; 例如：
+; 例如: 
 ;       MAXPHYADDR = 36 时: select mask = 0000000F_FFFFFFFFh
 ;       MAXPHYADDR = 40 时: select mask = 000000FF_FFFFFFFFh
-;       MAXPHYADDR = 52 时：select mask = 000FFFFF_FFFFFFFFh
+;       MAXPHYADDR = 52 时: select mask = 000FFFFF_FFFFFFFFh
 ;-----------------------------------------------------------------
 get_maxphyaddr_select_mask:
         push ecx

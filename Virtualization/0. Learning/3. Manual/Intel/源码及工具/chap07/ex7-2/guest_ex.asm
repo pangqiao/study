@@ -6,9 +6,9 @@
 
         
         ;;
-        ;; 例子 ex7-2：模拟 guest 任务切换
-        ;; 注意：必须编译为 guest 使用 legacy 保护模式
-        ;; 编译命令可以为：
+        ;; 例子 ex7-2: 模拟 guest 任务切换
+        ;; 注意: 必须编译为 guest 使用 legacy 保护模式
+        ;; 编译命令可以为: 
         ;;      1) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE -D__X64
         ;;      2) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE
         ;;
@@ -57,7 +57,7 @@
        
         ;;
         ;; ### 下面进行任务切换操作。###
-        ;; 注意：不要使用 INT 指令！
+        ;; 注意: 不要使用 INT 指令！
         ;;       因为，在例子 ex7-4 里拦截了执行 INT 指令，并没有对中断的任务切换进行处理 ！！
         ;;       所以，这里使用 CALL 指令进行任务切换 ！！
         ;;     

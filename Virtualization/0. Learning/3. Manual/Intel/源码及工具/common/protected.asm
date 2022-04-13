@@ -202,7 +202,7 @@ ApStage2End:
         mov DWORD [gs: PCB.ActivityState], CPU_STATE_HLT
                          
         ;;
-        ;; AP 第2阶段的最终工作是：进入 HLT 状态
+        ;; AP 第2阶段的最终工作是: 进入 HLT 状态
         ;;
         sti
         hlt

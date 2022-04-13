@@ -63,13 +63,13 @@ entry:
         mov esi, msg11
         call puts
         
-;;现在更改 monitor/mwait enable位，以及更改 monitor line size
+;;现在更改 monitor/mwait enable位, 以及更改 monitor line size
 ;        mov ecx, IA32_MISC_ENABLE
 ;        rdmsr
 ;        btc eax, 18                                                 ; 将 monitor/mwait 指令 disable 
 ;        wrmsr
         
-;; 注意当 MONITOR/MWAIT 指令被 disable 时，IA32_MONITOR_FILTER_LINE_SIZE 寄存器是不可用的
+;; 注意当 MONITOR/MWAIT 指令被 disable 时, IA32_MONITOR_FILTER_LINE_SIZE 寄存器是不可用的
         mov ecx, IA32_MONITOR_FILTER_LINE_SIZE
         xor edx, edx
         mov eax, 2000H                                                ; 设置最大监视 line size 为 2000H
@@ -215,7 +215,7 @@ clear_TF:
         mov esi, db_msg2
         call puts
 do_DB_handler_done:        
-        bts DWORD [esp + 4 * 8 + 8], 16             ; 设置 eflags.RF 为 1，以便中断返回时，继续执行
+        bts DWORD [esp + 4 * 8 + 8], 16             ; 设置 eflags.RF 为 1, 以便中断返回时, 继续执行
         popad
         iret
 
@@ -239,7 +239,7 @@ do_GP_handler:
         mov eax, [esp]
         cmp BYTE [eax], 0xfb                        ; 检查是否因为 sti 指令而产生 #GP 异常
         jne fix
-        inc eax                                      ; 如果是的话，跳过产生 #GP 异常的 sti 指令，执行下一条指令
+        inc eax                                      ; 如果是的话, 跳过产生 #GP 异常的 sti 指令, 执行下一条指令
         mov [esp], eax
         mov esi, gp_msg3
         call puts

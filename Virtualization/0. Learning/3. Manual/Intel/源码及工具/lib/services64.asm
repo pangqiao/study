@@ -12,7 +12,7 @@
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 context 信息
 ;-----------------------------------------------------
 %macro DO_EXCEPTION_REPORT64 0
@@ -99,7 +99,7 @@
                 
 ;-----------------------------------------------------
 ; error_code_default_handler64()
-; 描述：
+; 描述: 
 ;       1) 需要压入错误码的缺省 handler
 ;-----------------------------------------------------
 error_code_default_handler64:
@@ -115,7 +115,7 @@ error_code_default_handler64:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 缺省的异常服务例程
 ;       2) 所有缺省异常放入下半部处理
 ;       3) 下半部允许中断
@@ -146,7 +146,7 @@ exception_default_handler64.@0:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 由硬件或IPI调用
 ;-----------------------------------------------------
 nmi_handler64:
@@ -187,7 +187,7 @@ nmi_handler64:
 ;       rdi - interrupt handler
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 安装 kernel 使用的中断例程
 ;-----------------------------------------------------
 install_kernel_interrupt_handler64:
@@ -217,7 +217,7 @@ install_kernel_interrupt_handler64:
 ;       rdi - interrupt handler
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 安装 user 使用的中断例程
 ;-----------------------------------------------------
 install_user_interrupt_handler64:
@@ -246,7 +246,7 @@ install_user_interrupt_handler64:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       设置 sysenter 指令使用环境
 ;-----------------------------------------------------
 setup_sysenter64:
@@ -291,7 +291,7 @@ setup_sysenter64.next:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) PIC 8259 的 IRQ0 中断服务例程
 ;       2) 具体实现在 32 位的 pic8159a.asm 模块里
 ;-----------------------------------------------------

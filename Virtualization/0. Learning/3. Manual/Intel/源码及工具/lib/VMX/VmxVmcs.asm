@@ -14,7 +14,7 @@
 ;       none
 ; output;
 ;       eax - 返回 vmcs base 物理地址值
-; 描述：
+; 描述: 
 ;       1) 在 kernel pool 里分配 4k 块作为 vmcs region 
 ;----------------------------------------------------------
 alloc_vmcs_region_4k_physical_base:      
@@ -29,7 +29,7 @@ alloc_vmcs_region_4k_physical_base:
 ;       none
 ; output;
 ;       eax - 返回 vmcs region 虚拟地址值
-; 描述：
+; 描述: 
 ;       1) 在 kernel pool 里分配 4k 块作为 vmcs region 
 ;----------------------------------------------------------
 alloc_vmcs_region_4k_base:
@@ -44,8 +44,8 @@ alloc_vmcs_region_4k_base:
 ; input:
 ;       none
 ; output:
-;       eax - page attribute（PCD 与 PWT 标志位）
-; 描述：
+;       eax - page attribute(PCD 与 PWT 标志位)
+; 描述: 
 ;       1) 返回 VMCS 以及 access page 中的关于 PCD 与 PWT 标志位
 ;----------------------------------------------------------
 get_vmcs_page_memory_type:
@@ -74,9 +74,9 @@ get_vmcs_page_memory_type:
 ; input:
 ;       none
 ; output:
-;       eax - vmcs pointer（虚拟地址）
-;       edx - vmcs pointer（物理地址）
-; 描述： 
+;       eax - vmcs pointer(虚拟地址)
+;       edx - vmcs pointer(物理地址)
+; 描述:  
 ;       1) 获得 vmcs pointer/vmcs access page pointer
 ;       2) eax 返回虚拟地址，edx 返回物理地址
 ;       3) 64-bit 下，rax 64 位返回虚拟地址， rdx 64 位返回物理地址
@@ -92,9 +92,9 @@ get_vmcs_pointer:
 ; input:
 ;       esi - memory type
 ; output:
-;       eax - vmcs pointer（虚拟地址）
-;       edx - vmcs pointer（物理地址）
-; 描述： 
+;       eax - vmcs pointer(虚拟地址)
+;       edx - vmcs pointer(物理地址)
+; 描述:  
 ;       1) 获得 vmcs pointer
 ;       2) eax 返回虚拟地址，edx 返回物理地址
 ;       3) 64-bit 下，rax 64 位返回虚拟地址， rdx 64 位返回物理地址
@@ -167,7 +167,7 @@ get_vmcs_region_pointer:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将 VMCS buffer 中的 Guest State 信息刷新到当前 Vmcs 中
 ;----------------------------------------------------------        
 flush_guest_state:
@@ -277,7 +277,7 @@ flush_guest_state:
         ;; 4) vmcs link pointer
         ;; 5) VMX preemption timer value
         ;; 6) PDPTEs
-        ;; 7) guest interrupt status（RVI/SVI）
+        ;; 7) guest interrupt status(RVI/SVI)
         ;;
         DoVmWrite GUEST_ACTIVITY_STATE, [ebp + GUEST_STATE.ActivityState]
         DoVmWrite GUEST_INTERRUPTIBILITY_STATE, [ebp + GUEST_STATE.InterruptibilityState]
@@ -341,7 +341,7 @@ flush_guest_state.done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将当前 VMCS 中的 Guest State 信息保存在 guest state buffer 中
 ;----------------------------------------------------------        
 store_guest_state:
@@ -450,7 +450,7 @@ store_guest_state:
         ;; 4) vmcs link pointer
         ;; 5) VMX preemption timer value
         ;; 6) PDPTEs
-        ;; 7) guest interrupt status（RVI/SVI）
+        ;; 7) guest interrupt status(RVI/SVI)
         ;;
         DoVmRead GUEST_ACTIVITY_STATE, [ebp + GUEST_STATE.ActivityState]
         DoVmRead GUEST_INTERRUPTIBILITY_STATE, [ebp + GUEST_STATE.InterruptibilityState]
@@ -514,7 +514,7 @@ store_guest_state.done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将 VMCS buffer 中的 Host State 信息刷新到当前 Vmcs 中
 ;----------------------------------------------------------  
 flush_host_state:
@@ -581,7 +581,7 @@ flush_host_state:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将 VMCS 中的 Host State 信息保存到 host state buffer 中
 ;----------------------------------------------------------  
 store_host_state:
@@ -648,7 +648,7 @@ store_host_state:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将 execution control buffer 刷新到 VMCS 中
 ;----------------------------------------------------------              
 flush_execution_control:
@@ -664,7 +664,7 @@ flush_execution_control:
         
         
         ;;
-        ;; 写入基本的 execution control 域（每个域固定为 32 位）
+        ;; 写入基本的 execution control 域(每个域固定为 32 位)
         ;;
         DoVmWrite CONTROL_PINBASED, [ebp + EXECUTION_CONTROL.PinControl]
         DoVmWrite CONTROL_PROCBASED_PRIMARY, [ebp + EXECUTION_CONTROL.ProcessorControl1]
@@ -672,7 +672,7 @@ flush_execution_control:
         
         
         ;;
-        ;; 写入 exception bitmap 与 #PF 异常的 mask/match 值（固定为 32 位）
+        ;; 写入 exception bitmap 与 #PF 异常的 mask/match 值(固定为 32 位)
         ;;
         DoVmWrite CONTROL_EXCEPTION_BITMAP, [ebp + EXECUTION_CONTROL.ExceptionBitmap]
         DoVmWrite CONTROL_PAGE_FAULT_ERROR_CODE_MASK, [ebp + EXECUTION_CONTROL.PfErrorCodeMask]
@@ -680,7 +680,7 @@ flush_execution_control:
         
         
         ;;
-        ;; 写入 IoBitmap A & B 地址值（物理地址）
+        ;; 写入 IoBitmap A & B 地址值(物理地址)
         ;; 1) 在开启 "Use I/O bitmap" 时写入，否则忽略！
         ;; 
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl1], USE_IO_BITMAP
@@ -835,7 +835,7 @@ flush_execution_control.@6:
                 
 flush_execution_control.@7:
         ;;
-        ;; 写入 executive-VMCS pointer 值 (64 位）
+        ;; 写入 executive-VMCS pointer 值 (64 位)
         ;;
         DoVmWrite CONTROL_EXECUTIVE_VMCS_POINTER_FULL, [ebp + EXECUTION_CONTROL.ExecutiveVmcsPointer]
 %ifndef __X64
@@ -921,7 +921,7 @@ flush_execution_control.done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将 VMCS 中的 VM-execution control 保存在 execution control buffer 中
 ;---------------------------------------------------------------------------              
 store_execution_control:
@@ -1160,7 +1160,7 @@ store_execution_control.done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将 exit control buffer 刷新到 VMCS 中
 ;----------------------------------------------------------        
 flush_exit_control:
@@ -1209,7 +1209,7 @@ flush_exit_control:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将 VMCS 中的 VM-exit control 保存在 buffer 中
 ;----------------------------------------------------------        
 store_exit_control:
@@ -1257,7 +1257,7 @@ store_exit_control:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将 buffer 中的 VM-entry control 刷新到 VMCS 中
 ;----------------------------------------------------------
 flush_entry_control:
@@ -1304,7 +1304,7 @@ flush_entry_control:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 将 VMCS 中的 VM-entry control 保存在 buffer 中
 ;----------------------------------------------------------
 store_entry_control:

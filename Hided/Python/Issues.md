@@ -1,4 +1,4 @@
-1. api calls hanging in ssl do_handshake() method：
+1. api calls hanging in ssl do_handshake() method: 
 
 https://github.com/tweepy/tweepy/issues/283
 

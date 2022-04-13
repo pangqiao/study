@@ -44,7 +44,7 @@
 
 - 另一种是通过**周期性的机制**, 以**固定的频率运行**, 不时的检测是否有必要
 
-因此当前**linux的调度程序**由**两个调度器组成**：
+因此当前**linux的调度程序**由**两个调度器组成**: 
 
 - **主调度器**
 
@@ -52,7 +52,7 @@
 
 两者又统称为**通用调度器(generic scheduler)**或**核心调度器(core scheduler)**
 
-并且**每个调度器**包括两个内容：**调度框架**(其实质就是**两个函数框架**)及**调度器类**
+并且**每个调度器**包括两个内容: **调度框架**(其实质就是**两个函数框架**)及**调度器类**
 
 ### 1.1.2 6种调度策略
 
@@ -77,7 +77,7 @@ stop_sched_class -> dl_sched_class -> rt_sched_class -> fair_sched_class -> idle
 
 调度器**不限于调度进程**, 还可以调度更大的实体, 比如实现**组调度**.
 
-这种一般性要求**调度器不直接操作进程**,而是**处理可调度实体**,因此需要一个通用的数据结构描述这个调度实体,即**seched\_entity结构**,其实际上就代表了一个**调度对象**，可以为**一个进程**，也可以为**一个进程组**.
+这种一般性要求**调度器不直接操作进程**,而是**处理可调度实体**,因此需要一个通用的数据结构描述这个调度实体,即**seched\_entity结构**,其实际上就代表了一个**调度对象**, 可以为**一个进程**, 也可以为**一个进程组**.
 
 linux中针对当前**可调度的实时**和**非实时进程**, 定义了类型为**seched\_entity的3个调度实体**
 
@@ -111,17 +111,17 @@ linux实现了6种调度策略,依据其调度策略的不同实现了5个调度
 
 ### 2.1.1 linux优先级概述
 
-在**用户空间**通过**nice命令**设置进程的**静态优先级**,这在内部会调用**nice系统调用**,进程的**nice值在\-20\~\+19之间(用户空间！！！**。）.值越低优先级越高.
+在**用户空间**通过**nice命令**设置进程的**静态优先级**,这在内部会调用**nice系统调用**,进程的**nice值在\-20\~\+19之间(用户空间！！！**. ).值越低优先级越高.
 
 **setpriority系统调**用也可以用来**设置进程的优先级**.它不仅能够**修改单个线程的优先级**, 还能**修改进程组中所有进程的优先级**,或者通过**制定UID来修改特定用户的所有进程的优先级(特定用户！！！**)
 
-**内核**使用一些简单的数值范围**0\~139表示内部优先级（内核里面使用！！！**), 数值越低, 优先级越高。
+**内核**使用一些简单的数值范围**0\~139表示内部优先级(内核里面使用！！！**), 数值越低, 优先级越高. 
 
 - **0\~99**的范围专供**实时进程**使用
 
 - nice的值[**\-20,19**]则映射到范围**100\~139**, 用于**普通进程**
 
->linux2.6内核将任务优先级进行了一个划分, **实时进程**优先级范围是0到MAX\_RT\_PRIO\-1（即99），而**普通进程的静态优先级**范围是从MAX\_RT\_PRIO到MAX\_PRIO-1（即100到139）.
+>linux2.6内核将任务优先级进行了一个划分, **实时进程**优先级范围是0到MAX\_RT\_PRIO\-1(即99), 而**普通进程的静态优先级**范围是从MAX\_RT\_PRIO到MAX\_PRIO-1(即100到139).
 
 内核里面**priority的范围**:
 
@@ -242,9 +242,9 @@ static inline bool dl_time_before(u64 a, u64 b)
 struct task_struct
 {
     /* 进程优先级
-     * prio: 动态优先级，范围为100~139，与静态优先级和补偿(bonus)有关
-     * static_prio: 静态优先级，static_prio = 100 + nice + 20 (nice值为-20~19,所以static_prio值为100~139)
-     * normal_prio: 没有受优先级继承影响的常规优先级，具体见normal_prio函数，跟属于什么类型的进程有关
+     * prio: 动态优先级, 范围为100~139, 与静态优先级和补偿(bonus)有关
+     * static_prio: 静态优先级, static_prio = 100 + nice + 20 (nice值为-20~19,所以static_prio值为100~139)
+     * normal_prio: 没有受优先级继承影响的常规优先级, 具体见normal_prio函数, 跟属于什么类型的进程有关
      */
     int prio, static_prio, normal_prio;
     /* 实时进程优先级 */
@@ -267,7 +267,7 @@ struct task_struct
 
 | 字段 | 描述 |
 | ------------- |:-------------:|
-| static\_prio | 用于保存静态优先级, 是进程启动时分配的优先级, ，可以通过nice和sched\_setscheduler系统调用来进行修改, 否则在进程运行期间会一直保持恒定 |
+| static\_prio | 用于保存静态优先级, 是进程启动时分配的优先级, , 可以通过nice和sched\_setscheduler系统调用来进行修改, 否则在进程运行期间会一直保持恒定 |
 | prio | 保存进程的动态优先级 |
 | normal\_prio | 表示基于进程的静态优先级static\_prio和调度策略计算出的优先级. 因此即使普通进程和实时进程具有相同的静态优先级, 其普通优先级也是不同的, 进程分叉(fork)时, 子进程会继承父进程的普通优先级 |
 | rt\_priority | 用于保存实时优先级 |
@@ -288,7 +288,7 @@ struct task_struct
 
 **静态优先级static\_prio(普通进程**)和**实时优先级rt_priority(实时进程**)是**计算的起点(！！！**)
 
-因此他们也是进程创建的时候设定好的,我们通过**nice修改**的就是**普通进程的静态优先级static\_prio(！！！**。）
+因此他们也是进程创建的时候设定好的,我们通过**nice修改**的就是**普通进程的静态优先级static\_prio(！！！**. )
 
 首先通过**静态优先级static\_prio**计算出**普通优先级normal\_prio**, 该工作可以由**normal\_prio**来完成,该函数定义在[kernel/sched/core.c#L861](http://lxr.free-electrons.com/source/kernel/sched/core.c#L861)
 
@@ -379,17 +379,17 @@ static inline int task_has_dl_policy(struct task_struct *p)
 
 因此网上出现了一种说法, 优先级越高？这又是怎么回事？难道有一种说法错了吗？
 
-实际的原因是这样的，对于一个**实时进程(！！！**)，他有**两个参数来表明优先级(！！！**)——**prio** 和 **rt\_priority**，
+实际的原因是这样的, 对于一个**实时进程(！！！**), 他有**两个参数来表明优先级(！！！**)——**prio** 和 **rt\_priority**, 
 
-**prio才是调度所用的最终优先级数值(！！！**)，这个**值越小**，**优先级越高**；
+**prio才是调度所用的最终优先级数值(！！！**), 这个**值越小**, **优先级越高**；
 
-而**rt\_priority**被称作**实时进程优先级**，prio要经过转化——**prio=MAX\_RT\_PRIO \- 1 \- p\->rt\_priority**; 
+而**rt\_priority**被称作**实时进程优先级**, prio要经过转化——**prio=MAX\_RT\_PRIO \- 1 \- p\->rt\_priority**; 
 
-**MAX\_RT\_PRIO = 100**;这样意味着**rt\_priority值越大，优先级越高**；
+**MAX\_RT\_PRIO = 100**;这样意味着**rt\_priority值越大, 优先级越高**；
 
-而**内核提供的修改优先级的函数**，是**修改rt\_priority的值**，所以**越大**，优先级**越高**。
+而**内核提供的修改优先级的函数**, 是**修改rt\_priority的值**, 所以**越大**, 优先级**越高**. 
 
-所以**用户在使用实时进程或线程**，在修改优先级时，就会有“**优先级值越大，优先级越高的说法**”，也是对的。
+所以**用户在使用实时进程或线程**, 在修改优先级时, 就会有“**优先级值越大, 优先级越高的说法**”, 也是对的. 
 
 ### 3.1.3 为什么需要\_\_normal\_prio函数
 
@@ -470,15 +470,15 @@ policy == SCHED_FIFO || policy == SCHED_RR;
 
 - 在**新进程**用**wake\_up\_new\_task唤醒**时,或者使用**nice系统调用**改变其**静态优先级**时, 则会**通过effective\_prio的方法设置p\->prio**
 
->wake\_up\_new\_task(),计算此进程的优先级和其他调度参数，将新的进程加入到进程调度队列并设此进程为可被调度的，以后这个进程可以被进程调度模块调度执行。
+>wake\_up\_new\_task(),计算此进程的优先级和其他调度参数, 将新的进程加入到进程调度队列并设此进程为可被调度的, 以后这个进程可以被进程调度模块调度执行. 
 
 - 进程创建时**copy\_process**通过调用**sched\_fork**来初始化和设置调度器的过程中会设置**子进程的优先级**
 
 ## 3.4 nice系统调用的实现
 
-**nice系统调用**是的内核实现是**sys\_nice**,其定义在[kernel/sched/core.c#L7498](http://lxr.free-electrons.com/source/kernel/sched/core.c?v=4.6#L7498)，
+**nice系统调用**是的内核实现是**sys\_nice**,其定义在[kernel/sched/core.c#L7498](http://lxr.free-electrons.com/source/kernel/sched/core.c?v=4.6#L7498), 
 
-它在通过一系列检测后,通过[set\_user\_nice函数](http://lxr.free-electrons.com/source/kernel/sched/core.c?v=4.6#L3497)，其定义在[kernel/sched/core.c#L3497](http://lxr.free-electrons.com/source/kernel/sched/core.c?v=4.6#L3497)
+它在通过一系列检测后,通过[set\_user\_nice函数](http://lxr.free-electrons.com/source/kernel/sched/core.c?v=4.6#L3497), 其定义在[kernel/sched/core.c#L3497](http://lxr.free-electrons.com/source/kernel/sched/core.c?v=4.6#L3497)
 
 关于其具体实现我们会在另外一篇博客里面详细讲
 
@@ -551,7 +551,7 @@ task\_struct采用了**四个成员**表示**进程的优先级**:prio和normal\
 
 | 字段 | 描述 |
 | ------------- |:-------------:|
-| static\_prio | 用于保存静态优先级, 是进程启动时分配的优先级, ，可以通过nice和sched\_setscheduler系统调用来进行修改, 否则在进程运行期间会一直保持恒定 |
+| static\_prio | 用于保存静态优先级, 是进程启动时分配的优先级, , 可以通过nice和sched\_setscheduler系统调用来进行修改, 否则在进程运行期间会一直保持恒定 |
 | prio | 进程的动态优先级, 这个有显示才是调度器重点考虑的进程优先级 |
 | normal\_prio | 普通进程的静态优先级static\_prio和调度策略计算出的优先级. 因此即使普通进程和实时进程具有相同的静态优先级, 其普通优先级也是不同的, 进程分叉(fork)时, 子进程会继承父进程的普通优先级, 可以通过normal\_prio来计算(非实时进程用static\_prIo计算, 实时进程用rt\_priority计算) |
 | rt\_priority | 实时进程的静态优先级  |
@@ -565,6 +565,6 @@ task\_struct采用了**四个成员**表示**进程的优先级**:prio和normal\
 
 [进程调度之sys_nice()系统调用](http://blog.sina.com.cn/s/blog_9ca3f6e70102wkwp.html)
 
-[linux调度器源码研究 - 概述（一）](http://blog.chinaunix.net/uid-20671208-id-4909623.html)
+[linux调度器源码研究 - 概述(一)](http://blog.chinaunix.net/uid-20671208-id-4909623.html)
 
 [深入 Linux 的进程优先级](http://www.linuxidc.com/Linux/2016-05/131244.htm)

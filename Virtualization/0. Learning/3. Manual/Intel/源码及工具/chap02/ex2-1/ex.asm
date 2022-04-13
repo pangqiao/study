@@ -5,14 +5,14 @@
 ;*************************************************
 
 ;;
-;; ex.asm 说明：
+;; ex.asm 说明: 
 ;; 1) ex.asm 是实验例子的源代码文件，它嵌入在 protected.asm 和 long.asm 文件内
 ;; 2) ex.asm 是通用模块，能在 stage2 和 stage3 阶段运行
 ;;
 
 
         ;;
-        ;; 例子 ex2-1：列举出其中一个逻辑处理器VMX提供的能力信息
+        ;; 例子 ex2-1: 列举出其中一个逻辑处理器VMX提供的能力信息
         ;;
                               
         call get_usable_processor_index                         ; 得取可用的处理器 index 值
@@ -36,7 +36,7 @@
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 调度执行的目标代码
 ;----------------------------------------------
 TargetCpuVmxCapabilities:

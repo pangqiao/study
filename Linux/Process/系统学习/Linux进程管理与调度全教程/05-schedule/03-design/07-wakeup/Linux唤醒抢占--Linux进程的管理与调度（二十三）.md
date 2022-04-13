@@ -34,7 +34,7 @@ CFS负责处理普通非实时进程, 这类进程是我们linux中最普遍的�
 
 **CFS调度算法的思想**
 
-理想状态下每个进程都能获得相同的时间片，并且同时运行在CPU上，但实际上**一个CPU同一时刻运行的进程只能有一个**。也就是说，当**一个进程占用CPU**时，**其他进程就必须等待**。CFS为了**实现公平**，必须**惩罚当前正在运行的进程**，以**使那些正在等待的进程下次被调度**.
+理想状态下每个进程都能获得相同的时间片, 并且同时运行在CPU上, 但实际上**一个CPU同一时刻运行的进程只能有一个**. 也就是说, 当**一个进程占用CPU**时, **其他进程就必须等待**. CFS为了**实现公平**, 必须**惩罚当前正在运行的进程**, 以**使那些正在等待的进程下次被调度**.
 
 ## 1.2 CFS的pick\_next\_fair选择下一个进程
 
@@ -58,23 +58,23 @@ CFS负责处理普通非实时进程, 这类进程是我们linux中最普遍的�
 
 # 2 Linux进程的睡眠
 
-在Linux中，仅**等待CPU时间的进程**称为**就绪进程**，它们被放置在一个**运行队列**中，一个就绪进程的状态标志位为**TASK\_RUNNING**.一旦一个运行中的进程**时间片用完**,Linux内核的调度器会**剥夺这个进程对CPU的控制权**,并且从运行队列中**选择一个合适的进程**投入运行.
+在Linux中, 仅**等待CPU时间的进程**称为**就绪进程**, 它们被放置在一个**运行队列**中, 一个就绪进程的状态标志位为**TASK\_RUNNING**.一旦一个运行中的进程**时间片用完**,Linux内核的调度器会**剥夺这个进程对CPU的控制权**,并且从运行队列中**选择一个合适的进程**投入运行.
 
-当然，**一个进程**也可以**主动释放CPU的控制权**.函数**schedule**()是一个调度函数, 它可以**被一个进程主动调用**,从而调度其它进程占用CPU.一旦这个主动放弃CPU的进程被重新调度占用CPU,那么它将**从上次停止执行的位置开始执行**,也就是说它将从**调用schedule()的下一行代码处开始执行(！！！**).
+当然, **一个进程**也可以**主动释放CPU的控制权**.函数**schedule**()是一个调度函数, 它可以**被一个进程主动调用**,从而调度其它进程占用CPU.一旦这个主动放弃CPU的进程被重新调度占用CPU,那么它将**从上次停止执行的位置开始执行**,也就是说它将从**调用schedule()的下一行代码处开始执行(！！！**).
 
 有时候,**进程**需要**等待直到某个特定的事件**发生,例如设备初始化完成、I/O操作完成或定时器到时等.在这种情况下,**进程则必须从运行队列移出(！！！**),加入到一个等待队列中, 这个时候进程就进入了**睡眠状态**.
 
 Linux中的进程**睡眠状态有两种**
 
-- 一种是**可中断的睡眠状态**，其状态标志位**TASK\_INTERRUPTIBLE**.
+- 一种是**可中断的睡眠状态**, 其状态标志位**TASK\_INTERRUPTIBLE**.
 
 >**可中断的睡眠状态**的进程会睡眠直到**某个条件变为真**,比如说产生一个**硬件中断**、**释放进程正在等待的系统资源**或是**传递一个信号**都可以是**唤醒进程**的条件. 
 
-- 另一种是**不可中断的睡眠状态**，其状态标志位为**TASK\_UNINTERRUPTIBLE**.
+- 另一种是**不可中断的睡眠状态**, 其状态标志位为**TASK\_UNINTERRUPTIBLE**.
 
 >**不可中断睡眠状态**与可中断睡眠状态类似,但是它有一个例外,那就是把信号传递到这种睡眠 状态的进程不能改变它的状态,也就是说它不响应信号的唤醒.不可中断睡眠状态一般较少用到, 但在一些特定情况下这种状态还是很有用的,比如说: 进程必须等待, 不能被中断, 直到某个特定的事件发生.
 
-在现代的Linux操作系统中,进程一般都是用**调用schedule**()的方法**进入睡眠状态**的, 下面的代码演示了如何让**正在运行的进程进入睡眠状态**。
+在现代的Linux操作系统中,进程一般都是用**调用schedule**()的方法**进入睡眠状态**的, 下面的代码演示了如何让**正在运行的进程进入睡眠状态**. 
 
 ```c
 sleeping_task = current;
@@ -84,11 +84,11 @@ func1();
 /* Rest of the code ... */
 ```
 
-在第一个语句中, 程序存储了一份进程结构指针sleeping\_task, current 是一个宏，它指向正在执行的进程结构。set\_current\_state()将该进程的状态从执行状态TASK\_RUNNING变成睡眠状态TASK\_INTERRUPTIBLE.
+在第一个语句中, 程序存储了一份进程结构指针sleeping\_task, current 是一个宏, 它指向正在执行的进程结构. set\_current\_state()将该进程的状态从执行状态TASK\_RUNNING变成睡眠状态TASK\_INTERRUPTIBLE.
 
-- 如果schedule是被一个状态为TASK\_RUNNING的进程调度，那么schedule将调度另外一个进程占用CPU;
+- 如果schedule是被一个状态为TASK\_RUNNING的进程调度, 那么schedule将调度另外一个进程占用CPU;
 
-- 如果**schedule**是被一个状态为**TASK\_INTERRUPTIBLE或TASK\_UNINTERRUPTIBLE 的进程调度**，那么还有一个**附加的步骤(！！！**)将被执行：**当前执行的进程**在另外一个进程被调度之前会被**从运行队列中移出**，这将导致**正在运行的那个进程进入睡眠**，因为它已经不在运行队列中了.
+- 如果**schedule**是被一个状态为**TASK\_INTERRUPTIBLE或TASK\_UNINTERRUPTIBLE 的进程调度**, 那么还有一个**附加的步骤(！！！**)将被执行: **当前执行的进程**在另外一个进程被调度之前会被**从运行队列中移出**, 这将导致**正在运行的那个进程进入睡眠**, 因为它已经不在运行队列中了.
 
 # 3 linux进程的唤醒
 
@@ -105,7 +105,7 @@ int wake_up_process(struct task_struct *p)
 }
 ```
 
-在调用了wake\_up\_process以后, 这个睡眠进程的状态会被设置为**TASK\_RUNNING**，而且调度器会把它**加入到运行队列**中去. 当然，这个进程只有在**下次被调度器调度**到的时候才能真正地**投入运行**.
+在调用了wake\_up\_process以后, 这个睡眠进程的状态会被设置为**TASK\_RUNNING**, 而且调度器会把它**加入到运行队列**中去. 当然, 这个进程只有在**下次被调度器调度**到的时候才能真正地**投入运行**.
 
 ## 3.2 try\_to\_wake\_up
 
@@ -118,7 +118,7 @@ static int
 try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
 ```
 
-该函数接受的参数有:**被唤醒进程的描述符指针**(p),可以被唤醒的进程状态掩码(state),一个标志wake\_flags，用来**禁止被唤醒的进程抢占本地CPU**上正在运行的进程.
+该函数接受的参数有:**被唤醒进程的描述符指针**(p),可以被唤醒的进程状态掩码(state),一个标志wake\_flags, 用来**禁止被唤醒的进程抢占本地CPU**上正在运行的进程.
 
 try\_to\_wake\_up函数定义在[kernel/sched/core.c, line 1906](http://lxr.free-electrons.com/source/kernel/sched/core.c?v=4.6#L1906)
 
@@ -132,7 +132,7 @@ void wake_up_new_task(struct task_struct *p)
 ](http://lxr.free-electrons.com/source/kernel/sched/core.c?v=4.6#L2421
 )
 
-之前**进入睡眠状态**的可以通过try\_to\_wake\_up和wake\_up\_process完成唤醒,而我们**fork新创建**的进程在完成自己的创建工作后,可以通过**wake\_up\_new\_task完成唤醒**工作,参见[Linux下进程的创建过程分析(\_do\_fork/do\_fork详解)--Linux进程的管理与调度（八）](http://blog.csdn.net/gatieme/article/details/51569932)
+之前**进入睡眠状态**的可以通过try\_to\_wake\_up和wake\_up\_process完成唤醒,而我们**fork新创建**的进程在完成自己的创建工作后,可以通过**wake\_up\_new\_task完成唤醒**工作,参见[Linux下进程的创建过程分析(\_do\_fork/do\_fork详解)--Linux进程的管理与调度(八)](http://blog.csdn.net/gatieme/article/details/51569932)
 
 使用**fork创建进程**的时候,内核会调用\_do\_fork(早期内核对应do\_fork)函数完成内核的创建, 其中在进程的信息创建完毕后,就可以使用**wake\_up\_new\_task将进程唤醒**并**添加到就绪队列中等待调度**. 代码参见[kernel/fork.c, line 1755](http://lxr.free-electrons.com/source/kernel/fork.c?v=4.6#L1755)
 
@@ -211,7 +211,7 @@ spin_unlock(&list_lock);
 wake_up_process(A);
 ```
 
-这里会出现一个问题，假如当A进程执行到**第4行后(spin\_unlock(&list\_lock);)第5行前(set\_current\_state(TASK\_INTERRUPTIBLE);)**的时候,B进程被另外一个处理器调度投入运行.在这个时间片内,**B进程执行完了它所有的指令**,因此它试图**唤醒A进程**,而此时的A进程还**没有进入睡眠**, 所以**唤醒操作无效**.
+这里会出现一个问题, 假如当A进程执行到**第4行后(spin\_unlock(&list\_lock);)第5行前(set\_current\_state(TASK\_INTERRUPTIBLE);)**的时候,B进程被另外一个处理器调度投入运行.在这个时间片内,**B进程执行完了它所有的指令**,因此它试图**唤醒A进程**,而此时的A进程还**没有进入睡眠**, 所以**唤醒操作无效**.
 
 在这之后, A进程继续执行, 它会错误地认为这个时候链表仍然是空的,于是将自己的状态设置为TASK\_INTERRUPTIBLE然后调用schedule()进入睡眠. 由于**错过了B进程唤醒**, 它将会**无限期的睡眠**下去, 这就是**无效唤醒问题**, 因为即使链表中有数据需要处理, A进程也还是睡眠了.
 
@@ -219,7 +219,7 @@ wake_up_process(A);
 
 如何**避免无效唤醒**问题呢?
 
-我们发现**无效唤醒**主要发生在**检查条件之后(链表为空)**和**进程状态被设置为睡眠状态之前**,本来B进程的wake\_up\_process提供了一次将A进程状态置为TASK\_RUNNING的机会，可惜这个时候A进程的状态仍然是TASK\_RUNNING，所以wake\_up\_process将A进程状态从睡眠状态转变为运行状态的努力没有起到预期的作用.
+我们发现**无效唤醒**主要发生在**检查条件之后(链表为空)**和**进程状态被设置为睡眠状态之前**,本来B进程的wake\_up\_process提供了一次将A进程状态置为TASK\_RUNNING的机会, 可惜这个时候A进程的状态仍然是TASK\_RUNNING, 所以wake\_up\_process将A进程状态从睡眠状态转变为运行状态的努力没有起到预期的作用.
 
 ## 4.3 避免无效抢占
 
@@ -243,9 +243,9 @@ set_current_state(TASK_RUNNING);
 spin_unlock(&list_lock);
 ```
 
-可以看到，这段代码在**测试条件之前(链表为空)**就将当前执行进程状态转设置成**TASK\_INTERRUPTIBLE**了,并且在**链表不为空**的情况下又将自己置为**TASK\_RUNNING状态**.
+可以看到, 这段代码在**测试条件之前(链表为空)**就将当前执行进程状态转设置成**TASK\_INTERRUPTIBLE**了,并且在**链表不为空**的情况下又将自己置为**TASK\_RUNNING状态**.
 
-这样一来如果B进程在A进程检查了链表为空以后调用wake\_up\_process,那么A进程的状态就会自动由原来TASK\_INTERRUPTIBLE变成TASK\_RUNNING,此后即使进程又调用了schedule,由于它现在的状态是TASK\_RUNNING,所以仍然不会被从运行队列中移出, 因而不会错误的进入睡眠，当然也就避免了无效唤醒问题.
+这样一来如果B进程在A进程检查了链表为空以后调用wake\_up\_process,那么A进程的状态就会自动由原来TASK\_INTERRUPTIBLE变成TASK\_RUNNING,此后即使进程又调用了schedule,由于它现在的状态是TASK\_RUNNING,所以仍然不会被从运行队列中移出, 因而不会错误的进入睡眠, 当然也就避免了无效唤醒问题.
 
 # 5 Linux内核的例子
 
@@ -317,7 +317,7 @@ for (;;) {
 
 **kthread\_worker**/**kthread\_work**是一种内核工作的更好的管理方式,可以**多个内核线程**在**同一个worker上**工作, **共同完成work的工作(！！！**), 有点像**线程池的工作方式**.
 
-内核提供了**kthread\_worker\_fn**函数一般作为**kthread\_create**或者**kthread\_run**函数的 **threadfn参数**运行,可以将**多个内核线程**附加的**同一个worker**上面，即**将同一个worker结构(！！！**)传给**kthread\_run**或者**kthread\_create**当作threadfn的参数就可以了.
+内核提供了**kthread\_worker\_fn**函数一般作为**kthread\_create**或者**kthread\_run**函数的 **threadfn参数**运行,可以将**多个内核线程**附加的**同一个worker**上面, 即**将同一个worker结构(！！！**)传给**kthread\_run**或者**kthread\_create**当作threadfn的参数就可以了.
 
 其**kthread\_worker\_fn函数**作为**worker**的**主函数框架**,也**包含了避免无效唤醒的代码**, [kernel/kthread.c, kthread\_worker\_fn函数,line573](http://lxr.free-electrons.com/source/kernel/kthread.c?v=4.6#L573), 如下所示
 

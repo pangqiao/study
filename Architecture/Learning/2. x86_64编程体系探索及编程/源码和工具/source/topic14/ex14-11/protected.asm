@@ -17,7 +17,7 @@ protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protec
 
 entry:
         
-;; 为了完成实验，关闭时间中断和键盘中断
+;; 为了完成实验, 关闭时间中断和键盘中断
         call disable_timer
         
 ;; 设置 #PF handler
@@ -86,7 +86,7 @@ entry:
 
 
 ;*
-;* 实验 ex14-11：测试BTS buffer的过滤功能
+;* 实验 ex14-11: 测试BTS buffer的过滤功能
 ;*
 
 ; 1) 开启APIC
@@ -106,7 +106,7 @@ entry:
         jz next                                           ; 不可用
 
 
-; 设置完整 DS 区域（环形 BTS buffer）
+; 设置完整 DS 区域(环形 BTS buffer)
         SET_DS_AREA
 
         
@@ -134,7 +134,7 @@ entry:
 
 
 ;; **********************************        
-;; 下面是用户代码（CPL = 3)
+;; 下面是用户代码(CPL = 3)
 ;; **********************************
 
 user_entry:
@@ -240,7 +240,7 @@ msg        db 'hi, message from User...', 10, 10, 0
 
 ;;************* 函数导入表  *****************
 
-; 这个 lib32 库导入表放在 common\ 目录下，
+; 这个 lib32 库导入表放在 common\ 目录下, 
 ; 供所有实验的 protected.asm 模块使用
 
 %include "..\common\lib32_import_table.imt"

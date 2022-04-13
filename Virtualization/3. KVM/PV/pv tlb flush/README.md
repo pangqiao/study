@@ -3,7 +3,7 @@ https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=85
 
 检查下flushmask是否为NULL
 
-为NULL表示，表明没有running的vCPUs，都是preempted vCPUs
+为NULL表示, 表明没有running的vCPUs, 都是preempted vCPUs
 
 不用调用 native_flush_tlb_others
 

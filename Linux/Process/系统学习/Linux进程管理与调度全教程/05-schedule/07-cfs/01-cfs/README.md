@@ -47,7 +47,7 @@ linux把进程区分为**实时进程**和**非实时进程**, 其中非实时�
 
 根据进程的不同分类Linux采用不同的调度策略.
 
-对于实时进程，采用FIFO, Round Robin或者Earliest Deadline First (EDF)最早截止期限优先调度算法|的调度策略.
+对于实时进程, 采用FIFO, Round Robin或者Earliest Deadline First (EDF)最早截止期限优先调度算法|的调度策略.
 
 
 
@@ -74,9 +74,9 @@ linux把进程区分为**实时进程**和**非实时进程**, 其中非实时�
 
 *	另一种是通过周期性的机制, 以固定的频率运行, 不时的检测是否有必要
 
-因此当前linux的调度程序由两个调度器组成：**主调度器**，**周期性调度器**(两者又统称为**通用调度器(generic scheduler)**或**核心调度器(core scheduler)**)
+因此当前linux的调度程序由两个调度器组成: **主调度器**, **周期性调度器**(两者又统称为**通用调度器(generic scheduler)**或**核心调度器(core scheduler)**)
 
-并且每个调度器包括两个内容：**调度框架**(其实质就是两个函数框架)及**调度器类**
+并且每个调度器包括两个内容: **调度框架**(其实质就是两个函数框架)及**调度器类**
 
 
 
@@ -107,7 +107,7 @@ stop_sched_class -> dl_sched_class -> rt_sched_class -> fair_sched_class -> idle
 
 调度器不限于调度进程, 还可以调度更大的实体, 比如实现组调度.
 
-这种一般性要求调度器不直接操作进程, 而是处理可调度实体, 因此需要一个通用的数据结构描述这个调度实体,即seched_entity结构, 其实际上就代表了一个调度对象，可以为一个进程，也可以为一个进程组.
+这种一般性要求调度器不直接操作进程, 而是处理可调度实体, 因此需要一个通用的数据结构描述这个调度实体,即seched_entity结构, 其实际上就代表了一个调度对象, 可以为一个进程, 也可以为一个进程组.
 
 linux中针对当前可调度的实时和非实时进程, 定义了类型为seched_entity的3个调度实体
 
@@ -177,15 +177,15 @@ const struct sched_class fair_sched_class = {
 
 | 成员 | 描述 |
 | ------------- |:-------------:|
-| enqueue\_task | 向**就绪队列**中**添加一个进程**,某个任务**进入可运行状态时**，该函数将得到**调用**。它将调度实体（进程）**放入红黑树**中，并对**nr\_running**变量加 1 |
-| dequeue\_task | 将一个进程从**就就绪队列**中**删除**,当某个任务**退出可运行状态**时调用该函数，它将**从红黑树中去掉对应的调度实体**，并从 **nr\_running** 变量中减 1 |
-| yield\_task | 在进程想要资源**放弃对处理器的控制权**的时, 可使用在**sched\_yield系统调用**, 会调用内核API yield\_task完成此工作. **compat\_yield sysctl关闭**的情况下，该函数实际上执行**先出队后入队**；在这种情况下，它将调度实体放在**红黑树的最右端** |
-| check\_preempt\_curr | 该函数将**检查当前运行的任务是否被抢占**。在**实际抢占正在运行的任务之前**，CFS 调度程序模块将**执行公平性测试**。这**将驱动唤醒式（wakeup）抢占** |
+| enqueue\_task | 向**就绪队列**中**添加一个进程**,某个任务**进入可运行状态时**, 该函数将得到**调用**. 它将调度实体(进程)**放入红黑树**中, 并对**nr\_running**变量加 1 |
+| dequeue\_task | 将一个进程从**就就绪队列**中**删除**,当某个任务**退出可运行状态**时调用该函数, 它将**从红黑树中去掉对应的调度实体**, 并从 **nr\_running** 变量中减 1 |
+| yield\_task | 在进程想要资源**放弃对处理器的控制权**的时, 可使用在**sched\_yield系统调用**, 会调用内核API yield\_task完成此工作. **compat\_yield sysctl关闭**的情况下, 该函数实际上执行**先出队后入队**；在这种情况下, 它将调度实体放在**红黑树的最右端** |
+| check\_preempt\_curr | 该函数将**检查当前运行的任务是否被抢占**. 在**实际抢占正在运行的任务之前**, CFS 调度程序模块将**执行公平性测试**. 这**将驱动唤醒式(wakeup)抢占** |
 | pick\_next\_task | 该函数**选择**接下来要运行的最合适的进程 |
 | put\_prev\_task | 用另一个进程**代替当前运行的进程** |
-| set\_curr\_task | 当任务**修改其调度类或修改其任务组**时，将调用这个函数 |
-| task\_tick | 在**每次激活周期调度器**时, 由**周期性调度器调用**, 该函数通常调用自 time tick 函数；它**可能引起进程切换**。这将驱动运行时（running）抢占 |
-| task\_new | 内核调度程序为调度模块提供了管理新任务启动的机会,用于建立fork系统调用和调度器之间的关联, 每次**新进程建立**后,则用**new\_task通知调度器**,CFS调度模块使用它进行组调度，而用于**实时任务的调度模块则不会使用**这个函数 |
+| set\_curr\_task | 当任务**修改其调度类或修改其任务组**时, 将调用这个函数 |
+| task\_tick | 在**每次激活周期调度器**时, 由**周期性调度器调用**, 该函数通常调用自 time tick 函数；它**可能引起进程切换**. 这将驱动运行时(running)抢占 |
+| task\_new | 内核调度程序为调度模块提供了管理新任务启动的机会,用于建立fork系统调用和调度器之间的关联, 每次**新进程建立**后,则用**new\_task通知调度器**,CFS调度模块使用它进行组调度, 而用于**实时任务的调度模块则不会使用**这个函数 |
 
 
 ##2.2	cfs的就绪队列
@@ -194,23 +194,23 @@ const struct sched_class fair_sched_class = {
 
 ```c
 /* CFS-related fields in a runqueue */
-/* CFS调度的运行队列，每个CPU的rq会包含一个cfs_rq，而每个组调度的sched_entity也会有自己的一个cfs_rq队列 */
+/* CFS调度的运行队列, 每个CPU的rq会包含一个cfs_rq, 而每个组调度的sched_entity也会有自己的一个cfs_rq队列 */
 struct cfs_rq {
 	/* CFS运行队列中所有进程的总负载 */
     struct load_weight load;
 	/*
      *  nr_running: cfs_rq中调度实体数量
-     *  h_nr_running: 只对进程组有效，其下所有进程组中cfs_rq的nr_running之和
+     *  h_nr_running: 只对进程组有效, 其下所有进程组中cfs_rq的nr_running之和
 	*/
     unsigned int nr_running, h_nr_running;
 
     u64 exec_clock;
     
 	/*
-     * 当前CFS队列上最小运行时间，单调递增
+     * 当前CFS队列上最小运行时间, 单调递增
      * 两种情况下更新该值: 
      * 1、更新当前运行任务的累计运行时间时
-     * 2、当任务从队列删除去，如任务睡眠或退出，这时候会查看剩下的任务的vruntime是否大于min_vruntime，如果是则更新该值。
+     * 2、当任务从队列删除去, 如任务睡眠或退出, 这时候会查看剩下的任务的vruntime是否大于min_vruntime, 如果是则更新该值. 
      */
 
     u64 min_vruntime;
@@ -219,14 +219,14 @@ struct cfs_rq {
 #endif
 	/* 该红黑树的root */
     struct rb_root tasks_timeline;
-     /* 下一个调度结点(红黑树最左边结点，最左边结点就是下个调度实体) */
+     /* 下一个调度结点(红黑树最左边结点, 最左边结点就是下个调度实体) */
     struct rb_node *rb_leftmost;
 
     /*
      * 'curr' points to currently running entity on this cfs_rq.
      * It is set to NULL otherwise (i.e when none are currently running).
-	 * curr: 当前正在运行的sched_entity（对于组虽然它不会在cpu上运行，但是当它的下层有一个task在cpu上运行，那么它所在的cfs_rq就把它当做是该cfs_rq上当前正在运行的sched_entity）
-     * next: 表示有些进程急需运行，即使不遵从CFS调度也必须运行它，调度时会检查是否next需要调度，有就调度next
+	 * curr: 当前正在运行的sched_entity(对于组虽然它不会在cpu上运行, 但是当它的下层有一个task在cpu上运行, 那么它所在的cfs_rq就把它当做是该cfs_rq上当前正在运行的sched_entity)
+     * next: 表示有些进程急需运行, 即使不遵从CFS调度也必须运行它, 调度时会检查是否next需要调度, 有就调度next
      *
      * skip: 略过进程(不会选择skip指定的进程调度)
      */
@@ -302,8 +302,8 @@ struct cfs_rq {
 | min\_vruntime | 跟踪记录队列上所有进程的**最小虚拟运行时间**. 这个值是实现与就绪队列相关的虚拟时钟的基础 |
 | tasks\_timeline | 用于在**按时间排序**的**红黑树**中管理所有进程 |
 | rb\_leftmost | 总是设置为指向红黑树最左边的节点, 即需要被调度的进程. 该值其实可以可以通过病例红黑树获得, 但是将这个值存储下来可以减少搜索红黑树花费的平均时间 |
-| curr | 当前正在运行的sched\_entity（对于组虽然它不会在cpu上运行，但是当它的下层有一个task在cpu上运行，那么它所在的cfs\_rq就把它当做是该cfs\_rq上当前正在运行的sched\_entity |
-| next | 表示有些进程急需运行，即使不遵从CFS调度也必须运行它，调度时会检查是否next需要调度，有就调度next |
+| curr | 当前正在运行的sched\_entity(对于组虽然它不会在cpu上运行, 但是当它的下层有一个task在cpu上运行, 那么它所在的cfs\_rq就把它当做是该cfs\_rq上当前正在运行的sched\_entity |
+| next | 表示有些进程急需运行, 即使不遵从CFS调度也必须运行它, 调度时会检查是否next需要调度, 有就调度next |
 | skip | 略过进程(不会选择skip指定的进程调度) |
 
 
@@ -312,12 +312,12 @@ struct cfs_rq {
 
 [Linux进程组调度机制分析](http://www.oenhan.com/task-group-sched)
 
-[ Linux内核学习笔记（一）CFS完全公平调度类 ](http://blog.chinaunix.net/uid-24757773-id-3266304.html)
+[ Linux内核学习笔记(一)CFS完全公平调度类 ](http://blog.chinaunix.net/uid-24757773-id-3266304.html)
 
 [CFS 调度器学习笔记](http://blog.csdn.net/melong100/article/details/6329201)
 
 
-[linux调度器（五）——进程管理与CFS](http://blog.csdn.net/wudongxu/article/details/8574737)
+[linux调度器(五)——进程管理与CFS](http://blog.csdn.net/wudongxu/article/details/8574737)
 
 [CFS进程调度](http://blog.csdn.net/arriod/article/details/7033895)
 
@@ -329,4 +329,4 @@ struct cfs_rq {
 
 [Linux 任务调度策略](http://blog.csdn.net/mtofum/article/details/44108043)
 
-[Linux内核学习6：内存管理(2)-进程地址空间](http://blog.csdn.net/gzbaishabi/article/details/39371523)
+[Linux内核学习6: 内存管理(2)-进程地址空间](http://blog.csdn.net/gzbaishabi/article/details/39371523)

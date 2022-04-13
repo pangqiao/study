@@ -188,9 +188,9 @@ import "github.com/spf13/cobra"
 
 ## 4.1. 基本结构
 
-通常**基于Cobra的应用程序**将遵循下面的**组织结构**，当然你也可以遵循自己的接口：
+通常**基于Cobra的应用程序**将遵循下面的**组织结构**，当然你也可以遵循自己的接口: 
 
-一般用 cobra 命令生成的项目结构如下：
+一般用 cobra 命令生成的项目结构如下: 
 
 ```
 ▾ appName/
@@ -204,7 +204,7 @@ import "github.com/spf13/cobra"
 
 ## 4.2. main.go
 
-在Cobra应用程序中，通常**main.go**文件非常空洞。它主要只干一件事：**初始化Cobra**。
+在Cobra应用程序中，通常**main.go**文件非常空洞。它主要只干一件事: **初始化Cobra**。
 
 ```go
 // main.go
@@ -230,7 +230,7 @@ Cobra提供自己的程序来创建你的程序并且添加你想要的命令。
 
 [这里](https://github.com/spf13/cobra/blob/master/cobra/README.md)你能找到相关信息
 
-windows系统下使用：
+windows系统下使用: 
 
 go get github.com/spf13/cobra/cobra
 
@@ -383,13 +383,13 @@ exit status 1
 
 ## 5.2. cobra add
 
-这个命令用来创建子命令，子命令就是像下面这样：
+这个命令用来创建子命令，子命令就是像下面这样: 
 
 * app serve
 * app config
 * app config create
 
-在你项目的目录下，运行下面这些命令：
+在你项目的目录下，运行下面这些命令: 
 
 ```
 # cobra add serve
@@ -631,7 +631,7 @@ func initConfig() {
 
 你需要在**main函数**里执行**rootCmd**。
 
-通常main.go文件非常空洞。它主要只干一件事：初始化Cobra。
+通常main.go文件非常空洞。它主要只干一件事: 初始化Cobra。
 
 ```go
 // main.go
@@ -697,13 +697,13 @@ var versionCmd = &cobra.Command{
 }
 ```
 
-子命令就是像下面这样：
+子命令就是像下面这样: 
 
 * app serve
 * app config
 * app config create
 
-同时，可以将命令**添加到父项**中，这个例子中**RootCmd便是父项**。只需要添加：
+同时，可以将命令**添加到父项**中，这个例子中**RootCmd便是父项**。只需要添加: 
 
 ```
 RootCmd.AddCommand(versionCmd)
@@ -749,7 +749,7 @@ var Source string
 
 ### 7.1.1. 持久标志(Persistent Flags)
 
-persistent意思是说这个flag能**任何子命令**下均可使用，适合**全局flag**：
+persistent意思是说这个flag能**任何子命令**下均可使用，适合**全局flag**: 
 
 '持久'表示每个在**那个命令下的命令**都将能**分配到这个标志**。
 
@@ -842,7 +842,7 @@ var cmd = &cobra.Command{
 
 # 9. 例子
 
-定义了**3个命令**。**2个在顶级**，一个（cmdTimes）是其中一个顶级命令的子命令。
+定义了**3个命令**。**2个在顶级**，一个(cmdTimes)是其中一个顶级命令的子命令。
 
 我们仅为**一个命令定义了标记Flag**。
 

@@ -53,8 +53,8 @@ PROCESSOR3_ESP                        equ        0x3fc000
 
 ;--------------------------------------------------------------------------------------------------------
 ; 为每个 logical 处理器定义各自 kernel stack  pointer
-; 分配方法：根据处理器 index 值来分配，每个处理器缺省使用 2K stack
-; 例如：
+; 分配方法: 根据处理器 index 值来分配, 每个处理器缺省使用 2K stack
+; 例如: 
 ;      processor #0 = PROCESSOR_KERNEL_ESP + PROCESSOR_STACK_SIZE + (PROCESSOR_STACK_SIZE * 0)
 ;      processor #1 = PROCESSOR_KERNEL_ESP + PROCESSOR_STACK_SIZE + (PROCESSOR_STACK_SIZE * 1)
 ;      processor #2 = PROCESSOR_KERNEL_ESP + PROCESSOR_STACK_SIZE + (PROCESSOR_STACK_SIZE * 2)

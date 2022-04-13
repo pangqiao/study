@@ -26,7 +26,7 @@
 
 中断在那个CPU上执行，取决于在**那个CPU上申请了vector**并**配置了对应的中断控制器(比如local APIC**)。如果想要**改变一个中断的执行CPU**，必须**重新申请vector并配置中断控制器**。一般通过**echo xxx > /proc/irq/xxx/affinity**来完成调整，同时irq\_balance一类软件可以用于完成中断的均衡。
 
-当外设触发一次中断后，一个大概的处理过程是：
+当外设触发一次中断后，一个大概的处理过程是: 
 
 1、具体CPU architecture相关的模块会进行现场保护
 
@@ -34,7 +34,7 @@
 
 3、通过common\_interrupt，调用do\_IRQ，完成vector到irq\_desc的转换(根据硬件的信息获取HW interrupt ID，并且通过irq domain模块翻译成IRQ number)，进入Generic interrupt layer(调用处理函数`generic_handle_irq_desc`)； 
 
-4、调用在**中断初始化的时候**，按照**中断特性**(level触发，edge触发等、simple等)初始化的irq\_desc:: handle\_irq，执行不同的通用处理接口，比如handle\_simple\_irq; 调用该IRQ number对应的high level irq event handler，在这个high level的handler中，会通过和interupt controller交互，进行中断处理的flow control（处理中断的嵌套、抢占等），当然最终会遍历该中断描述符的IRQ action list，调用外设的specific handler来处理该中断
+4、调用在**中断初始化的时候**，按照**中断特性**(level触发，edge触发等、simple等)初始化的irq\_desc:: handle\_irq，执行不同的通用处理接口，比如handle\_simple\_irq; 调用该IRQ number对应的high level irq event handler，在这个high level的handler中，会通过和interupt controller交互，进行中断处理的flow control(处理中断的嵌套、抢占等)，当然最终会遍历该中断描述符的IRQ action list，调用外设的specific handler来处理该中断
 
 5、这些通用处理接口会调用中断初始化的时候注册的外部中断处理函数；完成EOI等硬件相关操作；并完成中断处理的相关控制。
 
@@ -49,7 +49,7 @@
 gate_desc idt_table[NR_VECTORS] __page_aligned_bss;
 ```
 
-对中断相关的初始化，内核主要有以下工作： 
+对中断相关的初始化，内核主要有以下工作:  
 
 1、 设置used\_vectors，确保外设不能分配到X86保留使用的vector(**预留的vector范围为[0,31**]，另外还有其他通过apic\_intr_init等接口预留的系统使用的vector); 
 
@@ -63,7 +63,7 @@ gate_desc idt_table[NR_VECTORS] __page_aligned_bss;
 
 6、 初始化中断控制器(下一章描述) 
 
-以上工作主要在以下函数中完成：
+以上工作主要在以下函数中完成: 
 
 ```cpp
 start_kernel
@@ -74,7 +74,7 @@ start_kernel
             load_idt((const struct desc_ptr *)&idt_descr) 把&idt_descr的地址加载到idtr
                 native_load_idt()
     init_IRQ
-        初始化0号CPU的vector_irq：其vector[0x30-0x3f]和irq号[0-15](ISA中断)对应
+        初始化0号CPU的vector_irq: 其vector[0x30-0x3f]和irq号[0-15](ISA中断)对应
         x86_init.irqs.intr_init(native_init_IRQ)
             x86_init.irqs.pre_vector_init(init_ISA_irqs)
                 init_ISA_irqs:初始化ISA，设置irq号[0,15] (ISA中断)的irq_desc
@@ -82,7 +82,7 @@ start_kernel
             使用interrupt数组初始化设置外设中断idt entry
 ```
 
-这个过程会完成每个中断vector对应的idt entry的初始化，系统把这些中断vector分成以下几种： 
+这个过程会完成每个中断vector对应的idt entry的初始化，系统把这些中断vector分成以下几种:  
 
 1、**X86保留vector**，这些**vector包括[0,0x1f**]和**APIC等系统部件占用的vector**,对这些vector，会**记录在bitmap used\_vectors中**，确保**不会被外设分配使用**；同时这些vector都使用**各自的中断处理接口(！！！**)，其中断处理过程相对简单(没有generic interrupt layer的参与，CPU直接调用到各自的ISR)。 
 
@@ -92,7 +92,7 @@ start_kernel
 
 ### 中断处理接口interrupt数组 
 
-interrupt数组是内核中外设中断对应的IDT entry，其在`arch/x86/entry/entry_64.S`中定义，定义如下：
+interrupt数组是内核中外设中断对应的IDT entry，其在`arch/x86/entry/entry_64.S`中定义，定义如下: 
 
 ```assembly
 [arch/x86/include/asm/irq_vectors.h]
@@ -120,7 +120,7 @@ ENTRY(irq_entries_start)
 END(irq_entries_start)
 ```
 
-这段汇编的效果是：在**代码段**，生成了一个**符号`irq_entries_start`**，该符号对应的内容是一组可执行代码.
+这段汇编的效果是: 在**代码段**，生成了一个**符号`irq_entries_start`**，该符号对应的内容是一组可执行代码.
 
 X86 CPU在准备好了中断执行环境后，会调用**中断描述符定义的中断处理入口**；
 
@@ -161,7 +161,7 @@ struct irq_domain {
 ```
 
 - link: 用于将**irq domain**连接到**全局链表irq\_domain\_list**中。
-- name： irq domain 的**名称**。
+- name:  irq domain 的**名称**。
 - ops: irq domain映射**操作使用的方法集合**。
 - of\_node:对应**中断控制器的device node**。
 - hwirq\_max: 该**irq domain**支持**中断数量的最大值**。
@@ -213,7 +213,7 @@ int request_threaded_irq(unsigned int irq, irq_handler_t handler,
 
 ## 高层中断处理
 
-common\_interrupt在entry\_64.S中定义，其中关键步骤为：调用**do\_IRQ**，完成后会根据**环境**判断**是否需要执行调度**，最后执行**iretq指令**完成中断处理，iret指令的重要功能就是**恢复中断函数前的EFLAGS(执行中断入口前被入栈保存，并清零IF位关中断**)，并恢复执行被中断的程序(这里不一定会恢复到之前的执行环境，可能执行软中断处理，或者执行调度)。
+common\_interrupt在entry\_64.S中定义，其中关键步骤为: 调用**do\_IRQ**，完成后会根据**环境**判断**是否需要执行调度**，最后执行**iretq指令**完成中断处理，iret指令的重要功能就是**恢复中断函数前的EFLAGS(执行中断入口前被入栈保存，并清零IF位关中断**)，并恢复执行被中断的程序(这里不一定会恢复到之前的执行环境，可能执行软中断处理，或者执行调度)。
 
 do_IRQ的基本处理过程如下，其负责中断执行环境建立、vector到irq的转换等, 调用内核代码继续处理
 
@@ -421,7 +421,7 @@ local\_bh\_enable: 打开软中断. preempt\_count先减去(SOFTIRQ\_DISABLE\_OF
 
 ## 2.4 中断上下文
 
-**中断上下文**包括**硬中断上下文**（hardirq context)和**软中断上下文**（softirq context)。
+**中断上下文**包括**硬中断上下文**(hardirq context)和**软中断上下文**(softirq context)。
 
 - **硬件中断上下文**表示**硬件中断处理过程**。
 - **软中断上下文**包括**三部分**
@@ -437,7 +437,7 @@ preempt\_count成员在第3.1节中(进程管理)介绍过，如图5.6所示。
 
 **中断上下文(！！！**)包括**硬件中断处理过程**、**关BH临界区**、**软中断处理过程(！！！**)和**NMI中断**处理过程。在内核代码中经常需要判断当前状态是否处于进程上下文中，也就是希望确保当前不在任何中断上下文中，这种情况很常见，因为代码需要做一些睡眠之类的事情。**in\_interrupt**()宏返回false,则此时内核处于**进程上下文**中，否则处于**中断上下文**中。
 
-Linux内核中有几个宏来描述和判断这些情况：
+Linux内核中有几个宏来描述和判断这些情况: 
 
 ```cpp
 [include/linux/preempt_mask.h]
@@ -462,9 +462,9 @@ Linux内核中有几个宏来描述和判断这些情况：
 
 ## 3.1 背景和原理
 
-工作队列的基本原理是把work(需要推迟执行的函数）交由一个**内核线程**来执行，它总是在**进程上下文**中执行。工作队列的优点是利用进程上下文来执行中断下半部操作，因此工作队列允许**重新调度**和**睡眠**，是**异步执行的进程上下文**，另外它还能解决**软中断**和**tasklet**执行**时间过长**导致系统**实时性下降**等问题。
+工作队列的基本原理是把work(需要推迟执行的函数)交由一个**内核线程**来执行，它总是在**进程上下文**中执行。工作队列的优点是利用进程上下文来执行中断下半部操作，因此工作队列允许**重新调度**和**睡眠**，是**异步执行的进程上下文**，另外它还能解决**软中断**和**tasklet**执行**时间过长**导致系统**实时性下降**等问题。
 
-早起workqueue比较简单, 由多线程（Multi threaded，每个CPU默认一个工作线程）和单线程（Single threaded, 用户可以自行创建工作线程）组成. 容易导致①内核线程数量太多 ②并发性差(工作线程和CPU是绑定的) ③死锁(同一个队列上的数据有依赖容易死锁)
+早起workqueue比较简单, 由多线程(Multi threaded，每个CPU默认一个工作线程)和单线程(Single threaded, 用户可以自行创建工作线程)组成. 容易导致①内核线程数量太多 ②并发性差(工作线程和CPU是绑定的) ③死锁(同一个队列上的数据有依赖容易死锁)
 
 concurrency\-managed workqueues(CMWQ): BOUND类型(Per\-CPU, 每个CPU一个)和UNBOUND类型, **每种**都有**两个工作线程池(worker\-pool**): 普通优先级的工作(work)使用和高优先级的工作(work)使用. 工作线程池(worker\-pool)中线程数量是动态管理的. 工作线程睡眠时, 检查是否需要唤醒更多工作线程, 有需要则唤醒同一个工作线程池中idle状态的工作线程.
 
@@ -609,11 +609,11 @@ struct workqueue_struct {
 
 - **work\_struct**结构体代表的是**一个任务**，它指向一个待异步执行的函数，不管驱动还是子系统什么时候要执行这个函数，都必须把**work**加入到一个**workqueue**。
 
-- **worker**结构体代表一个**工作者线程（worker thread**），它主要**一个接一个的执行挂入到队列中的work**，如果没有work了，那么工作者线程就挂起，这些工作者线程被worker\-pool管理。
+- **worker**结构体代表一个**工作者线程(worker thread**)，它主要**一个接一个的执行挂入到队列中的work**，如果没有work了，那么工作者线程就挂起，这些工作者线程被worker\-pool管理。
 
 对于**驱动和子系统**的开发人员来说，接触到的**只有work**，而背后的处理机制是管理worker\-pool和处理挂入的work。
 
-- **worker\_pool**结构体用来**管理worker**，对于**每一种worker pool**都分**两种情况**：一种是处理**普通work**，另一种是处理**高优先级的work**。
+- **worker\_pool**结构体用来**管理worker**，对于**每一种worker pool**都分**两种情况**: 一种是处理**普通work**，另一种是处理**高优先级的work**。
 
 - **workqueue\_struct**结构体代表的是**工作队列**，工作队列分**unbound workqueue**和**bound workqueue**。bound workqueue就是**绑定到cpu**上的，**挂入到此队列中的work**只会在**相对应的cpu**上运行。**unbound workqueue不绑定到特定的cpu**，而且**后台线程池的数量也是动态**的，具体**workqueue关联到哪个worker pool**，这是由**workqueue\_attrs决定**的。
 
@@ -681,7 +681,7 @@ recheck:
 }
 ```
 
-- 动态地创建和管理一个工作线程池中的工作线程。假如发现有PENDING的work且当前工作池中没有正在运行的工作线程（worker\_pool\-\>nr\_running = 0)，那就唤醒idle状态的线程，否则就动态创建一个工作线程。
+- 动态地创建和管理一个工作线程池中的工作线程。假如发现有PENDING的work且当前工作池中没有正在运行的工作线程(worker\_pool\-\>nr\_running = 0)，那就唤醒idle状态的线程，否则就动态创建一个工作线程。
 - 如果发现一个work己经在同一个工作池的另外一个工作线程执行了，那就不处理该work。
 - 动态管理活跃工作线程数量，见keep\_working()函数。如果pool\-\>worklist中还有工作需要处理且工作线程池中活跃的线程小于等于1，那么保持当前工作线程继续工作，此功能可以防止工作线程泛滥。也就是限定活跃的工作线程数量小于等于1.
 

@@ -178,8 +178,8 @@ void print_mm_struct(struct mm_struct *mm)
     printk("code : [0x%lx, 0x%lx]\n", mm->start_code, mm->end_code);
     printk("data : [0x%lx, 0x%lx]\n", mm->start_data, mm->end_data);
 
-    //  heap从低地址向高地址扩展，做内存管理相对要简单些。
-    //  stack从高地址向低地址扩展，这样栈空间的起始位置就能确定下来，动态的调整栈空间大>
+    //  heap从低地址向高地址扩展, 做内存管理相对要简单些. 
+    //  stack从高地址向低地址扩展, 这样栈空间的起始位置就能确定下来, 动态的调整栈空间大>
     printk("heap : [0x%lx, 0x%lx]\n", mm->start_brk, mm->brk);
     printk("stack: [0x%lx, 0x%lx]\n", mm->start_stack - STACK_SIZE, mm->start_stack);
 }

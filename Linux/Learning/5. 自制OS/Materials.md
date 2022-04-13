@@ -2,9 +2,9 @@
 
 ## 1. 参考资料
 
-《JamesM's kernel development tutorials》：http://www.jamesmolloy.co.uk/tutorial_html/
+《JamesM's kernel development tutorials》: http://www.jamesmolloy.co.uk/tutorial_html/
 
-中文：http://wiki.0xffffff.org/ , 使用qemu模拟
+中文: http://wiki.0xffffff.org/ , 使用qemu模拟
 
 http://wiki.osdev.org/Main_Page
 
@@ -14,7 +14,7 @@ http://wiki.osdev.org/Main_Page
 
 《自己动手写操作系统》
 
-AndrewS.Tanenbaum和AlbertS.Woodhull的《操作系统：设计与实现》
+AndrewS.Tanenbaum和AlbertS.Woodhull的《操作系统: 设计与实现》
 
 于渊github: https://github.com/yyu
 
@@ -26,7 +26,7 @@ BiscuitOS: https://biscuitos.github.io/blog/BiscuitOS_Catalogue/
 
 ### 2.1. hurlex
 
-- 项目开发文档：
+- 项目开发文档: 
 
 http://hurlex.0xffffff.org/
 
@@ -59,5 +59,5 @@ https://github.com/haiwei-li/firekylin
 https://github.com/Gerry-Lee/MyOS
 
 
-计算机自制操作系统：完成总结 - kaka的文章 - 知乎
+计算机自制操作系统: 完成总结 - kaka的文章 - 知乎
 https://zhuanlan.zhihu.com/p/149465851

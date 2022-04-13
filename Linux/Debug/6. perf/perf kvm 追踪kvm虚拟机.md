@@ -72,7 +72,7 @@ perf kvm有几个变体:
 
 为了能够让kvm子工具正确解析guest的符号，我们首先需要把guest系统的/proc/kallsyms和 /proc/modules文件拷贝到host中。
 
-在host中运行下面命令：
+在host中运行下面命令: 
 
 ```
 # ssh guest “cat /proc/kallsyms” > /tmp/guest.kallsyms
@@ -82,15 +82,15 @@ perf kvm有几个变体:
 
 其中guest为host中guest os的名字，我们也可以用IP地址来代替guest的名字。
 
-注意：我们这里不用scp命令拷贝文件的原因是因为有时scp在拷贝guest的modules文件时会返回空文件。
+注意: 我们这里不用scp命令拷贝文件的原因是因为有时scp在拷贝guest的modules文件时会返回空文件。
 
 # 4. 利用sshfs自动读取guest的kallsyms和modules文件
 
 perf kvm可以利用sshfs来挂载guest的根文件系统，这样它就可以直接读取guest的kallsyms和modules文件了。
 
-sshfs需要fuse（the Filesystem in Userspace）如果你的系统中没有安装fuse，需要首先安装fuse。
+sshfs需要fuse(the Filesystem in Userspace)如果你的系统中没有安装fuse，需要首先安装fuse。
 
-在host中运行下列命令：
+在host中运行下列命令: 
 
 ```
 # mkdir -p /tmp/guestmount
@@ -102,7 +102,7 @@ sshfs需要fuse（the Filesystem in Userspace）如果你的系统中没有安�
 
 这样我们就可以利用perf kvm的—guestmount参数来指定guest的文件系统了。
 
-当我们用完perf kvm后需要卸载guest的文件系统：
+当我们用完perf kvm后需要卸载guest的文件系统: 
 
 ```
 # fusermount -u /tmp/guestmount/24764
@@ -110,7 +110,7 @@ sshfs需要fuse（the Filesystem in Userspace）如果你的系统中没有安�
 
 # 5. 记录guest的性能事件
 
-经过了上面的准备工作我们就可以记录guest的性能事件了，利用perf kvm record命令来记录guest的性能事件：
+经过了上面的准备工作我们就可以记录guest的性能事件了，利用perf kvm record命令来记录guest的性能事件: 
 
 ```
 # perf kvm --host --guest --guestkallsyms=/tmp/guest.kallsyms --guestmodules=/tmp/guest.modules record -a
@@ -130,13 +130,13 @@ sshfs需要fuse（the Filesystem in Userspace）如果你的系统中没有安�
 
 我们可以发送SIGINT命令结束采样，注意如果perf被非SIGINT指令结束，比如SIGTERM 或者SIGQUIT，那么perf kvm report命令将不能正确的解析采样文件。
 
-默认情况下，如果我们只记录host的性能事件那么生成的采样文件的名字为：perf.data.host，如果我们只记录guest的性能事件，那么生成的采样文件的名字为：perf.data.guest。如果我们同时记录host和guest的性能事件，那么生成的采样文件的名字为：perf.data.kvm。
+默认情况下，如果我们只记录host的性能事件那么生成的采样文件的名字为: perf.data.host，如果我们只记录guest的性能事件，那么生成的采样文件的名字为: perf.data.guest。如果我们同时记录host和guest的性能事件，那么生成的采样文件的名字为: perf.data.kvm。
 
 按 Ctrl-C 停止纪录。
 
 # 6. 分析guest上的性能事件
 
-有了上面的采样文件，我们就可以利用perf kvm report来查看性能事件了，执行以下命令：
+有了上面的采样文件，我们就可以利用perf kvm report来查看性能事件了，执行以下命令: 
 
 ```
 # perf kvm --host --guest --guestkallsyms=/tmp/guest.kallsyms --guestmodules=/tmp/guest.modules report -i /tmp/perf.data.kvm
@@ -146,7 +146,7 @@ sshfs需要fuse（the Filesystem in Userspace）如果你的系统中没有安�
 perf kvm --host --guest --guestmodules=guest-modules report -i perf.data.kvm --force > analyze
 ```
 
-我们会得到如图1-01的分析结果：
+我们会得到如图1-01的分析结果: 
 
 ![2020-01-29-00-44-46.png](./images/2020-01-29-00-44-46.png)
 
@@ -156,7 +156,7 @@ perf kvm --host --guest --guestmodules=guest-modules report -i perf.data.kvm --f
 
 将来perf kvm可能通过增加guest的PID的方式来分别指定每个guest的kallsyms和modules文件，那么，就可以正确解析每个guest的符号。
 
-通过上面的介绍，我们可以看到，利用perf kvm子工具，我们可以方便的在host中监测guest中的性能事件，这对于我们分析guest的性能是非常方便的。Perf kvm子工具还支持其它的perf的命令，比如：stat等。
+通过上面的介绍，我们可以看到，利用perf kvm子工具，我们可以方便的在host中监测guest中的性能事件，这对于我们分析guest的性能是非常方便的。Perf kvm子工具还支持其它的perf的命令，比如: stat等。
 
 
 # 7. perf kvm stat record/report 使用

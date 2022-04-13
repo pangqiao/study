@@ -32,7 +32,7 @@ STATUS_DS_NOT_READY                     EQU     10h
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       初始化处理器的 debug store 功能单元
 ;-------------------------------------------------
 init_debug_store_unit:
@@ -132,8 +132,8 @@ init_debug_unit.done:
 ;       none
 ; output:
 ;       成功时返回 Bts buffer，　失败时返回 0
-; 描述：
-;       得到 BTS buffer 基址（在开启 paging 后使用）
+; 描述: 
+;       得到 BTS buffer 基址(在开启 paging 后使用)
 ;-------------------------------------------------
 get_bts_buffer_base:
         push ecx
@@ -152,8 +152,8 @@ get_bts_buffer_base:
 ;       none
 ; output:
 ;       成功时返回 PEBS buffer，　失败时返回 0
-; 描述：
-;       得到 PEBS buffer 基址（在开启 paging 后使用）
+; 描述: 
+;       得到 PEBS buffer 基址(在开启 paging 后使用)
 ;-------------------------------------------------
 get_pebs_buffer_base:
         push ecx
@@ -235,9 +235,9 @@ enable_branch_trace_store.done:
 ;       none
 ; output:
 ;       eax - status
-; 描述：
+; 描述: 
 ;       开启 BTINT 机制，应在 enable_bts() 之后调用
-; 示例：
+; 示例: 
 ;       call enable_bts                 ; 开启 BTS 机制
 ;       ...
 ;       call enable_btint               ; 启用 BTINT
@@ -336,7 +336,7 @@ disable_bts.done:
 
 
 ;--------------------------------
-; disable_btint()：关闭 BTINT 功能
+; disable_btint(): 关闭 BTINT 功能
 ;--------------------------------
 disable_btint:
         push ecx
@@ -497,7 +497,7 @@ support_enhancement_pebs:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       更新处理器 debug 相关的功能记录
 ;----------------------------------------------
 init_debug_capabilities_info:
@@ -622,11 +622,11 @@ set_ds_management_record:
         jz set_ds_management_record.done                                ; 分配 BTS buffer 失败
 
         ;;
-        ;; 设置 bts 管理记录，初始状态下：
+        ;; 设置 bts 管理记录，初始状态下: 
         ;; 1) BTS base = BTS buffer
         ;; 2) BTS index = BTS buffer
         ;; 3) BTS maximum = BTS record size * maximum
-        ;; 4) BTS threshold = BTS maximum + BTS record size（即 BtsMaximum 下一条记录）
+        ;; 4) BTS threshold = BTS maximum + BTS record size(即 BtsMaximum 下一条记录)
         ;;
         mov ebx, [gs: PCB.BtsBasePointer]
         mov [ebx], esi
@@ -642,7 +642,7 @@ set_ds_management_record:
         mov [ebx], eax
       
         ;;
-        ;; 设置 pebs 管理记录，初始状态下：
+        ;; 设置 pebs 管理记录，初始状态下: 
         ;; 1) PEBS base = PEBS buffer
         ;; 2) PEBS index = PEBS buffer
         ;; 3) PEBS maximum = PEBS record size * maximum
@@ -792,7 +792,7 @@ reset_bts_index:
 
 
 ;----------------------------------------------
-; reset_pebs_index()：重置 PEBS index 值为 base
+; reset_pebs_index(): 重置 PEBS index 值为 base
 ; input:
 ;       none
 ; output:
@@ -813,7 +813,7 @@ reset_pebs_index:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       更新 [gs: PCB.PebsBufferIndex]变量的值，保持检测 PEBS 中断
 ;       [gs: PCB.PebsBufferIndex] 记录着“当前”的 PEBS index 值
 ;------------------------------------------------------------

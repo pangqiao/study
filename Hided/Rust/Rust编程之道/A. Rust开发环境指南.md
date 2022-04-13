@@ -137,7 +137,7 @@ export RUSTUP_UPDATE_ROOT=http://mirrors.ustc.edu.cn/rust-static/rustup
 
 2. 设置 cargo 使用的国内镜像
 
-在`CARGO_HOME`目录下(默认是`～/.cargo`)建立一个名叫config的文件, 内容如下：
+在`CARGO_HOME`目录下(默认是`～/.cargo`)建立一个名叫config的文件, 内容如下: 
 
 ```
 [source.crates-io]
@@ -162,7 +162,7 @@ RUN curl https://sh.rustup.rs -sSf | sh -s -- --default-toolchain nightly -y
 
 如果你不想使用Nightly版本, 可以将nightly换成stable.
 
-如果你想指定固定的nightly版本, 则可以再添加如下一行命令：
+如果你想指定固定的nightly版本, 则可以再添加如下一行命令: 
 
 ```
 RUN rustup default nightly-2018-05-12
@@ -219,7 +219,7 @@ Rust 语言服务器(RLS)基于 LSP(Language Server Protocol), 即语言服务�
 
 它通过用于开发工具和语言服务器间通信的 JSON-RPC 标准, 能够让编程工具提供实时反馈的详细信息并以此实现多种强大功能, 比如符号搜寻、语法分析、代码自动补全、移至定义、描绘轮廓与重构等. Rust 语言服务器集成了这些逻辑作为后端, 并通过标准的 LSP 提供给前端工具, 它被设计为与前端无关, 可以被不同的编辑器和 IDE 广泛采用.
 
-RLS 就是 Rust 官方为 Visual Studio Code 提供的 Rust 语言服务器**前端参考实现**, 它支持：
+RLS 就是 Rust 官方为 Visual Studio Code 提供的 Rust 语言服务器**前端参考实现**, 它支持: 
 
 * 代码补全
 
@@ -247,7 +247,7 @@ RLS 是Rust Language Server的简写, 微软提出编程语言服务器的概念
 
 > 不依赖 racer?
 
-Rust Analyzer：一款旨在带来优秀 IDE 体验的编译器: https://www.infoq.cn/article/lvLv4lmcMzTDg7ZTOMdY, 2020 年 2 月 13 日
+Rust Analyzer: 一款旨在带来优秀 IDE 体验的编译器: https://www.infoq.cn/article/lvLv4lmcMzTDg7ZTOMdY, 2020 年 2 月 13 日
 
 RA 是一个模块化编译器前端, 目的是为了带来优秀的 Rust IDE 体验
 

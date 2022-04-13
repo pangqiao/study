@@ -21,7 +21,7 @@ MBOOT_CHECKSUM 		equ 	- (MBOOT_HEADER_MAGIC + MBOOT_HEADER_FLAGS)
 
 ; 符合Multiboot规范的 OS 映象需要这样一个 magic Multiboot 头
 
-; Multiboot 头的分布必须如下表所示：
+; Multiboot 头的分布必须如下表所示: 
 ; ----------------------------------------------------------
 ; 偏移量  类型  域名        备注
 ;

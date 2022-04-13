@@ -5,7 +5,7 @@
 /usr/bin/ld: 找不到 -lm
 ```
 
-这些讯息会随着编译不同类型的source code 而有不同的结果出来如：
+这些讯息会随着编译不同类型的source code 而有不同的结果出来如: 
 
 ```
 /usr/bin/ld: cannot find -lc
@@ -13,53 +13,53 @@
 /usr/bin/ld: cannot find -lXtst
 ```
 
-其中xxx即表示函式库文件名称，如上例的：libc.so、libltdl.so、libXtst.so。
-其命名规则是：lib+库名(即xxx)+.so。
+其中xxx即表示函式库文件名称，如上例的: libc.so、libltdl.so、libXtst.so。
+其命名规则是: lib+库名(即xxx)+.so。
 
-会发生这样的原因有以下三种情形：
+会发生这样的原因有以下三种情形: 
 1. 系统没有安装相对应的lib
 2. 相对应的lib版本不对
 3. lib(.so档)的symbolic link 不正确，没有连结到正确的函式库文件(.so)
 
-对于上述三种原因有一篇文章写的很棒可参考这一篇文章的第４点：
+对于上述三种原因有一篇文章写的很棒可参考这一篇文章的第４点: 
 
 [gcc命令祥解](http://passby.tk/index.php?q=YUhSMGNEb3ZMM0JoYzNOaWVTNTBheTlwYm1SbGVDNXdhSEEvY1QxWlZXaFRUVWRPUldJeldrMU5NbEY2V2tock1FMVZNVmxWYlhocVRURktkMWx0TVdwa1ZtdDVUMWhTVFUxdFozZFpiR1F6WkdzeGNWVllXazVXUjJRMFZHNXJNV0l5VWtoTldFMGxNMFFtT1RnMU56VXhNakEx&1702098065)
 
 
-解决方法：
+解决方法: 
 (1)先判断在/usr/lib 下的相对应的函式库文件(.so) 的symbolic link 是否正确
 若不正确改成正确的连结目标即可解决问题。
 
 (2)若不是symbolic link 的问题引起，而是系统缺少相对应的lib安装lib即可解决。
 
-(3)如何安装缺少的lib：
+(3)如何安装缺少的lib: 
 
-以上面三个错误讯息为例：
+以上面三个错误讯息为例: 
 
 - 错误1缺少libc的LIB
 - 错误2缺少libltdl的LIB
 - 错误3缺少libXtst的LIB 
 　
 
-以Ubuntu为例：
+以Ubuntu为例: 
 
-先搜寻相对应的LIB再进行安装的作业如：
+先搜寻相对应的LIB再进行安装的作业如: 
 
 - apt-cache search libc-dev
 - apt-cache search libltdl-dev 
 - apt-cache search libXtst-dev
 
-实例：
+实例: 
 
-在进行输入法gcin的Source Code的编译时出现以下的错误讯息：
+在进行输入法gcin的Source Code的编译时出现以下的错误讯息: 
 
 /usr/bin/ld: cannot find -lXtst
 
-经检查后发现是：
+经检查后发现是: 
 
 lib(.so档)的symbolic link 不正确
 
-解决方法如下：
+解决方法如下: 
 
 ```
 cd /usr/lib
@@ -68,7 +68,7 @@ ln -s libXtst.so.6 libXtst.so
 
 如果在/usr/lib的目录下找不到libXtst.so档，那么就表示系统没有安装libXtst的函式库。
 
-解法如下：
+解法如下: 
 
 ```
 apt-get install libxtst-dev
@@ -78,7 +78,7 @@ apt-get install libxtst-dev
 
 主要的原因是库文件并没有导入的ld检索目录中。
 
-解决方式：
+解决方式: 
 
 1. 确认库文件是否存在，比如-l123, 在/usr/lib, /usr/local/lib,或者其他自定义的lib下有无lib123.so, 如果只是存在lib123.so.1,那么可以通过ln \-sv lib123.so.1   lib123.so，建立一个连接重建lib123.so.
 
@@ -126,4 +126,4 @@ ldconfig可用的选项说明如下:
 
 (12) - 或 --help 或 --usage : 这三个选项作用相同,都是让ldconfig打印出其帮助信息,而后退出.
 
-注：先去分析编译的参数，如果是-static的，那么需要装的包是glibc-static，而不是glibc
+注: 先去分析编译的参数，如果是-static的，那么需要装的包是glibc-static，而不是glibc

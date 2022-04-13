@@ -17,7 +17,7 @@ protected_length dw     PROTECTED_END - PROTECTED_BEGIN         ; protected 模�
 
 entry:
         
-;; 为了完成实验，关闭时间中断和键盘中断
+;; 为了完成实验, 关闭时间中断和键盘中断
         ;call disable_timer
         ;sti
 ;; 设置 #PF handler
@@ -93,7 +93,7 @@ entry:
 
 
 ;
-;** 实验 20-3：打印 status信息及 stack
+;** 实验 20-3: 打印 status信息及 stack
 ;
 
         finit                                ; 初始化 x87 FPU
@@ -238,7 +238,7 @@ do_keyboard_handler:
         iret        
         
 ;---------------------------------------------
-; apic_timer_handler()：这是 APIC TIMER 的 ISR
+; apic_timer_handler(): 这是 APIC TIMER 的 ISR
 ;---------------------------------------------
 apic_timer_handler:
         jmp do_apic_timer_handler

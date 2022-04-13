@@ -2,13 +2,13 @@
 
 >  
 http://debugo.com/python-redis/  
-Redis源码分析：http://blog.csdn.net/androidlushangderen/article/details/39803337  
-github中文源码分析：https://github.com/linyiqun/Redis-Code  
-gitbook教程以及命令参考：https://www.gitbook.com/book/wizardforcel/w3school-redis/details
+Redis源码分析: http://blog.csdn.net/androidlushangderen/article/details/39803337  
+github中文源码分析: https://github.com/linyiqun/Redis-Code  
+gitbook教程以及命令参考: https://www.gitbook.com/book/wizardforcel/w3school-redis/details
 
 # Redis源码结构解析
 
-分析源码的第一步，先别急着想着从哪开始看起，先浏览一下源码结构，可以模块式的渐入，不过比较坑爹的是，Redis的源码全部放在在里面的src目录里，一下90多个文件统统在里面。所以先将其进行拆分，按照功能拆分，大概的拆分结果如下：
+分析源码的第一步，先别急着想着从哪开始看起，先浏览一下源码结构，可以模块式的渐入，不过比较坑爹的是，Redis的源码全部放在在里面的src目录里，一下90多个文件统统在里面。所以先将其进行拆分，按照功能拆分，大概的拆分结果如下: 
 
 ![redis结构](images/1.png)
 

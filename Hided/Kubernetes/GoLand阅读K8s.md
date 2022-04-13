@@ -46,7 +46,7 @@ k8s是用go语言写的，看k8s的源码首先要安装go的环境，然后下�
 * vscode(go插件)
 * Intellij IDEA for golang
 
-注：刚开始Intellij idea支持go开发是使用的一个go插件，后来推出了专门的GoLand, 这个有个优点: 每一个打开的工程都可以设置自己的GOPATH。
+注: 刚开始Intellij idea支持go开发是使用的一个go插件，后来推出了专门的GoLand, 这个有个优点: 每一个打开的工程都可以设置自己的GOPATH。
 
 # 5. k8s源码下载
 
@@ -56,7 +56,7 @@ k8s是用go语言写的，看k8s的源码首先要安装go的环境，然后下�
 
 k8s的源码下载后是无法直接编译和查看啊，k8s也依赖很多golang的开源代码，而且如果用ide打开后有很多依赖是无法找到的，所以要现整理一下。
 
-在上面我们设置的**GOPATH目录**下，新建文件夹：\$**GOPATH/src/k8s.io/kubernetes**；
+在上面我们设置的**GOPATH目录**下，新建文件夹: \$**GOPATH/src/k8s.io/kubernetes**；
 
 ```
 # mkdir -p $GOPATH/src/k8s.io/kubernetes
@@ -74,7 +74,7 @@ k8s的源码下载后是无法直接编译和查看啊，k8s也依赖很多golan
 * vender
 * third\_party
 
-为了验证k8s的代码能否找到相应的依赖，我们可以通过如下方式验证：
+为了验证k8s的代码能否找到相应的依赖，我们可以通过如下方式验证: 
 
 * 命令行进入$GOPATH/src/k8s.io/kubernetes/cmd/kube\-proxy目录
 
@@ -98,7 +98,7 @@ app  BUILD  proxy.go
 app  BUILD  kube-proxy  proxy.go
 ```
 
-注：关于go的依赖机制vendor可以参考：https://studygolang.com/articles/4607
+注: 关于go的依赖机制vendor可以参考: https://studygolang.com/articles/4607
 
 # 7. IDE打开
 
@@ -121,7 +121,7 @@ app  BUILD  kube-proxy  proxy.go
 
 目录名 | 用途
 ----|---
-cmd | 每个组件代码入口（main函数）
+cmd | 每个组件代码入口(main函数)
 pkg | 各个组件的具体功能实现
 staging | 已经分库的项目
 vendor | 依赖
@@ -130,7 +130,7 @@ vendor | 依赖
 
 包括kubernetes所有**后台进程的代码**包括apiserver、controller manager、proxy、kuberlet等进程
 
-每个组件代码入口（main函数）
+每个组件代码入口(main函数)
 
 ## 8.2. pkg
 

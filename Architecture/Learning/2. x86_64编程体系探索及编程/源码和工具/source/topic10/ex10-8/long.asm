@@ -157,7 +157,7 @@ entry64:
 
 ;;;; ######  下面是实验测试代码 ##########        
 
-;; 切换到 compatibility mode（进入 3 级）
+;; 切换到 compatibility mode(进入 3 级)
         push user_data32_sel | 3
         push COMPATIBILITY_USER_ESP
         push user_code32_sel | 3
@@ -166,7 +166,7 @@ entry64:
 
 ;;        call QWORD far [conforming_pointer]                        ; 测试conforimg 代码
         
-;; 从 64 位切换到 compatibility mode（权限不改变，0 级）　        
+;; 从 64 位切换到 compatibility mode(权限不改变, 0 级)　        
 ;        jmp QWORD far [compatibility_pointer]
 
 
@@ -239,11 +239,11 @@ msg1        db 'entry long mode', 10, 0
 
 
 
-;; ###### 下面是 64 位例程：#######
+;; ###### 下面是 64 位例程: #######
 
         bits 64
 
-;; 0x40号中断例程：
+;; 0x40号中断例程: 
 system_service:
         jmp do_system_service
 smsg1        db '---> Interrupt handler: RSP0 of 64-bit TSS is : ', 0
@@ -285,7 +285,7 @@ do_interrupt_handler:
 ;                rsi: string
 ; output:
 ;                rax: length
-; 描述：
+; 描述: 
 ;                这个函数调用conforming段的库 routine
 ;-----------------------------------------------
 strlen:

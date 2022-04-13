@@ -13,27 +13,27 @@
 	* [1.7 列出所有可用单元](#17-列出所有可用单元)
 	* [1.8 列出所有运行中单元](#18-列出所有运行中单元)
 	* [1.9 列出所有失败单元](#19-列出所有失败单元)
-	* [1.10 检查某个单元（如 cron.service）是否启用](#110-检查某个单元如-cronservice是否启用)
+	* [1.10 检查某个单元(如 cron.service)是否启用](#110-检查某个单元如-cronservice是否启用)
 	* [1.11 检查某个单元或服务是否运行](#111-检查某个单元或服务是否运行)
 * [2 使用Systemctl控制并管理服务](#2-使用systemctl控制并管理服务)
-	* [2.1 列出所有服务（包括启用的和禁用的）](#21-列出所有服务包括启用的和禁用的)
+	* [2.1 列出所有服务(包括启用的和禁用的)](#21-列出所有服务包括启用的和禁用的)
 	* [2.2 启动、重启、停止、重载服务以及检查服务](#22-启动-重启-停止-重载服务以及检查服务)
-	* [2.3 如何激活服务并在启动时启用或禁用服务（即系统启动时自动启动服务）](#23-如何激活服务并在启动时启用或禁用服务即系统启动时自动启动服务)
-	* [2.4 如何屏蔽（让它不能启动）或显示服务](#24-如何屏蔽让它不能启动或显示服务)
+	* [2.3 如何激活服务并在启动时启用或禁用服务(即系统启动时自动启动服务)](#23-如何激活服务并在启动时启用或禁用服务即系统启动时自动启动服务)
+	* [2.4 如何屏蔽(让它不能启动)或显示服务](#24-如何屏蔽让它不能启动或显示服务)
 	* [2.5 使用systemctl命令杀死服务](#25-使用systemctl命令杀死服务)
 * [3 使用Systemctl控制并管理挂载点](#3-使用systemctl控制并管理挂载点)
 	* [3.1 列出所有系统挂载点](#31-列出所有系统挂载点)
 	* [3.2 挂载、卸载、重新挂载、重载系统挂载点并检查系统中挂载点状态](#32-挂载-卸载-重新挂载-重载系统挂载点并检查系统中挂载点状态)
-	* [3.3 在启动时激活、启用或禁用挂载点（系统启动时自动挂载）](#33-在启动时激活-启用或禁用挂载点系统启动时自动挂载)
-	* [3.4 在Linux中屏蔽（让它不能启用）或可见挂载点](#34-在linux中屏蔽让它不能启用或可见挂载点)
+	* [3.3 在启动时激活、启用或禁用挂载点(系统启动时自动挂载)](#33-在启动时激活-启用或禁用挂载点系统启动时自动挂载)
+	* [3.4 在Linux中屏蔽(让它不能启用)或可见挂载点](#34-在linux中屏蔽让它不能启用或可见挂载点)
 * [4 使用Systemctl控制并管理套接口](#4-使用systemctl控制并管理套接口)
 	* [4.1 列出所有可用系统套接口](#41-列出所有可用系统套接口)
 	* [4.2 在Linux中启动、重启、停止、重载套接口并检查其状态](#42-在linux中启动-重启-停止-重载套接口并检查其状态)
-	* [4.3 在启动时激活套接口，并启用或禁用它（系统启动时自启动）](#43-在启动时激活套接口并启用或禁用它系统启动时自启动)
-	* [4.4 屏蔽（使它不能启动）或显示套接口](#44-屏蔽使它不能启动或显示套接口)
+	* [4.3 在启动时激活套接口, 并启用或禁用它(系统启动时自启动)](#43-在启动时激活套接口并启用或禁用它系统启动时自启动)
+	* [4.4 屏蔽(使它不能启动)或显示套接口](#44-屏蔽使它不能启动或显示套接口)
 * [5 服务的CPU利用率](#5-服务的cpu利用率)
 	* [5.1 获取当前某个服务的CPU分配额](#51-获取当前某个服务的cpu分配额)
-	* [5.2 将某个服务（httpd.service）的CPU分配份额限制为2000 CPUShares\/](#52-将某个服务httpdservice的cpu分配份额限制为2000-cpushares)
+	* [5.2 将某个服务(httpd.service)的CPU分配份额限制为2000 CPUShares\/](#52-将某个服务httpdservice的cpu分配份额限制为2000-cpushares)
 	* [5.3 检查某个服务的所有配置细节](#53-检查某个服务的所有配置细节)
 	* [5.4 分析某个服务的关键链](#54-分析某个服务的关键链)
 	* [5.5 获取某个服务的依赖性列表](#55-获取某个服务的依赖性列表)
@@ -43,18 +43,18 @@
 	* [6.1 启动系统救援模式](#61-启动系统救援模式)
 	* [6.2 进入紧急模式](#62-进入紧急模式)
 	* [6.3 列出当前使用的运行等级](#63-列出当前使用的运行等级)
-	* [6.4 启动运行等级5，即图形模式](#64-启动运行等级5即图形模式)
-	* [6.5 启动运行等级3，即多用户模式（命令行）](#65-启动运行等级3即多用户模式命令行)
+	* [6.4 启动运行等级5, 即图形模式](#64-启动运行等级5即图形模式)
+	* [6.5 启动运行等级3, 即多用户模式(命令行)](#65-启动运行等级3即多用户模式命令行)
 	* [6.6 设置多用户模式或图形模式为默认运行等级](#66-设置多用户模式或图形模式为默认运行等级)
 	* [6.7 重启、停止、挂起、休眠系统或使系统进入混合睡眠](#67-重启-停止-挂起-休眠系统或使系统进入混合睡眠)
 * [7 参考](#7-参考)
 
 <!-- /code_chunk_output -->
-Systemctl是一个systemd工具，主要负责控制systemd系统和服务管理器。
+Systemctl是一个systemd工具, 主要负责控制systemd系统和服务管理器. 
 
-Systemd是一个系统管理守护进程、工具和库的集合，用于取代System V初始进程。Systemd的功能是用于集中管理和配置类UNIX系统。
+Systemd是一个系统管理守护进程、工具和库的集合, 用于取代System V初始进程. Systemd的功能是用于集中管理和配置类UNIX系统. 
 
-在Linux生态系统中，Systemd被部署到了大多数的标准Linux发行版中，只有为数不多的几个发行版尚未部署。Systemd通常是所有其它守护进程的父进程，但并非总是如此。
+在Linux生态系统中, Systemd被部署到了大多数的标准Linux发行版中, 只有为数不多的几个发行版尚未部署. Systemd通常是所有其它守护进程的父进程, 但并非总是如此. 
 
 # 1 Systemd和Systemctl基础
 
@@ -90,7 +90,7 @@ dbus      5466     1  7 5月21 ?       16:21:20 /usr/bin/dbus-daemon --system --
 root      5501     1  0 5月21 ?       00:00:07 /usr/lib/systemd/systemd-logind
 ```
 
-注意：systemd是作为父进程（PID=1）运行的。在上面带（\-e）参数的ps命令输出中，选择所有进程，（\-a）选择除会话前导外的所有进程，并使用（\-f）参数输出完整格式列表（即 \-eaf）。
+注意: systemd是作为父进程(PID=1)运行的. 在上面带(\-e)参数的ps命令输出中, 选择所有进程, (\-a)选择除会话前导外的所有进程, 并使用(\-f)参数输出完整格式列表(即 \-eaf). 
 
 ## 1.4 分析systemd启动进程
 
@@ -143,7 +143,7 @@ graphical.target @26.024s
                                       └─dev-mapper-centos\x2dswap.device @718ms
 ```
 
-重要：Systemctl接受服务（.service），挂载点（.mount），套接口（.socket）和设备（.device）作为单元。
+重要: Systemctl接受服务(.service), 挂载点(.mount), 套接口(.socket)和设备(.device)作为单元. 
 
 ## 1.7 列出所有可用单元
 
@@ -199,7 +199,7 @@ SUB    = The low-level unit activation state, values depend on unit type.
 To show all installed unit files use 'systemctl list-unit-files'.
 ```
 
-## 1.10 检查某个单元（如 cron.service）是否启用
+## 1.10 检查某个单元(如 cron.service)是否启用
 
 ```
 [root@gerrylee project]# systemctl is-enabled crond.service
@@ -220,7 +220,7 @@ enabled
 
 # 2 使用Systemctl控制并管理服务
 
-## 2.1 列出所有服务（包括启用的和禁用的）
+## 2.1 列出所有服务(包括启用的和禁用的)
 
 ```
 [root@gerrylee project]# systemctl list-unit-files --type=service
@@ -248,7 +248,7 @@ systemctl reload httpd.service
 systemctl status httpd.service
 ```
 
-## 2.3 如何激活服务并在启动时启用或禁用服务（即系统启动时自动启动服务）
+## 2.3 如何激活服务并在启动时启用或禁用服务(即系统启动时自动启动服务)
 
 ```
 systemctl is-active httpd.service
@@ -256,7 +256,7 @@ systemctl enable httpd.service
 systemctl disable httpd.service
 ```
 
-## 2.4 如何屏蔽（让它不能启动）或显示服务
+## 2.4 如何屏蔽(让它不能启动)或显示服务
 
 ```
 # systemctl mask httpd.service
@@ -290,7 +290,7 @@ systemctl reload tmp.mount
 systemctl status tmp.mount
 ```
 
-## 3.3 在启动时激活、启用或禁用挂载点（系统启动时自动挂载）
+## 3.3 在启动时激活、启用或禁用挂载点(系统启动时自动挂载)
 
 ```
 systemctl is-active tmp.mount
@@ -298,7 +298,7 @@ systemctl enable tmp.mount
 systemctl disable  tmp.mount
 ```
 
-## 3.4 在Linux中屏蔽（让它不能启用）或可见挂载点
+## 3.4 在Linux中屏蔽(让它不能启用)或可见挂载点
 
 ```
 # systemctl mask tmp.mount
@@ -326,7 +326,7 @@ systemctl list-unit-files --type=socket
 # systemctl status cups.socket
 ```
 
-## 4.3 在启动时激活套接口，并启用或禁用它（系统启动时自启动）
+## 4.3 在启动时激活套接口, 并启用或禁用它(系统启动时自启动)
 
 ```
 # systemctl is-active cups.socket
@@ -334,7 +334,7 @@ systemctl list-unit-files --type=socket
 # systemctl disable cups.socket
 ```
 
-## 4.4 屏蔽（使它不能启动）或显示套接口
+## 4.4 屏蔽(使它不能启动)或显示套接口
 
 ```
 # systemctl mask cups.socket
@@ -353,9 +353,9 @@ rm '/etc/systemd/system/cups.socket'
 CPUShares=1024
 ```
 
-注意：各个服务的默认CPU分配份额=1024，你可以增加/减少某个进程的CPU分配份额。
+注意: 各个服务的默认CPU分配份额=1024, 你可以增加/减少某个进程的CPU分配份额. 
 
-## 5.2 将某个服务（httpd.service）的CPU分配份额限制为2000 CPUShares\/
+## 5.2 将某个服务(httpd.service)的CPU分配份额限制为2000 CPUShares\/
 
 ```
 # systemctl set-property httpd.service CPUShares=2000
@@ -363,7 +363,7 @@ CPUShares=1024
 CPUShares=2000
 ```
 
-注意：当你为某个服务设置CPUShares，会自动创建一个以服务名命名的目录（如 httpd.service），里面包含了一个名为90-CPUShares.conf的文件，该文件含有CPUShare限制信息，你可以通过以下方式查看该文件：
+注意: 当你为某个服务设置CPUShares, 会自动创建一个以服务名命名的目录(如 httpd.service), 里面包含了一个名为90-CPUShares.conf的文件, 该文件含有CPUShare限制信息, 你可以通过以下方式查看该文件: 
 
 ```
 # vi /etc/systemd/system/httpd.service.d/90-CPUShares.conf
@@ -422,7 +422,7 @@ CPUShares=2000
 # systemctl get-default
 ```
 
-## 6.4 启动运行等级5，即图形模式
+## 6.4 启动运行等级5, 即图形模式
 
 ```
 # systemctl isolate runlevel5.target
@@ -430,7 +430,7 @@ CPUShares=2000
 # systemctl isolate graphical.target
 ```
 
-## 6.5 启动运行等级3，即多用户模式（命令行）
+## 6.5 启动运行等级3, 即多用户模式(命令行)
 
 ```
 # systemctl isolate runlevel3.target
@@ -460,9 +460,9 @@ CPUShares=2000
 
 - Runlevel 0 : 关闭系统
 - Runlevel 1 : 救援？维护模式
-- Runlevel 3 : 多用户，无图形系统
-- Runlevel 4 : 多用户，无图形系统
-- Runlevel 5 : 多用户，图形化系统
+- Runlevel 3 : 多用户, 无图形系统
+- Runlevel 4 : 多用户, 无图形系统
+- Runlevel 5 : 多用户, 图形化系统
 - Runlevel 6 : 关闭并重启机器
 
 # 7 参考

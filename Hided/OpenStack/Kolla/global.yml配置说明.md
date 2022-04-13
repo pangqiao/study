@@ -20,7 +20,7 @@
 
 11、enable_haproxy: "yes"，openstack的外部管理网络地址没有使用过，需要启用高可用proxy，确定可以使用。
 
-12、ceph_pool_pg_num: 128和ceph_pool_pgp_num: 128，参照如下：
+12、ceph_pool_pg_num: 128和ceph_pool_pgp_num: 128，参照如下: 
 
 - 小于5个OSD时可把pg_num设置为128
 - OSD数量在5到10个之间的，可以把pg_num设置为512

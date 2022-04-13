@@ -163,7 +163,7 @@ entry64:
 
 
 
-;; 实验 ex14-7：测试 64-bit 模式下过滤 CPL = 0的分支
+;; 实验 ex14-7: 测试 64-bit 模式下过滤 CPL = 0的分支
 
 ; 1)　开启 LBR        
         mov ecx, IA32_DEBUGCTL
@@ -174,7 +174,7 @@ entry64:
 ; 2) 设置过滤条件        
         mov ecx, MSR_LBR_SELECT
         mov edx, 0
-        mov eax, 1                                        ; CPL_EQ_0 = 1（过滤所有CPL=0下的分支记录）
+        mov eax, 1                                        ; CPL_EQ_0 = 1(过滤所有CPL=0下的分支记录)
         wrmsr
 
 ; 3) 开启 DR7.L0位
@@ -184,7 +184,7 @@ entry64:
         
 ; 4) 设置断点
         mov rax, breakpoint                             ; 设置 user 代码下的执行断点
-        mov dr0, rax                                    ; 目的是：为了在 user 代码下进入 #DB handler 打印
+        mov dr0, rax                                    ; 目的是: 为了在 user 代码下进入 #DB handler 打印
 
 ;; 切换到用户代码　
         push USER_SS | 3
@@ -200,21 +200,21 @@ entry64:
         
         ;call QWORD far [conforming_pointer]                        ; 测试conforimg 代码
         
-;; 从 64 位切换到 compatibility mode（权限不改变，0 级）　        
+;; 从 64 位切换到 compatibility mode(权限不改变, 0 级)　        
         ;jmp QWORD far [compatibility_pointer]
 
 ;compatibility_pointer:
 ;                dq compatibility_kernel_entry              ; 64 bit offset on Intel64
 ;                dw code32_sel
 
-;; 切换到 compatibility mode（进入 3 级）
+;; 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push user_code32_sel | 3
 ;        push compatibility_user_entry
 ;        retf64
 
-;; 使用 iret 切换到 compatibility mode（进入 3 级）
+;; 使用 iret 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push 02h
@@ -270,7 +270,7 @@ user_entry:
         call sys_service_call                
         
 breakpoint:
-        mov rax, rbx                        ; 在这此设置断点，进入#DB handler 打印 LBR stack
+        mov rax, rbx                        ; 在这此设置断点, 进入#DB handler 打印 LBR stack
         
                       
         

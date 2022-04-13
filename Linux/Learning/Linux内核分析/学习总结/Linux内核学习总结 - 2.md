@@ -14,11 +14,11 @@ Linux内核学习总结
 
 通过shell调试内核，对start_kernel到init进程启动的过程有了详细的认识
 
-4.扒开系统调用的三层皮（上）
+4.扒开系统调用的三层皮(上)
 
 复习了用户态、内核态、中断等相关知识，对系统调用工作机制有了理解
 
-5.扒开系统调用的三层皮（下）
+5.扒开系统调用的三层皮(下)
 
 通过调试分析系统调用内核函数，学习了系统调用流程，对系统调用处理过程有了理解
 
@@ -36,18 +36,18 @@ Linux内核学习总结
 
 作业目录
 
-1.通过汇编一个简单的C程序，分析汇编代码理解计算机是如何工作的：http://www.jianshu.com/p/0028585afcd3
+1.通过汇编一个简单的C程序，分析汇编代码理解计算机是如何工作的: http://www.jianshu.com/p/0028585afcd3
 
-2.一个简单的时间片轮转多道程序内核代码：http://www.jianshu.com/p/f245d162126f
+2.一个简单的时间片轮转多道程序内核代码: http://www.jianshu.com/p/f245d162126f
 
-3.跟踪分析Linux内核的启动过程：http://www.jianshu.com/p/c50563d5d999
+3.跟踪分析Linux内核的启动过程: http://www.jianshu.com/p/c50563d5d999
 
-4.使用库函数API和C代码中嵌入汇编代码两种方式使用同一个系统调用：http://www.jianshu.com/p/dc9bab96dbea
+4.使用库函数API和C代码中嵌入汇编代码两种方式使用同一个系统调用: http://www.jianshu.com/p/dc9bab96dbea
 
-5.分析system_call中断处理过程：http://www.jianshu.com/p/396ac105dbd5
+5.分析system_call中断处理过程: http://www.jianshu.com/p/396ac105dbd5
 
-6.分析Linux内核创建一个新进程的过程：http://www.jianshu.com/p/7ab4972995d4
+6.分析Linux内核创建一个新进程的过程: http://www.jianshu.com/p/7ab4972995d4
 
-7.Linux内核如何装载和启动一个可执行程序：http://www.jianshu.com/p/eca35a20dbda
+7.Linux内核如何装载和启动一个可执行程序: http://www.jianshu.com/p/eca35a20dbda
 
-8.理解进程调度时机跟踪分析进程调度与进程切换的过程：http://www.jianshu.com/p/ccdbed5c7243
+8.理解进程调度时机跟踪分析进程调度与进程切换的过程: http://www.jianshu.com/p/ccdbed5c7243

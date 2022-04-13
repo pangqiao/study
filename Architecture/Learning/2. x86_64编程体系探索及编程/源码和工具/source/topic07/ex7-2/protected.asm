@@ -125,11 +125,11 @@ msg9                db 10, 'Now: set variable-rang', 10, 0
 ;-------------------------------------------------------------------------
 ; set_variable_rang(): 设置 variable_rang 区域
 ; input:
-;                 esi：edi-物理基地址， edx:eax 结束地址， [esp+4]: variable_rang序号, [esp+8]: memory type
-; 描述：
-;                这个函数使用了4个参数，第3，4个参数通过stack传递
-;                esi:edi 这对寄存器提供基地址（64位值），　edx:eax 这对寄存器提供结束地址（64位值)
-; 例子：
+;                 esi: edi-物理基地址,  edx:eax 结束地址,  [esp+4]: variable_rang序号, [esp+8]: memory type
+; 描述: 
+;                这个函数使用了4个参数, 第3, 4个参数通过stack传递
+;                esi:edi 这对寄存器提供基地址(64位值), 　edx:eax 这对寄存器提供结束地址(64位值)
+; 例子: 
 ;                mov esi, 1000000H
 ;                mov edi, 0H
 ;                mov edx, 0
@@ -137,7 +137,7 @@ msg9                db 10, 'Now: set variable-rang', 10, 0
 ;                push 0
 ;                push 06H
 ;                cal set_variable_rang
-; 注意：
+; 注意: 
 ;                这个函数使用了部分 enumerate_variable_rang() 的变量!!
 ;-------------------------------------------------------------------
 set_variable_rang:
@@ -167,7 +167,7 @@ do_set_variable_rang:
         and eax, 0x0f
         mov [number], eax                       ; 存放 number
         cmp eax, [set_number]
-        jb set_variable_rang_done               ; 如果超限，什么都不做
+        jb set_variable_rang_done               ; 如果超限, 什么都不做
 
 ;; 设置写入值
         mov edx, [set_physbase + 4]             ; 高位
@@ -175,7 +175,7 @@ do_set_variable_rang:
         and eax, 0FFFFF000H                     ; 清低 12位
         mov ebx, [set_type]
         and ebx, 0x0f
-        or eax, ebx                             ; 设 memory type（注意，没有检查合法性）
+        or eax, ebx                             ; 设 memory type(注意, 没有检查合法性)
         mov ebx, [set_number]
         mov ecx, [mtrr_physbase_table + ebx * 4]                
         wrmsr                                   ; 写 IA32_MTRR_PHYSBASE 寄存器
@@ -183,7 +183,7 @@ do_set_variable_rang:
 ;;;;; 下面计算 PhysMask 值　;;;;;;
         mov esi, set_physlimit
         mov edi, set_physbase
-        call subtract64                         ; 使用64位的减法：limit - base
+        call subtract64                         ; 使用64位的减法: limit - base
         push edx
         push eax
         
@@ -497,7 +497,7 @@ clear_TF:
         mov esi, db_msg2
         call puts
 do_DB_handler_done:        
-        bts DWORD [esp + 4 * 8 + 8], 16                 ; 设置 eflags.RF 为 1，以便中断返回时，继续执行
+        bts DWORD [esp + 4 * 8 + 8], 16                 ; 设置 eflags.RF 为 1, 以便中断返回时, 继续执行
         popad
         iret
 
@@ -521,7 +521,7 @@ do_GP_handler:
         mov eax, [esp]
         cmp BYTE [eax], 0xfb                        ; 检查是否因为 sti 指令而产生 #GP 异常
         jne fix
-        inc eax                                      ; 如果是的话，跳过产生 #GP 异常的 sti 指令，执行下一条指令
+        inc eax                                      ; 如果是的话, 跳过产生 #GP 异常的 sti 指令, 执行下一条指令
         mov [esp], eax
         mov esi, gp_msg3
         call puts

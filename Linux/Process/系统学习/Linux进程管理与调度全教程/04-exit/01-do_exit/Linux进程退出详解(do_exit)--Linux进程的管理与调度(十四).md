@@ -18,7 +18,7 @@
   - [4.1 触发task\_exit\_nb通知链实例的处理函数](#41-触发task_exit_nb通知链实例的处理函数)
   - [4.2 检查进程的blk\_plug是否为空](#42-检查进程的blk_plug是否为空)
   - [4.3 OOPS消息](#43-oops消息)
-  - [4.4 设定进程可以使用的虚拟地址的上限（用户空间）](#44-设定进程可以使用的虚拟地址的上限用户空间)
+  - [4.4 设定进程可以使用的虚拟地址的上限(用户空间)](#44-设定进程可以使用的虚拟地址的上限用户空间)
   - [4.5 检查进程设置进程PF\_EXITING](#45-检查进程设置进程pf_exiting)
   - [4.6 内存屏障](#46-内存屏障)
   - [4.7 同步进程的mm的rss\_stat](#47-同步进程的mm的rss_stat)
@@ -52,19 +52,19 @@
 
 ## 1.2 \_exit, exit和\_Exit的区别和联系
 
-\_exit是linux**系统调用**，**关闭所有文件描述符**，然后**退出进程**。
+\_exit是linux**系统调用**, **关闭所有文件描述符**, 然后**退出进程**. 
 
-**exit**是**c语言的库函数**，他**最终调用\_exit**。在此**之前**，先**清洗标准输出的缓存**，调用**atexit注册的函数**等,在c语言的**main函数**中**调用return**就**等价于调用exit**。
+**exit**是**c语言的库函数**, 他**最终调用\_exit**. 在此**之前**, 先**清洗标准输出的缓存**, 调用**atexit注册的函数**等,在c语言的**main函数**中**调用return**就**等价于调用exit**. 
 
-\_Exit是**c语言的库函数**，自c99后加入，**等价于\_exit**，即可以认为它直接调用\_exit。
+\_Exit是**c语言的库函数**, 自c99后加入, **等价于\_exit**, 即可以认为它直接调用\_exit. 
 
-基本来说，\_Exit（或\_exit，**建议使用大写版本**）是为fork之后的**子进程**准备的**特殊API**。功能见[POSIX 标准：\_Exit](https://link.zhihu.com/?target=http%3A//pubs.opengroup.org/onlinepubs/9699919799/functions/_Exit.html%23)，讨论见 [c - how to exit a child process](https://link.zhihu.com/?target=http%3A//stackoverflow.com/questions/2329640/how-to-exit-a-child-process-exit-vs-exit)
+基本来说, \_Exit(或\_exit, **建议使用大写版本**)是为fork之后的**子进程**准备的**特殊API**. 功能见[POSIX 标准: \_Exit](https://link.zhihu.com/?target=http%3A//pubs.opengroup.org/onlinepubs/9699919799/functions/_Exit.html%23), 讨论见 [c - how to exit a child process](https://link.zhihu.com/?target=http%3A//stackoverflow.com/questions/2329640/how-to-exit-a-child-process-exit-vs-exit)
 
->由fork()函数创建的**子进程分支**里，**正常情况**下使用**函数exit**()是**不正确的**，这是因为使用它会**导致标准输入输出的缓冲区被清空两次**，而且**临时文件可能被意外删除**。
+>由fork()函数创建的**子进程分支**里, **正常情况**下使用**函数exit**()是**不正确的**, 这是因为使用它会**导致标准输入输出的缓冲区被清空两次**, 而且**临时文件可能被意外删除**. 
 >
->因为在**fork之后**，**exec之前**，**很多资源还是共享**的（如某些文件描述符），如果**使用exit会关闭这些资源**，导致某些非预期的副作用（如删除临时文件等）。
+>因为在**fork之后**, **exec之前**, **很多资源还是共享**的(如某些文件描述符), 如果**使用exit会关闭这些资源**, 导致某些非预期的副作用(如删除临时文件等). 
 
-「**刷新**」是对应flush，意思是把内容从**内存缓存写出到文件**里，而**不仅仅是清空**（所以常见的**对stdin调用flush的方法是耍流氓**而已）。如果在**fork**的时候**父进程内存有缓冲内容**，则这个**缓冲会带到子进程**，并且**两个进程会分别 flush （写出）一次，造成数据重复**。参见[c - How does fork() work with buffered streams like stdout?](https://link.zhihu.com/?target=http%3A//stackoverflow.com/questions/18671525/how-does-fork-work-with-buffered-streams-like-stdout)
+「**刷新**」是对应flush, 意思是把内容从**内存缓存写出到文件**里, 而**不仅仅是清空**(所以常见的**对stdin调用flush的方法是耍流氓**而已). 如果在**fork**的时候**父进程内存有缓冲内容**, 则这个**缓冲会带到子进程**, 并且**两个进程会分别 flush (写出)一次, 造成数据重复**. 参见[c - How does fork() work with buffered streams like stdout?](https://link.zhihu.com/?target=http%3A//stackoverflow.com/questions/18671525/how-does-fork-work-with-buffered-streams-like-stdout)
 
 # 2 进程退出的系统调用
 
@@ -74,35 +74,35 @@
 
 **进程退出**由\_exit**系统调用**来完成,这使得**内核**有机会将**该进程所使用的资源释放回系统**中
 
-进程终止时，一般是调用**exit库函数**（无论是程序员**显式调用**还是**编译器自动地把exit库函数插入到main函数的最后一条语句之后！！！**）来**释放进程所拥有的资源**。
+进程终止时, 一般是调用**exit库函数**(无论是程序员**显式调用**还是**编译器自动地把exit库函数插入到main函数的最后一条语句之后！！！**)来**释放进程所拥有的资源**. 
 
-\_exit系统调用的**入口点是sys\_exit()函数**,需要一个**错误码作为参数**,以便退出进程。
+\_exit系统调用的**入口点是sys\_exit()函数**,需要一个**错误码作为参数**,以便退出进程. 
 
 其**定义是体系结构无关**的, 见**kernel/exit.c**
 
 而我们**用户空间**的**多线程应用程序(用户空间线程！！！),对应内核中就有多个进程**, 这些**进程共享虚拟地址空间和资源**,他们有**各自的进程id(pid**),但是他们的**组进程id(tpid)是相同**的, 都**等于组长(领头进程)的pid**
 
->在**linux内核中对线程并没有做特殊的处理**，还是由task\_struct来管理。所以从内核的角度看，**用户态的线程本质上还是一个进程**。对于**同一个进程（用户态角度！！！）中不同的线程**其**tgid是相同**的，但是pid各不相同。**主线程**即**group_leader（主线程会创建其他所有的子线程！！！**）。如果是**单线程进程（用户态角度！！！**），它的**pid等于tgid**。
+>在**linux内核中对线程并没有做特殊的处理**, 还是由task\_struct来管理. 所以从内核的角度看, **用户态的线程本质上还是一个进程**. 对于**同一个进程(用户态角度！！！)中不同的线程**其**tgid是相同**的, 但是pid各不相同. **主线程**即**group_leader(主线程会创建其他所有的子线程！！！**). 如果是**单线程进程(用户态角度！！！**), 它的**pid等于tgid**. 
 >
 >这个信息我们已经讨论过很多次了
 >
 >参见
 >
->[Linux进程ID号--Linux进程的管理与调度（三）](http://blog.csdn.net/gatieme/article/details/51383377#t10)
+>[Linux进程ID号--Linux进程的管理与调度(三)](http://blog.csdn.net/gatieme/article/details/51383377#t10)
 >
->[Linux进程描述符task_struct结构体详解--Linux进程的管理与调度（一）](http://blog.csdn.net/gatieme/article/details/51383272#t5)
+>[Linux进程描述符task_struct结构体详解--Linux进程的管理与调度(一)](http://blog.csdn.net/gatieme/article/details/51383272#t5)
 
 **为什么还需要exit\_group**
 
-我们如果了解linux的**线程实现机制**的话,会知道**所有的线程是属于一个线程组**的,同时即使不是线程,linux也允许**多个进程组成进程组,多个进程组组成一个会话**,因此我们本质上了解到**不管是多线程**,还是**进程组**起本质都是**多个进程组成的一个集合**,那么我们的应用程序在退出的时候,自然希望**一次性的退出组内所有的进程**。
+我们如果了解linux的**线程实现机制**的话,会知道**所有的线程是属于一个线程组**的,同时即使不是线程,linux也允许**多个进程组成进程组,多个进程组组成一个会话**,因此我们本质上了解到**不管是多线程**,还是**进程组**起本质都是**多个进程组成的一个集合**,那么我们的应用程序在退出的时候,自然希望**一次性的退出组内所有的进程**. 
 
 因此exit\_group就诞生了
 
-**exit\_group函数**会杀死属于**当前进程**所在**线程组**的**所有进程**。它接受**进程终止代号作为参数**，进程终止代号可能是**系统调用exit\_group**（**正常结束**）指定的一个值，也可能是内核提供的一个错误码（**异常结束**）。 
+**exit\_group函数**会杀死属于**当前进程**所在**线程组**的**所有进程**. 它接受**进程终止代号作为参数**, 进程终止代号可能是**系统调用exit\_group**(**正常结束**)指定的一个值, 也可能是内核提供的一个错误码(**异常结束**).  
 
-因此**C语言**的**库函数exit**使用**系统调用exit\_group**来**终止整个线程组**，库函数**pthread\_exit**使用系统调用\_exit来**终止某一个线程**
+因此**C语言**的**库函数exit**使用**系统调用exit\_group**来**终止整个线程组**, 库函数**pthread\_exit**使用系统调用\_exit来**终止某一个线程**
 
-\_exit和exit\_group这**两个系统调用**在Linux内核中的入口点函数分别为sys\_exit和sys\_exit\_group。
+\_exit和exit\_group这**两个系统调用**在Linux内核中的入口点函数分别为sys\_exit和sys\_exit\_group. 
 
 ## 2.2 系统调用声明
 
@@ -164,15 +164,15 @@ SYSCALL_DEFINE1(exit_group, int, error_code)
 
 # 3 do\_group\_exist流程
 
-do\_group\_exit()函数杀死**属于current线程组**的**所有进程**。它接受进程终止代码作为参数，进程终止代号可能是系统调用exit\_group()指定的一个值，也可能是内核提供的一个错误代号。
+do\_group\_exit()函数杀死**属于current线程组**的**所有进程**. 它接受进程终止代码作为参数, 进程终止代号可能是系统调用exit\_group()指定的一个值, 也可能是内核提供的一个错误代号. 
 
 该函数执行下述操作
 
-1. 检查退出进程的SIGNAL\_GROUP\_EXIT标志是否不为0，如果不为0，说明内核**已经开始为线性组执行退出的过程**。在这种情况下，就把存放在**current\->signal\->group\_exit\_code**的值当作**退出码**，然后跳转到第4步。
+1. 检查退出进程的SIGNAL\_GROUP\_EXIT标志是否不为0, 如果不为0, 说明内核**已经开始为线性组执行退出的过程**. 在这种情况下, 就把存放在**current\->signal\->group\_exit\_code**的值当作**退出码**, 然后跳转到第4步. 
 
-2. 否则，设置**进程的SIGNAL\_GROUP\_EXIT标志**并把**终止代号**放到current\->signal\->group\_exit\_code字段。
+2. 否则, 设置**进程的SIGNAL\_GROUP\_EXIT标志**并把**终止代号**放到current\->signal\->group\_exit\_code字段. 
 
-3. 调用**zap\_other\_threads**()函数**杀死current线程组中的其它进程**。为了完成这个步骤，函数扫描当前线程所在线程组的链表，向表中所有**不同于current的进程发送SIGKILL信号**，结果，**所有这样的进程都将执行do\_exit()函数，从而被杀死**。
+3. 调用**zap\_other\_threads**()函数**杀死current线程组中的其它进程**. 为了完成这个步骤, 函数扫描当前线程所在线程组的链表, 向表中所有**不同于current的进程发送SIGKILL信号**, 结果, **所有这样的进程都将执行do\_exit()函数, 从而被杀死**. 
 
 遍历线程所在线程组的所有线程函数while\_each\_thread(p, t)使用了:
 
@@ -189,7 +189,7 @@ static inline struct task_struct *next_thread(const struct task_struct *p)
 
 同一个进程组的可以, 扫描与`current->pids[PIDTYPE_PGID]`(这是进程组组长pid结构体)对应的PIDTYPE\_PGID类型`的散列表(因为是进程组组长,所以其真实的pid结构体中tasks[PIDTYPE\_PGID]是这个散列表的表头)中的每个PID链表
 
-4. 调用**do\_exit**()函数，把进程的终止代码传递给它。正如我们将在下面看到的，**do\_exit()杀死进程而且不再返回**。
+4. 调用**do\_exit**()函数, 把进程的终止代码传递给它. 正如我们将在下面看到的, **do\_exit()杀死进程而且不再返回**. 
 
 ```c
 /*
@@ -219,7 +219,7 @@ do_group_exit(int exit_code)
         else {
             sig->group_exit_code = exit_code;
             sig->flags = SIGNAL_GROUP_EXIT;
-            zap_other_threads(current);     /*  遍历整个线程组链表，并杀死其中的每个线程  */
+            zap_other_threads(current);     /*  遍历整个线程组链表, 并杀死其中的每个线程  */
         }
         spin_unlock_irq(&sighand->siglock);
     }
@@ -231,7 +231,7 @@ do_group_exit(int exit_code)
 
 # 4 do\_exit流程
 
-进程终止所要完成的任务**都是由do\_exit函数**来处理。
+进程终止所要完成的任务**都是由do\_exit函数**来处理. 
 
 该函数定义在[kernel/exit.c](http://lxr.free-electrons.com/source/kernel/exit.c#L652)中
 
@@ -282,7 +282,7 @@ static BLOCKING_NOTIFIER_HEAD(task_exit_notifier);
 
 ## 4.2 检查进程的blk\_plug是否为空
 
-**保证**task\_struct中的**plug字段**是空的，或者**plug字段指向的队列是空的**。**plug字段的意义是stack plugging**
+**保证**task\_struct中的**plug字段**是空的, 或者**plug字段指向的队列是空的**. **plug字段的意义是stack plugging**
 
 ```c
 //  http://lxr.free-electrons.com/source/include/linux/blkdev.h?v=4.6#L1095
@@ -303,7 +303,7 @@ static inline bool blk_needs_flush_plug(struct task_struct *tsk)
 ```
 ## 4.3 OOPS消息
 
-**中断上下文不能执行do\_exit函数**, 也**不能终止PID为0的进程**。
+**中断上下文不能执行do\_exit函数**, 也**不能终止PID为0的进程**. 
 
 ```c
 if (unlikely(in_interrupt()))
@@ -312,7 +312,7 @@ if (unlikely(!tsk->pid))
 	panic("Attempted to kill the idle task!");
 ```
 
-## 4.4 设定进程可以使用的虚拟地址的上限（用户空间）
+## 4.4 设定进程可以使用的虚拟地址的上限(用户空间)
 
 ```c
 /*
@@ -322,7 +322,7 @@ if (unlikely(!tsk->pid))
  * mm_release()->clear_child_tid() from writing to a user-controlled
  * kernel address.
  *
- * 设定进程可以使用的虚拟地址的上限（用户空间）
+ * 设定进程可以使用的虚拟地址的上限(用户空间)
  * http://lxr.free-electrons.com/ident?v=4.6;i=set_fs
  */
 set_fs(USER_DS);
@@ -412,9 +412,9 @@ static inline void set_fs(mm_segment_t fs)
      * tsk->flags are checked in the futex code to protect against
      * an exiting task cleaning up the robust pi futexes.
      */
-    /*  内存屏障，用于确保在它之后的操作开始执行之前，它之前的操作已经完成  */
+    /*  内存屏障, 用于确保在它之后的操作开始执行之前, 它之前的操作已经完成  */
     smp_mb();
-    /*  一直等待，直到获得current->pi_lock自旋锁  */
+    /*  一直等待, 直到获得current->pi_lock自旋锁  */
     raw_spin_unlock_wait(&tsk->pi_lock);
 ```
 
@@ -516,7 +516,7 @@ static void __acct_update_integrals(struct task_struct *tsk,
 
 ```c
     /*  释放存储空间
-    放弃进程占用的mm,如果没有其他进程使用该mm，则释放它。
+    放弃进程占用的mm,如果没有其他进程使用该mm, 则释放它. 
      */
     exit_mm(tsk);
 ```
@@ -534,7 +534,7 @@ static void __acct_update_integrals(struct task_struct *tsk,
 ```c
 exit_sem(tsk);   /*  释放用户空间的“信号量”  */
 ```
-遍历current->sysvsem.undo\_list链表，并**清除进程所涉及的每个IPC信号量的操作痕迹**
+遍历current->sysvsem.undo\_list链表, 并**清除进程所涉及的每个IPC信号量的操作痕迹**
 
 **释放锁**
 
@@ -572,7 +572,7 @@ exit_task_work(tsk);
     exit_thread();      /*     */
 ```
 
-触发thread\_notify\_head链表中**所有通知链实例的处理函数**，用于处理struct thread\_info结构体
+触发thread\_notify\_head链表中**所有通知链实例的处理函数**, 用于处理struct thread\_info结构体
 
 **Performance Event功能相关资源的释放**
 
@@ -601,13 +601,13 @@ cgroup_exit(tsk);
     exit_notify(tsk, group_dead);
 ```
 
-**进程事件连接器（通过它来报告进程fork、exec、exit以及进程用户ID与组ID的变化）**
+**进程事件连接器(通过它来报告进程fork、exec、exit以及进程用户ID与组ID的变化)**
 
 ```c
     proc_exit_connector(tsk);
 ```
 
-**用于NUMA，当引用计数为0时，释放struct mempolicy结构体所占用的内存**
+**用于NUMA, 当引用计数为0时, 释放struct mempolicy结构体所占用的内存**
 
 ```c
 #ifdef CONFIG_NUMA
@@ -659,10 +659,10 @@ cgroup_exit(tsk);
     tsk->state = TASK_DEAD;
     tsk->flags |= PF_NOFREEZE;      /* tell freezer to ignore us */
     /*
-    重新调度，因为该进程已经被设置成了僵死状态，因此永远都不会再把它调度回来运行了，也就实现了do_exit不会有返回的目标    */
+    重新调度, 因为该进程已经被设置成了僵死状态, 因此永远都不会再把它调度回来运行了, 也就实现了do_exit不会有返回的目标    */
     schedule();
 ```
 
-在设置了**进程状态为TASK\_DEAD**后,进程进入**僵死状态**,进程已经**无法被再次调度**, 因为**对应用程序或者用户空间**来说此**进程已经死了**,但是尽管进程已经不能再被调度，但系统还是**保留了它的进程描述符**，这样做是为了让系统有办法在**进程终止后**仍能**获得它的信息**。
+在设置了**进程状态为TASK\_DEAD**后,进程进入**僵死状态**,进程已经**无法被再次调度**, 因为**对应用程序或者用户空间**来说此**进程已经死了**,但是尽管进程已经不能再被调度, 但系统还是**保留了它的进程描述符**, 这样做是为了让系统有办法在**进程终止后**仍能**获得它的信息**. 
 
-在**父进程**获得**已终止子进程的信息**后，**子进程的task\_struct结构体**才被释放（包括**此进程的内核栈**）。
+在**父进程**获得**已终止子进程的信息**后, **子进程的task\_struct结构体**才被释放(包括**此进程的内核栈**). 

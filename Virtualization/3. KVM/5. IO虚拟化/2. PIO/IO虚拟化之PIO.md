@@ -12,15 +12,15 @@
 
 ## 1. PIO
 
-Port IO，所谓端口IO，x86上使用in、out指令进行访问。和内存的地址空间完全隔离。
+Port IO, 所谓端口IO, x86上使用in、out指令进行访问. 和内存的地址空间完全隔离. 
 
-80386的I/O指令使得处理器可以访问I/O端口，以便从外设输入数据，或者向外设发送数据。这些指令有一个指定I/O空间端口地址的操作数。有两类的I/O指令：
+80386的I/O指令使得处理器可以访问I/O端口, 以便从外设输入数据, 或者向外设发送数据. 这些指令有一个指定I/O空间端口地址的操作数. 有两类的I/O指令: 
 
-1. 在寄存器指定的地址**传送一个数据**（字节、字、双字）, 使用IN/OUT指令。
+1. 在寄存器指定的地址**传送一个数据**(字节、字、双字), 使用IN/OUT指令. 
 
-2. 传送指定内存中的**一串数据**（字节串、字串、双字串）。这些被称作为“串 I/O指令”或者说“块I/O指令”, 使用INS/OUTS指令
+2. 传送指定内存中的**一串数据**(字节串、字串、双字串). 这些被称作为“串 I/O指令”或者说“块I/O指令”, 使用INS/OUTS指令
 
-cat /proc/ioports查看当前OS的所有的ioports：
+cat /proc/ioports查看当前OS的所有的ioports: 
 
 ```
 [root@dell-cicada ~]# cat /proc/ioports 
@@ -90,7 +90,7 @@ cat /proc/ioports查看当前OS的所有的ioports：
 8000-ffff : PCI Bus 0000:80
 ```
 
-常见的port 40---timer，60---keyboard等等。这是业界习惯。
+常见的port 40---timer, 60---keyboard等等. 这是业界习惯. 
 
 ## 2. PIO在KVM中
 
@@ -114,17 +114,17 @@ static int handle_io(struct kvm_vcpu *vcpu)
       port = exit_qualification >> 16;
         // 大小, bits 2:0
         size = (exit_qualification & 7) + 1;
-        // 判断io方向，是in  还是out
+        // 判断io方向, 是in  还是out
         in = (exit_qualification & 8) != 0;
 
         return kvm_fast_pio(vcpu, size, port, in);
 }
 ```
 
-exit qualification 字段的 `bits 2:0`记录I/O指令访问的数据大小：
-* 为 0 时，1 个字节，例如：`in al, 92h`。
-* 为 1 时，2 个字节，例如：`in ax, 92h`。
-* 为 3 时，4 个字节，例如：`in eax,92h`。
+exit qualification 字段的 `bits 2:0`记录I/O指令访问的数据大小: 
+* 为 0 时, 1 个字节, 例如: `in al, 92h`. 
+* 为 1 时, 2 个字节, 例如: `in ax, 92h`. 
+* 为 3 时, 4 个字节, 例如: `in eax,92h`. 
 
 
 关于`Exit qualification字段`, 可以参见手册
@@ -134,7 +134,7 @@ exit qualification 字段的 `bits 2:0`记录I/O指令访问的数据大小：
 
 fast是指硬件解码, 不用软件, 所以叫fast
 
-Guest在使用in、out指令的时候，Host会感知。Host中会在arch/x86/kvm/emulate.c中处理：
+Guest在使用in、out指令的时候, Host会感知. Host中会在arch/x86/kvm/emulate.c中处理: 
 
 ```cpp
 static int em_in(struct x86_emulate_ctxt *ctxt)
@@ -156,7 +156,7 @@ static int em_out(struct x86_emulate_ctxt *ctxt)
 } 
 ```
 
-以em\_in为例，它调用pio\_in\_emulated()，该函数定义如下(X86)：
+以em\_in为例, 它调用pio\_in\_emulated(), 该函数定义如下(X86): 
 
 ```cpp
 static const struct x86_emulate_ops emulate_ops = {
@@ -167,7 +167,7 @@ static const struct x86_emulate_ops emulate_ops = {
 };
 ```
 
-通过追踪emulate\_ops调用关系，会发现是通过struct kvm\_x86\_ops vmx\_x86\_ops的vcpu\_create操作添加的映射
+通过追踪emulate\_ops调用关系, 会发现是通过struct kvm\_x86\_ops vmx\_x86\_ops的vcpu\_create操作添加的映射
 
 ```cpp
 static struct kvm_x86_ops vmx_x86_ops = {
@@ -177,7 +177,7 @@ static struct kvm_x86_ops vmx_x86_ops = {
 }
 ```     
 
-通过查找vcpu\_create的调用关系，发现是函数kvm\_vm\_ioctl的case KVM\_CREATE\_VCPU调用
+通过查找vcpu\_create的调用关系, 发现是函数kvm\_vm\_ioctl的case KVM\_CREATE\_VCPU调用
 
 ```cpp
 static long kvm_vm_ioctl(struct file *filp,
@@ -196,9 +196,9 @@ static long kvm_vm_ioctl(struct file *filp,
 }
 ```
 
-所以是创建每个vcpu（不同CPU架构可能不同）时候根据架构不同进行的操作映射。
+所以是创建每个vcpu(不同CPU架构可能不同)时候根据架构不同进行的操作映射. 
 
-我们继续查看in指令的模拟。
+我们继续查看in指令的模拟. 
 
 ## 3. PIO运行在QEMU
 

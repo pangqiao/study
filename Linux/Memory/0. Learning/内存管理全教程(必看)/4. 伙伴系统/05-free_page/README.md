@@ -5,7 +5,7 @@
 -------
 
 
-内存区中第1页内的链表元素, 可用于将内存区维持在链表中。因此，也不必引入新的数据结构来管理物理上连续的页，否则这些页不可能在同一内存区中. 如下图所示
+内存区中第1页内的链表元素, 可用于将内存区维持在链表中. 因此, 也不必引入新的数据结构来管理物理上连续的页, 否则这些页不可能在同一内存区中. 如下图所示
 
 
 ![伙伴系统中相互连接的内存区](../images/buddy_node_connect.png)
@@ -43,15 +43,15 @@
 
 ![伙伴系统](../images/buddy_system.png)
 
-内核对所有大小相同的伙伴（1、2、4、8、16或其他数目的页），都放置到同一个列表中管理. 各有8页的一对伙伴也在相应的列表中.
+内核对所有大小相同的伙伴(1、2、4、8、16或其他数目的页), 都放置到同一个列表中管理. 各有8页的一对伙伴也在相应的列表中.
 
 如果系统现在需要8个页帧, 则将16个页帧组成的块拆分为两个伙伴. 其中一块用于满足应用程序的请求, 而剩余的8个页帧则放置到对应8页大小内存块的列表中.
 
-如果下一个请求只需要2个连续页帧, 则由8页组成的块会分裂成2个伙伴, 每个包含4个页帧. 其中一块放置回伙伴列表中，而另一个再次分裂成2个伙伴, 每个包含2页。其中一个回到伙伴系统，另一个则传递给应用程序.
+如果下一个请求只需要2个连续页帧, 则由8页组成的块会分裂成2个伙伴, 每个包含4个页帧. 其中一块放置回伙伴列表中, 而另一个再次分裂成2个伙伴, 每个包含2页. 其中一个回到伙伴系统, 另一个则传递给应用程序.
 
-在应用程序释放内存时, 内核可以直接检查地址, 来判断是否能够创建一组伙伴, 并合并为一个更大的内存块放回到伙伴列表中, 这刚好是内存块分裂的逆过程。这提高了较大内存块可用的可能性.
+在应用程序释放内存时, 内核可以直接检查地址, 来判断是否能够创建一组伙伴, 并合并为一个更大的内存块放回到伙伴列表中, 这刚好是内存块分裂的逆过程. 这提高了较大内存块可用的可能性.
 
-在系统长期运行时，服务器运行几个星期乃至几个月是很正常的，许多桌面系统也趋向于长期开机运行，那么会发生称为碎片的内存管理问题。频繁的分配和释放页帧可能导致一种情况：系统中有若干页帧是空闲的，但却散布在物理地址空间的各处。换句话说，系统中缺乏连续页帧组成的较大的内存块，而从性能上考虑，却又很需要使用较大的连续内存块。通过伙伴系统可以在某种程度上减少这种效应，但无法完全消除。如果在大块的连续内存中间刚好有一个页帧分配出去，很显然这两块空闲的内存是无法合并的.
+在系统长期运行时, 服务器运行几个星期乃至几个月是很正常的, 许多桌面系统也趋向于长期开机运行, 那么会发生称为碎片的内存管理问题. 频繁的分配和释放页帧可能导致一种情况: 系统中有若干页帧是空闲的, 但却散布在物理地址空间的各处. 换句话说, 系统中缺乏连续页帧组成的较大的内存块, 而从性能上考虑, 却又很需要使用较大的连续内存块. 通过伙伴系统可以在某种程度上减少这种效应, 但无法完全消除. 如果在大块的连续内存中间刚好有一个页帧分配出去, 很显然这两块空闲的内存是无法合并的.
 
 在内核版本2.6.24之后, 增加了一些有效措施来防止内存碎片.
 
@@ -59,31 +59,31 @@
 #3	避免碎片
 -------
 
-在第1章给出的简化说明中, 一个双链表即可满足伙伴系统的所有需求. 在内核版本2.6.23之前, 的确是这样. 但在内核2.6.24开发期间, 内核开发者对伙伴系统的争论持续了相当长时间. 这是因为伙伴系统是内核最值得尊敬的一部分，对它的改动不会被大家轻易接受
+在第1章给出的简化说明中, 一个双链表即可满足伙伴系统的所有需求. 在内核版本2.6.23之前, 的确是这样. 但在内核2.6.24开发期间, 内核开发者对伙伴系统的争论持续了相当长时间. 这是因为伙伴系统是内核最值得尊敬的一部分, 对它的改动不会被大家轻易接受
 
 
 ##3.1	内存碎片
 
 
-伙伴系统的基本原理已经在第1章中讨论过，其方案在最近几年间确实工作得非常好。但在Linux内存管理方面，有一个长期存在的问题：在系统启动并长期运行后，物理内存会产生很多碎片。该情形如下图所示
+伙伴系统的基本原理已经在第1章中讨论过, 其方案在最近几年间确实工作得非常好. 但在Linux内存管理方面, 有一个长期存在的问题: 在系统启动并长期运行后, 物理内存会产生很多碎片. 该情形如下图所示
 
 ![物理内存的碎片](../images/physical_memory_fragmentation.png)
 
-假定内存由60页组成，这显然不是超级计算机，但用于示例却足够了。左侧的地址空间中散布着空闲页。尽管大约25%的物理内存仍然未分配，但最大的连续空闲区只有一页. 这对用户空间应用程序没有问题：其内存是通过页表映射的，无论空闲页在物理内存中的分布如何，应用程序看到的内存
-似乎总是连续的。右图给出的情形中，空闲页和使用页的数目与左图相同，但所有空闲页都位于一个连续区中。
+假定内存由60页组成, 这显然不是超级计算机, 但用于示例却足够了. 左侧的地址空间中散布着空闲页. 尽管大约25%的物理内存仍然未分配, 但最大的连续空闲区只有一页. 这对用户空间应用程序没有问题: 其内存是通过页表映射的, 无论空闲页在物理内存中的分布如何, 应用程序看到的内存
+似乎总是连续的. 右图给出的情形中, 空闲页和使用页的数目与左图相同, 但所有空闲页都位于一个连续区中. 
 
-但对内核来说，碎片是一个问题. 由于(大多数)物理内存一致映射到地址空间的内核部分, 那么在左图的场景中, 无法映射比一页更大的内存区. 尽管许多时候内核都分配的是比较小的内存, 但也有时候需要分配多于一页的内存. 显而易见, 在分配较大内存的情况下, 右图中所有已分配页和空闲页都处于连续内存区的情形，是更为可取的.
+但对内核来说, 碎片是一个问题. 由于(大多数)物理内存一致映射到地址空间的内核部分, 那么在左图的场景中, 无法映射比一页更大的内存区. 尽管许多时候内核都分配的是比较小的内存, 但也有时候需要分配多于一页的内存. 显而易见, 在分配较大内存的情况下, 右图中所有已分配页和空闲页都处于连续内存区的情形, 是更为可取的.
 
 很有趣的一点是, 在大部分内存仍然未分配时, 就也可能发生碎片问题. 考虑图3-25的情形.
 
-只分配了4页，但可分配的最大连续区只有8页，因为伙伴系统所能工作的分配范围只能是2的幂次.
+只分配了4页, 但可分配的最大连续区只有8页, 因为伙伴系统所能工作的分配范围只能是2的幂次.
 
 
 ![物理内存的碎片](../images/some_memory_fragmentation.png)
 
-我提到内存碎片只涉及内核，这只是部分正确的。大多数现代CPU都提供了使用巨型页的可能性，比普通页大得多。这对内存使用密集的应用程序有好处。在使用更大的页时，地址转换后备缓冲器只需处理较少的项，降低了TLB缓存失效的可能性。但分配巨型页需要连续的空闲物理内存！
+我提到内存碎片只涉及内核, 这只是部分正确的. 大多数现代CPU都提供了使用巨型页的可能性, 比普通页大得多. 这对内存使用密集的应用程序有好处. 在使用更大的页时, 地址转换后备缓冲器只需处理较少的项, 降低了TLB缓存失效的可能性. 但分配巨型页需要连续的空闲物理内存！
 
-很长时间以来，物理内存的碎片确实是Linux的弱点之一。尽管已经提出了许多方法，但没有哪个方法能够既满足Linux需要处理的各种类型工作负荷提出的苛刻需求，同时又对其他事务影响不大。
+很长时间以来, 物理内存的碎片确实是Linux的弱点之一. 尽管已经提出了许多方法, 但没有哪个方法能够既满足Linux需要处理的各种类型工作负荷提出的苛刻需求, 同时又对其他事务影响不大. 
 
 
 
@@ -92,27 +92,27 @@
 -------
 
 
-在内核2.6.24开发期间，防止碎片的方法最终加入内核。在我讨论具体策略之前，有一点需要澄清。
+在内核2.6.24开发期间, 防止碎片的方法最终加入内核. 在我讨论具体策略之前, 有一点需要澄清. 
 
-文件系统也有碎片，该领域的碎片问题主要通过碎片合并工具解决。它们分析文件系统，重新排序已分配存储块，从而建立较大的连续存储区. 理论上，该方法对物理内存也是可能的，但由于许多物理内存页不能移动到任意位置，阻碍了该方法的实施。因此，内核的方法是反碎片(anti-fragmentation), 即试图从最初开始尽可能防止碎片.
+文件系统也有碎片, 该领域的碎片问题主要通过碎片合并工具解决. 它们分析文件系统, 重新排序已分配存储块, 从而建立较大的连续存储区. 理论上, 该方法对物理内存也是可能的, 但由于许多物理内存页不能移动到任意位置, 阻碍了该方法的实施. 因此, 内核的方法是反碎片(anti-fragmentation), 即试图从最初开始尽可能防止碎片.
 
 <font color=0x00ffff>
 反碎片的工作原理如何?
 </font>
 
 
-为理解该方法，我们必须知道内核将已分配页划分为下面3种不同类型。
+为理解该方法, 我们必须知道内核将已分配页划分为下面3种不同类型. 
 
 
 | 页面类型 | 描述 | 举例 |
 |:---------:|:-----:|:-----:|
 | 不可移动页 | 在内存中有固定位置, **不能移动**到其他地方. | 核心内核分配的大多数内存属于该类别 |
-| 可移动页 | **可以随意地移动**. | 属于用户空间应用程序的页属于该类别. 它们是通过页表映射的<br>如果它们复制到新位置，页表项可以相应地更新，应用程序不会注意到任何事 |
-| 可回收页 | **不能直接移动, 但可以删除, 其内容可以从某些源重新生成**. | 例如，映射自文件的数据属于该类别<br>kswapd守护进程会根据可回收页访问的频繁程度，周期性释放此类内存. , 页面回收本身就是一个复杂的过程. 内核会在可回收页占据了太多内存时进行回收, 在内存短缺(即分配失败)时也可以发起页面回收. |
+| 可移动页 | **可以随意地移动**. | 属于用户空间应用程序的页属于该类别. 它们是通过页表映射的<br>如果它们复制到新位置, 页表项可以相应地更新, 应用程序不会注意到任何事 |
+| 可回收页 | **不能直接移动, 但可以删除, 其内容可以从某些源重新生成**. | 例如, 映射自文件的数据属于该类别<br>kswapd守护进程会根据可回收页访问的频繁程度, 周期性释放此类内存. , 页面回收本身就是一个复杂的过程. 内核会在可回收页占据了太多内存时进行回收, 在内存短缺(即分配失败)时也可以发起页面回收. |
 
 
 
-页的可移动性，依赖该页属于3种类别的哪一种. 内核使用的**反碎片技术**, 即基于将具有相同可移动性的页分组的思想.
+页的可移动性, 依赖该页属于3种类别的哪一种. 内核使用的**反碎片技术**, 即基于将具有相同可移动性的页分组的思想.
 
 <font color=0x00ffff>
 为什么这种方法有助于减少碎片?
@@ -140,7 +140,7 @@
 -------
 
 
-尽管内核使用的反碎片技术卓有成效，它对伙伴分配器的代码和数据结构几乎没有影响。内核定义了一些枚举常量(早期用宏来实现)来表示不同的迁移类型, 参见[include/linux/mmzone.h?v=4.7, line 38](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L38)
+尽管内核使用的反碎片技术卓有成效, 它对伙伴分配器的代码和数据结构几乎没有影响. 内核定义了一些枚举常量(早期用宏来实现)来表示不同的迁移类型, 参见[include/linux/mmzone.h?v=4.7, line 38](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L38)
 
 ```cpp
 enum {
@@ -179,12 +179,12 @@ enum {
 | MIGRATE_MOVABLE | 可移动页 |
 | MIGRATE_RECLAIMABLE | 可回收页 |
 | MIGRATE_PCPTYPES | 是per_cpu_pageset, 即用来表示每CPU页框高速缓存的数据结构中的链表的迁移类型数目 |
-| MIGRATE_HIGHATOMIC |  = MIGRATE_PCPTYPES, 在罕见的情况下，内核需要分配一个高阶的页面块而不能休眠.如果向具有特定可移动性的列表请求分配内存失败，这种紧急情况下可从MIGRATE_HIGHATOMIC中分配内存 |
+| MIGRATE_HIGHATOMIC |  = MIGRATE_PCPTYPES, 在罕见的情况下, 内核需要分配一个高阶的页面块而不能休眠.如果向具有特定可移动性的列表请求分配内存失败, 这种紧急情况下可从MIGRATE_HIGHATOMIC中分配内存 |
 | MIGRATE_CMA | Linux内核最新的连续内存分配器(CMA), 用于避免预留大块内存 |
 | MIGRATE_ISOLATE | 是一个特殊的虚拟区域, 用于跨越NUMA结点移动物理内存页. 在大型系统上, 它有益于将物理内存页移动到接近于使用该页最频繁的CPU. |
 | MIGRATE_TYPES | 只是表示迁移类型的数目, 也不代表具体的区域 |
 
-对于MIGRATE_CMA类型, 其中在我们使用ARM等嵌入式Linux系统的时候, 一个头疼的问题是GPU, Camera, HDMI等都需要预留大量连续内存，这部分内存平时不用，但是一般的做法又必须先预留着. 目前, Marek Szyprowski和Michal Nazarewicz实现了一套全新的Contiguous Memory Allocator. 通过这套机制, 我们可以做到不预留内存，这些内存平时是可用的，只有当需要的时候才被分配给Camera，HDMI等设备. 参照[宋宝华--Linux内核最新的连续内存分配器(CMA)——避免预留大块内存](http://21cnbao.blog.51cto.com/109393/898846/), 内核为此提供了函数is_migrate_cma来检测当前类型是否为MIGRATE_CMA, 该函数定义在[include/linux/mmzone.h?v=4.7, line 69](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L69)
+对于MIGRATE_CMA类型, 其中在我们使用ARM等嵌入式Linux系统的时候, 一个头疼的问题是GPU, Camera, HDMI等都需要预留大量连续内存, 这部分内存平时不用, 但是一般的做法又必须先预留着. 目前, Marek Szyprowski和Michal Nazarewicz实现了一套全新的Contiguous Memory Allocator. 通过这套机制, 我们可以做到不预留内存, 这些内存平时是可用的, 只有当需要的时候才被分配给Camera, HDMI等设备. 参照[宋宝华--Linux内核最新的连续内存分配器(CMA)——避免预留大块内存](http://21cnbao.blog.51cto.com/109393/898846/), 内核为此提供了函数is_migrate_cma来检测当前类型是否为MIGRATE_CMA, 该函数定义在[include/linux/mmzone.h?v=4.7, line 69](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L69)
 
 ```cpp
 /* In mm/page_alloc.c; keep in sync also with show_migration_types() there */
@@ -210,7 +210,7 @@ unsigned long           nr_free;
 };
 ```
 
-*	nr_free统计了所有列表上空闲页的数目，而每种迁移类型都对应于一个空闲列表
+*	nr_free统计了所有列表上空闲页的数目, 而每种迁移类型都对应于一个空闲列表
 
 
 宏for_each_migratetype_order(order, type)可用于迭代指定迁移类型的所有分配阶
@@ -268,7 +268,7 @@ static int fallbacks[MIGRATE_TYPES][4] = {
 -------
 
 
-全局变量和辅助函数尽管页可移动性分组特性总是编译到内核中，但只有在系统中有足够内存可以分配到多个迁移类型对应的链表时，才是有意义的。由于每个迁移链表都应该有适当数量的内存，内核需要定义"适当"的概念. 这是通过两个全局变量pageblock_order和pageblock_nr_pages提供的. 第一个表示内核认为是"大"的一个分配阶, pageblock_nr_pages则表示该分配阶对应的页数。如果体系结构提供了巨型页机制, 则pageblock_order通常定义为巨型页对应的分配阶. 定义在[include/linux/pageblock-flags.h?v=4.7, line 44](http://lxr.free-electrons.com/source/include/linux/pageblock-flags.h?v=4.7#L42)
+全局变量和辅助函数尽管页可移动性分组特性总是编译到内核中, 但只有在系统中有足够内存可以分配到多个迁移类型对应的链表时, 才是有意义的. 由于每个迁移链表都应该有适当数量的内存, 内核需要定义"适当"的概念. 这是通过两个全局变量pageblock_order和pageblock_nr_pages提供的. 第一个表示内核认为是"大"的一个分配阶, pageblock_nr_pages则表示该分配阶对应的页数. 如果体系结构提供了巨型页机制, 则pageblock_order通常定义为巨型页对应的分配阶. 定义在[include/linux/pageblock-flags.h?v=4.7, line 44](http://lxr.free-electrons.com/source/include/linux/pageblock-flags.h?v=4.7#L42)
 
 
 ```cpp
@@ -311,7 +311,7 @@ static int fallbacks[MIGRATE_TYPES][4] = {
 
 我们将在以后讲解, 有关各个内存分配的细节都通过分配掩码指定.
 
-内核提供了两个标志，分别用于表示分配的内存是可移动的(\__GFP_MOVABLE)或可回收的(\__GFP_RECLAIMABLE).
+内核提供了两个标志, 分别用于表示分配的内存是可移动的(\__GFP_MOVABLE)或可回收的(\__GFP_RECLAIMABLE).
 
 
 
@@ -375,7 +375,7 @@ struct zone
 };
 ```
 
-在初始化期间, 内核自动确保对内存域中的每个不同的迁移类型分组, 在pageblock_flags中都分配了足够存储NR_PAGEBLOCK_BITS个比特位的空间。当前，表示一个连续内存区的迁移类型需要3个比特位, 参见[include/linux/pageblock-flags.h?v=4.7, line 28](http://lxr.free-electrons.com/source/include/linux/pageblock-flags.h?v=4.7#L28)
+在初始化期间, 内核自动确保对内存域中的每个不同的迁移类型分组, 在pageblock_flags中都分配了足够存储NR_PAGEBLOCK_BITS个比特位的空间. 当前, 表示一个连续内存区的迁移类型需要3个比特位, 参见[include/linux/pageblock-flags.h?v=4.7, line 28](http://lxr.free-electrons.com/source/include/linux/pageblock-flags.h?v=4.7#L28)
 
 ```cpp
 /* Bit indices that affect a whole block of pages */
@@ -411,7 +411,7 @@ void set_pageblock_migratetype(struct page *page, int migratetype)
 
 
 
-`migratetype`参数可以通过上文介绍的`gfpflags_to_migratetype`辅助函数构建. 请注意很重要的一点, 页的迁移类型是预先分配好的, 对应的比特位总是可用, 与页是否由伙伴系统管理无关. 在释放内存时，页必须返回到正确的迁移链表。这之所以可行，是因为能够从`get_pageblock_migratetype`获得所需的信息. 参见[include/linux/mmzone.h?v=4.7, line 84](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L84)
+`migratetype`参数可以通过上文介绍的`gfpflags_to_migratetype`辅助函数构建. 请注意很重要的一点, 页的迁移类型是预先分配好的, 对应的比特位总是可用, 与页是否由伙伴系统管理无关. 在释放内存时, 页必须返回到正确的迁移链表. 这之所以可行, 是因为能够从`get_pageblock_migratetype`获得所需的信息. 参见[include/linux/mmzone.h?v=4.7, line 84](http://lxr.free-electrons.com/source/include/linux/mmzone.h?v=4.7#L84)
 
 
 ```cpp
@@ -435,7 +435,7 @@ void set_pageblock_migratetype(struct page *page, int migratetype)
 
 
 
-在内存子系统初始化期间, memmap_init_zone负责处理内存域的page实例. 该函数定义在[mm/page_alloc.c?v=4.7, line 5139](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5139), 该函数完成了一些不怎么有趣的标准初始化工作，但其中有一件是实质性的，即所有的页最初都标记为可移动的. 参见[mm/page_alloc.c?v=4.7, line 5224](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5224)
+在内存子系统初始化期间, memmap_init_zone负责处理内存域的page实例. 该函数定义在[mm/page_alloc.c?v=4.7, line 5139](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5139), 该函数完成了一些不怎么有趣的标准初始化工作, 但其中有一件是实质性的, 即所有的页最初都标记为可移动的. 参见[mm/page_alloc.c?v=4.7, line 5224](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L5224)
 
 
 ```cpp
@@ -469,7 +469,7 @@ not_early:
 
 实际上, 在启动期间分配可移动内存区的情况较少, 那么分配器有很高的几率分配长度最大的内存区, 并将其从可移动列表转换到不可移动列表. 由于分配的内存区长度是最大的, 因此不会向可移动内存中引入碎片.
 
-总而言之, 这种做法避免了启动期间内核分配的内存(经常在系统的整个运行时间都不释放)散布到物理内存各处, 从而使其他类型的内存分配免受碎片的干扰，这也是页可移动性分组框架的最重要的目标之一.
+总而言之, 这种做法避免了启动期间内核分配的内存(经常在系统的整个运行时间都不释放)散布到物理内存各处, 从而使其他类型的内存分配免受碎片的干扰, 这也是页可移动性分组框架的最重要的目标之一.
 
 
 #4	分配器API
@@ -483,19 +483,19 @@ not_early:
 
 所有函数的一个共同点是 : 只能分配2的整数幂个页.
 
-因此，接口中不像C标准库的malloc函数或bootmem和memblock分配器那样指定了所需内存大小作为参数. 相反, 必须指定的是分配阶, 伙伴系统将在内存中分配$2^order$页. 内核中细粒度的分配只能借助于slab分配器(或者slub、slob分配器), 后者基于伙伴系统
+因此, 接口中不像C标准库的malloc函数或bootmem和memblock分配器那样指定了所需内存大小作为参数. 相反, 必须指定的是分配阶, 伙伴系统将在内存中分配$2^order$页. 内核中细粒度的分配只能借助于slab分配器(或者slub、slob分配器), 后者基于伙伴系统
 
 
 | 内存分配函数 | 功能 | 定义 |
 |:-----:|:-----:|
-| alloc_pages(mask, order) | 分配$2^order$页并返回一个struct page的实例，表示分配的内存块的起始页 | [NUMA-include/linux/gfp.h, line 466](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L466)<br>[UMA-include/linux/gfp.h?v=4.7, line 476](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L476) |
-| alloc_page(mask) | 是前者在order = 0情况下的简化形式，只分配一页 |  [include/linux/gfp.h?v=4.7, line 483](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L483) |
-| get_zeroed_page(mask) | 分配一页并返回一个page实例，页对应的内存填充0（所有其他函数，分配之后页的内容是未定义的） | [mm/page_alloc.c?v=4.7, line 3900](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L3900)| |
-| [__get_free_pages(mask, order)](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L3883)<br>[__get_free_page(mask)](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L500) | 工作方式与上述函数相同，但返回分配内存块的虚拟地址，而不是page实例 |
+| alloc_pages(mask, order) | 分配$2^order$页并返回一个struct page的实例, 表示分配的内存块的起始页 | [NUMA-include/linux/gfp.h, line 466](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L466)<br>[UMA-include/linux/gfp.h?v=4.7, line 476](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L476) |
+| alloc_page(mask) | 是前者在order = 0情况下的简化形式, 只分配一页 |  [include/linux/gfp.h?v=4.7, line 483](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L483) |
+| get_zeroed_page(mask) | 分配一页并返回一个page实例, 页对应的内存填充0(所有其他函数, 分配之后页的内容是未定义的) | [mm/page_alloc.c?v=4.7, line 3900](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L3900)| |
+| [__get_free_pages(mask, order)](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L3883)<br>[__get_free_page(mask)](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L500) | 工作方式与上述函数相同, 但返回分配内存块的虚拟地址, 而不是page实例 |
 | get_dma_pages(gfp_mask, order) | 用来获得适用于DMA的页. | [include/linux/gfp.h?v=4.7, line 503](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L503) |
 
 
-在空闲内存无法满足请求以至于分配失败的情况下，所有上述函数都返回空指针(比如alloc_pages和alloc_page)或者0(比如get_zeroed_page、__get_free_pages和__get_free_page).
+在空闲内存无法满足请求以至于分配失败的情况下, 所有上述函数都返回空指针(比如alloc_pages和alloc_page)或者0(比如get_zeroed_page、__get_free_pages和__get_free_page).
 
 因此内核在各次分配之后都必须检查返回的结果. 这种惯例与设计得很好的用户层应用程序没什么不同, 但在内核中忽略检查会导致严重得多的故障
 
@@ -503,20 +503,20 @@ not_early:
 内核除了伙伴系统函数之外, 还提供了其他内存管理函数. 它们以伙伴系统为基础, 但并不属于伙伴分配器自身. 这些函数包括vmalloc和vmalloc_32, 使用页表将不连续的内存映射到内核地址空间中, 使之看上去是连续的.
 
 还有一组kmalloc类型的函数, 用于分配小于一整页的内存区. 其实现
-将在本章后续的几节分别讨论。
+将在本章后续的几节分别讨论. 
 
 
 
 ## 释放函数
 -------
 
-有4个函数用于释放不再使用的页，与所述函数稍有不同
+有4个函数用于释放不再使用的页, 与所述函数稍有不同
 
 
 | 内存释放函数 | 描述 |
 |:--------------:|:-----:|
-| [free_page(struct page *)](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L520)<br>[free_pages(struct page *, order)](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L3918) | 用于将一个或2order页返回给内存管理子系统。内存区的起始地址由指向该内存区的第一个page实例的指针表示 |
-| [__free_page(addr)](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L519)<br>[__free_pages(addr, order)](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L3906) | 类似于前两个函数，但在表示需要释放的内存区时，使用了虚拟内存地址而不是page实例 |
+| [free_page(struct page *)](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L520)<br>[free_pages(struct page *, order)](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L3918) | 用于将一个或2order页返回给内存管理子系统. 内存区的起始地址由指向该内存区的第一个page实例的指针表示 |
+| [__free_page(addr)](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L519)<br>[__free_pages(addr, order)](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L3906) | 类似于前两个函数, 但在表示需要释放的内存区时, 使用了虚拟内存地址而不是page实例 |
 
 
 
@@ -524,7 +524,7 @@ not_early:
 -------
 
 
-前述所有函数中强制使用的mask参数，到底是什么语义?
+前述所有函数中强制使用的mask参数, 到底是什么语义?
 
 我们知道Linux将内存划分为内存域. 内核提供了所谓的内存域修饰符(zone modifier)(在掩码的最低4个比特位定义), 来指定从哪个内存域分配所需的页.
 
@@ -585,16 +585,16 @@ not_early:
 #define ___GFP_FS               0x80u		/* 可以调用底层文件系统？ */
 #define ___GFP_COLD             0x100u	   /* 需要非缓存的冷页 */
 #define ___GFP_NOWARN           0x200u	   /* 禁止分配失败警告 */
-#define ___GFP_REPEAT           0x400u	   /* 重试分配，可能失败 */
-#define ___GFP_NOFAIL           0x800u	   /* 一直重试，不会失败 */
-#define ___GFP_NORETRY          0x1000u	  /* 不重试，可能失败 */
+#define ___GFP_REPEAT           0x400u	   /* 重试分配, 可能失败 */
+#define ___GFP_NOFAIL           0x800u	   /* 一直重试, 不会失败 */
+#define ___GFP_NORETRY          0x1000u	  /* 不重试, 可能失败 */
 #define ___GFP_MEMALLOC         0x2000u  	/* 使用紧急分配链表 */
 #define ___GFP_COMP             0x4000u	  /* 增加复合页元数据 */
 #define ___GFP_ZERO             0x8000u	  /* 成功则返回填充字节0的页 */
 #define ___GFP_NOMEMALLOC       0x10000u	 /* 不使用紧急分配链表 */
 #define ___GFP_HARDWALL         0x20000u	 /* 只允许在进程允许运行的CPU所关联的结点分配内存 */
-#define ___GFP_THISNODE         0x40000u	 /* 没有备用结点，没有策略 */
-#define ___GFP_ATOMIC           0x80000u 	/* 用于原子分配，在任何情况下都不能中断  */
+#define ___GFP_THISNODE         0x40000u	 /* 没有备用结点, 没有策略 */
+#define ___GFP_ATOMIC           0x80000u 	/* 用于原子分配, 在任何情况下都不能中断  */
 #define ___GFP_ACCOUNT          0x100000u
 #define ___GFP_NOTRACK          0x200000u
 #define ___GFP_DIRECT_RECLAIM   0x400000u
@@ -757,27 +757,27 @@ not_early:
 #define __GFP_BITS_SHIFT 26
 #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
 ```
-给出的常数，其中一些很少使用，因此我不会讨论。其中最重要的一些常数语义如下所示
+给出的常数, 其中一些很少使用, 因此我不会讨论. 其中最重要的一些常数语义如下所示
 
 
-/*	\__GFP_WAIT表示分配内存的请求可以中断。也就是说，调度器在该请求期间可随意选择另一个过程执行，或者该请求可以被另一个更重要的事件中断. 分配器还可以在返回内存之前, 在队列上等待一个事件(相关进程会进入睡眠状态).
+/*	\__GFP_WAIT表示分配内存的请求可以中断. 也就是说, 调度器在该请求期间可随意选择另一个过程执行, 或者该请求可以被另一个更重要的事件中断. 分配器还可以在返回内存之前, 在队列上等待一个事件(相关进程会进入睡眠状态).
 
->虽然名字相似，但__GFP_HIGH与__GFP_HIGHMEM毫无关系，请不要弄混这两者\
+>虽然名字相似, 但__GFP_HIGH与__GFP_HIGHMEM毫无关系, 请不要弄混这两者\
 
 | 宏 | 描述 |
 |:---:|:----:|
-| \__GFP_RECLAIMABLE<br>\__GFP_MOVABLE | 是页迁移机制所需的标志. 顾名思义，它们分别将分配的内存标记为可回收的或可移动的。这影响从空闲列表的哪个子表获取内存 |
-| \___GFP_HIGH | 如果请求非常重要, 则设置\__GFP_HIGH，即内核急切地需要内存时。在分配内存失败可能给内核带来严重后果时(比如威胁到系统稳定性或系统崩溃), 总是会使用该标志 |
+| \__GFP_RECLAIMABLE<br>\__GFP_MOVABLE | 是页迁移机制所需的标志. 顾名思义, 它们分别将分配的内存标记为可回收的或可移动的. 这影响从空闲列表的哪个子表获取内存 |
+| \___GFP_HIGH | 如果请求非常重要, 则设置\__GFP_HIGH, 即内核急切地需要内存时. 在分配内存失败可能给内核带来严重后果时(比如威胁到系统稳定性或系统崩溃), 总是会使用该标志 |
 | \___GFP_IO |说明在查找空闲内存期间内核可以进行I/O操作. 实际上, 这意味着如果内核在内存分配期间换出页, 那么仅当设置该标志时, 才能将选择的页写入硬盘 |
 | \___GFP_FS |允许内核执行VFS操作. 在与VFS层有联系的内核子系统中必须禁用, 因为这可能引起循环递归调用. |
-| \___GFP_COLD | 如果需要分配不在CPU高速缓存中的“冷”页时，则设置\__GFP_COLD |
-| \___GFP_NOWARN | 在分配失败时禁止内核故障警告。在极少数场合该标志有用 |
-| \___GFP_REPEAT | 在分配失败后自动重试，但在尝试若干次之后会停止 |
-| \___GFP_NOFAIL | 在分配失败后一直重试，直至成功 |
-| \___GFP_NORETRY |  在分配失败后不重试，因此可能分配失败 |
-| \___GFP_ZERO | 在分配成功时，将返回填充字节0的页 |
-| \__GFP_HARDWALL | 只在NUMA系统上有意义. 它限制只在分配到当前进程的各个CPU所关联的结点分配内存。如果进程允许在所有CPU上运行（默认情况），该标志是无意义的。只有进程可以运行的CPU受限时，该标志才有效果 |
-| \__GFP_THISNODE | 也只在NUMA系统上有意义。如果设置该比特位，则内存分配失败的情况下不允许使用其他结点作为备用，需要保证在当前结点或者明确指定的结点上成功分配内存 |
+| \___GFP_COLD | 如果需要分配不在CPU高速缓存中的“冷”页时, 则设置\__GFP_COLD |
+| \___GFP_NOWARN | 在分配失败时禁止内核故障警告. 在极少数场合该标志有用 |
+| \___GFP_REPEAT | 在分配失败后自动重试, 但在尝试若干次之后会停止 |
+| \___GFP_NOFAIL | 在分配失败后一直重试, 直至成功 |
+| \___GFP_NORETRY |  在分配失败后不重试, 因此可能分配失败 |
+| \___GFP_ZERO | 在分配成功时, 将返回填充字节0的页 |
+| \__GFP_HARDWALL | 只在NUMA系统上有意义. 它限制只在分配到当前进程的各个CPU所关联的结点分配内存. 如果进程允许在所有CPU上运行(默认情况), 该标志是无意义的. 只有进程可以运行的CPU受限时, 该标志才有效果 |
+| \__GFP_THISNODE | 也只在NUMA系统上有意义. 如果设置该比特位, 则内存分配失败的情况下不允许使用其他结点作为备用, 需要保证在当前结点或者明确指定的结点上成功分配内存 |
 
 
 其次还定义了我们程序和函数中所需要的掩码MASK的信息, 由于其中__GFP_DMA, __GFP_DMA32, __GFP_HIGHMEM, __GFP_MOVABLE是在内存中分别有对应的内存域信息, 因此我们定义了内存域的掩码GFP_ZONEMASK, 参见[include/linux/gfp.h?v=4.7, line 57](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L57)
@@ -798,9 +798,9 @@ not_early:
 -------
 
 
-最后来看**第三部分**, 由于这些标志几乎总是组合使用，内核作了一些分组，包含了用于各种标准情形的适当的标志.
+最后来看**第三部分**, 由于这些标志几乎总是组合使用, 内核作了一些分组, 包含了用于各种标准情形的适当的标志.
 
-如果有可能的话，在内存管理子系统之外，总是把下列分组之一用于内存分配. 在内核源代码中，双下划线通常用于内部数据和定义。而这些预定义的分组名没有双下划线前缀，这一点从侧面验证了上述说法.
+如果有可能的话, 在内存管理子系统之外, 总是把下列分组之一用于内存分配. 在内核源代码中, 双下划线通常用于内部数据和定义. 而这些预定义的分组名没有双下划线前缀, 这一点从侧面验证了上述说法.
 
 ```cpp
 #define GFP_ATOMIC      (__GFP_HIGH|__GFP_ATOMIC|__GFP_KSWAPD_RECLAIM)
@@ -827,11 +827,11 @@ not_early:
 
 | 掩码组 | 描述 |
 |:-------:|:-----:|
-| GFP_ATOMIC | 用于原子分配，在任何情况下都不能中断, 可能使用紧急分配链表中的内存 |
-| GFP_NOIO<br>GFP_NOFS | 分别明确禁止I/O操作和访问VFS层, 但同时设置了\__GFP_RECLAIM，因此可以被回收 |
-| GFP_KERNEL<br>GFP_USER | 分别是内核和用户分配的默认设置。二者的失败不会立即威胁系统稳定性, GFP_KERNEL绝对是内核源代码中最常使用的标志 |
-| GFP_HIGHUSER | 是GFP_USER的一个扩展, 也用于用户空间. 它允许分配无法直接映射的高端内存. 使用高端内存页是没有坏处的，因为用户过程的地址空间总是通过非线性页表组织的 |
-| GFP_HIGHUSER_MOVABLE |用途类似于GFP_HIGHUSER，但分配将从虚拟内存域ZONE_MOVABLE进行 |
+| GFP_ATOMIC | 用于原子分配, 在任何情况下都不能中断, 可能使用紧急分配链表中的内存 |
+| GFP_NOIO<br>GFP_NOFS | 分别明确禁止I/O操作和访问VFS层, 但同时设置了\__GFP_RECLAIM, 因此可以被回收 |
+| GFP_KERNEL<br>GFP_USER | 分别是内核和用户分配的默认设置. 二者的失败不会立即威胁系统稳定性, GFP_KERNEL绝对是内核源代码中最常使用的标志 |
+| GFP_HIGHUSER | 是GFP_USER的一个扩展, 也用于用户空间. 它允许分配无法直接映射的高端内存. 使用高端内存页是没有坏处的, 因为用户过程的地址空间总是通过非线性页表组织的 |
+| GFP_HIGHUSER_MOVABLE |用途类似于GFP_HIGHUSER, 但分配将从虚拟内存域ZONE_MOVABLE进行 |
 | GFP_DMA<br>GFP_DMA32 | 用于分配适用于DMA的内存, 当前是\__GFP_DMA的同义词, GFP_DMA32也是\__GFP_GMA32的同义词 |
 
 
@@ -875,7 +875,7 @@ GFP_ZONES_SHIFT must be <= 2 on 32 bit platforms.
 
 
 
-很有趣的一点是，没有\__GFP_NORMAL常数，而内存分配的主要负担却落到ZONE_NORMAL内存域
+很有趣的一点是, 没有\__GFP_NORMAL常数, 而内存分配的主要负担却落到ZONE_NORMAL内存域
 
 内核考虑到这一点, 提供了一个函数gfp_zone来计算与给定分配标志兼容的最高内存域. 那么内存分配可以从该内存域或更低的内存域进行, 该函数定义在[include/linux/gfp.h?v=4.7, line 394](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L394)
 
@@ -920,16 +920,16 @@ static inline enum zone_type gfp_zone(gfp_t flags)
 
 *	如果\__GFP_DMA和\__GFP_HIGHMEM都没有设置, 则首先扫描ZONE_NORMAL, 后面是ZONE_DMA
 
-*	如果设置了\__GFP_HIGHMEM没有设置__GFP_DMA，则结果是从ZONE_HIGHMEM开始扫描所有3个内存域。=
+*	如果设置了\__GFP_HIGHMEM没有设置__GFP_DMA, 则结果是从ZONE_HIGHMEM开始扫描所有3个内存域. =
 
-*	如果设置了__GFP_DMA，那么\__GFP_HIGHMEM设置与否没有关系. 只有ZONE_DMA用于3种情形. 这是合理的, 因为同时使用\__GFP_HIGHMEM和__GFP_DMA没有意义. 高端内存从来都不适用于DMA
+*	如果设置了__GFP_DMA, 那么\__GFP_HIGHMEM设置与否没有关系. 只有ZONE_DMA用于3种情形. 这是合理的, 因为同时使用\__GFP_HIGHMEM和__GFP_DMA没有意义. 高端内存从来都不适用于DMA
 
 
-设置\__GFP_MOVABLE不会影响内核的决策，除非它与\__GFP_HIGHMEM同时指定. 在这种情况下, 会使用特殊的虚拟内存域ZONE_MOVABLE满足内存分配请求. 对前文描述的内核的反碎片策略而言, 这种行为是必要的.
+设置\__GFP_MOVABLE不会影响内核的决策, 除非它与\__GFP_HIGHMEM同时指定. 在这种情况下, 会使用特殊的虚拟内存域ZONE_MOVABLE满足内存分配请求. 对前文描述的内核的反碎片策略而言, 这种行为是必要的.
 
 除了内存域修饰符之外, 掩码中还可以设置一些标志. 
 
-下图中给出了掩码的布局，以及与各个比特位置关联的常数. \__GFP_DMA32出现了几次，因为它可能位于不同的地方.
+下图中给出了掩码的布局, 以及与各个比特位置关联的常数. \__GFP_DMA32出现了几次, 因为它可能位于不同的地方.
 
 
 ![GFP掩码的布局](../images/gfp_flag_mask.png)
@@ -946,7 +946,7 @@ static inline enum zone_type gfp_zone(gfp_t flags)
 ###4.3.1	内存分配统一到alloc_pages接口
 -------
 
-通过使用标志、内存域修饰符和各个分配函数，内核提供了一种非常灵活的内存分配体系.尽管如此, 所有接口函数都可以追溯到一个简单的基本函数(alloc_pages_node)
+通过使用标志、内存域修饰符和各个分配函数, 内核提供了一种非常灵活的内存分配体系.尽管如此, 所有接口函数都可以追溯到一个简单的基本函数(alloc_pages_node)
 
 分配单页的函数[`alloc_page`](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L483)和[`__get_free_page`](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L500), 还有[`__get_dma_pages`](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L503)是借助于宏定义的.
 
@@ -963,7 +963,7 @@ static inline enum zone_type gfp_zone(gfp_t flags)
 	__get_free_pages((gfp_mask) | GFP_DMA, (order))
 ```
 
-[`get_zeroed_page`](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L3900)的实现也没什么困难, 对`__get_free_pages`使用`__GFP_ZERO`标志，即可分配填充字节0的页. 再返回与页关联的内存区地址即可.
+[`get_zeroed_page`](http://lxr.free-electrons.com/source/mm/page_alloc.c?v=4.7#L3900)的实现也没什么困难, 对`__get_free_pages`使用`__GFP_ZERO`标志, 即可分配填充字节0的页. 再返回与页关联的内存区地址即可.
 
 
 ```cpp
@@ -1000,9 +1000,9 @@ unsigned long __get_free_pages(gfp_t gfp_mask, unsigned int order)
 EXPORT_SYMBOL(__get_free_pages);
 ```
 
-在这种情况下， 使用了一个普通函数而不是宏， 因为`alloc_pages`返回的`page`实例需要使用辅助
+在这种情况下,  使用了一个普通函数而不是宏,  因为`alloc_pages`返回的`page`实例需要使用辅助
 
-函数`page_address`转换为内存地址. 在这里，只要知道该函数可根据`page`实例计算相关页的线性内存地址即可. 对高端内存页这是有问题的
+函数`page_address`转换为内存地址. 在这里, 只要知道该函数可根据`page`实例计算相关页的线性内存地址即可. 对高端内存页这是有问题的
 
 
 <font color = 0x00ffff>
@@ -1023,7 +1023,7 @@ EXPORT_SYMBOL(__get_free_pages);
 -------
 
 
-既然所有的内存分配API函数都可以追溯掉`alloc_page`函数, 从某种意义上说，该函数是伙伴系统主要实现的"发射台".
+既然所有的内存分配API函数都可以追溯掉`alloc_page`函数, 从某种意义上说, 该函数是伙伴系统主要实现的"发射台".
 
 
 `alloc_pages`函数的定义是依赖于NUMA或者UMA架构的, 定义如下
@@ -1227,7 +1227,7 @@ EXPORT_SYMBOL(__alloc_pages_nodemask);
 ##4.4	__free_pages
 
 
-类似地，内存释放函数也可以归约到一个主要的函数(\__free_pages), 只是用不同的参数调用而已
+类似地, 内存释放函数也可以归约到一个主要的函数(\__free_pages), 只是用不同的参数调用而已
 
 前面我们讲过内核释放的两个主要函数有\__free_page和free_page, 它们的定义在[include/linux/gfp.h?v=4.7#L519](http://lxr.free-electrons.com/source/include/linux/gfp.h?v=4.7#L519)
 

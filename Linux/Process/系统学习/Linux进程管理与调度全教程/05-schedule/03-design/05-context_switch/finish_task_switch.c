@@ -62,7 +62,7 @@ static struct rq *finish_task_switch(struct task_struct *prev)
         fire_sched_in_preempt_notifiers(current);
         if (mm)
                 mmdrop(mm);
-        if (unlikely(prev_state == TASK_DEAD))  /*  如果上一个进程已经终止，释放其task_struct 结构  */
+        if (unlikely(prev_state == TASK_DEAD))  /*  如果上一个进程已经终止, 释放其task_struct 结构  */
         {
                 if (prev->sched_class->task_dead)
                         prev->sched_class->task_dead(prev);

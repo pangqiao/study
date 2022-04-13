@@ -189,7 +189,7 @@
 %define IA32_TSC_DEADLINE                                          6E0H
 
 
-;;; 下面是 06_25H(DisplayFamily_DisplayModel) 处理器的 MSRs， 适用于 Nehalem/Westmere 微架构
+;;; 下面是 06_25H(DisplayFamily_DisplayModel) 处理器的 MSRs,  适用于 Nehalem/Westmere 微架构
 
 %define MSR_LBR_SELECT                                             1C8H
 %define MSR_LASTBRANCH_TOS                                         1C9H

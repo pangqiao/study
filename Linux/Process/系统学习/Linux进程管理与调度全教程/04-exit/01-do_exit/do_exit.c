@@ -20,7 +20,7 @@ void do_exit(long code)
 
     /*  oops消息
         中断上下文不能执行do_exit函数
-        也不能终止PID为0的进程。
+        也不能终止PID为0的进程. 
     */
     if (unlikely(in_interrupt()))
         panic("Aiee, killing interrupt handler!");
@@ -34,7 +34,7 @@ void do_exit(long code)
      * mm_release()->clear_child_tid() from writing to a user-controlled
      * kernel address.
      *
-     * 设定进程可以使用的虚拟地址的上限（用户空间）
+     * 设定进程可以使用的虚拟地址的上限(用户空间)
      * http://lxr.free-electrons.com/ident?v=4.6;i=set_fs
      */
     set_fs(USER_DS);
@@ -83,9 +83,9 @@ void do_exit(long code)
      * tsk->flags are checked in the futex code to protect against
      * an exiting task cleaning up the robust pi futexes.
      */
-    /*  内存屏障，用于确保在它之后的操作开始执行之前，它之前的操作已经完成  */
+    /*  内存屏障, 用于确保在它之后的操作开始执行之前, 它之前的操作已经完成  */
     smp_mb();
-    /*  一直等待，直到获得current->pi_lock自旋锁  */
+    /*  一直等待, 直到获得current->pi_lock自旋锁  */
     raw_spin_unlock_wait(&tsk->pi_lock);
 
     if (unlikely(in_atomic())) {
@@ -121,7 +121,7 @@ void do_exit(long code)
     taskstats_exit(tsk, group_dead);
 
     /*  释放存储空间
-    放弃进程占用的mm,如果没有其他进程使用该mm，则释放它。
+    放弃进程占用的mm,如果没有其他进程使用该mm, 则释放它. 
      */
     exit_mm(tsk);
     /*  输出进程会计信息  */
@@ -220,7 +220,7 @@ void do_exit(long code)
     tsk->state = TASK_DEAD;
     tsk->flags |= PF_NOFREEZE;      /* tell freezer to ignore us */
     /*
-        重新调度，因为该进程已经被设置成了僵死状态，因此永远都不会再把它调度回来运行了，也就实现了do_exit不会有返回的目标    */
+        重新调度, 因为该进程已经被设置成了僵死状态, 因此永远都不会再把它调度回来运行了, 也就实现了do_exit不会有返回的目标    */
     schedule();
     BUG();
     /* Avoid "noreturn function does return".  */

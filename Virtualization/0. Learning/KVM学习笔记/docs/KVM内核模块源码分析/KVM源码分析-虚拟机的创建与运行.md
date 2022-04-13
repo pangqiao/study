@@ -2,11 +2,11 @@
 
 KVM源代码分析1:基本工作原理。 基本原理里面提到kvm虚拟化由用户态程序Qemu和内核态驱动kvm配合完成，qemu负责HOST用户态层面进程管理，IO处理等，KVM负责把qemu的部分指令在硬件上直接实现，从虚拟机的创建和运行上看，**qemu的代码占了流程上的主要部分**。下面的代码主要主要针对与qemu，KVM部分另外开篇再说。
 
-代码：
+代码: 
 
 ```
-QEMU：git://git.qemu.org/qemu.git v2.4.0
-KVM：https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git v4.2
+QEMU: git://git.qemu.org/qemu.git v2.4.0
+KVM: https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git v4.2
 ```
 
 **QEMU和KVM是通过IOCTL进行配合的**，直接抓住这个线看有kvm_ioctl、kvm_vm_ioctl、kvm_vcpu_ioctl、kvm_device_ioctl等，他们还都在一个C文件里面。
@@ -15,13 +15,13 @@ KVM：https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git v4
 * 而调用kvm_vm_ioctl的函数真是海了去了，需要看的是KVM_SET_USER_MEMORY_REGION，KVM_CREATE_VCPU，KVM_CREATE_DEVICE。
 * 所有寄存器的交换信息都是通过kvm_vcpu_ioctl，需要记住的操作只有，KVM_RUN。
 
-所有看QEMU和KVM的配合流程如下：
+所有看QEMU和KVM的配合流程如下: 
 
 ![1534127987738.png](image/1534127987738.png)
 
 ![1534141975523.png](image/1534141975523.png)
 
-接下来参考上图分析qemu代码流程： **从vl.c代码的main函数开始**。
+接下来参考上图分析qemu代码流程:  **从vl.c代码的main函数开始**。
 ```
 atexit(qemu_run_exit_notifiers)//注册了qemu的退出处理函数，
 ```
@@ -29,7 +29,7 @@ atexit(qemu_run_exit_notifiers)//注册了qemu的退出处理函数，
 ```
 2964 module_call_init(MODULE_INIT_QOM);
 ```
-module_call_init则开始初始化qemu的各个模块，其中MODULE_INIT_QOM是枚举值，枚举中陆陆续续的有以下参数：
+module_call_init则开始初始化qemu的各个模块，其中MODULE_INIT_QOM是枚举值，枚举中陆陆续续的有以下参数: 
 
 ```
 typedef enum {
@@ -142,7 +142,7 @@ DEFINE_PC_MACHINE注册的函数pc_init_##suffix在DEFINE_I440FX_MACHINE中定�
 ```
 
 * 它前面的修饰是**__attribute__((constructor))**,这个**导致machine_init或者type_init等会在main()之前就被执行**。
-* 所有type_init(kvm_type_init）-> kvm_accel_type -> kvm_accel_class_init -> kvm_init依次完成了函数注册，所有说module_call_init(MODULE_INIT_QOM)函数已经完成了kvm_init的执行，所有这样就清楚KVM调用关系了。
+* 所有type_init(kvm_type_init)-> kvm_accel_type -> kvm_accel_class_init -> kvm_init依次完成了函数注册，所有说module_call_init(MODULE_INIT_QOM)函数已经完成了kvm_init的执行，所有这样就清楚KVM调用关系了。
 * 如此就先去看kvm_init函数，前面主要干了一件事，填充**KVMState *s结构体**，
 * 然后通过kvm_ioctl(s, KVM_GET_API_VERSION, 0)判断内核KVM驱动和当前QEMU版本是否兼容，
 * 再下面则是执行kvm_ioctl(s, KVM_CREATE_VM, type)进行虚拟机的创建活动，创建了KVM虚拟机，获取虚拟机句柄。具体KVM_CREATE_VM在内核态做了什么，ioctl的工作等另外再说
@@ -259,7 +259,7 @@ if (incoming) {
 }
 ```
 
-现在进入pc_init1函数：
+现在进入pc_init1函数: 
 ```
 /* PC hardware initialisation */
 static void pc_init1(MachineState *machine)
@@ -535,7 +535,7 @@ pc_cpus_init入参是cpu_model，前面说过这是具体的CPU模型，所有X8
 然后是for循环中针对每个CPU初始化，即pc_new_cpu，直接进入cpu_x86_create函数，
 主要就是把CPUX86State填充了一下，涉及到CPUID和其他的feature。
 
-下面是x86_cpu_realize，即唤醒CPU，重点是qemu_init_vcpu，MCE忽略掉，走到qemu_kvm_start_vcpu，qemu创建VCPU，如下：
+下面是x86_cpu_realize，即唤醒CPU，重点是qemu_init_vcpu，MCE忽略掉，走到qemu_kvm_start_vcpu，qemu创建VCPU，如下: 
 
 ```
 //创建VPU对于的qemu线程，线程函数是qemu_kvm_cpu_thread_fn
@@ -553,7 +553,7 @@ while (!cpu->created) {
   #define type_init(function) module_init(function, MODULE_INIT_QOM)
 ```
 
-从上面看，pc_cpus_init函数过程已经理顺了，下面看一下，vcpu所在的线程对应的qemu_kvm_cpu_thread_fn中：
+从上面看，pc_cpus_init函数过程已经理顺了，下面看一下，vcpu所在的线程对应的qemu_kvm_cpu_thread_fn中: 
 
 ```
   //初始化VCPU
@@ -600,9 +600,9 @@ vmstate_register_ram_global这个函数则是负责将前面提到的ramlist中�
 
 后面则是subregion的处理，memory_region_init_alias初始化，其中将ram传递给mr->owner确定了隶属关系，memory_region_add_subregion则是大头，memory_region_add_subregion_common前面的判断忽略，QTAILQ_INSERT_TAIL(&mr->subregions, subregion, subregions_link)就是插入了链表而已，主要内容在memory_region_transaction_commit。
 
-memory_region_transaction_commit中引入了新的结构address_spaces（AS），注释里面提到“AddressSpace: describes a mapping of addresses to #MemoryRegion objects”，就是内存地址的映射关系，因为内存有不同的应用类型，address_spaces以链表形式存在，commit函数则是对所有AS执行address_space_update_topology，先看AS在哪里注册的，就是前面提到的kvm_init里面，执行memory_listener_register，注册了address_space_memory和address_space_io两个，涉及的另外一个结构体则是MemoryListener，有kvm_memory_listener和kvm_io_listener，就是用于监控内存映射关系发生变化之后执行回调函数。
+memory_region_transaction_commit中引入了新的结构address_spaces(AS)，注释里面提到“AddressSpace: describes a mapping of addresses to #MemoryRegion objects”，就是内存地址的映射关系，因为内存有不同的应用类型，address_spaces以链表形式存在，commit函数则是对所有AS执行address_space_update_topology，先看AS在哪里注册的，就是前面提到的kvm_init里面，执行memory_listener_register，注册了address_space_memory和address_space_io两个，涉及的另外一个结构体则是MemoryListener，有kvm_memory_listener和kvm_io_listener，就是用于监控内存映射关系发生变化之后执行回调函数。
 
-下面进入到address_space_update_topology函数，FlatView则是“Flattened global view of current active memory hierarchy”，address_space_get_flatview直接获取当前的，generate_memory_topology则根据前面已经变化的mr重新生成FlatView,然后通过address_space_update_topology_pass比较，简单说address_space_update_topology_pass就是两个FlatView逐条的FlatRange进行对比，以后一个FlatView为准，如果前面FlatView的FlatRange和后面的不一样，则对前面的FlatView的这条FlatRange进行处理，差别就是3种情况，如代码：
+下面进入到address_space_update_topology函数，FlatView则是“Flattened global view of current active memory hierarchy”，address_space_get_flatview直接获取当前的，generate_memory_topology则根据前面已经变化的mr重新生成FlatView,然后通过address_space_update_topology_pass比较，简单说address_space_update_topology_pass就是两个FlatView逐条的FlatRange进行对比，以后一个FlatView为准，如果前面FlatView的FlatRange和后面的不一样，则对前面的FlatView的这条FlatRange进行处理，差别就是3种情况，如代码: 
 
 
 ```
@@ -659,7 +659,7 @@ memory_region_transaction_commit中引入了新的结构address_spaces（AS）�
 
 重点在MEMORY_LISTENER_UPDATE_REGION函数上，将变化的FlatRange构造一个MemoryRegionSection，然后遍历所有的memory_listeners，如果memory_listeners监控的内存区域和MemoryRegionSection一样，则执行第四个入参函数，如region_del函数，即kvm_region_del函数，这个是在kvm_init中初始化的。kvm_region_del主要是kvm_set_phys_mem函数，主要是将MemoryRegionSection有效值转换成KVMSlot形式，在kvm_set_user_memory_region中使用kvm_vm_ioctl(s, KVM_SET_USER_MEMORY_REGION, &mem)传递给kernel。
 我们看内存初始化真正需要做的是什么？就是qemu申请内存，把申请物理地址传递给kernel进行映射，那我们直接就可以KVMSlot申请内存，然后传递给kvm_vm_ioctl，这样也是OK的，之所以有这么多代码，因为qemu本身是一个软件虚拟机，mr涉及的地址已经是vm的地址，对于KVM是多余的，只是方便函数复用而已。
-内存初始化之后还是pci等处理先跳过，如此pc_init就完成了，但是前面VM线程已经初始化成功，在qemu_kvm_cpu_thread_fn函数中等待运行：
+内存初始化之后还是pci等处理先跳过，如此pc_init就完成了，但是前面VM线程已经初始化成功，在qemu_kvm_cpu_thread_fn函数中等待运行: 
 ```
     while (1) {
         if (cpu_can_run(cpu)) {

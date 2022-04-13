@@ -13,7 +13,7 @@
 
 <!-- /code_chunk_output -->
 
-用qemu+GDB来调试内核和ko，当然我们需要准备如下：
+用qemu+GDB来调试内核和ko，当然我们需要准备如下: 
 
 - 带调试信息的内核vmlinux
 - 一个压缩的内核vmlinuz或者bzImage
@@ -67,7 +67,7 @@ $ mkdir mnt
 $ mkdir -p etc/init.d/
 ```
 
-在\_install/etc/init.d/目录下新创建一个叫 rcS 的文件，并且写入如下内容：
+在\_install/etc/init.d/目录下新创建一个叫 rcS 的文件，并且写入如下内容: 
 
 ```
 #!/bin/sh
@@ -119,7 +119,7 @@ $ sudo mknod console c 5 1
 $ sudo mknod null c 1 3
 ```
 
-当然也可以使用既有的initramfs，或者将其进行裁剪（https://blog.csdn.net/weijitao/article/details/79477792）
+当然也可以使用既有的initramfs，或者将其进行裁剪(https://blog.csdn.net/weijitao/article/details/79477792)
 
 # 2. 编译调试版内核
 
@@ -134,7 +134,7 @@ $ make menuconfig
 
 配置 initramfs，在 initramfs source file 中填入\_install。另外需要把 Default kernel command string 清空。
 
-取消 Processor type and features \-\> Build a relocatable kernel: 因为内核启用这项特性之后，内核启动时会随机化内核的各个 section 的虚拟地址（VA），导致 gdb 断点设置在错误的虚拟地址上，内核执行时就不会触发这些断点。
+取消 Processor type and features \-\> Build a relocatable kernel: 因为内核启用这项特性之后，内核启动时会随机化内核的各个 section 的虚拟地址(VA)，导致 gdb 断点设置在错误的虚拟地址上，内核执行时就不会触发这些断点。
 
 取消后 Build a relocatable kernel 的子项 Randomize the address of the kernel image (KASLR) 也会一并被取消
 
@@ -170,7 +170,7 @@ Device Drivers -->
 $ make -j 20
 ```
 
-编译后，bzImage这个是被压缩了的，不带调试信息的内核，供qemu虚拟机使用（arch/x86/boot/bzImage），vmlinux(当前目录)里面带了调试信息，没有压缩，供gdb使用。
+编译后，bzImage这个是被压缩了的，不带调试信息的内核，供qemu虚拟机使用(arch/x86/boot/bzImage)，vmlinux(当前目录)里面带了调试信息，没有压缩，供gdb使用。
 
 当编译结束后，可以将vmlinux和bzImage文件copy到一个干净的目录下。
 
@@ -178,15 +178,15 @@ $ make -j 20
 
 qemu 是一款虚拟机，可以模拟x86 & arm 等等硬件平台<似乎可模拟的硬件平台很多...>，而qemu 也内嵌了一个 gdbserver。这个gdbserver于是就可以和gdb构成一个远程合作伙伴，通过ip:port 网络方式或者是通过串口/dev/ttyS\*来进行工作，一个在这头，一个在那头。
 
-start\_kernel脚本：
+start\_kernel脚本: 
 
 ```
 #!/usr/bin/bash
 qemu-system-x86_64 -cpu host -smp 2 -m 1024 -kernel arch/x86/boot/bzImage -nographic -append "rdinit=/linuxrc loglevel=8 console=ttyS0" -S -s
 ```
 
-- `-S`：表示QEMU虚拟机会冻结CPU，直到远程的GDB输入相应控制命令。
-- `-s`：表示在1234端口接受GDB的调试连接。
+- `-S`: 表示QEMU虚拟机会冻结CPU，直到远程的GDB输入相应控制命令。
+- `-s`: 表示在1234端口接受GDB的调试连接。
 
 启动gdb脚本或参照下面命令
 
@@ -208,7 +208,7 @@ gdb vmlinux
 show arch
 # 当前架构一般是: i386:x86-64
 
-# 连接 qemu 进行调试：
+# 连接 qemu 进行调试: 
 target remote :1234
 
 # 设置断点
@@ -219,13 +219,13 @@ b start_kernel
 c
 ```
 
-执行内核后，gdb 会出现一个错误：
+执行内核后，gdb 会出现一个错误: 
 
 ```
 Remote 'g' packet reply is too long: 后续一堆的十六进制数字
 ```
 
-这是 gdb 的一个bug，可以通过以下方式规避：
+这是 gdb 的一个bug，可以通过以下方式规避: 
 
 ```
 # 断开 gdb 的连接
@@ -236,7 +236,7 @@ disconnect
 set arch i386:x86-64:intel
 ```
 
-设置完 arch 后，重新连接：
+设置完 arch 后，重新连接: 
 
 ```
 target remote :1234
@@ -316,7 +316,7 @@ drwxrwxrwt    2 0        0               40 May 30 08:21 tmp
 
 1. 为什么要关闭 Build a relocatable kernel 
 
-因为内核启用这项特性之后，内核启动时会随机化内核的各个 section 的虚拟地址（VA），导致 gdb 断点设置在错误的虚拟地址上，内核执行时就不会触发这些断点。
+因为内核启用这项特性之后，内核启动时会随机化内核的各个 section 的虚拟地址(VA)，导致 gdb 断点设置在错误的虚拟地址上，内核执行时就不会触发这些断点。
 
 2. Generate dwarf4 debuginfo 有什么用 
 
@@ -324,10 +324,10 @@ drwxrwxrwt    2 0        0               40 May 30 08:21 tmp
 
 3. Remote 'g' packet reply is too long 错误的原因 
 
-这个错误是当目标程序执行时发生模式切换（real mode 16bit -> protected mode 32bit -> long mode 64bit）的时候，gdb server（此处就是 qemu）发送了不同长度的信息，gdb 无法正确的处理这种情况，所以直接就报错。 
-此时需要断开连接并切换 gdb 的 arch （i386:x86-64 和 i386:x86-64:intel ），arch 变化后，gdb 会重新设置缓冲区，然后再连接上去就能正常调试。这个方法规避了一些麻烦，但是实际上有两种正规的解决方案： 
-（1） 修改 gdb 的源码，使 gdb 支持这种长度变化（gdb 开发者似乎认为这个问题应该由 gdb server 解决）。 
-（2） 修改 qemu 的 gdb server，始终发送 64bit 的消息（但是这种方式可能导致无法调试 real mode 的代码）。
+这个错误是当目标程序执行时发生模式切换(real mode 16bit -> protected mode 32bit -> long mode 64bit)的时候，gdb server(此处就是 qemu)发送了不同长度的信息，gdb 无法正确的处理这种情况，所以直接就报错。 
+此时需要断开连接并切换 gdb 的 arch (i386:x86-64 和 i386:x86-64:intel )，arch 变化后，gdb 会重新设置缓冲区，然后再连接上去就能正常调试。这个方法规避了一些麻烦，但是实际上有两种正规的解决方案:  
+(1) 修改 gdb 的源码，使 gdb 支持这种长度变化(gdb 开发者似乎认为这个问题应该由 gdb server 解决)。 
+(2) 修改 qemu 的 gdb server，始终发送 64bit 的消息(但是这种方式可能导致无法调试 real mode 的代码)。
 
 4. 为什么最后内核执行出现了 Kernel panic - not syncing: VFS: Unable to mount root fs on unknown-block(0,0) 
 
@@ -337,7 +337,7 @@ drwxrwxrwt    2 0        0               40 May 30 08:21 tmp
 
 内核里面没有勾上hotplug选项
 
-确保编译内核时编译如下选项：
+确保编译内核时编译如下选项: 
 
 ```
 CONFIG_PROC_FS=y

@@ -23,7 +23,7 @@ static void __sched notrace __schedule(bool preempt)
     if (unlikely(prev->state == TASK_DEAD))
         preempt_enable_no_resched_notrace();
     
-    /*  如果禁止内核抢占，而又调用了cond_resched就会出错
+    /*  如果禁止内核抢占, 而又调用了cond_resched就会出错
      *  这里就是用来捕获该错误的  */
     schedule_debug(prev);
 
@@ -33,7 +33,7 @@ static void __sched notrace __schedule(bool preempt)
     /*  关闭本地中断  */
     local_irq_disable();
 
-    /*  更新全局状态，
+    /*  更新全局状态, 
      *  标识当前CPU发生上下文的切换  */
     rcu_note_context_switch();
 
@@ -60,7 +60,7 @@ static void __sched notrace __schedule(bool preempt)
      *  此时不能只检查抢占计数
      *  因为可能某个进程(如网卡轮询)直接调用了schedule
      *  如果不判断prev->stat就可能误认为task进程为RUNNING状态
-     *  到达这里，有两种可能，一种是主动schedule, 另外一种是被抢占
+     *  到达这里, 有两种可能, 一种是主动schedule, 另外一种是被抢占
      *  被抢占有两种情况, 一种是时间片到点, 一种是时间片没到点
      *  时间片到点后, 主要是置当前进程的need_resched标志
      *  接下来在时钟中断结束后, 会preempt_schedule_irq抢占调度
@@ -72,16 +72,16 @@ static void __sched notrace __schedule(bool preempt)
      *  而是配置其状态为TASK_RUNNING, 并且把他留在rq中
 
     /*  如果内核态没有被抢占, 并且内核抢占有效
-        即是否同时满足以下条件：
+        即是否同时满足以下条件: 
         1  该进程处于停止状态
         2  该进程没有在内核态被抢占 */
     if (!preempt && prev->state)
     {
 
-        /*  如果当前进程有非阻塞等待信号，并且它的状态是TASK_INTERRUPTIBLE  */
+        /*  如果当前进程有非阻塞等待信号, 并且它的状态是TASK_INTERRUPTIBLE  */
         if (unlikely(signal_pending_state(prev->state, prev)))
         {
-            /*  将当前进程的状态设为：TASK_RUNNING  */
+            /*  将当前进程的状态设为: TASK_RUNNING  */
             prev->state = TASK_RUNNING;
         }
         else   /*  否则需要将prev进程从就绪队列中删除*/
@@ -105,7 +105,7 @@ static void __sched notrace __schedule(bool preempt)
                     try_to_wake_up_local(to_wakeup);
             }
         }
-        /*  如果不是被抢占的，就累加主动切换次数  */
+        /*  如果不是被抢占的, 就累加主动切换次数  */
         switch_count = &prev->nvcsw;
     }
 
@@ -134,7 +134,7 @@ static void __sched notrace __schedule(bool preempt)
         /*  进程之间上下文切换    */
         rq = context_switch(rq, prev, next); /* unlocks the rq */
     }
-    else    /*  如果prev和next为同一进程，则不进行进程切换  */
+    else    /*  如果prev和next为同一进程, 则不进行进程切换  */
     {
         lockdep_unpin_lock(&rq->lock);
         raw_spin_unlock_irq(&rq->lock);

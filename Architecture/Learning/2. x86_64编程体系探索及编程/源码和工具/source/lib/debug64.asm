@@ -29,8 +29,8 @@ set_debug_store_area:
 ;		rsi - BTS buffer base
 ;		rdi - PEBS buffer base
 ; description:
-;		缺省情况下，配置为环形回路 buffer 形式，
-;		threshold 值大于 maximum，避免产生 DS buffer 溢出中断
+;		缺省情况下, 配置为环形回路 buffer 形式, 
+;		threshold 值大于 maximum, 避免产生 DS buffer 溢出中断
 ;--------------------------------------------------------------------
 set_ds_management_record:
 	push rbp
@@ -74,9 +74,9 @@ set_ds_management_record:
 	jmp set_pebs64
 enhancement_pebs64:
 	;*
-	;* 增强的 PEBS 格式，每条记录共 176 个字节 *
+	;* 增强的 PEBS 格式, 每条记录共 176 个字节 *
 	;*
-	mov DWORD [enhancement_pebs_flag], 1				; 支持，enhancement_pebs_flag 标志置 1
+	mov DWORD [enhancement_pebs_flag], 1				; 支持, enhancement_pebs_flag 标志置 1
 	mov DWORD [pebs_record_length], 176
 	lea rax, [rdi + PEBS_RECORD_MAXIMUM * 176]			; maximum 值
 	lea rdx, [rdi + PEBS_RECORD_THRESHOLD * 176]			; threshold 值
@@ -168,7 +168,7 @@ set_bts_buffer_size:
         rdmsr 
         bt eax, BTINT_BIT                       ; 测试是否开启 BTINT 位
         mov ecx, 0
-        cmovc rsi, rcx                          ; 如果开启了，bts threshold = bts maximum
+        cmovc rsi, rcx                          ; 如果开启了, bts threshold = bts maximum
                                                 ; 否则 bts threshold = bts maximum + sizeof(bts_record)
         add [rdi], rsi                          ; 最终的 bts threshold 值
         pop rdx
@@ -228,7 +228,7 @@ reset_bts_index:
         ret
 
 ;----------------------------------------------
-; reset_pebs_index()：重置 PEBS index 值为 base
+; reset_pebs_index(): 重置 PEBS index 值为 base
 ;----------------------------------------------
 reset_pebs_index:
         mov rdi, [pebs_index_pointer]       
@@ -241,8 +241,8 @@ reset_pebs_index:
 
 ;------------------------------------------------------------
 ; update_pebs_index_track(): 更新PEBS index 的轨迹
-; 描述：
-;       更新 [pebs_buffer_index]变量的值，保持检测 PEBS 中断
+; 描述: 
+;       更新 [pebs_buffer_index]变量的值, 保持检测 PEBS 中断
 ;       [pebs_buffer_index] 记录着“当前”的 PEBS index 值
 ;------------------------------------------------------------
 update_pebs_index_track:
@@ -377,7 +377,7 @@ do_dump_bts_record:
 	mov rbx, [rax]				; 取 BTS base 值
 
 
-; 现在：rbx = base 值，r10 = BTS buffer 最大值
+; 现在: rbx = base 值, r10 = BTS buffer 最大值
 
 	xor rcx, rcx
 dump_bts_record_loop:
@@ -486,7 +486,7 @@ do_dump_reg64_loop:
 
 
 ;---------------------------------------------
-; dump_pebs_record()：打印最后一条 PEBS 记录
+; dump_pebs_record(): 打印最后一条 PEBS 记录
 ;---------------------------------------------
 dump_pebs_record:
 	jmp do_dump_pebs_record

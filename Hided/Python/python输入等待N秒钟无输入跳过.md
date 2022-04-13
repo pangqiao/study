@@ -42,11 +42,11 @@ signal.signal(signal.SIGALRM, interrupted)
 signal.alarm(10)
 
 try:
-    name = raw_input('请在10秒内输入你的名字：')
+    name = raw_input('请在10秒内输入你的名字: ')
 except InputTimeoutError:
     print('\ntimeout')
     name = '无名'
 
 signal.alarm(0)  # 读到输入的话重置信号
-print('你的名字是：%s' % name)
+print('你的名字是: %s' % name)
 ```

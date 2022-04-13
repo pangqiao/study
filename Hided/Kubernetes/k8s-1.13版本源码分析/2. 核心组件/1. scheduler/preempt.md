@@ -6,7 +6,7 @@
 
 Pod 有了 priority(优先级) 后才有优先级调度、抢占调度的说法，高优先级的 pod 可以在调度队列中排到前面，优先选择 node；另外当高优先级的 pod 找不到合适的 node 时，就会看 node 上低优先级的 pod 驱逐之后是否能够 run 起来，如果可以，那么 node 上的一个或多个低优先级的 pod 会被驱逐，然后高优先级的 pod 得以成功运行1个 node 上。
 
-今天我们分析 pod 抢占相关的代码。开始之前我们看一下和 priority 相关的2个示例配置文件：
+今天我们分析 pod 抢占相关的代码。开始之前我们看一下和 priority 相关的2个示例配置文件: 
 
 **PriorityClass 例子**
 
@@ -60,7 +60,7 @@ if err != nil {
 }
 ```
 
-当`schedule()`函数没有返回 host，也就是没有找到合适的 node 的时候，就会出发 preempt 过程。这时候代码逻辑进入`sched.preempt(pod, fitError)`这一行。我们先看一下这个函数的整体逻辑，然后深入其中涉及的子过程：
+当`schedule()`函数没有返回 host，也就是没有找到合适的 node 的时候，就会出发 preempt 过程。这时候代码逻辑进入`sched.preempt(pod, fitError)`这一行。我们先看一下这个函数的整体逻辑，然后深入其中涉及的子过程: 
 
 !FILENAME pkg/scheduler/scheduler.go:311
 
@@ -141,7 +141,7 @@ type SchedulingQueue interface {
 }
 ```
 
-在 Scheduler 中 SchedulingQueue 接口对应两种实现：
+在 Scheduler 中 SchedulingQueue 接口对应两种实现: 
 
 - FIFO 先进先出队列
 - PriorityQueue 优先级队列
@@ -164,7 +164,7 @@ cache.FIFO定义在`vendor/k8s.io/client-go/tools/cache/fifo.go:93`，这个先�
 
 PriorityQueue 同样实现了 SchedulingQueue 接口，PriorityQueue 的顶是最高优先级的 pending pod. 这里的PriorityQueue 有2个子 queue，activeQ 放的是等待调度的 pod，unschedulableQ 放的是已经尝试过调度，然后失败了，被标记为 unschedulable 的 pod.
 
-我们看一下 PriorityQueue 结构的定义：
+我们看一下 PriorityQueue 结构的定义: 
 
 !FILENAME pkg/scheduler/internal/queue/scheduling_queue.go:201
 
@@ -187,7 +187,7 @@ type PriorityQueue struct {
 }
 ```
 
-PriorityQueue 的方法比较好理解，我们看几个吧：
+PriorityQueue 的方法比较好理解，我们看几个吧: 
 
 **1、`func (p *PriorityQueue) Add(pod *v1.Pod) error`** //在 active queue 中添加1个pod
 
@@ -296,7 +296,7 @@ func (p *PriorityQueue) Pop() (*v1.Pod, error) {
 }
 ```
 
-再看个别 `PriorityQueue.nominatedPods` 属性相关操作的方法，也就是 `preempt()` 函数中多次调用到的方法：
+再看个别 `PriorityQueue.nominatedPods` 属性相关操作的方法，也就是 `preempt()` 函数中多次调用到的方法: 
 
 **5、`func (p *PriorityQueue) UpdateNominatedPodForNode(pod *v1.Pod, nodeName string)**`//pod 抢占的时候，确定一个 node 可以用于跑这个 pod 时，通过调用这个方法将 pod nominated 到 指定的 node 上。
 
@@ -311,7 +311,7 @@ func (p *PriorityQueue) UpdateNominatedPodForNode(pod *v1.Pod, nodeName string) 
 }
 ```
 
-先看 nominatedPods 属性的类型，这个类型用于存储 pods 被 nominate 到 nodes 的信息：
+先看 nominatedPods 属性的类型，这个类型用于存储 pods 被 nominate 到 nodes 的信息: 
 
 !FILENAME pkg/scheduler/internal/queue/scheduling_queue.go:822
 
@@ -324,7 +324,7 @@ type nominatedPodMap struct {
 }
 ```
 
-在看一下`add()`方法的实现：
+在看一下`add()`方法的实现: 
 
 !FILENAME pkg/scheduler/internal/queue/scheduling_queue.go:832
 
@@ -370,7 +370,7 @@ type PodPreemptor interface {
 }
 ```
 
-这个 interface 对应的实现类型是：
+这个 interface 对应的实现类型是: 
 
 !FILENAME pkg/scheduler/factory/factory.go:1620
 
@@ -380,7 +380,7 @@ type podPreemptor struct {
 }
 ```
 
-这个类型绑定了4个方法：
+这个类型绑定了4个方法: 
 
 !FILENAME pkg/scheduler/factory/factory.go:1624
 
@@ -416,7 +416,7 @@ func (p *podPreemptor) RemoveNominatedNodeName(pod *v1.Pod) error {
 
 #### 接口定义
 
-我们回到挺久之前讲常规调度过程的时候提过的一个接口：
+我们回到挺久之前讲常规调度过程的时候提过的一个接口: 
 
 !FILENAME pkg/scheduler/algorithm/scheduler_interface.go:78
 
@@ -437,20 +437,20 @@ type ScheduleAlgorithm interface {
 
 #### 整体流程
 
-`Preempt()`同样由`genericScheduler`类型(`pkg/scheduler/core/generic_scheduler.go:98`)实现，方法前的一大串英文注释先来理解一下：
+`Preempt()`同样由`genericScheduler`类型(`pkg/scheduler/core/generic_scheduler.go:98`)实现，方法前的一大串英文注释先来理解一下: 
 
 - Preempt 寻找一个在发生抢占之后能够成功调度“pod”的node.
-- Preempt 选择一个 node 然后抢占上面的 pods 资源，返回：
+- Preempt 选择一个 node 然后抢占上面的 pods 资源，返回: 
   - 这个 node 信息
   - 被抢占的 pods 信息
   - nominated node name 需要被清理的 node 列表
   - 可能有的 error
-- Preempt 过程不涉及快照更新（快照的逻辑以后再讲）
-- 避免出现这种情况：preempt 发现一个不需要驱逐任何 pods 就能够跑“pod”的 node.
+- Preempt 过程不涉及快照更新(快照的逻辑以后再讲)
+- 避免出现这种情况: preempt 发现一个不需要驱逐任何 pods 就能够跑“pod”的 node.
 - 当有很多 pending pods 在调度队列中的时候，a nominated pod 会排到队列中相同优先级的 pod 后面. 
 - The nominated pod 会阻止其他 pods 使用“指定”的资源，哪怕花费了很多时间来等待其他 pending 的 pod.
 
-我们先过整体流程，然后逐个分析子流程调用：
+我们先过整体流程，然后逐个分析子流程调用: 
 
 !FILENAME pkg/scheduler/core/generic_scheduler.go:251
 
@@ -527,7 +527,7 @@ func (g *genericScheduler) Preempt(pod *v1.Pod, nodeLister algorithm.NodeLister,
 - `podEligibleToPreemptOthers` 做的事情是判断一个 pod 是否应该去抢占其他 pods. 如果这个 pod 已经抢占过其他 pods，那些 pods 还在 graceful termination period 中，那就不应该再次发生抢占。
 - 如果一个 node 已经被这个 pod nominated，并且这个 node 上有处于 terminating 状态的 pods，那么就不考虑驱逐更多的 pods.
 
-这个函数逻辑很简单，我们直接看源码：
+这个函数逻辑很简单，我们直接看源码: 
 
 !FILENAME pkg/scheduler/core/generic_scheduler.go:1110
 
@@ -555,7 +555,7 @@ func podEligibleToPreemptOthers(pod *v1.Pod, nodeNameToInfo map[string]*schedule
 
 `nodesWherePreemptionMightHelp` 要做的事情是寻找 predicates 阶段失败但是通过抢占也许能够调度成功的 nodes.
 
-这个函数也不怎么长，看下代码：
+这个函数也不怎么长，看下代码: 
 
 !FILENAME pkg/scheduler/core/generic_scheduler.go:1060
 
@@ -607,9 +607,9 @@ func nodesWherePreemptionMightHelp(nodes []*v1.Node, failedPredicatesMap FailedP
 
 这个函数会并发计算所有的 nodes 是否通过驱逐实现 pod 抢占。
 
-看这个函数内容之前我们先看一下返回值的类型：
+看这个函数内容之前我们先看一下返回值的类型: 
 
-`map[*v1.Node]*schedulerapi.Victims` 的 key 很好理解，value 是啥呢：
+`map[*v1.Node]*schedulerapi.Victims` 的 key 很好理解，value 是啥呢: 
 
 ```go
 type Victims struct {
@@ -620,7 +620,7 @@ type Victims struct {
 
 这里的 **Pods** 是被选中准备要驱逐的；**NumPDBViolations** 表示的是要破坏多少个 PDB 限制。这里肯定也就是要尽量符合 PDB 要求，能不和 PDB 冲突就不冲突。
 
-然后看一下这个函数的整体过程：
+然后看一下这个函数的整体过程: 
 
 !FILENAME pkg/scheduler/core/generic_scheduler.go:895
 
@@ -669,7 +669,7 @@ func selectNodesForPreemption(pod *v1.Pod,
 
 这个算法首选计算当这个 node 上所有的低优先级 pods 被驱逐之后能否调度“pod”. 如果可以，那就按照优先级排序，根据 PDB 是否破坏分成两组，一组是影响 PDB 限制的，另外一组是不影响 PDB. 两组各自按照优先级排序。然后开始逐渐释放影响 PDB 的 group 中的 pod，然后逐渐释放不影响 PDB 的 group 中的 pod，在这个过程中要保持“pod”能够 fit 这个 node. 也就是说一旦放过某一个 pod 导致“pod”不 fit 这个 node 了，那就说明这个 pod 不能放过，也就是意味着已经找到了最少 pods 集。
 
-看一下具体的实现吧：
+看一下具体的实现吧: 
 
 FILENAME pkg/scheduler/core/generic_scheduler.go:983
 
@@ -755,7 +755,7 @@ func selectVictimsOnNode(
 
 #### pickOneNodeForPreemption
 
-`pickOneNodeForPreemption` 要从给定的 nodes 中选择一个 node，这个函数假设给定的 map 中 value 部分是以 priority 降序排列的。这里选择 node 的标准是：
+`pickOneNodeForPreemption` 要从给定的 nodes 中选择一个 node，这个函数假设给定的 map 中 value 部分是以 priority 降序排列的。这里选择 node 的标准是: 
 
 1. 最少的 PDB violations
 2. 最少的高优先级 victim

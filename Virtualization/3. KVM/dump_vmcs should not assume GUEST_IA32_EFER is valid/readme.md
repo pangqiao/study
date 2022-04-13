@@ -3,7 +3,7 @@
 
 v1: https://patchwork.kernel.org/project/kvm/patch/20210218100450.2157308-1-david.edmondson@oracle.com/
 
-David Edmondson: dump VMCS时，如果未设置`VM_EXIT_SAVE_IA32_EFER`或`VM_ENTRY_LOAD_IA32_EFER`都未设置，则从`kvm_vcpu`结构中检索当前guest的EFER值. 如果处理器不支持相关的VM-entry/exit control，则可能会发生这种情况。
+David Edmondson: dump VMCS时, 如果未设置`VM_EXIT_SAVE_IA32_EFER`或`VM_ENTRY_LOAD_IA32_EFER`都未设置, 则从`kvm_vcpu`结构中检索当前guest的EFER值. 如果处理器不支持相关的VM-entry/exit control, 则可能会发生这种情况. 
 
 paolo: 打印`kvm_vcpu`中的值不可取, 可否打印整个MSR load/store area
 

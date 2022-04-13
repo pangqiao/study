@@ -17,7 +17,7 @@ EPT_VIOLATION_FIXING                    EQU     1
 ;       none
 ; output:
 ;       eax - 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由于 guest APIC-page 而引起的 EPT violation
 ;-----------------------------------------------------------------------
 EptHandlerForGuestApicPage:
@@ -84,9 +84,9 @@ EptHandlerForGuestApicPage.Write:
         je EptHandlerForGuestApicPage.Write.OpcodeC7
         
         ;;
-        ;; ### 注意，作为示例，这里不处理其它指令情况，包括：
+        ;; ### 注意，作为示例，这里不处理其它指令情况，包括: 
         ;; 1) 使用其它 opcode 的指令
-        ;; 1) 含有 REX prefix（4xH) 指令
+        ;; 1) 含有 REX prefix(4xH) 指令
         ;;
         jmp EptHandlerForGuestApicPage.Done
         
@@ -174,9 +174,9 @@ EptHandlerForGuestApicPage.Read:
         je EptHandlerForGuestApicPage.Read.Opcode8B
         
         ;;
-        ;; ### 注意，作为示例，这里不处理其它指令情况，包括：
+        ;; ### 注意，作为示例，这里不处理其它指令情况，包括: 
         ;; 1) 使用其它 opcode 的指令
-        ;; 1) 含有 REX prefix（4xH) 指令
+        ;; 1) 含有 REX prefix(4xH) 指令
         ;;
         jmp EptHandlerForGuestApicPage.Done
         

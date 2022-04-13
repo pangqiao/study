@@ -36,8 +36,8 @@ user_system_service_call:               jmp DWORD __user_system_service_call
 ; output:
 ;                rax: length of string
 ;
-; 描述：
-;                这个函数放置在 conforming 段里由任意权限执行(使用 far pointer指针形式）　
+; 描述: 
+;                这个函数放置在 conforming 段里由任意权限执行(使用 far pointer指针形式)　
 ;-----------------------------------------------------
 __strlen:
         mov rax, -1
@@ -56,7 +56,7 @@ strlen_done:
 ; lib32_service(): 对外接口
 ; input:
 ;                rax: 库函数编号
-; 描述：
+; 描述: 
 ;                通过 call-gate 进行调用实际工作的 lib32_service()
 ;-------------------------------------------------------
 lib32_service:
@@ -72,10 +72,10 @@ lib32_service_next:
 ;; **** 使用 32 位编译 ****
         bits 32
 ;---------------------------------------------------------------------------
-; compatibility_lib32_service(): 对外接口，用于 32-bit compatibility模式下
+; compatibility_lib32_service(): 对外接口, 用于 32-bit compatibility模式下
 ; input:
 ;                eax: 库函数编号
-; 描述：
+; 描述: 
 ;; 下面是兼容模式下的调用 lib32_service() stub 函数
 ;---------------------------------------------------------------------------
 compatibility_lib32_service:
@@ -95,45 +95,45 @@ compatibility_lib32_service_next:
 
 
 ;****************************************************************************************
-;* Bug或设计缺陷说明：                                                                  *
+;* Bug或设计缺陷说明:                                                                   *
 ;*      lib32_service() 设计上的有“不可重入”的缺陷！                                    *
 ;*      当在64-bit模式通过 lib32_service()调用lib32库函数时,                            *
 ;*      lib32_service()转入compatibility模式前重设stack指针esp为LIB32_ESP值             *
-;*      如果执行lib32库函数期间发生被异常或其它中断抢占时，如果这个异常或中断           *
-;*      再次调用lib32_service()来执行lib32库函数时，发生严重后果。                      *
-;*      结果是：stack指针又被重置为LIB32_ESP值，导致stack发生错乱!                      *
+;*      如果执行lib32库函数期间发生被异常或其它中断抢占时, 如果这个异常或中断           *
+;*      再次调用lib32_service()来执行lib32库函数时, 发生严重后果。                      *
+;*      结果是: stack指针又被重置为LIB32_ESP值, 导致stack发生错乱!                      *
 ;*                                                                                      *
-;* 解决办法：                                                                           *
-;*      1)在无法预知否会在lib32库函数执行期间产生中断情况下，可以使用中断调用方式       *
+;* 解决办法:                                                                            *
+;*      1)在无法预知否会在lib32库函数执行期间产生中断情况下, 可以使用中断调用方式       *
 ;*        避免使用 call-gate 方式调用lib32_service()来转入compatibility模式。           *
-;*        这样：可以避免被中断触发时抢占情况的产生，但不能避免被异常抢占！              *
+;*        这样: 可以避免被中断触发时抢占情况的产生, 但不能避免被异常抢占！              *
 ;*                                                                                      *
-;*      2)设计在64-bit代码下的stack区域与compatibility模式的stack区域重合，             *
-;*        当转入compaibility模式后的32位ESP值由于RSP的高32位清0后，还能保持有效性。     *
-;*        在这种方法下，在进入lib32_service()后无须对ESP进行重设！                      *
-;*        但必须确保RSP的低32位值，在无须修改的情况下保持正确性（RSP与ESP值相对应）     *
+;*      2)设计在64-bit代码下的stack区域与compatibility模式的stack区域重合,              *
+;*        当转入compaibility模式后的32位ESP值由于RSP的高32位清0后, 还能保持有效性。     *
+;*        在这种方法下, 在进入lib32_service()后无须对ESP进行重设！                      *
+;*        但必须确保RSP的低32位值, 在无须修改的情况下保持正确性(RSP与ESP值相对应)     *
 ;*                                                                                      *
-;*      3)重新编写lib32库对应的64位版本的函数库，避免在64-bit代码下使用lib32库!      　 *
-;*      　显然，这是最根本，最正确的解决方法，但是lib32库函数不用被重用。               *
+;*      3)重新编写lib32库对应的64位版本的函数库, 避免在64-bit代码下使用lib32库!      　 *
+;*      　显然, 这是最根本, 最正确的解决方法, 但是lib32库函数不用被重用。               *
 ;****************************************************************************************
 
 
 ;-------------------------------------------------------
 ; lib32_service(): 在64位的代码下使用32位的库函数
 ; input:
-;                rax: 库函数编号，rsi...相应的函数参数
+;                rax: 库函数编号, rsi...相应的函数参数
 ; 描述:
-;                (1) rax 是32位库函数号，类似于系统服务例程的功能号
+;                (1) rax 是32位库函数号, 类似于系统服务例程的功能号
 ;                (2) 代码会先切换到 compaitibility 模式调用 32 位模式的函数
-;                (3) 32 位例程执行完毕，切换回 64 位模式
+;                (3) 32 位例程执行完毕, 切换回 64 位模式
 ;                (4) 从 64 位模式中返回调用者
 ;                (5) lib32_service() 函数使用 call-gate 进行调用
 ;-------------------------------------------------------
 __lib32_service:
 ;*
 ;* changlog: 使用 r15 代替 rbp 保存 rsp 指针
-;*           目的：使用 lib32 库里可以使用 ebp 指针！   
-;*                 如果使用 rbp 保存 rsp 指针，那么当lib32 库函数使用 ebp 时将刷掉 rbp 寄存器值
+;*           目的: 使用 lib32 库里可以使用 ebp 指针！   
+;*                 如果使用 rbp 保存 rsp 指针, 那么当lib32 库函数使用 ebp 时将刷掉 rbp 寄存器值
 ;*
         push r15
         mov r15, rsp
@@ -180,13 +180,13 @@ reload_sreg:
 ;* 对 compatibility 的stack结构进行设置
 ;* 这个导致不可重入 ==> mov esp, LIB32_ESP
 ;*
-;* chang log: 去掉 mov esp, LIB32_ESP 这条指令，无需设置 compatibility 模式下的 esp 值
+;* chang log: 去掉 mov esp, LIB32_ESP 这条指令, 无需设置 compatibility 模式下的 esp 值
 ;*            使用 compatibility 模式的 esp 与 64-bit rsp 低 32 位相同的映射方式
 ;*
 
 
 ;*
-;* 下面的代码将调用 lib32.asm 库内的函数，运行在 compatibility 模式下
+;* 下面的代码将调用 lib32.asm 库内的函数, 运行在 compatibility 模式下
 ;*
 call_lib32:
         lea eax, [LIB32_SEG + ebx * 4 + ebx]            ; rbx * 5 + LIB32_SEG 得到 lib32 库函数地址
@@ -235,8 +235,8 @@ __set_system_descriptor:
 ; set_call_gate(int selector, long long address)
 ; input:
 ;                rsi: selector,  rdi: address, r8: DPL, r9: code_selector
-; 注意：
-;                这里将 call gate 的权限设为 3 级，从用户代码可以调用
+; 注意: 
+;                这里将 call gate 的权限设为 3 级, 从用户代码可以调用
 ;--------------------------------------------------------------------------
 __set_call_gate:
         sgdt [gdt_pointer]
@@ -303,7 +303,7 @@ __read_idt_descriptor:
 ;-----------------------------------------------------
 ; write_idt_descriptor(): 写入 IDT 表
 ; input:
-;                rsi: vector， rdx:rax - gate descriptor
+;                rsi: vector,  rdx:rax - gate descriptor
 ;------------------------------------------------------
 __write_idt_descriptor:
         sidt [idt_pointer]        
@@ -506,7 +506,7 @@ return_64_address_syscall:
         bits 32
 ;-------------------------------------------------------------
 ; compatibility_sys_service_enter(): compatibility 模式下的 stub
-; 描述：
+; 描述: 
 ;       仅供在 compatibility模式下使用
 ;----------------------------------------------------------------
 __compatibility_sys_service_enter:
@@ -570,7 +570,7 @@ lib32_service_enter_done:
         sysexit64                                                 ; 返回到 64-bit 模式
         
 ;-----------------------------------------------------
-; sys_service_routine():  系统服务例程，syscall/sysret 版本
+; sys_service_routine():  系统服务例程, syscall/sysret 版本
 ;-----------------------------------------------------        
 __sys_service_routine:
         swapgs                                 ; 获取 Kernel 数据
@@ -638,7 +638,7 @@ set_system_service_done:
 ; user_system_service_call(): 调用用户自定义的服务例程
 ; input:
 ;       rax - 用户自定义系统服务例程号
-; 描述：
+; 描述: 
 ;       由函数由 Int 40h 来调用
 ;-----------------------------------------------------
 __user_system_service_call:

@@ -16,7 +16,7 @@
 ; output:
 ;       eax - 虚拟地址
 ;       edx - 物理地址
-; 描述：
+; 描述: 
 ;       1) 在 domain pool 里分配 VM domain 区域
 ;-------------------------------------------------------------------
 vm_alloc_domain:
@@ -78,7 +78,7 @@ vm_alloc_domain:
 ;       esi - n 页
 ; output:
 ;       eax - physical address
-; 描述：
+; 描述: 
 ;       1) 在 VM domain 里分配物理内存
 ;       2) 成功时，返回物理地址，失败返回 0 值
 ;-------------------------------------------------------------------
@@ -160,7 +160,7 @@ get_guest_paging_mode.done:
 ;       esi - guest-linear address
 ; output:
 ;       eax - guest-physical address
-; 描述：　
+; 描述: 　
 ;       1) 得到 guest-linear address 对应的 guest-physical address
 ;---------------------------------------------------------------
 get_guest_pa_of_guest_va:
@@ -392,7 +392,7 @@ get_guest_pa_of_guest_va.Done:
 ;       esi - guest_physical_address
 ; output:
 ;       eax - virtual address
-; 描述：
+; 描述: 
 ;       1) 返回当前 guest 的 guest-physical address 对应的 system 的虚拟地址
 ;       2) 失败时返回 0 值
 ;-------------------------------------------------------------------
@@ -452,7 +452,7 @@ get_system_va_of_guest_pa.done:
 ;       esi - guest-linear address
 ; output:
 ;       eax - host linear address
-; 描述：
+; 描述: 
 ;       1) 得到 guest 线性地址对应的 host 线性地址
 ;----------------------------------------------------------
 get_system_va_of_guest_va:
@@ -483,7 +483,7 @@ get_system_va_of_guest_va.@1:
 ;       esi - guest-physical address 或 guest-linear address
 ; output:
 ;       eax - host virtual address
-; 描述：
+; 描述: 
 ;       1) 假如 guest OS 启用了paging 则返回 guest-linear address 对应的 host virtual address
 ;       2) 假如 guest OS 关闭 paging 则返回 guestt-physical address 对应的 host virtual address
 ;----------------------------------------------------------
@@ -515,12 +515,12 @@ get_system_va_of_guest_os:
 ;----------------------------------------------------------
 ; init_eptp_field()
 ; input:
-;       x86: edi:esi - EP4TA（64 位值）
+;       x86: edi:esi - EP4TA(64 位值)
 ;       x64: rsi - EP4TA
 ; output:
 ;       none
-; 描述：
-;       1) 设置 Extended-page-table pointer（EPTP) 域
+; 描述: 
+;       1) 设置 Extended-page-table pointer(EPTP) 域
 ;----------------------------------------------------------
 init_eptp_field:
         push ebp
@@ -535,9 +535,9 @@ init_eptp_field:
         
         ;;
         ;; 设置 EPTP 说明:
-        ;; [2:0]     - EPT memory type：支持 UC 和 WB 两类
-        ;; [5:3]     - 3（指示 EPT 的 page walk legnth 为 4 级）
-        ;; [6]       - 1（由 IA32_VMX_EPT_VPID_CAP[21]决定）
+        ;; [2:0]     - EPT memory type: 支持 UC 和 WB 两类
+        ;; [5:3]     - 3(指示 EPT 的 page walk legnth 为 4 级)
+        ;; [6]       - 1(由 IA32_VMX_EPT_VPID_CAP[21]决定)
         ;; [11:7]    - 保留位，为 0
         ;; [N-1:12]  - EPT pointer 值
         ;; [63:N]    - 保留位，为 0
@@ -600,12 +600,12 @@ init_eptp_field:
 ;----------------------------------------------------------
 ; set_guest_eptp()
 ; input:
-;       edi:esi - EPT pointer（64 位值）
-;       rsi - EPT pointer（x64）
+;       edi:esi - EPT pointer(64 位值)
+;       rsi - EPT pointer(x64)
 ; output:
 ;       none
-; 描述：
-;       1) 设置 Extended-page-table pointer（EPTP) 域
+; 描述: 
+;       1) 设置 Extended-page-table pointer(EPTP) 域
 ;----------------------------------------------------------
 set_guest_eptp:
         push ebp
@@ -646,7 +646,7 @@ set_guest_eptp:
 ;       esi - privilege level
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 设置 guest 环境的 CPL 值
 ;----------------------------------------------------------
 set_guest_cpl:
@@ -774,7 +774,7 @@ set_guest_cpl.@0:
 ;       esi - CSEG_64 or CSEG_32
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 设置 longmode 下的 64-bit 或 32-bit 代码
 ;----------------------------------------------------------
 set_longmode_guest_code:
@@ -809,7 +809,7 @@ set_longmode_guest_code:
 ;       esi - interruptibility state
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 设置guest的可中断状态
 ;----------------------------------------------------------
 set_guest_interruptibility_state:
@@ -833,7 +833,7 @@ set_guest_interruptibility_state:
 ;       esi - activity state
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 设置guest的可中断状态
 ;----------------------------------------------------------
 set_guest_activity_state:
@@ -856,7 +856,7 @@ set_guest_activity_state:
 ;       esi - pending debug exception 字段值
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 设置 guest 的 pending #DB 异常
 ;----------------------------------------------------------
 set_guest_pending_debug_exception:
@@ -881,7 +881,7 @@ set_guest_pending_debug_exception:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 根据 VM-exit information 相关信息来更新 rip
 ;----------------------------------------------------------
 update_guest_rip:
@@ -1030,8 +1030,8 @@ set_realmode_guest_segment:
 ;       none
 ; output:
 ;       none
-; 描述：
-;       1）设置 guest 使用I/O无条件退VM，这时关闭“I/O bitmap”功能
+; 描述: 
+;       1)设置 guest 使用I/O无条件退VM，这时关闭“I/O bitmap”功能
 ;-------------------------------------------------------------------        
 set_guest_unconditional_ioexit:
         ;;
@@ -1055,7 +1055,7 @@ set_guest_unconditional_ioexit:
 ;       edi - 端口
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 对 IO bitmap 置位
 ;-------------------------------------------------------------------
 set_vmcs_iomap_bit:
@@ -1079,7 +1079,7 @@ set_vmcs_iomap_bit:
 ;       esi - port
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 对当前 IO bitmap 置位
 ;-------------------------------------------------------------------
 set_io_bitmap:
@@ -1115,7 +1115,7 @@ set_io_bitmap:
 ;       edi - port end
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 对当前 IO bitmap 置位
 ;-------------------------------------------------------------------
 set_io_bitmap_with_range:
@@ -1167,7 +1167,7 @@ clear_vmcs_iomap_bit:
 ;       esi - port
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 对当前 IO bitmap 清位
 ;-------------------------------------------------------------------
 clear_io_bitmap:
@@ -1203,7 +1203,7 @@ clear_io_bitmap:
 ;       edi - port end
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 对当前 IO bitmap 清位
 ;-------------------------------------------------------------------
 clear_io_bitmap_with_range:
@@ -1229,7 +1229,7 @@ clear_io_bitmap_with_range.Loop:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 清所有寄存器
 ;-------------------------------------------------------------------
 reset_guest_context:
@@ -1268,7 +1268,7 @@ reset_guest_context:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 保存当前 guest 的环境信息
 ;-----------------------------------------------------------------------
 store_guest_context:
@@ -1346,7 +1346,7 @@ store_guest_context:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 恢复 guest 环境信息
 ;-----------------------------------------------------------------------
 restore_guest_context:
@@ -1417,7 +1417,7 @@ restore_guest_context:
 ;       esi - segment ID
 ; output:
 ;       eax - base address
-; 描述：
+; 描述: 
 ;       1) 根据提供的 segment 寄存器 ID 来读取 guest segment base 值
 ;-------------------------------------------------------------------
 get_guest_segment_base:
@@ -1472,7 +1472,7 @@ get_guest_segment_base.Next:
 ;       esi - register ID
 ; output:
 ;       eax - base address
-; 描述：
+; 描述: 
 ;       1) 根据提供的寄存器 ID 来读取 guest 寄存器值
 ;-------------------------------------------------------------------
 get_guest_register_value:
@@ -1501,7 +1501,7 @@ get_guest_register_value:
 ;       edi - value
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 根据提供的寄存器 ID 来读取 guest 寄存器值
 ;-------------------------------------------------------------------
 set_guest_register_value:
@@ -1530,7 +1530,7 @@ set_guest_register_value:
 ;       edx:eax - Msr data
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 往 VM-entry MSR-load 列表里增加 MSR entry
 ;-------------------------------------------------------------------
 append_vmentry_msr_load_entry:
@@ -1564,7 +1564,7 @@ append_vmentry_msr_load_entry:
 ;       edx:eax - Msr data
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 
 ;-------------------------------------------------------------------
 append_vmexit_msr_store_entry:
@@ -1599,7 +1599,7 @@ append_vmexit_msr_store_entry:
 ;       edx:eax - Msr data
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 
 ;-------------------------------------------------------------------
 append_vmexit_msr_load_entry:
@@ -1646,7 +1646,7 @@ do_append_msr_list_entry:
 ;       esi - MSR index
 ; output:
 ;       edx:eax - Msr data
-; 描述：
+; 描述: 
 ;       1) 返回 VM-exit MSR-store 列表对应数据
 ;-------------------------------------------------------------------
 get_vmexit_msr_store_entry:
@@ -1700,7 +1700,7 @@ get_vmexit_msr_store_entry.done:
 ;       esi - MSR index
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 置 MSR 对应的 read bitmap 位
 ;-------------------------------------------------------------------
 set_msr_read_bitmap:        
@@ -1736,7 +1736,7 @@ set_msr_read_bitmap:
 ;       edi - MSR end
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 置 MSR 对应的 read bitmap 位
 ;-------------------------------------------------------------------
 set_msr_read_bitmap_with_range:
@@ -1763,7 +1763,7 @@ set_msr_read_bitmap_with_range.Loop:
 ;       esi - MSR index
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 置 MSR 对应的 write bitmap 位
 ;-------------------------------------------------------------------
 set_msr_write_bitmap:        
@@ -1799,7 +1799,7 @@ set_msr_write_bitmap:
 ;       edi - MSR end
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 置 MSR 对应的 write bitmap 位
 ;-------------------------------------------------------------------
 set_msr_write_bitmap_with_range:   
@@ -1826,7 +1826,7 @@ set_msr_write_bitmap_with_range.Loop:
 ;       esi - MSR index
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 清 MSR 对应的 read bitmap 位
 ;-------------------------------------------------------------------
 clear_msr_read_bitmap:        
@@ -1862,7 +1862,7 @@ clear_msr_read_bitmap:
 ;       edi - MSR end
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 清 MSR 对应的 read bitmap 位
 ;-------------------------------------------------------------------
 clear_msr_read_bitmap_with_range: 
@@ -1888,7 +1888,7 @@ clear_msr_read_bitmap_with_range.Loop:
 ;       esi - MSR index
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 清 MSR 对应的 write bitmap 位
 ;-------------------------------------------------------------------
 clear_msr_write_bitmap:        
@@ -1924,7 +1924,7 @@ clear_msr_write_bitmap:
 ;       edi - MSR end
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 清 MSR 对应的 write bitmap 位
 ;-------------------------------------------------------------------
 clear_msr_write_bitmap_with_range: 
@@ -1948,7 +1948,7 @@ clear_msr_write_bitmap_with_range.Loop:
 ;       esi - us
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 设置 VMX-preemption timer 初始计数值
 ;-------------------------------------------------------------------
 set_vmx_preemption_timer_value:
@@ -1995,8 +1995,8 @@ set_vmx_preemption_timer_value.done:
 ;       esi - guest index
 ; output:
 ;       none
-; 描述：
-;       1) 在 guest running 队列里插入 guest 编号（0, 1, 2, 3）
+; 描述: 
+;       1) 在 guest running 队列里插入 guest 编号(0, 1, 2, 3)
 ;-------------------------------------------------------------------
 in_running_queue:
         push ebp
@@ -2037,8 +2037,8 @@ in_running_queue.done:
 ;       esi - guest index
 ; output:
 ;       none
-; 描述：
-;       1) 在 guest ready 队列里插入 guest 编号（0, 1, 2, 3）
+; 描述: 
+;       1) 在 guest ready 队列里插入 guest 编号(0, 1, 2, 3)
 ;-------------------------------------------------------------------
 in_ready_queue:
         push ebp
@@ -2078,8 +2078,8 @@ in_ready_queue.done:
 ;       none
 ; output:
 ;       eax - guest index
-; 描述：
-;       1) 在 guest running 队列里取出 guest 编号（0, 1, 2, 3）
+; 描述: 
+;       1) 在 guest running 队列里取出 guest 编号(0, 1, 2, 3)
 ;-------------------------------------------------------------------
 out_running_queue:
         push ebp
@@ -2116,8 +2116,8 @@ out_running_queue.done:
 ;       none
 ; output:
 ;       eax - guest index
-; 描述：
-;       1) 在 guest ready 队列里取出 guest 编号（0, 1, 2, 3）
+; 描述: 
+;       1) 在 guest ready 队列里取出 guest 编号(0, 1, 2, 3)
 ;-------------------------------------------------------------------
 out_ready_queue:
         push ebp
@@ -2155,7 +2155,7 @@ out_ready_queue.done:
 ;       esi - selector
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 从 guest GDT 里加载 CS 寄存器
 ;       2) 在 task switch 例程内部使用！
 ;-------------------------------------------------------------------
@@ -2178,7 +2178,7 @@ load_guest_cs_register:
         mov edx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.GuestGdtBase]
 
         ;;
-        ;; 进行检查，包括：
+        ;; 进行检查，包括: 
         ;; 1) CS selector 是否为 NULL selector
         ;; 2) CS selector 是否超出 limit
         ;; 3) CS.RPL == SS.DPL == SS.RPL，CS.DPL 视情况而定
@@ -2246,7 +2246,7 @@ load_guest_cs_register:
 load_guest_cs_register.@1:
 
         ;;
-        ;; 检查 CS 描述符： P = S = C/D = 1
+        ;; 检查 CS 描述符:  P = S = C/D = 1
         ;;
         test esi, 9800h
         jz load_guest_cs_register.Error
@@ -2334,7 +2334,7 @@ load_guest_cs_register.Done:
 ;       esi - selector
 ; output:
 ;       eax - error code
-; 描述：
+; 描述: 
 ;       1) 从 guest GDT 里加载 ES 寄存器
 ;       2) 在 task switch 例程内部使用！
 ;-------------------------------------------------------------------
@@ -2359,10 +2359,10 @@ load_guest_es_register:
         
         ;;
         ;; 如果 ES selector 是 NULL，则直接设置
-        ;; 否则，检查：
+        ;; 否则，检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
-        ;; 3) 描述符为 code segment：
+        ;; 3) 描述符为 code segment: 
         ;;      a) 是否为可读段
         ;;      b) non-conforming 段: 需要 DPL >= SS.DPL, RPL <= DPL
         ;; 
@@ -2378,7 +2378,7 @@ load_guest_es_register:
                
         ;;
         ;; 检查是否超出 limit
-        ;; 注意：
+        ;; 注意: 
         ;;      作为示例，这里忽略了 LDT 
         ;;
         ;;
@@ -2407,7 +2407,7 @@ load_guest_es_register:
         
         ;;
         ;; 属于 non-conforming 段，检查权限
-        ;; 需要满足：
+        ;; 需要满足: 
         ;; 1) DPL >= SS.RPL
         ;; 2) DPL >= RPL
         ;;
@@ -2506,7 +2506,7 @@ load_guest_es_register.Done:
 ;       esi - selector
 ; output:
 ;       eax - error code
-; 描述：
+; 描述: 
 ;       1) 从 guest GDT 里加载 ES 寄存器
 ;       2) 在 task switch 例程内部使用！
 ;-------------------------------------------------------------------
@@ -2531,10 +2531,10 @@ load_guest_ds_register:
         
         ;;
         ;; 如果 DS selector 是 NULL，则直接设置
-        ;; 否则，检查：
+        ;; 否则，检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
-        ;; 3) 描述符为 code segment：
+        ;; 3) 描述符为 code segment: 
         ;;      a) 是否为可读段
         ;;      b) non-conforming 段: 需要 DPL >= SS.DPL, RPL <= DPL
         ;; 
@@ -2550,7 +2550,7 @@ load_guest_ds_register:
                
         ;;
         ;; 检查是否超出 limit
-        ;; 注意：
+        ;; 注意: 
         ;;      作为示例，这里忽略了 LDT 
         ;;
         ;;
@@ -2579,7 +2579,7 @@ load_guest_ds_register:
         
         ;;
         ;; 属于 non-conforming 段，检查权限
-        ;; 需要满足：
+        ;; 需要满足: 
         ;; 1) DPL >= SS.RPL
         ;; 2) DPL >= RPL
         ;;
@@ -2677,7 +2677,7 @@ load_guest_ds_register.Done:
 ;       esi - selector
 ; output:
 ;       eax - error code
-; 描述：
+; 描述: 
 ;       1) 从 guest GDT 里加载 SS 寄存器
 ;       2) 在 task switch 例程内部使用！
 ;-------------------------------------------------------------------
@@ -2700,7 +2700,7 @@ load_guest_ss_register:
         mov edx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.GuestGdtBase]
 
         ;;
-        ;; 进行检查，包括：
+        ;; 进行检查，包括: 
         ;; 1) SS selector 是否为 NULL selector
         ;; 2) SS selector 是否超出 limit
         ;; 3) SS.RPL == SS.DPL == CS.RPL，CS.DPL 视情况而定
@@ -2767,7 +2767,7 @@ load_guest_ss_register:
 
 load_guest_ss_register.@1:
         ;;
-        ;; 检查 SS 描述符： P = S = W = 1
+        ;; 检查 SS 描述符:  P = S = W = 1
         ;;
         test eax, 9200h
         jz load_guest_ss_register.Error
@@ -2857,7 +2857,7 @@ load_guest_ss_register.Done:
 ;       esi - selector
 ; output:
 ;       eax - error code
-; 描述：
+; 描述: 
 ;       1) 从 guest GDT 里加载 FS 寄存器
 ;       2) 在 task switch 例程内部使用！
 ;-------------------------------------------------------------------
@@ -2882,10 +2882,10 @@ load_guest_fs_register:
         
         ;;
         ;; 如果 FS selector 是 NULL，则直接设置
-        ;; 否则，检查：
+        ;; 否则，检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
-        ;; 3) 描述符为 code segment：
+        ;; 3) 描述符为 code segment: 
         ;;      a) 是否为可读段
         ;;      b) non-conforming 段: 需要 DPL >= SS.DPL, RPL <= DPL
         ;; 
@@ -2901,7 +2901,7 @@ load_guest_fs_register:
                
         ;;
         ;; 检查是否超出 limit
-        ;; 注意：
+        ;; 注意: 
         ;;      作为示例，这里忽略了 LDT 
         ;;
         ;;
@@ -2930,7 +2930,7 @@ load_guest_fs_register:
         
         ;;
         ;; 属于 non-conforming 段，检查权限
-        ;; 需要满足：
+        ;; 需要满足: 
         ;; 1) DPL >= SS.RPL
         ;; 2) DPL >= RPL
         ;;
@@ -3029,7 +3029,7 @@ load_guest_fs_register.Done:
 ;       esi - selector
 ; output:
 ;       eax - error code
-; 描述：
+; 描述: 
 ;       1) 从 guest GDT 里加载 GS 寄存器
 ;       2) 在 task switch 例程内部使用！
 ;-------------------------------------------------------------------
@@ -3054,10 +3054,10 @@ load_guest_gs_register:
         
         ;;
         ;; 如果 GS selector 是 NULL，则直接设置
-        ;; 否则，检查：
+        ;; 否则，检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
-        ;; 3) 描述符为 code segment：
+        ;; 3) 描述符为 code segment: 
         ;;      a) 是否为可读段
         ;;      b) non-conforming 段: 需要 DPL >= SS.DPL, RPL <= DPL
         ;; 
@@ -3073,7 +3073,7 @@ load_guest_gs_register:
                
         ;;
         ;; 检查是否超出 limit
-        ;; 注意：
+        ;; 注意: 
         ;;      作为示例，这里忽略了 LDT 
         ;;
         ;;
@@ -3102,7 +3102,7 @@ load_guest_gs_register:
         
         ;;
         ;; 属于 non-conforming 段，检查权限
-        ;; 需要满足：
+        ;; 需要满足: 
         ;; 1) DPL >= SS.RPL
         ;; 2) DPL >= RPL
         ;;
@@ -3202,7 +3202,7 @@ load_guest_gs_register.Done:
 ;       esi - selector
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 从 guest GDT 里加载 LDTR 寄存器
 ;       2) 在 task switch 例程内部使用！
 ;-------------------------------------------------------------------
@@ -3227,7 +3227,7 @@ load_guest_ldtr_register:
         
         ;;
         ;; 如果 LDTR selector 是 NULL，则直接设置
-        ;; 否则，检查：
+        ;; 否则，检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
         ;; 
@@ -3347,7 +3347,7 @@ load_guest_ldtr_register.Done:
 ;       esi - selector
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 从 guest GDT 里加载 LDTR 寄存器
 ;       2) 使用在 LLDT 指令里
 ;-------------------------------------------------------------------
@@ -3380,7 +3380,7 @@ do_load_ldtr_register:
 
         ;;
         ;; 如果 LDT selector 是 NULL，则产生 #GP(0)
-        ;; 否则，检查：
+        ;; 否则，检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
         ;; 
@@ -3514,7 +3514,7 @@ do_load_ldtr_register.Done:
 ;       esi - selector
 ; output:
 ;       eax - 状态码
-; 描述：
+; 描述: 
 ;       1) 从 guest GDT 里加载 TR 寄存器
 ;       2) 使用在 LTR 指令里
 ;-------------------------------------------------------------------
@@ -3547,7 +3547,7 @@ do_load_tr_register:
 
         ;;
         ;; 如果 TR selector 是 NULL，则产生 #GP(0)
-        ;; 否则，检查：
+        ;; 否则，检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
         ;; 
@@ -3693,8 +3693,8 @@ do_load_tr_register.Done:
 ;       esi - selector
 ; output:
 ;       eax - system va
-; 描述：
-;       1) 返回 guest GDT 的描述符地址（system virtual address)
+; 描述: 
+;       1) 返回 guest GDT 的描述符地址(system virtual address)
 ;-------------------------------------------------------------------
 get_address_of_gdt_descriptor:
         push ebp

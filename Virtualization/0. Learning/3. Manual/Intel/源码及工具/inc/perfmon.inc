@@ -20,7 +20,7 @@
 
 ;*
 ;* 使用预定义监控事件，用来监控指令执行数量
-;* IA32_PERFEVTSELx 寄存器的设置为：EN=1, INT=1, USR=OS=1, umask=0, event select = c0
+;* IA32_PERFEVTSELx 寄存器的设置为: EN=1, INT=1, USR=OS=1, umask=0, event select = c0
 ;*
 %define UNHALTED_CORE_CYCLE_EVENT               53003Ch
 %define INST_COUNT_EVENT                        5300C0h
@@ -80,12 +80,12 @@
 ;*
 
 ;-------------------------------------------------------
-; 宏 ENABLE_COUNTER：开启 counter enable
+; 宏 ENABLE_COUNTER: 开启 counter enable
 ; input:
-;       %1 - 参数1：需要开启的 IA32_PMCx 计数器 
+;       %1 - 参数1: 需要开启的 IA32_PMCx 计数器 
 ;       %2 - 参数2: 需要开启的 IA32_FIXED_CTRx 计数器
 ;
-; 示例：
+; 示例: 
 ;       ENABLE_COUNTER (IA32_PMC0_EN | IA32_PMC1_EN), 0
 ;-------------------------------------------------------
 %macro ENABLE_COUNTER 2
@@ -98,12 +98,12 @@
 
 
 ;-------------------------------------------------------
-; 宏 DISABLE_COUNTER：关闭 counter enable
+; 宏 DISABLE_COUNTER: 关闭 counter enable
 ; input:
-;       %1 - 参数1：需要关闭的 IA32_PMCx 计数器 
+;       %1 - 参数1: 需要关闭的 IA32_PMCx 计数器 
 ;       %2 - 参数2: 需要关闭的 IA32_FIXED_CTRx 计数器
 ;
-; 示例：
+; 示例: 
 ;       DISABLE_COUNTER (IA32_PMC0_EN | IA32_PMC1_EN), 0
 ;-------------------------------------------------------
 %macro DISABLE_COUNTER 2
@@ -118,9 +118,9 @@
 ;-----------------------------------------------------
 ; 宏 ENABLE_PEBS_COUNTER: 开启 counter PEBS 中断许可
 ; input:
-;       %1 - 参数1：需要开启的 IA32_PMCx 计数器
+;       %1 - 参数1: 需要开启的 IA32_PMCx 计数器
 ;       %2 - 参数2: 需要开启的 load latency 计数器许可
-; 示例：
+; 示例: 
 ;       ENABLE_PEBS_COUNTER (PEBS_PMC0_EN), 0
 ;-------------------------------------------------------
 %macro ENABLE_PEBS_COUNTER 2
@@ -135,9 +135,9 @@
 ;-----------------------------------------------------
 ; 宏 DISABLE_PEBS_COUNTER: 关闭 counter PEBS 中断许可
 ; input:
-;       %1 - 参数1：需要关闭的 IA32_PMCx 计数器
+;       %1 - 参数1: 需要关闭的 IA32_PMCx 计数器
 ;       %2 - 参数2: 需要关闭的 load latency 计数器许可
-; 示例：
+; 示例: 
 ;       DISABLE_PEBS_COUNTER (PEBS_PMC0_EN), 0
 ;-------------------------------------------------------
 %macro DISABLE_PEBS_COUNTER 2
@@ -345,7 +345,7 @@
 
 ;-----------------------------------------------
 ; 宏 RESET_FIXED_PMC()
-; 描述：
+; 描述: 
 ;       清所有 IA32_FIXED_CTR计数器的值为 0
 ;-----------------------------------------------
 %macro RESET_FIXED_PMC 0
@@ -383,7 +383,7 @@
 
 ;--------------------------------------------------------------
 ; 宏 RESET_COUNTER_OVERFLOW()
-; 描述：
+; 描述: 
 ;       清 IA32_PERF_GLOBAL_STATUS 寄存器所有 overflow 标志位
 ;-------------------------------------------------------------
 %macro RESET_COUNTER_OVERFLOW 0
@@ -395,7 +395,7 @@
 
 ;-------------------------------------------------------------
 ; 宏 RESET_PMI_COUNTER_OVERFLOW()
-; 描述：
+; 描述: 
 ;       清触发 PMI 中断的 counter overflow
 ;       去掉触发 PEBS 中断的 counter overflow
 ;-------------------------------------------------------------
@@ -416,7 +416,7 @@
 
 ;--------------------------------------------------------------
 ; 宏 RESET_PEBS_BUFFER_OVERFLOW() 
-; 描述：
+; 描述: 
 ;       清 IA32_PERF_GLOBAL_STATUS 寄存器的 OvfBuffer 位
 ;--------------------------------------------------------------
 %macro RESET_PEBS_BUFFER_OVERFLOW 0

@@ -1,7 +1,7 @@
 
 # 1 cinder ServiceController
 
-先来看看 cinder-list 的实现代码：
+先来看看 cinder-list 的实现代码: 
 
 ```python
 class ServiceController(wsgi.Controller):
@@ -41,7 +41,7 @@ class ServiceController(wsgi.Controller):
 
 # 2 cinder updated_at更新机制
 
-cinder-api，cinder-backup 等服务都是class Service(service.Service) 的一个实例，它的start方法如下：
+cinder-api，cinder-backup 等服务都是class Service(service.Service) 的一个实例，它的start方法如下: 
 
 ```python
 # cinder/service.py
@@ -196,11 +196,11 @@ class FixedIntervalLoopingCall(LoopingCallBase):
 
 # 3 问题定位
 
-如果发现某个服务的状态为down,在启动日志没有出错的情况下，可以按照下面的步骤进行定位：
+如果发现某个服务的状态为down,在启动日志没有出错的情况下，可以按照下面的步骤进行定位: 
 
-（1）看看是不是在 cinder.conf 中 report_interval 配置项的值是多少，如果超过了 service_down_time 配置项默认的 60 秒，那么该service 的状态肯定就是 'down' 了。
+(1)看看是不是在 cinder.conf 中 report_interval 配置项的值是多少，如果超过了 service_down_time 配置项默认的 60 秒，那么该service 的状态肯定就是 'down' 了。
 
-（2）看 service 所在节点的时间，它的时间和 controller 节点的时间误差必须在 [service_down_time - report_interval ] 之内，也就是在使用默认配置情况下，时间差必须在 50 秒之内。
+(2)看 service 所在节点的时间，它的时间和 controller 节点的时间误差必须在 [service_down_time - report_interval ] 之内，也就是在使用默认配置情况下，时间差必须在 50 秒之内。
 
-（3）看看 service 的 log 文件中，确认 report_state  方法是不是都按时被调用了，不方便看的话，在代码中加个注释吧。
+(3)看看 service 的 log 文件中，确认 report_state  方法是不是都按时被调用了，不方便看的话，在代码中加个注释吧。
 

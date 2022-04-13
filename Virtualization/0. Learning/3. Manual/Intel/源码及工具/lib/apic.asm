@@ -16,7 +16,7 @@ IAPIC_BASE64                    EQU     0FFFFF800FEC00000h
 
 
 ;-----------------------------------------------------
-; support_apic()：检测是否支持 APIC on Chip的 local APIC
+; support_apic(): 检测是否支持 APIC on Chip的 local APIC
 ;----------------------------------------------------
 support_apic:
         push edx
@@ -160,8 +160,8 @@ set_apic:
 ;       esi: 低 32 位， edi: 高半部分
 ; output:
 ;       none
-; 描述：
-;       设置 apic 的物理基址（在 MAXPHYADDR 值内）
+; 描述: 
+;       设置 apic 的物理基址(在 MAXPHYADDR 值内)
 ;------------------------------------------------
 set_apic_physical_base:
         push edx
@@ -208,8 +208,8 @@ get_apic_physical_base:
 ;       none
 ; output:
 ;       eax - 最大逻辑处理器数
-; 描述：
-;       获得 package（处理器）中的逻辑 processor 数量
+; 描述: 
+;       获得 package(处理器)中的逻辑 processor 数量
 ;----------------------------------------------------
 get_logical_processor_count:
         mov eax, [gs: PCB.MaxLogicalProcessor]
@@ -232,7 +232,7 @@ get_processor_core_count:
 ;       none
 ; output:
 ;       eax - inital apic id
-; 描述：
+; 描述: 
 ;       得到 initial apic id
 ;---------------------------------------------------
 get_apic_id:
@@ -261,7 +261,7 @@ get_x2apic_id:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       枚举 CPUID 0B leaf，来得到处理器拓扑信息，更新 PCB 内的拓扑记录
 ;-------------------------------------------------------------------
 init_processor_topology_info:
@@ -291,7 +291,7 @@ init_processor_topology_info:
         dec edi
                         
         ;;
-        ;; 开始枚举：EAX = 0Bh, ECX = 0
+        ;; 开始枚举: EAX = 0Bh, ECX = 0
         ;; 然后，每次递增 ECX 值，再执行 CPUID.0BH leaf
         ;;
         xor esi, esi                                            ; 开始的 sub-leaf 为 0
@@ -305,9 +305,9 @@ init_processor_topology_info.loop:
         ;;
         ;; 执行 CPUID.0BH/ECX 时，返回 ECX[15:8] 为 level type
         ;;
-        ;; 1) 输入 ECX = 0 时，返回：ECX[7:0] = 0, ECX[15:8] = 1
-        ;; 2) 输入 ECX = 1 时，返回：ECX[7:0] = 1, ECX[15:8] = 2
-        ;; 3) 输入 ECX = 2 时，返回：ECX[7:0] = 2，ECX[15:8] = 0
+        ;; 1) 输入 ECX = 0 时，返回: ECX[7:0] = 0, ECX[15:8] = 1
+        ;; 2) 输入 ECX = 1 时，返回: ECX[7:0] = 1, ECX[15:8] = 2
+        ;; 3) 输入 ECX = 2 时，返回: ECX[7:0] = 2，ECX[15:8] = 0
         ;;        
         shr ecx, 8
         and ecx, 0FFh
@@ -330,10 +330,10 @@ init_processor_topology_info.loop:
         
         ;;
         ;; 属于 core level
-        ;; 注意：
+        ;; 注意: 
         ;; 1) CoreMaskWidth 值包含了 ThreadMaskWidth 在内
         ;; 2) CoreSelectMask 值包启了 ThreadSelectMask 在内
-        ;; 3) APIC ID 剩余的域归为 PackageId，因此：PackageId = APIC ID >> CoreMaskWidth
+        ;; 3) APIC ID 剩余的域归为 PackageId，因此: PackageId = APIC ID >> CoreMaskWidth
         ;;　
         mov [ebp + TopologyInfo.CoreMaskWidth], al
         mov ecx, eax
@@ -352,7 +352,7 @@ init_processor_topology_info.loop:
         
         ;;
         ;; 检测 logical processor 数量:
-        ;; 1) 当属于 Core Level（ECX[15:8] = 2）时，EBX[15:0] 返回处理器物理 package 内有的 logical processor 数量
+        ;; 1) 当属于 Core Level(ECX[15:8] = 2)时，EBX[15:0] 返回处理器物理 package 内有的 logical processor 数量
         ;;
         and ebx, 0FFFFh
         mov [ebp + TopologyInfo.LogicalProcessorPerPackage], ebx
@@ -373,7 +373,7 @@ init_processor_topology_info.loop:
         
         ;;
         ;; 检测 logical processor 数量:
-        ;; 1) 当属于 Thread Level（ECX[15:8] = 1）时，EBX[15:0] 返回 core 内有的 logical processor 数量
+        ;; 1) 当属于 Thread Level(ECX[15:8] = 1)时，EBX[15:0] 返回 core 内有的 logical processor 数量
         ;;
         and ebx, 0FFFFh
         mov [ebp + TopologyInfo.LogicalProcessorPerCore], ebx   ; 更新 logical Processor per core 值
@@ -383,13 +383,13 @@ init_processor_topology_info.loop:
         
 init_processor_topology_info.next:
         ;;
-        ;; 更新剩余信息：
+        ;; 更新剩余信息: 
         ;; 1) 32 位 Processor ID 值
         ;; 2) 处理器 logical processor 与 core 计数值
         ;;
-        mov [ebp + TopologyInfo.ProcessorId], edx               ; 更新 ProcessorId（32 位的扩展 APIC ID 值）
+        mov [ebp + TopologyInfo.ProcessorId], edx               ; 更新 ProcessorId(32 位的扩展 APIC ID 值)
         ;;
-        ;; 处理器 logical processor 与 core 数量的计算方法：
+        ;; 处理器 logical processor 与 core 数量的计算方法: 
         ;; 1) LogicalProcessorCount = LogicalProcessorPerPackage
         ;; 2) ProcessorCoreCount = LogicalProcessorPerPackage / LogicalProcessorPerCore
         ;;
@@ -415,7 +415,7 @@ init_processor_topology_info.done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 发送 EOI 命令给 local apic
 ;-----------------------------------------------------
 send_eoi_command:
@@ -443,7 +443,7 @@ send_eoi_command:
 ;-----------------------------------------------------
 ; get_mask_width(): 得到 mask width，使用于 xAPIC ID中
 ; input:
-;       esi - maximum count（SMT 或 core 的最大 count 值）
+;       esi - maximum count(SMT 或 core 的最大 count 值)
 ; output:
 ;       eax - mask width
 ;-------------------------------------------------------

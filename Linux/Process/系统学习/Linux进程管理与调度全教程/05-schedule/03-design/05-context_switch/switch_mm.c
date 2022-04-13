@@ -50,7 +50,7 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
         trace_tlb_flush(TLB_FLUSH_ON_TASK_SWITCH, TLB_FLUSH_ALL);
 
         /* Stop flush ipis for the previous mm 
-         * 除prev的cpu_vm_mask，表示prev放弃使用cpu  */
+         * 除prev的cpu_vm_mask, 表示prev放弃使用cpu  */
         cpumask_clear_cpu(cpu, mm_cpumask(prev));
 
         /* Load per-mm CR4 state

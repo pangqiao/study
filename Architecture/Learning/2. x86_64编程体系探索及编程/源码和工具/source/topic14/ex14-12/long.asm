@@ -184,7 +184,7 @@ entry64:
 
 
 ;
-;* 实验 14-12：测试 64-bit 模式下的 BTS 机制
+;* 实验 14-12: 测试 64-bit 模式下的 BTS 机制
 ;*
 
         ; 复制测试函数到 0FFFFFFF8_10000000h 地址里
@@ -194,7 +194,7 @@ entry64:
         rep movsb
         
         SET_DS_AREA64                           ; 设置 DS 存储区域
-        ENABLE_BTS                              ; 开启 BTS，使用环形的 BTS buffer
+        ENABLE_BTS                              ; 开启 BTS, 使用环形的 BTS buffer
 
         ;* 调用测试函数
         ;* 函数的地址在 0FFFFFFF8_10000000h 位置上
@@ -226,21 +226,21 @@ test_func_end:
         
         ;call QWORD far [conforming_pointer]                        ; 测试conforimg 代码
         
-;; 从 64 位切换到 compatibility mode（权限不改变，0 级）　        
+;; 从 64 位切换到 compatibility mode(权限不改变, 0 级)　        
         ;jmp QWORD far [compatibility_pointer]
 
 ;compatibility_pointer:
 ;                dq compatibility_kernel_entry              ; 64 bit offset on Intel64
 ;                dw code32_sel
 
-;; 切换到 compatibility mode（进入 3 级）
+;; 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push user_code32_sel | 3
 ;        push compatibility_user_entry
 ;        retf64
 
-;; 使用 iret 切换到 compatibility mode（进入 3 级）
+;; 使用 iret 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push 02h

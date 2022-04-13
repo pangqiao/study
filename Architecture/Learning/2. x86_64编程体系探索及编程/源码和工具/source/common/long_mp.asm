@@ -230,8 +230,8 @@ bsp_processsor_enter:
         LIB32_PUTS_CALL
 
         ;*
-        ;* 下面发送 IPIs，使用 INIT-SIPI-SIPI 序列
-        ;* 发送 SIPI 时，发送 startup routine 地址位于 200000h
+        ;* 下面发送 IPIs, 使用 INIT-SIPI-SIPI 序列
+        ;* 发送 SIPI 时, 发送 startup routine 地址位于 200000h
         ;*
         mov DWORD [APIC_BASE + ICR0], 000c4500h                ; 发送 INIT IPI, 使所有 processor 执行 INIT
         DELAY
@@ -255,7 +255,7 @@ next:   ; 触发 apic timer 中断
         DELAY
 
         ; 开放 lock 信号
-        ; 发送 IPI 到所有 AP 处理器，让它们执行测试函数
+        ; 发送 IPI 到所有 AP 处理器, 让它们执行测试函数
         mov DWORD [vacant], 0   
         mov DWORD [APIC_BASE + ICR1], 0E000000h
         mov DWORD [APIC_BASE + ICR0], LOGICAL_ID | AP_IPI_VECTOR
@@ -360,21 +360,21 @@ ap_ipi_handler_done:
         
         ;call QWORD far [conforming_pointer]                        ; 测试conforimg 代码
         
-;; 从 64 位切换到 compatibility mode（权限不改变，0 级）　        
+;; 从 64 位切换到 compatibility mode(权限不改变, 0 级)　        
         ;jmp QWORD far [compatibility_pointer]
 
 ;compatibility_pointer:
 ;                dq compatibility_kernel_entry              ; 64 bit offset on Intel64
 ;                dw code32_sel
 
-;; 切换到 compatibility mode（进入 3 级）
+;; 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push user_code32_sel | 3
 ;        push compatibility_user_entry
 ;        retf64
 
-;; 使用 iret 切换到 compatibility mode（进入 3 级）
+;; 使用 iret 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push 02h

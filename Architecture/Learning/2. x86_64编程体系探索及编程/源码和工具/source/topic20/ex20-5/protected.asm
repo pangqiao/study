@@ -17,7 +17,7 @@ protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protec
 
 entry:
         
-;; 为了完成实验，关闭时间中断和键盘中断
+;; 为了完成实验, 关闭时间中断和键盘中断
         call disable_timer
         
 ;; 设置 #PF handler
@@ -86,13 +86,13 @@ entry:
 ;========= 初始化设置完毕 =================
 
 
-;; 实验　ex20-5：测试DOS compatibility模式
+;; 实验　ex20-5: 测试DOS compatibility模式
 
         mov esi, FPU_VECTOR
         mov edi, fpu_handler
         call set_interrupt_handler
 
-; 未开启 CR0.NE 位，使用 DOS compatibility 模式处理
+; 未开启 CR0.NE 位, 使用 DOS compatibility 模式处理
 ;        mov eax, cr0
 ;        bts eax, 5                        ; CR0.NE = 1
 ;        mov cr0, eax
@@ -207,7 +207,7 @@ user_start:
 
 ;;************* 函数导入表  *****************
 
-; 这个 lib32 库导入表放在 common\ 目录下，
+; 这个 lib32 库导入表放在 common\ 目录下, 
 ; 供所有实验的 protected.asm 模块使用
 
 %include "..\common\lib32_import_table.imt"

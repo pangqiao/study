@@ -25,7 +25,7 @@
 
 ## 1.1 execve系统调用
 
-我们前面提到了, **fork, vfork**等复制出来的进程是**父进程的一个副本**,那么如何我们想**加载新的程序**,可以通过execve来加载和启动新的程序。
+我们前面提到了, **fork, vfork**等复制出来的进程是**父进程的一个副本**,那么如何我们想**加载新的程序**,可以通过execve来加载和启动新的程序. 
 
 >x86架构下, 其实还实现了一个**新的exec的系统调用**叫做**execveat**(自linux-3.19后进入内核)
 >
@@ -33,7 +33,7 @@
 
 ## 1.2 exec()函数族
 
-exec函数一共有六个，其中**execve**为**内核级系统调用**，其他（**execl**，**execle**，**execlp**，**execv**，**execvp**）都是调用**execve**的库函数。
+exec函数一共有六个, 其中**execve**为**内核级系统调用**, 其他(**execl**, **execle**, **execlp**, **execv**, **execvp**)都是调用**execve**的库函数. 
 
 
 ```c
@@ -49,11 +49,11 @@ int execvp(const char *file, char *const argv[]);
 
 ## 2.1 ELF可执行文件格式
 
-Linux下标准的可执行文件格式是ELF. ELF(**Executable and Linking Format**)是一种**对象文件的格式**，用于定义不同类型的对象文件(Object files)中都放了什么东西、以及都以什么样的格式去放这些东西。它自最早在 System V 系统上出现后，被xNIX世界所广泛接受，作为**缺省的二进制文件格式**来使用。
+Linux下标准的可执行文件格式是ELF. ELF(**Executable and Linking Format**)是一种**对象文件的格式**, 用于定义不同类型的对象文件(Object files)中都放了什么东西、以及都以什么样的格式去放这些东西. 它自最早在 System V 系统上出现后, 被xNIX世界所广泛接受, 作为**缺省的二进制文件格式**来使用. 
 
 但是linux也支持**其他不同的可执行程序格式**,各个**可执行程序的执行方式不尽相同**,因此linux内核每种被注册的可执行程序格式都用**linux\_binfmt**来存储, 其中记录了**可执行程序的加载和执行函数**
 
-同时我们需要一种方法来**保存可执行程序的信息**,比如可执行文件的路径,运行的参数和环境变量等信息，即linux\_binprm结构
+同时我们需要一种方法来**保存可执行程序的信息**,比如可执行文件的路径,运行的参数和环境变量等信息, 即linux\_binprm结构
 
 ## 2.2 struct linux_binprm结构描述一个可执行程序
 
@@ -91,7 +91,7 @@ struct linux_binprm {
     int argc, envc;		/*  命令行参数和环境变量数目  */
     // 要执行的文件的名称 
     const char * filename;  /* Name of binary as seen by procps */
-    //  要执行的文件的真实名称，通常和filename相同
+    //  要执行的文件的真实名称, 通常和filename相同
     const char * interp;    /* Name of the binary really executed. Most
                                of the time same as filename, but could be
                                different for binfmt_{misc,script} */
@@ -103,9 +103,9 @@ struct linux_binprm {
 
 ## 2.3 struct linux\_binfmt可执行格式的结构
 
-linux支持其他不同格式的可执行程序, 在这种方式下, linux能运行其他操作系统所编译的程序, 如MS-DOS程序, 或BSD Unix的COFF可执行格式, 因此linux内核用**struct linux\_binfmt**来描述**各种可执行程序**。
+linux支持其他不同格式的可执行程序, 在这种方式下, linux能运行其他操作系统所编译的程序, 如MS-DOS程序, 或BSD Unix的COFF可执行格式, 因此linux内核用**struct linux\_binfmt**来描述**各种可执行程序**. 
 
-linux内核对所支持的**每种可执行的程序类型(！！！**)都有个**struct linux\_binfmt的数据结构**，定义如下
+linux内核对所支持的**每种可执行的程序类型(！！！**)都有个**struct linux\_binfmt的数据结构**, 定义如下
 
 >linux\_binfmt定义在[include/linux/binfmts.h](http://lxr.free-electrons.com/source/include/linux/binfmts.h#L74)中
 
@@ -144,7 +144,7 @@ struct linux_binfmt {
 
 # 3 execve加载可执行程序的过程
 
-内核中实际执行**execv()或execve()系统调用**的程序是**do\_execve**()，这个函数**先打开目标映像文件**，并**从目标文件的头部**（**第一个字节**开始）读入若干（当前Linux内核中是**128）字节**（实际上就是**填充ELF文件头**，下面的分析可以看到），然后**调用另一个函数search\_binary\_handler**()，在此函数里面，它会**搜索我们上面提到的Linux支持的可执行文件类型队列**，让各种可执行程序的处理程序前来认领和处理。如果**类型匹配**，则**调用load\_binary函数**指针所指向的处理函数来**处理目标映像文件**。在**ELF文件格式**中，处理函数是**load\_elf\_binary函数**，下面主要就是分析load\_elf\_binary函数的执行过程（说明：因为内核中实际的加载需要涉及到很多东西，这里**只关注跟ELF文件的处理相关的代码**）：
+内核中实际执行**execv()或execve()系统调用**的程序是**do\_execve**(), 这个函数**先打开目标映像文件**, 并**从目标文件的头部**(**第一个字节**开始)读入若干(当前Linux内核中是**128)字节**(实际上就是**填充ELF文件头**, 下面的分析可以看到), 然后**调用另一个函数search\_binary\_handler**(), 在此函数里面, 它会**搜索我们上面提到的Linux支持的可执行文件类型队列**, 让各种可执行程序的处理程序前来认领和处理. 如果**类型匹配**, 则**调用load\_binary函数**指针所指向的处理函数来**处理目标映像文件**. 在**ELF文件格式**中, 处理函数是**load\_elf\_binary函数**, 下面主要就是分析load\_elf\_binary函数的执行过程(说明: 因为内核中实际的加载需要涉及到很多东西, 这里**只关注跟ELF文件的处理相关的代码**): 
 
 sys\_execve() > do\_execve() > do\_execveat\_common > search\_binary\_handler() > load\_elf\_binary()
 
@@ -176,11 +176,11 @@ SYSCALL_DEFINE3(execve,
 | argv | 程序的参数 |
 | envp | 环境变量 |
 
-指向**程序参数argv**和**环境变量envp**两个**数组的指针**以及**数组中所有的指针**都位于**虚拟地址空间**的**用户空间部分**。因此**内核在访问用户空间内存**时,需要多加小心,而\_\_user注释则允许自动化工具来检测时候所有相关事宜都处理得当
+指向**程序参数argv**和**环境变量envp**两个**数组的指针**以及**数组中所有的指针**都位于**虚拟地址空间**的**用户空间部分**. 因此**内核在访问用户空间内存**时,需要多加小心,而\_\_user注释则允许自动化工具来检测时候所有相关事宜都处理得当
 
 ## 3.2 do\_execve函数
 
-do\_execve的定义在**fs/exec.c**中，参见 http://lxr.free-electrons.com/source/fs/exec.c?v=4.5#L1628
+do\_execve的定义在**fs/exec.c**中, 参见 http://lxr.free-electrons.com/source/fs/exec.c?v=4.5#L1628
 
 | [更早期实现linux-2.4](http://lxr.free-electrons.com/source/fs/exec.c?v=2.4.37#L936) | [linux\-3.18引入execveat之前do\_execve实现](http://lxr.free-electrons.com/source/fs/exec.c?v=3.18#L1549) | [linux\-3.19\~至今引入execveat之后do\_execve实现](http://lxr.free-electrons.com/source/fs/exec.c?v=4.5#L1628) | [do\_execveat的实现](http://lxr.free-electrons.com/source/fs/exec.c?v=4.5#L1637) |
 | ------------- |:-------------|:-------------|:-------------|
@@ -200,11 +200,11 @@ do\_execve的定义在**fs/exec.c**中，参见 http://lxr.free-electrons.com/so
 >
 >[linux-3.19~至今引入execveat之后do\_execve调用**do\_execveat\_common**来完成程序的加载和运行](http://lxr.free-electrons.com/source/fs/exec.c?v=4.5#L1481)
 
-在Linux中提供了一系列的**函数**，这些函数能用**可执行文件**所描述的**新上下文代替进程的上下文**。这样的函数名以**前缀exec开始**。**所有的exec函数**都是调用了**execve()系统调用**。
+在Linux中提供了一系列的**函数**, 这些函数能用**可执行文件**所描述的**新上下文代替进程的上下文**. 这样的函数名以**前缀exec开始**. **所有的exec函数**都是调用了**execve()系统调用**. 
 
-sys\_execve接受参数：1.**可执行文件的路径**  2.**命令行参数字符串** 3.**环境变量字符串**
+sys\_execve接受参数: 1.**可执行文件的路径**  2.**命令行参数字符串** 3.**环境变量字符串**
 
-sys\_execve是调用**do\_execve实现**的。do\_execve则是调用do\_execveat\_common实现的，依次执行以下操作：
+sys\_execve是调用**do\_execve实现**的. do\_execve则是调用do\_execveat\_common实现的, 依次执行以下操作: 
 
 1. 调用**unshare\_files**()为进程**复制一份文件表**
 
@@ -212,23 +212,23 @@ sys\_execve是调用**do\_execve实现**的。do\_execve则是调用do\_execveat
 
 3. 调用**open\_exec**()查找并打开二进制文件
 
-4. 调用**sched\_exec**()找到**最小负载的CPU**，用来执行该二进制文件
+4. 调用**sched\_exec**()找到**最小负载的CPU**, 用来执行该二进制文件
 
-5. 根据获取的信息，**填充struct linux\_binprm结构体**中的**file**、**filename**、**interp**成员
+5. 根据获取的信息, **填充struct linux\_binprm结构体**中的**file**、**filename**、**interp**成员
 
-6. 调用**bprm\_mm\_init**()创建进程的**内存地址空间**，为**新程序初始化内存管理**.并调用**init\_new\_context**()检查当前进程是否使用**自定义的局部描述符表**；如果是，那么**分配和准备一个新的LDT(！！！**)
+6. 调用**bprm\_mm\_init**()创建进程的**内存地址空间**, 为**新程序初始化内存管理**.并调用**init\_new\_context**()检查当前进程是否使用**自定义的局部描述符表**；如果是, 那么**分配和准备一个新的LDT(！！！**)
 
 7. 填充struct linux\_binprm结构体中的**argc**、**envc**成员
 
-8. 调用**prepare\_binprm**()检查该二进制文件的**可执行权限**；最后，**kernel\_read**()读取二进制文件的**头128字节**（这些字节用于**识别二进制文件的格式及其他信息**，后续会使用到）
+8. 调用**prepare\_binprm**()检查该二进制文件的**可执行权限**；最后, **kernel\_read**()读取二进制文件的**头128字节**(这些字节用于**识别二进制文件的格式及其他信息**, 后续会使用到)
 
 9. 调用**copy\_strings\_kernel**()从**内核空间**获取二进制文件的**路径名称**
 
 10. 调用**copy\_string**()从**用户空间**拷贝**环境变量和命令行参数**
 
-11. 至此，二进制文件已经被打开，struct linux\_binprm结构体中也记录了重要信息,内核开始**调用exec\_binprm识别该二进制文件的格式并执行可执行程序**
+11. 至此, 二进制文件已经被打开, struct linux\_binprm结构体中也记录了重要信息,内核开始**调用exec\_binprm识别该二进制文件的格式并执行可执行程序**
 
-12. 释放linux\_binprm数据结构，返回从该文件可执行格式的load\_binary中获得的代码
+12. 释放linux\_binprm数据结构, 返回从该文件可执行格式的load\_binary中获得的代码
 
 定义在[fs/exec.c](http://lxr.free-electrons.com/source/fs/exec.c#L1481)
 
@@ -242,7 +242,7 @@ static int do_execveat_common(int fd, struct filename *filename,
                           int flags)
 {
     char *pathbuf = NULL;
-    /* 这个结构当然是非常重要的，下文列出了这个结构体以便查询各个成员变量的意义 */
+    /* 这个结构当然是非常重要的, 下文列出了这个结构体以便查询各个成员变量的意义 */
     struct linux_binprm *bprm;  
     struct file *file;
     struct files_struct *displaced;
@@ -292,10 +292,10 @@ static int do_execveat_common(int fd, struct filename *filename,
     if (IS_ERR(file))
             goto out_unmark;
 
-	//	4、调用sched_exec()找到最小负载的CPU，用来执行该二进制文件；
+	//	4、调用sched_exec()找到最小负载的CPU, 用来执行该二进制文件；
     sched_exec();
 
-    //	5、根据获取的信息，填充struct linux_binprm结构体中的file、filename、interp成员；
+    //	5、根据获取的信息, 填充struct linux_binprm结构体中的file、filename、interp成员；
     bprm->file = file;
     if (fd == AT_FDCWD || filename->name[0] == '/') {
             bprm->filename = filename->name;
@@ -320,9 +320,9 @@ static int do_execveat_common(int fd, struct filename *filename,
     }
     bprm->interp = bprm->filename;
 
-    //	6、调用bprm_mm_init()创建进程的内存地址空间，
+    //	6、调用bprm_mm_init()创建进程的内存地址空间, 
     // 并调用init_new_context()检查当前进程是否使用自定义的局部描述符表；
-    // 如果是，那么分配和准备一个新的LDT；
+    // 如果是, 那么分配和准备一个新的LDT；
     retval = bprm_mm_init(bprm);
     if (retval)
             goto out_unmark;
@@ -337,7 +337,7 @@ static int do_execveat_common(int fd, struct filename *filename,
             goto out;
 
     //	8、调用prepare_binprm()检查该二进制文件的可执行权限；
-    // 最后，kernel_read()读取二进制文件的头128字节（这些字节用于识别二进制文件的格式及其他信息，后续会使用到）；
+    // 最后, kernel_read()读取二进制文件的头128字节(这些字节用于识别二进制文件的格式及其他信息, 后续会使用到)；
     retval = prepare_binprm(bprm);
     if (retval < 0)
             goto out;
@@ -359,7 +359,7 @@ static int do_execveat_common(int fd, struct filename *filename,
     if (retval < 0)
             goto out;
 	/*
-	    至此，二进制文件已经被打开，struct linux_binprm结构体中也记录了重要信息；
+	    至此, 二进制文件已经被打开, struct linux_binprm结构体中也记录了重要信息；
 
         下面需要识别该二进制文件的格式并最终运行该文件
     */
@@ -404,13 +404,13 @@ out_ret:
 
 ## 3.4 exec\_binprm()识别并加载二进程程序
 
-**每种格式的二进制文件**对应一个struct **linux\_binprm结构体**，每种可执行的程序类型都对应一个数据结构struct linux\_binfmt,**load\_binary成员**负责**识别该二进制文件的格式**；
+**每种格式的二进制文件**对应一个struct **linux\_binprm结构体**, 每种可执行的程序类型都对应一个数据结构struct linux\_binfmt,**load\_binary成员**负责**识别该二进制文件的格式**；
 
-内核使用**链表组织这些struct linux\_binfmt结构体**，**链表头是formats**。
+内核使用**链表组织这些struct linux\_binfmt结构体**, **链表头是formats**. 
 
-接着do\_execveat\_common()中的exec\_binprm()继续往下看：
+接着do\_execveat\_common()中的exec\_binprm()继续往下看: 
 
-调用**search\_binary\_handler**()函数对linux\_binprm的**formats链表进行扫描**，并**尝试每个load\_binary函数**，如果成功加载了文件的执行格式，对formats的扫描终止。
+调用**search\_binary\_handler**()函数对linux\_binprm的**formats链表进行扫描**, 并**尝试每个load\_binary函数**, 如果成功加载了文件的执行格式, 对formats的扫描终止. 
 
 
 ```c
@@ -439,7 +439,7 @@ static int exec_binprm(struct linux_binprm *bprm)
 
 ## 3.5 search\_binary\_handler识别二进程程序
 
-这里需要说明的是，这里的fmt变量的类型是struct linux\_binfmt *,但是这一个类型与之前在do\_execveat\_common()中的bprm是**不一样**的，
+这里需要说明的是, 这里的fmt变量的类型是struct linux\_binfmt *,但是这一个类型与之前在do\_execveat\_common()中的bprm是**不一样**的, 
 
 >定义在[fs/exec.c](http://lxr.free-electrons.com/source/fs/exec.c#L1502)
 

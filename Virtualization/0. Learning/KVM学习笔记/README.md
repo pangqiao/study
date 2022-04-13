@@ -12,8 +12,8 @@ Bug report, questions and discussion are welcome, you can post an issue or pull 
 
 ## 相关站点
 
-* GitBook访问地址：<https://yifengyou.gitbooks.io/learn-kvm/content/>
-* GitHub访问地址：<https://github.com/yifengyou/learn-kvm>
+* GitBook访问地址: <https://yifengyou.gitbooks.io/learn-kvm/content/>
+* GitHub访问地址: <https://github.com/yifengyou/learn-kvm>
 
 ## 目录
 

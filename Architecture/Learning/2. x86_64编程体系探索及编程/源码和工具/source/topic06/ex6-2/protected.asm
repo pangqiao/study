@@ -211,7 +211,7 @@ clear_TF:
         mov esi, db_msg2
         call puts
 do_DB_handler_done:        
-        bts DWORD [esp + 4 * 8 + 8], 16                                        ; 设置 eflags.RF 为 1，以便中断返回时，继续执行
+        bts DWORD [esp + 4 * 8 + 8], 16                                        ; 设置 eflags.RF 为 1, 以便中断返回时, 继续执行
         popad
         iret
 

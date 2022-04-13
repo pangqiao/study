@@ -10,35 +10,35 @@
   - [3.1 查看当前物理内存](#31-查看当前物理内存)
   - [3.2 硬件支持的信息](#32-硬件支持的信息)
 - [4 获取BIOS信息](#4-获取bios信息)
-- [5 获取制造商，型号和序列号](#5-获取制造商型号和序列号)
+- [5 获取制造商, 型号和序列号](#5-获取制造商型号和序列号)
 - [脚本](#脚本)
 
 <!-- /code_chunk_output -->
 
 # 1 简介
 
-使用的dmidecode命令检索任何Linux系统的硬件信息。 假设，如果我们要升级，我们需要收集如内存 ，BIOS和CPU等信息的系统 随着的dmidecode命令的帮助下，我们会知道的细节，而无需打开系统的底盘。 
+使用的dmidecode命令检索任何Linux系统的硬件信息.  假设, 如果我们要升级, 我们需要收集如内存 , BIOS和CPU等信息的系统 随着的dmidecode命令的帮助下, 我们会知道的细节, 而无需打开系统的底盘.  
 
-dmidecode命令适用于RHEL / CentOS的 / Fedora的 / Ubuntu Linux操作系统。
+dmidecode命令适用于RHEL / CentOS的 / Fedora的 / Ubuntu Linux操作系统. 
 
-dmidecode允许你在Linux系统下获取有关硬件方面的信息。dmidecode遵循SMBIOS/DMI标准，其输出的信息包括BIOS、系统、主板、处理器、内存、缓存等等。
+dmidecode允许你在Linux系统下获取有关硬件方面的信息. dmidecode遵循SMBIOS/DMI标准, 其输出的信息包括BIOS、系统、主板、处理器、内存、缓存等等. 
 
-DMI是英文单词Desktop Management Interface的缩写，也就是桌面管理界面，它含有关于系统硬件的配置信息。计算机**每次启动**时都对**DMI数据进行校验**，如果该数据出错或硬件有所变动，就会**对机器进行检测**，并把测试的数据写入**BIOS芯片保存**。所以如果我们在**BIOS设置**中**禁止了BIOS芯片的刷新功能**或者在**主板使用跳线禁止了 BIOS芯片的刷新功能**，那这台机器的**DMI数据**将**不能被更新**。如果你更换了硬件配置，那么在进行WINDOWS系统时，机器仍旧按老系统的配置进行工作。这样就不能充分发挥新添加硬件的性能，有时还会出现这样或那样的故障。
+DMI是英文单词Desktop Management Interface的缩写, 也就是桌面管理界面, 它含有关于系统硬件的配置信息. 计算机**每次启动**时都对**DMI数据进行校验**, 如果该数据出错或硬件有所变动, 就会**对机器进行检测**, 并把测试的数据写入**BIOS芯片保存**. 所以如果我们在**BIOS设置**中**禁止了BIOS芯片的刷新功能**或者在**主板使用跳线禁止了 BIOS芯片的刷新功能**, 那这台机器的**DMI数据**将**不能被更新**. 如果你更换了硬件配置, 那么在进行WINDOWS系统时, 机器仍旧按老系统的配置进行工作. 这样就不能充分发挥新添加硬件的性能, 有时还会出现这样或那样的故障. 
 
-- DMI（Desktop Management Interface,DMI）就是帮助收集电脑**系统信息**的**管理系统**，**DMI信息的收集**必须在严格遵照**SMBIOS规范**的前提下进行。
-- SMBIOS（System Management BIOS）是**主板或系统制造者**以标准格式显示产品管理信息所需遵循的统一规范。
+- DMI(Desktop Management Interface,DMI)就是帮助收集电脑**系统信息**的**管理系统**, **DMI信息的收集**必须在严格遵照**SMBIOS规范**的前提下进行. 
+- SMBIOS(System Management BIOS)是**主板或系统制造者**以标准格式显示产品管理信息所需遵循的统一规范. 
 
-SMBIOS和DMI是由行业指导机构Desktop Management Task Force(DMTF)起草的开放性的技术标准，其中DMI设计适用于任何的平台和操作系统。
+SMBIOS和DMI是由行业指导机构Desktop Management Task Force(DMTF)起草的开放性的技术标准, 其中DMI设计适用于任何的平台和操作系统. 
 
-DMI充当了管理工具和系统层之间接口的角色。它建立了标准的可管理系统更加方便了电脑厂商和用户对系统的了解。DMI的主要组成部分是Management Information Format(MIF)数据库。这个数据库包括了所有有关电脑系统和配件的信息。通过DMI，用户可以获取序列号、电脑厂商、串口信息以及其它系统配件信息。
+DMI充当了管理工具和系统层之间接口的角色. 它建立了标准的可管理系统更加方便了电脑厂商和用户对系统的了解. DMI的主要组成部分是Management Information Format(MIF)数据库. 这个数据库包括了所有有关电脑系统和配件的信息. 通过DMI, 用户可以获取序列号、电脑厂商、串口信息以及其它系统配件信息. 
 
-dmidecode的作用是将DMI数据库中的信息解码，以可读的文本方式显示。由于DMI信息可以人为修改，因此**里面的信息不一定是系统准确的信息！！！**。
+dmidecode的作用是将DMI数据库中的信息解码, 以可读的文本方式显示. 由于DMI信息可以人为修改, 因此**里面的信息不一定是系统准确的信息！！！**. 
 
 以内存插槽为例, 芯片组支持的插槽数不一定全部有连接, 可能有些管道, 而dmidecode是基于DMI/SMBIOS规范的, 取决于主板/系统制造者的实现.
 
 # 2 命令用法
 
-不带选项执行dmidecode通常会输出所有的硬件信息。dmidecode有个很有用的选项-t，可以指定类型输出相关信息。假如要获得处理器方面的信息，则可以执行：
+不带选项执行dmidecode通常会输出所有的硬件信息. dmidecode有个很有用的选项-t, 可以指定类型输出相关信息. 假如要获得处理器方面的信息, 则可以执行: 
 
 ```
 dmidecode -t processor
@@ -50,23 +50,23 @@ Usage: dmidecode [OPTIONS]
 
 Options are:
 
--d：(default:/dev/mem)从设备文件读取信息，输出内容与不加参数标准输出相同。
+-d: (default:/dev/mem)从设备文件读取信息, 输出内容与不加参数标准输出相同. 
 
--h：显示帮助信息。
+-h: 显示帮助信息. 
 
--s：只显示指定DMI字符串的信息。(string)
+-s: 只显示指定DMI字符串的信息. (string)
 
--t：只显示指定条目的信息。(type)
+-t: 只显示指定条目的信息. (type)
 
--u：显示未解码的原始条目内容。
+-u: 显示未解码的原始条目内容. 
 
 -- dump-bin FILE: Dump the DMI data to a binary file.
 
 -- from-dump FILE: Read the DMI data from a binary file.
 
--V：显示版本信息
+-V: 显示版本信息
 
-dmidecode的输出格式一般如下：
+dmidecode的输出格式一般如下: 
 
 ```
 Handle 0x0002, DMI type 2, 95 bytes.
@@ -82,15 +82,15 @@ Base Board Information
      Serial Number: Not Specified
 ```
 
-其中记录头（recode header）包括了：
+其中记录头(recode header)包括了: 
 
-recode id(Handle)：**DMI表**中的**记录标识符**，这是唯一的，比如上例中的Handle 0x0002.
+recode id(Handle): **DMI表**中的**记录标识符**, 这是唯一的, 比如上例中的Handle 0x0002.
 
-DMI type id：**记录的类型**，譬如说：BIOS，Memory，上例是type 2，即“Base Board Information”.
+DMI type id: **记录的类型**, 譬如说: BIOS, Memory, 上例是type 2, 即“Base Board Information”.
 
-recode size：DMI表中对应**记录的大小**，上例为95 bytes。（不包括文本信息，所有实际输出的内容比这个size要更大）。记录头之后就是记录的值。
+recode size: DMI表中对应**记录的大小**, 上例为95 bytes. (不包括文本信息, 所有实际输出的内容比这个size要更大). 记录头之后就是记录的值. 
 
-recoded values：记录值可以是多行的，比如上例显示了主板的制造商（Manufacturer）、Product Name、Version以及Serial Number。
+recoded values: 记录值可以是多行的, 比如上例显示了主板的制造商(Manufacturer)、Product Name、Version以及Serial Number. 
 
 1. 最简单的的显示全部dmi信息
 
@@ -108,13 +108,13 @@ recoded values：记录值可以是多行的，比如上例显示了主板的制
 
 -q(–quite) 只显示必要的信息
 
-3. 显示指定类型的信息：
+3. 显示指定类型的信息: 
 
-通常我只想查看某类型，比如CPU，内存或者磁盘的信息而不是全部的。这可以使用\-t(\–type TYPE)来指定信息类型
+通常我只想查看某类型, 比如CPU, 内存或者磁盘的信息而不是全部的. 这可以使用\-t(\–type TYPE)来指定信息类型
 
 ```
 # dmidecode -t bios
-# dmidecode -t bios, processor (这种方式不可以用，必须用下面的数字的方式)
+# dmidecode -t bios, processor (这种方式不可以用, 必须用下面的数字的方式)
 # dmidecode -t 0,4 (显示bios和processor)
 ```
 
@@ -122,23 +122,23 @@ recoded values：记录值可以是多行的，比如上例显示了主板的制
 
 可以在man dmidecode里面看到
 
-文本参数支持：
+文本参数支持: 
 
 bios, system, baseboard, chassis, processor, memory, cache, connector, slot
 
 bios |  bios的各项信息
 -----|-----------
- system |  系统信息，在我的笔记本上可以看到版本、型号、序号等信息。
+ system |  系统信息, 在我的笔记本上可以看到版本、型号、序号等信息. 
  baseboard |  主板信息
- chassis |  “底板”，不太理解其含意，期待大家补充
+ chassis |  “底板”, 不太理解其含意, 期待大家补充
  processor |  CPU的详细信息
- memory |  内存信息，包括目前插的内存条数及大小，支持的单条最大内存和总内存大小等等。
- cache |  缓存信息，似乎是CPU的缓存信息
+ memory |  内存信息, 包括目前插的内存条数及大小, 支持的单条最大内存和总内存大小等等. 
+ cache |  缓存信息, 似乎是CPU的缓存信息
  connector |  在我的电脑是PCI设备的信息
  slot |  插槽信息
 
 
-数字参数支持很多：
+数字参数支持很多: 
 
 ```
 The SMBIOS specification defines the following DMI types:
@@ -191,16 +191,16 @@ The SMBIOS specification defines the following DMI types:
          42   Management Controller Host Interface
 ```
 
-4. 通过关键字查看信息：
+4. 通过关键字查看信息: 
 
-比如只想查看系统序列号，可以使用:
+比如只想查看系统序列号, 可以使用:
 
 ```
 # dmidecode -s system-serial-number
 218480676
 ```
 
--s (–string keyword)支持的keyword包括：
+-s (–string keyword)支持的keyword包括: 
 
 bios-vendor,bios-version, bios-release-date,
 
@@ -212,7 +212,7 @@ system-manufacturer, system-product-name, system-version, system-serial-number, 
 
 ## 3.1 查看当前物理内存
 
-Linux下，可以使用free或者查看meminfo来获得当前的物理内存：
+Linux下, 可以使用free或者查看meminfo来获得当前的物理内存: 
 
 ```
 # free -h
@@ -223,7 +223,7 @@ Swap:           39G        733M         39G
 
 显示当前服务器物理内存是125G
 
-但是通过这种方式，你只能看到内存的总量和使用量。而无法知道内存的类型（DDR1、DDR2、DDR3、DDR4、SDRAM、DRAM）、频率等信息。
+但是通过这种方式, 你只能看到内存的总量和使用量. 而无法知道内存的类型(DDR1、DDR2、DDR3、DDR4、SDRAM、DRAM)、频率等信息. 
 
 ## 3.2 硬件支持的信息
 
@@ -286,24 +286,24 @@ CPU(s):                64
 On-line CPU(s) list:   0-63
 Thread(s) per core:    2
 Core(s) per socket:    16
-座：                 2
-NUMA 节点：         2
-厂商 ID：           GenuineIntel
-CPU 系列：          6
-型号：              85
-型号名称：        Intel(R) Xeon(R) Gold 6130 CPU @ 2.10GHz
-步进：              4
-CPU MHz：             1800.000
+座:                  2
+NUMA 节点:          2
+厂商 ID:            GenuineIntel
+CPU 系列:           6
+型号:               85
+型号名称:         Intel(R) Xeon(R) Gold 6130 CPU @ 2.10GHz
+步进:               4
+CPU MHz:              1800.000
 CPU max MHz:           2101.0000
 CPU min MHz:           1000.0000
-BogoMIPS：            4200.00
-虚拟化：           VT-x
-L1d 缓存：          32K
-L1i 缓存：          32K
-L2 缓存：           1024K
-L3 缓存：           22528K
-NUMA 节点0 CPU：    0-15,32-47
-NUMA 节点1 CPU：    16-31,48-63
+BogoMIPS:             4200.00
+虚拟化:            VT-x
+L1d 缓存:           32K
+L1i 缓存:           32K
+L2 缓存:            1024K
+L3 缓存:            22528K
+NUMA 节点0 CPU:     0-15,32-47
+NUMA 节点1 CPU:     16-31,48-63
 Flags:                 fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch epb cat_l3 cdp_l3 intel_pt tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm cqm mpx rdt_a avx512f avx512dq rdseed adx smap clflushopt clwb avx512cd avx512bw avx512vl xsaveopt xsavec xgetbv1 cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local dtherm ida arat pln pts
 ```
 
@@ -766,7 +766,7 @@ BIOS Language Information
 	Currently Installed Language: en|US|iso8859-1
 ```
 
-# 5 获取制造商，型号和序列号
+# 5 获取制造商, 型号和序列号
 
 ```
 # dmidecode -t system

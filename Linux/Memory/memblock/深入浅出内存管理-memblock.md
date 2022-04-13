@@ -28,7 +28,7 @@ struct memblock {
 
 - current\_limit 内存分配最大限制值
 
-memblock 的内存分为3类, memory，reserved, 和 physmem
+memblock 的内存分为3类, memory, reserved, 和 physmem
 
 - memory 可用的内存的集合
 

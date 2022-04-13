@@ -1,4 +1,4 @@
-Linux RCU（Read-Copy Update）
+Linux RCU(Read-Copy Update)
 
 
 

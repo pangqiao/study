@@ -115,7 +115,7 @@ user_entry:
 ;; 测试 INTO 指令 
         mov eax, 0x80000000
         mov ebx, eax
-        add eax, ebx                                      ; 产生溢出，OF标志置位
+        add eax, ebx                                      ; 产生溢出, OF标志置位
         into                                              ; 引发 #OF 异常
 
 
@@ -124,7 +124,7 @@ user_entry:
         mov BYTE [breakpoint], 0xcc                        ; 写入 int3 指令
         
 breakpoint:
-        mov esi, msg1                                      ; 这是断点位置，引发 #BP 异常
+        mov esi, msg1                                      ; 这是断点位置, 引发 #BP 异常
         call puts
 
 ;; 测试 bound 指令
@@ -165,7 +165,7 @@ msg2        db   'Fixed the Bound Error OK!', 10, 0
 
 ;;************* 函数导入表  *****************
 
-; 这个 lib32 库导入表放在 common\ 目录下，
+; 这个 lib32 库导入表放在 common\ 目录下, 
 ; 供所有实验的 protected.asm 模块使用
 
 %include "..\common\lib32_import_table.imt"

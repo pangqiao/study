@@ -14,7 +14,7 @@
 ; input:
 ;       esi - size
 ;       edi - buffer address
-; 描述：
+; 描述: 
 ;       将内存块清 0
 ;-----------------------------------------
 ZeroMemory:
@@ -38,10 +38,10 @@ ZeroMemory:
         
         ;;
         ;; 计算调整到 DWORD 边界上的差额，原理等于 4 - dest & 03
-        ;; 1) 例如：[2:0] = 011B（3）
-        ;; 2) 取反后 = 100B（4）
-        ;; 3) 加1后 = 101B（5）        
-        ;; 4) 在32位下与03后 = 001B（1），即差额为 1
+        ;; 1) 例如: [2:0] = 011B(3)
+        ;; 2) 取反后 = 100B(4)
+        ;; 3) 加1后 = 101B(5)        
+        ;; 4) 在32位下与03后 = 001B(1)，即差额为 1
         ;;
         mov ecx, esi                                    ; 原 count        
         mov esi, edi                                    ; 原 dest
@@ -119,7 +119,7 @@ AllocPhysicalPage:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 在未分页下调用
 ;-----------------------------------------------------
 init_longmode_page:
@@ -130,13 +130,13 @@ init_longmode_page:
 
         ;;
         ;;    --------------- 虚拟地址 --------------              ------ 物理地址 ------
-        ;; 1) FFFF8000_C0200000h - FFFF8000_C05FFFFFh     ==>     00200000h - 005FFFFFh （2M页面）
-        ;; 2) FFFF8000_80020000h - FFFF8000_8002FFFFh     ==>     00020000h - 0002FFFFh （4K页面）
-        ;; 3) 00020000h - 0002FFFFh                       ==>     00020000h - 0002FFFFh （4K页面）
-        ;; 4) FFFF8000_FFF00000h - FFFF8000_FFF00FFFh     ==>     AllocPhysicalPage()   （4K页面）
-        ;; 5) 000B8000h - 000B8FFFh                       ==>     000B8000h - 000B8FFFh （4K页面）
-        ;; 6) 00007000h - 00008FFFh                       ==>     00007000h - 00008FFFh （4K页面）
-        ;; 7) FFFF8000_81000000h - FFFF8000_81000FFFh     ==>     01000000h - 01000FFFh （4K页面）
+        ;; 1) FFFF8000_C0200000h - FFFF8000_C05FFFFFh     ==>     00200000h - 005FFFFFh (2M页面)
+        ;; 2) FFFF8000_80020000h - FFFF8000_8002FFFFh     ==>     00020000h - 0002FFFFh (4K页面)
+        ;; 3) 00020000h - 0002FFFFh                       ==>     00020000h - 0002FFFFh (4K页面)
+        ;; 4) FFFF8000_FFF00000h - FFFF8000_FFF00FFFh     ==>     AllocPhysicalPage()   (4K页面)
+        ;; 5) 000B8000h - 000B8FFFh                       ==>     000B8000h - 000B8FFFh (4K页面)
+        ;; 6) 00007000h - 00008FFFh                       ==>     00007000h - 00008FFFh (4K页面)
+        ;; 7) FFFF8000_81000000h - FFFF8000_81000FFFh     ==>     01000000h - 01000FFFh (4K页面)
         ;;
         
         
@@ -322,7 +322,7 @@ init_longmode_page.loop:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 更新 TSS 为 64-bit 下的 TSS
 ;----------------------------------------------------------
 update_tss_longmode:       
@@ -338,7 +338,7 @@ update_tss_longmode:
 ;       eax - page attribute
 ; output:
 ;       0 - successful, otherwise - error code
-; 描述：
+; 描述: 
 ;       1) 将虚拟地址映射到物理地址
 ;----------------------------------------------------------
 do_virtual_address_mapping:
@@ -354,7 +354,7 @@ do_virtual_address_mapping:
         mov r10, rsi                                    ; r10 = VA
         mov r11, rdi                                    ; r11 = PA
         mov ebx, eax                                    ; ebx = page attribute
-        mov ecx, (32 - 4)                               ; ecx = 表项 index 左移位数（shld）
+        mov ecx, (32 - 4)                               ; ecx = 表项 index 左移位数(shld)
         mov rbp, PML4T_BASE                             ; rbp = PML4T 虚拟基址
 
 
@@ -465,7 +465,7 @@ do_virtual_address_mapping.Done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 在未分页下调用
 ;-----------------------------------------------------
 init_pae_page:
@@ -475,13 +475,13 @@ init_pae_page:
         
         ;;
         ;;    ----- 虚拟地址 ------              ----- 物理地址 ------
-        ;; 1) C0200000h - C05FFFFFh     ==>     00200000h - 005FFFFFh （2M页面）
-        ;; 2) 80020000h - 8002FFFFh     ==>     00020000h - 0002FFFFh （4K页面）
-        ;; 3) 00020000h - 0002FFFFh     ==>     00020000h - 0002FFFFh （4K页面）
-        ;; 4) FFF00000h - FFF00FFFh     ==>     AllocPhysicalPage()   （4K页面）
-        ;; 5) 000B8000h - 000B8000h     ==>     000B8000h - 000B8000h （4K页面）
-        ;; 6) 00007000h - 00008FFFh     ==>     00007000h - 00008FFFh （4K页面）
-        ;; 7) 81000000h - 81000FFFh     ==>     01000000h - 01000FFFh （4K页面）        
+        ;; 1) C0200000h - C05FFFFFh     ==>     00200000h - 005FFFFFh (2M页面)
+        ;; 2) 80020000h - 8002FFFFh     ==>     00020000h - 0002FFFFh (4K页面)
+        ;; 3) 00020000h - 0002FFFFh     ==>     00020000h - 0002FFFFh (4K页面)
+        ;; 4) FFF00000h - FFF00FFFh     ==>     AllocPhysicalPage()   (4K页面)
+        ;; 5) 000B8000h - 000B8000h     ==>     000B8000h - 000B8000h (4K页面)
+        ;; 6) 00007000h - 00008FFFh     ==>     00007000h - 00008FFFh (4K页面)
+        ;; 7) 81000000h - 81000FFFh     ==>     01000000h - 01000FFFh (4K页面)        
         ;;
         
         ;;
@@ -530,7 +530,7 @@ init_pae_page:
         mov edx, [GUEST_PDT0_BASE + 0 * 8]
         and ebx, ~0FFFh                                         ; 读取 80020000h 虚拟地址对应的 PT 地址
         and edx, ~0FFFh                                         ; 读取 00020000h 虚拟地址对应的 PT 地址
-        mov ecx, 20h                                            ; 起始 PTE index 为 20h（对应 80020 page frame)
+        mov ecx, 20h                                            ; 起始 PTE index 为 20h(对应 80020 page frame)
         mov eax, 20000h                                         ; 起始物理地址为 20000h
         or eax, RW | P
        
@@ -547,7 +547,7 @@ init_pae_page.loop1:
         or DWORD [edx + ecx * 8], PAGE_USER
         add eax, 1000h                                          ; 指向下一页面
         inc ecx
-        cmp ecx, 2Fh                                            ; page frmae 从 80020 到 8002F（00020 到 0002F）
+        cmp ecx, 2Fh                                            ; page frmae 从 80020 到 8002F(00020 到 0002F)
         jbe init_pae_page.loop1
         
         ;;

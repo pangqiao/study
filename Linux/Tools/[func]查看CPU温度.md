@@ -1,6 +1,6 @@
 - 安装包
 
-ubuntu：
+ubuntu: 
 
 ```
 apt-get install lm-sensors

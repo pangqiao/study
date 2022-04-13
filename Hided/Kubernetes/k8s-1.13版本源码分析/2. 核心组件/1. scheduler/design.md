@@ -6,9 +6,9 @@
 
 我们先整体了解一下Scheduler的设计原理，然后再看这些过程是如何用代码实现的。关于调度器的设计在官网有介绍，我下面结合官网给的说明，简化掉不影响理解的复杂部分，和大家介绍一下Scheduler的工作过程。
 
-英文还可以的小伙伴们可以看一下官网的介绍先：[scheduler.md](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-scheduling/scheduler.md)
+英文还可以的小伙伴们可以看一下官网的介绍先: [scheduler.md](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-scheduling/scheduler.md)
 
-官网有一段描述如下：
+官网有一段描述如下: 
 
 The Kubernetes scheduler runs as a process alongside the other master components such as the API server. Its interface to the API server is to watch for Pods with an empty PodSpec.NodeName, and for each Pod, it posts a binding indicating where the Pod should be scheduled.
 
@@ -18,7 +18,7 @@ The Kubernetes scheduler runs as a process alongside the other master components
 
 ## 源码层级
 
-从高level看，scheduler的源码可以分为3层：
+从高level看，scheduler的源码可以分为3层: 
 
 - `cmd/kube-scheduler/scheduler.go`: main() 函数入口位置，在scheduler过程开始被调用前的一系列初始化工作。
 - `pkg/scheduler/scheduler.go`: 调度框架的整体逻辑，在具体的调度算法之上的框架性的代码。
@@ -26,12 +26,12 @@ The Kubernetes scheduler runs as a process alongside the other master components
 
 ## 调度算法
 
-调度过程整体如下图所示（官文里这个图没对齐，逼疯强迫症了！！！当然由于中文显示的问题，下图有中文的行也没法完全对齐，这个地方让我很抓狂。。。）：
+调度过程整体如下图所示(官文里这个图没对齐，逼疯强迫症了！！！当然由于中文显示的问题，下图有中文的行也没法完全对齐，这个地方让我很抓狂。。。): 
 
 ```shell
 对于一个给定的pod
 +---------------------------------------------+
-|             可用于调度的nodes如下：           |
+|             可用于调度的nodes如下:            |
 |  +--------+     +--------+     +--------+   |
 |  | node 1 |     | node 2 |     | node 3 |   |
 |  +--------+     +--------+     +--------+   |
@@ -59,7 +59,7 @@ The Kubernetes scheduler runs as a process alongside the other master components
                        v
             选择分值最高的节点 = node 2
 ```
-Scheduler为每个pod寻找一个适合其运行的node，大体分成三步：
+Scheduler为每个pod寻找一个适合其运行的node，大体分成三步: 
 
 1. 通过一系列的“predicates”过滤掉不能运行pod的node，比如一个pod需要500M的内存，有些节点剩余内存只有100M了，就会被剔除；
 2. 通过一系列的“priority functions”给剩下的node排一个等级，分出三六九等，寻找能够运行pod的若干node中最合适的一个node；
@@ -67,7 +67,7 @@ Scheduler为每个pod寻找一个适合其运行的node，大体分成三步：
 
 ## Predicates 和 priorities 策略
 
-Predicates是一些用于过滤不合适node的策略 . Priorities是一些用于区分node排名（分数）的策略（作用在通过predicates过滤的node上）. K8s默认内建了一些predicates 和 priorities 策略，官方文档介绍地址： [scheduler_algorithm.md](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-scheduling/scheduler_algorithm.md). Predicates 和 priorities 的代码分别在：
+Predicates是一些用于过滤不合适node的策略 . Priorities是一些用于区分node排名(分数)的策略(作用在通过predicates过滤的node上). K8s默认内建了一些predicates 和 priorities 策略，官方文档介绍地址:  [scheduler_algorithm.md](https://github.com/kubernetes/community/blob/master/contributors/devel/sig-scheduling/scheduler_algorithm.md). Predicates 和 priorities 的代码分别在: 
 
 - pkg/scheduler/algorithm/predicates/predicates.go
 - pkg/scheduler/algorithm/priorities.
@@ -78,7 +78,7 @@ Predicates是一些用于过滤不合适node的策略 . Priorities是一些用�
 
 ## 调度策略的修改
 
-默认调度策略是通过`defaultPredicates()` 和 `defaultPriorities()函数`定义的，源码在 `pkg/scheduler/algorithmprovider/defaults/defaults.go`，我们可以通过命令行flag `--policy-config-file`来覆盖默认行为。所以我们可以通过配置文件的方式或者修改`pkg/scheduler/algorithm/predicates/predicates.go` /`pkg/scheduler/algorithm/priorities`，然后注册到`defaultPredicates()`/`defaultPriorities()`来实现。配置文件类似下面这个样子：
+默认调度策略是通过`defaultPredicates()` 和 `defaultPriorities()函数`定义的，源码在 `pkg/scheduler/algorithmprovider/defaults/defaults.go`，我们可以通过命令行flag `--policy-config-file`来覆盖默认行为。所以我们可以通过配置文件的方式或者修改`pkg/scheduler/algorithm/predicates/predicates.go` /`pkg/scheduler/algorithm/priorities`，然后注册到`defaultPredicates()`/`defaultPriorities()`来实现。配置文件类似下面这个样子: 
 
 ```json
 {

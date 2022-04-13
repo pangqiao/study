@@ -1,6 +1,6 @@
-Kernel学习计划：
+Kernel学习计划: 
 
-一：基础知识
+一: 基础知识
 
 1. 内存管理/常用API总结
 
@@ -20,24 +20,24 @@ Kernel学习计划：
 
 9. Kernel Doc ->  The Kernel API 整理
 
-二：案例分析
+二: 案例分析
 
 1. DM9000网卡驱动案例
 
 2. ext2无日志文件系统案例
 
-三：性能分析
+三: 性能分析
 
 Perf基本原理/工具使用
 
 systemtap
 
-四：调试诊断
+四: 调试诊断
 
 kdump/crash
 
 debugfs/ftrace
 
-五：性能调优
+五: 性能调优
 
 各子系统支持的调优参数

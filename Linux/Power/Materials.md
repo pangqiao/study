@@ -15,6 +15,6 @@ nohz_full: https://access.redhat.com/documentation/zh-cn/red_hat_enterprise_linu
 
 Linux 3.10完全无滴嗒特性详解: https://blog.csdn.net/yiyeguzhou100/article/details/50748373
 
-nohz_full 提供一种动态的无时钟设置,在内核”CONFIG_NO_HZ_FULL=y”的前提下，指定哪些CPU核心可以进入完全无滴答状态。配置了CONFIG_NO_HZ_FULL=y后，当cpu上只有一个任务在跑的时候，不发送调度时钟中断到此cpu也就是减少调度时钟中断，不中断空闲CPU，从而可以减少耗电量和减少系统抖动。默认情况下所有的cpu都不会进入这种模式，需要通过nohz_full参数指定那些cpu进入这种模式。
+nohz_full 提供一种动态的无时钟设置,在内核”CONFIG_NO_HZ_FULL=y”的前提下, 指定哪些CPU核心可以进入完全无滴答状态. 配置了CONFIG_NO_HZ_FULL=y后, 当cpu上只有一个任务在跑的时候, 不发送调度时钟中断到此cpu也就是减少调度时钟中断, 不中断空闲CPU, 从而可以减少耗电量和减少系统抖动. 默认情况下所有的cpu都不会进入这种模式, 需要通过nohz_full参数指定那些cpu进入这种模式. 
 
 Intel Turbo Boost技术和intel_pstate: https://huataihuang.gitbooks.io/cloud-atlas/content/os/linux/kernel/cpu/intel_turbo_boost_and_pstate.html

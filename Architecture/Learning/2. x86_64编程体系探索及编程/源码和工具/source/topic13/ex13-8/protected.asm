@@ -65,7 +65,7 @@ entry:
                   
                 
         
-;; 实验 13-8：测试rep movsb中的数据断点
+;; 实验 13-8: 测试rep movsb中的数据断点
 
 ;1) 设置数据断点 enable 位
         mov eax, dr7
@@ -167,7 +167,7 @@ do_debug_handler:
 
 ;;************* 函数导入表  *****************
 
-; 这个 lib32 库导入表放在 common\ 目录下，
+; 这个 lib32 库导入表放在 common\ 目录下, 
 ; 供所有实验的 protected.asm 模块使用
 
 %include "..\common\lib32_import_table.imt"

@@ -12,9 +12,9 @@
 
 ### 4. 启用root以及ssh
 
-替换掉/etc/shadow或者修改里面内容，将root密码删掉（置空）
+替换掉/etc/shadow或者修改里面内容，将root密码删掉(置空)
 
-修改ssh服务的配置文件（一般在/etc/ssh/sshd_config），参照当前目录下文件。
+修改ssh服务的配置文件(一般在/etc/ssh/sshd_config)，参照当前目录下文件。
 
 在/root/.bashrc尾添加下面内容
 
@@ -33,7 +33,7 @@ fi
 
 ubuntu的软件源文件是/etc/apt/sources.list。
 
-查看当前OS的版本：
+查看当前OS的版本: 
 
 ```
 root@Gerry:~# cat /etc/issue
@@ -47,7 +47,7 @@ Release:        16.04
 Codename:       xenial
 ```
 
-清华镜像源配置：https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
+清华镜像源配置: https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
 
 根据版本选择一个源。
 

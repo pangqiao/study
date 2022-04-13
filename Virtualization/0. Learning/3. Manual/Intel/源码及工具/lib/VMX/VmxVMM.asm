@@ -16,7 +16,7 @@
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 这里 VMM 监控例程
 ;-----------------------------------------------------------------------  
 VmmEntry:
@@ -163,7 +163,7 @@ VmmEntry.done:
 ;       none
 ; output:
 ;       eax - process code
-; 描述：
+; 描述: 
 ;       1) 处理由 exception 或者 NMI 引发的 VM-exit
 ;-----------------------------------------------------------------------
 DoExceptionNMI: 
@@ -195,7 +195,7 @@ DoExceptionNMI.Done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由外部中断引发的 VM-exit
 ;-----------------------------------------------------------------------        
 DoExternalInterrupt: 
@@ -229,7 +229,7 @@ DoExternalInterrupt:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 triple fault 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoTripleFault: 
@@ -243,7 +243,7 @@ DoTripleFault:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 INIT 信号引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoINIT:
@@ -274,7 +274,7 @@ DoINIT.done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 SIPI 信号引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoSIPI: 
@@ -289,7 +289,7 @@ DoSIPI:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 I/O SMI 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoIoSMI: 
@@ -305,7 +305,7 @@ DoIoSMI:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 Other SMI 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoOtherSMI:
@@ -321,7 +321,7 @@ DoOtherSMI:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 interrupt-window 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoInterruptWindow: 
@@ -338,7 +338,7 @@ DoInterruptWindow:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 NMI window 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoNMIWindow: 
@@ -353,7 +353,7 @@ DoNMIWindow:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 task switch 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoTaskSwitch: 
@@ -377,7 +377,7 @@ DoTaskSwitch:
         
         ;;
         ;; ### VMM 需要模拟处理器的任务切换动作 ###
-        ;; 注意：
+        ;; 注意: 
         ;;  1) 不能使用事件注入重启任务切换！        
         ;;  2) 这里的“当前”指“旧任务”
         ;;
@@ -386,8 +386,8 @@ DoTaskSwitch:
 
         ;;
         ;; step 1: 处理当前的 TSS 描述符
-        ;; a) JMP， IRET 指令发起：则清 busy 位。
-        ;; b) CALL, 中断或异常发起：则 busy 位保持不变（原 busy 为 1）
+        ;; a) JMP， IRET 指令发起: 则清 busy 位。
+        ;; b) CALL, 中断或异常发起: 则 busy 位保持不变(原 busy 为 1)
         ;;        
 DoTaskSwitch.Step1:
         cmp ecx, TASK_SWITCH_JMP
@@ -438,7 +438,7 @@ DoTaskSwitch.Step2:
         mov [ebx + TSS32.Eflags], eax                                    ;; 保存 eflags
         
         ;;
-        ;; 注意：保存 EIP 时需要加上指令长度
+        ;; 注意: 保存 EIP 时需要加上指令长度
         ;;
         mov eax, [edx + VSB.Rip]
         add eax, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.InstructionLength]
@@ -467,8 +467,8 @@ DoTaskSwitch.Step2:
         
         ;;
         ;; step 3: 处理当前 TSS 内的 eflags.NT 标志位
-        ;; a) IRET 指令发起：则清 TSS 内 eflags.NT 位
-        ;; b) CALL, JMP, 中断或异常发起：TSS 内 eflags.NT 位保持不变
+        ;; a) IRET 指令发起: 则清 TSS 内 eflags.NT 位
+        ;; b) CALL, JMP, 中断或异常发起: TSS 内 eflags.NT 位保持不变
         ;;        
 DoTaskSwitch.Step3:
         cmp ecx, TASK_SWITCH_IRET
@@ -481,8 +481,8 @@ DoTaskSwitch.Step3:
         
         ;;
         ;; step 4: 处理目标 TSS 的 eflags.NT 位
-        ;; a) CALL, 中断或异常发起：置 TSS 内的 eflags.NT 位
-        ;; b) IRET，JMP 发起：保持 TSS 内的 eflags.NT 位不变
+        ;; a) CALL, 中断或异常发起: 置 TSS 内的 eflags.NT 位
+        ;; b) IRET，JMP 发起: 保持 TSS 内的 eflags.NT 位不变
         ;;
 DoTaskSwitch.Step4:
         REX.Wrxb
@@ -501,7 +501,7 @@ DoTaskSwitch.Step4.SetNT:
 
         ;;
         ;; step 5: 处理目标 TSS 描述符
-        ;; a) CALL, JMP, 中断或异常发起：置 busy 位
+        ;; a) CALL, JMP, 中断或异常发起: 置 busy 位
         ;; b) IRET 发起: busy 位保持不变
         ;;
 DoTaskSwitch.Step5:        
@@ -662,7 +662,7 @@ DoTaskSwitch.Done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 CPUID 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoCPUID: 
@@ -725,7 +725,7 @@ DoCPUID:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 GETSEC 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoGETSEC: 
@@ -739,7 +739,7 @@ DoGETSEC:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 HLT 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoHLT:
@@ -762,7 +762,7 @@ DoHLT:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 INVD 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoINVD:
@@ -786,7 +786,7 @@ DoINVD:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 INVLPG 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoINVLPG: 
@@ -838,7 +838,7 @@ DoINVLPG:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 RDPMC 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoRDPMC: 
@@ -853,7 +853,7 @@ DoRDPMC:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 RDTSC 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoRDTSC: 
@@ -870,7 +870,7 @@ DoRDTSC:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 RSM 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoRSM: 
@@ -885,7 +885,7 @@ DoRSM:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 VMCALL 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVMCALL:
@@ -924,7 +924,7 @@ DoVMCALL:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 VMCLEAR 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVMCLEAR: 
@@ -939,7 +939,7 @@ DoVMCLEAR:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 VMLAUNCH 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVMLAUNCH: 
@@ -954,7 +954,7 @@ DoVMLAUNCH:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 VMPTRLD 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVMPTRLD: 
@@ -969,7 +969,7 @@ DoVMPTRLD:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 VMPTRST 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVMPTRST: 
@@ -985,7 +985,7 @@ DoVMPTRST:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 VMREAD 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVMREAD: 
@@ -1000,7 +1000,7 @@ DoVMREAD:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 VMRESUME 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVMRESUME:
@@ -1016,7 +1016,7 @@ DoVMRESUME:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 VMWRITE 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVMWRITE: 
@@ -1031,7 +1031,7 @@ DoVMWRITE:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 VMXOFF 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVMXOFF:
@@ -1048,7 +1048,7 @@ DoVMXOFF:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 VMXON 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVMXON: 
@@ -1065,7 +1065,7 @@ DoVMXON:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试访问 control 寄存器引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoControlRegisterAccess: 
@@ -1238,7 +1238,7 @@ DoControlRegisterAccess.MovFromCr:
         ;;
         ;; 处理 MOV from CR 指令
         ;;
-        ;; 注意：
+        ;; 注意: 
         ;; 1) 这里忽略 MOV-from-CR8 指令 !
         ;; 2) 只有 MOV-from-CR3 指令需要处理 !
         ;;        
@@ -1312,7 +1312,7 @@ DoControlRegisterAccess.Done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 MOV-DR 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoMovDr: 
@@ -1329,7 +1329,7 @@ DoMovDr:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 I/O 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoIoInstruction:
@@ -1372,7 +1372,7 @@ DoIoInstruction:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 RDMSR 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoRDMSR: 
@@ -1420,7 +1420,7 @@ DoRDMSR.Done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 WRMSR 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoWRMSR:
@@ -1468,7 +1468,7 @@ DoWRMSR.Done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由于无效 guest-state 字段导致 VM-entry 失败引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoInvalidGuestState: 
@@ -1484,7 +1484,7 @@ DoInvalidGuestState:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理在加载 guest MSR 出错导致VM-entry失败引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoMSRLoading: 
@@ -1499,7 +1499,7 @@ DoMSRLoading:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 MWAIT 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoMWAIT:
@@ -1514,7 +1514,7 @@ DoMWAIT:
 ;       esi - DO process 控制
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 pending MTF VM-exit 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoMTF:
@@ -1617,7 +1617,7 @@ DoMTF.done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 MONITOR 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoMONITOR: 
@@ -1632,7 +1632,7 @@ DoMONITOR:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 PAUSE 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoPAUSE: 
@@ -1648,7 +1648,7 @@ DoPAUSE:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 machine check event 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoMachineCheck:
@@ -1664,7 +1664,7 @@ DoMachineCheck:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 VPTR 低于 TPR threshold 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoTPRThreshold: 
@@ -1679,7 +1679,7 @@ DoTPRThreshold:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由访问 APIC-access page 页面引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoAPICAccessPage: 
@@ -1695,7 +1695,7 @@ DoAPICAccessPage:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 EOI exit bitmap 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoEOIBitmap: 
@@ -1711,7 +1711,7 @@ DoEOIBitmap:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试访问 GDTR/IDTR 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoGDTR_IDTR: 
@@ -1843,9 +1843,9 @@ DoGDTR_IDTR.CheckType:
         mov ecx, [ebp + PCB.CurrentVmbPointer]
         
         ;;
-        ;; 分析指令：
-        ;; 1) SGDT：保存 gdt pointer 
-        ;; 2) SIDT：保存 idt pointer
+        ;; 分析指令: 
+        ;; 1) SGDT: 保存 gdt pointer 
+        ;; 2) SIDT: 保存 idt pointer
         ;; 3) LGDT: 加载 gdt pointer
         ;; 4) LIDT: 加载 idt pointer
         ;;        
@@ -1866,7 +1866,7 @@ DoGDTR_IDTR.CheckType:
 
 DoGDTR_IDTR.SgdtSidt:
         ;;
-        ;; 处理 SGDT 与 SIDT 指令：保存 GDT/IDT pointer
+        ;; 处理 SGDT 与 SIDT 指令: 保存 GDT/IDT pointer
         ;;
         mov ax, [esi]
         mov [ebx], ax
@@ -1887,7 +1887,7 @@ DoGDTR_IDTR.Lgdt:
         DEBUG_RECORD    "[DoGDTR_IDTR]: load GDTR"
         
         ;;
-        ;; 处理 LGDT 指令：写入 GGMB.GdtPointer 以及加载 guest GDTR
+        ;; 处理 LGDT 指令: 写入 GGMB.GdtPointer 以及加载 guest GDTR
         ;;
         REX.Wrxb
         lea ecx, [ecx + VMB.GuestGmb + GGMB.GdtPointer]
@@ -1910,7 +1910,7 @@ DoGDTR_IDTR.Lidt:
         DEBUG_RECORD    "[DoGDTR_IDTR]: load IDTR"
         
         ;;
-        ;; 处理 LIDT 指令：写入 GIMB.IdtPointer 以及加载 guest IDTR
+        ;; 处理 LIDT 指令: 写入 GIMB.IdtPointer 以及加载 guest IDTR
         ;;
         REX.Wrxb
         lea ecx, [ecx + VMB.GuestImb + GIMB.IdtPointer]
@@ -1960,7 +1960,7 @@ DoGDTR_IDTR.Done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试访问 LDTR/TR 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoLDTR_TR: 
@@ -1981,7 +1981,7 @@ DoLDTR_TR:
         lea edx, [ebp + PCB.GuestExitInfo]
    
         ;;
-        ;; 检查操作数类型：
+        ;; 检查操作数类型: 
         ;; 1) 内存操作数，则获到线性地址值
         ;; 2) 寄存器操作数，则读取寄存器值
         ;;
@@ -2185,7 +2185,7 @@ DoLDTR_TR.Done:
 ;       esi - do process code
 ; output:
 ;       eax - VMM process code
-; 描述：
+; 描述: 
 ;       1) 处理由 EPT violation 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoEptViolaton:
@@ -2224,8 +2224,8 @@ DoEptViolaton:
         
         ;;
         ;; 处理完毕后，是否需要修复 EPT violation 故障
-        ;; a）需要则执行下面的修复工作
-        ;; b）否则直接返回
+        ;; a)需要则执行下面的修复工作
+        ;; b)否则直接返回
         ;;
         cmp eax, EPT_VIOLATION_FIXING
         jne DoEptViolation.resume
@@ -2278,7 +2278,7 @@ DoEptViolaton.remaping:
         
         ;;
         ;; 下面进行 guest-physical address 映射
-        ;; 注意：这里添加所有访问权限，read/write/execute
+        ;; 注意: 这里添加所有访问权限，read/write/execute
         ;; 1) 因为，guest-physical address 访问，可能会进行多种访问，需要多种权限
         ;;
 %ifdef __X64
@@ -2365,7 +2365,7 @@ DoEptViolation.done:
 ;       none
 ; output:
 ;       eax - VMM process code
-; 描述：
+; 描述: 
 ;       1) 处理由 EPT misconfiguration 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoEptMisconfiguration: 
@@ -2427,7 +2427,7 @@ DoEptMisconfiguration.done:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 INVEPT 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoINVEPT: 
@@ -2442,7 +2442,7 @@ DoINVEPT:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 RDTSCP 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoRDTSCP: 
@@ -2458,7 +2458,7 @@ DoRDTSCP:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由VMX-preemption timer 超时引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVmxPreemptionTimer: 
@@ -2484,7 +2484,7 @@ DoVmxPreemptionTimer:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 INVVPID 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoINVVPID: 
@@ -2500,7 +2500,7 @@ DoINVVPID:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 WBINVD 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoWBINVD:
@@ -2516,7 +2516,7 @@ DoWBINVD:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理尝试执行 XSETBV 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoXSETBV: 
@@ -2531,7 +2531,7 @@ DoXSETBV:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 APIC-write 引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoAPICWrite: 
@@ -2546,7 +2546,7 @@ DoAPICWrite:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 RDRAND 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoRDRAND: 
@@ -2561,7 +2561,7 @@ DoRDRAND:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1)  处理由 INVPCID 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoINVPCID: 
@@ -2576,7 +2576,7 @@ DoINVPCID:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理由 VMFUNC 指令引发的 VM-exit
 ;----------------------------------------------------------------------- 
 DoVMFUNC:

@@ -8,7 +8,7 @@
 <!-- /code_chunk_output -->
 
 > 
-参考：http://blog.csdn.net/whuslei/article/details/6667471
+参考: http://blog.csdn.net/whuslei/article/details/6667471
 
 
 

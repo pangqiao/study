@@ -21,11 +21,11 @@
 
 # 2 为什么需要片内总线？
 
-片内总线**连接Die内部**的**各个模块(！！！各个模块！！！**)，是它们之间信息交流的必须途径。它的设计高效与否，会大大影响CPU的性能。如果我们把各个模块看做一个个节点，那么它们之间相互连接关系一般可以有以下几种：
+片内总线**连接Die内部**的**各个模块(！！！各个模块！！！**)，是它们之间信息交流的必须途径。它的设计高效与否，会大大影响CPU的性能。如果我们把各个模块看做一个个节点，那么它们之间相互连接关系一般可以有以下几种: 
 
 ![](./images/2019-04-23-12-19-07.png)
 
-而我们CPU片内总线连接就经历了从**星型（Star**）连接 \-\-> **环形总线**（Ring Bus）\-\-> **Mesh网络**的过程。
+而我们CPU片内总线连接就经历了从**星型(Star**)连接 \-\-> **环形总线**(Ring Bus)\-\-> **Mesh网络**的过程。
 
 # 3 星型连接
 
@@ -45,10 +45,10 @@ Intel的服务器产品线是第一个受不了这种临时安排的。**至强C
 
 ![](./images/2019-04-23-12-22-43.png)
 
-我们可以看到，Ring Bus实际上是**两个环**，一个**顺时针环**和一个**逆时针环**。**各个模块**一视同仁的通过**Ring Stop**挂接在**Ring Bus**上。如此设计带来很多好处：
+我们可以看到，Ring Bus实际上是**两个环**，一个**顺时针环**和一个**逆时针环**。**各个模块**一视同仁的通过**Ring Stop**挂接在**Ring Bus**上。如此设计带来很多好处: 
 
 1. **双环**设计可以保证**任何两个ring stop之间距离不超过Ring Stop总数的一半**，延迟较低。
-2. 各个模块之间交互方便，**不需要Core中转**。这样一些高级加速技术，如DCA（Direct Cache Access), Crystal Beach等等应运而生。
+2. 各个模块之间交互方便，**不需要Core中转**。这样一些高级加速技术，如DCA(Direct Cache Access), Crystal Beach等等应运而生。
 3. **高速的ring bus**保证了性能的极大提高。Core to Core latency只有**60ns**左右，而带宽则高达数百G(记得Nehalem是192GB/s).
 4. 方便灵活。**增加一个Core**，只要在Ring上面加个新的ring stop就好，不用像以前一样考虑复杂的互联问题。
 
@@ -60,7 +60,7 @@ Intel Xeon E5 v4 Low Core Count(LCC, 最多10个core)
 
 Ring Bus的缺点也很快随着内核的快速增加而暴露出来。由于**每加一个Core**，**ring bus**就长大一些，**延迟就变大一点**，很快ring bus性能就随着core的增多而严重下降，**多于12个core**后会严重拖累系统的**整体延迟**。
 
-和星型连接一样，一种变种产生了：
+和星型连接一样，一种变种产生了: 
 
 ![](./images/2019-04-23-13-09-27.png)
 
@@ -70,23 +70,23 @@ Intel Xeon E5-2600 V4 **High Core Count** Die(HCC, 16个core以上)
 
 在**至强HCC(High Core Count, 核很多版**)版本中，又加入了一个ring bus。
 
-**两个ring bus**各接**12个Core**，将**延迟**控制在可控的范围内。**俩个Ring Bus**直接用两个**双向Pipe Line连接**，保证通讯顺畅。于此同时由于Ring 0中的模块访问Ring 1中的模块延迟明显高于本Ring，亲缘度不同，所以**两个Ring分属于不同的NUMA！！！**（Non\-Uniform Memory Access Architecture）node。这点在 **BIOS设计！！！** 中要特别注意。
+**两个ring bus**各接**12个Core**，将**延迟**控制在可控的范围内。**俩个Ring Bus**直接用两个**双向Pipe Line连接**，保证通讯顺畅。于此同时由于Ring 0中的模块访问Ring 1中的模块延迟明显高于本Ring，亲缘度不同，所以**两个Ring分属于不同的NUMA！！！**(Non\-Uniform Memory Access Architecture)node。这点在 **BIOS设计！！！** 中要特别注意。
 
 这个是 **一个socket！！！** 里面的**很多core**， 也就是说 **NUMA不是以socket划分的！！！**, 而**和它的结构有关系！！！**
 
-聪明的同学可能要问了，如果Core比12个多，比24个少些呢？是不是凑合塞到第一个ring里拉倒呢？其实还有个1.5 ring的奇葩设计：
+聪明的同学可能要问了，如果Core比12个多，比24个少些呢？是不是凑合塞到第一个ring里拉倒呢？其实还有个1.5 ring的奇葩设计: 
 
 Intel Xeon E5 V4 MCC(最多12 \~ 14个core)
 
 ![](./images/2019-04-23-13-12-07.png)
 
-核大战的硝烟远远尚未平息，摩尔定律带来的晶体管更多的都用来增加内核而不是提高速度（[为什么CPU的频率止步于4G?我们触到频率天花板了吗？](https://zhuanlan.zhihu.com/p/30409360)）24个Core的至强也远远不是终点，那么更多的Core怎么办呢？三个Ring设计吗？多于3个Ring后，它们之间怎么互联呢？这些困难促使Intel寻找新的方向。
+核大战的硝烟远远尚未平息，摩尔定律带来的晶体管更多的都用来增加内核而不是提高速度([为什么CPU的频率止步于4G?我们触到频率天花板了吗？](https://zhuanlan.zhihu.com/p/30409360))24个Core的至强也远远不是终点，那么更多的Core怎么办呢？三个Ring设计吗？多于3个Ring后，它们之间怎么互联呢？这些困难促使Intel寻找新的方向。
 
 # 5 Mesh网路
 
-Intel在**Skylake**和**Knight Landing**中引入了新的**片内总线**：**Mesh**。
+Intel在**Skylake**和**Knight Landing**中引入了新的**片内总线**: **Mesh**。
 
-它是一种**2D**的Mesh网络：
+它是一种**2D**的Mesh网络: 
 
 Intel Skylake SP Mesh Architecture Conceptual Diagram:
 
@@ -94,14 +94,14 @@ Intel Skylake SP Mesh Architecture Conceptual Diagram:
 
 ![](./images/2019-04-23-13-07-23.png)
 
-Mesh网络近几年越来越火热，它的灵活性吸引越来越多的产品加入对它的支持，包括我们的Wifi等等系统。Mesh网络引入片内总线是一个巨大的进步，它有很多优点：
+Mesh网络近几年越来越火热，它的灵活性吸引越来越多的产品加入对它的支持，包括我们的Wifi等等系统。Mesh网络引入片内总线是一个巨大的进步，它有很多优点: 
 
 1. 首先当然是灵活性。新的模块或者节点在Mesh中增加十分方便，它带来的延迟不是像ring bus一样线性增加，而是非线性的。从而可以容纳更多的内核。
 2. 设计弹性很好，不需要1.5 ring和2ring的委曲求全。
 3. 双向mesh网络减小了两个node之间的延迟。过去两个node之间通讯，最坏要绕过半个ring。而mesh整体node之间距离大大缩减。
-4. 外部延迟大大缩短：
+4. 外部延迟大大缩短: 
 
-⓵ RAM延迟大大缩短：
+⓵ RAM延迟大大缩短: 
 
 Broadwell Ring V Skylake Mesh DRAM Example:
 
@@ -115,7 +115,7 @@ Broadwell Ring V Skylake Mesh PCIe Example:
 
 ![](./images/2019-04-23-13-25-30.png)
 
-注: 在过去的几代中，英特尔一直在使用QuickPath Interconnect（QPI）作为高速点对点互连。 QPI已被Ultra Path Interconnect（UPI）取代，后者是可扩展系统的更高效的一致性互连，允许多个处理器共享一个共享地址空间。根据确切的型号，**每个处理器**可以有**两个或三个UPI链接**连接到**其他处理器**。
+注: 在过去的几代中，英特尔一直在使用QuickPath Interconnect(QPI)作为高速点对点互连。 QPI已被Ultra Path Interconnect(UPI)取代，后者是可扩展系统的更高效的一致性互连，允许多个处理器共享一个共享地址空间。根据确切的型号，**每个处理器**可以有**两个或三个UPI链接**连接到**其他处理器**。
 
 # 6 结论
 

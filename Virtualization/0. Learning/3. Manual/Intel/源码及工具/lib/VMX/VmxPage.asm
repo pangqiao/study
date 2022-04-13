@@ -14,9 +14,9 @@
 ; input:
 ;       none
 ; output:
-;       eax - vmcs pointer（虚拟地址）
-;       edx - vmcs pointer（物理地址）
-; 描述： 
+;       eax - vmcs pointer(虚拟地址)
+;       edx - vmcs pointer(物理地址)
+; 描述:  
 ;       1) 这个函数从 kernel pool 里分配 4K 块作为 EPT 中的 PT 表
 ;       2) eax 返回虚拟地址，edx 返回物理地址
 ;       3) 64-bit 下，rax - 64 位返回虚拟地址， rdx - 64 位返回物理地址
@@ -39,7 +39,7 @@ get_ept_page:
 ;       none
 ; output:
 ;       eax - page memory attribute
-; 描述：
+; 描述: 
 ;       1) 得到 EPT 结构中的 page memory attribute
 ;       2) 支持两种 attribute: WB 或 UC
 ;----------------------------------------------------------
@@ -61,7 +61,7 @@ get_ept_page_attribute:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 初始化 EPT 的 PXT 表
 ;----------------------------------------------------------
 init_ept_pxt_ppt:
@@ -138,12 +138,12 @@ init_ept_pxt.loop:
         
         
 ;----------------------------------------------------------
-; get_ept_ppt_virtual_address()：
+; get_ept_ppt_virtual_address(): 
 ; input:
 ;       esi - pa
 ; output:
 ;       eax - va
-; 描述：
+; 描述: 
 ;       1) 根据输入的物理地址转换为虚拟地址
 ;----------------------------------------------------------
 get_ept_ppt_virtual_address:
@@ -164,12 +164,12 @@ get_ept_ppt_virtual_address:
         
 
 ;----------------------------------------------------------
-; get_ept_pdt_virtual_address()：
+; get_ept_pdt_virtual_address(): 
 ; input:
 ;       esi - pa
 ; output:
 ;       eax - va
-; 描述：
+; 描述: 
 ;       1) 根据输入的物理地址转换为虚拟地址
 ;----------------------------------------------------------
 get_ept_pdt_virtual_address:
@@ -182,10 +182,10 @@ get_ept_pt_virtual_address:
         mov ebp, [fs: SDA.Base]
 %endif
         ;;
-        ;; 说明：
+        ;; 说明: 
         ;; 1) EPT 的 PDT 和 PT 表物理地址从 kernel pool 里分配。
-        ;; 2) 需要减去 KernelPoolPhysicalBase 值（物理地址）
-        ;; 2) 加上 KernelPoolBase 值（虚拟地址）
+        ;; 2) 需要减去 KernelPoolPhysicalBase 值(物理地址)
+        ;; 2) 加上 KernelPoolBase 值(虚拟地址)
         ;;
         REX.Wrxb
         sub esi, [ebp + SDA.KernelPoolPhysicalBase]
@@ -204,9 +204,9 @@ get_ept_pt_virtual_address:
 ;       edx:eax - guest physical address
 ; output:
 ;       eax - offset
-; 描述：
+; 描述: 
 ;       得到 PXT entry 的 offset 值
-; 注意：
+; 注意: 
 ;       在 legacy 模式下使用
 ;---------------------------------------------------------------
 get_ept_pxe_offset32:
@@ -226,7 +226,7 @@ get_ept_pxe_offset32:
 ;       edx:eax - ga
 ; output:
 ;       eax - offset
-; 描述：
+; 描述: 
 ;       1) 得到 PPT entry 的 offset 值
 ;       2) 在 legacy 下使用
 ;---------------------------------------------------------------
@@ -248,7 +248,7 @@ get_ept_ppe_offset32:
 ;       edx:eax - ga
 ; output:
 ;       eax - offset
-; 描述：
+; 描述: 
 ;       1) 得到 PDT entry 的 offset 值
 ;       2) 在 legacy 下使用
 ;---------------------------------------------------------------
@@ -265,7 +265,7 @@ get_ept_pde_offset32:
 ;       edx:eax - ga
 ; output:
 ;       eax - offset
-; 描述：
+; 描述: 
 ;       1) 得到 PT entry 的 offset 值
 ;       2) 在 legacy 下使用
 ;---------------------------------------------------------------
@@ -323,18 +323,18 @@ get_ept_entry_level_attribute32.Done:
 ;----------------------------------------------------------
 ; do_guest_physical_address_mapping32()
 ; input:
-;       edi:esi - guest physical address (64 位）
-;       edx:eax - physical address(64位）
+;       edi:esi - guest physical address (64 位)
+;       edx:eax - physical address(64位)
 ;       ecx - page attribute
 ; output:
 ;       0 - successful, otherwise - error code
-; 描述：
+; 描述: 
 ;       1) 如果进行映射工作，则映射 guest physical address 到 physical address
 ;       2) 如果进行修复工作，则修复 EPT violation 及 EPT misconfiguration
 ;       3) legacy模式下使用
 ;
-; page attribute 说明：
-;       ecx 传递过来的 attribute 由下面标志位组成：
+; page attribute 说明: 
+;       ecx 传递过来的 attribute 由下面标志位组成: 
 ;       [0]    - Read
 ;       [1]    - Write
 ;       [2]    - Execute
@@ -365,14 +365,14 @@ do_guest_physical_address_mapping32:
 %define STACK_EDI_OFFSET                 0
 
         ;;
-        ;; EPT 映射说明：
+        ;; EPT 映射说明: 
         ;; 1) 所有映射均使用 4K-page 进行
         ;; 2) 在 PML4T(PXT)，PDPT(PPT) 以及 PDT 表上，访问权限都具有 Read/Write/Execute
         ;; 3) 在最后一级 PT 表上，访问权限是输入的 ecx 参数(page attribute)
-        ;; 4) 所有页表需要使用 get_ept_page 动态分配（从 Kernel pool 内分配）
+        ;; 4) 所有页表需要使用 get_ept_page 动态分配(从 Kernel pool 内分配)
         ;;
         ;;
-        ;; page attribute 使用说明：
+        ;; page attribute 使用说明: 
         ;; 1) FIX_MISCONF=1 时，表明修复 EPT misconfiguration 错误.
         ;; 2) FIX_ACCESS=1 时，表明修复 EPT violation 错误
         ;; 3) GET_PTE=1时，表明需要返回 PTE 值
@@ -411,7 +411,7 @@ do_guest_physical_address_mapping32.Walk:
         
         
         ;;
-        ;; 检查 EPT 表项是否为 not present，包括：
+        ;; 检查 EPT 表项是否为 not present，包括: 
         ;; 1) access right 不为 0
         ;; 2) EPT_VALID_FLAG
         ;;
@@ -524,8 +524,8 @@ do_guest_physical_address_mapping32.BuildPte:
         
         ;;
         ;; 检查是否属于 PTE
-        ;; 1）是：写入提供的 HPA 值
-        ;; 2）否：分配 EPT 页面
+        ;; 1)是: 写入提供的 HPA 值
+        ;; 2)否: 分配 EPT 页面
         ;;
         cmp ecx, (47 - 11 - 9 - 9 - 9)
         je do_guest_physical_address_mapping32.WriteEptEntry
@@ -570,7 +570,7 @@ do_guest_physical_address_mapping32.Done:
         mov [esp + STACK_EAX_OFFSET], eax
 
 ;;################################################
-;; 注意：当返回 PTE 内容时，这里需要写入 EDX 返回值 #
+;; 注意: 当返回 PTE 内容时，这里需要写入 EDX 返回值 #
 ;;       这里保留这功能　!                        #
 ;;################################################
         ;;; mov [esp + STACK_EDX_OFFSET], edx                       
@@ -662,9 +662,9 @@ do_guest_physical_address_mapping32_n.done:
 ;       edi:esi - table entry of EPT_MISCONFIGURATION
 ; output:
 ;       eax - 0 = successful， otherwise = error code
-; 描述：
+; 描述: 
 ;       1) 修复提供的 EPT table entry 值
-; 参数：
+; 参数: 
 ;       edi:esi - 提供发生 EPT misconfiguration 的 EPT 表项，修复后返回 EPT 表项
 ;       eax - 为 0 时表示成功，否则为错误码
 ;---------------------------------------------------------------
@@ -672,11 +672,11 @@ do_ept_entry_misconf_fixing32:
         push ecx
         
         ;;
-        ;; EPT misconfigruation 的产生：
-        ;; 1) 表项的 access right 为 010B（write-only）或者 110B（write/execute）
-        ;; 2) 表项的 access right 为 100B（execute-only），但 VMX 并不支持 execute-only 属性
-        ;; 3) 当表项是 present 的（access right 不为 000B）：
-        ;;      3.1) 保留位不为 0，即：bits 51:M 为保留位，这个 M 值等于 MAXPHYADDR 值
+        ;; EPT misconfigruation 的产生: 
+        ;; 1) 表项的 access right 为 010B(write-only)或者 110B(write/execute)
+        ;; 2) 表项的 access right 为 100B(execute-only)，但 VMX 并不支持 execute-only 属性
+        ;; 3) 当表项是 present 的(access right 不为 000B): 
+        ;;      3.1) 保留位不为 0，即: bits 51:M 为保留位，这个 M 值等于 MAXPHYADDR 值
         ;;      3.2) page frame 的 memory type 不支持，为 2, 3 或者 7
         ;;
         
@@ -693,7 +693,7 @@ do_ept_entry_misconf_fixing32:
         and eax, 7
 
         ;;
-        ;; ### 检查1：access right 是否为 100B（execute-only）
+        ;; ### 检查1: access right 是否为 100B(execute-only)
         ;;
         cmp eax, EPT_EXECUTE
         jne do_ept_entry_misconf_fixing32.@1
@@ -706,7 +706,7 @@ do_ept_entry_misconf_fixing32:
         
 do_ept_entry_misconf_fixing32.@1:
         ;;
-        ;; 这里不检查 access right 是否为 010B（write-only） 或者 110B（write/execute）
+        ;; 这里不检查 access right 是否为 010B(write-only) 或者 110B(write/execute)
         ;; 我们直接添加 read 权限
         ;;
         or esi, EPT_READ
@@ -716,7 +716,7 @@ do_ept_entry_misconf_fixing32.@2:
         ;;
         ;; 这里不检查保留位
         ;; 1) 我们直接将 bits 51:M 位清 0
-        ;; 2) 保留 bits 63:52（忽略位）的值
+        ;; 2) 保留 bits 63:52(忽略位)的值
         ;;
         mov eax, 0FFF00000h                                     ; bits 63:52
         or eax, [gs: PCB.MaxPhyAddrSelectMask + 4]              ; bits 63:52, bits M-1:0
@@ -741,7 +741,7 @@ do_ept_entry_misconf_fixing32.@3:
 do_ept_entry_misconf_fixing32.@31:        
 
         ;;
-        ;; 如果属于 PTE 时，保留 bit6（IPAT位），并将 memory type 置为 PCB.EptMemoryType 值
+        ;; 如果属于 PTE 时，保留 bit6(IPAT位)，并将 memory type 置为 PCB.EptMemoryType 值
         ;;
         cmp ecx, 4
         jne do_ept_entry_misconf_fixing32.@32
@@ -775,11 +775,11 @@ do_ept_entry_misconf_fixing32.done:
 ;       ebx - attribute
 ; output:
 ;       eax - 0 = successful， otherwise = error code
-; 描述：
+; 描述: 
 ;       1) 修复表项的 EPT violation 错误
-; 参数说明：
+; 参数说明: 
 ;       1) rsi 提供需要修复的表项
-;       2) edi 提供的属性值：
+;       2) edi 提供的属性值: 
 ;       [0]    - read access
 ;       [1]    - write access
 ;       [2]    - execute access
@@ -808,7 +808,7 @@ do_ept_entry_violation_fixing32:
         ;; 3) 对 guest-physical address 进行写访问，而 EPT paging-structure 表项的 bit1 为 0
         ;; 4) EPTP[6] = 1 时，在更新 guest paging-structure 表项的 accessed 或 dirty 位时被作为“写访问”
         ;;                    此时 EPT paging-structure 表项的 bit1 为 0
-        ;; 5) 对 guest-physical address 进行 fetch操作（execute），而 EPT paging-structure 表项的 bit2 为 0
+        ;; 5) 对 guest-physical address 进行 fetch操作(execute)，而 EPT paging-structure 表项的 bit2 为 0
         ;;
         
         mov eax, MAPPING_UNSUCCESS
@@ -819,7 +819,7 @@ do_ept_entry_violation_fixing32:
         ;;
         ;; 修复处理:
         ;; 1) 这里不修复 not-present 现象
-        ;; 2) 添加相应的访问权限：将表项值 或上 attribute[2:0] 值
+        ;; 2) 添加相应的访问权限: 将表项值 或上 attribute[2:0] 值
         ;;
         and ebx, 7
         or esi, ebx
@@ -841,7 +841,7 @@ do_ept_entry_violation_fixing32.done:
 ;       ebp - address of table entry
 ; output:
 ;       0 - Ok, otherwisw - misconfiguration code
-; 描述：
+; 描述: 
 ;       1) 检查表项是否有 misconfiguration，并修复
 ;---------------------------------------------------------------
 check_fix_misconfiguration:
@@ -849,12 +849,12 @@ check_fix_misconfiguration:
         push ebx
         
         ;;
-        ;; misconfiguration 原因：
-        ;; 1) [2:0] = 010B（write-only） 或 110B（execute/write）时。
-        ;; 2) [2:0] = 100B（execute-only），但 VMX 并不支持 execute-only 时。
-        ;; 3) [2:0] = 000B（not present）时，下面的保留位不为 0
-        ;;    3.1) 表项内的物理地址宽度不能超过 MAXPHYADDR 位（即在 MAXPHYADDR 范围内）
-        ;;    3.2) EPT memory type 为保留的类型（即 2,3 或 7）
+        ;; misconfiguration 原因: 
+        ;; 1) [2:0] = 010B(write-only) 或 110B(execute/write)时。
+        ;; 2) [2:0] = 100B(execute-only)，但 VMX 并不支持 execute-only 时。
+        ;; 3) [2:0] = 000B(not present)时，下面的保留位不为 0
+        ;;    3.1) 表项内的物理地址宽度不能超过 MAXPHYADDR 位(即在 MAXPHYADDR 范围内)
+        ;;    3.2) EPT memory type 为保留的类型(即 2,3 或 7)
         ;;
         
         xor ecx, ecx
@@ -882,9 +882,9 @@ check_fix_misconfiguration.@2:
         and edi, [gs: PCB.MaxPhyAddrSelectMask + 4]             ; 清掉 MAXPHYADDR 外的值
         
         ;;
-        ;; 注意：这里统一处理！
-        ;; 1) 所有 memory type 都设为 WB（支持时）或 UC（不支持 WB 时）类型
-        ;; 2) 忽略所有其他情景（不管是否为保留还是其它内存类型）
+        ;; 注意: 这里统一处理！
+        ;; 1) 所有 memory type 都设为 WB(支持时)或 UC(不支持 WB 时)类型
+        ;; 2) 忽略所有其他情景(不管是否为保留还是其它内存类型)
         ;; 3) 因此，无需检查内存类型
         ;;
         and esi, 0FFFFFFC7h                                     ; 清原 memory type
@@ -940,9 +940,9 @@ do_ept_page_fault:
         push ecx
         
         ;;
-        ;; EPT page fault 产生原因为：
-        ;; 1) EPT misconfiguration（EPT 的 tage enties 设置不合法）
-        ;; 2) EPT violation（EPT 的访问违例）
+        ;; EPT page fault 产生原因为: 
+        ;; 1) EPT misconfiguration(EPT 的 tage enties 设置不合法)
+        ;; 2) EPT violation(EPT 的访问违例)
         ;;
         
         ;;
@@ -965,7 +965,7 @@ do_ept_page_fault:
         mov ebx, [gs: PCB.ExitInfoBuf + EXIT_INFO.ExitQualification]
         
         ;;
-        ;; EPT violation 的两类处理说明：
+        ;; EPT violation 的两类处理说明: 
         ;; 1) 由于 entry 是 not present 而引起的，需要进行映射该 guest physical address
         ;; 2) 由于 access right 不符而引起的，则添加相应的权限
         ;;
@@ -995,7 +995,7 @@ do_ept_page_fault:
 do_ept_page_fault.NotPresent:        
         ;;
         ;; 属于 not present
-        ;; 1) 分配一个 4K 空间（从 kernel pool 里）
+        ;; 1) 分配一个 4K 空间(从 kernel pool 里)
         ;;
         call get_ept_page                                       ; edx:eax 返回 pa:va
         mov eax, edx
@@ -1039,8 +1039,8 @@ do_ept_page_fault.done:
 ; input:
 ;       esi - GPA
 ; output:
-;       eax - GPA HTE（handler table entry）地址
-; 描述：
+;       eax - GPA HTE(handler table entry)地址
+; 描述: 
 ;       1) 返回 GPA 对应的 HTE 表项地址
 ;       2) 不存在相应的 GPA Hte 时，返回 0 值
 ;-----------------------------------------------------------------------
@@ -1087,7 +1087,7 @@ GetGpaHte.Done:
 ;       edi - handler
 ; output:
 ;       eax - HTE 地址
-; 描述：
+; 描述: 
 ;       1) 根据 GPA 值向 GpaHteBuffer 里写入 HTE
 ;-----------------------------------------------------------------------
 AppendGpaHte:

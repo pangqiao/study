@@ -33,14 +33,14 @@ ceph osd pool create vm 128
 
 ## 2.1 安装ceph客户端软件
 
-在运行 glance-api 的节点上你需要 librbd 的 Python 绑定：
+在运行 glance-api 的节点上你需要 librbd 的 Python 绑定: 
 
 ```
 sudo apt-get install python-rbd
 sudo yum install python-rbd
 ```
 
-在 nova-compute 、 cinder-backup 和 cinder-volume 节点上，要安装 Python 绑定和客户端命令行工具：
+在 nova-compute 、 cinder-backup 和 cinder-volume 节点上，要安装 Python 绑定和客户端命令行工具: 
 
 ```
 sudo apt-get install ceph-common

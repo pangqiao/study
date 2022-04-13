@@ -1,10 +1,10 @@
 ## 1. 问题
 
-64位Linux系统编译32位汇编程序的时候需要仿真32位系统的需求，发现使用-m32参数后，编译提示错误，如下：
+64位Linux系统编译32位汇编程序的时候需要仿真32位系统的需求，发现使用-m32参数后，编译提示错误，如下: 
 
 ```
 /usr/bin/ld: 未知的仿真模式: 32  
-支持的仿真： elf_x86_64 elf32_x86_64 elf_i386 i386linux elf_l1om elf_k1om i386pep i386pe  
+支持的仿真:  elf_x86_64 elf32_x86_64 elf_i386 i386linux elf_l1om elf_k1om i386pep i386pe  
 collect2: error: ld returned 1 exit status
 ```
 
@@ -25,7 +25,7 @@ amd64
 
 表明是64位内核
 
-第二步：确认打开了多架构支持功能
+第二步: 确认打开了多架构支持功能
 
 ```
 root@Gerry:~# dpkg --print-foreign-architectures
@@ -81,7 +81,7 @@ GNU ld (GNU Binutils for Ubuntu) 2.26.1
    i386pe
 ```
 
-如果汇编中引用了C函数，链接时候需要如下：
+如果汇编中引用了C函数，链接时候需要如下: 
 
 ```
 ld -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o hello hello.o /usr/lib/libc.so.6

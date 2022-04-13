@@ -37,7 +37,7 @@ CFS负责处理普通非实时进程, 这类进程是我们linux中最普遍的�
 
 **CFS调度算法的思想**
 
-理想状态下每个进程都能获得相同的时间片，并且同时运行在CPU上，但实际上一个CPU同一时刻运行的进程只能有一个。也就是说，当一个进程占用CPU时，其他进程就必须等待。CFS为了实现公平，必须惩罚当前正在运行的进程，以使那些正在等待的进程下次被调度.
+理想状态下每个进程都能获得相同的时间片, 并且同时运行在CPU上, 但实际上一个CPU同一时刻运行的进程只能有一个. 也就是说, 当一个进程占用CPU时, 其他进程就必须等待. CFS为了实现公平, 必须惩罚当前正在运行的进程, 以使那些正在等待的进程下次被调度.
 
 ##1.2	CFS的pick_next_fair选择下一个进程
 -------
@@ -212,7 +212,7 @@ check_preempt_tick函数的目的在于, 判断是否需要抢占当前进程. �
 而上一节我们提到, 进程在CPU上已经运行的实际时间间隔由sum_exec_runtime - prev_sum_runtime给出.
 
 
->还记得上一节， 在set_next_entity函数的最后, 将选择出的调度实体se的sum_exec_runtime保存在了prev_sum_exec_runtime中, 因为该调度实体指向的进程, 马上将抢占处理器成为当前活动进程, 在CPU上花费的实际时间将记入sum_exec_runtime, 因此内核会在prev_sum_exec_runtime保存此前的设置. 要注意进程中的sum_exec_runtime没有重置. 因此差值sum_exec_runtime - prev_sum_runtime确实标识了在CPU上执行花费的实际时间.
+>还记得上一节,  在set_next_entity函数的最后, 将选择出的调度实体se的sum_exec_runtime保存在了prev_sum_exec_runtime中, 因为该调度实体指向的进程, 马上将抢占处理器成为当前活动进程, 在CPU上花费的实际时间将记入sum_exec_runtime, 因此内核会在prev_sum_exec_runtime保存此前的设置. 要注意进程中的sum_exec_runtime没有重置. 因此差值sum_exec_runtime - prev_sum_runtime确实标识了在CPU上执行花费的实际时间.
 >
 >在处理周期性调度时, 这个差值就显得格外重要
 
@@ -228,7 +228,7 @@ check_preempt_tick函数的目的在于, 判断是否需要抢占当前进程. �
 
 *	curr进程与红黑树中最左进程left虚拟运行时间的差值大于curr的期望运行时间ideal_runtime
 
-	此时说明红黑树中最左结点left与curr节点更渴望处理器, 已经接近于饥饿状态, 这个我们可以这样理解, 相对于curr进程来说, left进程如果参与调度, 其期望运行时间应该域curr进程的期望时间ideal_runtime相差不大, 而此时如果curr->vruntime - se->vruntime > curr.ideal_runtime, 我们可以初略的理解为curr进程已经优先于left进程多运行了一个周期, 而left又是红黑树总最饥渴的那个进程, 因此curr进程已经远远领先于队列中的其他进程, 此时应该补偿其他进程。
+	此时说明红黑树中最左结点left与curr节点更渴望处理器, 已经接近于饥饿状态, 这个我们可以这样理解, 相对于curr进程来说, left进程如果参与调度, 其期望运行时间应该域curr进程的期望时间ideal_runtime相差不大, 而此时如果curr->vruntime - se->vruntime > curr.ideal_runtime, 我们可以初略的理解为curr进程已经优先于left进程多运行了一个周期, 而left又是红黑树总最饥渴的那个进程, 因此curr进程已经远远领先于队列中的其他进程, 此时应该补偿其他进程. 
 
 
 如果检查需要发生抢占, 则内核通过resched_curr(rq_of(cfs_rq))设置重调度标识, 从而触发延迟调度

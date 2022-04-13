@@ -36,29 +36,29 @@ CPU(s):                12
 On-line CPU(s) list:   0-11
 Thread(s) per core:    2
 Core(s) per socket:    6
-座：                 1
-NUMA 节点：         1
-厂商 ID：           GenuineIntel
-CPU 系列：          6
-型号：              158
-型号名称：        Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
-步进：              10
-CPU MHz：             898.632
+座:                  1
+NUMA 节点:          1
+厂商 ID:            GenuineIntel
+CPU 系列:           6
+型号:               158
+型号名称:         Intel(R) Core(TM) i7-8700 CPU @ 3.20GHz
+步进:               10
+CPU MHz:              898.632
 CPU max MHz:           4200.0000
 CPU min MHz:           800.0000
-BogoMIPS：            6384.00
-虚拟化：           VT-x
-L1d 缓存：          32K
-L1i 缓存：          32K
-L2 缓存：           256K
-L3 缓存：           12288K
-NUMA 节点0 CPU：    0-11
+BogoMIPS:             6384.00
+虚拟化:            VT-x
+L1d 缓存:           32K
+L1i 缓存:           32K
+L2 缓存:            256K
+L3 缓存:            12288K
+NUMA 节点0 CPU:     0-11
 Flags:                 fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc art arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc aperfmperf eagerfpu pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch epb intel_pt ssbd ibrs ibpb stibp tpr_shadow vnmi flexpriority ept vpid fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm mpx rdseed adx smap clflushopt xsaveopt xsavec xgetbv1 dtherm ida arat pln pts hwp hwp_notify hwp_act_window hwp_epp spec_ctrl intel_stibp flush_l1d
 ```
 
 # 3 cpuid命令 - 显示x86 CPU
 
-命令cpuid转储从CPUID指令收集的CPU的完整信息，并从该信息中发现x86 CPU的确切型号。
+命令cpuid转储从CPUID指令收集的CPU的完整信息, 并从该信息中发现x86 CPU的确切型号. 
 
 安装包
 
@@ -76,7 +76,7 @@ $ sudo dnf install cpuid	#Fedora 22+
 
 # 4 dmidecode命令 - 显示Linux硬件信息
 
-dmidecode是用于检索任何Linux系统的硬件信息的工具。 它以人性化的格式转储计算机的DMI（又称SMBIOS）表格，便于检索。
+dmidecode是用于检索任何Linux系统的硬件信息的工具.  它以人性化的格式转储计算机的DMI(又称SMBIOS)表格, 便于检索. 
 
 ```
 [root@localhost ~]# dmidecode --type processor
@@ -150,7 +150,7 @@ Processor Information
 
 # 5 Inxi工具 - 显示Linux系统信息
 
-Inxi是一款功能强大的命令行系统信息脚本，用于控制台和IRC（Internet Relay Chat）。 您可以使用它来即时检索硬件信息。
+Inxi是一款功能强大的命令行系统信息脚本, 用于控制台和IRC(Internet Relay Chat).  您可以使用它来即时检索硬件信息. 
 
 安装
 
@@ -160,7 +160,7 @@ $ sudo yum install inxi		#RHEL/CentOS systems
 $ sudo dnf install inxi		#Fedora 22+ 
 ```
 
-要显示完整的CPU信息，包括每个CPU时钟速度和CPU最大速度（如果有的话），请使用\-C标志，如下所示：
+要显示完整的CPU信息, 包括每个CPU时钟速度和CPU最大速度(如果有的话), 请使用\-C标志, 如下所示: 
 
 ```
 [root@localhost ~]# inxi -C
@@ -173,9 +173,9 @@ CPU:       Topology: 6-Core model: Intel Core i7-8700 bits: 64 type: MT MCP L2 c
 
 # 6 lshw工具 \- 列出硬件配置
 
-lshw是收集有关计算机硬件配置的深入信息的最小工具。 
+lshw是收集有关计算机硬件配置的深入信息的最小工具.  
 
-在这种情况下，可以使用-C选项来选择硬件类，CPU
+在这种情况下, 可以使用-C选项来选择硬件类, CPU
 
 ```
 [root@localhost ~]# lshw -C CPU
@@ -219,19 +219,19 @@ Linux系统信息:
 
 ![](./images/2019-04-18-15-55-31.png)
 
-它还使您能够通过单击“ 生成报告 ”按钮生成系统硬件信息报告。 从下面的界面，点击“ 生成 ”继续。 请注意，您可以选择要生成的硬件信息类别。
+它还使您能够通过单击“ 生成报告 ”按钮生成系统硬件信息报告.  从下面的界面, 点击“ 生成 ”继续.  请注意, 您可以选择要生成的硬件信息类别. 
 
 生成系统信息报告:
 
 ![](./images/2019-04-18-15-55-53.png)
 
-一旦您以html格式生成报告，您可以从网络浏览器查看，如下所示。
+一旦您以html格式生成报告, 您可以从网络浏览器查看, 如下所示. 
 
 ![](./images/2019-04-18-15-56-29.png)
 
 # hwinfo - 显示当前硬件信息
 
-hwinfo用于提取有关Linux系统中存在的硬件的信息。 要显示有关CPU的信息，请使用\-\-cpu
+hwinfo用于提取有关Linux系统中存在的硬件的信息.  要显示有关CPU的信息, 请使用\-\-cpu
 
 ```
 [root@localhost ~]# hwinfo --cpu
@@ -239,7 +239,7 @@ hwinfo用于提取有关Linux系统中存在的硬件的信息。 要显示有�
 
 # nproc - 打印处理单元数
 
-nproc命令用于显示计算机上存在的处理单元数量：
+nproc命令用于显示计算机上存在的处理单元数量: 
 
 ```
 [root@localhost ~]# nproc

@@ -104,10 +104,10 @@ sudo apt-get install binutils bcc bcc-tools libbcc-examples python-bcc
 -------
 
 
-安装从4.2+内核http://alt.fedoraproject.org/pub/alt/rawhide-kernel-nodebug ，如果您的系统具有比需要什么更低版本。下面是一个如何做的例子：
+安装从4.2+内核http://alt.fedoraproject.org/pub/alt/rawhide-kernel-nodebug ，如果您的系统具有比需要什么更低版本。下面是一个如何做的例子: 
 $ sudo dnf config-manager --add-repo=http://alt.fedoraproject.org/pub/alt/rawhide-kernel-nodebug/fedora-rawhide-kernel-nodebug.repo
 $ sudo dnf update
-$ reboot 在此之后，添加BBC工具库，更新你的系统，并执行下一个命令系列的安装工具：
+$ reboot 在此之后，添加BBC工具库，更新你的系统，并执行下一个命令系列的安装工具: 
 $ echo -e '[iovisor]\nbaseurl=https://repo.iovisor.org/yum/nightly/f23/$basearch\nenabled=1\ngpgcheck=0' | sudo tee /etc/yum.repos.d/iovisor.repo
 $ sudo dnf update
 $ sudo dnf install bcc-tools
@@ -130,7 +130,7 @@ cachestat     filelife    mysqld_qslower  solisten     tplist
 cachetop      fileslower  offcputime      sslsniff     trace 我们应包括以下几个例子-监测的一般Linux系统的性能和网络。
 跟踪open()系统调用
 
-让我们通过追踪所有启动open()使用opensnoop系统调用。这使我们能够通过识别他们的数据文件，配置文件等等告诉我们各种应用程序如何工作：
+让我们通过追踪所有启动open()使用opensnoop系统调用。这使我们能够通过识别他们的数据文件，配置文件等等告诉我们各种应用程序如何工作: 
 $ cd /usr/share/bcc/tools
 $ sudo ./opensnoop
 PID    COMM               FD ERR PATH
@@ -211,9 +211,9 @@ basename         14903  14899    0 /usr/bin/basename /usr/bin/libreoffice
 跟踪慢ext4操作
 
 使用ext4slower跟踪ext4文件系统是大于10ms较慢的常用操作，帮助我们通过文件系统识别独立较慢的磁盘I / O。
-建议阅读： 13 Linux的性能监视工具
+建议阅读:  13 Linux的性能监视工具
 
-它只输出超过阈值的操作：
+它只输出超过阈值的操作: 
 $ sudo ./execslower
 Tracing ext4 operations slower than 10 ms
 TIME     COMM           PID    T BYTES   OFF_KB   LAT(ms) FILENAME
@@ -238,7 +238,7 @@ TIME     COMM           PID    T BYTES   OFF_KB   LAT(ms) FILENAME
 ...
 跟踪块设备I / O，带PID和延迟
 
-下一步，让我们每秒钟为每个磁盘I / O打印一行，其中包括进程ID，扇区，字节，使用biosnoop的其他延迟等细节：
+下一步，让我们每秒钟为每个磁盘I / O打印一行，其中包括进程ID，扇区，字节，使用biosnoop的其他延迟等细节: 
 $ sudo ./biosnoop
 TIME(s)        COMM           PID    DISK    T  SECTOR    BYTES   LAT(ms)
 0.000000000    ?              0              R  -1        8          0.26
@@ -258,7 +258,7 @@ TIME(s)        COMM           PID    DISK    T  SECTOR    BYTES   LAT(ms)
 ...
 跟踪页面缓存命中/未命中比率
 
-此后，我们继续使用cachestat到显示器汇总统计的一行从系统缓存每一秒。这通过指出低缓存命中率和高错失率来实现系统调整操作：
+此后，我们继续使用cachestat到显示器汇总统计的一行从系统缓存每一秒。这通过指出低缓存命中率和高错失率来实现系统调整操作: 
 $ sudo ./cachestat
 HITS   MISSES  DIRTIES  READ_HIT% WRITE_HIT%   BUFFERS_MB  CACHED_MB
 0        0        0       0.0%       0.0%           19        544
@@ -296,7 +296,7 @@ PID    COMM         IP SADDR            DADDR            DPORT
 15272  Socket Threa 4  10.0.2.15        216.58.199.142   443
 15272  Socket Threa 4  10.0.2.15        54.69.17.198     443
 15272  Socket Threa 4  10.0.2.15        54.69.17.198     443
-... 以上所有的工具，也可以与各种选项一起使用，使一个给定的工具的帮助页面，利用的-h选项，例如：
+... 以上所有的工具，也可以与各种选项一起使用，使一个给定的工具的帮助页面，利用的-h选项，例如: 
 $ sudo ./tcpconnect -h
 usage: tcpconnect [-h] [-t] [-p PID] [-P PORT]
 Trace TCP connects
@@ -313,7 +313,7 @@ examples:
 ./tcpconnect -P 80,81  # only trace port 80 and 81
 跟踪失败exec()s Syscalls
 
-要跟踪失败的exec()秒的系统调用，应用-x具有如下opensnoop选项：
+要跟踪失败的exec()秒的系统调用，应用-x具有如下opensnoop选项: 
 $ sudo ./opensnoop -x
 PID    COMM               FD ERR PATH
 15414  pool               -1   2 /home/.hidden
@@ -341,11 +341,11 @@ PID    COMM               FD ERR PATH
 跟踪特定的过程函数
 
 下面的最后一个示例演示了如何执行自定义跟踪操作。我们正在使用其PID跟踪特定进程。
-建议阅读： Netdata -适用于Linux的实时性能监控工具
+建议阅读:  Netdata -适用于Linux的实时性能监控工具
 
-首先确定进程ID：
+首先确定进程ID: 
 $ pidof firefox
-15437 后来，运行定制trace命令。 在下面的命令： -p指定的进程ID， do_sys_open()是动态跟踪包括它的第二个参数是一个字符串核函数。
+15437 后来，运行定制trace命令。 在下面的命令:  -p指定的进程ID， do_sys_open()是动态跟踪包括它的第二个参数是一个字符串核函数。
 $ sudo ./trace -p 4095 'do_sys_open "%s", arg2'
 TIME     PID    COMM         FUNC             -
 12:17:14 15437  firefox      do_sys_open      /run/user/1000/dconf/user
@@ -371,7 +371,7 @@ TIME     PID    COMM         FUNC             -
 12:18:15 15437  firefox      do_sys_open      /dev/urandom
 ....
 概要
-BCC是各种系统管理任务，例如追踪系统性能监控，跟踪块设备一个功能强大且易于使用的工具包I / O，TCP的功能，文件系统操作，系统调用，Node.js的探头，再加上其它更多地方。重要的是，它提供了几个示例文件和手册页的工具来指导你，使其用户友好和可靠。 最后但同样重要的是，您可以通过下面的评论部分分享您对主题的想法，提出问题，提出有用的建议或任何建设性的反馈，以回复我们。 欲了解更多信息和使用情况，请访问： https://iovisor.github.io/bcc/
+BCC是各种系统管理任务，例如追踪系统性能监控，跟踪块设备一个功能强大且易于使用的工具包I / O，TCP的功能，文件系统操作，系统调用，Node.js的探头，再加上其它更多地方。重要的是，它提供了几个示例文件和手册页的工具来指导你，使其用户友好和可靠。 最后但同样重要的是，您可以通过下面的评论部分分享您对主题的想法，提出问题，提出有用的建议或任何建设性的反馈，以回复我们。 欲了解更多信息和使用情况，请访问:  https://iovisor.github.io/bcc/
 
 #参见
 -------

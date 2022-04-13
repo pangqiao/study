@@ -1,7 +1,7 @@
 
 # 简介
 
-火焰图（Flame Graph）是由Linux性能优化大师Brendan Gregg发明的，和所有其他的trace和profiling方法不同的是，Flame Graph以一个全局的视野来看待时间分布，它从底部往顶部，列出所有可能的调用栈。
+火焰图(Flame Graph)是由Linux性能优化大师Brendan Gregg发明的，和所有其他的trace和profiling方法不同的是，Flame Graph以一个全局的视野来看待时间分布，它从底部往顶部，列出所有可能的调用栈。
 
 其他的呈现方法，一般只能列出单一的调用栈或者非层次化的时间分布。
 
@@ -17,7 +17,7 @@ CPU火焰图中的**每一个方框**是**一个函数**，**方框的长度**�
 
 ## 生成过程
 
-火焰图的生成过程是：
+火焰图的生成过程是: 
 
 1. 先trace系统，获取系统的profiling数据 
 2. 用脚本来绘制
@@ -50,7 +50,7 @@ a(){
 }
 ```
 
-则这三个函数，在火焰图中呈现的样子为：
+则这三个函数，在火焰图中呈现的样子为: 
 
 ![2020-02-04-23-11-42.png](./images/2020-02-04-23-11-42.png)
 
@@ -58,7 +58,7 @@ a(){
 
 ![2020-02-04-23-12-28.png](./images/2020-02-04-23-12-28.png)
 
-进一步理解火焰图的最好方法仍然是通过一个实际的案例，下面的程序**创建2个线程**，两个线程的handler都是`thread_fun()`，之后`thread_fun()`调用`fun_a()`、`fun_b()`、`fun_c()`，而`fun_a()`又会调用`fun_d()`：
+进一步理解火焰图的最好方法仍然是通过一个实际的案例，下面的程序**创建2个线程**，两个线程的handler都是`thread_fun()`，之后`thread_fun()`调用`fun_a()`、`fun_b()`、`fun_c()`，而`fun_a()`又会调用`fun_d()`: 
 
 ```cpp
 #include <pthread.h>
@@ -121,7 +121,7 @@ int main(void){
 
 先看看不用火焰图的缺点在哪里。
 
-如果不用火焰图，我们也可以用类似perf top这样的工具分析出来CPU时间主要花费在哪里了：
+如果不用火焰图，我们也可以用类似perf top这样的工具分析出来CPU时间主要花费在哪里了: 
 
 ```
 $gcc exam.c -pthread
@@ -129,11 +129,11 @@ $./a.out&
 $sudo perf top
 ```
 
-perf top的显示结果如下：
+perf top的显示结果如下: 
 
 ![2020-02-04-23-26-12.png](./images/2020-02-04-23-26-12.png)
 
-perf top提示出来了fun_a()、fun_b()、fun_c(), fun_d()，thread_func()这些函数内部的代码是CPU消耗大户，但是它缺乏一个全局的视野，我们无法看出全局的调用栈，也弄不清楚这些函数之间的关系。火焰图则不然，我们用下面的命令可以生成火焰图（以root权限运行）：
+perf top提示出来了fun_a()、fun_b()、fun_c(), fun_d()，thread_func()这些函数内部的代码是CPU消耗大户，但是它缺乏一个全局的视野，我们无法看出全局的调用栈，也弄不清楚这些函数之间的关系。火焰图则不然，我们用下面的命令可以生成火焰图(以root权限运行): 
 
 ```
 # 采集信息
@@ -166,7 +166,7 @@ perf top提示出来了fun_a()、fun_b()、fun_c(), fun_d()，thread_func()这�
 
 上图摘自Yichun Zhang (agentzh)的《Introduction to offCPU Time Flame Graphs》。
 
-关于火焰图的更多细节和更多种火焰图各自的功能，可以访问：
+关于火焰图的更多细节和更多种火焰图各自的功能，可以访问: 
 
 官网: http://www.brendangregg.com/flamegraphs.html
 

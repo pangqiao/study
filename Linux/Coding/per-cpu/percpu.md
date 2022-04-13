@@ -1,11 +1,11 @@
 
-凡是对现代计算机系统有一定了解的人都知道，在不同的物理核之间共享数据的开销是挺大的。一般来说，从register中读取一个字长数据的开销是1个cycle，在L1 cache中读取的开销是3个cycle，而如果这个数据在另外一个核甚至是另外一个node的cache上，这个开销最高可能达到100个cycle。因此，设计高性能程序不到万不得已时不应该在不同核之间共享数据。造成这个现象的原因是现代的cpu需要利用MESI协议来保证不同核之间cache的一致性（不然程序员写程序时还不得时常在想我此时读到的数据对不对？是不是最新的值？），要发消息到target core再等消息回来（会引发流水线stall？），不慢才怪。
+凡是对现代计算机系统有一定了解的人都知道，在不同的物理核之间共享数据的开销是挺大的。一般来说，从register中读取一个字长数据的开销是1个cycle，在L1 cache中读取的开销是3个cycle，而如果这个数据在另外一个核甚至是另外一个node的cache上，这个开销最高可能达到100个cycle。因此，设计高性能程序不到万不得已时不应该在不同核之间共享数据。造成这个现象的原因是现代的cpu需要利用MESI协议来保证不同核之间cache的一致性(不然程序员写程序时还不得时常在想我此时读到的数据对不对？是不是最新的值？)，要发消息到target core再等消息回来(会引发流水线stall？)，不慢才怪。
 
 以上是采用Percpu variable的一个原因，为了保证每个core对共享数据的互斥访问，还必须得加锁，这又带来了额外的性能开销。
 
 而Percpu variable的诞生则很好地解决了以上的问题，避免了cache line的乒乓问题，也没有了锁之间的contention。下面就来讲一讲linux中percpu variable的实现。
 
-在percpu-defs.h中有如下宏定义：
+在percpu-defs.h中有如下宏定义: 
 
 ```cpp
 /*
@@ -21,7 +21,7 @@
 
 于是可以用DECLARE_PER_CPU来申明一个Percpu variable，用`DEFINE_PER_CPU`来定义一个Percpu variable。
 
-继续往下展开，DEFINE_PER_CPU(type, name)可以变为：
+继续往下展开，DEFINE_PER_CPU(type, name)可以变为: 
 
 ```cpp
 #define DEFINE_PER_CPU_SECTION(type, name, sec)             \

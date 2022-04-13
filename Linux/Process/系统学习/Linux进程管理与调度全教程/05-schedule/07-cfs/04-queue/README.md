@@ -42,22 +42,22 @@ CFS负责处理普通非实时进程, 这类进程是我们linux中最普遍的�
 
 **CFS调度算法的思想**
 
-理想状态下每个进程都能获得相同的时间片，并且同时运行在CPU上，但实际上一个CPU同一时刻运行的进程只能有一个。也就是说，当一个进程占用CPU时，其他进程就必须等待。CFS为了实现公平，必须惩罚当前正在运行的进程，以使那些正在等待的进程下次被调度.
+理想状态下每个进程都能获得相同的时间片, 并且同时运行在CPU上, 但实际上一个CPU同一时刻运行的进程只能有一个. 也就是说, 当一个进程占用CPU时, 其他进程就必须等待. CFS为了实现公平, 必须惩罚当前正在运行的进程, 以使那些正在等待的进程下次被调度.
 
 ##1.2	负荷权重和虚拟时钟
 
 **虚拟时钟是红黑树排序的依据**
 
-具体实现时，CFS通过每个进程的**虚拟运行时间(vruntime)**来衡量哪个进程最值得被调度. CFS中的就绪队列是一棵以vruntime为键值的红黑树，虚拟时间越小的进程越靠近整个红黑树的最左端。因此，调度器每次选择位于红黑树最左端的那个进程，该进程的vruntime最小.
+具体实现时, CFS通过每个进程的**虚拟运行时间(vruntime)**来衡量哪个进程最值得被调度. CFS中的就绪队列是一棵以vruntime为键值的红黑树, 虚拟时间越小的进程越靠近整个红黑树的最左端. 因此, 调度器每次选择位于红黑树最左端的那个进程, 该进程的vruntime最小.
 
 **优先级计算负荷权重, 负荷权重和当前时间计算出虚拟运行时间**
 
-虚拟运行时间是通过进程的实际运行时间和进程的权重(weight)计算出来的。在CFS调度器中，将进程优先级这个概念弱化，而是强调进程的权重。一个进程的权重越大，则说明这个进程更需要运行，因此它的虚拟运行时间就越小，这样被调度的机会就越大。而，CFS调度器中的权重在内核是对用户态进程的优先级nice值, 通过prio_to_weight数组进行nice值和权重的转换而计算出来的
+虚拟运行时间是通过进程的实际运行时间和进程的权重(weight)计算出来的. 在CFS调度器中, 将进程优先级这个概念弱化, 而是强调进程的权重. 一个进程的权重越大, 则说明这个进程更需要运行, 因此它的虚拟运行时间就越小, 这样被调度的机会就越大. 而, CFS调度器中的权重在内核是对用户态进程的优先级nice值, 通过prio_to_weight数组进行nice值和权重的转换而计算出来的
 
 
 **虚拟时钟相关公式**
 
- linux内核采用了计算公式：
+ linux内核采用了计算公式: 
 
 | 属性 | 公式 | 描述 |
 |:-------:|:-------:|
@@ -66,20 +66,20 @@ CFS负责处理普通非实时进程, 这类进程是我们linux中最普遍的�
 | se.weight |  | 当前进程的权重 |
 | cfs.weight |  | 整个cfs_rq的总权重 |
 
-这里se.weight和cfs.weight根据上面讲解我们可以算出, sum_runtime是怎们计算的呢，linux内核中这是个经验值，其经验公式是
+这里se.weight和cfs.weight根据上面讲解我们可以算出, sum_runtime是怎们计算的呢, linux内核中这是个经验值, 其经验公式是
 
 | 条件 | 公式 |
 |:-------:|:-------:|
 | 进程数 > sched_nr_latency | sum_runtime=sysctl_sched_min_granularity *nr_running |
 | 进程数 <=sched_nr_latency | sum_runtime=sysctl_sched_latency = 20ms |
 
->注：sysctl_sched_min_granularity =4ms
+>注: sysctl_sched_min_granularity =4ms
 >
 >sched_nr_latency是内核在一个延迟周期中处理的最大活动进程数目
 
-linux内核代码中是通过一个叫vruntime的变量来实现上面的原理的，即：
+linux内核代码中是通过一个叫vruntime的变量来实现上面的原理的, 即: 
 
-每一个进程拥有一个vruntime,每次需要调度的时候就选运行队列中拥有最小vruntime的那个进程来运行，vruntime在时钟中断里面被维护，每次时钟中断都要更新当前进程的vruntime,即vruntime以如下公式逐渐增长：
+每一个进程拥有一个vruntime,每次需要调度的时候就选运行队列中拥有最小vruntime的那个进程来运行, vruntime在时钟中断里面被维护, 每次时钟中断都要更新当前进程的vruntime,即vruntime以如下公式逐渐增长: 
 
 
 | 条件 | 公式 |
@@ -302,7 +302,7 @@ enqueue_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int flags)
 
 如果进程此前在睡眠, 那么则调用place_entity处理其虚拟运行时间
 
-设想一下子如果休眠进程的vruntime保持不变, 而其他运行进程的 vruntime一直在推进, 那么等到休眠进程终于唤醒的时候, 它的vruntime比别人小很多, 会使它获得长时间抢占CPU的优势, 其他进程就要饿死了. 这显然是另一种形式的不公平，因此CFS是这样做的：在休眠进程被唤醒时重新设置vruntime值，以min_vruntime值为基础，给予一定的补偿，但不能补偿太多. 这个重新设置其虚拟运行时间的工作就是就是通过place_entity来完成的, 另外新进程创建完成后, 也是通过place_entity完成其虚拟运行时间vruntime的设置的. place_entity通过其第三个参数initial来标识新进程创建和休眠进程苏醒两种不同情形的.
+设想一下子如果休眠进程的vruntime保持不变, 而其他运行进程的 vruntime一直在推进, 那么等到休眠进程终于唤醒的时候, 它的vruntime比别人小很多, 会使它获得长时间抢占CPU的优势, 其他进程就要饿死了. 这显然是另一种形式的不公平, 因此CFS是这样做的: 在休眠进程被唤醒时重新设置vruntime值, 以min_vruntime值为基础, 给予一定的补偿, 但不能补偿太多. 这个重新设置其虚拟运行时间的工作就是就是通过place_entity来完成的, 另外新进程创建完成后, 也是通过place_entity完成其虚拟运行时间vruntime的设置的. place_entity通过其第三个参数initial来标识新进程创建和休眠进程苏醒两种不同情形的.
 
 
 
@@ -327,8 +327,8 @@ place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int initial)
      * 但是如果当前运行的所有进程被承诺了一个运行周期
      * 那么则将新进程的vruntime后推一个他自己的slice
      * 实际上新进程入队时要重新计算运行队列的总权值
-     * 总权值显然是增加了，但是所有进程总的运行时期并不一定随之增加
-     * 则每个进程的承诺时间相当于减小了，就是减慢了进程们的虚拟时钟步伐。 
+     * 总权值显然是增加了, 但是所有进程总的运行时期并不一定随之增加
+     * 则每个进程的承诺时间相当于减小了, 就是减慢了进程们的虚拟时钟步伐.  
      */
     /*  initial标识了该进程是新进程  */
     if (initial && sched_feat(START_DEBIT))
@@ -353,7 +353,7 @@ place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int initial)
     }
 
     /* ensure we never gain time by being placed backwards.
-     * 如果是唤醒已经存在的进程，则单调附值
+     * 如果是唤醒已经存在的进程, 则单调附值
      */
     se->vruntime = max_vruntime(se->vruntime, vruntime);
 }
@@ -365,10 +365,10 @@ place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int initial)
 place_entity(cfs_rq, se, 0);
 ```
 
-所以会执行if (!initial)后的语句。因为进程睡眠后，vruntime就不会增加了，当它醒来后不知道过了多长时间，可能vruntime已经比 min_vruntime小了很多，如果只是简单的将其插入到就绪队列中，它将拼命追赶min_vruntime，因为它总是在红黑树的最左面。如果这 样，它将会占用大量的CPU时间，导致红黑树右边的进程被饿死。但是我们又必须及时响应醒来的进程，因为它们可能有一些工作需要立刻处理，所以系统采取了 一种折衷的办法，将当前cfs_rq->min_vruntime时间减去sysctl_sched_latency赋给vruntime，这时它 会被插入到就绪队列的最左边。这样刚唤醒的进程在当前执行进程时间耗尽时就会被调度上处理器执行。当然如果进程没有睡眠那么多时间，我们只需保留原来的时 间vruntime = max_vruntime(se->vruntime, vruntime)。这有什么好处的，我觉得它可以将所有唤醒的进程排个队，睡眠越久的越快得到响应。
+所以会执行if (!initial)后的语句. 因为进程睡眠后, vruntime就不会增加了, 当它醒来后不知道过了多长时间, 可能vruntime已经比 min_vruntime小了很多, 如果只是简单的将其插入到就绪队列中, 它将拼命追赶min_vruntime, 因为它总是在红黑树的最左面. 如果这 样, 它将会占用大量的CPU时间, 导致红黑树右边的进程被饿死. 但是我们又必须及时响应醒来的进程, 因为它们可能有一些工作需要立刻处理, 所以系统采取了 一种折衷的办法, 将当前cfs_rq->min_vruntime时间减去sysctl_sched_latency赋给vruntime, 这时它 会被插入到就绪队列的最左边. 这样刚唤醒的进程在当前执行进程时间耗尽时就会被调度上处理器执行. 当然如果进程没有睡眠那么多时间, 我们只需保留原来的时 间vruntime = max_vruntime(se->vruntime, vruntime). 这有什么好处的, 我觉得它可以将所有唤醒的进程排个队, 睡眠越久的越快得到响应. 
 
 
-对于新进程创建时initial为1，所以它会执行`vruntime += sched_vslice(cfs_rq, se);`这句，而这里的vruntime就是当前CFS就绪队列的min_vruntime，新加进程应该在最近很快被调度，这样减少系统的响应时间，我们已经知道当前进程的vruntime越小，它在红黑树中就会越靠左，就会被很快调度到处理器上执行。但是，Linux内核需要根据新加入的进程的权重决策一下应该何时调度该进程，而不能任意进程都来抢占当前队列中靠左的进程，因为必须保证就绪队列中的所有进程尽量得到他们应得的时间响应， sched_vslice函数就将其负荷权重转换为等价的虚拟时间, 其定义在[kernel/sched/fair.c, line 626](http://lxr.free-electrons.com/source/kernel/sched/fair.c#L626)
+对于新进程创建时initial为1, 所以它会执行`vruntime += sched_vslice(cfs_rq, se);`这句, 而这里的vruntime就是当前CFS就绪队列的min_vruntime, 新加进程应该在最近很快被调度, 这样减少系统的响应时间, 我们已经知道当前进程的vruntime越小, 它在红黑树中就会越靠左, 就会被很快调度到处理器上执行. 但是, Linux内核需要根据新加入的进程的权重决策一下应该何时调度该进程, 而不能任意进程都来抢占当前队列中靠左的进程, 因为必须保证就绪队列中的所有进程尽量得到他们应得的时间响应,  sched_vslice函数就将其负荷权重转换为等价的虚拟时间, 其定义在[kernel/sched/fair.c, line 626](http://lxr.free-electrons.com/source/kernel/sched/fair.c#L626)
 
 
 函数就是根据initial的值来区分两种情况, 一般来说只有在新进程被加到系统中时,才会首次设置该参数,  但是这里的情况并非如此:

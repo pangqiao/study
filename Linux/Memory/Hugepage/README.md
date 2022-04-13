@@ -13,7 +13,7 @@ Linux hugetlb/page 具体函数分析:
 
 Linux 操作系统原理 — 内存 — 大页内存: https://blog.csdn.net/Jmilk/article/details/106871256
 
-Linux内存管理：大页内存原理(v5.12) - https://zhuanlan.zhihu.com/p/356338438
+Linux内存管理: 大页内存原理(v5.12) - https://zhuanlan.zhihu.com/p/356338438
 
 hugepage_note_大页内存笔记: https://blog.csdn.net/yk_wing4/article/details/88080442
 
@@ -22,7 +22,7 @@ hugepage_note_大页内存笔记: https://blog.csdn.net/yk_wing4/article/details
 
 HugePage介绍、实现分析、配置和使用: https://www.cnblogs.com/arnoldlu/p/14028825.html
 
-Linux内存管理：大页内存原理: https://zhuanlan.zhihu.com/p/356338438
+Linux内存管理: 大页内存原理: https://zhuanlan.zhihu.com/p/356338438
 
 大页性能测评的文章: [HERE](https://alexandrnikitin.github.io/blog/transparent-hugepages-measuring-the-performance-impact/)
 

@@ -7,7 +7,7 @@
 %include "..\..\lib\Guest\Guest.inc"
 
 ;;
-;; ex.asm 说明：
+;; ex.asm 说明: 
 ;; 1) ex.asm 是实验例子的源代码文件，它嵌入在 protected.asm 和 long.asm 文件内
 ;; 2) ex.asm 是通用模块，能在 stage2 和 stage3 阶段运行
 ;;
@@ -18,7 +18,7 @@
         %include "ex.inc"
 
         ;;
-        ;; 示例7-2：实现guest的任务切换
+        ;; 示例7-2: 实现guest的任务切换
         ;;
 
 
@@ -93,7 +93,7 @@ Ex.Next:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 调度执行的目标代码
 ;----------------------------------------------
 TargetCpuVmentry: 
@@ -421,7 +421,7 @@ Ex.DoExternalInterrupt:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 初始化 GUEST A
 ;----------------------------------------------
 init_guest_a:
@@ -479,7 +479,7 @@ init_guest_a:
         ;;
 %if __BITS__ == 64        
         ;;
-        ;; step 1：将 GuestBoot 模块安装到 domain
+        ;; step 1: 将 GuestBoot 模块安装到 domain
         ;;
         mov ecx, [GUEST_BOOT_SEGMENT]
         add ecx, 0C00h + 0FFFh
@@ -549,7 +549,7 @@ init_guest_a:
         
 %else       
         ;;
-        ;; step 1：将 GuestBoot 模块安装到 domain
+        ;; step 1: 将 GuestBoot 模块安装到 domain
         ;;
         mov ecx, [GUEST_BOOT_SEGMENT]
         add ecx, 0C00h + 0FFFh
@@ -580,7 +580,7 @@ init_guest_a:
         call memcpy
         
         ;;
-        ;; step 2：将 GuestKernel 模块安装到 domain
+        ;; step 2: 将 GuestKernel 模块安装到 domain
         ;;
         mov ecx, [GUEST_KERNEL_SEGMENT]
         add ecx, 0FFFh
@@ -625,7 +625,7 @@ init_guest_a:
 %endif
 
         ;;
-        ;; 屏蔽 guest 对 NMI_EN_PORT（70h）与 SYSTEM_CONTROL_PORTA（92h）端口的访问
+        ;; 屏蔽 guest 对 NMI_EN_PORT(70h)与 SYSTEM_CONTROL_PORTA(92h)端口的访问
         ;;
         mov R6, [R5 + PCB.VmcsA]
         mov edi, NMI_EN_PORT
@@ -697,7 +697,7 @@ init_guest_a.@1:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 初始化 GUEST B
 ;----------------------------------------------
 init_guest_b:
@@ -756,7 +756,7 @@ init_guest_b:
 %if __BITS__ == 64                
 
         ;;
-        ;; step 1：将 GuestBoot 模块安装到 domain
+        ;; step 1: 将 GuestBoot 模块安装到 domain
         ;;
         mov ecx, [GUEST_BOOT_SEGMENT]
         add ecx, 0C00h + 0FFFh
@@ -826,7 +826,7 @@ init_guest_b:
         
 %else       
         ;;
-        ;; step 1：将 GuestBoot 模块安装到 domain
+        ;; step 1: 将 GuestBoot 模块安装到 domain
         ;;
         mov ecx, [GUEST_BOOT_SEGMENT]
         add ecx, 0C00h + 0FFFh
@@ -857,7 +857,7 @@ init_guest_b:
         call memcpy
         
         ;;
-        ;; step 2：将 GuestKernel 模块安装到 domain
+        ;; step 2: 将 GuestKernel 模块安装到 domain
         ;;
         mov ecx, [GUEST_KERNEL_SEGMENT]
         add ecx, 0FFFh
@@ -902,7 +902,7 @@ init_guest_b:
 %endif
         
         ;;
-        ;; 屏蔽 guest 对 NMI_EN_PORT（70h）与 SYSTEM_CONTROL_PORTA（92h）端口的访问
+        ;; 屏蔽 guest 对 NMI_EN_PORT(70h)与 SYSTEM_CONTROL_PORTA(92h)端口的访问
         ;;
         mov R6, [R5 + PCB.VmcsB]
         mov edi, NMI_EN_PORT

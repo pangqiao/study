@@ -17,11 +17,11 @@
 
 
 ;;
-;; 说明：
+;; 说明: 
 ;; 1) 模块开始点是 SETUP_SEGMENT
 ;; 2) 模块头的存放是“模块 size”
 ;; 3) load_module() 函数将模块加载到 SETUP_SEGMENT 位置上
-;; 4) SETUP 模块的“入口点”是：SETUP_SEGMENT + 0x18
+;; 4) SETUP 模块的“入口点”是: SETUP_SEGMENT + 0x18
         
         [SECTION .text]
         org SETUP_SEGMENT
@@ -33,9 +33,9 @@
 SetupLenth      DD SETUP_LENGTH                 ; 这个模块的 size
 CpuIndex        DD 0FFFFFFFFh                   ; CPU index
 CurrentVideo    DD 0B8000h					    ; CurrentVideo
-ApStage1Lock    DD 1                            ; stage1（setup）阶段的锁
-ApStage2Lock    DD 1                            ; stage2（protected）阶段的锁
-ApStage3Lock    DD 1                            ; stage3（long）阶段的锁    
+ApStage1Lock    DD 1                            ; stage1(setup)阶段的锁
+ApStage2Lock    DD 1                            ; stage2(protected)阶段的锁
+ApStage3Lock    DD 1                            ; stage3(long)阶段的锁    
 MMap.Size       DQ 0
 MMap.Base:      DQ 0                            ; 内存区域的地起地址
 MMap.Length:    DQ 0                            ; 内存区域的长度
@@ -68,8 +68,8 @@ SetupEntry:                                             ; 这是模块代码的�
 
         ;;
         ;; 下面进行数据的初始化设置:
-        ;; 1) 首先，初始化 SDA（System Data Area）区域数据
-        ;; 2) 然后，初始化 PCB（Processor Control Block）区域数据
+        ;; 1) 首先，初始化 SDA(System Data Area)区域数据
+        ;; 2) 然后，初始化 PCB(Processor Control Block)区域数据
         ;;
         ;; 说明:
         ;; 1) SDA 数据是所有处理器共享，所以必须先初始化
@@ -77,9 +77,9 @@ SetupEntry:                                             ; 这是模块代码的�
         ;; 3) PCB 数据是动态分配，每个 PCB 块基址不同
         ;; 
         ;;
-        ;; fs 段说明：
-        ;;      1) fs 指向 SDA（System Data Area）区域，是所有 logical processor 共享的数据区域
-        ;; 注意：
+        ;; fs 段说明: 
+        ;;      1) fs 指向 SDA(System Data Area)区域，是所有 logical processor 共享的数据区域
+        ;; 注意: 
         ;;      1) 需要在支持 64 位的处理器上才能直接写 IA_FS_BASE 寄存器！
         ;;      2) 否则，需要开启保护模式来加载 FS 段基址
         ;;      3) GS 段基址在后续代码中更新
@@ -89,9 +89,9 @@ SetupEntry:                                             ; 这是模块代码的�
 
 PcbInitEntry:
         ;;
-        ;; 设置 PCB（Processor Control Block）内容
-        ;; 说明：
-        ;; 1) 此处为 logical processor 的 PCB 初始化入口（包括 BSP 与 AP）
+        ;; 设置 PCB(Processor Control Block)内容
+        ;; 说明: 
+        ;; 1) 此处为 logical processor 的 PCB 初始化入口(包括 BSP 与 AP)
         ;; 2) 每个 logical processor 都需要经过下面的 PCB 数据初始化
         ;; 
         call init_processor_control_block
@@ -112,7 +112,7 @@ PcbInitEntry:
         jne ApStage1End
 
         ;;
-        ;; 这是 BSP 第1阶段的最后工作：
+        ;; 这是 BSP 第1阶段的最后工作: 
         ;; 1) 发送 INIT-SIPI-SIPI 序列给 AP 
         ;; 2) 等待所有 AP 第1阶段完成
         ;; 3) 转入下阶段工作
@@ -122,7 +122,7 @@ PcbInitEntry:
 
         ;;
         ;; 检查是否需要进入 longmode
-        ;; 1) 是，跳过 stage2, 进入 stage3 阶段（longmode 模式）
+        ;; 1) 是，跳过 stage2, 进入 stage3 阶段(longmode 模式)
         ;; 2) 否，进入 stage2 阶段
         ;;
         cmp DWORD [fs: SDA.ApLongmode], 1
@@ -133,9 +133,9 @@ PcbInitEntry:
 
 %ifndef DBG      
         ;;
-        ;; AP第1阶段最后工作说明：
+        ;; AP第1阶段最后工作说明: 
         ;; 1) 增加 ApInitDoneCount 计数值
-        ;; 1) AP 等待第2阶段锁（等待 BSP 开放 stage2 锁）
+        ;; 1) AP 等待第2阶段锁(等待 BSP 开放 stage2 锁)
         ;;
         
 ApStage1End:  
@@ -156,7 +156,7 @@ ApStage1End:
 %endif
         ;;
         ;; 检查是否需要进入 longmode
-        ;; 1) 是，跳过 stage2, 等待 stage3 锁，进入 stage3 阶段（longmode 模式）
+        ;; 1) 是，跳过 stage2, 等待 stage3 锁，进入 stage3 阶段(longmode 模式)
         ;; 2) 否，等待 stage2 锁，进入 stage2 阶段
         ;;
         cmp DWORD [fs: SDA.ApLongmode], 1

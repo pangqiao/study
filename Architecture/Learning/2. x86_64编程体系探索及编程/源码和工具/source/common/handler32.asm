@@ -15,7 +15,7 @@
 
 ;----------------------------------------
 ; DB_handler():  #DB handler
-; 描述：
+; 描述: 
 ;       
 ;----------------------------------------
 DB_handler:
@@ -52,7 +52,7 @@ do_DB_handler_loop:
         cmp eax, 3
         mov esi, printblank                     ; 空格
         mov edi, println                        ; 换行
-        cmove esi, edi                          ; 打印 4 个后，换行
+        cmove esi, edi                          ; 打印 4 个后, 换行
         call esi
 
         inc ecx        
@@ -72,7 +72,7 @@ stop_debug:
         mov esi, db_msg2
         call puts
 do_DB_handler_done:        
-        bts DWORD [esp + 8], 16                 ; 设置 eflags.RF 为 1，以便中断返回时，继续执行
+        bts DWORD [esp + 8], 16                 ; 设置 eflags.RF 为 1, 以便中断返回时, 继续执行
 
         RESTORE_CONTEXT
         iret
@@ -81,7 +81,7 @@ do_DB_handler_done:
 %ifdef DEBUG
 ;--------------------------------------------
 ; #DB handler
-; 描述：
+; 描述: 
 ;       这个版本的 #DB handler 用于
 ;-------------------------------------------
 debug_handler:
@@ -321,7 +321,7 @@ do_OF_handler:
 
 ;-------------------------------
 ; system timer handler
-; 描述：
+; 描述: 
 ;       使用于 8259 IRQ0 handler
 ;-------------------------------
 timer_handler:                
@@ -372,7 +372,7 @@ delay:
         
 ;----------------------------
 ; keyboard_handler:
-; 描述：
+; 描述: 
 ;       使用于 8259 IRQ1 handler
 ;----------------------------        
 keyboard_handler:
@@ -394,7 +394,7 @@ do_keyboard_handler:
 
 %ifdef APIC_TIMER_HANDLER        
 ;---------------------------------------------
-; apic_timer_handler()：这是 APIC TIMER 的 ISR
+; apic_timer_handler(): 这是 APIC TIMER 的 ISR
 ;---------------------------------------------
 apic_timer_handler:
         jmp do_apic_timer_handler
@@ -417,7 +417,7 @@ do_apic_timer_handler:
 ;* 如果定义了 APIC_PERFMON_HANDLER
 ;* 则使用 handler32.asm 文件里的 apic_perfmon_handler
 ;* 作为 PMI 中断 handler
-;* 否则：在 protected.asm 文件里提供 PMI handler
+;* 否则: 在 protected.asm 文件里提供 PMI handler
 ;*
 
 %ifdef APIC_PERFMON_HANDLER
@@ -440,10 +440,10 @@ do_apic_perfmon_handler:
 ;*
 ;* 下面在 handler 里关闭功能
 ;*
-        ;; 当 TR 开启时，就关闭 TR
+        ;; 当 TR 开启时, 就关闭 TR
         mov ecx, IA32_DEBUGCTL
         rdmsr
-        mov [debugctl_value], eax        ; 保存原 IA32_DEBUGCTL 寄存器值，以便恢复
+        mov [debugctl_value], eax        ; 保存原 IA32_DEBUGCTL 寄存器值, 以便恢复
         mov [debugctl_value + 4], edx
         mov eax, 0
         mov edx, 0
@@ -484,7 +484,7 @@ check_pebs_interrupt:
         mov esi, ph_msg6
         call puts
         call dump_ds_management
-        call update_pebs_index_track            ; 更新 PEBS index 的轨迹，保持对 PEBS 中断的检测
+        call update_pebs_index_track            ; 更新 PEBS index 的轨迹, 保持对 PEBS 中断的检测
 
 
 check_counter_overflow:
@@ -557,7 +557,7 @@ apic_perfmon_handler_done:
 %ifdef AP_IPI_HANDLER
 
 ;---------------------------------------------
-; ap_ipi_handler()：这是 AP IPI handler
+; ap_ipi_handler(): 这是 AP IPI handler
 ;---------------------------------------------
 ap_ipi_handler:
 	jmp do_ap_ipi_handler

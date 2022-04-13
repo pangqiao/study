@@ -14,7 +14,7 @@
 
 ## 1.1 问题
 
-今天处理了一个 Boot from volume 失败的问题，错误日志给出了明确的原因：The instance and volume are not in the same AZ。
+今天处理了一个 Boot from volume 失败的问题，错误日志给出了明确的原因: The instance and volume are not in the same AZ。
 
 ```
 BuildAbortException: Build of instance aa701728-f40b-47e7-b8ed-2302f1bff226 aborted: Invalid volume: Instance 2216 and volume bbbd66b4-761f-4096-b8f7-4feeb04c4b44 are not in the same availability_zone. Instance is in ovs. Volume is in nova
@@ -32,7 +32,7 @@ storage_availability_zone = nova
 default_availability_zone = nova
 ```
 
-解决这个问题的办法自然就是将预期的 Cinder backend 也划分至 AZ:ovs 中：
+解决这个问题的办法自然就是将预期的 Cinder backend 也划分至 AZ:ovs 中: 
 
 ```
 # cinder.conf
@@ -42,7 +42,7 @@ storage_availability_zone = ovs
 default_availability_zone = ovs
 ```
 
-此后创建该 Backend 的 Volumes 也需要显式的指定 AZ 参数：
+此后创建该 Backend 的 Volumes 也需要显式的指定 AZ 参数: 
 
 ```
 openstack volume create --type ovs_backend --availability-zone ovs ...

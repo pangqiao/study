@@ -7,7 +7,7 @@ BIOS在**POST过程**中，将RSDP存在0xE0000--0xFFFFF的内存空间中，然
 
 控制权交给OS之后，由OS来开启ACPI Mode，首先在内存中搜寻ACPI Table，然后写ACPI_Enable到SMI_CMD，SCI_EN也会被HW置起来。
 
-ACPI Tables根据存储的位置，可以分为：
+ACPI Tables根据存储的位置，可以分为: 
 
 1).  RSDP位于F段，用于OSPM搜索ACPI Table，RSDP可以定位其他所有ACPI Table
 
@@ -17,11 +17,11 @@ ACPI Tables根据存储的位置，可以分为：
 
 ACPI Table根据版本又分为1.0B，2.0，3.0，4.0。
 
-2.0以后，支持了64-bit的地址空间，因此几个重要的Table会不大一样，比如：RSDP，RSDT，FADT，FACS。简单的列举一下不同版本的ACPI Table：
+2.0以后，支持了64-bit的地址空间，因此几个重要的Table会不大一样，比如: RSDP，RSDT，FADT，FACS。简单的列举一下不同版本的ACPI Table: 
 
-1） ACPI 1.0B：RSDP1，RSDT，FADT1，FACS1，DSDT，MADT，SSDT，HPET，MCFG等
+1) ACPI 1.0B: RSDP1，RSDT，FADT1，FACS1，DSDT，MADT，SSDT，HPET，MCFG等
 
-2） ACPI 3.0 ：RSDP3，RSDT，XSDT，FADT3，FACS3，DSDT，MADT，HPET，MCFG，SSDT等
+2) ACPI 3.0 : RSDP3，RSDT，XSDT，FADT3，FACS3，DSDT，MADT，HPET，MCFG，SSDT等
 
-以系统支持ACPI3.0为例子，说明系统中ACPI table之间的关系如图：
+以系统支持ACPI3.0为例子，说明系统中ACPI table之间的关系如图: 
 

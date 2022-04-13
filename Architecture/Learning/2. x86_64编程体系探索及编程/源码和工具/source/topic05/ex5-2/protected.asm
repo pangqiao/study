@@ -32,7 +32,7 @@ entry:
         call get_tss_base
         mov DWORD [eax + 4], KERNEL_ESP
 
-;; 为了完成实验，关闭时间中断和键盘中断
+;; 为了完成实验, 关闭时间中断和键盘中断
         call disable_timer
 
 
@@ -213,7 +213,7 @@ do_DB_handler:
         mov esi, db_msg2
         call puts
         call println
-        bts DWORD [esp+8], 16                                        ; 设置 eflags.RF 为 1，以便中断返回时，继续执行
+        bts DWORD [esp+8], 16                                        ; 设置 eflags.RF 为 1, 以便中断返回时, 继续执行
         iret
 
 ;-------------------------------------------
@@ -264,7 +264,7 @@ do_set_interrupt_handler:
 ;--------------------------------------------------------
 ; set_IO_bitmap(int port, int value): 设置 IOBITMAP 中的值
 ; input:
-;                esi - port（端口值），edi - value 设置的值
+;                esi - port(端口值), edi - value 设置的值
 ;---------------------------------------------------------
 set_IO_bitmap:
         jmp do_set_IO_bitmap

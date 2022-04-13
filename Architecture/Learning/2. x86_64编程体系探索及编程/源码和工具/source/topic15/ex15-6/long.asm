@@ -179,7 +179,7 @@ entry64:
         
 
 ;*
-;* 实验 ex15-6：测试 64-bit 模式下的 PEBS 中断
+;* 实验 ex15-6: 测试 64-bit 模式下的 PEBS 中断
 ;*
 
         ;*
@@ -196,7 +196,7 @@ entry64:
         SET_DS_AREA64
         
 ;*        
-;* 开启 BTS，并使用在 PMI handler 里冻结 counter 功能 
+;* 开启 BTS, 并使用在 PMI handler 里冻结 counter 功能 
 ;* 
         ENABLE_BTS_FREEZE_PERFMON_ON_PMI
 
@@ -215,7 +215,7 @@ entry64:
 ; 开启 PEBS 
         ENABLE_PEBS_PMC0                            ; 开启 IA32_PMC0 PEBS中断允许
 
-; 开启 counter，开始计数
+; 开启 counter, 开始计数
         ENABLE_IA32_PMC0
 
 
@@ -243,21 +243,21 @@ entry64:
         
         ;call QWORD far [conforming_pointer]                        ; 测试conforimg 代码
         
-;; 从 64 位切换到 compatibility mode（权限不改变，0 级）　        
+;; 从 64 位切换到 compatibility mode(权限不改变, 0 级)　        
         ;jmp QWORD far [compatibility_pointer]
 
 ;compatibility_pointer:
 ;                dq compatibility_kernel_entry              ; 64 bit offset on Intel64
 ;                dw code32_sel
 
-;; 切换到 compatibility mode（进入 3 级）
+;; 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push user_code32_sel | 3
 ;        push compatibility_user_entry
 ;        retf64
 
-;; 使用 iret 切换到 compatibility mode（进入 3 级）
+;; 使用 iret 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push 02h
@@ -432,7 +432,7 @@ do_perfmon_handler:
         ;; 关闭 BTS
         mov ecx, IA32_DEBUGCTL
         rdmsr
-        mov [debugctl_value], eax        ; 保存原 IA32_DEBUGCTL 寄存器值，以便恢复
+        mov [debugctl_value], eax        ; 保存原 IA32_DEBUGCTL 寄存器值, 以便恢复
         mov [debugctl_value + 4], edx
         mov eax, 0
         mov edx, 0

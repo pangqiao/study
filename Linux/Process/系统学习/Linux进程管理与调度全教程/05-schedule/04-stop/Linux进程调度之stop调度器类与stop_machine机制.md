@@ -14,11 +14,11 @@
 
 所属调度器类为stop\_sched\_class的进程是系统中优先级最高的进程,其次才是dl\_shced\_class和rt\_sched\_class
 
-stop\_sched\_class用于停止CPU,一般在SMP系统上使用，用以实现负载平衡和CPU热插拔.这个类有最高的调度优先级, 如果你的系统没有定义CONFIG\_SMP. 你可以试着将此类移除.
+stop\_sched\_class用于停止CPU,一般在SMP系统上使用, 用以实现负载平衡和CPU热插拔.这个类有最高的调度优先级, 如果你的系统没有定义CONFIG\_SMP. 你可以试着将此类移除.
 
-stop调度器类实现了Unix的stop\_machine 特性(根据UNIX 风格，也可能是等效的其他特性)准备拼接新代码。
+stop调度器类实现了Unix的stop\_machine 特性(根据UNIX 风格, 也可能是等效的其他特性)准备拼接新代码. 
 
-stop\_machine是一个通信信号:在SMP的情况下相当于暂时停止其他的CPU的运行,它让一个CPU继续运行，而让所有其他CPU空闲.在单CPU的情况下这个东西就相当于关中断
+stop\_machine是一个通信信号:在SMP的情况下相当于暂时停止其他的CPU的运行,它让一个CPU继续运行, 而让所有其他CPU空闲.在单CPU的情况下这个东西就相当于关中断
 
 我的理解是如果Mulit CPU共享的东西需要修改, 且无法借助OS的lock, 关中断等策略来实现这一功能, 则需要stop\_machine
 
@@ -243,6 +243,6 @@ static inline int stop_machine_from_inactive_cpu(cpu_stop_fn_t fn, void *data,
 | module install and remove | 增加删除模块, 在不需要重启内核的情况下, 加载和删除模块 |
 | cpu hotplug | CPU的热插拔, 用以执行任务迁移的工作, [cpu\_stop\_threads](http://lxr.free-electrons.com/source/kernel/stop_machine.c?v=4.7#L29), 该任务由CPU绑定的migration内核线程来完成  |
 | memory hotplug | Memory的热插拔 |
-| ftrace | 内核trace，debug功能, 参见[kernel/trace/ftrace.c](http://lxr.free-electrons.com/source/kernel/trace/ftrace.c?v=4.7#L2571)  |
-| hwlat\_detector | 检测系统硬件引入的latency，debug功能 |
+| ftrace | 内核trace, debug功能, 参见[kernel/trace/ftrace.c](http://lxr.free-electrons.com/source/kernel/trace/ftrace.c?v=4.7#L2571)  |
+| hwlat\_detector | 检测系统硬件引入的latency, debug功能 |
 | Kernel Hotpatch | [Ksplice](http://www.ibm.com/developerworks/cn/aix/library/au-spunix_ksplice/)可以在不到一秒时间里动态地应用内核补丁, 不需要重新引导 |

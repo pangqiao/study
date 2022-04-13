@@ -11,7 +11,7 @@
 
 <!-- /code_chunk_output -->
 
-用qemu+GDB来调试内核和ko，当然我们需要准备如下：
+用qemu+GDB来调试内核和ko，当然我们需要准备如下: 
 
 - 带调试信息的内核vmlinux
 - 一个压缩的内核vmlinuz或者bzImage
@@ -36,7 +36,7 @@ Kernel hacking  --->
         [*]   Provide GDB scripts for kernel debugging
 ```
 
-编译后，**bzImage**这个是**被压缩了的**，**不带调试信息的**内核，供qemu虚拟机使用（**arch/x86/boot/bzImage**），**vmlinux(当前目录**)里面带了**调试信息**，没有压缩，供**gdb使用**。
+编译后，**bzImage**这个是**被压缩了的**，**不带调试信息的**内核，供qemu虚拟机使用(**arch/x86/boot/bzImage**)，**vmlinux(当前目录**)里面带了**调试信息**，没有压缩，供**gdb使用**。
 
 当编译结束后，可以将vmlinux和bzImage文件copy到一个干净的目录下。
 
@@ -88,7 +88,7 @@ $ ls
 bin   dev  init  proc  sbin  sys   usr
 ```
 
-init文件内容：
+init文件内容: 
 
 ```
 #!/bin/busybox sh         
@@ -110,7 +110,7 @@ qemu 是一款虚拟机，可以模拟x86 & arm 等等硬件平台<似乎可模�
 
 这个gdbserver于是就可以和gdb构成一个远程合作伙伴，通过ip:port 网络方式或者是通过串口`/dev/ttyS*`来进行工作，一个在这头，一个在那头。
 
-启动内核：
+启动内核: 
 
 > cd busybox-1.28.0
 > qemu-system-x86_64 -s -S -m 512 -kernel arch/x86/boot/bzImage -initrd initramfs.cpio.gz -nographic -append "console=ttyS0, loglevel=8"
@@ -118,20 +118,20 @@ qemu 是一款虚拟机，可以模拟x86 & arm 等等硬件平台<似乎可模�
 - `-s`: `-gdb tcp::1234` 的缩写，监听1234端口，在GDB中可以通过`target remote localhost:1234`连接；
 - `-S`: 表示 QEMU 虚拟机会冻结 CPU 直到远程的 GDB 输入相应控制命令，所以运行后看不到任何输出；
 - `-kernel`: 指定编译好的调试版内核；
-- `-initrd`: 指定制作的initramfs，这个文件可以从 /boot/initrd.img\-3.13.0\-43\-generic  拷贝而来，关于它是什么东西呢？ 可以参考这个： http://www.linuxfly.org/post/94/ ，或者是这个 http://blog.csdn.net/chrisniu1984/article/details/3907874;
+- `-initrd`: 指定制作的initramfs，这个文件可以从 /boot/initrd.img\-3.13.0\-43\-generic  拷贝而来，关于它是什么东西呢？ 可以参考这个:  http://www.linuxfly.org/post/94/ ，或者是这个 http://blog.csdn.net/chrisniu1984/article/details/3907874;
 - `-nographic`: 取消图形输出窗口，使QEMU成简单的命令行程序；
 - `-append "console=ttyS0"`: 将输出重定向到console，将会显示在标准输出stdio。\-append 后面跟的是**虚拟机的cmdline**
 
-**内核安装**的vmlinuz-2.6.32-504.el6.x86_64是bzImage格式（需要使用arch/x86/boot/bzImage文件），而内核编译完，内核源码根目录下的vmlinux是ELF格式。
+**内核安装**的vmlinuz-2.6.32-504.el6.x86_64是bzImage格式(需要使用arch/x86/boot/bzImage文件)，而内核编译完，内核源码根目录下的vmlinux是ELF格式。
 
-**启动后的根目录**, 就是**initramfs**中包含的内容：
+**启动后的根目录**, 就是**initramfs**中包含的内容: 
 
 ```
 / # ls                    
 bin   dev  init  proc  root  sbin  sys   usr
 ```
 
-由于系统自带的GDB版本为7.2，内核辅助脚本无法使用，重新编译了一个**新版GDB**：
+由于系统自带的GDB版本为7.2，内核辅助脚本无法使用，重新编译了一个**新版GDB**: 
 
 ```
 $ cd gdb-7.9.1
@@ -169,7 +169,7 @@ $ /usr/local/bin/gdb
 break *0x7c00
 ```
 
-使用内核提供的GDB辅助调试功能：
+使用内核提供的GDB辅助调试功能: 
 
 ```
 (gdb) apropos lx                                    
@@ -232,7 +232,7 @@ $2 = 0xffff880007e68980 "console=ttyS0"
 
 ![config](images/1.jpg)
 
-Linux把跟一个进程相关的thread\_info和内核栈stack放在了同一内存区域，内核通过esp寄存器获得当前CPU上运行进程的内核栈栈底地址，该地址正好是thread\_info地址，由于进程描述符指针task字段在thread\_info结构体中偏移量为0，进而获得task。相关汇编指令如下：
+Linux把跟一个进程相关的thread\_info和内核栈stack放在了同一内存区域，内核通过esp寄存器获得当前CPU上运行进程的内核栈栈底地址，该地址正好是thread\_info地址，由于进程描述符指针task字段在thread\_info结构体中偏移量为0，进而获得task。相关汇编指令如下: 
 
 ```
 movl $0xffffe000, %ecx      /* 内核栈大小为8K，屏蔽低13位有效位。

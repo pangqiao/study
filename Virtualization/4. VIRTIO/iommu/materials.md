@@ -1,18 +1,18 @@
 
-Virtio-IOMMU 驱动程序现在使用 Linux 5.14 内核的 x86/x86_64硬件工作。 是 Virtio - Iommu 驱动程序 （合并在 Linux 5.3）， 在几年前在树外工作后， 最初专注于 AArch64 的准虚拟 Iommu 硬件。现在，2021 年 Linux 5.14 的 VirtIO-IOMMU 代码也已调整为适用于 x86 英特尔/AMD 硬件。Virtio-IOMMU 可以处理模拟和准虚拟化设备的管理。ACPI 虚拟 I/O 翻译表 （VIOT） 用于描述准虚拟平台的拓扑，在此案例中，x86 用于描述 virtio-iommu 和端点之间的关系。 Linux 5.14 的 IOMMU 更改还包括 Arm SMMU 更新、英特尔 VT-d 现在支持异步嵌套功能以及各种其他改进。还有一个新的是"amd_iommu=force_enable"内核启动选项，用于在通常有问题的平台上强制 IOMMU。
+Virtio-IOMMU 驱动程序现在使用 Linux 5.14 内核的 x86/x86_64硬件工作.  是 Virtio - Iommu 驱动程序 (合并在 Linux 5.3),  在几年前在树外工作后,  最初专注于 AArch64 的准虚拟 Iommu 硬件. 现在, 2021 年 Linux 5.14 的 VirtIO-IOMMU 代码也已调整为适用于 x86 英特尔/AMD 硬件. Virtio-IOMMU 可以处理模拟和准虚拟化设备的管理. ACPI 虚拟 I/O 翻译表 (VIOT) 用于描述准虚拟平台的拓扑, 在此案例中, x86 用于描述 virtio-iommu 和端点之间的关系.  Linux 5.14 的 IOMMU 更改还包括 Arm SMMU 更新、英特尔 VT-d 现在支持异步嵌套功能以及各种其他改进. 还有一个新的是"amd_iommu=force_enable"内核启动选项, 用于在通常有问题的平台上强制 IOMMU. 
 
 
-Virtio IOMMU 是一种半虚拟化设备，允许通过 virtio-mmio 发送 IOMMU 请求，如map/unmap。
+Virtio IOMMU 是一种半虚拟化设备, 允许通过 virtio-mmio 发送 IOMMU 请求, 如map/unmap. 
 
-使用VirtIO标准实现不同虚拟化组件的跨管理程序兼容性，有一个虚拟IOMMU设备现在由Linux 5.3内核中的工作驱动程序支持。
-
-
-VirtIO规范提供了v0.8规范中的虚拟IOMMU设备，该规范与平台无关，并以有效的方式管理来自仿真或物理设备的直接存储器访问。
+使用VirtIO标准实现不同虚拟化组件的跨管理程序兼容性, 有一个虚拟IOMMU设备现在由Linux 5.3内核中的工作驱动程序支持. 
 
 
-Linux VirtIO-IOMMU驱动程序的修补程序自去年以来一直在浮动，而本周最后一个Linux 5.3内核合并窗口已经排队等待登陆。 这个VirtIO IOMMU驱动程序将作为下一个内核的VirtIO/Vhost修复/功能/性能工作的一部分。
+VirtIO规范提供了v0.8规范中的虚拟IOMMU设备, 该规范与平台无关, 并以有效的方式管理来自仿真或物理设备的直接存储器访问. 
 
-QEMU正在等待补丁来支持这个VirtIO IOMMU功能。
+
+Linux VirtIO-IOMMU驱动程序的修补程序自去年以来一直在浮动, 而本周最后一个Linux 5.3内核合并窗口已经排队等待登陆.  这个VirtIO IOMMU驱动程序将作为下一个内核的VirtIO/Vhost修复/功能/性能工作的一部分. 
+
+QEMU正在等待补丁来支持这个VirtIO IOMMU功能. 
 
 
 # Paper

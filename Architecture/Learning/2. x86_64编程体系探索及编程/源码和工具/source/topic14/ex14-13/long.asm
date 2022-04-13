@@ -161,7 +161,7 @@ entry64:
 	call enable_xapic	
 
 ;
-;* 实验 14-13：统计 64-bit 模式下 PMI 中断 handler 调用的次数
+;* 实验 14-13: 统计 64-bit 模式下 PMI 中断 handler 调用的次数
 ;*
 	mov rsi, APIC_PERFMON_VECTOR
 	mov rdi, apic_perfmon_handler
@@ -173,9 +173,9 @@ entry64:
 
 	
 	SET_INT_DS_AREA64			; 设置 64-bit 模式下的 DS 存储区域
-	ENABLE_BTS_BTINT			; 开启 BTS，使用中断型 BTS buffer
+	ENABLE_BTS_BTINT			; 开启 BTS, 使用中断型 BTS buffer
 
-;; 下面打印测试信息，统计这个打印产生了多少分支
+;; 下面打印测试信息, 统计这个打印产生了多少分支
 	mov esi, test_msg
 	LIB32_PUTS_CALL
 
@@ -207,10 +207,10 @@ pmi_counter	dq 0
 	
 	;call QWORD far [conforming_pointer]			; 测试conforimg 代码
 	
-;; 从 64 位切换到 compatibility mode（权限不改变，0 级）　	
+;; 从 64 位切换到 compatibility mode(权限不改变, 0 级)　	
 	;jmp QWORD far [compatibility_pointer]
 
-;; 切换到 compatibility mode（进入 3 级）
+;; 切换到 compatibility mode(进入 3 级)
 ;	push user_data32_sel | 3
 ;	push 0x10ff0
 ;	push user_code32_sel | 3
@@ -218,7 +218,7 @@ pmi_counter	dq 0
 ;	db 0x48
 ;	retf	
 
-;; 使用 iret 切换到 compatibility mode（进入 3 级）
+;; 使用 iret 切换到 compatibility mode(进入 3 级)
 ;	mov rax, KERNEL_RSP
 ;	push user_data32_sel | 3
 ;	push rax;USER_RSP
@@ -332,7 +332,7 @@ user_entry:
 	call sys_service_call		
 	
 breakpoint:
-	mov rax, rbx			; 无用的指令，在这此产生#DB异常
+	mov rax, rbx			; 无用的指令, 在这此产生#DB异常
 	
 		
 ;	mov rsi, msg1
@@ -413,7 +413,7 @@ compatibility_entry_end:
 
 
 
-;; ###### 下面是 64 位例程：#######
+;; ###### 下面是 64 位例程: #######
 
 	bits 64
 
@@ -441,7 +441,7 @@ do_apic_perfmon_handler:
 	;; 关闭 TR
 	mov ecx, IA32_DEBUGCTL
 	rdmsr
-	mov [debugctl_value], eax	; 保存原 IA32_DEBUGCTL 寄存器值，以便恢复
+	mov [debugctl_value], eax	; 保存原 IA32_DEBUGCTL 寄存器值, 以便恢复
 	mov [debugctl_value + 4], edx
 	btr eax, 6			; TR = 0
 	wrmsr

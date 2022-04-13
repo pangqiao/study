@@ -1,7 +1,7 @@
 关于VIM的进阶内容
 
 ```
-参考：
+参考: 
 http://easwy.com/blog/archives/advanced-vim-skills-catalog/
 ```
 

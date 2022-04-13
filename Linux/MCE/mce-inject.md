@@ -1,4 +1,4 @@
-使用mce-inject工具，但是您需要加载mce_inject内核模块。
+使用mce-inject工具, 但是您需要加载mce_inject内核模块. 
 
 ```
 modprobe mce_inject
@@ -10,7 +10,7 @@ modprobe mce_inject
 CONFIG_X86_MCE_INJECT
 ```
 
-接下来，您需要下载mce_inject工具的源代码，安装依赖项并编译它：
+接下来, 您需要下载mce_inject工具的源代码, 安装依赖项并编译它: 
 
 ```
 $ git clone https://github.com/andikleen/mce-inject.git

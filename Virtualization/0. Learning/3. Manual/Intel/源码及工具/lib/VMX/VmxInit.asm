@@ -17,7 +17,7 @@
 ; output:
 ;       0 - successful
 ;       otherwise - 错误码
-; 描述：
+; 描述: 
 ;       1) 使处理器进入 VMX root operation 环境
 ;----------------------------------------------------------
 vmx_operation_enter:
@@ -201,8 +201,8 @@ vmx_operation_enter.done:
 ; output:
 ;       0 - successful
 ;       otherwise - 错误码
-; 描述：
-;       1) 初始化 VMM（host）的 vmxon region
+; 描述: 
+;       1) 初始化 VMM(host)的 vmxon region
 ;----------------------------------------------
 initialize_vmxon_region:
         push ebx
@@ -224,9 +224,9 @@ initialize_vmxon_region:
         
         ;;
         ;; 检查 CR0.PE 与 CR0.PG 是否符合 fixed 位，这里只检查低 32 位值
-        ;; 1) 对比 Cr0FixedMask 值（固定为1值），不相同则返回错误码
+        ;; 1) 对比 Cr0FixedMask 值(固定为1值)，不相同则返回错误码
         ;;
-        mov eax, STATUS_VMX_UNEXPECT                    ; 错误码（超出期望值）
+        mov eax, STATUS_VMX_UNEXPECT                    ; 错误码(超出期望值)
         xor ecx, [ebp + PCB.Cr0FixedMask]               ; 与 Cr0FixedMask 值异或，检查是否相同
         js initialize_vmxon_region.done                 ; 检查 CR0.PG 位是否相等
         test ecx, 1
@@ -355,8 +355,8 @@ vmx_operation_exit.done:
 ; output:
 ;       0 - successful
 ;       otherwise - 错误码
-; 描述：
-;       1) 初始化提供的 vmcs buffer（由 VM 管理块指针提供）
+; 描述: 
+;       1) 初始化提供的 vmcs buffer(由 VM 管理块指针提供)
 ;-----------------------------------------------------------
 initialize_vmcs_buffer:
         push ebp
@@ -432,7 +432,7 @@ initialize_vmcs_buffer:
         mov [ebx + VMB.Ep4taPhysicalBase], edx
         
         ;;
-        ;; 下面为 VMCS region 分配相关的 access page，包括：
+        ;; 下面为 VMCS region 分配相关的 access page，包括: 
         ;; 1) IoBitmap A page
         ;; 2) IoBitmap B page
         ;; 3) Virtual-access page
@@ -453,7 +453,7 @@ initialize_vmcs_buffer:
         ;; 使用 get_vmcs_access_pointer() 分配一个 access page
         ;; 1) edx:eax 返回对应的 physical address 与 virtual address
         ;; 2) 在 X64 下返回对应的 64 位地址
-        ;; 3) 注意：这里不检查 get_vmcs_access_pointer() 的返回值，
+        ;; 3) 注意: 这里不检查 get_vmcs_access_pointer() 的返回值，
         ;;          作为演示，并没设计当超出内存资源的情形！
         ;;
         
@@ -541,7 +541,7 @@ initialize_vmcs_buffer.loop:
 
         
         ;;
-        ;; 下面分别初始化各个 VMCS 域，包括：
+        ;; 下面分别初始化各个 VMCS 域，包括: 
         ;; 1) VM execution control fields
         ;; 2) VM-exit control fields
         ;; 3) VM-entry control fields
@@ -587,7 +587,7 @@ initialize_vmcs_buffer.loop:
 ;       esi - VMB pointer
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 初始化 VM 私的存储区域
 ;-----------------------------------------------------------
 init_vm_storage_block:
@@ -599,7 +599,7 @@ init_vm_storage_block:
         mov ebx, esi
         
         ;;
-        ;; 分配 VSB（VM storage block）区域
+        ;; 分配 VSB(VM storage block)区域
         ;;
         mov esi, ((VSB_SIZE + 0FFFh) / 1000h)
         call alloc_kernel_pool_n
@@ -680,7 +680,7 @@ setup_vmcs_region:
 ;       esi - VMB pointer
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 设置 VMCS 的 HOST STAGE 区域
 ;       2) 这是保护模式或者IA-32e模式的 guest区域设置
 ;----------------------------------------------------------   
@@ -797,7 +797,7 @@ init_guest_state_area.@0:
         mov [GuestStateBufBase + GUEST_STATE.TrSelector], ax
 
         ;;
-        ;; 如果 guest 使用 3 级（USER）权限
+        ;; 如果 guest 使用 3 级(USER)权限
         ;;
         test DWORD [edx + VMB.GuestFlags], GUEST_FLAG_USER
         jz init_guest_state_area.@01
@@ -864,15 +864,15 @@ init_guest_state_area.@02:
         mov [GuestStateBufBase + GUEST_STATE.TrBase], eax
         
         ;;
-        ;; 64-bit Kernel CS/SS 描述符设置说明：
-        ;; 1）在 x64 体系下描述符可以设置为：
+        ;; 64-bit Kernel CS/SS 描述符设置说明: 
+        ;; 1)在 x64 体系下描述符可以设置为: 
         ;;      * CS = 00209800_00000000h (L=P=1, G=D=0, C=R=A=0)
         ;;      * SS = 00009200_00000000h (L=1, G=B=0, W=1, E=A=0)
-        ;; 2) 在 VMX 架构下, 在VM-exit 返回 host 后会将描述符设置为：
+        ;; 2) 在 VMX 架构下, 在VM-exit 返回 host 后会将描述符设置为: 
         ;;      * CS = 00AF9B00_0000FFFFh (G=L=P=1, D=0, C=0, R=A=1)
         ;;      * SS = 00CF9300_0000FFFFh (G=P=1, B=1, E=0, W=A=1)
         ;;
-        ;; 3) 因此，为了与 host 的描述符达成一致，这里将描述符设为：
+        ;; 3) 因此，为了与 host 的描述符达成一致，这里将描述符设为: 
         ;;      * CS = 00AF9A00_0000FFFFh (G=L=P=1, D=0, C=A=0, R=1)
         ;;      * SS = 00CF9200_0000FFFFh (G=P=1, B=1, E=A=0, W=1)  
         ;;        
@@ -882,7 +882,7 @@ init_guest_state_area.@02:
         mov DWORD [GuestStateBufBase + GUEST_STATE.TrAccessRight], TYPE_SYS | TYPE_BUSY_TSS64 | SEG_ugdlP | DPL_0
         
         ;;
-        ;; 如果 guest 使用 3 级（USER）权限
+        ;; 如果 guest 使用 3 级(USER)权限
         ;;
         test DWORD [edx + VMB.GuestFlags], GUEST_FLAG_USER
         jz init_guest_state_area.@03
@@ -1032,7 +1032,7 @@ init_guest_state_area.@13:
 init_guest_state_area.@2:
         ;;
         ;; 写入 GDTR 与 IDTR 值
-        ;; 1) 32 位 base(x64下 64 位）
+        ;; 1) 32 位 base(x64下 64 位)
         ;; 2) 32 位 limit
         ;;
         REX.Wrxb
@@ -1057,7 +1057,7 @@ init_guest_state_area.@2:
         ;;
         ;; 以当前值写入 MSRs
         ;; 1) IA32_DEBUGCTL
-        ;; 2) IA32_SYSENTER_CS（32位）
+        ;; 2) IA32_SYSENTER_CS(32位)
         ;; 3) IA32_SYSENTER_ESP
         ;; 4) IA32_SYSENTER_EIP
         ;; 5) IA32_PERF_GLOBAL_CTRL
@@ -1119,10 +1119,10 @@ init_guest_state_area.@3:
         mov DWORD [GuestStateBufBase + GUEST_STATE.ActivityState], GUEST_STATE_ACTIVE
         
         ;; 2. Interruptibility state:
-        ;; 说明：
+        ;; 说明: 
         ;;    1) 全部设置为 0
         ;;    2) 除了当 guest processor 处于 SMM 模式时，Block by SMI 必须设为 1 值
-        ;; 因此：
+        ;; 因此: 
         ;;    [0]: Blocking by STI: No
         ;;    [1]: Blocking by MOV SS: No
         ;;    [2]: Blocking by SMI: No
@@ -1145,7 +1145,7 @@ init_guest_state_area.@3:
         
         ;;
         ;; 5. VMX-preemption timer value
-        ;; 说明：
+        ;; 说明: 
         ;;    1) guest 每 500ms 执行 VM-exit
         ;;    2) PCB.ProcessorFrequency * us 数
         ;;
@@ -1159,7 +1159,7 @@ init_guest_state_area.@3:
         
         ;;
         ;; 6. PDPTEs(Page-Directory-Pointer Table Enties)
-        ;; 说明：
+        ;; 说明: 
         ;;      1) 从 PCB.Ppt 表里读取 4 个 PDPTEs 值
         ;;
         mov eax, [ebp + PCB.Ppt]
@@ -1206,7 +1206,7 @@ init_guest_state_area.@3:
 ;       esi - VMB pointer
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 设置实模式下 VMCS 的 GUEST STAGE 区域
 ;----------------------------------------------------------     
 init_realmode_guest_state:
@@ -1363,7 +1363,7 @@ init_realmode_guest_state:
 
 
         ;;
-        ;; MSRs 设置：
+        ;; MSRs 设置: 
         ;; 1) IA32_DEBUGCTL = 0
         ;; 2) IA32_SYSENTER_CS = 0
         ;; 3) IA32_SYSENTER_ESP = 0
@@ -1405,10 +1405,10 @@ init_realmode_guest_state:
         mov DWORD [GuestStateBufBase + GUEST_STATE.ActivityState], GUEST_STATE_ACTIVE
         
         ;; 2. Interruptibility state:
-        ;; 说明：
+        ;; 说明: 
         ;;    1) 全部设置为 0
         ;;    2) 除了当 guest processor 处于 SMM 模式时，Block by SMI 必须设为 1 值
-        ;; 因此：
+        ;; 因此: 
         ;;    [0]: Blocking by STI: No
         ;;    [1]: Blocking by MOV SS: No
         ;;    [2]: Blocking by SMI: No
@@ -1437,7 +1437,7 @@ init_realmode_guest_state:
         
         ;;
         ;; 6. PDPTEs(Page-Directory-Pointer Table Enties)
-        ;; 说明：
+        ;; 说明: 
         ;;      1) 所有 PDPTEs 为 0
         ;;
         xor eax, eax
@@ -1473,7 +1473,7 @@ init_realmode_guest_state:
 ;       esi - VMB pointer
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 设置 VMCS 的 HOST STAGE 区域
 ;----------------------------------------------------------   
 init_host_state_area:
@@ -1610,10 +1610,10 @@ init_host_state_area:
 ;----------------------------------------------------------
 ; init_vm_execution_control_fields()
 ; input:
-;       esi - VMCS 管理块指针（VMCS_MANAGE_BLOCK）
+;       esi - VMCS 管理块指针(VMCS_MANAGE_BLOCK)
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 设置 VMCS 的 VM-execution 控制域
 ;----------------------------------------------------------   
 init_vm_execution_control_fields:
@@ -1639,7 +1639,7 @@ init_vm_execution_control_fields:
         ;; 4) [6]  - Activate VMX preemption timer: Yes
         ;; 5) [7]  - process posted interrupts: No
         ;;
-        ;; 注意：
+        ;; 注意: 
         ;; 1) 如果 VMB.VmxTimerValue = 0 时，不使用 VMX-preemption timer
         ;;
         
@@ -1650,13 +1650,13 @@ init_vm_execution_control_fields:
         cmove eax, ebx
         
         ;;
-        ;; 注意，PCB.PinBasedCtls 的值在 stage1 阶段时已更新，它的值为：
+        ;; 注意，PCB.PinBasedCtls 的值在 stage1 阶段时已更新，它的值为: 
         ;; 1) 当 IA32_VMX_BASIC[55] = 1 时，等于 IA32_VMX_TRUE_PINBASED_CTLS 寄存器
         ;; 2) 当 IA32_VMX_BASIC[55] = 0 时，等于 IA32_VMX_PINBASED_CTLS 寄存器
         ;; 
         
         ;;######################################################################################
-        ;; PCB.PinBasedCtls 值说明：
+        ;; PCB.PinBasedCtls 值说明: 
         ;; 1) [31:0]  - allowed 0-setting 位
         ;;              当 bit 为 1 时，Pin-based VM-execution control 位为 0，则出错!
         ;;              当 bit 为 0 时，Pin-based VM-execution control 位可为 0 值。
@@ -1670,15 +1670,15 @@ init_vm_execution_control_fields:
         ;; 3) 当 [31:0] 的位为 0，而 [63:32] 的相应位同时为 1 时，
         ;;    说明 Pin-based VM-execution control 位允许设置为 0 或 1 值
         ;;
-        ;; 生成最终的 Pin-based VM-execution control 值说明：
+        ;; 生成最终的 Pin-based VM-execution control 值说明: 
         ;; 1) 当 eax 输入用户设置的值后，下面算法生成最终的值
-        ;; 算法一：
-        ;; 1) mask1 = (allowed 0-setting) AND (allowed 1-setting)：得出必须为 1 的 mask 值
-        ;; 2) eax = (eax) OR (mask1)：置 1 值
-        ;; 3) mask0 = (allowed 0-setting) OR (allowed 1-setting)：得出必须为 0 的 mask 值
-        ;; 4) eax = (eax) AND (mask0)：清 0 值
+        ;; 算法一: 
+        ;; 1) mask1 = (allowed 0-setting) AND (allowed 1-setting): 得出必须为 1 的 mask 值
+        ;; 2) eax = (eax) OR (mask1): 置 1 值
+        ;; 3) mask0 = (allowed 0-setting) OR (allowed 1-setting): 得出必须为 0 的 mask 值
+        ;; 4) eax = (eax) AND (mask0): 清 0 值
         ;; 
-        ;; 算法二：
+        ;; 算法二: 
         ;; 1) eax = (eax) OR (allowed 0-setting)
         ;; 2) eax = (eax) AND (allowed 1-setting)
         ;;
@@ -1832,21 +1832,21 @@ init_vm_execution_control_fields.@02:
         
         ;;
         ;; 设置 #PF 异常的 PFEC_MASK 与 PFEC_MATCH 值
-        ;; PFEC 与 PFEC_MASK，PFEC_MATCH 说明：
+        ;; PFEC 与 PFEC_MASK，PFEC_MATCH 说明: 
         ;; 当 PFEC & PFEC_MASK = PFEC_MATCH 时，#PF 导致 VM exit 发生
         ;;      1) 当 PFEC_MASK = PFEC_MATCH = 0 时，所有的 #PF 都导致 VM exit
         ;;      2) 当 PFEC_MASK = 0，而 PFEC_MATCH = FFFFFFFFh 时，任何 #PF 都不会导致 VM exit
         ;;
         ;; PFEC 说明:
-        ;; 1) [0] - P 位：  为 0 时，#PF 由 not present 产生
+        ;; 1) [0] - P 位:   为 0 时，#PF 由 not present 产生
         ;;                  为 1 时，#PF 由其它 voilation 产生
-        ;; 2) [1] - R/W 位：为 0 时，#PF 由 read access 产生
+        ;; 2) [1] - R/W 位: 为 0 时，#PF 由 read access 产生
         ;;                  为 1 时，#PF 由 write access 产生
-        ;; 3) [2] - U/S 位：为 0 时，发生 #PF 时，处理器在 supervisor 权限下
+        ;; 3) [2] - U/S 位: 为 0 时，发生 #PF 时，处理器在 supervisor 权限下
         ;;                  为 1 时，发生 #PF 时，处理器在 user 权限下
-        ;; 4) [3] - RSVD 位：为 0 时，指示保留位为 0
+        ;; 4) [3] - RSVD 位: 为 0 时，指示保留位为 0
         ;;                   为 1 时，指示保留位为 1
-        ;; 5) [4] - I/D 位： 为 0 时，执行页正常
+        ;; 5) [4] - I/D 位:  为 0 时，执行页正常
         ;;                   为 1 时，执行页产生 #PF
         ;; 6) [31:5] - 保留位
         ;;
@@ -1864,7 +1864,7 @@ init_vm_execution_control_fields.@02:
         
         
         ;;
-        ;; 设置 IO bitmap address（物理地址）
+        ;; 设置 IO bitmap address(物理地址)
         ;;                
         mov eax, [esi + VMB.IoBitmapPhyAddressA]
         mov edx, [esi + VMB.IoBitmapPhyAddressA + 4]
@@ -1884,7 +1884,7 @@ init_vm_execution_control_fields.@02:
         
         ;;
         ;; 设置 CR0/CR4 的 guest/host mask 及 read shadows 值
-        ;; 说明：
+        ;; 说明: 
         ;; 1) 当 mask 相应位为 1 时，表明此位属于 Host 设置，guest 无权设置
         ;; 2) 当 mask 相应位为 0 时，表时此位 guest 可以设置
         ;;
@@ -1952,8 +1952,8 @@ init_vm_execution_control_fields.Cr4:
                 
         ;;
         ;; APIC virtualization 设置
-        ;; 1) APIC-access address  = 0FEE00000H（默认）
-        ;; 2) Virtual-APIC address = 分配获得（物理地址）
+        ;; 1) APIC-access address  = 0FEE00000H(默认)
+        ;; 2) Virtual-APIC address = 分配获得(物理地址)
         ;; 3) TPR thresold = 10h
         ;; 4) EOI-exit bitmap = 0
         ;; 5) posted-interrupt notification vector = 0
@@ -2020,7 +2020,7 @@ init_vm_execution_control_fields.@1:
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.PostedInterruptDescriptorAddr + 4], eax  
         
         ;;
-        ;; MSR-bitmap address 设置（物理地址）
+        ;; MSR-bitmap address 设置(物理地址)
         ;;
         mov esi, [edx + VMB.MsrBitmapPhyAddress]
         mov edi, [edx + VMB.MsrBitmapPhyAddress + 4]
@@ -2100,7 +2100,7 @@ init_vm_execution_control_fields.@3:
 ; init_vm_exit_control_fields()
 ; input:
 ;     esi - VMB pointer
-; 描述：
+; 描述: 
 ;       1) 设置 VM-Entry 控制域  
 ;---------------------------------------------------------- 
 init_vm_exit_control_fields:
@@ -2161,7 +2161,7 @@ init_vm_exit_control_fields.@0:
         
         
         ;;
-        ;; VM-exit MSR-store 设置：这里暂时不设置 MSR-store 
+        ;; VM-exit MSR-store 设置: 这里暂时不设置 MSR-store 
         ;; 1) MsrStoreCount = 0
         ;; 2) MsrStoreAddress =  分配获得
         ;;
@@ -2173,7 +2173,7 @@ init_vm_exit_control_fields.@0:
 
 
         ;;
-        ;; Vm-exit Msr-load 设置：这里暂不设置 Msr-store
+        ;; Vm-exit Msr-load 设置: 这里暂不设置 Msr-store
         ;; 1) MsrLoadCount = 0
         ;; 2) MsrLoadAddress = 分配获得
         ;;
@@ -2197,7 +2197,7 @@ init_vm_exit_control_fields.@0:
 ; init_vm_entry_control_fields()
 ; input:
 ;       esi - VMB pointer
-; 描述：
+; 描述: 
 ;       1) 设置 VM-Entry 控制域  
 ;---------------------------------------------------------- 
 init_vm_entry_control_fields:
@@ -2241,7 +2241,7 @@ init_vm_entry_control_fields:
         
 
         ;;
-        ;; VM-entry MSR-load 设置：这里暂时不设置
+        ;; VM-entry MSR-load 设置: 这里暂时不设置
         ;; 1) MsrLoadCount = 0
         ;; 2) VM-entry MsrLoadAddress =  VM-entry MsrStoreAddress
         ;;
@@ -2253,7 +2253,7 @@ init_vm_entry_control_fields:
         
         
         ;;
-        ;; 写入 event injection：此时没有 event injection
+        ;; 写入 event injection: 此时没有 event injection
         ;; 1) VM-entry interruption-inoformation = 0
         ;; 2) VM-entry exception error code = 0
         ;; 3) VM-entry instruction length = 0
@@ -2276,7 +2276,7 @@ init_vm_entry_control_fields:
 ;       esi - virtual apic address
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 初始化 virtual local apic
 ;----------------------------------------------------------
 init_virtual_local_apic:
@@ -2336,7 +2336,7 @@ init_virtual_local_apic:
 ;       esi - VMB pointer
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 初始化 guest 环境的页表结构
 ;----------------------------------------------------------
 init_guest_page_table:

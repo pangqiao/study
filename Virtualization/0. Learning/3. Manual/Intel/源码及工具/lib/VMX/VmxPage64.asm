@@ -13,9 +13,9 @@
 ;       rsi - guest physical address
 ; output:
 ;       eax - offset
-; 描述：
+; 描述: 
 ;       得到 PXT entry 的 offset 值
-; 注意：
+; 注意: 
 ;       在 legacy 模式下使用
 ;---------------------------------------------------------------
 get_ept_pxe_offset64:
@@ -30,7 +30,7 @@ get_ept_pxe_offset64:
 ;       rsi - GPA
 ; output:
 ;       eax - offset
-; 描述：
+; 描述: 
 ;       1) 得到 PPT entry 的 offset 值
 ;---------------------------------------------------------------        
 get_ept_ppe_offset64:
@@ -46,7 +46,7 @@ get_ept_ppe_offset64:
 ;       rsi - GPA
 ; output:
 ;       eax - offset
-; 描述：
+; 描述: 
 ;       1) 得到 PDT entry 的 offset 值
 ;---------------------------------------------------------------
 get_ept_pde_offset64:
@@ -61,7 +61,7 @@ get_ept_pde_offset64:
 ;       rsi - GPA
 ; output:
 ;       eax - offset
-; 描述：
+; 描述: 
 ;       1) 得到 PT entry 的 offset 值
 ;---------------------------------------------------------------  
 get_ept_pte_offset64:
@@ -120,12 +120,12 @@ get_ept_entry_level_attribute.Done:
 ;       eax - page attribute
 ; output:
 ;       0 - successful, otherwise - error code
-; 描述：
+; 描述: 
 ;       1) 如果进行映射工作，则映射 guest-physical address 到 physical addrss
 ;       2) 如果进行修复工作，则修复 EPT violation 及 EPT misconfiguration
 ;
-; page attribute 说明：
-;       eax 传递过来的 attribute 由下面标志位组成：
+; page attribute 说明: 
+;       eax 传递过来的 attribute 由下面标志位组成: 
 ;       [0]    - Read
 ;       [1]    - Write
 ;       [2]    - Execute
@@ -150,14 +150,14 @@ do_guest_physical_address_mapping64:
         
         
         ;;
-        ;; EPT 映射说明：
+        ;; EPT 映射说明: 
         ;; 1) 所有映射均使用 4K-page 进行
         ;; 2) 在 PML4T(PXT)，PDPT(PPT) 以及 PDT 表上，访问权限都具有 Read/Write/Execute
         ;; 3) 在最后一级 PT 表上，访问权限是输入的 ecx 参数(page attribute)
-        ;; 4) 所有页表需要使用 get_ept_page 动态分配（从 Kernel pool 内分配）
+        ;; 4) 所有页表需要使用 get_ept_page 动态分配(从 Kernel pool 内分配)
         ;;
         ;;
-        ;; page attribute 使用说明：
+        ;; page attribute 使用说明: 
         ;; 1) FIX_MISCONF=1 时，表明修复 EPT misconfiguration 错误.
         ;; 2) FIX_ACCESS=1 时，表明修复 EPT violation 错误
         ;; 3) GET_PTE=1时，表明需要返回 PTE 值
@@ -169,7 +169,7 @@ do_guest_physical_address_mapping64:
         mov r10, rsi                                    ; r10 = GPA
         mov r11, rdi                                    ; r11 = HPA
         mov ebx, eax                                    ; ebx = page attribute
-        mov ecx, (32 - 4)                               ; ecx = EPT 表项 index 左移位数（shld）
+        mov ecx, (32 - 4)                               ; ecx = EPT 表项 index 左移位数(shld)
         
         ;;
         ;; 读取当前 VMB 的 EP4TA 值
@@ -193,7 +193,7 @@ do_guest_physical_address_mapping64.Walk:
         
         
         ;;
-        ;; 检查 EPT 表项是否为 not present，包括：
+        ;; 检查 EPT 表项是否为 not present，包括: 
         ;; 1) access right 不为 0
         ;; 2) EPT_VALID_FLAG
         ;;
@@ -303,8 +303,8 @@ do_guest_physical_address_mapping64.BuildPte:
         
         ;;
         ;; 检查是否属于 PTE 层级
-        ;; 1）是：写入生成的 PTE 值
-        ;; 2）否：分配 EPT 页面
+        ;; 1)是: 写入生成的 PTE 值
+        ;; 2)否: 分配 EPT 页面
         ;;
         cmp ecx, (32 - 4 + 9 + 9 + 9)
         je do_guest_physical_address_mapping64.WriteEptEntry
@@ -412,9 +412,9 @@ do_ept_page_fault64:
         push rcx
         
         ;;
-        ;; EPT page fault 产生原因为：
-        ;; 1) EPT misconfiguration（EPT 的 tage enties 设置不合法）
-        ;; 2) EPT violation（EPT 的访问违例）
+        ;; EPT page fault 产生原因为: 
+        ;; 1) EPT misconfiguration(EPT 的 tage enties 设置不合法)
+        ;; 2) EPT violation(EPT 的访问违例)
         ;;
         
         ;;
@@ -431,12 +431,12 @@ do_ept_page_fault64:
         je do_ept_page_fault64.EptMisconf
         
         ;;
-        ;; Exit qualification 字段保存明细信息：
+        ;; Exit qualification 字段保存明细信息: 
         ;; 1) bits 8:7 = 0 时，执行 MOV to CR3 指令引起 EPT violation
         ;; 2) bits 8:7 = 1 时，在访问 guest paging-structure 时引起 EPT violation
         ;; 3) bits 8:7 = 3 时, 由 guest-physical address 引起 EPT violation
         ;;
-        ;; 修复 EPT violation 说明：
+        ;; 修复 EPT violation 说明: 
         ;; 1) 由“MOV to CR3” 及 guest paging-structure 引起的 EPT violation，修复时 GPA 与 HPA 一一对应
         ;; 2) 由 guest-physical address 引起的 EPT violation，修复时动态分配 EPT 页面
         ;;       
@@ -480,9 +480,9 @@ do_ept_page_fault64.done:
 ;       rsi - table entry of EPT_MISCONFIGURATION
 ; output:
 ;       eax - 0 = successful， otherwise = error code
-; 描述：
+; 描述: 
 ;       1) 修复提供的 EPT table entry 值
-; 参数：
+; 参数: 
 ;       rsi - 提供发生 EPT misconfiguration 的 EPT 表项，修复后返回 EPT 表项
 ;       eax - 为 0 时表示成功，否则为错误码
 ;---------------------------------------------------------------
@@ -490,11 +490,11 @@ do_ept_entry_misconf_fixing64:
         push rcx
 
         ;;
-        ;; EPT misconfigruation 的产生：
-        ;; 1) 表项的 access right 为 010B（write-only）或者 110B（write/execute）
-        ;; 2) 表项的 access right 为 100B（execute-only），但 VMX 并不支持 execute-only 属性
-        ;; 3) 当表项是 present 的（access right 不为 000B）：
-        ;;      3.1) 保留位不为 0，即：bits 51:M 为保留位，这个 M 值等于 MAXPHYADDR 值
+        ;; EPT misconfigruation 的产生: 
+        ;; 1) 表项的 access right 为 010B(write-only)或者 110B(write/execute)
+        ;; 2) 表项的 access right 为 100B(execute-only)，但 VMX 并不支持 execute-only 属性
+        ;; 3) 当表项是 present 的(access right 不为 000B): 
+        ;;      3.1) 保留位不为 0，即: bits 51:M 为保留位，这个 M 值等于 MAXPHYADDR 值
         ;;      3.2) page frame 的 memory type 不支持，为 2, 3 或者 7
         ;;
         
@@ -512,7 +512,7 @@ do_ept_entry_misconf_fixing64:
         and eax, 7
         
         ;;
-        ;; ### 检查1：access right 是否为 100B（execute-only）
+        ;; ### 检查1: access right 是否为 100B(execute-only)
         ;;
         cmp eax, EPT_EXECUTE
         jne do_ept_entry_misconf_fixing64.@1
@@ -525,7 +525,7 @@ do_ept_entry_misconf_fixing64:
         
 do_ept_entry_misconf_fixing64.@1:
         ;;
-        ;; 这里不检查 access right 是否为 010B（write-only） 或者 110B（write/execute）
+        ;; 这里不检查 access right 是否为 010B(write-only) 或者 110B(write/execute)
         ;; 我们直接添加 read 权限
         ;;
         or rsi, EPT_READ                                
@@ -536,7 +536,7 @@ do_ept_entry_misconf_fixing64.@2:
         ;;
         ;; 这里不检查保留位
         ;; 1) 我们直接将 bits 51:M 位清 0
-        ;; 2) 保留 bits 63:52（忽略位）的值
+        ;; 2) 保留 bits 63:52(忽略位)的值
         ;;
         mov rax, 0FFF0000000000000h                             ; bits 63:52
         or rax, [gs: PCB.MaxPhyAddrSelectMask]                  ; bits 63:52, bits M-1:0
@@ -559,7 +559,7 @@ do_ept_entry_misconf_fixing64.@3:
 do_ept_entry_misconf_fixing64.@31:        
 
         ;;
-        ;; 如果属于 PTE 时，保留 bit6（IPAT位），并将 memory type 置为 PCB.EptMemoryType 值
+        ;; 如果属于 PTE 时，保留 bit6(IPAT位)，并将 memory type 置为 PCB.EptMemoryType 值
         ;;
         cmp ecx, 4
         jne do_ept_entry_misconf_fixing64.@32
@@ -595,11 +595,11 @@ do_ept_entry_misconf_fixing64.done:
 ;       edi - attribute
 ; output:
 ;       eax - 0 = successful， otherwise = error code
-; 描述：
+; 描述: 
 ;       1) 修复表项的 EPT violation 错误
-; 参数说明：
+; 参数说明: 
 ;       1) rsi 提供需要修复的表项
-;       2) edi 提供的属性值：
+;       2) edi 提供的属性值: 
 ;       [0]    - read access
 ;       [1]    - write access
 ;       [2]    - execute access
@@ -629,7 +629,7 @@ do_ept_entry_violation_fixing64:
         ;; 3) 对 guest-physical address 进行写访问，而 EPT paging-structure 表项的 bit1 为 0
         ;; 4) EPTP[6] = 1 时，在更新 guest paging-structure 表项的 accessed 或 dirty 位时被作为“写访问”
         ;;                    此时 EPT paging-structure 表项的 bit1 为 0
-        ;; 5) 对 guest-physical address 进行 fetch操作（execute），而 EPT paging-structure 表项的 bit2 为 0
+        ;; 5) 对 guest-physical address 进行 fetch操作(execute)，而 EPT paging-structure 表项的 bit2 为 0
         ;;
         
         mov eax, MAPPING_UNSUCCESS
@@ -640,7 +640,7 @@ do_ept_entry_violation_fixing64:
         ;;
         ;; 修复处理:
         ;; 1) 这里不修复 not-present 现象
-        ;; 2) 添加相应的访问权限：将表项值 或上 attribute[2:0] 值
+        ;; 2) 添加相应的访问权限: 将表项值 或上 attribute[2:0] 值
         ;;
         mov ecx, edi
         and ecx, 7
@@ -661,7 +661,7 @@ do_ept_entry_violation_fixing64.done:
 ;       rsi - guest-physical address
 ; output:
 ;       none
-; 描述：　
+; 描述: 　
 ;       1) 打印 EPT paging structure 表项
 ;---------------------------------------------------------------
 dump_ept_paging_structure64:
@@ -673,7 +673,7 @@ dump_ept_paging_structure64:
 
         
         mov r10, rsi                                    ; r10 = GPA
-        mov ecx, (32 - 4)                               ; ecx = EPT 表项 index 左移位数（shld）
+        mov ecx, (32 - 4)                               ; ecx = EPT 表项 index 左移位数(shld)
         
         ;;
         ;; 读取当前 VMB 的 EP4TA 值
@@ -718,7 +718,7 @@ dump_ept_paging_structure64.Walk:
         call println
         
         ;;
-        ;; 检查 EPT 表项是否为 not present，包括：
+        ;; 检查 EPT 表项是否为 not present，包括: 
         ;; 1) access right 不为 0
         ;; 2) EPT_VALID_FLAG
         ;;
@@ -762,7 +762,7 @@ dump_ept_paging_structure64.Done:
 ;       rdi - dump page flag
 ; output:
 ;       none
-; 描述：　
+; 描述: 　
 ;       1) 打印 EPT paging structure 表项
 ;---------------------------------------------------------------
 dump_guest_longmode_paging_structure64:
@@ -773,7 +773,7 @@ dump_guest_longmode_paging_structure64:
 
         
         mov r10, rsi                                    ; r10 = GPA
-        mov ecx, (32 - 4)                               ; ecx = EPT 表项 index 左移位数（shld）
+        mov ecx, (32 - 4)                               ; ecx = EPT 表项 index 左移位数(shld)
         
         mov [Ept.DumpPageFlag], edi
         

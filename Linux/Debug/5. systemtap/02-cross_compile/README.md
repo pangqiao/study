@@ -2,7 +2,7 @@
 `Systemtap` 是内核调试的强大工具, `systemtap` 从版本 `1.0` 开始变支持 `arm` 处理器, 但是只支持 `OMAP` 的, 由于"工作"需要将 `systemtap` 移植到运行 `Android`.
 
 
-`systemtap` 里面有三个重要的工具：translator，compiler，staprun。
+`systemtap` 里面有三个重要的工具: translator，compiler，staprun。
 translator负责将stp脚本翻译为c代码；
 compiler根据runtime环境和内核路径来生成module；
 staprun负责装载、卸载模块，输出模块探测的信息。
@@ -19,13 +19,13 @@ translator和compiler都是在宿主机上运行，staprun在目标板上运行�
 
 正常情况下, `SystemTap` 仅仅会运行在部署了 `SystemTap` 的系统上. 这意味着, 如果你想在 `10` 个系统上运行 `SystemTap`, 你必须把 `SystemTap` 部署到所有的系统上. 有时候, 这可能既不可行也不理想. 比如, 公司政策禁止管理员在指定的机器上安装 `RPM` 包来提供编译和 `debug` 信息, 从而防止 `SystemTap` 的部署. 为了解决这一问题, `SystemTap` 允许你使用 `Cross-instrumentation`.
 
-`Cross-instrumentation` 是一个从一台计算机上的 `SystemTap` 脚本生成 `SystemTap` 测量模块并在另一台计算机上使用的过程. 这个过程提供了以下好处：
+`Cross-instrumentation` 是一个从一台计算机上的 `SystemTap` 脚本生成 `SystemTap` 测量模块并在另一台计算机上使用的过程. 这个过程提供了以下好处: 
 
 *	各种主机的内核信息包可以被安装在单台主机上
 
 *	每台目标机器仅仅需要被安装一个 `RPM` 包, 为了使用生成的 `SystemTap` 测量模块 : `systemtap-runtime` 包
 
-为了简单起见，在这一节中使用以下术语：
+为了简单起见，在这一节中使用以下术语: 
 
 *	测量模块 - 从 `SystemTap` 脚本构建的内核模. `SystemTap` 模块在主机系统上被构建, 将在目标系统的内核上被加载.
 

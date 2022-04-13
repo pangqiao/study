@@ -1,7 +1,7 @@
          ;代码清单9-1
-         ;文件名：c09_1.asm
-         ;文件说明：用户程序 
-         ;创建日期：2011-4-16 22:03
+         ;文件名: c09_1.asm
+         ;文件说明: 用户程序 
+         ;创建日期: 2011-4-16 22:03
          
 ;===============================================================================
 SECTION header vstart=0                     ;定义用户程序头部段 
@@ -23,7 +23,7 @@ SECTION header vstart=0                     ;定义用户程序头部段
 header_end:                
     
 ;===============================================================================
-SECTION code align=16 vstart=0           ;定义代码段（16字节对齐） 
+SECTION code align=16 vstart=0           ;定义代码段(16字节对齐) 
 new_int_0x70:
       push ax
       push bx
@@ -32,7 +32,7 @@ new_int_0x70:
       push es
       
   .w0:                                    
-      mov al,0x0a                        ;阻断NMI。当然，通常是不必要的
+      mov al,0x0a                        ;阻断NMI。当然, 通常是不必要的
       or al,0x80                          
       out 0x70,al
       in al,0x71                         ;读寄存器A
@@ -59,7 +59,7 @@ new_int_0x70:
 
       mov al,0x0c                        ;寄存器C的索引。且开放NMI 
       out 0x70,al
-      in al,0x71                         ;读一下RTC的寄存器C，否则只发生一次中断
+      in al,0x71                         ;读一下RTC的寄存器C, 否则只发生一次中断
                                          ;此处不考虑闹钟和周期性中断的情况 
       mov ax,0xb800
       mov es,ax
@@ -103,8 +103,8 @@ new_int_0x70:
 
 ;-------------------------------------------------------------------------------
 bcd_to_ascii:                            ;BCD码转ASCII
-                                         ;输入：AL=bcd码
-                                         ;输出：AX=ascii
+                                         ;输入: AL=bcd码
+                                         ;输出: AX=ascii
       mov ah,al                          ;分拆成两个数字 
       and al,0x0f                        ;仅保留低4位 
       add al,0x30                        ;转换成ASCII 
@@ -129,15 +129,15 @@ start:
       mov bx,inst_msg                    ;显示安装信息 
       call put_string
  
-;BIOS启动时，设置主片的中断号从0x80开始，从片的中断号从0x70开始，RTC是从片中第一个中断
+;BIOS启动时, 设置主片的中断号从0x80开始, 从片的中断号从0x70开始, RTC是从片中第一个中断
       mov al,0x70
       mov bl,4
       mul bl                             ;计算0x70号中断在IVT中的偏移
       mov bx,ax                          
 
 	  
-;第一步，替换系统中的默认的0x70中断号地址
-;替换掉自己的程序，即：每当0x70中断时将执行这个程序	  
+;第一步, 替换系统中的默认的0x70中断号地址
+;替换掉自己的程序, 即: 每当0x70中断时将执行这个程序	  
       cli                                ;防止改动期间发生新的0x70号中断
 
       push es
@@ -148,21 +148,21 @@ start:
       mov word [es:bx+2],cs              ;段地址
       pop es
 
-;第二步，0x70中断是RTC中断；RTC中断要满足一定条件
+;第二步, 0x70中断是RTC中断；RTC中断要满足一定条件
 ;a、关闭NMI中断
 ;b、设置三个中断中的某个中断
-;c、读取c寄存器，清空寄存器，准备接受中断
-;d、设置IMR寄存器，主片为：0x20/0x21 从片为：0xa0/0xa1
+;c、读取c寄存器, 清空寄存器, 准备接受中断
+;d、设置IMR寄存器, 主片为: 0x20/0x21 从片为: 0xa0/0xa1
 	  
       mov al,0x0b                        ;RTC寄存器B
       or al,0x80                         ;阻断NMI 
       out 0x70,al
-      mov al,0x12                        ;设置寄存器B，禁止周期性中断，开放更 
-      out 0x71,al                        ;新结束后中断，BCD码，24小时制 
+      mov al,0x12                        ;设置寄存器B, 禁止周期性中断, 开放更 
+      out 0x71,al                        ;新结束后中断, BCD码, 24小时制 
 
       mov al,0x0c
       out 0x70,al
-      in al,0x71                         ;读RTC寄存器C，复位未决的中断状态
+      in al,0x71                         ;读RTC寄存器C, 复位未决的中断状态
 
       in al,0xa1                         ;读8259从片的IMR寄存器 
       and al,0xfe                        ;清除bit 0(此位连接RTC)
@@ -178,19 +178,19 @@ start:
       
       mov cx,0xb800
       mov ds,cx
-      mov byte [12*160 + 33*2],'@'       ;屏幕第12行，35列
+      mov byte [12*160 + 33*2],'@'       ;屏幕第12行, 35列
        
  .idle:
-      hlt                                ;使CPU进入低功耗状态，直到用中断唤醒
+      hlt                                ;使CPU进入低功耗状态, 直到用中断唤醒
       not byte [12*160 + 33*2+1]         ;反转显示属性 
       jmp .idle
 
 ;-------------------------------------------------------------------------------
 put_string:                              ;显示串(0结尾)。
-                                         ;输入：DS:BX=串地址
+                                         ;输入: DS:BX=串地址
          mov cl,[bx]
          or cl,cl                        ;cl=0 ?
-         jz .exit                        ;是的，返回主程序 
+         jz .exit                        ;是的, 返回主程序 
          call put_char
          inc bx                          ;下一个字符 
          jmp put_string
@@ -200,7 +200,7 @@ put_string:                              ;显示串(0结尾)。
 
 ;-------------------------------------------------------------------------------
 put_char:                                ;显示一个字符
-                                         ;输入：cl=字符ascii
+                                         ;输入: cl=字符ascii
          push ax
          push bx
          push cx
@@ -234,7 +234,7 @@ put_char:                                ;显示一个字符
 
  .put_0a:
          cmp cl,0x0a                     ;换行符？
-         jnz .put_other                  ;不是，那就正常显示字符 
+         jnz .put_other                  ;不是, 那就正常显示字符 
          add bx,80
          jmp .roll_screen
 

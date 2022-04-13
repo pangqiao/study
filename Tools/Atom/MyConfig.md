@@ -22,15 +22,15 @@ tab length: 4
 
 ### 3.1 vim-mode
 
-地址：https://atom.io/packages/vim-mode
+地址: https://atom.io/packages/vim-mode
 
 ### 3.2 disable spell-check
 
 ### 3.3 editor-background
 
-地址：https://atom.io/packages/editor-background
+地址: https://atom.io/packages/editor-background
 
-配置如下：
+配置如下: 
 
 ![config](images/1.png)
 
@@ -42,14 +42,14 @@ tab length: 4
 
 使用vim-mode一定要安装ex-mode和relative-numbers插件
 
-地址：https://atom.io/packages/ex-mode
+地址: https://atom.io/packages/ex-mode
 
-地址：https://atom.io/packages/relative-numbers
+地址: https://atom.io/packages/relative-numbers
 
 ### 3.6 minimap
 
-地址：https://atom.io/packages/minimap
+地址: https://atom.io/packages/minimap
 
 ### 3.7 terminal-plus
 
-地址：https://atom.io/packages/terminal-plus
+地址: https://atom.io/packages/terminal-plus

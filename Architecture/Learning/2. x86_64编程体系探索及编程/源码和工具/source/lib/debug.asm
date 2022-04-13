@@ -191,8 +191,8 @@ set_debug_store_area:
 ;		esi - BTS buffer base
 ;		edi - PEBS buffer base
 ; description:
-;		缺省情况下，配置为环形回路 buffer 形式，
-;		threshold 值大于 maximum，避免产生 DS buffer 溢出中断
+;		缺省情况下, 配置为环形回路 buffer 形式, 
+;		threshold 值大于 maximum, 避免产生 DS buffer 溢出中断
 ;--------------------------------------------------------------------
 set_ds_management_record:
 	push ebp
@@ -207,7 +207,7 @@ set_ds_management_record:
 	bt ecx, 2						; DEST64 位
 	jc set_ds_management_record64
 	
-	mov DWORD [ds64_flag], 0					; DS64 不支持，ds64_flags 标志清0
+	mov DWORD [ds64_flag], 0					; DS64 不支持, ds64_flags 标志清0
         mov DWORD [enhancement_pebs_flag], 0				; 不支持, enhancement_pebs_flag 标志清 0
 
 	;; 设置 32位的 BTS 格式
@@ -290,9 +290,9 @@ set_ds_management_record64:
 	jmp set_pebs64
 enhancement_pebs64:
 	;*
-	;* 增强的 PEBS 格式，每条记录共 176 个字节 *
+	;* 增强的 PEBS 格式, 每条记录共 176 个字节 *
 	;*
-	mov DWORD [enhancement_pebs_flag], 1				; 支持，enhancement_pebs_flag 标志置 1
+	mov DWORD [enhancement_pebs_flag], 1				; 支持, enhancement_pebs_flag 标志置 1
 	mov DWORD [pebs_record_length], 176
 	lea eax, [edi + PEBS_RECORD_MAXIMUM * 176]			; maximum 值
 	lea edx, [edi + PEBS_RECORD_THRESHOLD * 176]			; threshold 值
@@ -387,7 +387,7 @@ set_bts_buffer_size:
         rdmsr 
         bt eax, BTINT_BIT                       ; 测试是否开启 BTINT 位
         mov ecx, 0
-        cmovc esi, ecx                          ; 如果开启了，bts threshold = bts maximum
+        cmovc esi, ecx                          ; 如果开启了, bts threshold = bts maximum
                                                 ; 否则 bts threshold = bts maximum + sizeof(bts_record)
         add [edi], esi                          ; 最终的 bts threshold 值
         pop edx
@@ -432,7 +432,7 @@ set_pebs_buffer_size:
         cmovne ecx, edi                                  
         cmp DWORD [ds64_flag], 1                        ; 测试是否支持 DS64 格式
         mov edi, PEBS_RECORD_SIZE
-        cmovne ecx, edi                                 ; 不支持的话，使用 PEBS_RECORD_SIZE 尺寸
+        cmovne ecx, edi                                 ; 不支持的话, 使用 PEBS_RECORD_SIZE 尺寸
         imul esi, ecx                                   ; count * size(pebs_record)
         mov edi, [pebs_maximum_pointer]
         mov eax, [pebs_base_pointer]
@@ -456,7 +456,7 @@ reset_bts_index:
         ret
 
 ;----------------------------------------------
-; reset_pebs_index()：重置 PEBS index 值为 base
+; reset_pebs_index(): 重置 PEBS index 值为 base
 ;----------------------------------------------
 reset_pebs_index:
         mov edi, [pebs_index_pointer]       
@@ -468,8 +468,8 @@ reset_pebs_index:
 
 ;------------------------------------------------------------
 ; update_pebs_index_track(): 更新PEBS index 的轨迹
-; 描述：
-;       更新 [pebs_buffer_index]变量的值，保持检测 PEBS 中断
+; 描述: 
+;       更新 [pebs_buffer_index]变量的值, 保持检测 PEBS 中断
 ;       [pebs_buffer_index] 记录着“当前”的 PEBS index 值
 ;------------------------------------------------------------
 update_pebs_index_track:
@@ -535,7 +535,7 @@ set_bts_index:
 ;---------------------------------------------------------
 ; get_last_pebs_record_pointer()
 ; output:
-;       eax - PEBS 记录的地址值，返回 0 时表示无 PEBS 记录
+;       eax - PEBS 记录的地址值, 返回 0 时表示无 PEBS 记录
 ;----------------------------------------------------------
 get_last_pebs_record_pointer:
         mov eax, [pebs_index_pointer]
@@ -575,8 +575,8 @@ do_dump_ds_management:
 
 ; 测试是否支持 64 位格式
 	test DWORD [ds64_flag], 1
-	mov eax, print_dword_value		; 如果不支持，打印 32 位格式
-	mov edx, print_qword_value		; 如果支持，打印 64 位格式
+	mov eax, print_dword_value		; 如果不支持, 打印 32 位格式
+	mov edx, print_qword_value		; 如果支持, 打印 64 位格式
 	cmovz edx, eax				; edx 存放打印函数
 	
 
@@ -666,11 +666,11 @@ do_dump_bts_record:
 	push ebx
 	push ebp
 ;*
-;* 是否支持 DEST64, 如果支持 DEST64 功能，则打印 64 位格式
+;* 是否支持 DEST64, 如果支持 DEST64 功能, 则打印 64 位格式
 ;*
 	test DWORD [ds64_flag], 1
-	mov eax, print_dword_value		; 不支持，打印 32 位
-	mov edx, print_qword_value		; 支持，打印 64 位
+	mov eax, print_dword_value		; 不支持, 打印 32 位
+	mov edx, print_qword_value		; 支持, 打印 64 位
 	cmovz edx, eax
 
 	; 打印表头
@@ -689,7 +689,7 @@ do_dump_bts_record:
 	mov ebx, [eax]				; 取 BTS base 值
 
 
-; 现在：ebx = base 值，ebp = BTS buffer 最大值
+; 现在: ebx = base 值, ebp = BTS buffer 最大值
 
 	xor ecx, ecx
 dump_bts_record_loop:
@@ -836,7 +836,7 @@ dump_pebs64_record_done:
 	ret
 
 ;---------------------------------------------
-; dump_pebs_record()：打印最后一条 PEBS 记录
+; dump_pebs_record(): 打印最后一条 PEBS 记录
 ;---------------------------------------------
 dump_pebs_record:
 	jmp do_dump_pebs_record
@@ -851,7 +851,7 @@ do_dump_pebs_record:
 	call puts
 
 ;*
-;* 是否支持 DEST64, 如果支持 DEST64 功能，则打印 64 位格式
+;* 是否支持 DEST64, 如果支持 DEST64 功能, 则打印 64 位格式
 ;*
 	test DWORD [ds64_flag], 1
 	jnz dump_pebs64
@@ -1193,7 +1193,7 @@ debug_context	times 10 dd 0
 
 ;*
 ;* 单步调用停止目标地址
-;* 当 #DB handler 检测到目标地址为该值时，终止单步调试
+;* 当 #DB handler 检测到目标地址为该值时, 终止单步调试
 ;*
 db_stop_address         dd 0
 

@@ -69,11 +69,11 @@ kolla-ansible 的核心代码在ansible实现的
 
 ## 3.1 ansible role是什么？
 
-Ansible Role 是一种分类 & 重用的概念，透过将 vars, tasks, files, templates, handler … 等等根据不同的目的(例如：nova、glance、cinder)，规划后至于独立目录中，后续便可以利用 include 的概念來使用。
+Ansible Role 是一种分类 & 重用的概念，透过将 vars, tasks, files, templates, handler … 等等根据不同的目的(例如: nova、glance、cinder)，规划后至于独立目录中，后续便可以利用 include 的概念來使用。
 
 若同样是 include 的概念，那 role 跟 include 之间不一样的地方又是在哪里呢?
 
-答案是：role 的 include 机制是自动的!
+答案是: role 的 include 机制是自动的!
 
 我们只要提前将 role 的 vars / tasks / files / handler …. 等等事先定义好按照特定的结构(下面會提到)放好，Ansible 就会自动 include 完成，不需要再自己一个一个指定 include。
 
@@ -104,7 +104,7 @@ Ansible Role 是一种分类 & 重用的概念，透过将 vars, tasks, files, t
 
 以上就是一个基本完整的一个role结构，当然还有file、vars；我们这里没有使用这个2个；如果没有的部分可以不用。
 
-ansible会针对role（x）进行以下处理：
+ansible会针对role(x)进行以下处理: 
 
 1. 如果role/x/**task**/main.yml存在，则会**自动**加到playbook中的**task list**中
 2. 如果role/x/**handlers**/main.yml存在，则会自动加到playbook中的**handler list**中
@@ -180,7 +180,7 @@ config.yml 是用来**生成openstack sevice config文件**
 ```
 [root@control01 tasks]# cat config.yml
 ---
-### 生成 node_config_directory（默认是/etc/kolla， 你可以在all.yml中设置）sevice目录
+### 生成 node_config_directory(默认是/etc/kolla， 你可以在all.yml中设置)sevice目录
 - name: Ensuring config directories exist
   file:
     path: "{{ node_config_directory }}/{{ item.key }}"

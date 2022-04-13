@@ -24,17 +24,17 @@ Region的概念即美国区，欧洲区，亚洲区，是最大范围的一个�
 
 Availability 
 
-Zone是针对一个区来说的，将区分成更小的范围，如果你将VM都部署在一个Region的其中一个AZ上，那么当该AZ出现故障（比较糟糕的，完全断电
-或者火灾之类的），那么你的instances就都挂掉了。所以一般将应用的多个VM实例分别部署在Region的多个AZ上，提高AZ的容灾性和可用
-性。当然对于一个Region只在一个机房的情况下一个AZ可以是一个或几个相邻的机架，这个定义由管理员可以指定（nova.conf），如果没有指定
+Zone是针对一个区来说的，将区分成更小的范围，如果你将VM都部署在一个Region的其中一个AZ上，那么当该AZ出现故障(比较糟糕的，完全断电
+或者火灾之类的)，那么你的instances就都挂掉了。所以一般将应用的多个VM实例分别部署在Region的多个AZ上，提高AZ的容灾性和可用
+性。当然对于一个Region只在一个机房的情况下一个AZ可以是一个或几个相邻的机架，这个定义由管理员可以指定(nova.conf)，如果没有指定
 的话在Folsom版本中所有的service默认都在nova这个Zone中。在OpenStack的Nova中是可以让用户指定VM是在哪个AZ启动
 的，这样nova-scheduler就会针对这个AZ做虚拟机部署的调度。该特性面向用户，用户可以指定AZ部署虚拟机。
 
 Aggregate Host 
 
-Aggregate则是针对一个AZ来说的，主要是针对有共同特性的主机host做一个aggregate，如共享存储和网络，或可信计算硬件等。比较常用的做法是和nova-scheduler结合，比如说nova-scheduler会将同一flavor或image的VM放置在一个aggregate中。该特性只面向管理员（nova.conf），可以由管理员指定相关的调度策略，而用户不可见。
+Aggregate则是针对一个AZ来说的，主要是针对有共同特性的主机host做一个aggregate，如共享存储和网络，或可信计算硬件等。比较常用的做法是和nova-scheduler结合，比如说nova-scheduler会将同一flavor或image的VM放置在一个aggregate中。该特性只面向管理员(nova.conf)，可以由管理员指定相关的调度策略，而用户不可见。
 
-附上OpenStack官方的概念介绍：http://docs.openstack.org/trunk/openstack-ops/content/scaling.html
+附上OpenStack官方的概念介绍: http://docs.openstack.org/trunk/openstack-ops/content/scaling.html
 
 # 1 Region
 
@@ -58,7 +58,7 @@ az在openstack中其实是nova\-scheduler来实现的，当新建虚拟机，调
 
 指定instance clocktower将在availability zone\-chicago被创建，至于那些compute node属于哪一个az，是在nova.conf中通过参数node\_availability\_zone=xxx来配置的。
 
-Availability Zones 通常是对 computes 节点上的资源在小的区域内进行逻辑上的分组和隔离。例如在同一个数据中心，我们可以将 Availability Zones 规划到不同的机房，或者在同一机房的几个相邻的机架，从而保障如果某个 Availability Zone 的节点发生故障（如供电系统或网络），而不影响其他的 Availability Zones 上节点运行的虚拟机，通过这种划分来提高 OpenStack 的可用性。目前 OpenStack 默认的安装是把所有的 computes 节点划分到 nova 的 Availability Zone 上，但我们可以通过对 nova.conf 文件的配置来定义不同的 Availability zones。
+Availability Zones 通常是对 computes 节点上的资源在小的区域内进行逻辑上的分组和隔离。例如在同一个数据中心，我们可以将 Availability Zones 规划到不同的机房，或者在同一机房的几个相邻的机架，从而保障如果某个 Availability Zone 的节点发生故障(如供电系统或网络)，而不影响其他的 Availability Zones 上节点运行的虚拟机，通过这种划分来提高 OpenStack 的可用性。目前 OpenStack 默认的安装是把所有的 computes 节点划分到 nova 的 Availability Zone 上，但我们可以通过对 nova.conf 文件的配置来定义不同的 Availability zones。
 
 # 3 Aggregate Hosts
 
@@ -74,13 +74,13 @@ nova aggregate-create joesservers chicago
 
 Host aggregate可以用来进一步细分availability zone。
 
-通过以上分析，问题就来了：availability zone和host aggregate都能对host machine进行划分，那么二者的区别是啥？
+通过以上分析，问题就来了: availability zone和host aggregate都能对host machine进行划分，那么二者的区别是啥？
 
 Availability zones are handy for allowing users to specify a particular group of servers on which they want their host to run, but beyond that they don’t do much more than serve as a bucket. In this example, using an availability zone, our users can specify that a VM should be started up in the Chicago data center.
 
 Host aggregates, on the other hand, serve as an intelligent way for schedulers to know where to place VM’s based on some sort of characteristic. In this example, we might want to enable users to easily boot their most mission-critical VMs on servers that are administered by Joe, rather than leaving them to fate.
 
-综上所述：az是用户可见的，用户手动的来指定vm运行在哪些host上；Host aggregate是一种更智能的方式，是调度器可见的，影响调度策略的一个表达式。
+综上所述: az是用户可见的，用户手动的来指定vm运行在哪些host上；Host aggregate是一种更智能的方式，是调度器可见的，影响调度策略的一个表达式。
 
 # 4 Availability Zones和Host Aggregate的关系图
 
@@ -92,7 +92,7 @@ Host Aggregates
 
 Host aggregates can be regarded as a mechanism to further partition an availability zone; while availability zones are visible to users, host aggregates are only visible to administrators. Host aggregates started out as a way to use Xen hypervisor resource pools, but has been generalized to provide a mechanism to allow administrators to assign key-value pairs to groups of machines. Each node can have multiple aggregates, each aggregate can have multiple key-value pairs, and the same key-value pair can be assigned to multiple aggregate. This information can be used in the scheduler to enable advanced scheduling, to set up xen hypervisor resources pools or to define logical groups for migration.
 
-理解：Host Aggregates可以视为是AZ(Avaliability Zone)的更进一步的划分，是对管理员可见的。每一个节点都可以属于多个Aggregates，这些Aggregates可以用作更高级的调度、配置Xen的资源池、或者定义用于升级的逻辑分组。可以理解为aggregate是一组具有相同属性主机的分组。
+理解: Host Aggregates可以视为是AZ(Avaliability Zone)的更进一步的划分，是对管理员可见的。每一个节点都可以属于多个Aggregates，这些Aggregates可以用作更高级的调度、配置Xen的资源池、或者定义用于升级的逻辑分组。可以理解为aggregate是一组具有相同属性主机的分组。
 
 Availability Zones (AZs)
 
@@ -103,7 +103,7 @@ That said, there are a few rules to know that diverge from an API perspective be
 - one host can be in multiple aggregates, but it can only be in one availability zone
 - by default a host is part of a default availability zone even if it doesn’t belong to an aggregate (the configuration option is named default_availability_zone)
 
-理解：Availability Zones可以理解为将一个aggregate加了一些metadata信息，使得对用户可见。他和Aggregate最主要的区别是，一个节点只能属于一个AZ，默认一个主机属于一个默认的AZ。
+理解: Availability Zones可以理解为将一个aggregate加了一些metadata信息，使得对用户可见。他和Aggregate最主要的区别是，一个节点只能属于一个AZ，默认一个主机属于一个默认的AZ。
 
 Xen Pool Host Aggregates
 
@@ -111,7 +111,7 @@ Originally all aggregates were Xen resource pools, now an aggregate can be set u
 
 You can use aggregates for XenServer resource pools when you have multiple compute nodes installed (only XenServer/XCP via xenapi driver is currently supported), and you want to leverage the capabilities of the underlying hypervisor resource pools. For example, you want to enable VM live migration (i.e. VM migration within the pool) or enable host maintenance with zero-downtime for guest instances. Please, note that VM migration across pools (i.e. storage migration) is not yet supported in XenServer/XCP, but will be added when available. Bear in mind that the two migration techniques are not mutually exclusive and can be used in combination for a higher level of flexibility in your cloud management.
 
-理解：可以将Xen的划分到一个Aggregate，来支持Xen资源池的一些特性。
+理解: 可以将Xen的划分到一个Aggregate，来支持Xen资源池的一些特性。
 
 Design
 
@@ -134,7 +134,7 @@ Hosts
 - start host maintenance (or evacuate-host): disallow a host to serve API requests and migrate instances to other hosts of the aggregate
 - stop host maintenance: (or rebalance-host): put the host back into operational mode, migrating instances back onto that host
 
-理解：对于Aggregate操作有：列出、创建、显示信息、更新、设置metadaa、删除、添加主机、移除主机。对于host的操作有：开启维护主机、停止维护主机。
+理解: 对于Aggregate操作有: 列出、创建、显示信息、更新、设置metadaa、删除、添加主机、移除主机。对于host的操作有: 开启维护主机、停止维护主机。
 
 # 5 例子
 

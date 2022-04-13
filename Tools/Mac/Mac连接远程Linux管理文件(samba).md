@@ -49,7 +49,7 @@ USER\_NAME就是你的用户名。
 
 ## 3.3 配置samba.conf
 
-可以直接修改/etc/samba/smb.conf，在文件末尾添加：
+可以直接修改/etc/samba/smb.conf，在文件末尾添加: 
 
 ```
 [share]
@@ -91,7 +91,7 @@ systemctl restart smb.service
 
 # 4 在mac上连接
 
-打开Finder（或在桌面），CMD + k，可以得到以下页面：
+打开Finder(或在桌面)，CMD + k，可以得到以下页面: 
 
 ![](./images/2019-05-10-10-26-18.png)
 

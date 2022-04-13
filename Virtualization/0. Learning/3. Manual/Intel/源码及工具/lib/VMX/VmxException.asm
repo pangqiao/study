@@ -20,7 +20,7 @@
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       在下面的情况下，VMM 需要 reflect exception 给 guest 执行:
 ;       1) VM exit 是由于 exception 引发
 ;       2) exception 的是由于 guest OS 条件而产生的
@@ -49,7 +49,7 @@ reflect_exception_to_guest:
         mov ecx, eax        
         
         ;;
-        ;; 检查 bit12 位（NMI unblocking due to IRET）
+        ;; 检查 bit12 位(NMI unblocking due to IRET)
         ;; 1) bit12 为 0 时，不修改 blocking by NMI 位
         ;; 2) bit12 为 1 时，检查 VM-exit event 是否为 #DF
         ;; 
@@ -84,7 +84,7 @@ reflect_exception_to_guest.@0:
         xor esi, esi                                                    ; 清 blocking by NMI 位
         
         ;;
-        ;; 检查是否属于 hardware exception（3）
+        ;; 检查是否属于 hardware exception(3)
         ;;
         and eax, 700h
         cmp eax, INTERRUPT_TYPE_HARDWARE_EXCEPTION
@@ -106,17 +106,17 @@ reflect_exception_to_guest.@0:
         
         ;;
         ;; 下面的情形之一，需要 reflect #DF exception 给 guest
-        ;; 1) 如果原始 event（记录在 IDT-vectoring 里）和引发 VM-exit 的 event 都是属于 #DE，#TS，#NP，#SS 或 #GP
-        ;;   （对应的 vector 为 0, 10, 11, 12，13）
+        ;; 1) 如果原始 event(记录在 IDT-vectoring 里)和引发 VM-exit 的 event 都是属于 #DE，#TS，#NP，#SS 或 #GP
+        ;;   (对应的 vector 为 0, 10, 11, 12，13)
         ;; 2) 如果原始 event 为 #PF，并且引发 VM-exit 的 event 为 #PF 或 #DE，#TS，#NP，#SS, #GP
-        ;;   （对应的 vector 为 14, 0, 10, 11, 12, 13）
-        ;; 上面情形之一表明：event delivery 期间发生了 #DF 异常
+        ;;   (对应的 vector 为 14, 0, 10, 11, 12, 13)
+        ;; 上面情形之一表明: event delivery 期间发生了 #DF 异常
         ;;
 
 reflect_exception_to_guest.@1:
        
         ;;
-        ;; 原始 event 是否为 contributory exception（0, 10, 11, 12, 13）
+        ;; 原始 event 是否为 contributory exception(0, 10, 11, 12, 13)
         ;;
         cmp dl, 0                                                       ; 检查 #DE
         je reflect_exception_to_guest.@2
@@ -143,7 +143,7 @@ reflect_exception_to_guest.@2:
         je reflect_exception_to_guest.df
         
         ;;
-        ;; 是否 contributory exception（10, 11, 12, 13）
+        ;; 是否 contributory exception(10, 11, 12, 13)
         ;;
         cmp bl, 10                                                      ; 检查 10 - 13
         jb reflect_exception_to_guest.inject
@@ -165,7 +165,7 @@ reflect_exception_to_guest.df:
         
 reflect_exception_to_guest.inject:        
         ;;
-        ;; 设置 injection 信息：
+        ;; 设置 injection 信息: 
         ;; 1) 复制 VM exit interrupt-information 
         ;; 2) 复制 VM exit interrupt error code
         ;;
@@ -196,7 +196,7 @@ reflect_exception_to_guest.done:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #DE 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_DE:
@@ -210,7 +210,7 @@ do_DE:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #DB 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_DB:
@@ -240,7 +240,7 @@ do_DB:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 NMI 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_NMI:
@@ -284,7 +284,7 @@ do_NMI:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #BP 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_BP:
@@ -316,7 +316,7 @@ do_BP:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #OF 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_OF:
@@ -331,7 +331,7 @@ do_OF:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #BR 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_BR:
@@ -345,7 +345,7 @@ do_BR:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #UD 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_UD:
@@ -361,7 +361,7 @@ do_UD:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #NM 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_NM:
@@ -376,7 +376,7 @@ do_NM:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #DF 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_DF:
@@ -392,7 +392,7 @@ do_DF:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #TS 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_TS:
@@ -407,7 +407,7 @@ do_TS:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #NP 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_NP:
@@ -422,7 +422,7 @@ do_NP:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #SS 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_SS:
@@ -436,7 +436,7 @@ do_SS:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #GP 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_GP:
@@ -469,7 +469,7 @@ do_GP:
         je do_GP.DoInterrupt
 
         ;;
-        ;; 反射处理：
+        ;; 反射处理: 
         ;; 1) 当 IDT-vectoring information 记录异常为 #DE，#TS，#NP, #SS 或者 #GP 时，需要反射 #DF 异常
         ;; 2) 当 IDT-vectoring information 记录异常为 #DF 异常，需要处理 triple fault
         ;;
@@ -543,7 +543,7 @@ do_GP.Done1:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #PF 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_PF:
@@ -581,7 +581,7 @@ do_PF.Done:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #MF 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_MF:
@@ -597,7 +597,7 @@ do_MF:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #AC 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_AC:
@@ -612,7 +612,7 @@ do_AC:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #MC 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_MC:
@@ -628,7 +628,7 @@ do_MC:
 ;       none
 ; output:
 ;       eax - VMM 处理码
-; 描述：
+; 描述: 
 ;       1) 处理由 #XM 引发的 VM-exit
 ;-----------------------------------------------------------------------
 do_XM:
@@ -643,7 +643,7 @@ do_XM:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 保留的异常
 ;-----------------------------------------------------------------------
 DoReserved:
@@ -656,7 +656,7 @@ DoReserved:
 ;       esi - vector
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 处理中断 delivery 操作
 ;-----------------------------------------------------------------------
 do_int_process:
@@ -781,7 +781,7 @@ do_int_process.Protected.CheckType:
         
 do_int_process.Protected.CheckPrivilege:
         ;;
-        ;; step 4: 当属于software-interrupt 时，检查权限：CPL <= IDT-gate.DPL
+        ;; step 4: 当属于software-interrupt 时，检查权限: CPL <= IDT-gate.DPL
         ;;
         movzx eax, BYTE [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.InterruptType]
         cmp eax, INTERRUPT_TYPE_SOFTWARE
@@ -850,7 +850,7 @@ do_int_process.InterruptTrap:
         jz do_int_process.Gp_CsSelector_01B
 
         ;;
-        ;; step 11: 检查权限：DPL <= CPL
+        ;; step 11: 检查权限: DPL <= CPL
         ;;
         mov esi, edi
         shr esi, 13
@@ -869,7 +869,7 @@ do_int_process.InterruptTrap.Next:
         ;;
         ;; step 13: 根据权限进行相应处理
         ;;
-        ;; 注意： ### 作为例子，保留实现对 conforming 类型段的处理 ###
+        ;; 注意:  ### 作为例子，保留实现对 conforming 类型段的处理 ###
         ;;        ### 作为例子，保留实现对 virutal-8086 模式下的中断处理 ###
         ;;
         mov eax, do_interrupt_for_inter_privilege
@@ -928,7 +928,7 @@ do_int_process.Longmode:
         
 do_int_process.Longmode.CheckPrivilege:
         ;;
-        ;; step 4: 当属于software-interrupt 时，检查权限：CPL <= IDT-gate.DPL
+        ;; step 4: 当属于software-interrupt 时，检查权限: CPL <= IDT-gate.DPL
         ;;
         movzx eax, BYTE [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.InterruptType]
         cmp eax, INTERRUPT_TYPE_SOFTWARE
@@ -979,8 +979,8 @@ do_int_process.Done:
 ;       esi - privilege level
 ; output:
 ;       eax - statusf code
-; 描述：
-;       1) 处理 legacy 模式下的特权级内的中断（切入高权限）
+; 描述: 
+;       1) 处理 legacy 模式下的特权级内的中断(切入高权限)
 ;-----------------------------------------------------------------------
 do_interrupt_for_inter_privilege:
         push ebp
@@ -1025,7 +1025,7 @@ do_interrupt_for_inter_privilege.ReadStack16:
         REX.Wrxb
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TssBase]            
         movzx esi, WORD [eax + ecx]                                             ;; new SP
-        movzx ecx, WORD [eax + ecx + 2]                                         ;; new SS（ecx)
+        movzx ecx, WORD [eax + ecx + 2]                                         ;; new SS(ecx)
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSs], cx             ;; 保存 SS
         REX.Wrxb
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp], esi           ;; 保存目标 RSP        
@@ -1069,7 +1069,7 @@ do_interrupt_for_inter_privilege.Ts_SsSelector_01B:
         
 do_interrupt_for_inter_privilege.IdtGate16: 
         ;;
-        ;; 检查 16 位 IDT-gate 里，stack 是否能容纳 10 bytes（5 *  2)，根据 stack 段是否属于 expand-down 段
+        ;; 检查 16 位 IDT-gate 里，stack 是否能容纳 10 bytes(5 *  2)，根据 stack 段是否属于 expand-down 段
         ;; 1) expand-down:  esp - 10 > SS.limit && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit 
         ;;
@@ -1156,7 +1156,7 @@ do_interrupt_for_inter_privilege.CheckSsSelector:
         ;;
         ;; step 4: 检查 SS selector 是否超出 limit，超出则产生 #TS(SS_selector, 0, EXT)
         ;; 
-        ;; 注意：#### 此处保留检查 LDT ####
+        ;; 注意: #### 此处保留检查 LDT ####
         ;;
         mov eax, ecx
         and eax, 0FFF8h
@@ -1218,7 +1218,7 @@ do_interrupt_for_inter_privilege.CheckSsLimit:
         jz do_interrupt_for_inter_privilege.IdtGate16
 
         ;;
-        ;; 检查 32 位 stack 是否能容纳 20 bytes（5 *  4)，根据 stack 段是否属于 expand-down 段
+        ;; 检查 32 位 stack 是否能容纳 20 bytes(5 *  4)，根据 stack 段是否属于 expand-down 段
         ;; 1) expand-down:  esp - 20 > SS.limit  && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit
         ;;
@@ -1276,7 +1276,7 @@ do_interrupt_for_inter_privilege.CheckCsLimit:
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRip], esi                   ; 保存目标 RIP
 
         ;;
-        ;; step 12：检查 Eip 是否超出 Cs.limit，超出则产生 #GP(EXT)
+        ;; step 12: 检查 Eip 是否超出 Cs.limit，超出则产生 #GP(EXT)
         ;;
         cmp esi, eax
         ja do_interrupt_for_inter_privilege.Gp_01B
@@ -1401,8 +1401,8 @@ do_interrupt_for_inter_privilege.Done:
 ;       esi - privilege level
 ; output:
 ;       eax - status code
-; 描述：
-;       1) 处理 longmode 模式下的特权级内的中断（切入高权限）
+; 描述: 
+;       1) 处理 longmode 模式下的特权级内的中断(切入高权限)
 ;-----------------------------------------------------------------------
 do_interrupt_for_inter_privilege_longmode:
         push ebp
@@ -1602,8 +1602,8 @@ do_interrupt_for_inter_privilege_longmode.Done:
 ;       none
 ; output:
 ;       eax -status code
-; 描述：
-;       1) 处理 legacy 模式下的特权级外的中断（同级）
+; 描述: 
+;       1) 处理 legacy 模式下的特权级外的中断(同级)
 ;-----------------------------------------------------------------------
 do_interrupt_for_intra_privilege:
         push ebp
@@ -1650,7 +1650,7 @@ do_interrupt_for_intra_privilege.CheckSsLimit:
         jz do_interrupt_for_intra_privilege.IdtGate16
 
         ;;
-        ;; 检查 32 位 stack 是否能容纳 12 bytes（3 * 4)，根据 stack 段是否属于 expand-down 段
+        ;; 检查 32 位 stack 是否能容纳 12 bytes(3 * 4)，根据 stack 段是否属于 expand-down 段
         ;; 1) expand-down:  esp - 12 > SS.limit && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit 
         ;;
@@ -1788,7 +1788,7 @@ do_interrupt_for_intra_privilege.Push16:
         
 do_interrupt_for_intra_privilege.IdtGate16: 
         ;;
-        ;; 检查 16 位 IDT-gate 里，stack 是否能容纳 6 bytes（3 * 2)，根据 stack 段是否属于 expand-down 段
+        ;; 检查 16 位 IDT-gate 里，stack 是否能容纳 6 bytes(3 * 2)，根据 stack 段是否属于 expand-down 段
         ;; 1) expand-down:  esp - 6 > SS.limit && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit 
         ;;
@@ -1857,8 +1857,8 @@ do_interrupt_for_intra_privilege.Done:
 ;       none
 ; output:
 ;       eax - status code
-; 描述：
-;       1) 处理 longmode 模式下的特权级外的中断（同级）
+; 描述: 
+;       1) 处理 longmode 模式下的特权级外的中断(同级)
 ;-----------------------------------------------------------------------
 do_interrupt_for_intra_privilege_longmode:
         push ebp

@@ -141,7 +141,7 @@ entry64:
 ;============================================================
 
 
-;; 从 64 位切换到 compatibility mode（权限不改变，0 级）　        
+;; 从 64 位切换到 compatibility mode(权限不改变, 0 级)　        
         jmp QWORD far [compatibility_pointer]
 
 compatibility_pointer:
@@ -152,7 +152,7 @@ compatibility_pointer:
 ;;        call QWORD far [conforming_pointer]           ; 测试conforimg 代码
 
         
-;; 切换到 compatibility mode（进入 3 级）
+;; 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push user_code32_sel | 3

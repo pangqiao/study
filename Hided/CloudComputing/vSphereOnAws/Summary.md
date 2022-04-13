@@ -1,6 +1,6 @@
-VMware的简要说明：http://www.vmware.com/cloud-services/vmware-cloud-aws.html
+VMware的简要说明: http://www.vmware.com/cloud-services/vmware-cloud-aws.html
 
-AWS的简要描述：https://aws.amazon.com/cn/vmware/
+AWS的简要描述: https://aws.amazon.com/cn/vmware/
 https://aws.amazon.com/cn/blogs/aws/in-the-works-vmware-cloud-on-aws/
 https://blogs.vmware.com/vsphere/2016/10/vmware-aws-announce-strategic-partnership.html
 

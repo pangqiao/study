@@ -64,7 +64,7 @@ int event_reinit(struct event_base *base);
 
 ## 2.2 查看IO模型
 
-IO多路复用模型中（[IO模型文章](http://blog.csdn.net/initphp/article/details/42011845)），有多种方法可以供我们选择，但是这些模型是在不同的平台下面的： select  poll  epoll  kqueue  devpoll  evport  win32
+IO多路复用模型中([IO模型文章](http://blog.csdn.net/initphp/article/details/42011845))，有多种方法可以供我们选择，但是这些模型是在不同的平台下面的:  select  poll  epoll  kqueue  devpoll  evport  win32
 
 当我们创建一个event\_base的时候，libevent会**自动**为我们选择**最快的IO多路复用模型**，Linux下一般会用epoll模型。
 
@@ -90,9 +90,9 @@ void event_base_free(struct event_base *base);
 int event_base_dispatch(struct event_base *base);
 ```
 
-返回值：0 表示成功退出  \-1 表示存在错误信息。
+返回值: 0 表示成功退出  \-1 表示存在错误信息。
 
-还可以用这个方法：
+还可以用这个方法: 
 
 ```c
 #define EVLOOP_ONCE             0x01
@@ -108,9 +108,9 @@ event\_base\_loop这个方法会比event\_base\_dispatch这个方法更加灵活
 
 - EVLOOP\_NONBLOCK: 不阻塞，检查哪个事件准备好，调用优先级最高的那一个，然后退出。
 
-0：如果参数填了0，则**只有事件进来的时候**才会**调用一次事件的回调函数**，比较常用
+0: 如果参数填了0，则**只有事件进来的时候**才会**调用一次事件的回调函数**，比较常用
 
-事件循环停止的情况：
+事件循环停止的情况: 
 
 1. event\_base中没有事件event
 
@@ -120,18 +120,18 @@ event\_base\_loop这个方法会比event\_base\_dispatch这个方法更加灵活
 
 4. 程序错误，异常退出
 
-两个退出的方法：
+两个退出的方法: 
 
 ```c
 // 这两个函数成功返回 0 失败返回 -1
 // 指定在 tv 时间后停止事件循环
 // 如果 tv == NULL 那么将无延时的停止事件循环
 int event_base_loopexit(struct event_base *base,const struct timeval *tv);
-// 立即停止事件循环（而不是无延时的停止）
+// 立即停止事件循环(而不是无延时的停止)
 int event_base_loopbreak(struct event_base *base);
 ```
 
-两个方法区别：
+两个方法区别: 
 
 1. event_base_loopexit(base, NULL) 如果当前正在为多个活跃事件调用回调函数，那么不会立即退出，而是等到所有的活跃事件的回调函数都执行完成后才退出事件循环
 
@@ -167,7 +167,7 @@ int main() {
 
 # 3 event事件
 
-event_base是事件的集合，负责事件的循环，以及集合的销毁。而event就是event_base中的基本单元：事件。
+event_base是事件的集合，负责事件的循环，以及集合的销毁。而event就是event_base中的基本单元: 事件。
 
 我们举一个简单的例子来理解事件。例如我们的socket来进行网络开发的时候，都会使用accept这个方法来阻塞监听是否有客户端socket连接上来，如果客户端连接上来，则会创建一个线程用于服务端与客户端进行数据的交互操作，而服务端会继续阻塞等待下一个客户端socket连接上来。客户端连接到服务端实际就是一种事件。
 
@@ -177,19 +177,19 @@ event_base是事件的集合，负责事件的循环，以及集合的销毁。�
 struct event *event_new(struct event_base *base, evutil_socket_t fd,short what, event_callback_fn cb,void *arg);
 ```
 
-参数：
+参数: 
 
-1. base：即event_base
+1. base: 即event_base
 
-2. fd：文件描述符。
+2. fd: 文件描述符。
 
-3. what：event关心的各种条件。
+3. what: event关心的各种条件。
 
-4. cb：回调函数。
+4. cb: 回调函数。
 
-5. arg：用户自定义的数据，可以传递到回调函数中去。
+5. arg: 用户自定义的数据，可以传递到回调函数中去。
 
-libevent是基于事件的，也就是说只有在事件到来的这种条件下才会触发当前的事件。例如：
+libevent是基于事件的，也就是说只有在事件到来的这种条件下才会触发当前的事件。例如: 
 
 1. fd文件描述符已准备好可写或者可读
 
@@ -201,7 +201,7 @@ libevent是基于事件的，也就是说只有在事件到来的这种条件下
 
 5. 用户触发的事件
 
-what参数 event各种条件：
+what参数 event各种条件: 
 
 ```c
 // 超时
@@ -210,7 +210,7 @@ what参数 event各种条件：
 #define EV_READ 0x02
 // event 相关的文件描述符可以写了
 #define EV_WRITE 0x04
-// 被用于信号检测（详见下文）
+// 被用于信号检测(详见下文)
 #define EV_SIGNAL 0x08
 // 用于指定 event 为 persistent 持久类型。当事件执行完毕后，不会被删除，继续保持pending等待状态;
 // 如果是非持久类型，则回调函数执行完毕后，事件就会被删除，想要重新使用这个事件，就必须将这个事件继续添加event_add 
@@ -239,15 +239,15 @@ int event_del(struct event *event);
 
 该方法将用于**向event_base注册事件**。
 
-参数：ev 为事件指针；tv 为时间指针。当tv = NULL的时候则无超时时间。
+参数: ev 为事件指针；tv 为时间指针。当tv = NULL的时候则无超时时间。
 
-函数返回：0表示成功 -1 表示失败。
+函数返回: 0表示成功 -1 表示失败。
 
 ```c
 int event_add(struct event *ev, const struct timeval *tv);
 ```
 
-tv时间结构例子：
+tv时间结构例子: 
 
 ```c
 struct timeval five_seconds = {5, 0};
@@ -261,7 +261,7 @@ event_add(ev1, &five_seconds);
 已经初始化或者处于 pending 的 event，首先需要调用 event\_del() 后再调用 event_assign()。这个时候就可以重用这个event了。
 
 ```cpp
-// 此函数用于初始化 event（包括可以初始化栈上和静态存储区中的 event）
+// 此函数用于初始化 event(包括可以初始化栈上和静态存储区中的 event)
 // event_assign() 和 event_new() 除了 event 参数之外，使用了一样的参数
 // event 参数用于指定一个未初始化的且需要初始化的 event
 // 函数成功返回 0 失败返回 -1
@@ -293,7 +293,7 @@ evsignal_del(ev)
 
 1. 每一个事件event都需要通过event_new初始化生成。event_new生成的事件是在堆上分配的内存。
 
-2. 当一个事件通过event_add被注册到event_base上的时候，这个事件处于pending（等待状态），当只有有事件进来的时候，event才会被激活active状态，相关的回调函数就会被调用。
+2. 当一个事件通过event_add被注册到event_base上的时候，这个事件处于pending(等待状态)，当只有有事件进来的时候，event才会被激活active状态，相关的回调函数就会被调用。
 
 3. persistent 如果event_new中的what参数选择了EV_PERSIST，则是持久的类型。持久的类型调用玩回调函数后，会继续转为pending状态，就会继续等待事件进来。大部分情况下会选择持久类型的事件。
 
@@ -392,7 +392,7 @@ int main() {
     const char *x =  event_base_get_method(base_ev); //获取IO多路复用的模型，linux一般为epoll
     printf("METHOD:%s\n", x);
  
-    //创建一个事件，类型为持久性EV_PERSIST，回调函数为do_accept（主要用于监听连接进来的客户端）
+    //创建一个事件，类型为持久性EV_PERSIST，回调函数为do_accept(主要用于监听连接进来的客户端)
     //将base_ev传递到do_accept中的arg参数
     struct event *ev;
     ev = event_new(base_ev, server_socketfd, EV_TIMEOUT|EV_READ|EV_PERSIST, do_accept, base_ev);
@@ -409,7 +409,7 @@ int main() {
 }
 ```
 
-说明：
+说明: 
 1. 必须设置socket为非阻塞模式，否则就会阻塞在那边，影响整个程序运行
 
 ```cpp
@@ -436,21 +436,21 @@ event_add(ev, NULL);
 
 # 5 Bufferevent
 
-上面的socket例子估计经过测试估计大家就会有很多疑问：
+上面的socket例子估计经过测试估计大家就会有很多疑问: 
 
 1. do_read方法作为一个事件会一直被循环
 
 2. 当客户端连接断开的时候，do_read方法还是在循环，根本不知道客户端已经断开socket的连接。
 
-3. 需要解决各种粘包和拆包（相关粘包拆包文章）问题
+3. 需要解决各种粘包和拆包(相关粘包拆包文章)问题
 
 如果要解决这个问题，我们可能要做大量的工作来维护这些socket的连接状态，读取状态。而Libevent的Bufferevent帮我们解决了这些问题。
 
-Bufferevent主要是用来管理和调度IO事件；而Evbuffer（下面一节会讲到）主要用来缓冲网络IO数据。
+Bufferevent主要是用来管理和调度IO事件；而Evbuffer(下面一节会讲到)主要用来缓冲网络IO数据。
 
 Bufferevent目前支持TCP协议，而不知道UDP协议。我们这边也只讲TCP协议下的Bufferevent的使用。
 
-我们先看下下面的接口（然后结合下面改进socket的例子，自己动手去实验一下）：
+我们先看下下面的接口(然后结合下面改进socket的例子，自己动手去实验一下): 
 
 ## 5.1 创建Bufferevent API
 
@@ -459,21 +459,21 @@ Bufferevent目前支持TCP协议，而不知道UDP协议。我们这边也只讲
 struct bufferevent *bufferevent_socket_new(struct event_base *base, evutil_socket_t fd, enum bufferevent_options options);
 ```
 
-参数：
+参数: 
 
-base：即event_base
+base: 即event_base
 
-fd：文件描述符。如果是socket的方法，则socket需要设置为非阻塞的模式。
+fd: 文件描述符。如果是socket的方法，则socket需要设置为非阻塞的模式。
 
-options：行为选项，下面是行为选项内容
+options: 行为选项，下面是行为选项内容
 
-1. BEV_OPT_CLOSE_ON_FREE ：当 bufferevent 被释放同时关闭底层（socket 被关闭等） 一般用这个选项
+1. BEV_OPT_CLOSE_ON_FREE : 当 bufferevent 被释放同时关闭底层(socket 被关闭等) 一般用这个选项
 
-2. BEV_OPT_THREADSAFE ：为 bufferevent 自动分配锁，这样能够在多线程环境中安全使用
+2. BEV_OPT_THREADSAFE : 为 bufferevent 自动分配锁，这样能够在多线程环境中安全使用
 
-3. BEV_OPT_DEFER_CALLBACKS ： 当设置了此标志，bufferevent 会延迟它的所有回调（参考前面说的延时回调）
+3. BEV_OPT_DEFER_CALLBACKS :  当设置了此标志，bufferevent 会延迟它的所有回调(参考前面说的延时回调)
 
-4. BEV_OPT_UNLOCK_CALLBACKS ： 如果 bufferevent 被设置为线程安全的，用户提供的回调被调用时 bufferevent 的锁会被持有。如果设置了此选项，Libevent 将在调用你的回调时释放 bufferevent 的锁
+4. BEV_OPT_UNLOCK_CALLBACKS :  如果 bufferevent 被设置为线程安全的，用户提供的回调被调用时 bufferevent 的锁会被持有。如果设置了此选项，Libevent 将在调用你的回调时释放 bufferevent 的锁
 
 
 

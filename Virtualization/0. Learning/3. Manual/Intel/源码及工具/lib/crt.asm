@@ -7,12 +7,12 @@
 
 
 ;-----------------------------------------
-; clear_4k_page32()：清4K页面
+; clear_4k_page32(): 清4K页面
 ; input:  
 ;       esi: address
 ; output;
 ;       none
-; 描述：
+; 描述: 
 ;       1) 一次清 4K 页面
 ;       2) 地址在 4K 边界上
 ;       3) 需开启 SSE 指令支持    
@@ -45,12 +45,12 @@ clear_4k_page32.done:
 
 
 ;-----------------------------------------
-; clear_4k_buffer32()：清 4K 内存
+; clear_4k_buffer32(): 清 4K 内存
 ; input:  
 ;       esi: address
 ; output;
 ;       none
-; 描述：
+; 描述: 
 ;       1) 一次清 4K 页面
 ;       2) 地址在 4K 边界上
 ;       3) 使用 GPI 指令处理
@@ -68,7 +68,7 @@ clear_4k_buffer32:
 
 
 ;-----------------------------------------
-; clear_4k_page_n32()：清 n个 4K页面
+; clear_4k_page_n32(): 清 n个 4K页面
 ; input:  
 ;       esi - address
 ;       edi - count
@@ -84,7 +84,7 @@ clear_4k_page_n32:
 
 
 ;-----------------------------------------
-; clear_4k_buffer_n32()：清 n个 4K 内存块
+; clear_4k_buffer_n32(): 清 n个 4K 内存块
 ; input:  
 ;       esi - address
 ;       edi - count
@@ -104,7 +104,7 @@ clear_4k_buffer_n32:
 ; input:
 ;       esi - size
 ;       edi - buffer address
-; 描述：
+; 描述: 
 ;       将内存块清 0
 ;-----------------------------------------
 zero_memory32:
@@ -128,10 +128,10 @@ zero_memory32:
         
         ;;
         ;; 计算调整到 DWORD 边界上的差额，原理等于 4 - dest & 03
-        ;; 1) 例如：[2:0] = 011B（3）
-        ;; 2) 取反后 = 100B（4）
-        ;; 3) 加1后 = 101B（5）        
-        ;; 4) 在32位下与03后 = 001B（1），即差额为 1
+        ;; 1) 例如: [2:0] = 011B(3)
+        ;; 2) 取反后 = 100B(4)
+        ;; 3) 加1后 = 101B(5)        
+        ;; 4) 在32位下与03后 = 001B(1)，即差额为 1
         ;;
         mov ecx, esi                                    ; 原 count
         mov esi, edi                                    ; 原 dest
@@ -284,7 +284,7 @@ bit_swap32.loop:
         shl esi, 1                              ; esi 高位移出到 CF
         rcr eax, 1                              ; CF 移入 eax 高位
         ;;
-        ;; 注意：
+        ;; 注意: 
         ;;      1) 使用 FF /1 的 dec 指令，避免在 64-bit 模式下变为 REX prefix
         ;;
         DECv ecx
@@ -300,7 +300,7 @@ bit_swap32.loop:
 ;       edi - column
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 从 (row, column) 位置开始清空屏幕
 ;-------------------------------------------------
 clear_screen:
@@ -438,7 +438,7 @@ video_buffer_column:
 ;       edi - column
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 设置 video buffer 位置
 ;-------------------------------------------------
 set_video_buffer:
@@ -626,7 +626,7 @@ write_char:
         jne write_char.@1
 
         ;;
-        ;; 处理换行：
+        ;; 处理换行: 
         ;; 1) 计算新行所写的位置，更新 video buffer 指针为下一个字符所写位置
         ;;
         call video_buffer_column                                ; 得到当前 column 值
@@ -638,12 +638,12 @@ write_char:
 write_char.@1:
         
         ;;
-        ;; 检查是否为 HT 符（水平TAB键）
+        ;; 检查是否为 HT 符(水平TAB键)
         ;;
         cmp si, 0F09h
         jne write_char.next
         ;;
-        ;; 处理TAB键：
+        ;; 处理TAB键: 
         ;; 检查上一个字符是否为 TAB 键
         ;; 1) 是，buffer pointer 加上 10h
         ;; 2) 否，buffer pointer 加上 0Fh
@@ -663,7 +663,7 @@ write_char.@2:
         
 write_char.next:        
         ;;
-        ;; 检查是否超过一屏（25 * 80)
+        ;; 检查是否超过一屏(25 * 80)
         ;;
         cmp ecx, (25 * 80 * 2)
         jae write_char.update
@@ -789,7 +789,7 @@ printblank:
 ;       edi - count
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印若干个字符
 ;-------------------------------------------------
 print_chars:
@@ -801,7 +801,7 @@ print_chars.@0:
         mov esi, ebx     
         call putc
         ;;
-        ;; 注意：
+        ;; 注意: 
         ;;      1) 使用 FF /1 的 dec 指令，避免在 64-bit 模式下变为 REX prefix
         ;;
         DECv ecx    
@@ -901,7 +901,7 @@ puts.@1:
 
 puts.next:        
         ;;
-        ;; 注意：
+        ;; 注意: 
         ;;      1) 使用 FF /0 的 inc 指令，避免在 64-bit 模式下变为 REX prefix
         ;;        
         REX.Wrxb
@@ -1018,7 +1018,7 @@ print_hex_value.loop:
         call putc
         mov esi, ebx
         ;;
-        ;; 注意：
+        ;; 注意: 
         ;;      1) 使用 FF /1 的 dec 指令，避免在 64-bit 模式下变为 REX prefix
         ;;
         DECv ecx        
@@ -1037,7 +1037,7 @@ print_hex_value.loop:
 ; output:
 ;       none
 ; 描述:
-;       打印半个字节（4位值）
+;       打印半个字节(4位值)
 ;-------------------------------------------------
 print_half_byte:
         call hex_to_char
@@ -1100,7 +1100,7 @@ print_decimal.loop:
         test eax, eax
         cmovz edx, [ebx]
         mov [ebx], eax
-        lea edx, [edx + '0']                    ; 余数转化为字符，使用 lea 指令，避免使用 add 指令（不改变eflags)
+        lea edx, [edx + '0']                    ; 余数转化为字符，使用 lea 指令，避免使用 add 指令(不改变eflags)
         mov [esi], dl                           ; 写入余数字符
         jnz print_decimal.loop
         
@@ -1127,7 +1127,7 @@ print_decimal.loop:
 ;---------------------------------------------------------------
 ; print_dword_float()
 ; input:
-;       esi - 浮点数地址值（单精度值）
+;       esi - 浮点数地址值(单精度值)
 ; output:
 ;       none
 ; 描述:
@@ -1146,7 +1146,7 @@ print_dword_float:
 ;---------------------------------------------------------------
 ; print_qword_float()
 ; input:
-;       esi - 浮点数地址值（双精度值）
+;       esi - 浮点数地址值(双精度值)
 ; output:
 ;       none
 ; 描述:
@@ -1164,7 +1164,7 @@ print_qword_float:
 ;---------------------------------------------------------------
 ; print_tword_float()
 ; input:
-;       esi - 浮点数地址值（扩展双精度值）
+;       esi - 浮点数地址值(扩展双精度值)
 ; output:
 ;       none
 ; 描述:
@@ -1200,7 +1200,7 @@ print_float:
         fld st2                                         ; 复制 value 到 st0
         
         ;;
-        ;; 当前 FPU stack 状态：
+        ;; 当前 FPU stack 状态: 
         ;; ** 1) st0    - float value
         ;; ** 2) st1    - 1.0
         ;; ** 3) st2    - 10.0
@@ -1217,7 +1217,7 @@ print_float:
         mov DWORD [crt.point], 0
         
         ;;
-        ;; 当前 FPU stack 状态：
+        ;; 当前 FPU stack 状态: 
         ;; st(2) = 10.0
         ;; st(1) = 1.0
         ;; st(0) = 余数值 
@@ -1270,7 +1270,7 @@ print_point:
 
 print_point.loop:
         ;;
-        ;; 当前状态：
+        ;; 当前状态: 
         ;; st(3) = 10.0
         ;; st(2) = 1.0
         ;; st(1) = 余数值
@@ -1530,7 +1530,7 @@ upper_to_lower.done:
 ; letter_convert()
 ; input:
 ;       esi - 字符
-;       edi - 选择（1: 转换为大写，0: 转换为小写）
+;       edi - 选择(1: 转换为大写，0: 转换为小写)
 ; output:
 ;       eax - 结果
 ; 描述:
@@ -1642,10 +1642,10 @@ dump_encodes.loop:
 ; puts_with_select()
 ; input:
 ;       esi - 字符串
-;       edi - select code（select[0] = 1: 大写，0 : 小写）
+;       edi - select code(select[0] = 1: 大写，0 : 小写)
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       根据提供的 select[0] 选择打印大写或小写
 ;       
 ;-------------------------------------------------
@@ -1689,7 +1689,7 @@ puts_with_select.done:
 ;-------------------------------------------------
 ; dump_string_with_mask()
 ; input:
-;       esi - mask flags 值（最大32位）
+;       esi - mask flags 值(最大32位)
 ;       edi - 字符串数组
 ; output:
 ;       none
@@ -1697,7 +1697,7 @@ puts_with_select.done:
 ;       根据提供的 mask flags 值，来打印 edi 内的值
 ;       1) mask flags 置位，则打印大写串
 ;       2) mask flags 清位，则打印小写串
-; 示例：
+; 示例: 
 ;       CPUID.01H:EDX 返回 01 leaf 的功能支持位
 ;       mov esi, edx
 ;       mov edi, edx_flags
@@ -1911,7 +1911,7 @@ division64_32.done:
 ;       edi: 乘数地址
 ;       ebp: 结果值地址
 ;
-; 描述：
+; 描述: 
 ; c3:c2:c1:c0 = a1:a0 * b1:b0
 ;(1) a0*b0 = d1:d0
 ;(2) a1*b0 = e1:e0
@@ -1981,7 +1981,7 @@ do_mul64:
 ;       ecx:ebx
 ; output:
 ;       eflags
-; 描述：
+; 描述: 
 ;       执行64位数的比较操作
 ;------------------------------------------------------  
 cmp64:
@@ -2003,7 +2003,7 @@ cmp64.done:
 ;       ecx - count
 ; output:
 ;       edx:eax - 结果
-; 描述：
+; 描述: 
 ;       执行 64 位的左移
 ;------------------------------------------------------ 
 shl64:
@@ -2024,14 +2024,14 @@ shl64:
 shl64_64:
         ;;
         ;; 向左移动 32 位数，或者超过 32 位
-        ;; 1) n = 32 时： edx:eax << 32, 结果为 eax:0
-        ;; 2) n > 32 时： edx:eax << n， 结果为 eax<<(n-32):0
+        ;; 1) n = 32 时:  edx:eax << 32, 结果为 eax:0
+        ;; 2) n > 32 时:  edx:eax << n， 结果为 eax<<(n-32):0
         ;;
         mov edx, eax                                    ; eax 移入 edx
         xor eax, eax                                    ; 低 32 位为 0
         and ecx, 31                                     ; 取 32 余数值，结果为 64 - n 
         shl edx, cl                                     ; 当 n = 32 时:  cl = 0
-                                                        ; 当 n > 32 时： 32 > cl > 0
+                                                        ; 当 n > 32 时:  32 > cl > 0
 shl64.done:
         ret        
 
@@ -2044,7 +2044,7 @@ shl64.done:
 ;       ecx - count
 ; output:
 ;       edx:eax - 结果
-; 描述：
+; 描述: 
 ;       执行 64 位的右移
 ;------------------------------------------------------ 
 shr64:
@@ -2065,14 +2065,14 @@ shr64:
 shr64_64:
         ;;
         ;; 向右移动 32 位数，或者超过 32 位
-        ;; 1) n = 32 时： edx:eax >> 32, 结果为 0:edx
-        ;; 2) n > 32 时： edx:eax >> n， 结果为 0:edx>>(n-32)
+        ;; 1) n = 32 时:  edx:eax >> 32, 结果为 0:edx
+        ;; 2) n > 32 时:  edx:eax >> n， 结果为 0:edx>>(n-32)
         ;;
         mov eax, edx                                    ; edx 移入 eax
         xor edx, edx                                    ; 高 32 位为 0
         and ecx, 31                                     ; 取 32 余数值，结果为 64 - n 
         shr eax, cl                                     ; 当 n = 32 时:  cl = 0
-                                                        ; 当 n > 32 时： 32 > cl > 0
+                                                        ; 当 n > 32 时:  32 > cl > 0
 shr64.done:
         ret        
 
@@ -2085,7 +2085,7 @@ shr64.done:
 ;       edx:eax - 加数
 ; output:
 ;       edx:eax - 返回被加数原值
-; 描述：
+; 描述: 
 ;       1) 执行 lock 的 64 位数相加，结果保存在目标操作数里
 ;       2) 目标操作数是内存
 ;       3) 函数返回目标操作数原值
@@ -2104,7 +2104,7 @@ locked_xadd64:
         
         ;;
         ;; 不支持 cmpxchg8b 指令时，直接执行两次 xadd 指令
-        ;; 警告：
+        ;; 警告: 
         ;;      1) 在这种情况下，并不能真正地执行 64 位的原子 xadd 操作
         ;;
         lock xadd [esi], eax
@@ -2136,16 +2136,16 @@ locked_xadd64.loop:
        
        ;;
        ;; 执行 edx:eax 与 [esi] 比较，并且交换
-       ;; 1) edx;eax == [esi] 时：[esi] = ecx:ebx
-       ;; 2) edx:eax != [esi] 时：edx:eax = [esi]
+       ;; 1) edx;eax == [esi] 时: [esi] = ecx:ebx
+       ;; 2) edx:eax != [esi] 时: edx:eax = [esi]
        ;;
         lock cmpxchg8b [esi]                            ; [esi] = ecx:ebx
         
         ;;
         ;; 检查 [esi] 内的原值是否已经被修改
-        ;; 注意：
+        ;; 注意: 
         ;; 1) 在执行“回写”目标操作数之前，“可能”已经被其它代码修改了 [esi] 内的原值
-        ;; 2) 因此：必须检查原值是否相等！
+        ;; 2) 因此: 必须检查原值是否相等！
         ;; 3) 当原值已经被修改时，需要重新加载 [esi] 原值，再进行“相加”，“回写”操作
         ;;
         jne locked_xadd64.loop                          ; [esi] 原值与 edx:eax 不相等时，重复操作 
@@ -2167,7 +2167,7 @@ locked_xadd64.done:
 ;       none
 ; 描述:
 ;       1) 执行延时操作
-;       2) 延时的单位为us（微秒）
+;       2) 延时的单位为us(微秒)
 ;------------------------------------------------------
 delay_with_us32:
         push edx
@@ -2205,14 +2205,14 @@ delay_with_us32.@0:
 ;------------------------------------------------------
 ; start_lapic_timer()
 ; input:
-;       esi - 时间（单位为 us）
+;       esi - 时间(单位为 us)
 ;       edi - 定时模式
 ;       eax - 回调函数
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 启动 local apic timer
-; 参数：
+; 参数: 
 ;       esi - 提供定时时间，单位为 us
 ;       edi - LAPIC_TIMER_ONE_SHOT，使用一次性定时
 ;             LAPIC_TIMER_PERIODIC, 使用周期性定时
@@ -2259,7 +2259,7 @@ start_lapic_timer.@0:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 停止 local apic timer
 ;------------------------------------------------------
 stop_lapic_timer:
@@ -2288,7 +2288,7 @@ stop_lapic_timer:
 ;       edi - column
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 在(row,column) 位置上显示时钟
 ;------------------------------------------------------
 clock:
@@ -2346,10 +2346,10 @@ clock:
 ;       none
 ; output:
 ;       none
-; 描述：
-;       1) 向所有处理器发送 INIT 消息（包括BSP）
+; 描述: 
+;       1) 向所有处理器发送 INIT 消息(包括BSP)
 ;       2) 此函数引发处理器 INIT RESET
-; 注意：
+; 注意: 
 ;       1) INIT RESET 下，MSR 不改变!
 ;       2) BSP 执行 boot，所有 AP 等待 SIPI 消息!
 ;------------------------------------------------------
@@ -2373,8 +2373,8 @@ send_init_command:
 ;       none
 ; output:
 ;       none
-; 描述：
-;       1) 提升 TPL（Task Priority Level）一级
+; 描述: 
+;       1) 提升 TPL(Task Priority Level)一级
 ;----------------------------------------------
 raise_tpl:
         push ebp
@@ -2396,8 +2396,8 @@ raise_tpl:
 ;       none
 ; output:
 ;       none
-; 描述：
-;       1) 降低 TPL（Task Priority Level）一级
+; 描述: 
+;       1) 降低 TPL(Task Priority Level)一级
 ;----------------------------------------------        
 lower_tpl:
         push ebp
@@ -2420,8 +2420,8 @@ lower_tpl:
 ;       esi - TPL
 ; output:
 ;       none
-; 描述：
-;       1)修改 TPL（Task Priority Level）
+; 描述: 
+;       1)修改 TPL(Task Priority Level)
 ;----------------------------------------------  
 change_tpl:
         push ebp
@@ -2443,8 +2443,8 @@ change_tpl:
 ;       none
 ; output:
 ;       none
-; 描述：
-;       1)恢复原 TPL（Task Priority Level）
+; 描述: 
+;       1)恢复原 TPL(Task Priority Level)
 ;----------------------------------------------        
 recover_tpl:
         push ebp
@@ -2487,7 +2487,7 @@ do_modity_tpl.end:
 ;       none
 ; output:
 ;       eax - scan code
-; 描述：
+; 描述: 
 ;       1) 等待按建，返回一个扫描码
 ;       2) 此函数最后将关闭键盘
 ;----------------------------------------------
@@ -2568,10 +2568,10 @@ read_keyboard.done:
 ;       none
 ; output:
 ;       eax - 扫描码
-; 描述：
+; 描述: 
 ;       1) 等待按键，返回一个扫描码
 ;       2) wait_a_key()是已经打开键盘时使用
-;       3）read_keyboard() 内部打开键盘，无需已经开启键盘
+;       3)read_keyboard() 内部打开键盘，无需已经开启键盘
 ;----------------------------------------------
 wait_a_key:
         push ebp
@@ -2733,7 +2733,7 @@ get_spin_lock.acquire:
         je get_spin_lock.done
 
         ;;
-        ;; 获取失败后，检查 lock 是否开放（未上锁）
+        ;; 获取失败后，检查 lock 是否开放(未上锁)
         ;; 1) 是，则再次执行获取锁，并上锁
         ;; 2) 否，继续不断地检查 lock，直到 lock 开放
         ;;
@@ -2784,7 +2784,7 @@ get_spin_lock_with_count.acquire:
         je get_spin_lock_with_count.done
 
         ;;
-        ;; 获取失败后，检查 lock 是否开放（未上锁）
+        ;; 获取失败后，检查 lock 是否开放(未上锁)
         ;; 1) 是，则再次执行获取锁，并上锁
         ;; 2) 否，继续不断地检查 lock，直到 lock 开放
         ;;
@@ -2812,7 +2812,7 @@ get_spin_lock_with_count.done:
 ;       esi - buffer
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 打印 buffer 数据
 ;       2) <UP>键向上翻，<DOWN>向下翻, <ESC>退出
 ;-----------------------------------------------------
@@ -3042,7 +3042,7 @@ report_system_status:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 更新系统状态到 local video buffer 里
 ;-----------------------------------------------------                        
 update_system_status:

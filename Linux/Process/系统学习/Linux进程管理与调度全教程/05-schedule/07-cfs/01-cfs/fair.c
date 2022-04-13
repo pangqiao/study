@@ -3157,8 +3157,8 @@ place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int initial)
      * 但是如果当前运行的所有进程被承诺了一个运行周期
      * 那么则将新进程的vruntime后推一个他自己的slice
      * 实际上新进程入队时要重新计算运行队列的总权值
-     * 总权值显然是增加了，但是所有进程总的运行时期并不一定随之增加
-     * 则每个进程的承诺时间相当于减小了，就是减慢了进程们的虚拟时钟步伐。 
+     * 总权值显然是增加了, 但是所有进程总的运行时期并不一定随之增加
+     * 则每个进程的承诺时间相当于减小了, 就是减慢了进程们的虚拟时钟步伐.  
      */
     /*  initial标识了该进程是新进程  */
     if (initial && sched_feat(START_DEBIT))
@@ -3183,7 +3183,7 @@ place_entity(struct cfs_rq *cfs_rq, struct sched_entity *se, int initial)
     }
 
     /* ensure we never gain time by being placed backwards.
-     * 如果是唤醒已经存在的进程，则单调附值
+     * 如果是唤醒已经存在的进程, 则单调附值
      */
     se->vruntime = max_vruntime(se->vruntime, vruntime);
 }
@@ -3377,8 +3377,8 @@ check_preempt_tick(struct cfs_rq *cfs_rq, struct sched_entity *curr)
      * narrow margin doesn't have to wait for a full slice.
      * This also mitigates buddy induced latencies under load.
      * 下面是这里是第二个抢占条件
-     * 红黑树中最做节点最小虚拟运行时间的进程和当前进程的虚拟运行时间进行比较， 
-     * 如果后者比前者大了ideal_runtime，就需要进行调度
+     * 红黑树中最做节点最小虚拟运行时间的进程和当前进程的虚拟运行时间进行比较,  
+     * 如果后者比前者大了ideal_runtime, 就需要进行调度
      * 此时说明curr进程已经领先其他进程
      * 红黑树中的其他进程接近于饥饿状态, 应该立即补偿
      */
@@ -3442,7 +3442,7 @@ wakeup_preempt_entity(struct sched_entity *curr, struct sched_entity *se);
  * 4) do not run the "skip" process, if something else is available
  *
  *  1. 首先要确保任务组之间的公平, 这也是设置组的原因之一
- *  2. 其次, 挑选下一个合适的（优先级比较高的）进程
+ *  2. 其次, 挑选下一个合适的(优先级比较高的)进程
  *     因为它确实需要马上运行 
  *  3. 如果没有找到条件2中的进程
  *     那么为了保持良好的局部性
@@ -5398,7 +5398,7 @@ wakeup_gran(struct sched_entity *curr, struct sched_entity *se)
      * This is especially important for buddies when the leftmost
      * task is higher priority than the buddy.
      *
-     * 计算进程运行的期限，即抢占的粒度
+     * 计算进程运行的期限, 即抢占的粒度
      */
     return calc_delta_fair(gran, se);
 }
@@ -5423,7 +5423,7 @@ wakeup_preempt_entity(struct sched_entity *curr, struct sched_entity *se)
     /*  vdiff为curr和se vruntime的差值*/
     s64 gran, vdiff = curr->vruntime - se->vruntime;
     
-    /*  cfs_rq的vruntime是单调递增的，也就是一个基准
+    /*  cfs_rq的vruntime是单调递增的, 也就是一个基准
      *  各个进程的vruntime追赶竞争cfsq的vruntime
      *  如果curr的vruntime比较小, 说明curr更加需要补偿, 
      *  即se无法抢占curr */
@@ -5432,7 +5432,7 @@ wakeup_preempt_entity(struct sched_entity *curr, struct sched_entity *se)
 
     /*  计算curr的最小抢占期限粒度   */
     gran = wakeup_gran(curr, se);
-    /*  当差值大于这个最小粒度的时候才抢占，这可以避免频繁抢占  */
+    /*  当差值大于这个最小粒度的时候才抢占, 这可以避免频繁抢占  */
     if (vdiff > gran)
         return 1;
 
@@ -5606,7 +5606,7 @@ again:
         /*  选择一个最优的调度实体  */
         se = pick_next_entity(cfs_rq, curr);
         cfs_rq = group_cfs_rq(se);
-    } while (cfs_rq);  /*  如果被调度的进程仍属于当前组，那么选取下一个可能被调度的任务，以保证组间调度的公平性  */
+    } while (cfs_rq);  /*  如果被调度的进程仍属于当前组, 那么选取下一个可能被调度的任务, 以保证组间调度的公平性  */
     /*  获取调度实体se的进程实体信息  */
     p = task_of(se);
 
@@ -5659,7 +5659,7 @@ simple:
     {
         /*  选出下一个可执行调度实体(进程)  */
         se = pick_next_entity(cfs_rq, NULL);
-        /*  把选中的进程从红黑树移除，更新红黑树  
+        /*  把选中的进程从红黑树移除, 更新红黑树  
          *  set_next_entity会调用__dequeue_entity完成此工作  */
         set_next_entity(cfs_rq, se);
         /*  group_cfs_rq return NULL when !CONFIG_FAIR_GROUP_SCHED

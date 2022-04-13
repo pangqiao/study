@@ -11,7 +11,7 @@
 
 |   链接   |
 |:-------:|
-| [内存管理（一）内存模型之Node](http://biancheng.dnbcw.info/linux/387391.html) |
+| [内存管理(一)内存模型之Node](http://biancheng.dnbcw.info/linux/387391.html) |
 | [Linux 内存管理 重要结构体](http://blog.chinaunix.net/uid-26009500-id-3078986.html) |
 | [Bootmem机制](http://blog.csdn.net/samssm/article/details/25064897) |
 | [Linux-2.6.32 NUMA架构之内存和调度](http://www.cnblogs.com/zhenjing/archive/2012/03/21/linux_numa.html) |
@@ -22,5 +22,5 @@
 | [内存管理(一)](http://www.cnblogs.com/openix/p/3334026.html) |
 | [Linux内存管理原理](http://www.cnblogs.com/zhaoyl/p/3695517.html) |
 | [第 15 章 内存映射和 DMA](http://www.embeddedlinux.org.cn/ldd3/ch15.html) |
-| [ 内存管理（二）struct page ](http://blog.chinaunix.net/uid-30282771-id-5176971.html) |
+| [ 内存管理(二)struct page ](http://blog.chinaunix.net/uid-30282771-id-5176971.html) |
 

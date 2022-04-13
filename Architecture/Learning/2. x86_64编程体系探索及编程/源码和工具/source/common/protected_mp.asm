@@ -149,13 +149,13 @@ bsp_processor_enter:
         ;*
         ;* 转入 long-mode
         ;*
-        mov DWORD [long_flag], 1                                ; 置 long_flag 标志，通知 AP 处理器需转入到 long mode
+        mov DWORD [long_flag], 1                                ; 置 long_flag 标志, 通知 AP 处理器需转入到 long mode
 
         jmp LONG_SEG
 
         ;*
-        ;* 下面发送 IPIs，使用 INIT-SIPI-SIPI 序列
-        ;* 发送 SIPI 时，发送 startup routine 地址位于 200000h
+        ;* 下面发送 IPIs, 使用 INIT-SIPI-SIPI 序列
+        ;* 发送 SIPI 时, 发送 startup routine 地址位于 200000h
         ;*
         mov DWORD [APIC_BASE + ICR0], 000c4500h                ; 发送 INIT IPI, 使所有 processor 执行 INIT
         DELAY
@@ -177,7 +177,7 @@ bsp_processor_enter:
 
 
 
-;; 实验 18-9：使用 logical 目标模式发送 IPI 消息
+;; 实验 18-9: 使用 logical 目标模式发送 IPI 消息
         mov esi, bp_msg1
         call puts
 
@@ -224,7 +224,7 @@ user_start:
 
 
 ;---------------------------------------------
-; ap_ipi_handler()：这是 AP IPI handler
+; ap_ipi_handler(): 这是 AP IPI handler
 ;---------------------------------------------
 ap_ipi_handler:
 	jmp do_ap_ipi_handler
@@ -303,7 +303,7 @@ get_handler_lock:
 
 ;;************* 函数导入表  *****************
 
-; 这个 lib32 库导入表放在 common\ 目录下，
+; 这个 lib32 库导入表放在 common\ 目录下, 
 ; 供所有实验的 protected.asm 模块使用
 
 %include "..\common\lib32_import_table.imt"

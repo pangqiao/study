@@ -380,9 +380,9 @@
 
 
 ;;
-;; 内存类型：
-;; 1) Uncacheable（UC）
-;; 2) WriteBack（WB）
+;; 内存类型: 
+;; 1) Uncacheable(UC)
+;; 2) WriteBack(WB)
 ;;
 
 %define MEM_TYPE_UC                                     0
@@ -801,7 +801,7 @@
 ; output:
 ;       %1 - 最终的 control 值
 ;
-; 使用示例：
+; 使用示例: 
 ;       mov eax, 0EE04h                                 ; 用户设置 VM-entrt control 域值放在 eax 
 ;       MakeControlBits eax, ebp + VGA.EnterCtls        ; 合成最终的 VM-entry control 值返回在 eax
 ;----------------------------------------------
@@ -825,7 +825,7 @@
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 保存 guest context
 ;----------------------------------------------
 %macro STORE_GUEST_CONTEXT 0
@@ -904,7 +904,7 @@
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 恢复 guest context
 ;----------------------------------------------
 %macro RESTORE_GUEST_CONTEXT 0

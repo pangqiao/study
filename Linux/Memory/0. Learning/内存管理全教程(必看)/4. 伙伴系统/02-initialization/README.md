@@ -21,7 +21,7 @@
 start_kernel()
     |---->page_address_init()
     |     考虑支持高端内存
-    |     业务：初始化page_address_pool链表；
+    |     业务: 初始化page_address_pool链表；
     |          将page_address_maps数组元素按索引降序插入
     |          page_address_pool链表; 
     |          初始化page_address_htable数组.
@@ -73,21 +73,21 @@ start_kernel()
          |
     |---->pidhash_init()
     |     详见下文.
-    |     根据低端内存页数和散列度，分配hash空间，并赋予pid_hash
+    |     根据低端内存页数和散列度, 分配hash空间, 并赋予pid_hash
     |
     |---->vfs_caches_init_early()
           |---->dcache_init_early()
-          |     dentry_hashtable空间，d_hash_shift, h_hash_mask赋值；
+          |     dentry_hashtable空间, d_hash_shift, h_hash_mask赋值；
           |     同pidhash_init();
           |     区别:
-          |         散列度变化了（13 - PAGE_SHIFT）;
+          |         散列度变化了(13 - PAGE_SHIFT);
           |         传入alloc_large_system_hash的最后参数值为0;
           |
           |---->inode_init_early()
-          |     inode_hashtable空间，i_hash_shift, i_hash_mask赋值；
+          |     inode_hashtable空间, i_hash_shift, i_hash_mask赋值；
           |     同pidhash_init();
           |     区别:
-          |         散列度变化了（14 - PAGE_SHIFT）;
+          |         散列度变化了(14 - PAGE_SHIFT);
           |         传入alloc_large_system_hash的最后参数值为0;
           |解buddy的内部机理,
 
@@ -95,11 +95,11 @@ start_kernel()
 
 
 
-我们只在特定于体系结构的代码中看到了内核如何检测系统中的可用内存。与高层数据结构(如内存域和结点)的关联, 则需要根据该信息构建。我们知道，体系结构相关代码需要在启动期间建立以下信息:
+我们只在特定于体系结构的代码中看到了内核如何检测系统中的可用内存. 与高层数据结构(如内存域和结点)的关联, 则需要根据该信息构建. 我们知道, 体系结构相关代码需要在启动期间建立以下信息:
 
-*	系统中各个内存域的页帧边界，保存在max_zone_pfn数组
+*	系统中各个内存域的页帧边界, 保存在max_zone_pfn数组
 
-*	各结点页帧的分配情况，保存在全局变量early_node_map中
+*	各结点页帧的分配情况, 保存在全局变量early_node_map中
 
 
 

@@ -5,17 +5,17 @@ DoS with unprivileged mounts:
 
 https://lore.kernel.org/linux-fsdevel/CAJfpegsxgnSRUW-E5HM3uT5QfGyUtn_v=i4Ppkkkutp34287AA@mail.gmail.com/
 
-在**任何命名空间**中的**任何 mount 实例**中。有一种简单有效的方法，可以通过简单地在文件或目录上 mount 某些东西来**防止** unlink（2）和 rename（2）在任何文件或目录上运行。
+在**任何命名空间**中的**任何 mount 实例**中。有一种简单有效的方法，可以通过简单地在文件或目录上 mount 某些东西来**防止** unlink(2)和 rename(2)在任何文件或目录上运行。
 
 在非特权 mount 设计中是否考虑了这一点？
 
 > Eric W. Biederman
 > 重点是不要欺骗特权应用程序，而实际上应该更深入地考虑的一些次要效果却被忽略了。
 
-从理论上讲，该解决方案也很简单：将**非特权私有命名空间**中的mount标记为“易失性”(volatile)，并在 unlink 类型操作中分解。
+从理论上讲，该解决方案也很简单: 将**非特权私有命名空间**中的mount标记为“易失性”(volatile)，并在 unlink 类型操作中分解。
 
 > Andy Lutomirski
-> 我实际上更喜欢相反的情况：无特权的挂载不会阻止 unlink 和 rename。 如果该dentry消失了，那么在mount点没有文件的情况下，该挂载仍将存在。 （网络文件系统已支持此功能。）
+> 我实际上更喜欢相反的情况: 无特权的挂载不会阻止 unlink 和 rename。 如果该dentry消失了，那么在mount点没有文件的情况下，该挂载仍将存在。 (网络文件系统已支持此功能。)
 
 这样的易失性mount通常也很有用。
 
@@ -34,7 +34,7 @@ https://lore.kernel.org/linux-fsdevel/CAJfpegsxgnSRUW-E5HM3uT5QfGyUtn_v=i4Ppkkku
 
 同样，所有这些都是关于有效数据结构的问题，而不是真正的语义问题。 可以以不减慢vfs的方式实现任一语义吗？
 
-> 鉴于 vfs_unlink 具有：
+> 鉴于 vfs_unlink 具有: 
 ```
 	if (d_mountpoint(dentry))
 		error = -EBUSY;

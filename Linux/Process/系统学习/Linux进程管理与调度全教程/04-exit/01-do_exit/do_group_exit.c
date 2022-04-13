@@ -24,7 +24,7 @@ do_group_exit(int exit_code)
         else {
             sig->group_exit_code = exit_code;
             sig->flags = SIGNAL_GROUP_EXIT;
-            zap_other_threads(current);     /*  遍历整个线程组链表，并杀死其中的每个线程  */
+            zap_other_threads(current);     /*  遍历整个线程组链表, 并杀死其中的每个线程  */
         }
         spin_unlock_irq(&sighand->siglock);
     }

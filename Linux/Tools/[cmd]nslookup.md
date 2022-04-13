@@ -14,7 +14,7 @@
 
 # 1 nslookup作用
 
-nslookup用于**查询DNS的记录**，查询**域名解析是否正常**，在网络故障时用来诊断网络问题
+nslookup用于**查询DNS的记录**, 查询**域名解析是否正常**, 在网络故障时用来诊断网络问题
 
 ```
 [root@gerry ~]# cat /etc/resolv.conf
@@ -32,7 +32,7 @@ nameserver 172.16.100.2
 
 默认选项
 
-A（Address）记录指的是用来指定**主机名或域名对应的IP记录**。
+A(Address)记录指的是用来指定**主机名或域名对应的IP记录**. 
 
 ```
 nslookup domain [dns-server]
@@ -65,7 +65,7 @@ search localdomain
 nameserver 172.16.100.2
 ```
 
-在提示符\>后直接输入域名，可以查看该域名的A记录（也可以用set type=a指令设置）：
+在提示符\>后直接输入域名, 可以查看该域名的A记录(也可以用set type=a指令设置): 
 
 ```
 [root@gerry ~]# nslookup
@@ -109,7 +109,7 @@ Address: 113.107.238.14
 nslookup -type=mx domain [dns-server]
 ```
 
-MX（mail exchanger）记录，**邮件交换记录**，它指向一个**邮件服务器**，用于电子邮件系统发邮件时根据**收信人的地址后缀**来**定位邮件服务器**。
+MX(mail exchanger)记录, **邮件交换记录**, 它指向一个**邮件服务器**, 用于电子邮件系统发邮件时根据**收信人的地址后缀**来**定位邮件服务器**. 
 
 ```
 [root@gerry ~]# nslookup -type=mx bilibili.com
@@ -123,7 +123,7 @@ bilibili.com	mail exchanger = 5 mxbiz1.qq.com.
 Authoritative answers can be found from:
 ```
 
-输入set type=mx，再输入域名可查询mx类型记录
+输入set type=mx, 再输入域名可查询mx类型记录
 
 ```
 [root@gerry ~]# nslookup
@@ -144,7 +144,7 @@ MX perference = 10 指MX记录的优先级
 
 # 4 NS记录
 
-NS（nameserver）记录，用来指定**该域名由那个DNS服务器**来进行解析。
+NS(nameserver)记录, 用来指定**该域名由那个DNS服务器**来进行解析. 
 
 ```
 nslookup -type=mx bilibili.com
@@ -169,7 +169,7 @@ Authoritative answers can be found from:
 
 # 5 CNAME记录
 
-cname记录是**别名记录**，也成为规范名字。这种记录允许将多个名字映射到同一台计算机
+cname记录是**别名记录**, 也成为规范名字. 这种记录允许将多个名字映射到同一台计算机
 
 输入`set type=cname`可以查询
 
@@ -190,14 +190,14 @@ Address: 106.75.240.122
 nslookup -type=type domain [dns-server]
 ```
 
-其中，type可以是以下这些类型：
+其中, type可以是以下这些类型: 
 
-* A 地址记录（Ipv4）
-* AAAA 地址记录（Ipv6）
+* A 地址记录(Ipv4)
+* AAAA 地址记录(Ipv6)
 * AFSDB Andrew文件系统数据库服务器记录
 * ATMA ATM地址记录
 * CNAME 别名记录
-* HINFO 硬件配置记录，包括CPU、操作系统信息
+* HINFO 硬件配置记录, 包括CPU、操作系统信息
 * ISDN 域名对应的ISDN号码
 * MB 存放指定邮箱的服务器
 * MG 邮件组记录
@@ -205,7 +205,7 @@ nslookup -type=type domain [dns-server]
 * MR 改名的邮箱记录
 * MX 邮件服务器记录
 * NS 名字服务器记录
-* PTR 反向记录（从IP地址解释域名）
+* PTR 反向记录(从IP地址解释域名)
 * RP 负责人记录
 * RT 路由穿透记录
 * SRV TCP服务器信息记录

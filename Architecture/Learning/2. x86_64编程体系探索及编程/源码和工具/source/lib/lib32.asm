@@ -14,11 +14,11 @@
 lib32_length        dw        LIB32_END - $
 
 ;*
-;* 说明：
+;* 说明: 
 ;*      1. 下面是 lib32 库函数的导出表
 ;*      2. 由嵌入到 protected.asm 模块的导入表 lib32_import_table.imt 所使用
-;*      3. 导出表是一个跳转表，跳转到最终的函数代码
-;*      4. 每条跳转都是 5 个字节宽，由导入表计算出地址
+;*      3. 导出表是一个跳转表, 跳转到最终的函数代码
+;*      4. 每条跳转都是 5 个字节宽, 由导入表计算出地址
 
 putc:                           jmp     DWORD __putc
 println:                        jmp     DWORD __println
@@ -175,7 +175,7 @@ __get_current_column:
 ; input:
 ;                esi: string
 ; output:
-;                eax: 1(需要), 0(不需要）
+;                eax: 1(需要), 0(不需要)
 ;--------------------------------------------
 __test_println:
         push ecx
@@ -408,7 +408,7 @@ do_print_point:
         lea ebx, [digit_array + 98]
         mov BYTE [ebx], '.'
 print_point_loop:        
-;; 当前：
+;; 当前: 
 ;; st(3) = 10.0
 ;; st(2) = 1.0
 ;; st(1) = 余数值
@@ -454,7 +454,7 @@ do_print_float:
         call __print_point
         
         mov DWORD [point], 0                
-;; 当前：
+;; 当前: 
 ;; st(2) = 10.0
 ;; st(1) = 1.0
 ;; st(0) = 余数值        
@@ -552,7 +552,7 @@ __print_qword_value:
 ; input:
 ;                esi: char
 ; output:
-;                eax: 1(是字母), 0(不是字母）
+;                eax: 1(是字母), 0(不是字母)
 ;-------------------------------------------
 __letter:
         and esi, 0xff
@@ -576,7 +576,7 @@ test_letter_done:
 ; input:
 ;                esi: char
 ; output:
-;                1: 是， 0不是
+;                1: 是,  0不是
 ;----------------------------------------
 __lowercase:
         and esi, 0xff
@@ -594,7 +594,7 @@ test_lowercase_done:
 ; input:
 ;                esi: char
 ; output:
-;                1: 是， 0不是
+;                1: 是,  0不是
 ;----------------------------------------
 __uppercase:
         and esi, 0xff
@@ -630,7 +630,7 @@ test_digit_done:
 ;----------------------------------------------------------------------
 ; lower_upper():        大小写字母的转换
 ; input:
-;                esi:需要转换的字母,  edi: 1 (小字转换为大写)，0 (大写转换为小写)
+;                esi:需要转换的字母,  edi: 1 (小字转换为大写), 0 (大写转换为小写)
 ; output:
 ;                eax: result letter
 ;---------------------------------------------------------------------
@@ -642,7 +642,7 @@ __lower_upper:
         jz do_lower_upper_done                   ; 如果不是字母
         bt edi, 0
         jnc set_lower_upper                      ; 1?
-        neg ecx                                 ; 小写转大写：减
+        neg ecx                                 ; 小写转大写: 减
 set_lower_upper:                
         add esi, ecx
 do_lower_upper_done:                
@@ -686,7 +686,7 @@ do_lower_to_upper_done:
 ;---------------------------------------------------
 ; lowers_to_uppers(): 小写串转换为大写串
 ; input:
-;                esi: 源串， edi:目标串        
+;                esi: 源串,  edi:目标串        
 ;---------------------------------------------------
 __lowers_to_uppers:
         push ecx
@@ -717,7 +717,7 @@ do_lowers_to_uppers_done:
 ;---------------------------------------------------
 ; uppers_to_lowers(): 大写串转换为小写串
 ; input:
-;                esi: 源串， edi:目标串        
+;                esi: 源串,  edi:目标串        
 ;---------------------------------------------------
 __uppers_to_lowers:
         push ecx
@@ -748,7 +748,7 @@ do_uppers_to_lowers_done:
 ;--------------------------------------------------------------
 ; get_qword_hex_string(): 将 QWORD 转换为字符串
 ; input:
-;                esi: 指令 QWORD 值的指针, edi: buffer（最少需要17bytes)
+;                esi: 指令 QWORD 值的指针, edi: buffer(最少需要17bytes)
 ;--------------------------------------------------------------
 __get_qword_hex_string:
         push ecx
@@ -765,8 +765,8 @@ __get_qword_hex_string:
 ;-------------------------------------------------
 ; get_dword_hex_string(): 将数 (DWORD) 转换为字符串
 ; input:
-;                esi: 需转换的数（dword size)
-;                edi: 目标串 buffer（最短需要 9 bytes，包括 0)
+;                esi: 需转换的数(dword size)
+;                edi: 目标串 buffer(最短需要 9 bytes, 包括 0)
 ;---------------------------------------------------
 __get_dword_hex_string:
         push ecx
@@ -787,7 +787,7 @@ do_get_dword_hex_string_loop:
 ;----------------------------------------------------
 ; get_byte_hex_string(): 将 BYTE 转换为字符串
 ; input:
-;                esi: BYTE 值, edi: buffer（最短需要3个)
+;                esi: BYTE 值, edi: buffer(最短需要3个)
 ;----------------------------------------------------
 __get_byte_hex_string:
         push ecx
@@ -810,10 +810,10 @@ __get_byte_hex_string:
 ; dump_flags():                打印 32 位的寄存器标记值
 ; description:
 ;                这个函数用来根据输入一 mask 值和对应的 flags字符串
-;                如果 bit被mask，打印大写串，否则打印小写串
+;                如果 bit被mask, 打印大写串, 否则打印小写串
 ; example:
 ;                CPUID.EAX=01H 返回的 EDX 寄存器含有处理器支持的扩展功能
-;                如果 EDX 的位中，支持就打印大写，不支持就打印小写
+;                如果 EDX 的位中, 支持就打印大写, 不支持就打印小写
 ;                mov esi, edx                        ;; CPUID.EAX=01H 返回的 edx寄存器
 ;                mov edi, edx_flags
 ;                call dump_flags
@@ -943,7 +943,7 @@ do_get_MAXPHYADDR_done:
 ;--------------------------------------------
 ; subtract64(): 64位的减法
 ; input:
-;                esi: 被减数地址， edi: 减数地址
+;                esi: 被减数地址,  edi: 减数地址
 ; ouput:
 ;                edx:eax 结果值
 ;--------------------------------------------
@@ -957,7 +957,7 @@ __subtract64:
 ;----------------------------------------
 ; addition64(): 64位加法
 ; input:
-;                esi: 被加数地址， edi: 加数地址
+;                esi: 被加数地址,  edi: 加数地址
 ; ouput:
 ;                edx:eax 结果值
 ;---------------------------------------
@@ -972,7 +972,7 @@ __addition64:
 ; mul64(): 64位乘法
 ; input:
 ;       esi: 被乘数地址, edi: 乘数地址, ebp: 结果值地址
-; 描述：
+; 描述: 
 ; c3:c2:c1:c0 = a1:a0 * b1:b0
 ;(1) a0*b0 = d1:d0
 ;(2) a1*b0 = e1:e0
@@ -1144,8 +1144,8 @@ __get_tr_base:
 ; set_call_gate(int selector, long address, int count)
 ; input:
 ;                esi: selector,  edi: address, eax: count
-; 注意：
-;                这里将 call gate 的权限设为 3 级，从用户代码可以调用
+; 注意: 
+;                这里将 call gate 的权限设为 3 级, 从用户代码可以调用
 ;--------------------------------------------------------------------------
 __set_call_gate:
         push ebx
@@ -1186,7 +1186,7 @@ __set_ldt_descriptor:
 ;--------------------------------------------------------
 ; set_IO_bitmap(int port, int value): 设置 IOBITMAP 中的值
 ; input:
-;       esi - port（端口值），edi - value 设置的值
+;       esi - port(端口值), edi - value 设置的值
 ;---------------------------------------------------------
 __set_IO_bitmap:
         push ebx
@@ -1251,7 +1251,7 @@ return_address:
         ret
 
 ;--------------------------------------------------------
-; sys_service()：使用 sysenter/sysexit 版本的系统服务例程
+; sys_service(): 使用 sysenter/sysexit 版本的系统服务例程
 ; input:
 ;                eax: 系统服务例程号
 ;--------------------------------------------------------
@@ -1278,7 +1278,7 @@ __system_service:
 ;-------------------------------------------------------
 ; set_system_service_table(): 设置中断调用函数
 ; input:
-;       esi: 功能号，　edi: 服务例程
+;       esi: 功能号, 　edi: 服务例程
 ;-------------------------------------------------------
 __set_system_service_table:
         mov [system_service_table + esi * 4], edi
@@ -1336,7 +1336,7 @@ opcode          dw 0
 op_offset       dd 0
 op_selector     dd 0
 
-;; FSAVE/FNSAVE，FRSTOR 指令的附加映像
+;; FSAVE/FNSAVE, FRSTOR 指令的附加映像
 ;; 定义 8 个 80 位的内存地址保存 data 寄存器值
 r0_value        dt 0.0
 r1_value        dt 0.0

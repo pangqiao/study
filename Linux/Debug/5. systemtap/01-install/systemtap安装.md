@@ -64,7 +64,7 @@ http://pkgs.org/centos-7/centos-x86_64
 
 参见
 
-* [ 构建源码树----Linux内核剖析（三）](http://blog.csdn.net/gatieme/article/details/44961475)
+* [ 构建源码树----Linux内核剖析(三)](http://blog.csdn.net/gatieme/article/details/44961475)
 * [SystemtapOnUbuntu](http://sourceware.org/systemtap/wiki/SystemtapOnUbuntu)
 * 使用Ubuntu的集成环境构建, [BuildYourOwnKernel](https://wiki.ubuntu.com/Kernel/BuildYourOwnKernel), [GitKernelBuild](https://wiki.ubuntu.com/KernelTeam/GitKernelBuild), [Kernel/Compile](https://help.ubuntu.com/community/Kernel/Compile)
 
@@ -107,7 +107,7 @@ kernel-debuginfo-xxxx
 >`uname -r`
 >2.6.18-308.el5
 >
->所以我对应的版本是：
+>所以我对应的版本是: 
 >
 >kernel-debug-debuginfo-2.6.18-308.el5.x86_64.rpm
 >kernel-debuginfo-common-2.6.18-308.el5.x86_64.rpm

@@ -174,7 +174,7 @@ write_pci_byte:
 ;-------------------------------------------
 ; get_PMBASE(): 得到Power Management I/O base
 ; output:
-;	eax: PMBASE（I/O 地址）
+;	eax: PMBASE(I/O 地址)
 ;-------------------------------------------
 get_PMBASE:
 ; 读 bus 0, device 31, function 0, offset 40h
@@ -187,7 +187,7 @@ get_PMBASE:
 ;-------------------------------------------
 ; get_GPIOBASE(): 得到 GPIO I/O base
 ; output:
-;	eax: GPIOBASE（I/O 地址）
+;	eax: GPIOBASE(I/O 地址)
 ;-------------------------------------------
 get_GPIOBASE:
 ; 读 bus 0, device 31, function 0, offset 48h
@@ -209,7 +209,7 @@ enable_GPIO:
 ;----------------------------------------------
 ; get_TCOBASE(): 得到 TCO I/O Base
 ; output:
-;	eax: TCOBASE（I/O 地址）
+;	eax: TCOBASE(I/O 地址)
 ;----------------------------------------------
 get_TCOBASE:
 	call get_PMBASE
@@ -227,7 +227,7 @@ get_RCBA:
 ;-------------------------------------------------
 ; get_root_complex_base_address(): 得到 RCBA 地址
 ; output:
-;       eax - RCBA address（memroy space)
+;       eax - RCBA address(memroy space)
 ;-------------------------------------------------
 get_root_complex_base_address:
         ;* 读 RCBA 寄存器
@@ -242,7 +242,7 @@ read_OIC:
         and eax, 0xFFFFC000
         mov ebx, 0xFEC00000
         sub eax, ebx
-        mov eax, [eax + PCI_FEC00000 + 0x31fe]                 ; 读 OIC（other interrupt control）寄存器
+        mov eax, [eax + PCI_FEC00000 + 0x31fe]                 ; 读 OIC(other interrupt control)寄存器
         and eax, 0xffff
         pop ebx
         ret

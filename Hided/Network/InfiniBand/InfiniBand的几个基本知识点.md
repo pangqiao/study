@@ -63,7 +63,7 @@ InfiniBand为不同类型的用户提供了不同的上层协议，并为某些�
 
 - IPoIB(IP-over-IB)是为了实现INFINIBAND网络与TCP/IP网络兼容而制定的协议，基于TCP/IP协议，对于用户应用程序是透明的，并且可以提供更大的带宽，也就是原先使用TCP/IP协议栈的应用不需要任何修改就能使用IPoIB。
 
-- uDAPL(User Direct Access Programming Library)用户直接访问编程库是标准的API，通过远程直接内存访问 RDMA功能的互连（如InfiniBand）来提高数据中心应用程序数据消息传送性能、伸缩性和可靠性。
+- uDAPL(User Direct Access Programming Library)用户直接访问编程库是标准的API，通过远程直接内存访问 RDMA功能的互连(如InfiniBand)来提高数据中心应用程序数据消息传送性能、伸缩性和可靠性。
 
 iSER (iSCSI Extensions for RDMA)和NFSoRDMA (NFS over RDMA)，SRP (SCSI RDMA Protocol) 等是InfiniBand中的一种通信协议，在InfiniBand中将SCSI命令进行打包，允许SCSI命令通过RDMA在不同的系统之间进行通信，实现存储设备共享和RDMA通信服务。
 

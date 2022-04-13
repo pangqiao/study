@@ -230,14 +230,14 @@ https://rust-analyzer.github.io/manual.html#vimneovim
 
 
 
-Racer: Rust Auto-Complete-er, 代码补全. 而 vim 下的 `racer-rust/vim-racer` 插件已经停止开发, 不建议使用. 应该改用LSP插件（vim-lsp，nvim-lspconfig）, 补全用 YCM 是否就可以了?
+Racer: Rust Auto-Complete-er, 代码补全. 而 vim 下的 `racer-rust/vim-racer` 插件已经停止开发, 不建议使用. 应该改用LSP插件(vim-lsp，nvim-lspconfig), 补全用 YCM 是否就可以了?
 
 
 
 
 # 7. reference
 
-Rust：vim 环境配置:
+Rust: vim 环境配置:
 
 
 https://blog.stdio.io/1103#method4

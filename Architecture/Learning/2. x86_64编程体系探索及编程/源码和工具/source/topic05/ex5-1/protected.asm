@@ -27,10 +27,10 @@ entry:
         mov edi, DB_handler
         call set_interrupt_handler
 
-;; 为了完成实验，关闭时间中断和键盘中断
+;; 为了完成实验, 关闭时间中断和键盘中断
         call disable_timer
 
-;; 测试1：在 CPL=0 的情况下改变 IOPL值，从 0 改变为 3
+;; 测试1: 在 CPL=0 的情况下改变 IOPL值, 从 0 改变为 3
         mov esi, msg1
         call puts
         call println
@@ -91,7 +91,7 @@ user_entry:
         call puts
         call println
         pushfd                                        ; get eflags
-        or DWORD [esp], 0x3200                        ; 尝试将 IOPL 改为 0，IF 改变 1
+        or DWORD [esp], 0x3200                        ; 尝试将 IOPL 改为 0, IF 改变 1
         popfd                                         ; 修改 eflags
         
         call print_flags_value
@@ -227,7 +227,7 @@ do_DB_handler:
         mov esi, db_msg2
         call puts
         call println
-        bts DWORD [esp+8], 16                             ; 设置 eflags.RF 为 1，以便中断返回时，继续执行
+        bts DWORD [esp+8], 16                             ; 设置 eflags.RF 为 1, 以便中断返回时, 继续执行
         iret
 
 ;-------------------------------------------

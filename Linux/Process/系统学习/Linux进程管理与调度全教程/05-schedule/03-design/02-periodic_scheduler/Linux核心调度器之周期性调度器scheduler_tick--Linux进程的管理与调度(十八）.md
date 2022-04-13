@@ -24,7 +24,7 @@
 
 - 另一种是通过周期性的机制, 以固定的频率运行, 不时的检测是否有必要
 
-因而内核提供了两个调度器**主调度器**，**周期性调度器**，分别实现如上工作,两者合在一起就组成了**核心调度器(core scheduler)**,也叫**通用调度器(generic scheduler)**.
+因而内核提供了两个调度器**主调度器**, **周期性调度器**, 分别实现如上工作,两者合在一起就组成了**核心调度器(core scheduler)**,也叫**通用调度器(generic scheduler)**.
 
 他们都**根据进程的优先级分配CPU时间**,因此这个过程就叫做**优先调度**,我们将在本节主要讲解**核心调度器的设计和优先调度的实现方式**.
 
@@ -44,7 +44,7 @@ scheduler\_tick函数定义在[kernel/sched/core.c, L2910](http://lxr.free-elect
 
 2. 激活负责**当前进程调度类的周期性调度方法**
 
-**检查进程执行的时间**是否超过了它**对应的ideal\_runtime**，如果超过了，则告诉系统，需要**启动主调度器(schedule)进行进程切换**。(注意thread\_info:preempt\_count、thread\_info:flags (TIF\_NEED\_RESCHED))
+**检查进程执行的时间**是否超过了它**对应的ideal\_runtime**, 如果超过了, 则告诉系统, 需要**启动主调度器(schedule)进行进程切换**. (注意thread\_info:preempt\_count、thread\_info:flags (TIF\_NEED\_RESCHED))
 
 ```c
 [kernel/sched/core.c]
@@ -52,7 +52,7 @@ void scheduler_tick(void)
 {
     /*  1.  获取当前cpu上的全局就绪队列rq和当前运行的进程curr  */
 
-    /*  1.1 在于SMP的情况下，获得当前CPU的ID。如果不是SMP，那么就返回0  */
+    /*  1.1 在于SMP的情况下, 获得当前CPU的ID. 如果不是SMP, 那么就返回0  */
     int cpu = smp_processor_id();
 
     /*  1.2 获取cpu的全局就绪队列rq, 每个CPU都有一个就绪队列rq  */
@@ -75,7 +75,7 @@ void scheduler_tick(void)
     curr->sched_class->task_tick(rq, curr, 0);
 
     /*  2.3 更新rq的负载信息,  即就绪队列的cpu_load[]数据
-     *  本质是讲数组中先前存储的负荷值向后移动一个位置，
+     *  本质是讲数组中先前存储的负荷值向后移动一个位置, 
      *  将当前负荷记入数组的第一个位置 */
     update_cpu_load_active(rq);
 
@@ -135,11 +135,11 @@ task\_tick的实现方法**取决于底层的调度器类**,例如**完全公平
 | fail\_sched\_class | | [kernel/sched/fair.c, line 8116, task\_tick\_fail](http://lxr.free-electrons.com/source/kernel/sched/fair.c?v=4.6#L8116) |
 | idle\_sched\_class | | [kernel/sched/idle_task.c, line 53, task\_tick\_idle](http://lxr.free-electrons.com/source/kernel/sched/idle_task.c?v=4.6#L53) |
 
-- 如果当前进程是**完全公平队列**中的进程,则首先根据**当前就绪队列中的进程数**算出一个**延迟时间间隔**，大概**每个进程分配2ms时间**，然后按照该进程在队列中的**总权重中占的比例**，算出它**该执行的时间X**，如果**该进程执行物理时间超过了X**，则**激发延迟调度**；如果没有超过X，但是**红黑树就绪队列中下一个进程优先级更高**，即curr->vruntime-leftmost->vruntime > X,也**将延迟调度**
+- 如果当前进程是**完全公平队列**中的进程,则首先根据**当前就绪队列中的进程数**算出一个**延迟时间间隔**, 大概**每个进程分配2ms时间**, 然后按照该进程在队列中的**总权重中占的比例**, 算出它**该执行的时间X**, 如果**该进程执行物理时间超过了X**, 则**激发延迟调度**；如果没有超过X, 但是**红黑树就绪队列中下一个进程优先级更高**, 即curr->vruntime-leftmost->vruntime > X,也**将延迟调度**
 
->**延迟调度**的**真正调度过程**在：**schedule中实现**，会**按照调度类顺序和优先级挑选出一个最高优先级的进程执行**
+>**延迟调度**的**真正调度过程**在: **schedule中实现**, 会**按照调度类顺序和优先级挑选出一个最高优先级的进程执行**
 
-- 如果当前进程是**实时调度类**中的进程：则如果**该进程是SCHED\_RR**，则**递减时间片为[HZ/10**]，**到期，插入到队列尾部**，并**激发延迟调度**，如果是**SCHED\_FIFO**，则什么也不做，**直到该进程执行完成**
+- 如果当前进程是**实时调度类**中的进程: 则如果**该进程是SCHED\_RR**, 则**递减时间片为[HZ/10**], **到期, 插入到队列尾部**, 并**激发延迟调度**, 如果是**SCHED\_FIFO**, 则什么也不做, **直到该进程执行完成**
 
 如果**当前进程希望被重新调度**,那么**调度类方法**会在**task\_struct**中设置**TIF\_NEED\_RESCHED标志**,以表示该请求, 而内核将会在**接下来的适当实际完成此请求**.
 
@@ -147,15 +147,15 @@ task\_tick的实现方法**取决于底层的调度器类**,例如**完全公平
 
 ## 3.1 定时器周期性的激活调度器
 
-定时器是Linux提供的一种**定时服务的机制**. 它在**某个特定的时间唤醒某个进程**，来做一些工作.
+定时器是Linux提供的一种**定时服务的机制**. 它在**某个特定的时间唤醒某个进程**, 来做一些工作.
 
 在**低分辨率定时器**的**每次时钟中断**完成**全局统计量更新**后,**每个cpu(！！！**)在**软中断中**执行以下操作
 
 - 更新**该cpu上当前进程内核态**、**用户态**使用时间**xtime\_update**
 - 调用**该cpu上的定时器函数**
-- 启动**周期性定时器**（**scheduler\_tick**）完成**该cpu**上任务的**周期性调度工作**；
+- 启动**周期性定时器**(**scheduler\_tick**)完成**该cpu**上任务的**周期性调度工作**；
 
-在**支持动态定时器(！！！**)的系统中，**可以关闭该调度器(没有进程在等待调度时候！！！**)，从而**进入深度睡眠过程**；scheduler\_tick查看**当前进程是否运行太长时间**，如果是，将**进程的TIF\_NEED\_RESCHED置位**，然后**在中断返回**时，调用**schedule**，进行**进程切换**操作
+在**支持动态定时器(！！！**)的系统中, **可以关闭该调度器(没有进程在等待调度时候！！！**), 从而**进入深度睡眠过程**；scheduler\_tick查看**当前进程是否运行太长时间**, 如果是, 将**进程的TIF\_NEED\_RESCHED置位**, 然后**在中断返回**时, 调用**schedule**, 进行**进程切换**操作
 
 ```c
 //  http://lxr.free-electrons.com/source/arch/arm/kernel/time.c?v=4.6#L74
@@ -196,11 +196,11 @@ void update_process_times(int user_tick)
 
 ## 3.2 早期实现
 
-**Linux初始化**时, **init\_IRQ**()函数设定**8253的定时周期为10ms(一个tick值**).同样，在**初始化**时,**time\_init**()用**setup\_irq**()设置**时间中断向量irq0**, **中断服务程序为timer\_interrupt**.
+**Linux初始化**时, **init\_IRQ**()函数设定**8253的定时周期为10ms(一个tick值**).同样, 在**初始化**时,**time\_init**()用**setup\_irq**()设置**时间中断向量irq0**, **中断服务程序为timer\_interrupt**.
 
 在2.4版内核及较早的版本当中,**定时器的中断处理采用底半机制**,**底半处理函数的注册**在**start\_kernel**()函数中调用**sechd\_init**(), 在这个函数中又调用init\_bh(TIMER\_BH, timer\_bh)注册了定时器的底半处理函数.然后系统才**调用time\_init()来注册定时器的中断向量和中断处理函数**.
 
-在中断处理函数timer\_interrupt()中，主要是调用do\_timer()函数完成工作。do\_timer()函数的主要功能就是调用**mark\_bh()产生软中断**，随后处理器会在合适的时候调用定时器底半处理函数timer\_bh()。在timer\_bh()中, 实现了**更新定时器**的功能. 2.4.23版的do\_timer()函数代码如下（经过简略）：
+在中断处理函数timer\_interrupt()中, 主要是调用do\_timer()函数完成工作. do\_timer()函数的主要功能就是调用**mark\_bh()产生软中断**, 随后处理器会在合适的时候调用定时器底半处理函数timer\_bh(). 在timer\_bh()中, 实现了**更新定时器**的功能. 2.4.23版的do\_timer()函数代码如下(经过简略): 
 
 ```c
 void do_timer(struct pt_regs *regs)
@@ -213,7 +213,7 @@ void do_timer(struct pt_regs *regs)
 
 ## 3.3 目前实现
 
-而在**内核2.6版本**以后，**定时器中断处理**采用了**软中断机制**而**不是底半机制**。**时钟中断处理函数**仍然为**timer\_interrupt**()\-> do\_timer\_interrupt()\-> do\_timer\_interrupt\_hook()\-> do\_timer()。不过do\_timer()函数的实现有所不同
+而在**内核2.6版本**以后, **定时器中断处理**采用了**软中断机制**而**不是底半机制**. **时钟中断处理函数**仍然为**timer\_interrupt**()\-> do\_timer\_interrupt()\-> do\_timer\_interrupt\_hook()\-> do\_timer(). 不过do\_timer()函数的实现有所不同
 ```c
 void do_timer(struct pt_regs *regs)
 {
@@ -225,14 +225,14 @@ void do_timer(struct pt_regs *regs)
 
 >更详细的实现linux-2.6
 >
-[Linux中断处理之时钟中断（一）](http://www.bianceng.cn/OS/Linux/201111/31272_4.htm)
+[Linux中断处理之时钟中断(一)](http://www.bianceng.cn/OS/Linux/201111/31272_4.htm)
 >
->[（原创）linux内核进程调度以及定时器实现机制](http://blog.csdn.net/joshua_yu/article/details/591038)
+>[(原创)linux内核进程调度以及定时器实现机制](http://blog.csdn.net/joshua_yu/article/details/591038)
 
 # 4 参考
 
 [进程管理与调度5 -- 进程调度、进程切换原理详解](http://wanderer-zjhit.blogbus.com/logs/156738683.html)
 
-[Linux中断处理之时钟中断（一）](http://www.bianceng.cn/OS/Linux/201111/31272_4.htm)
+[Linux中断处理之时钟中断(一)](http://www.bianceng.cn/OS/Linux/201111/31272_4.htm)
 
-[（原创）linux内核进程调度以及定时器实现机制](http://blog.csdn.net/joshua_yu/article/details/591038)
+[(原创)linux内核进程调度以及定时器实现机制](http://blog.csdn.net/joshua_yu/article/details/591038)

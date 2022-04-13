@@ -73,13 +73,13 @@ user_entry:
         mov ds, ax
         mov es, ax
 
-;; 通过 stack 给 interrupt handler 传递参数，下一条指令执行点        
+;; 通过 stack 给 interrupt handler 传递参数, 下一条指令执行点        
         push DWORD n1
         
 ;;测试 x87 fpu 指令        
         fild DWORD [mem32int]
 
-;; 通过 stack 给 interrupt handler 传递参数，下一条指令执行点
+;; 通过 stack 给 interrupt handler 传递参数, 下一条指令执行点
 n1:
         push DWORD n2
         
@@ -150,7 +150,7 @@ do_GP_handler:
         mov eax, [esp]
         cmp BYTE [eax], 0xfb                         ; 检查是否因为 sti 指令而产生 #GP 异常
         jne do_GP_handler_done
-        inc eax                                       ; 如果是的话，跳过产生 #GP 异常的 sti 指令，执行下一条指令
+        inc eax                                       ; 如果是的话, 跳过产生 #GP 异常的 sti 指令, 执行下一条指令
         mov [esp], eax
         mov esi, gp_msg3
         call puts
@@ -230,7 +230,7 @@ clear_TF:
         mov esi, db_msg2
         call puts
 do_DB_handler_done:        
-        bts DWORD [esp + 4 * 8 + 8], 16                                        ; 设置 eflags.RF 为 1，以便中断返回时，继续执行
+        bts DWORD [esp + 4 * 8 + 8], 16                                        ; 设置 eflags.RF 为 1, 以便中断返回时, 继续执行
         popad
         iret
                 

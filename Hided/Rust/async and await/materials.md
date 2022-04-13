@@ -2,9 +2,9 @@
 
 一文读懂Rust的async: https://blog.csdn.net/tianlangstudio/article/details/107310211
 
-Rust 学习心得＜4＞：async/await 如何工作: https://blog.csdn.net/m0_37889044/article/details/107949836
+Rust 学习心得＜4＞: async/await 如何工作: https://blog.csdn.net/m0_37889044/article/details/107949836
 
-生成器（Generator）和 async/await（译）: https://planetmeow.net/futures-explained/4-generators-async-await/
+生成器(Generator)和 async/await(译): https://planetmeow.net/futures-explained/4-generators-async-await/
 
 Rust 异步编程:
 

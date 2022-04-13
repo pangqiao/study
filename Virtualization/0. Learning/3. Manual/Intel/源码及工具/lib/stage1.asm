@@ -15,7 +15,7 @@
 ;       esi - GDT 表基址 
 ; output:
 ;       eax - 返回 GDT pointer
-; 描述：
+; 描述: 
 ;       1) 初始化临时的 GDT 数据
 ;	2) 此函数运行在 16 位 real-mode 下 
 ;-------------------------------------------------------------------
@@ -27,7 +27,7 @@ set_stage1_gdt:
         ;;
         ;; 设置基本 GDT 表项
         ;; 1) entry 0:          NULL descriptor
-        ;; 2) entry 1,2：       64-bit kernel code/data 描述符
+        ;; 2) entry 1,2:        64-bit kernel code/data 描述符
         ;; 3) entry 3,4:        32-bit user code/data 描述符
         ;; 4) entry 5,6:        64-bit user code/data 描述符
         ;; 5) entry 7,8:        32-bit kernel code/data 描述符                
@@ -41,15 +41,15 @@ set_stage1_gdt:
         mov [esi+4], eax
 
         ;;
-        ;; 64-bit Kernel CS/SS 描述符设置说明：
-        ;; 1）在 x64 体系下描述符可以设置为：
+        ;; 64-bit Kernel CS/SS 描述符设置说明: 
+        ;; 1)在 x64 体系下描述符可以设置为: 
         ;;      * CS = 00209800_00000000h (L=P=1, G=D=0, C=R=A=0)
         ;;      * SS = 00009200_00000000h (L=1, G=B=0, W=1, E=A=0)
-        ;; 2) 在 VMX 架构下, 在VM-exit 返回 host 后会将描述符设置为：
+        ;; 2) 在 VMX 架构下, 在VM-exit 返回 host 后会将描述符设置为: 
         ;;      * CS = 00AF9B00_0000FFFFh (G=L=P=1, D=0, C=0, R=A=1, limit=4G)
         ;;      * SS = 00CF9300_0000FFFFh (G=P=1, B=1, E=0, W=A=1, limit=4G)
         ;;
-        ;; 3) 因此，为了与 host 的描述符达成一致，这里将描述符设为：
+        ;; 3) 因此，为了与 host 的描述符达成一致，这里将描述符设为: 
         ;;      * CS = 00AF9A00_0000FFFFh (G=L=P=1, D=0, C=A=0, R=1, limit=4G)
         ;;      * SS = 00CF9200_0000FFFFh (G=P=1, B=1, E=A=0, W=1, limit=4G)  
         ;
@@ -141,7 +141,7 @@ set_stage1_gdt:
 ;       esi - GDT 地址
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 初始化 SDA 区域的 GDT 数据
 ;	    2) 此函数运行在 32 位 protected-mode 下
 ;-------------------------------------------------------------------
@@ -152,7 +152,7 @@ set_global_gdt:
         ;;
         ;; 设置基本 GDT 表项
         ;; 1) entry 0:          NULL descriptor
-        ;; 2) entry 1,2：       64-bit kernel code/data 描述符
+        ;; 2) entry 1,2:        64-bit kernel code/data 描述符
         ;; 3) entry 3,4:        32-bit user code/data 描述符
         ;; 4) entry 5,6:        64-bit user code/data 描述符
         ;; 5) entry 7,8:        32-bit kernel code/data 描述符                
@@ -168,15 +168,15 @@ set_global_gdt:
 
 
         ;;
-        ;; 64-bit Kernel CS/SS 描述符设置说明：
-        ;; 1）在 x64 体系下描述符可以设置为：
+        ;; 64-bit Kernel CS/SS 描述符设置说明: 
+        ;; 1)在 x64 体系下描述符可以设置为: 
         ;;      * CS = 00209800_00000000h (L=P=1, G=D=0, C=R=A=0)
         ;;      * SS = 00009200_00000000h (L=1, G=B=0, W=1, E=A=0)
-        ;; 2) 在 VMX 架构下, 在VM-exit 返回 host 后会将描述符设置为：
+        ;; 2) 在 VMX 架构下, 在VM-exit 返回 host 后会将描述符设置为: 
         ;;      * CS = 00AF9B00_0000FFFFh (G=L=P=1, D=0, C=0, R=A=1, limit=4G)
         ;;      * SS = 00CF9300_0000FFFFh (G=P=1, B=1, E=0, W=A=1, limit=4G)
         ;;
-        ;; 3) 因此，为了与 host 的描述符达成一致，这里将描述符设为：
+        ;; 3) 因此，为了与 host 的描述符达成一致，这里将描述符设为: 
         ;;      * CS = 00AF9A00_0000FFFFh (G=L=P=1, D=0, C=A=0, R=1, limit=4G)
         ;;      * SS = 00CF9200_0000FFFFh (G=P=1, B=1, E=A=0, W=1, limit=4G)  
         ;
@@ -294,15 +294,15 @@ set_global_gdt.@0:
 ;       none
 ; output:
 ;       none
-; 描述：
-;       1) 初始化系統数据区域（SDA）
+; 描述: 
+;       1) 初始化系統数据区域(SDA)
 ;       2) 此函数执行在 32-bit 保护模式下
 ;-------------------------------------------------------------------
 init_system_data_area:
         push ecx
         push edx
         ;;
-        ;; 地址说明：
+        ;; 地址说明: 
         ;; 1) 所有的地址值使用 64 位
         ;; 2) 低 32 位使用在 legacy 模式下，映射 32 位值
         ;; 3) 高 32 位使用在 64-bit 模式下，映射 64 位值
@@ -310,16 +310,16 @@ init_system_data_area:
         
         
         ;;
-        ;; SDA 基本信息说明：
-        ;; 1) SDA.Base 值：
+        ;; SDA 基本信息说明: 
+        ;; 1) SDA.Base 值: 
         ;;      1.1) legacy 下 SDA_BASE = 8002_0000h
         ;;      1.2) 64-bit 下 SDA_BASE = ffff_f800_8000_0000h
-        ;; 2) SDA.PhysicalBase 值：
+        ;; 2) SDA.PhysicalBase 值: 
         ;;      2.1) legacy 与 64-bit 下保持不变，为 12_0000h
-        ;; 3) SDA.PcbBase 值：
-        ;;      3.1) 指向 BSP 的 PCB 区域，即：8000_0000h
-        ;; 4) SDA.PcbPhysicalBase 值：
-        ;;      4.1) 指向 BSP 的 PCB 物理地址，即：10_0000h
+        ;; 3) SDA.PcbBase 值: 
+        ;;      3.1) 指向 BSP 的 PCB 区域，即: 8000_0000h
+        ;; 4) SDA.PcbPhysicalBase 值: 
+        ;;      4.1) 指向 BSP 的 PCB 物理地址，即: 10_0000h
         ;;
         mov edx, 0FFFFF800h                                             ; 64 位地址中的高 32 位
         xor ecx, ecx
@@ -361,7 +361,7 @@ init_system_data_area:
         
         ;;
         ;; 如果需要进入 longmode 则定义 __X64 符号
-        ;; 1）SDA.ApLongmode = 1 时，进入所有处理器进入 longmode 模式
+        ;; 1)SDA.ApLongmode = 1 时，进入所有处理器进入 longmode 模式
         ;; 2) SDA.ApLongmode = 0 时，使用 legacy 环境
         ;;
 %ifdef  __X64
@@ -421,12 +421,12 @@ init_system_data_area:
         ;;
         mov DWORD [fs: SDA.IdtBase], SDA_PHYSICAL_BASE+SDA.Idt
         mov [fs: SDA.IdtBase+4], edx
-        mov WORD [fs: SDA.IdtLimit], 256 * 16 - 1                       ; 默认保存 255 个 vector（为 longmode 下）
+        mov WORD [fs: SDA.IdtLimit], 256 * 16 - 1                       ; 默认保存 255 个 vector(为 longmode 下)
         mov DWORD [fs: SDA.IdtTop], SDA_PHYSICAL_BASE+SDA.Idt           ; top 指向 base
         mov [fs: SDA.IdtTop+4], edx
         
         ;;
-        ;; 初始 SRT（系统服务例程表）信息
+        ;; 初始 SRT(系统服务例程表)信息
         ;;
         mov DWORD [fs: SRT.Base], SDA_BASE+SRT.Base                   ; SRT 基址
         mov [fs: SRT.Base+4], edx
@@ -441,7 +441,7 @@ init_system_data_area:
                 
 
         ;;
-        ;; 初始化 paging 管理值（legacy 模式下）
+        ;; 初始化 paging 管理值(legacy 模式下)
         ;;
         mov DWORD [fs: SDA.XdValue], 0                                  ; XD 位清 0
         mov DWORD [fs: SDA.PtBase], PT_BASE                             ; PT 表基址为 0C0000000h
@@ -489,8 +489,8 @@ init_system_data_area:
         
         ;;
         ;; PT pool 管理记录:
-        ;; 1) 主 PT pool 区域：220_0000h - 2ff_ffffh（ffff_f800_8220_000h）
-        ;; 2) 备用 Pt pool 区域：20_0000h - 09f_ffffh（ffff_f800_8020_0000h）
+        ;; 1) 主 PT pool 区域: 220_0000h - 2ff_ffffh(ffff_f800_8220_000h)
+        ;; 2) 备用 Pt pool 区域: 20_0000h - 09f_ffffh(ffff_f800_8020_0000h)
         ;;
         mov DWORD [fs: SDA.PtPoolPhysicalBase], PT_POOL_PHYSICAL_BASE64
         mov DWORD [fs: SDA.PtPoolPhysicalBase + 4], 0
@@ -515,8 +515,8 @@ init_system_data_area:
 
         ;;
         ;; VMX Ept(extended page table)管理记录
-        ;; 1) PXT 表区域：FFFF_F800_C0A0_0000h - FFFF_F800_C0BF_FFFFh(A0_0000h - BF_FFFFh)
-        ;; 2) PPT 表区域：在 SDA 内
+        ;; 1) PXT 表区域: FFFF_F800_C0A0_0000h - FFFF_F800_C0BF_FFFFh(A0_0000h - BF_FFFFh)
+        ;; 2) PPT 表区域: 在 SDA 内
         ;;
         mov eax, [fs: SDA.Base]
         mov edx, [fs: SDA.PhysicalBase]
@@ -541,7 +541,7 @@ init_system_data_area:
         
         ;;
         ;; 初始化 stack 和 pool 管理信息
-        ;; 1) legacy 下： KERNEL_STACK_BASE  = ffe0_0000h
+        ;; 1) legacy 下:  KERNEL_STACK_BASE  = ffe0_0000h
         ;;                USER_STACK_BASE    = 7fe0_0000h
         ;;                KERNEL_POOL_BASE   = 8320_0000h
         ;;                USER_POOL_BASE     = 7300_1000h
@@ -707,10 +707,10 @@ init_system_data_area:
 ; output:
 ;       eax - PCB 物理地址
 ;       edx - PCB 虚拟地址
-; 描述：
+; 描述: 
 ;       1) 每个处理器的 PCB 地址使用 alloc_pcb_base() 来分配
 ;       2) edx:eax - 返回 PCB 块的虚拟地址和对应的物理地址
-;       2) 在 stage1（legacy 下未分页）使用
+;       2) 在 stage1(legacy 下未分页)使用
 ;-------------------------------------------------------------------
 alloc_pcb_base:
         push ebx
@@ -764,7 +764,7 @@ alloc_tss_base:
 ;       none
 ; output:
 ;       eax - stack base
-; 描述：
+; 描述: 
 ;       1) 分配 stage1 阶段使用的 kernel stack
 ;-------------------------------------------------------------------
 alloc_stage1_kernel_stack_4k_base:
@@ -782,7 +782,7 @@ alloc_stage1_kernel_stack_4k_base:
 ; output:
 ;       eax - 虚拟地址
 ;       edx - 物理地址
-; 描述：
+; 描述: 
 ;       1) 在　stage1 阶段分配的 kernel pool
 ;       2) 返回物理地址
 ;-------------------------------------------------------------------
@@ -861,7 +861,7 @@ init_processor_control_block:
         mov eax, [fs: SDA.Base]
         mov [gs: PCB.SdaBase], eax                      ; 指向 SDA 区域
         mov DWORD [gs: PCB.SdaBase+4], 0FFFFF800h
-        add eax, SRT.Base                               ; SRT 区域基址（位于 SDA 之后）
+        add eax, SRT.Base                               ; SRT 区域基址(位于 SDA 之后)
         mov [gs: PCB.SrtBase], eax                      ; 指向 System Service Routine Table 区域    
         mov DWORD [gs: PCB.SrtBase+4], 0FFFFF800h
         mov eax, [fs: SDA.PhysicalBase]     
@@ -888,7 +888,7 @@ init_processor_control_block:
 
         ;;
         ;; 设置 LDT 管理信息
-        ;; 注意：
+        ;; 注意: 
         ;; 1) LDT 此时为空，这里使用虚拟地址
         ;; 2) 地址高 32 位使用在 64-bit 模式下
         ;;
@@ -956,7 +956,7 @@ init_processor_control_block:
                
         
         ;;
-        ;; 更新 VMCS 管理指针（虚拟指针）
+        ;; 更新 VMCS 管理指针(虚拟指针)
         ;; 1) VmcsA 指向 GuestA
         ;; 2) VmcsB 指向 GuestB
         ;; 3) VmcsC 指向 GuestC
@@ -998,7 +998,7 @@ init_processor_control_block:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 安装默认的异常处理例程
 ;-----------------------------------------------------------------------
 install_default_exception_handler:
@@ -1018,7 +1018,7 @@ install_default_exception_handler.loop:
         
 ;-----------------------------------------------------
 ; local_interrupt_default_handler()
-; 描述：
+; 描述: 
 ;       处理器的 local 中断源缺省服务例程
 ;-----------------------------------------------------
 local_interrupt_default_handler:
@@ -1058,7 +1058,7 @@ install_default_interrupt_handler:
         ;; 说明:
         ;; 1) 安装 local vector table 服务例程
         ;; 2) 安装 IPI 服务例程
-        ;; 3) 安装系统服务例程(40h 中断调用）
+        ;; 3) 安装系统服务例程(40h 中断调用)
         ;;
      
         ;;
@@ -1114,7 +1114,7 @@ install_default_interrupt_handler:
 
 ;-----------------------------------------------------
 ; install_default_local_interrupt_handler()
-; 描述：
+; 描述: 
 ;       安装缺省 local interrupt
 ;-----------------------------------------------------
 install_default_local_interrupt_handler:
@@ -1142,7 +1142,7 @@ install_default_local_interrupt_handler:
 ;       none
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 发送 INIT-SIPI-SIPI 消息序给 AP
 ;       2) 等待 AP 完成第1阶段工作
 ;-----------------------------------------------------

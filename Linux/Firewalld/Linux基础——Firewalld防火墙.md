@@ -13,8 +13,8 @@
 * [7 命令行工具 firewall-cmd](#7-命令行工具-firewall-cmd)
 	* [7.1 firewall的状态](#71-firewall的状态)
 	* [7.2 动作中的查看操作](#72-动作中的查看操作)
-	* [7.3 更改区域操作：](#73-更改区域操作)
-	* [7.4 新建\-\-add或删除\-\-remove规则：](#74-新建-add或删除-remove规则)
+	* [7.3 更改区域操作: ](#73-更改区域操作)
+	* [7.4 新建\-\-add或删除\-\-remove规则: ](#74-新建-add或删除-remove规则)
 	* [7.5 应用示例](#75-应用示例)
 * [8 处理运行时区域](#8-处理运行时区域)
 * [9 处理永久区域](#9-处理永久区域)
@@ -34,9 +34,9 @@
 
 **每一条规则**均有**一个目标动作**，具有**相同动作的规则**可以**分组在一起**。
 
-RHEL7 中有几种防火墙共存：**firewalld**、**iptables**、**ebtables**等等，**默认**使用 **firewalld** 作为防火墙，**管理工具**是**firewall\-cmd**。使用 **firewalld** 来管理**netfilter**, 不过底层调用的命令仍然是 iptables等。
+RHEL7 中有几种防火墙共存: **firewalld**、**iptables**、**ebtables**等等，**默认**使用 **firewalld** 作为防火墙，**管理工具**是**firewall\-cmd**。使用 **firewalld** 来管理**netfilter**, 不过底层调用的命令仍然是 iptables等。
 
-最常用的防火墙有：FirewallD或iptables。Linux的发行版种类极多，但是公认的仍然是这两种。
+最常用的防火墙有: FirewallD或iptables。Linux的发行版种类极多，但是公认的仍然是这两种。
 
 RedhatEnterprise Linux7 已经默认使用firewalld 作为防火墙，其使用方式已经变化。基于 iptables 的防火墙被默认不启动，但仍然可以继续使用。
 
@@ -46,38 +46,38 @@ RedhatEnterprise Linux7 已经默认使用firewalld 作为防火墙，其使用�
 
 FirewallD即**Dynamic Firewall Manager of Linux systems**，Linux系统的**动态防火墙管理器**。是redhat7系统中对于netfilter内核模块的管理工具.
 
-**iptables** service 管理防火墙规则的模式（**静态**）: 用户将新的防火墙规则添加进 /**etc/sysconfig/iptables** 配置文件当中，再执行命令 /etc/init.d/**iptables reload** 使变更的规则生效。在这整个过程的背后，iptables service 首先**对旧的防火墙规则进行了清空**，然后**重新完整地加载**所有新的防火墙规则，如果加载了防火墙的模块，需要在重新加载后进行手动加载防火墙的模块；
+**iptables** service 管理防火墙规则的模式(**静态**): 用户将新的防火墙规则添加进 /**etc/sysconfig/iptables** 配置文件当中，再执行命令 /etc/init.d/**iptables reload** 使变更的规则生效。在这整个过程的背后，iptables service 首先**对旧的防火墙规则进行了清空**，然后**重新完整地加载**所有新的防火墙规则，如果加载了防火墙的模块，需要在重新加载后进行手动加载防火墙的模块；
 
-**firewalld** 管理防火墙规则的模式（**动态**）: 任何规则的变更都**不需要**对整个防火墙规则列表进行**重新加载**，只需要将**变更部分**保存并更新到运行中的 **iptables** 即可。还有命令行和图形界面配置工具，它仅仅是替代了 iptables service 部分，其底层还是使用 iptables 作为防火墙规则管理入口。
+**firewalld** 管理防火墙规则的模式(**动态**): 任何规则的变更都**不需要**对整个防火墙规则列表进行**重新加载**，只需要将**变更部分**保存并更新到运行中的 **iptables** 即可。还有命令行和图形界面配置工具，它仅仅是替代了 iptables service 部分，其底层还是使用 iptables 作为防火墙规则管理入口。
 
 firewalld 使用 python 语言开发，在新版本中已经计划使用 c\+\+ 重写 daemon 部分(见下图)。
 
 **FirewallD**是一个服务，用于**配置网络连接**，从而那些内外部网络的数据包可以允许穿过网络或阻止穿过网络。
 
-**FirewallD**允许**两种类型的配置**：**永久类型**和**运行时类型**。
+**FirewallD**允许**两种类型的配置**: **永久类型**和**运行时类型**。
 
 - 运行时类型的配置在**防火墙被重启后会丢失**相应的规则配置；
 - 而永久类型的配置即使遇到系统重启，也会保留生效。
 
-对应于上面两种类型的配置，FirewallD相应的有两个目录：
+对应于上面两种类型的配置，FirewallD相应的有两个目录: 
 
 - 针对**运行时**类型配置的目录/**usr/lib/firewall**；
 - 以及针对**永久类型**配置的目录/**etc/firewall**.
 
 在RHEL/CentOS 7或Fedora 18的默认服务可以看到。
 
-防火墙栈的整体图如下： 
+防火墙栈的整体图如下:  
 
 ![](./images/2019-04-30-22-37-15.png)
 
 Firewalld 提供了支持**网络/防火墙区域(zone**)定义**网络链接**以及**接口安全等级**的**防火墙管理工具**。拥有运行时配置和永久配置选项。它也支持允许服务或者应用程序直接添加防火墙规则的接口。以前的 system\-config\-firewall 防火墙模型是**静态**的，每次修改都要求**防火墙完全重启**。这个过程包括**内核 netfilter 防火墙模块**的**卸载**和新配置所需模块的**装载**等。相反，firewalldaemon 动态管理防火墙，不需要重启整个防火墙便可应用更改。因而也就没有必要重载所有内核防火墙模块了。
 
 
-查看防火墙几种服务的运行状态：
+查看防火墙几种服务的运行状态: 
 
 # 3 什么是iptables
 
-iptables是另一种服务，它可以决定是否允许、删除或返回IP数据包。iptables服务管理IPv4数据包，而ip6tables则管理IPv6数据包。此服务管理了一堆规则表，其中每个表分别用于维护不同的目的，比如过滤表（filter table）为防火墙规则，NAT表供新连接查询使用，mangle表用于数据包的转换等。
+iptables是另一种服务，它可以决定是否允许、删除或返回IP数据包。iptables服务管理IPv4数据包，而ip6tables则管理IPv6数据包。此服务管理了一堆规则表，其中每个表分别用于维护不同的目的，比如过滤表(filter table)为防火墙规则，NAT表供新连接查询使用，mangle表用于数据包的转换等。
 
 更进一步，每个表还具有规则链，规则链可以是内建的或是用户自定义的，它表示适用于一个数据包的规则集合，从而决定数据包应该执行哪些目标动作，比如允许ALLOWED、阻塞BLOCKED或返回RETURNED。iptables服务在RHEL/CentOS 6/5、Fedora、ArchLinux、Ubuntu等Linux发行版中是系统默认的服务。
 
@@ -150,7 +150,7 @@ iptables是另一种服务，它可以决定是否允许、删除或返回IP数�
 
 # 5 iptables服务的基本操作
 
-在RHEL/CentOS 6/5/4系统和Fedora 12-18系统中，iptables是默认的防火墙，如果服务不存在，可以这样安装：
+在RHEL/CentOS 6/5/4系统和Fedora 12-18系统中，iptables是默认的防火墙，如果服务不存在，可以这样安装: 
 
 ```
 # yum install iptables-services
@@ -235,7 +235,7 @@ $ sudo ufw disable
 $ sudo ufw status 
 ```
 
-但是，如果想列出iptables包含的所有规则链列表，应使用如下命令：
+但是，如果想列出iptables包含的所有规则链列表，应使用如下命令: 
 
 ```
 $ iptables -L -n -v
@@ -247,61 +247,61 @@ $ iptables -L -n -v
 
 ![](./images/2019-05-03-14-15-45.png)
 
-**数据包**要进入到**内核**必须要通过**这些zone中的一个**，而**不同的zone**里定义的**规则不一样**（即信任度不一样，过滤的强度也不一样）。可以根据网卡所连接的网络的安全性来判断，这张网卡的流量到底使用哪个 zone，比如上图来自 eth0 的流量全部使用 zone1 的过滤规则，eth1的流量使用 zone2。**一张网卡同时只能绑定到一个 zone**
+**数据包**要进入到**内核**必须要通过**这些zone中的一个**，而**不同的zone**里定义的**规则不一样**(即信任度不一样，过滤的强度也不一样)。可以根据网卡所连接的网络的安全性来判断，这张网卡的流量到底使用哪个 zone，比如上图来自 eth0 的流量全部使用 zone1 的过滤规则，eth1的流量使用 zone2。**一张网卡同时只能绑定到一个 zone**
 
-在CentOS/RHEL 7系统中，基于用户对网络中**设备和通信**所给与的**信任程度**，防火墙可用于将**网络划分成不同的区域**，区域类型如下：
+在CentOS/RHEL 7系统中，基于用户对网络中**设备和通信**所给与的**信任程度**，防火墙可用于将**网络划分成不同的区域**，区域类型如下: 
 
-- 丢弃区域（Drop Zone）：
+- 丢弃区域(Drop Zone): 
 
 如果使用丢弃区域，任何进入的数据包将被丢弃。这个类似与我们之前使用iptables -j drop。使用丢弃规则意味着将不存在响应。
 
 任何接收的网络数据包都被丢弃，没有任何回复。仅能有发送出去的网络连接。
 
-- 阻塞区域（Block Zone）：
+- 阻塞区域(Block Zone): 
 
 阻塞区域会拒绝进入的网络连接，返回icmp-host-prohibited，只有服务器已经建立的连接会被通过即只允许由该系统初始化的网络连接。
 
 任何接收的网络连接都被 IPv4 的 icmp-host-prohibited 信息和 IPv6 的 icmp6-adm-prohibited 信息所拒绝。
 
-- 公共区域（Public Zone）：
+- 公共区域(Public Zone): 
 
 只接受那些被选中的连接，默认只允许 ssh 和 dhcpv6-client。这个 zone 是缺省 zone
 
 在公共区域内使用，不能相信网络内的其他计算机不会对您的计算机造成危害，只能接收经过选取的连接。
 
-- 外部区域（External Zone）：
+- 外部区域(External Zone): 
 
-这个区域相当于路由器的启用伪装（masquerading）选项。只有指定的连接会被接受，即 ssh，而其它的连接将被丢弃或者不被接受。
+这个区域相当于路由器的启用伪装(masquerading)选项。只有指定的连接会被接受，即 ssh，而其它的连接将被丢弃或者不被接受。
 
 特别是为路由器启用了伪装功能的外部网。您不能信任来自网络的其他计算机，不能相信它们不会对您的计算机造成危害，只能接收经过选择的连接。
 
-- dmz（非军事区） 隔离区域（DMZ Zone）：
+- dmz(非军事区) 隔离区域(DMZ Zone): 
 
 如果想要只允许给部分服务能被外部访问，可以在 DMZ 区域中定义。它也拥有只通过被选中连接的特性，即 ssh。
 
 用于您的非军事区内的电脑，此区域内可公开访问，可以有限地进入您的内部网络，仅仅接收经过选择的连接。
 
-- 工作区域（Work Zone）：
+- 工作区域(Work Zone): 
 
 在这个区域，我们只能定义内部网络。比如私有网络通信才被允许，只允许ssh，ipp-client 和 dhcpv6-client。
 
 用于工作区。您可以基本相信网络内的其他电脑不会危害您的电脑。仅仅接收经过选择的连接。
 
-- 家庭区域（Home Zone）：
+- 家庭区域(Home Zone): 
 
 这个区域专门用于家庭环境。它同样只允许被选中的连接，即 ssh，ipp-client，mdns，samba-client和 dhcpv6-client。
 
 用于家庭网络。您可以基本信任网络内的其他计算机不会危害您的计算机。仅仅接收经过选择的连接。
 
-- 内部区域（Internal Zone）：
+- 内部区域(Internal Zone): 
 
-这个区域和工作区域（Work Zone）类似，只有通过被选中的连接，和 home 区域一样。
+这个区域和工作区域(Work Zone)类似，只有通过被选中的连接，和 home 区域一样。
 
 用于内部网络。您可以基本上信任网络内的其他计算机不会威胁您的计算机。仅仅接受经过选择的连接。
 
-- 信任区域（Trusted Zone）：
+- 信任区域(Trusted Zone): 
 
-信任区域允许所有网络通信通过。记住：因为 trusted 是最被信任的，即使没有设置任何的服务，那么也是被允许的，因为trusted 是允许所有连接的
+信任区域允许所有网络通信通过。记住: 因为 trusted 是最被信任的，即使没有设置任何的服务，那么也是被允许的，因为trusted 是允许所有连接的
 
 可接受所有的网络连接。
 
@@ -313,13 +313,13 @@ $ iptables -L -n -v
 
 ## 6.1 zone使用原则
 
-Firewalld 的原则：
+Firewalld 的原则: 
 
 如果一个**客户端访问服务器**，服务器根据**以下原则**决定使用**哪个 zone** 的策略去匹配
 
 1. 如果一个**客户端数据包**的**源 IP 地址**匹配 **zone** 的 **sources**，那么**该zone** 的规则就**适用这个客户端**；**一个源**只能属于**一个 zone**，不能同时属于多个 zone。
 
-2. 如果一个**客户端数据包**进入服务器的**某一个接口（如eth0**）区配 **zone** 的interfaces，则么**该 zone 的规则**就适用这个客户端；一个接口只能属于一个 zone，不能同时属于多个zone。
+2. 如果一个**客户端数据包**进入服务器的**某一个接口(如eth0**)区配 **zone** 的interfaces，则么**该 zone 的规则**就适用这个客户端；一个接口只能属于一个 zone，不能同时属于多个zone。
 
 3. 如果上述两个原则都不满足，那么**缺省的 zone** 将被应用
 
@@ -327,10 +327,10 @@ Firewalld 的原则：
 
 工具有例如firewall\-config这样的图形界面工具， firewall\-cmd 这样的命令行工具，或者你也可以在配置文件目录中创建或者拷贝**区域文件**，/**usr/lib/firewalld/zones** 被用于**默认和备用配置**，/**etc/firewalld/zones**被用于**用户创建和自定义**配置文件。
 
-文件：
+文件: 
 
-- /usr/lib/firewalld/services/ ：firewalld**服务默认**在此目录下定义了70\+种服务供我们使用，格式：服务名.xml；
-- /etc/firewalld/zones/ : 自定义区域配置文件，配置文件中指定了编写完成的规则（规则中的服务名必须与上述文件名一致）；
+- /usr/lib/firewalld/services/ : firewalld**服务默认**在此目录下定义了70\+种服务供我们使用，格式: 服务名.xml；
+- /etc/firewalld/zones/ : 自定义区域配置文件，配置文件中指定了编写完成的规则(规则中的服务名必须与上述文件名一致)；
 
 分为多个文件的优点 :
 
@@ -342,13 +342,13 @@ Firewalld 的原则：
 
 # 7 命令行工具 firewall-cmd 
 
-命令行工具 firewall-cmd 支持全部防火墙特性，基本应用如下：
+命令行工具 firewall-cmd 支持全部防火墙特性，基本应用如下: 
 
 ```
 firewall-cmd [--zone=zone] 动作 [--permanent] 
 ```
 
-注：如果不指定\-\-zone选项，则为当前所在的默认区域，\-\-permanent选项为是否将改动写入到区域配置文件中
+注: 如果不指定\-\-zone选项，则为当前所在的默认区域，\-\-permanent选项为是否将改动写入到区域配置文件中
 
 ## 7.1 firewall的状态
 
@@ -356,7 +356,7 @@ firewall-cmd [--zone=zone] 动作 [--permanent]
 
 - \-\-reload \#\#重新加载防火墙，中断用户的连接，将临时配置清掉，加载配置文件中的永久配置
 
-- \-\-complete\-reload \#\#重新加载防火墙，不中断用户的连接（防火墙出严重故障时使用）
+- \-\-complete\-reload \#\#重新加载防火墙，不中断用户的连接(防火墙出严重故障时使用)
 
 - \-\-panic\-on \#\#紧急模式，强制关闭所有网络连接,\-\-panic\-off是关闭紧急模式
 
@@ -376,21 +376,21 @@ firewall-cmd [--zone=zone] 动作 [--permanent]
 
 - \-\-list\-all \#\#查看此区域内的所有配置，类似与iptables \-L \-n
 
-## 7.3 更改区域操作：
+## 7.3 更改区域操作: 
 
 \-\-set\-default\-zone=work \#\#更改默认的区域
 
-## 7.4 新建\-\-add或删除\-\-remove规则：
+## 7.4 新建\-\-add或删除\-\-remove规则: 
 
 - \-\-add\-interface=eth0 \#\#将网络接口添加到默认的区域内
 - \-\-add\-port=12222/tcp \-\-permanent \#\#添加端口到区域开放列表中
 - \-\-add\-port=5000\-10000/tcp \-\-permanent \#\#将端口范围添加到开放列表中；
-- \-\-add\-service=ftp \-\-permanent \#\#添加服务到区域开放列表中（注意服务的名称需要与此区域支持的服务列表中的名称一致）
+- \-\-add\-service=ftp \-\-permanent \#\#添加服务到区域开放列表中(注意服务的名称需要与此区域支持的服务列表中的名称一致)
 - \-\-add\-source=192.168.1.1 \#\#添加源地址的流量到指定区域
 - \-\-remove\-source=192.168.1.1 \#\#删除源地址的流量到指定区域
 - \-\-change\-interface=eth1 \#\#改变指定的接口到其他区域
 - \-\-remove\-service=http \#\#在home区域内将http服务删除在开放列表中删除
-- \-\-add\-masquerade \#\#开启SNAT（源地址转换）
+- \-\-add\-masquerade \#\#开启SNAT(源地址转换)
 - \-\-query\-masquerade \#\#查询SNAT的状态
 - \-\-remove\-interface=eth0 \#\#将网络接口在默认的区域内删除
 - \-\-query\-interface=eth0 \#\#确定该网卡接口是否存在于此区域 
@@ -404,7 +404,7 @@ firewall-cmd [--zone=zone] 动作 [--permanent]
 firewall-cmd  --state
 ```
 
-2、在**不改变状态**的条件下**重新加载防火墙**：
+2、在**不改变状态**的条件下**重新加载防火墙**: 
 
 ```
 firewall-cmd  --reload
@@ -468,9 +468,9 @@ firewall-cmd  --get-icmptypes
 
 这条命令输出用空格分隔的列表。
 
-6、列出全部启用的区域的特性（即查询当前防火墙策略）
+6、列出全部启用的区域的特性(即查询当前防火墙策略)
 
-解释：特性可以是定义的防火墙策略，如：服务、端口和协议的组合、端口/数据报转发、伪装、ICMP 拦截或自定义规则等
+解释: 特性可以是定义的防火墙策略，如: 服务、端口和协议的组合、端口/数据报转发、伪装、ICMP 拦截或自定义规则等
 
 ```
 firewall-cmd  --list-all-zones
@@ -480,7 +480,7 @@ firewall-cmd  --list-all-zones
 
 上面的命令将会列出每种区域如 block、dmz、drop、external、home、internal、public、trusted
 
-以及 work。如果区域还有其它详细规则（rich-rules）、启用的服务或者端口，这些区域信息也会分别被罗列出来
+以及 work。如果区域还有其它详细规则(rich-rules)、启用的服务或者端口，这些区域信息也会分别被罗列出来
 
 7、输出区域全部启用的特性。如果省略区域，将显示默认区域的信息。
 
@@ -516,7 +516,7 @@ firewall-cmd --set-default-zone=区域名
 
 ![](./images/2019-05-03-16-23-47.png)
 
-11、根据接口获取区域即需要查看哪个区域和这个接口绑定即查看某个接口是属于哪个zone的：
+11、根据接口获取区域即需要查看哪个区域和这个接口绑定即查看某个接口是属于哪个zone的: 
 
 ```
 firewall-cmd --get-zone-of-interface=接口名
@@ -524,7 +524,7 @@ firewall-cmd --get-zone-of-interface=接口名
 
 ![](./images/2019-05-03-16-24-30.png)
 
-12、将接口（网卡）增加到区域
+12、将接口(网卡)增加到区域
 
 
 ```
@@ -553,7 +553,7 @@ firewall-cmd [--zone=] --remove-interface=接口名
 
 ![](./images/2019-05-03-16-26-20.png)
 
-注：如果某个接口不属于任何 Zone，那么这个接口的所有数据包使用默认的Zone 的规则
+注: 如果某个接口不属于任何 Zone，那么这个接口的所有数据包使用默认的Zone 的规则
 
 15、查询区域中是否包含某接口
 
@@ -591,7 +591,7 @@ firewall-cmd  –panic-off
 firewall-cmd  --query-panic
 ```
 
-其他相关的配置项可以查看firewall-cmd的手册页：
+其他相关的配置项可以查看firewall-cmd的手册页: 
 
 ```
 #man firewall-cmd
@@ -683,7 +683,7 @@ firewall-cmd [--zone=区域]  --remove-masquerade
 ```
 firewall-cmd [--zone=区域]  --query-masquerade
 ```
-注意：启用伪装功能的主机同时也需要开启转发服务：
+注意: 启用伪装功能的主机同时也需要开启转发服务: 
 
 ```
 # echo 1 > /proc/sys/net/ipv4/ip_forward
@@ -703,7 +703,7 @@ net.ipv4.ip_forward  =   1
 ```
 firewall-cmd [--zone=区域] --add-icmp-block=icmp 类型
 ```
-例：
+例: 
 
 ```
 firewal-cmd   --add-icmp-block=echo-request
@@ -711,7 +711,7 @@ firewal-cmd   --add-icmp-block=echo-request
 
 ![](./images/2019-05-03-16-44-51.png)
 
-此操作将启用选中的 Internet 控制报文协议（ICMP）报文进行阻塞。 ICMP 报文可以是请求信息或者创建的应答报文，以及错误应答。
+此操作将启用选中的 Internet 控制报文协议(ICMP)报文进行阻塞。 ICMP 报文可以是请求信息或者创建的应答报文，以及错误应答。
 
 11、禁止区域的 ICMP 阻塞功能
 
@@ -781,15 +781,15 @@ firewall-cmd --permanent --zone=public --query-service=http
 ```
 firewall-cmd --permanent --zone=public --add-port=8080/tcp
 ```
-6、命令行配置富规则：
+6、命令行配置富规则: 
 
-查看富规则：
+查看富规则: 
 
 ```
 # firewall-cmd --list-rich-rules
 ```
 
-创建富规则：
+创建富规则: 
 
 ```
 firewall-cmd--add-rich-rule 'rule family=ipv4 source address=10.35.89.0/24 service name=ftplog prefix="ftp" level=info accept' --permanent
@@ -798,7 +798,7 @@ firewall-cmd --add-rich-rule 'rule family=ipv4 sourceaddress=10.35.89.0/24 port 
 
 firewall-cmd --add-rich-rule rule family="ipv4" sourceaddress="192.168.10.30" forward-port port="808"protocol="tcp" to-port="80" to-addr="10.10.10.2"
 ```
-富规则中使用伪装功能可以更精确详细的限制：
+富规则中使用伪装功能可以更精确详细的限制: 
 
 ```
 firewall-cmd --add-rich-rule 'rule family=ipv4 source address=10.10.10.2/24 masquerade'
@@ -833,7 +833,7 @@ firewall-cmd --permanent --zone=public --add-rich-rule="rulefamily="ipv4" source
 
 10、端口转发。实验环境下，desktop访问server的5423端口，将访问server的80端口。
 
-Server上的操作：（172.25.0.10是desktop的IP地址）
+Server上的操作: (172.25.0.10是desktop的IP地址)
 
 ![](./images/2019-05-03-16-48-40.png)
 
@@ -862,7 +862,7 @@ Server上的操作：（172.25.0.10是desktop的IP地址）
 
 netfilter 防火墙总是容易受到规则顺序的影响，因为一条规则在链中没有固定的位置。在一条规则之前添加或者删除规则都会改变此规则的位置。在静态防火墙模型中，改变防火墙就是重建一个干净和完善的防火墙设置，默认链通常也没有安全的方式添加或删除规则而不影响其他规则。
 
-动态防火墙有附加的防火墙功能链。这些特殊的链按照已定义的顺序进行调用，因而向链中添加规则将不会干扰先前调用的拒绝和丢弃规则。从而利于创建更为合理完善的防火墙配置。下面是一些由守护进程创建的规则，过滤列表中启用了在公共区域对ssh , mdns 和ipp\-client的支持：
+动态防火墙有附加的防火墙功能链。这些特殊的链按照已定义的顺序进行调用，因而向链中添加规则将不会干扰先前调用的拒绝和丢弃规则。从而利于创建更为合理完善的防火墙配置。下面是一些由守护进程创建的规则，过滤列表中启用了在公共区域对ssh , mdns 和ipp\-client的支持: 
 
 ![](./images/2019-05-03-16-49-27.png)
 
@@ -874,7 +874,7 @@ firewall  daemon 主要的配置工具是 firewall-config。它支持防火墙�
 
 firewall-cmd 是命令行下提供大部分图形工具配置特性的工具。
 
-注：要想了解更多 firewall 防火墙更多知识可以查看 firewall的相关手册页:
+注: 要想了解更多 firewall 防火墙更多知识可以查看 firewall的相关手册页:
 
 man  -k  firewalld
 
@@ -886,7 +886,7 @@ man  firewalld.richlanguage
 
 当基本firewalld语法规则不能满足要求时，可以使用以下更复杂的规则
 
-\.rich\-rules 富规则，功能强,表达性语言,查看帮助：man 5 firewalld.richlanguage
+\.rich\-rules 富规则，功能强,表达性语言,查看帮助: man 5 firewalld.richlanguage
 
 \.rich规则比基本的firewalld语法实现更强的功能，不仅实现允许/拒绝，还可以实现**日志syslog**和auditd，也可以实现端口转发，伪装和限制速率
 
@@ -902,9 +902,9 @@ d. 该区域的拒绝规则
 
 每个匹配的规则都生效，所有规则都不匹配，该区域默认规则生效；
 
-Rich规则语法：
+Rich规则语法: 
 
-Rich规则选项：
+Rich规则选项: 
 ```
 --add-rich-rule=’rule’ ##新建rich规则
 --remove-rich-rule=’rule’ ##删除rich规则
@@ -913,7 +913,7 @@ Rich规则选项：
 ```
 
 
-Rich规则示例：
+Rich规则示例: 
 ```
 #拒绝从192.168.0.11的所有流量
 firewall-cmd --permanent --zone=cla***oom --add-rich-rule=‘rule family=ipv4 source address=192.168.0.11/32 reject‘
@@ -945,26 +945,26 @@ firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.16
 
 # 11 理解直接接口
 
-FirewallD包含了一个名为直接接口（direct interface）的概念，意思是可以直接通过iptables、ip6tables和ebtables的规则。直接接口适用于应用程序，不适用于用户。如果不熟悉iptables，那么使用直接接口是很危险的，因为可能会导致防火墙被入侵。
+FirewallD包含了一个名为直接接口(direct interface)的概念，意思是可以直接通过iptables、ip6tables和ebtables的规则。直接接口适用于应用程序，不适用于用户。如果不熟悉iptables，那么使用直接接口是很危险的，因为可能会导致防火墙被入侵。
 
 FirewallD保持对所增加规则项的追踪，所以能质询FirewallD，发现由使用直接端口模式的程序造成的更改。要使用直接端口，增加–direct选项到firewall-cmd命令来使用。
 
 # 12 改用iptables服务
 
-在CentOS/RHEL 7系统中，要用iptables和ip6tables服务代替FirewallD服务，需要以root身份运行以下命令，先禁用FirewallD：
+在CentOS/RHEL 7系统中，要用iptables和ip6tables服务代替FirewallD服务，需要以root身份运行以下命令，先禁用FirewallD: 
 
 ```
 # systemctl disable firewalld
 # systemctl stop firewalld
 ```
 
-然后安装iptables-services程序包，以root身份输入以下命令：
+然后安装iptables-services程序包，以root身份输入以下命令: 
 
 ```
 # yum install iptables-services
 ```
 
-iptables-services程序包包含了iptables和ip6tables服务。然后，以root身份运行iptables和ip6tables命令：
+iptables-services程序包包含了iptables和ip6tables服务。然后，以root身份运行iptables和ip6tables命令: 
 
 ```
 # systemctl start iptables
@@ -975,7 +975,7 @@ iptables-services程序包包含了iptables和ip6tables服务。然后，以root
 
 # 13 启动图形化防火墙设置工具
 
-用命令行启动图形化防火墙配置工具，则以root用户身份输入以下命令：
+用命令行启动图形化防火墙配置工具，则以root用户身份输入以下命令: 
 
 ```
 # firewall-config

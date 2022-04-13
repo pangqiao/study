@@ -16,7 +16,7 @@ make -C /lib/modules/`uname -r`/build M=`pwd` modules
 
 
 
-拷贝编译结果出来，并使用
+拷贝编译结果出来, 并使用
 
 cp *.ko /home/kvm/tools/modules/
 

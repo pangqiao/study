@@ -17,7 +17,7 @@ protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protec
 
 entry:
         
-;; 为了完成实验，关闭时间中断和键盘中断
+;; 为了完成实验, 关闭时间中断和键盘中断
         call disable_timer
         
 ;; 设置 #PF handler
@@ -100,7 +100,7 @@ entry:
         
 
 ;*
-;* 实验 ex15-12：对比TSC与CPU_CLK_UNHALTED.REF事件
+;* 实验 ex15-12: 对比TSC与CPU_CLK_UNHALTED.REF事件
 ;*
         
         call available_pebs                             ; 测试 pebs 是否可用
@@ -143,7 +143,7 @@ entry:
        
         mov esi, msg1
         call puts
-        ;* 求间隔：end_tsc - start_tsc
+        ;* 求间隔: end_tsc - start_tsc
         mov esi, end_tsc
         mov edi, start_tsc
         call subtract64
@@ -221,10 +221,10 @@ do_perfmon_handler:
 ;* 下面在 handler 里关闭功能
 ;*
 
-        ;; 当 TR 开启时，就关闭 TR
+        ;; 当 TR 开启时, 就关闭 TR
         mov ecx, IA32_DEBUGCTL
         rdmsr
-        mov [debugctl_value], eax        ; 保存原 IA32_DEBUGCTL 寄存器值，以便恢复
+        mov [debugctl_value], eax        ; 保存原 IA32_DEBUGCTL 寄存器值, 以便恢复
         mov [debugctl_value + 4], edx
         mov eax, 0
         mov edx, 0
@@ -269,7 +269,7 @@ do_perfmon_handler:
         call puts
 
         call dump_pebs_record                   ; 打印 PEBS 记录
-        call update_pebs_index_track            ; 更新 PEBS index 的轨迹，保持对 PEBS 中断的检测
+        call update_pebs_index_track            ; 更新 PEBS index 的轨迹, 保持对 PEBS 中断的检测
         jmp perfmon_handler_done
 
 check_pebs_buffer_overflow:
@@ -363,7 +363,7 @@ perfmon_handler_done:
 
 ;;************* 函数导入表  *****************
 
-; 这个 lib32 库导入表放在 common\ 目录下，
+; 这个 lib32 库导入表放在 common\ 目录下, 
 ; 供所有实验的 protected.asm 模块使用
 
 %include "..\common\lib32_import_table.imt"

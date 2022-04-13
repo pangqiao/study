@@ -67,7 +67,7 @@ PCI Express总线简称为PCIe总线，PCI-to-PCI桥简称为PCI桥，PCI Expres
 
 7) HOST主桥和PCI桥都包含PCI总线仲裁器，PCI设备通过仲裁获得PCI总线的使用权后，才能进行数据传送
 
-8) PCI总线的外部设备，如网卡、声卡、USB扩展卡等， 显卡是AGP总线（会往PCIe过渡）
+8) PCI总线的外部设备，如网卡、声卡、USB扩展卡等， 显卡是AGP总线(会往PCIe过渡)
 
 x86处理器将PCI总线作为标准的局部总线连接各类外部设备，PowerPC、MIPS处理器也将PCI总线作为标准局部总线。
 
@@ -121,11 +121,11 @@ HOST主桥中，设置了许多寄存器，HOST处理器通过操作这些寄存
 
 ![config](./images/7.png)
 
-2）处理器包括多个CPU，外部cache，中断控制器，DRAM控制器
+2)处理器包括多个CPU，外部cache，中断控制器，DRAM控制器
 
 x86中，PCI总线统一管理全部外部设备
 
-3）PCI总线地址空间在初始化时映射成为存储器域的存储地址
+3)PCI总线地址空间在初始化时映射成为存储器域的存储地址
 
 如32位的PCI总线中，每一个总线域的地址范围都是0x0000 0000 \~ 0xFFFF FFFF
 
@@ -141,7 +141,7 @@ RapidIO总线是用于解决背板互连的外部总线
 
 2) 配置空间的访问
 
-用ID号寻址，ID号包括：总线号，设备号，功能号
+用ID号寻址，ID号包括: 总线号，设备号，功能号
 
 总线号由系统软件决定，与主桥相连的PCI总线编号为0
 
@@ -169,7 +169,7 @@ ICH包括LPC、IDE、USB总线；而最新的nehalem I7中，MCH一分为二，�
 
 ## 2.3 桥和设备的配置空间
 
-1) 三种类型的配置空间：PCI agent， PCI桥， cardbus桥片
+1) 三种类型的配置空间: PCI agent， PCI桥， cardbus桥片
 
 PCI桥不需要驱动来设置，被称为透明桥，还有种非透明的PCI桥
 
@@ -185,7 +185,7 @@ device id, 具体设备， 这两个是由PCISIG 分配的。
 
 revision id, 版本号
 
-class code, PCI设备的分类， 包括base class code (显卡、网卡、PCI桥等）， sub class code,  interface
+class code, PCI设备的分类， 包括base class code (显卡、网卡、PCI桥等)， sub class code,  interface
 
 header type, 区分 PCI Agent、 桥、 cardbus
 
@@ -197,7 +197,7 @@ interrupt line ， PCI设备使用的中断向量号， 驱动得到后，注册
 
 interrupt pin， 使用的中断引脚，1表示INTA#
 
-base address register 0~5, BAR 保存基地址， linux用pci\_resource\_start读，ioremap物理地址转为逻辑地址，直接读BAR不对（得到PCI物理地址）
+base address register 0~5, BAR 保存基地址， linux用pci\_resource\_start读，ioremap物理地址转为逻辑地址，直接读BAR不对(得到PCI物理地址)
 
 command, 命令寄存器，设置才能访问IO和存储
 
@@ -211,13 +211,13 @@ letency timer， 控制PCI设备占用总线的时间
 
 ## 2.4 PCI总线的配置
 
-1) 两种配置请求： type 00, type 01, 穿桥只能01
+1) 两种配置请求:  type 00, type 01, 穿桥只能01
 
 2)系统软件用DFS初始化bus号，device号
 
 ## 2.5 非透明桥
 
-1) 可以方便的连接两个处理器系统（不是cpu)，对PCI总线x域和y域进行隔离，但不隔离存储器域空间
+1) 可以方便的连接两个处理器系统(不是cpu)，对PCI总线x域和y域进行隔离，但不隔离存储器域空间
 
 ![config](./images/11.png)
 
@@ -243,7 +243,7 @@ x86使用MTRR寄存器设置
 
 1) 使用预读机制降低了cache行失效带来的影响，有 指令预读、数据预读、外部设备的预读队列、操作系统的预读策略
 
-指令预读：CPU根据程序的执行情况，提前把指令从主存预读到指令cache中
+指令预读: CPU根据程序的执行情况，提前把指令从主存预读到指令cache中
 
 # 第4章 PCIe总线概述
 
@@ -255,7 +255,7 @@ x86使用MTRR寄存器设置
 
 PCIe是差分总线，端到端连接，频率更高；
 
-2) 一个数据通路（Lane）,有两组差分信号，即4根信号线，TX部件和RX部件相连（这为一组）
+2) 一个数据通路(Lane),有两组差分信号，即4根信号线，TX部件和RX部件相连(这为一组)
 
 一个pcie链路可以有多个lane
 
@@ -348,9 +348,9 @@ PCIE不分多少数据位，PCI\-E总线更类似串行线，**一次通信走1�
 
 **PCIe 3.0**的**总线频率4GHz**, 即**每秒变化4 x (10的9次方)次**; **一个数据通路(Lane**)有**两组差分信号**, 两两分组, **每组一次1位**, 也就是说**一次可以传输2 bit**, 也就是说每条数据通路(Lane)每秒传输8 x (10的9次方)次, 这就是上面的**单Lane的峰值带宽(！！！次数概念！！！**); 一个数据通路(Lane)**每秒传输8 x (10的9次方)个bit**, 即**每一条Lane 上支持每秒钟内传输 8G个bit**; 由于编码是128/130b, 所以**每一条Lane支持 8 \* 128 / 130 = 7876923080 bps = 984615385 B/s ≈ 984.6MB/s**. 也就是上面的吞吐量
 
-GT/s是Giga Transmissionper second （千兆传输/秒），即**每一秒内传输的次数**。重点在于描述物理层通信协议的速率。
+GT/s是Giga Transmissionper second (千兆传输/秒)，即**每一秒内传输的次数**。重点在于描述物理层通信协议的速率。
 
-Gbps —— Giga Bits Per Second （千兆位/秒）。
+Gbps —— Giga Bits Per Second (千兆位/秒)。
 
 GT/s 与Gbps 之间不存在成比例的换算关系。GT/s着重描述端口的速率属性，可以不和链路宽度等关联，这样来描述“可以进行链路宽度扩展”的高速串行接口更为合适一些。 需要**结合具体的物理层通信协议**来分析。
 
@@ -386,27 +386,27 @@ PRSNT1#，PRSNT2#, 热插拔相关
 
 7) pcie设备的初始化
 
-传统复位convertional reset：包括fundametal 和 non-fundametal, fundametal 又分cold和warm reset； non\-fundametal指的是hot reset
+传统复位convertional reset: 包括fundametal 和 non-fundametal, fundametal 又分cold和warm reset； non\-fundametal指的是hot reset
 
 FLR复位只复位与PCIE链路相关的部分逻辑
 
 ## 4.2 PCIE体系结构组成部件
 
-1) 大多使用RC、switch、PCIe\-to\-PCI桥连接设备，而基于pcie总线的设备，称为EP（endpoint）
+1) 大多使用RC、switch、PCIe\-to\-PCI桥连接设备，而基于pcie总线的设备，称为EP(endpoint)
 
-**RC**(PCI Express root complex）根联合体, 相当于**PCIE主桥**，也有称为**pcie总线控制器**
+**RC**(PCI Express root complex)根联合体, 相当于**PCIE主桥**，也有称为**pcie总线控制器**
 
 ![config](./images/2.png)
 
 **RC**在**x86**中由**MCH和ICH组成**, PCIe总线端口存储器控制器等接口集成在一起，统称RC
 
-2) PCIE设备包括 EP(如显卡、网卡等）、switch、PCIE桥
+2) PCIE设备包括 EP(如显卡、网卡等)、switch、PCIE桥
 
 3) RC与HOST主桥不同的是还有RCRB,内置PCI设备，event collector
 
 深入理解RC对理解pcie体系结构非常重要
 
-4) switch有一个上游端口和多个下游端口，上游端口连接RC、其他switch的下游端口，也支持crosslink连接方式（上连上，下连下）
+4) switch有一个上游端口和多个下游端口，上游端口连接RC、其他switch的下游端口，也支持crosslink连接方式(上连上，下连下)
 
 其实是多个PCI桥组成的
 
@@ -428,7 +428,7 @@ switch中设有仲裁器，规定报文通过switch的规则。分别基于VC和
 
 电源管理capability有PMCR和PMCSR寄存器
 
-2) capability结构：PCIE capability register， device/link/slot 等capability 寄存器
+2) capability结构: PCIE capability register， device/link/slot 等capability 寄存器
 
 # 第5章 Montevina 的MCH和ICH
 
@@ -448,13 +448,13 @@ device0被认为是HOST主桥
 
 ## 5.2 存储空间的组成结构
 
-存储器域（CPU可访问）、PCI总线域、DRAM域（主存），有些DRAM只能被显卡控制器访问到，不能被cpu访问
+存储器域(CPU可访问)、PCI总线域、DRAM域(主存)，有些DRAM只能被显卡控制器访问到，不能被cpu访问
 
-legacy地址空间：x86固有的一段1MB内存空间，DOS内存等
+legacy地址空间: x86固有的一段1MB内存空间，DOS内存等
 
-DRAM域：大小保存在MCH的TOM中，即PCI0的配置空间中，legacy地址在它里面
+DRAM域: 大小保存在MCH的TOM中，即PCI0的配置空间中，legacy地址在它里面
 
-存储器域：
+存储器域: 
 
 ![config](./images/4.png)
 
@@ -480,7 +480,7 @@ ECAM是直接映射到内存来访问
 
 # 第10章 MSI和MSI\-X中断机制
 
-PCI：必须支持INTx,MSI可选
+PCI: 必须支持INTx,MSI可选
 
 PCIe: 必须支持MSI，INTx可选
 
@@ -498,9 +498,9 @@ MSI使用存储器写请求TLP向处理器提交中断请求，即MSI报文。Po
 
 1) PCIe设备: Vetex-5内嵌的EP模块，该模块也被xilinx称为LogiCORE
 
-先主存到FPGA的片内SRAM（DMA读）, 单次DMA最大0X7FF B ， 2KB
+先主存到FPGA的片内SRAM(DMA读), 单次DMA最大0X7FF B ， 2KB
 
-SRAM到主存（DMA写）
+SRAM到主存(DMA写)
 
 ![config](./images/5.png)
 
@@ -520,13 +520,13 @@ SRAM到主存（DMA写）
 
 系统在PCI树中发现capric卡后，local\_pci\_probe调用capric\_probe，入口参数pci\_dev和ids，进行初始化
 
-初始化调用pci\_enable\_device使能PCIE设备（会修改command的io space和memory space位看配置空间是否使用它们），调用pcibios\_enable\_irq分配设备使用的中断向量号
+初始化调用pci\_enable\_device使能PCIE设备(会修改command的io space和memory space位看配置空间是否使用它们)，调用pcibios\_enable\_irq分配设备使用的中断向量号
 
-DMA掩码：存储域physical\_addr&DMA\_MASK = physical\_addr表示可以对这段内存DMA操作
+DMA掩码: 存储域physical\_addr&DMA\_MASK = physical\_addr表示可以对这段内存DMA操作
 
 a) linux中存储器映射的寄存器和io映射的寄存器都是ioresources管理，pci\_request\_regions把capric卡的BAR0使用的resource结构其name设置为DEV\_NAME, flags设为IORESOURCE\_BUSY，
 
-b) pci\_resource\_start 获得pci\_dev资源的BAR0空间的基地址（存储器域物理地址），pci\_read\_config\_word是pci域
+b) pci\_resource\_start 获得pci\_dev资源的BAR0空间的基地址(存储器域物理地址)，pci\_read\_config\_word是pci域
 
 c) ioremap将存储器域物理地址映射为linux虚拟地址
 
@@ -538,13 +538,13 @@ f) request\_irq(capric\_interrupt) 使用中断服务例程
 
 3) DMA读写
 
-DMA写： 与capric\_read对应
+DMA写:  与capric\_read对应
 
 kmalloc，实际驱动中很少在读写服务例程中申请内存，容易产生内存碎片，时间花费也长。
 
 pci\_map\_single虚拟地址转换为PCI物理地址
 
-DMA读：capric\_write
+DMA读: capric\_write
 
 dma\_sync\_single 存储器与cache同步
 
@@ -572,7 +572,7 @@ powerpc是inbound寄存器把PCI转换为存储器地址，inbound可以看做�
 
 ## 12.4 带宽和时延
 
-优化：减少对寄存器的读操作，如要读终端控制器状态寄存器可以改为收发等分开的IRQ
+优化: 减少对寄存器的读操作，如要读终端控制器状态寄存器可以改为收发等分开的IRQ
 
 流水线ring buffer技术，多路DMA读写并行执行
 

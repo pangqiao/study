@@ -1,4 +1,4 @@
-参考：
+参考: 
 
 http://blog.csdn.net/u012398362/article/details/53366186
 
@@ -14,7 +14,7 @@ c. 用户空间内存管理
 
 ![config](images/memory_mapping.png)
 
-ZONE_HIGHMEM的主要作用：通过非永久映射实现内核对896M之外的物理内存的访问，比如：实际物理内存为4G，内核直接映射了896M，之外的897M-4G内核都无法访问是无法接受的。
+ZONE_HIGHMEM的主要作用: 通过非永久映射实现内核对896M之外的物理内存的访问, 比如: 实际物理内存为4G, 内核直接映射了896M, 之外的897M-4G内核都无法访问是无法接受的. 
 
 ![config](images/HIGHMEM.png)
 

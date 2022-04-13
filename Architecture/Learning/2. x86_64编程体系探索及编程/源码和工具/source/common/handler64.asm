@@ -130,7 +130,7 @@ do_apic_perfmon_handler:
 
 ;*
 ;* 下面在 handler 里关闭相关的功能
-;* 在关闭功能之前，先保存原值，以便返回前恢复
+;* 在关闭功能之前, 先保存原值, 以便返回前恢复
 ;*
         mov ecx, IA32_DEBUGCTL
         rdmsr
@@ -272,7 +272,7 @@ apic_perfmon_handler_done:
         
 
 ;---------------------------------------------
-; apic_timer_handler()：这是 APIC TIMER 的 ISR
+; apic_timer_handler(): 这是 APIC TIMER 的 ISR
 ;---------------------------------------------
 apic_timer_handler:
         jmp do_apic_timer_handler

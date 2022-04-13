@@ -15,9 +15,9 @@
 
 # 1. 背景介绍
 
-gdb 调试多任务程序时会有些麻烦： fork 之后没法同时跟踪父进程和子进程，如果在子进程里设置了一个 breakpoint，那么子进程将会收到一个 SIGTRAP 信号并退出。
+gdb 调试多任务程序时会有些麻烦:  fork 之后没法同时跟踪父进程和子进程，如果在子进程里设置了一个 breakpoint，那么子进程将会收到一个 SIGTRAP 信号并退出。
 
-[gdb 手册](https://sourceware.org/gdb/current/onlinedocs/gdb/Forks.html#Forks)里提到了一种小技巧，那就是在想要插入 breakpoint 的位置添加 sleep() 调用。但经过笔者试验，添加以下代码更加适合：
+[gdb 手册](https://sourceware.org/gdb/current/onlinedocs/gdb/Forks.html#Forks)里提到了一种小技巧，那就是在想要插入 breakpoint 的位置添加 sleep() 调用。但经过笔者试验，添加以下代码更加适合: 
 
 ```cpp
 static volatile int hold = 1;
@@ -28,7 +28,7 @@ while (hold);
 
 # 2. 调试步骤
 
-多任务基本调试步骤如下：
+多任务基本调试步骤如下: 
 
 1. ps -ef | grep xxx，找到你关心的进程
 2. gdb attach pid，关联到当前 pid 对应的 program
@@ -44,20 +44,20 @@ Libvirt 是用于管理虚拟化平台的开源的 API，后台程序和管理�
 
 接下来以 libvirt 的分析过程为例来介绍 gdb 的多任务调试。
 
-libvirt 的基本操作和大概结构是这样的：
+libvirt 的基本操作和大概结构是这样的: 
 
 * libvirt 组件有一个 shell，被称为 virsh，提供类似 shell 的界面，可以输入 start、shutdown 等命令操作虚拟机
 
 * libvirt 有一个守护进程，libvirtd，其对 virsh 的命令做出响应
     * 以 non-root 执行 virsh start 时，将以 qemu://session 的方式运行。libvirtd 将启动一个 non-root 的子进程来与 virsh 进行 socket 通信
     * 以 root 执行 virsh start 时，将以 qemu://system 方式运行，**libvirtd** 直接与 **virsh** 进行 **socket 通信**
-* 无论是上述哪种方式，都会创建**多个（一般16个）线程**，该线程的的作用是将 **socket** 传递过来的各个命令和配置进行解析，最终形成一个 cmd。
+* 无论是上述哪种方式，都会创建**多个(一般16个)线程**，该线程的的作用是将 **socket** 传递过来的各个命令和配置进行解析，最终形成一个 cmd。
 
 * 子线程会将 cmd 通过 pipe 传递给 libvirtd，libvirtd 会 fork 出一个子进程，并 exec cmd
 
-但如果我们想弄清楚 virsh 启动 qemu 的全过程的细节，即在 virsh 里敲入 start xxx_domain，到 exec qemu bin，这中间究竟发生了什么细节呢？这就必须要 gdb 调试了。可以想象，这过程中必定有大量的进程间通信（socket、pipe），这时就出现了文章开头说明的问题：**当前 thread** 将**数据流**发给了**另外的 thread**，而另外的 thread 却没法跟踪并停止。
+但如果我们想弄清楚 virsh 启动 qemu 的全过程的细节，即在 virsh 里敲入 start xxx_domain，到 exec qemu bin，这中间究竟发生了什么细节呢？这就必须要 gdb 调试了。可以想象，这过程中必定有大量的进程间通信(socket、pipe)，这时就出现了文章开头说明的问题: **当前 thread** 将**数据流**发给了**另外的 thread**，而另外的 thread 却没法跟踪并停止。
 
-1. 我们通过 log 大概知道了 qemuProcessStart 是启动的必经之路，因此在这个函数里添加代码：
+1. 我们通过 log 大概知道了 qemuProcessStart 是启动的必经之路，因此在这个函数里添加代码: 
 
 ```cpp
 int
@@ -89,7 +89,7 @@ root     16529     1  0 16:34 ?        00:00:00 /usr/local/sbin/libvirtd --liste
 # virsh start xxx
 ```
 
-5. 按下 Ctrl+c 停止 gdb，查看所有 threads：
+5. 按下 Ctrl+c 停止 gdb，查看所有 threads: 
 
 ```
 (gdb) info threads

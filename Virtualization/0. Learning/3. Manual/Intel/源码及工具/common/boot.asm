@@ -17,10 +17,10 @@
 ; MAKE_LOAD_MODULE_ENTRY
 ; input:
 ;       %1 - 模块加载的内存段地址
-;       %2 - 模块在磁盘的扇区号（LBA）
+;       %2 - 模块在磁盘的扇区号(LBA)
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 用来定义需要加载的模块表
 ;----------------------------------------------------
 %macro MAKE_LOAD_MODULE_ENTRY   2
@@ -39,7 +39,7 @@ LOAD_MODULE_ENTRY_SIZE          EQU     4
 
     
 ;;
-;; 注意：
+;; 注意: 
 ;; 1) 现在处理器处于 real mode 下       
 ;; 2) int 19h 加载 boot 模块进入 BOOT_SEGMENT 段, BOOT_SEGMENT 定义为 7C00h
 ;;
@@ -72,7 +72,7 @@ disk_address_packet:
 
 ;;
 ;;
-;; 加载模块表，需要加载下面的模块（符号定义在 ..\inc\support.inc 文件里）
+;; 加载模块表，需要加载下面的模块(符号定义在 ..\inc\support.inc 文件里)
 ;; 1) setup 模块
 ;; 2) 定义 X64 时 long 模块，在 32 位下加载 protected 模块
 ;; 3) guest 的 boot 模块
@@ -256,7 +256,7 @@ check_int13h_extension:
         setz al                                 ; nz = 不支持
         jnz do_check_int13h_extension_done
         test cx, 1
-        setnz al                                ; z = 不支持扩展功能号：AH=42h-44h,47h,48h
+        setnz al                                ; z = 不支持扩展功能号: AH=42h-44h,47h,48h
 do_check_int13h_extension_done:        
         pop bx
         movzx ax, al
@@ -322,7 +322,7 @@ read_sector_with_chs_done:
 ;       cl - [5:0] sector, [7:6] cylinder 高 2 位
 ;       dh - header
 ;
-; 描述：
+; 描述: 
 ;       
 ; 1) 
 ;       eax = LBA / (head_maximum * sector_maximum),  cylinder = eax
@@ -399,7 +399,7 @@ get_driver_parameters_done:
 ;       使用 disk_address_packet 结构中提供的参数
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 加载模块到 buf 缓冲区
 ;-------------------------------------------------------------------
 load_module:
@@ -424,7 +424,7 @@ load_module:
         ;; size 向上调整到 512 倍数
         ;;
         add ecx, 512 - 1
-        shr ecx, 9							; 计算 block（sectors）
+        shr ecx, 9							; 计算 block(sectors)
         mov WORD [read_sectors], cx                                     ; 
         call read_sector
 do_load_module_done:  

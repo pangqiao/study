@@ -11,9 +11,9 @@
 
 
 ;;
-;; EPT（Extended Page Table）说明：
-;; 1) PXT 表区域：SDA.EptPxt
-;; 2) PPT 表区域：C0A0_0000h ~ C0BF_FFFFh 共 2M 空间，对应物理地址 A0_0000h ~ BF_FFFFh
+;; EPT(Extended Page Table)说明: 
+;; 1) PXT 表区域: SDA.EptPxt
+;; 2) PPT 表区域: C0A0_0000h ~ C0BF_FFFFh 共 2M 空间，对应物理地址 A0_0000h ~ BF_FFFFh
 ;; 3) PDT 表由 get_ept_page() 函数动态分配
 ;; 4) PT 表由 get_ept_page() 函数动态分配
 ;;
@@ -22,9 +22,9 @@ EPT_PPT_BASE                    EQU     0C0A00000h              ;; EPT PPT 表�
 EPT_PPT_PHYSICAL_BASE           EQU     0A00000h                ;; EPT PPT 表物理地址
 
 ;;
-;; 在 longmode 下：
-;; 1) PXT 表区域：SDA.EptPxt
-;; 2) PPT 表区域：FFFF_F800_C0A0_0000h - FFFF_F800_C0BF_FFFFh
+;; 在 longmode 下: 
+;; 1) PXT 表区域: SDA.EptPxt
+;; 2) PPT 表区域: FFFF_F800_C0A0_0000h - FFFF_F800_C0BF_FFFFh
 ;;
 
 EPT_READ                        EQU     1

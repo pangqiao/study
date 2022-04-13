@@ -40,11 +40,11 @@ static int load_elf_binary(struct linux_binprm *bprm)
     retval = -ENOEXEC;
     /* 
         1.2 First of all, some simple consistency checks 
-       比较文件头的前四个字节，查看是否是ELF文件类型定义的"\177ELF"*/
+       比较文件头的前四个字节, 查看是否是ELF文件类型定义的"\177ELF"*/
     if (memcmp(loc->elf_ex.e_ident, ELFMAG, SELFMAG) != 0)
         goto out;
     /*  
-        1.3 除前4个字符以外，还要看映像的类型是否ET_EXEC和ET_DYN之一；前者表示可执行映像，后者表示共享库
+        1.3 除前4个字符以外, 还要看映像的类型是否ET_EXEC和ET_DYN之一；前者表示可执行映像, 后者表示共享库
     */
     if (loc->elf_ex.e_type != ET_EXEC && loc->elf_ex.e_type != ET_DYN)
         goto out;
@@ -58,14 +58,14 @@ static int load_elf_binary(struct linux_binprm *bprm)
     /* 
         2.   load_elf_phdrs 加载程序头表
         load_elf_phdrs函数就是通过kernel_read读入整个program header table
-		从函数代码中可以看到，一个可执行程序必须至少有一个段（segment），
-		而所有段的大小之和不能超过64K。
+		从函数代码中可以看到, 一个可执行程序必须至少有一个段(segment), 
+		而所有段的大小之和不能超过64K. 
     */
     elf_phdata = load_elf_phdrs(&loc->elf_ex, bprm->file);
     if (!elf_phdata)
         goto out;
 
-	/*  bss段，brk段先初始化为0  */
+	/*  bss段, brk段先初始化为0  */
     elf_ppnt = elf_phdata;
     elf_bss = 0;
     elf_brk = 0;
@@ -79,13 +79,13 @@ static int load_elf_binary(struct linux_binprm *bprm)
     end_data = 0;
     /*
         3.   寻找和处理解释器段
-     这个for循环的目的在于寻找和处理目标映像的"解释器"段。
-     "解释器"段的类型为PT_INTERP，
-     找到后就根据其位置的p_offset和大小p_filesz把整个"解释器"段的内容读入缓冲区。
-     "解释器"段实际上只是一个字符串，
-     即解释器的文件名，如"/lib/ld-linux.so.2"。
-     有了解释器的文件名以后，就通过open_exec()打开这个文件，
-    再通过kernel_read()读入其开关128个字节，即解释器映像的头部。*/
+     这个for循环的目的在于寻找和处理目标映像的"解释器"段. 
+     "解释器"段的类型为PT_INTERP, 
+     找到后就根据其位置的p_offset和大小p_filesz把整个"解释器"段的内容读入缓冲区. 
+     "解释器"段实际上只是一个字符串, 
+     即解释器的文件名, 如"/lib/ld-linux.so.2". 
+     有了解释器的文件名以后, 就通过open_exec()打开这个文件, 
+    再通过kernel_read()读入其开关128个字节, 即解释器映像的头部. */
     for (i = 0; 
 		 i < loc->elf_ex.e_phnum;/*  e_phnumc存储了程序头表的数目*/
          i++) { 
@@ -123,7 +123,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
             if (elf_interpreter[elf_ppnt->p_filesz - 1] != '\0')
                 goto out_free_interp;
             /*  3.3 通过open_exec()打开解释器文件
-				内核把新进程的堆栈中设置一些标记对，
+				内核把新进程的堆栈中设置一些标记对, 
 				以指示动态链接器的相关操作,详见open_exec实现 */
             interpreter = open_exec(elf_interpreter);
             retval = PTR_ERR(interpreter);
@@ -138,7 +138,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
             would_dump(bprm, interpreter);
 
             /* Get the exec headers 
-               3.4  通过kernel_read()读入解释器的前128个字节，即解释器映像的头部。*/
+               3.4  通过kernel_read()读入解释器的前128个字节, 即解释器映像的头部. */
             retval = kernel_read(interpreter, 0,
                          (void *)&loc->interp_elf_ex,
                          sizeof(loc->interp_elf_ex));
@@ -179,7 +179,7 @@ static int load_elf_binary(struct linux_binprm *bprm)
 
     /* Some simple consistency checks for the interpreter 
        4.1  检查解释器头的信息  */
-	/* 检查是否由动态连接器，无论是否有动态连接器都会执行elf文件 */
+	/* 检查是否由动态连接器, 无论是否有动态连接器都会执行elf文件 */
     if (elf_interpreter) {
         retval = -ELIBBAD;
         /* Not an ELF interpreter */
@@ -253,14 +253,14 @@ static int load_elf_binary(struct linux_binprm *bprm)
     /* Now we do a little grungy work by mmapping the ELF image into
        the correct location in memory.
        5  装入目标程序的段segment 
-       这段代码从目标映像的程序头中搜索类型为PT_LOAD的段（Segment）。在二进制映像中，只有类型为PT_LOAD的段才是需要装入的。
+       这段代码从目标映像的程序头中搜索类型为PT_LOAD的段(Segment). 在二进制映像中, 只有类型为PT_LOAD的段才是需要装入的. 
 
-       当然在装入之前，需要确定装入的地址，只要考虑的就是页面对齐，还有该段的p_vaddr域的值（上面省略这部分内容）。
+       当然在装入之前, 需要确定装入的地址, 只要考虑的就是页面对齐, 还有该段的p_vaddr域的值(上面省略这部分内容). 
 
-       确定了装入地址后，就通过elf_map()建立用户空间虚拟地址空间与目标映像文件中某个连续区间之间的映射，其返回值就是实际映射的起始地址。
+       确定了装入地址后, 就通过elf_map()建立用户空间虚拟地址空间与目标映像文件中某个连续区间之间的映射, 其返回值就是实际映射的起始地址. 
     */
 
-	/* 按照先前获取的程序头表，循环将所有的可执行文件加载到内存中 */
+	/* 按照先前获取的程序头表, 循环将所有的可执行文件加载到内存中 */
 
     for(i = 0, elf_ppnt = elf_phdata;
         i < loc->elf_ex.e_phnum; i++, elf_ppnt++) {
@@ -327,9 +327,9 @@ static int load_elf_binary(struct linux_binprm *bprm)
         }
 
         /*  5.3  虚拟地址空间与目标映像文件的映射
-         确定了装入地址后，
+         确定了装入地址后, 
          就通过elf_map()建立用户空间虚拟地址空间
-         与目标映像文件中某个连续区间之间的映射，
+         与目标映像文件中某个连续区间之间的映射, 
          其返回值就是实际映射的起始地址 */
         error = elf_map(bprm->file, load_bias + vaddr, elf_ppnt,
                 elf_prot, elf_flags, total_size);
@@ -406,19 +406,19 @@ static int load_elf_binary(struct linux_binprm *bprm)
     /*
      6  填写程序的入口地址
 
-     这段程序的逻辑非常简单：
+     这段程序的逻辑非常简单: 
 
-     如果需要装入解释器，就通过load_elf_interp装入其映像, 
-     并把将来进入用户空间的入口地址设置成load_elf_interp()的返回值，
-     即解释器映像的入口地址。
+     如果需要装入解释器, 就通过load_elf_interp装入其映像, 
+     并把将来进入用户空间的入口地址设置成load_elf_interp()的返回值, 
+     即解释器映像的入口地址. 
 
-     而若不装入解释器，那么这个入口地址就是目标映像本身的入口地址。
+     而若不装入解释器, 那么这个入口地址就是目标映像本身的入口地址. 
      */
     if (elf_interpreter) {
 	/*  存在动态链接器
-		内核把控制权传递给动态链接器。
-		动态链接器检查程序对共享库的依赖性，
-		并在需要时对其进行加载，由load_elf_interp完成 
+		内核把控制权传递给动态链接器. 
+		动态链接器检查程序对共享库的依赖性, 
+		并在需要时对其进行加载, 由load_elf_interp完成 
         unsigned long interp_map_addr = 0;
 
         elf_entry = load_elf_interp(&loc->interp_elf_ex,
@@ -463,8 +463,8 @@ static int load_elf_binary(struct linux_binprm *bprm)
 #endif /* ARCH_HAS_SETUP_ADDITIONAL_PAGES */
 
     /*   7  create_elf_tables填写目标文件的参数环境变量等必要信息
-    在完成装入，启动用户空间的映像运行之前，还需要为目标映像和解释器准备好一些有关的信息，这些信息包括常规的argc、envc等等，还有一些"辅助向量（Auxiliary Vector）"。
-    这些信息需要复制到用户空间，使它们在CPU进入解释器或目标映像的程序入口时出现在用户空间堆栈上。这里的create_elf_tables()就起着这个作用。
+    在完成装入, 启动用户空间的映像运行之前, 还需要为目标映像和解释器准备好一些有关的信息, 这些信息包括常规的argc、envc等等, 还有一些"辅助向量(Auxiliary Vector)". 
+    这些信息需要复制到用户空间, 使它们在CPU进入解释器或目标映像的程序入口时出现在用户空间堆栈上. 这里的create_elf_tables()就起着这个作用. 
     */
     install_exec_creds(bprm);
 	/* 在内存中生成elf映射表 */
@@ -511,10 +511,10 @@ static int load_elf_binary(struct linux_binprm *bprm)
     ELF_PLAT_INIT(regs, reloc_func_desc);
 #endif
     /*
-     8  最后，start_thread()这个宏操作会将eip和esp改成新的地址，就使得CPU在返回用户空间时就进入新的程序入口。如果存在解释器映像，那么这就是解释器映像的程序入口，否则就是目标映像的程序入口。那么什么情况下有解释器映像存在，什么情况下没有呢？如果目标映像与各种库的链接是静态链接，因而无需依靠共享库、即动态链接库，那就不需要解释器映像；否则就一定要有解释器映像存在。
-       对于一个目标程序, gcc在编译时，除非显示的使用static标签，否则所有程序的链接都是动态链接的，也就是说需要解释器。由此可见，我们的程序在被内核加载到内存，内核跳到用户空间后并不是执行我们程序的，而是先把控制权交到用户空间的解释器，由解释器加载运行用户程序所需要的动态库（比如libc等等），然后控制权才会转移到用户程序。
+     8  最后, start_thread()这个宏操作会将eip和esp改成新的地址, 就使得CPU在返回用户空间时就进入新的程序入口. 如果存在解释器映像, 那么这就是解释器映像的程序入口, 否则就是目标映像的程序入口. 那么什么情况下有解释器映像存在, 什么情况下没有呢？如果目标映像与各种库的链接是静态链接, 因而无需依靠共享库、即动态链接库, 那就不需要解释器映像；否则就一定要有解释器映像存在. 
+       对于一个目标程序, gcc在编译时, 除非显示的使用static标签, 否则所有程序的链接都是动态链接的, 也就是说需要解释器. 由此可见, 我们的程序在被内核加载到内存, 内核跳到用户空间后并不是执行我们程序的, 而是先把控制权交到用户空间的解释器, 由解释器加载运行用户程序所需要的动态库(比如libc等等), 然后控制权才会转移到用户程序. 
        */
-	/* 开始执行程序，这时已经是子进程了 */
+	/* 开始执行程序, 这时已经是子进程了 */
     start_thread(regs, elf_entry, bprm->p);
     retval = 0;
 out:

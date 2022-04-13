@@ -16,7 +16,7 @@
 ;       rsi - address
 ; output;
 ;       none
-; 描述：
+; 描述: 
 ;       1) 一次清 4K 页面
 ;       2) 地址在 4K 边界上
 ;       3) 需开启 SSE 指令支持    
@@ -47,12 +47,12 @@ clear_4k_page64.done:
 
 
 ;-----------------------------------------
-; clear_4k_buffer64()：清 4K 内存
+; clear_4k_buffer64(): 清 4K 内存
 ; input:  
 ;       rsi: address
 ; output;
 ;       none
-; 描述：
+; 描述: 
 ;       1) 一次清 4K 页面
 ;       2) 地址在 4K 边界上
 ;       3) 使用 GPI 指令处理
@@ -70,7 +70,7 @@ clear_4k_buffer64:
 
 
 ;-----------------------------------------
-; clear_4k_page_n64()：清 n个 4K页面
+; clear_4k_page_n64(): 清 n个 4K页面
 ; input:  
 ;       rsi - address
 ;       rdi - count
@@ -86,7 +86,7 @@ clear_4k_page_n64:
 
 
 ;-----------------------------------------
-; clear_4k_buffer_n64()：清 n个 4K 内存块
+; clear_4k_buffer_n64(): 清 n个 4K 内存块
 ; input:  
 ;       rsi - address
 ;       rdi - count
@@ -108,7 +108,7 @@ clear_4k_buffer_n64:
 ;       rdi - buffer
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 清内存块
 ;-------------------------------------------------------------------
 zero_memory64:
@@ -131,9 +131,9 @@ zero_memory64:
         
         ;;
         ;; 计算调整到 8 字节边界上的差额，下面原理等于 8 - (dest & 07)
-        ;; 1) 例如：[2:0] = 011B（3）
-        ;; 2) 取反后 = 100B（4）
-        ;; 3) 加1后 = 101B（5）
+        ;; 1) 例如: [2:0] = 011B(3)
+        ;; 2) 取反后 = 100B(4)
+        ;; 3) 加1后 = 101B(5)
         ;;
         mov ecx, esi                                    ; count 
         mov esi, edi
@@ -246,7 +246,7 @@ memcpy64:
 ;       none
 ; output:
 ;       rax - tss 块地址
-; 描述：
+; 描述: 
 ;       1) 从 TSS POOL 里分配一个 TSS 块
 ;       2) 失败时返回 0 值
 ;-------------------------------------------------------------------
@@ -273,15 +273,15 @@ get_tss_base64:
 ;       rsi - 64 位描述符
 ; output:
 ;       rax - 返回 selector 值
-; 描述：
+; 描述: 
 ;       1) 往 GDT 表添加一个描述符
 ;       2) 在 64-bit 下使用
 ;-------------------------------------------------------------------
 append_gdt_descriptor64:
         ;;
         ;; 检查 Top 上的描述符是否为 128 位系统描述符
-        ;; 1) 是：下一条 entry = top + 16
-        ;; 2) 否：下一条 entry = top + 8
+        ;; 1) 是: 下一条 entry = top + 16
+        ;; 2) 否: 下一条 entry = top + 8
         ;;
         mov r9, [fs: SDA.GdtTop]                        ; 读取 GDT 顶端原值
         mov rax, [r9]
@@ -310,13 +310,13 @@ append_gdt_descriptor64:
 ; output:
 ;       rax - 返回 selector 值
 ; 描述:
-;       1) 往 GDT 添加系统描述符，包括：TSS，LDT 以及 Call-gate 描述符
+;       1) 往 GDT 添加系统描述符，包括: TSS，LDT 以及 Call-gate 描述符
 ;-------------------------------------------------------------------
 append_gdt_system_descriptor64:
         ;;
         ;; 检查 Top 上的描述符是否为 128 位系统描述符
-        ;; 1) 是：下一条 entry = top + 16
-        ;; 2) 否：下一条 entry = top + 8
+        ;; 1) 是: 下一条 entry = top + 16
+        ;; 2) 否: 下一条 entry = top + 8
         ;;
         mov r9, [fs: SDA.GdtTop]                        ; 读取 GDT 顶端原值
         mov rax, [r9]
@@ -348,7 +348,7 @@ append_gdt_system_descriptor64:
 ; output:
 ;       rax - 返回移除的描述符
 ;       rdx:rax - 128 位系统描述符
-; 描述：
+; 描述: 
 ;       1) 移除 GDT 表顶上的一个描述符
 ;       2) 返回被移除的描述符，如果属于 system 描述符，返回 128 位描述符
 ;-------------------------------------------------------------------
@@ -382,8 +382,8 @@ remove_gdt_descriptor64.next:
         sub DWORD [fs: SDA.GdtLimit], esi               ; 更新 GDT limit
         ;;
         ;; 检查前一个 entry 是否为 system 描述符
-        ;; 1) 是：前一个 entry = top - 16
-        ;; 2) 否：前一个 entry = top - 8
+        ;; 1) 是: 前一个 entry = top - 16
+        ;; 2) 否: 前一个 entry = top - 8
         ;;
         mov rsi, [r8 - 8]
         ;;
@@ -419,7 +419,7 @@ remove_gdt_descriptor64.done:
 ;       rdi - 64 位描述符值
 ; output:
 ;       rax - 返回描述符地址
-; 描述：
+; 描述: 
 ;       根据提供的 selector 值在 GDT 表写入一个描述符
 ;-------------------------------------------------------------------   
 write_gdt_descriptor64:
@@ -470,7 +470,7 @@ write_gdt_descriptor64.done:
 ;       esi - selector
 ; output:
 ;       rdx:rax - 128 位系统描述符
-; 描述：
+; 描述: 
 ;       1) 读取 GDT 描述符项
 ;       2) 属于系统描述符，则 rdx:rax 返回 128 位描述符
 ;       3) 失败返回 -1
@@ -608,7 +608,7 @@ unmask_io_port_access64:
 ;       none
 ; output:
 ;       rax - fs base
-; 描述：
+; 描述: 
 ;       1) 读取 FS base 值
 ;       2) basic 版本使用 RDMSR 指令读 FS base
 ;       3) extended 版本使用 RDFSBASE 指令读 FS base
@@ -633,7 +633,7 @@ read_fs_base_ex:
 ;       none
 ; output:
 ;       rax - gs base
-; 描述：
+; 描述: 
 ;       1) 读取 GS base 值
 ;       2) basic 版本使用 RDMSR 指令读 GS base
 ;       3) extended 版本使用 RDFSBASE 指令读 GS base
@@ -659,7 +659,7 @@ read_gs_base_ex:
 ;       rsi - fs base
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 写 FS base 值
 ;       2) basic 版本使用 WRMSR 指令写 FS base
 ;       3) extended 版本使用 WRFSBASE 指令写 FS base
@@ -685,7 +685,7 @@ write_fs_base_ex:
 ;       rsi - gs base
 ; output:
 ;       none
-; 描述：
+; 描述: 
 ;       1) 写 GS base 值
 ;       2) basic 版本使用 WRMSR 指令写 GS base
 ;       3) extended 版本使用 WRGSBASE 指令写 GS base
@@ -952,7 +952,7 @@ get_spin_lock64.acquire:
         je get_spin_lock64.done
 
         ;;
-        ;; 获取失败后，检查 lock 是否开放（未上锁）
+        ;; 获取失败后，检查 lock 是否开放(未上锁)
         ;; 1) 是，则再次执行获取锁，并上锁
         ;; 2) 否，继续不断地检查 lock，直到 lock 开放
         ;;
@@ -977,7 +977,7 @@ get_spin_lock64.done:
 ;       none
 ; 描述:
 ;       1) 执行延时操作
-;       2) 延时的单位为us（微秒）
+;       2) 延时的单位为us(微秒)
 ;------------------------------------------------------
 delay_with_us64:
         push rdx

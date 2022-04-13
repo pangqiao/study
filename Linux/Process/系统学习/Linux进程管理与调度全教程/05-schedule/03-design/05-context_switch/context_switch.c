@@ -18,12 +18,12 @@ context_switch(struct rq *rq, struct task_struct *prev,
      */
     arch_start_context_switch(prev);
 
-    /*  如果next是内核线程，则线程使用prev所使用的地址空间
+    /*  如果next是内核线程, 则线程使用prev所使用的地址空间
      *  schedule( )函数把该线程设置为懒惰TLB模式
      *  内核线程并不拥有自己的页表集(task_struct->mm = NULL)
      *  它使用一个普通进程的页表集
-     *  不过，没有必要使一个用户态线性地址对应的TLB表项无效
-     *  因为内核线程不访问用户态地址空间。
+     *  不过, 没有必要使一个用户态线性地址对应的TLB表项无效
+     *  因为内核线程不访问用户态地址空间. 
     */
     if (!mm)        /*  内核线程无虚拟地址空间, mm = NULL*/
     {

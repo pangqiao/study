@@ -20,7 +20,7 @@
 
 # 1 概述
 
-在创建一个新虚拟机实例时，Nova Scheduler通过配置好的Filter Scheduler对所有计算节点进行过滤（filtering）和称重（weighting），最后根据称重高低和用户请求节点个数返回可用主机列表。如果失败，则表明没有可用的主机。
+在创建一个新虚拟机实例时，Nova Scheduler通过配置好的Filter Scheduler对所有计算节点进行过滤(filtering)和称重(weighting)，最后根据称重高低和用户请求节点个数返回可用主机列表。如果失败，则表明没有可用的主机。
 
 ## 1.1 标准过滤器
 
@@ -30,9 +30,9 @@
 
 - ImagePropertiesFilter - 根据镜像元数据进行过滤。
 
-- AvailabilityZoneFilter - 根据可用区域进行过滤（Availability Zone元数据）。
+- AvailabilityZoneFilter - 根据可用区域进行过滤(Availability Zone元数据)。
 
-- ComputeCapabilitiesFilter - 根据计算能力进行过滤，通过请求创建虚拟机时指定的参数与主机的属性和状态进行匹配来确定是否通过，可用的操作符如下：
+- ComputeCapabilitiesFilter - 根据计算能力进行过滤，通过请求创建虚拟机时指定的参数与主机的属性和状态进行匹配来确定是否通过，可用的操作符如下: 
 
     * = (equal to or greater than as a number; same as vcpus case)
     * == (equal to as a number)
@@ -55,7 +55,7 @@ Examples are:
 ">= 5", "s== 2.1.0", "<in> gcc", "<all-in> aes mmx", and "<or> fpu <or> gpu"
 ```
 
-部分可用的属性：
+部分可用的属性: 
 
     * free_ram_mb (compared with a number, values like ">= 4096")
     * free_disk_mb (compared with a number, values like ">= 10240")
@@ -67,7 +67,7 @@ Examples are:
     * vcpus_total (compared with a number, values like: "= 48", ">=24")
     * vcpus_used (compared with a number, values like: "= 0", "<= 10")
 
-- AggregateInstanceExtraSpecsFilter - 根据额外的主机属性进行过滤（Host Aggregate元数据），与ComputeCapabilitiesFilter类似。
+- AggregateInstanceExtraSpecsFilter - 根据额外的主机属性进行过滤(Host Aggregate元数据)，与ComputeCapabilitiesFilter类似。
 
 - ComputeFilter - 根据主机的状态和服务的可用性过滤。
 
@@ -93,7 +93,7 @@ Examples are:
 
 - RetryFilter - 过滤掉已经尝试过的主机。
 
-- AggregateTypeAffinityFilter - 限定一个Aggregate中创建的实例类型（Flavor类型）。
+- AggregateTypeAffinityFilter - 限定一个Aggregate中创建的实例类型(Flavor类型)。
 
 - ServerGroupAntiAffinityFilter - 尽量把实例部署在不同主机。
 
@@ -111,31 +111,31 @@ Examples are:
 
 ![](./images/2019-04-26-16-54-44.png)
 
-当过滤后如果有多个主机，则需要进行权重计算，最后选出权重最高的主机，公式如下：
+当过滤后如果有多个主机，则需要进行权重计算，最后选出权重最高的主机，公式如下: 
 
 ```
 weight = w1_multiplier * norm(w1) + w2_multiplier * norm(w2) + ...
 ```
 
-每一项都由“权重系数”（wN_multiplier）乘以“称重值”（norm(wN)），“权重系数”通过配置文件获取，“称重值”由“称重对象”（Weight Object）动态生成，目前可用的“称重对象”主要有：RAMWeigher，DiskWeigher，MetricsWeigher，IoOpsWeigher，PCIWeigher，ServerGroupSoftAffinityWeigher和ServerGroupSoftAntiAffinityWeigher。
+每一项都由“权重系数”(wN_multiplier)乘以“称重值”(norm(wN))，“权重系数”通过配置文件获取，“称重值”由“称重对象”(Weight Object)动态生成，目前可用的“称重对象”主要有: RAMWeigher，DiskWeigher，MetricsWeigher，IoOpsWeigher，PCIWeigher，ServerGroupSoftAffinityWeigher和ServerGroupSoftAntiAffinityWeigher。
 
 ## 1.3 常见策略
 
-根据不同的需求，可以制定出不同的调度策略，使用调度插件进行组合，以满足需求。下面是一些常见的调度策略：
+根据不同的需求，可以制定出不同的调度策略，使用调度插件进行组合，以满足需求。下面是一些常见的调度策略: 
 
-- Packing： 虚拟机尽量放置在含有虚拟机数量最多的主机上。
+- Packing:  虚拟机尽量放置在含有虚拟机数量最多的主机上。
 
 - Stripping: 虚拟机尽量放置在含有虚拟机数量最少的主机上。
 
-- CPU load balance：虚拟机尽量放在可用core最多的主机上。
+- CPU load balance: 虚拟机尽量放在可用core最多的主机上。
 
-- Memory load balance：虚拟机尽量放在可用memory 最多的主机上。
+- Memory load balance: 虚拟机尽量放在可用memory 最多的主机上。
 
 - Affinity : 多个虚拟机需要放置在相同的主机上。
 
 - AntiAffinity: 多个虚拟机需要放在在不同的主机上。
 
-- CPU Utilization load balance：虚拟机尽量放在CPU利用率最低的主机上。
+- CPU Utilization load balance: 虚拟机尽量放在CPU利用率最低的主机上。
 
 # 2 元数据
 
@@ -145,7 +145,7 @@ weight = w1_multiplier * norm(w1) + w2_multiplier * norm(w2) + ...
 
 ### 2.1.1 过滤器配置
 
-新增AggregateInstanceExtraSpecsFilter过滤器：
+新增AggregateInstanceExtraSpecsFilter过滤器: 
 
 ```
 $ vi /etc/kolla/nova-scheduler/nova.conf
@@ -159,7 +159,7 @@ $ docker restart nova_scheduler
 
 ### 2.1.2 集合配置
 
-- 创建io\-fast集合：
+- 创建io\-fast集合: 
 
 ```
 $ nova aggregate-create io-fast

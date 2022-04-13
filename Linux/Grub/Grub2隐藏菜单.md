@@ -21,7 +21,7 @@
 
 ## 2.1 直接修改配置文件
 
-将grub2配置文件修改如下样式：
+将grub2配置文件修改如下样式: 
 
 ```
 terminal_output console
@@ -37,7 +37,7 @@ fi
 
 ## 2.2 使用grub2\-mkconfig命令生成
 
-修改grub系统配置文件：
+修改grub系统配置文件: 
 
 ```
 GRUB_TIMEOUT=0

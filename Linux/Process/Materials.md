@@ -1,4 +1,4 @@
-宋宝华《Linux进程、线程和调度》：http://blog.csdn.net/21cnbao/article/details/77505330
+宋宝华《Linux进程、线程和调度》: http://blog.csdn.net/21cnbao/article/details/77505330
 
 [Linux进程管理与调度-之-目录导航(全)](http://blog.csdn.net/gatieme/article/details/51456569)
 

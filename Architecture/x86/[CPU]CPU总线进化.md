@@ -22,7 +22,7 @@ CPU到现在发展已经经过了40个年头，而牙膏厂也在今年推出了
 
 在早期的时候，**CPU的外频**和**FSB的频率保持同步**。即**外频频率=FSB频率**，举例赛扬300A的**外频为66MHz**，那么它的**FSB频率也是66MHz**。
 
-而到了**奔腾4时代**，**FSB总线速度**已经**无法满足CPU的带宽需求**，于是牙膏厂引入了**Quad Pumped Bus**技术，让**FSB**在**一个周期**内可以传输**四倍的数据**。这就是我们最熟悉的计算方式了：**FSB频率**=**外频频率x4**，比如**333MHz的外频的CPU**，其**FSB频率为1333MHz**。大大扩展了**CPU与北桥的传输速度**。
+而到了**奔腾4时代**，**FSB总线速度**已经**无法满足CPU的带宽需求**，于是牙膏厂引入了**Quad Pumped Bus**技术，让**FSB**在**一个周期**内可以传输**四倍的数据**。这就是我们最熟悉的计算方式了: **FSB频率**=**外频频率x4**，比如**333MHz的外频的CPU**，其**FSB频率为1333MHz**。大大扩展了**CPU与北桥的传输速度**。
 
 而**FSB早期**不仅仅用于**CPU和北桥通信**，牙膏厂早期的胶水**双核**也是通过**FSB总线来进行数据交换**的。因为牙膏厂只是简单的把**两个die**封装到了**一个chip**上，所以**CPU之间**想要**通信**必须经过**北桥！！！来进行**。早期的AMD也是使用FSB总线。
 
@@ -54,7 +54,7 @@ QPI的全称是**快速通道互联**，其实QPI总线在早期已经用于**�
 
 Ultra Path Interconnect(超级通道互连)，数据传输率可达9.6GT/s、10.4GT/s，带宽更足，灵活性更强，每条消息可以发送多个请求。Intel还曾经用过“KTI”(Keizer Technology Interconnect)的名字。
 
-从Skylake\-SP(Scalable Processor)微架构处理器(即Intel Xeon Scalable)开始, 采用了新一代高速互连UPI（Ultra Path Interconnect）系统汇流排设计，来取现有的QPI系统汇流排，新Xeon Scalable系列同样搭配有最多3个UPI系统汇流排，UPI最高速度可以达到每秒最高10.4GT，至于原本Xeon E5 v4的QPI最高只到9.6GT/s
+从Skylake\-SP(Scalable Processor)微架构处理器(即Intel Xeon Scalable)开始, 采用了新一代高速互连UPI(Ultra Path Interconnect)系统汇流排设计，来取现有的QPI系统汇流排，新Xeon Scalable系列同样搭配有最多3个UPI系统汇流排，UPI最高速度可以达到每秒最高10.4GT，至于原本Xeon E5 v4的QPI最高只到9.6GT/s
 
 # 参考
 

@@ -133,7 +133,7 @@ SYSTEM_SERVICE_USER2            equ     (SYSTEM_SERVICE_USER0 + 2)
 
 
 ;这个宏生成一个描述符
-;3个参数：base, limit, attribute
+;3个参数: base, limit, attribute
 %macro MAKE_SEGMENT_DESCRIPTOR        3
         dd        (%2 & 0x0000ffff) | ((%1 & 0x0000ffff) << 16)
         dd  ((%1 & 0x00ff0000) >> 16) | (%2 & 0x000f0000) | (%3 << 8) | (%1 & 0xff000000)

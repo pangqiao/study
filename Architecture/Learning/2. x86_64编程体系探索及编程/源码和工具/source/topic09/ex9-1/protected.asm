@@ -55,7 +55,7 @@ entry:
 ;################  实验代码  ###########################        
 
 ; SMRAM control
-        SET_SMRAM_OPEN                       ; 置 D_OPEN 为 1，打开 SMRAM 区域
+        SET_SMRAM_OPEN                       ; 置 D_OPEN 为 1, 打开 SMRAM 区域
 
 ; 将 SMI handler 写入 a8000 处
         mov ecx, CSEG_SMM_END - CSEG_SMM_BEGIN
@@ -79,7 +79,7 @@ entry:
         out dx, eax                         ; 写 DWORD
         
 
-;; 第1次触发 SMI#，进入 SMI handler 在 0A8000h 处                
+;; 第1次触发 SMI#, 进入 SMI handler 在 0A8000h 处                
         mov dx, APM_CNT
         out dx, al
         
@@ -97,7 +97,7 @@ entry:
         out dx, al        
         
 ;; *** 下面进行探测 SMRAM 区域的实验 ***        
-;; 1. 当 D_OPEN = 1 的情况下，进行探测 SMRAM 区域
+;; 1. 当 D_OPEN = 1 的情况下, 进行探测 SMRAM 区域
         SET_SMRAM_CLOSE                                ; 关闭为了显示输出
         mov esi, msg12
         call puts
@@ -105,10 +105,10 @@ entry:
         call enumerate_smi_region
 
 ;; 由 SMI handler 返回        
-        SET_SMRAM_CLOSE                               ; 清 D_OPEN 位，关闭 SMRAM 区域
+        SET_SMRAM_CLOSE                               ; 清 D_OPEN 位, 关闭 SMRAM 区域
 
 
-;; 2. 当 D_OPEN = 0 的情况下，进行深测 SMRAM 区域
+;; 2. 当 D_OPEN = 0 的情况下, 进行深测 SMRAM 区域
 
 ;; 探测 SMRAM 区域        
         mov esi, msg13
@@ -122,7 +122,7 @@ entry:
         jnz next
 
 ;; 下面的实验是在 SMI handler 里复制 State Save Map 信息到提供的位置上 ****
-;; *** 打印 SMM State Save Map 区域信息（部分)        
+;; *** 打印 SMM State Save Map 区域信息(部分)        
         mov esi, msg14
         call puts
         
@@ -505,10 +505,10 @@ tseg_smi_entry:
 rev_64h:        
         mov ebx, 200FFE0h                ; AMD64 版本的 rbx 寄存器位置
 read_ebx:        
-        mov edi, [ebx]                   ; 读取 ebx 寄存器的值（传递过的参数-栈底）
+        mov edi, [ebx]                   ; 读取 ebx 寄存器的值(传递过的参数-栈底)
         
-;; 下面是复制 SMI handler 的 state save 区域到目标位置上（由ebx寄存器传过来的参数）
-        mov esi, 200FFFCh                ; save 区域的起始位置(栈底）
+;; 下面是复制 SMI handler 的 state save 区域到目标位置上(由ebx寄存器传过来的参数)
+        mov esi, 200FFFCh                ; save 区域的起始位置(栈底)
         mov ecx, (2010000h-200FC00h)/4
         std
         db 0x67                  ; address size override 操作
@@ -679,7 +679,7 @@ clear_TF:
         mov esi, db_msg2
         call puts
 do_DB_handler_done:        
-        bts DWORD [esp + 4 * 8 + 8], 16            ; 设置 eflags.RF 为 1，以便中断返回时，继续执行
+        bts DWORD [esp + 4 * 8 + 8], 16            ; 设置 eflags.RF 为 1, 以便中断返回时, 继续执行
         popad
         iret
 
@@ -703,7 +703,7 @@ do_GP_handler:
         mov eax, [esp]
         cmp BYTE [eax], 0xfb                        ; 检查是否因为 sti 指令而产生 #GP 异常
         jne fix
-        inc eax                                      ; 如果是的话，跳过产生 #GP 异常的 sti 指令，执行下一条指令
+        inc eax                                      ; 如果是的话, 跳过产生 #GP 异常的 sti 指令, 执行下一条指令
         mov [esp], eax
         mov esi, gp_msg3
         call puts

@@ -143,7 +143,7 @@ entry64:
 ;===========================================================================
         
 
-;; 从 64 位切换到 compatibility mode（权限不改变，0 级）　        
+;; 从 64 位切换到 compatibility mode(权限不改变, 0 级)　        
 ;        jmp QWORD far [compatibility_pointer]
 
 ;compatibility_pointer:
@@ -154,7 +154,7 @@ entry64:
 ;;        call QWORD far [conforming_pointer]           ; 测试conforimg 代码
 
         
-;; 切换到 compatibility mode（进入 3 级）
+;; 切换到 compatibility mode(进入 3 级)
 ;        push user_data32_sel | 3
 ;        push COMPATIBILITY_USER_ESP
 ;        push user_code32_sel | 3
@@ -169,7 +169,7 @@ entry64:
 ;        retf64
 
 
-;; 使用 iret 切换到 compatibility mode（进入 3 级）
+;; 使用 iret 切换到 compatibility mode(进入 3 级)
         push user_data32_sel | 3
         push COMPATIBILITY_USER_ESP
         pushfq
@@ -270,7 +270,7 @@ msg1    db 'enter 64-bit user code', 10, 0
 
 
 
-;; ###### 下面是 64 位例程：#######
+;; ###### 下面是 64 位例程: #######
 
         bits 64     
 

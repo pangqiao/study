@@ -13,12 +13,12 @@
     - [1.3.1 常见操作环境 target 兼容 runlevel 的等级](#131-常见操作环境-target-兼容-runlevel-的等级)
     - [1.3.2 systemd的处理流程](#132-systemd的处理流程)
   - [1.4 systemd 执行sysinit.target 初始化系统、basic.target 准备系统](#14-systemd-执行sysinittarget-初始化系统-basictarget-准备系统)
-  - [1.5 systemd启动multi-user.target服务：相容的rc.local、getty.target启动](#15-systemd启动multi-usertarget服务相容的rclocal-gettytarget启动)
+  - [1.5 systemd启动multi-user.target服务: 相容的rc.local、getty.target启动](#15-systemd启动multi-usertarget服务相容的rclocal-gettytarget启动)
     - [1.5.1 相容 systemV 的 rc-local.service](#151-相容-systemv-的-rc-localservice)
     - [1.5.2 提供 tty 界面与登入的服务](#152-提供-tty-界面与登入的服务)
   - [1.6 systemd启动graphical.target底下的服务](#16-systemd启动graphicaltarget底下的服务)
   - [1.7 开机过程会用的主要设置](#17-开机过程会用的主要设置)
-    - [1.7.1 关于模块： /etc/modprobe.d/*.conf 及 /etc/modules-load.d/*.conf](#171-关于模块-etcmodprobedconf-及-etcmodules-loaddconf)
+    - [1.7.1 关于模块:  /etc/modprobe.d/*.conf 及 /etc/modules-load.d/*.conf](#171-关于模块-etcmodprobedconf-及-etcmodules-loaddconf)
     - [1.7.2 /etc/sysconfig/*](#172-etcsysconfig)
 
 <!-- /code_chunk_output -->
@@ -27,19 +27,19 @@
 
 ## 1.1 启动流程一览
 
-在启动过程中，那个启动管理程序（**Boot Loader**）使用的软件可能不一样，目前各大Linux distributions主流是grub2，但早期Linux默认使用LILO或者grub1。
+在启动过程中，那个启动管理程序(**Boot Loader**)使用的软件可能不一样，目前各大Linux distributions主流是grub2，但早期Linux默认使用LILO或者grub1。
 
-首先硬件会主动读取BIOS或者UEFI BIOS来载入硬件信息并进行硬件系统的自我检测，之后系统主动读取第一个可启动的装置（BIOS配置），此时就可以读取Boot loader了。
+首先硬件会主动读取BIOS或者UEFI BIOS来载入硬件信息并进行硬件系统的自我检测，之后系统主动读取第一个可启动的装置(BIOS配置)，此时就可以读取Boot loader了。
 
 Boot Loader可以指定**使用哪个核心文件来启动**，并实际**加载kernel到内存中解压缩与运行**，kernel会检测所有硬件信息、加载适当的驱动程序来使整部主机开始运行。
 
 主机系统开始运行后，此时Linux才会调用外部程序开始准备软件运行的环境，并实际加载所有系统运行的所需的软件程序。最后，OS开始等待登录和操作。
 
-简单来说，系统启动流程如下：
+简单来说，系统启动流程如下: 
 
-1. 加载BIOS的硬件信息并进行自我检测，并根据配置获取第一个可启动的装置（硬盘、光驱、PXE等）；
+1. 加载BIOS的硬件信息并进行自我检测，并根据配置获取第一个可启动的装置(硬盘、光驱、PXE等)；
 
-2. 读取并运行第一个启动装置中MBR的Boot Loader（即grub、grub2、LILO等）；
+2. 读取并运行第一个启动装置中MBR的Boot Loader(即grub、grub2、LILO等)；
 
 3. 根据Boot Loader的配置加载kernel，kernel会检测硬件和加载驱动程序；
 
@@ -59,41 +59,41 @@ Boot Loader可以指定**使用哪个核心文件来启动**，并实际**加载
 
 ## 1.2 BIOS, boot loader 与 kernel 加载
 
-BIOS：无论传统BIOS或UEFI BIOS都称为BIOS；
+BIOS: 无论传统BIOS或UEFI BIOS都称为BIOS；
 
-MBR：分割表有传统的MBR以及新式GPT，不过GPT也保留了一块相容MBR的块。因此，下面说的在安装boot loader的部分，也称MBR！MBR就代表了该磁盘最前面的可安装boot loader的那块。
+MBR: 分割表有传统的MBR以及新式GPT，不过GPT也保留了一块相容MBR的块。因此，下面说的在安装boot loader的部分，也称MBR！MBR就代表了该磁盘最前面的可安装boot loader的那块。
 
 ### 1.2.1 BIOS、开机自检与MBR/GPT
 
 首先让系统载入BIOS，并通过BIOS程序载入CMOS的信息，并且由CMOS内的设置值取得主机的各项硬件设置。例如CPU与周边设备的沟通时脉、启动装置的搜寻顺序、硬盘的大小与类型、系统时间、各周边设备的I/O地址、以及与CPU沟通的IRQ等信息。
 
-获取这些信息后，BIOS会进行自我测试（**Power-on Self Test，POST**）。然后开始运行硬件检测的初始化，并配置PnP装置，之后再定义出可启动的装置顺序，然后读取启动装置的数据（MBR相关任务开始）。
+获取这些信息后，BIOS会进行自我测试(**Power-on Self Test，POST**)。然后开始运行硬件检测的初始化，并配置PnP装置，之后再定义出可启动的装置顺序，然后读取启动装置的数据(MBR相关任务开始)。
 
-由于**不同OS的文件系统格式不同**，所以必须要一个**启动管理程序来处理核心文件加载（load）的问题**，这个启动管理程序就是Boot Loader。Boot Loader会安装在在启动装置的第一个扇区（sector）内，也就是MBR（Mater Boot Record）。
+由于**不同OS的文件系统格式不同**，所以必须要一个**启动管理程序来处理核心文件加载(load)的问题**，这个启动管理程序就是Boot Loader。Boot Loader会安装在在启动装置的第一个扇区(sector)内，也就是MBR(Mater Boot Record)。
 
 既然核心文件需要loader来读取，每个OS的loader都不相同，BIOS是如何读取MBR内的loader呢？其实BIOS是通过硬件的INT 13中断来读取MBR内容的，也就是说只要BIOS能检测你的磁盘，那就有办法通过INT 13通道读取磁盘的第一sector的MBR。
 
-注：每个磁盘的第一个sector内含有446 bytes的MBR区域，那如果有两个磁盘呢？这个就看BIOS的配置。
+注: 每个磁盘的第一个sector内含有446 bytes的MBR区域，那如果有两个磁盘呢？这个就看BIOS的配置。
 
 ### 1.2.2 Boot Loader的功能
 
 主要用来**认识OS的文件格式并加载kernel到memory**中，不同OS的boot loader不同。那多OS呢？
 
-**每个文件系统（FileSystem）会保留一块启动扇区（boot sector）提供OS安装boot loader**，而通常OS会默认安装一份loader到根目录所在的文件系统的boot loader上。
+**每个文件系统(FileSystem)会保留一块启动扇区(boot sector)提供OS安装boot loader**，而通常OS会默认安装一份loader到根目录所在的文件系统的boot loader上。
 
 ![boot loader 安装在 MBR, boot sector 与操作系统的关系](images/1.png)
 
-每个OS会安装一套boot loader到自己的文件系统中（即每个filesystem左下角的方框）。而Linux在安装时候可以选择将boot loader安装到MBR，**也可不安装**。若安装到MBR，理论上在MBR和boot sector都会有一份boot loader程序。而Windows会将MBR和boot sector都装一份boot loader！
+每个OS会安装一套boot loader到自己的文件系统中(即每个filesystem左下角的方框)。而Linux在安装时候可以选择将boot loader安装到MBR，**也可不安装**。若安装到MBR，理论上在MBR和boot sector都会有一份boot loader程序。而Windows会将MBR和boot sector都装一份boot loader！
 
 虽然各个OS都可以安装一份boot loader到boot sector中，这样OS可以通过通过自己的boot loader来加载核心了。问题是系统的MBR只有一个！怎么运行boot sector里面的loader？
 
-boot loader功能如下：
+boot loader功能如下: 
 
-- 提供菜单：使用者可以选择不同启动项目，即多重启动；
+- 提供菜单: 使用者可以选择不同启动项目，即多重启动；
 
-- 加载核心文件：直接指向可启动的程序区段来开始操作系统；
+- 加载核心文件: 直接指向可启动的程序区段来开始操作系统；
 
-- 转交到其他loader：将启动管理功能转交给其他loader负责。
+- 转交到其他loader: 将启动管理功能转交给其他loader负责。
 
 具有菜单功能，所以可以选择不同核心来启动。而由于具有控制权转交功能，因此可以加载其他boot sector的loader！不过windows的loader默认没有控制权转交功能，因此不能使用Windows 的 loader 来加载 Linux 的 loader。所以先装 Windows 再装 Linux 。
 
@@ -118,11 +118,11 @@ vmlinuz-0-rescue-309eb890d09543d95ec7a*     <==救援用的核心文件
 vmlinuz-3.10.0-229.el7.x86_64*              <==核心文件
 ```
 
-此版本Linux 核心为 3.10.0-229.el7 ！为了开发者的便利，Linux 核心是可以通过动态加载核心模块的 (类似于驱动程序)，这些核心模块就放在 /lib/modules/ 目录内。 模块要放置在磁盘根分区目录内（/lib 与 / 必须是同一个partition），因此在启动过程中**核心必须要挂载根目录**，这样才能**读取核心模块提供加载驱动程序的功能**。为防止影响文件系统，因此启动过程中根目录是以只读方式挂载的。
+此版本Linux 核心为 3.10.0-229.el7 ！为了开发者的便利，Linux 核心是可以通过动态加载核心模块的 (类似于驱动程序)，这些核心模块就放在 /lib/modules/ 目录内。 模块要放置在磁盘根分区目录内(/lib 与 / 必须是同一个partition)，因此在启动过程中**核心必须要挂载根目录**，这样才能**读取核心模块提供加载驱动程序的功能**。为防止影响文件系统，因此启动过程中根目录是以只读方式挂载的。
 
 U盘、SATA、SCSI等磁盘驱动程序通常被编译为模块存在。假设Linux是安装在SATA磁盘上，可以通过BIOS的INT 13取得boot loader与kernel文件来启动，然后kernel会开始接管系统并检测硬件以及尝试挂载根目录来取得额外驱动程序。
 
-但是，**核心根本不认识 SATA 磁盘，所以需要加载 SATA 磁盘的驱动程序，否则根本就无法挂载根目录**。但是 SATA 的驱动程序在 /lib/modules 内，你根本无法挂载根目录又怎么读取到 /lib/modules/ 内的驱动程序？通过虚拟文件系统来处理这个问题（如果不是模块，而是编译进kernel就不用initramfs）。
+但是，**核心根本不认识 SATA 磁盘，所以需要加载 SATA 磁盘的驱动程序，否则根本就无法挂载根目录**。但是 SATA 的驱动程序在 /lib/modules 内，你根本无法挂载根目录又怎么读取到 /lib/modules/ 内的驱动程序？通过虚拟文件系统来处理这个问题(如果不是模块，而是编译进kernel就不用initramfs)。
 
 虚拟文件系统 (Initial RAM Disk 或 Initial RAM Filesystem) 一般使用 /boot/initrd 或 /boot/initramfs，这个文件的特色是，也能够**通过 boot loader 来加载到内存中**， 然后这个文件会**被解压缩并且在内存当中模拟成一个根目录**，且此**模拟在内存当中的文件系统能够提供一个可运行的程序，通过该程序来加载启动过程中所最需要的核心模块， 通常这些模块就是 U盘, RAID, LVM, SCSI 等文件系统与磁盘的驱动程序**啦！等加载完成后，会帮助核心重新调用 systemd 来开始后续的正常启动流程。
 
@@ -196,7 +196,7 @@ total 21220
 drwxr-xr-x. 3 root root       17 Oct 19 21:40 kernel
 ```
 
-通过上面，我们知道 initramfs 主要有两部分，一个是事先准备的一些资料，包括 kernel/x86/microcode/GenuineIntel.bin 这些东西。这些资料后面，才是真的核心会去读取的文件。你会发现 init 已经被 systemd 所取代！如果想要进一步解开这个文件，那得要先将 kernel/x86/microcode/GenuineIntel.bin 之前的文件先除掉。 因此：
+通过上面，我们知道 initramfs 主要有两部分，一个是事先准备的一些资料，包括 kernel/x86/microcode/GenuineIntel.bin 这些东西。这些资料后面，才是真的核心会去读取的文件。你会发现 init 已经被 systemd 所取代！如果想要进一步解开这个文件，那得要先将 kernel/x86/microcode/GenuineIntel.bin 之前的文件先除掉。 因此: 
 
 ```
 # 1. 先取得 initramfs 前面应该要去除的容量有多少
@@ -205,7 +205,7 @@ drwxr-xr-x. 3 root root       17 Oct 19 21:40 kernel
 [root@study initramfs]# cpio -i -d --no-absolute-filenames -I /boot/initramfs-3.10.0-229.el7.x86_64.img
 22 blocks
 # 这就是在前面的资料占用的 block 数量，每个 block 是 512bytes，
-# 因此，前面的部份占用： 22 * 512 = 11264 个 bytes 的意思！
+# 因此，前面的部份占用:  22 * 512 = 11264 个 bytes 的意思！
 # 每一个 initramfs 文件的前面容量都不相同，所以需要先找出來去除！
 
 # 2. 将 /boot/initramfs-XX 文件去除前面不需要的文件头资料部分。
@@ -246,7 +246,7 @@ drwxr-xr-x.  3 root root       47 Aug 24 19:40 var
 [root@study initramfs]# ll usr/lib/systemd/system/default.target
 lrwxrwxrwx. 1 root root 13 Aug 24 19:40 usr/lib/systemd/system/default.target -> initrd.target
 
-# 5. 最后查看系统内预设的（不是当前目录下的这个）initrd.target依赖的所有服务
+# 5. 最后查看系统内预设的(不是当前目录下的这个)initrd.target依赖的所有服务
 [root@study initramfs]# systemctl list-dependencies initrd.target
 initrd.target
 ├─dracut-cmdline.service
@@ -281,9 +281,9 @@ initrd.target
 
 通过上面解开 initramfs 的结果，其实 initramfs 就是一个小型根目录，这个小型根目录也是通过 systemd 来管理，同时查看 default.target 的连接，这个小型系统是通过initrd.target来开机，**而 initrd.target 也是需要读入一堆例如 basic.target, sysinit.target 等等的硬件检测、系统初始化的流程**。**最终才又卸载 initramfs 的小型文件系統，实际挂载系统的根目录**！
 
-initramfs 仅仅加载开机过程中会用到的核心模块而已（如果已经编译进kernel，可以不需要）。所以如果你在 initramfs 里面去找 modules ，就可以发现主要的核心模块大概就是 SCSI、virtio、RAID 等等跟磁盘相关性比较高的模块！现在由于磁盘大多使用SATA，并没有IDE格式。所以，没有 initramfs 的话，你的 Linux 几乎不能顺利开机！除非你将 SATA 的模块直接编译到核心！ 
+initramfs 仅仅加载开机过程中会用到的核心模块而已(如果已经编译进kernel，可以不需要)。所以如果你在 initramfs 里面去找 modules ，就可以发现主要的核心模块大概就是 SCSI、virtio、RAID 等等跟磁盘相关性比较高的模块！现在由于磁盘大多使用SATA，并没有IDE格式。所以，没有 initramfs 的话，你的 Linux 几乎不能顺利开机！除非你将 SATA 的模块直接编译到核心！ 
 
-在核心完整的载入后，主机就开始正常工作，接下來，就是要开始执行系统的第一个程序： systemd ！
+在核心完整的载入后，主机就开始正常工作，接下來，就是要开始执行系统的第一个程序:  systemd ！
 
 ## 1.3 第一支程序 systemd 及配置档 default.target进入开机程序分析
 
@@ -291,7 +291,7 @@ initramfs 仅仅加载开机过程中会用到的核心模块而已（如果已�
 
 ### 1.3.1 常见操作环境 target 兼容 runlevel 的等级
 
-过去的 system V 使用的是 runlevel 的概念来启动系统的，systemd 为了兼容 systemV 操作行为， 所以也将 runlevel 与操作环境结合！可以通过以下方式查找对应关系：
+过去的 system V 使用的是 runlevel 的概念来启动系统的，systemd 为了兼容 systemV 操作行为， 所以也将 runlevel 与操作环境结合！可以通过以下方式查找对应关系: 
 
 ```
 [root@study ~]# ll -d /usr/lib/systemd/system/runlevel*.target | cut -c 28-
@@ -306,13 +306,13 @@ May  4 17:52 /usr/lib/systemd/system/runlevel6.target -> reboot.target
 
 ### 1.3.2 systemd的处理流程
 
-当取得 /etc/systemd/system/default.target 后。 首先，它会链接到 /usr/lib/systemd/system/ 下去取得 multi-user.target 或 graphical.target 其中的一个，假设是使用 graphical.target ，接下来 systemd 会去找两个地方的设置， 就是如下的目录：
+当取得 /etc/systemd/system/default.target 后。 首先，它会链接到 /usr/lib/systemd/system/ 下去取得 multi-user.target 或 graphical.target 其中的一个，假设是使用 graphical.target ，接下来 systemd 会去找两个地方的设置， 就是如下的目录: 
 
-- /etc/systemd/system/graphical.target.wants/：使用者设置加载的 unit
+- /etc/systemd/system/graphical.target.wants/: 使用者设置加载的 unit
 
-- /usr/lib/systemd/system/graphical.target.wants/：系统预设加载的 unit
+- /usr/lib/systemd/system/graphical.target.wants/: 系统预设加载的 unit
 
-查看 /usr/lib/systemd/system/graphical.target 文件：
+查看 /usr/lib/systemd/system/graphical.target 文件: 
 
 ```
 [root@study ~]# cat /usr/lib/systemd/system/graphical.target
@@ -370,13 +370,13 @@ backup.timer         libvirtd.service        sshd2.service
 
 要知道系统的服务的流程，最简单的方法就是『 systemctl list-dependencies graphical.target 』！只是，如果你想要知道背后的设置文件意义， 那就是分別去找出 /etc 与 /usr/lib 底下的 graphical.target.wants/ 目录下的资料就对了！当然，文件里面的 Requires 所代表的服务，也是需要是先加载的。
 
-简要分析一下『 systemctl list-dependencies graphical.target 』，基本上我们 CentOS 7.x 的 systemd 开机流程大约是这样：
+简要分析一下『 systemctl list-dependencies graphical.target 』，基本上我们 CentOS 7.x 的 systemd 开机流程大约是这样: 
 
-- local-fs.target + swap.target：这两个 target 主要加载本机 /etc/fstab 里所定义的文件系统和相关的内存置换空间；
+- local-fs.target + swap.target: 这两个 target 主要加载本机 /etc/fstab 里所定义的文件系统和相关的内存置换空间；
 
-- sysinit.target：这个 target 主要在检测硬件，加载所需要的核心模块等动作。
+- sysinit.target: 这个 target 主要在检测硬件，加载所需要的核心模块等动作。
 
-- basic.target：加载主要的硬件驱动程序与防火墙相关任务
+- basic.target: 加载主要的硬件驱动程序与防火墙相关任务
 
 - multi-user.target 底下的其它一般系统或网络服务的载入
 
@@ -386,35 +386,35 @@ backup.timer         libvirtd.service        sshd2.service
 
 ## 1.4 systemd 执行sysinit.target 初始化系统、basic.target 准备系统
 
-『 systemctl list-dependencies sysinit.target 』，这些服务应该一个一个看脚本。基本上，可以将这些服务归类成几个大类：
+『 systemctl list-dependencies sysinit.target 』，这些服务应该一个一个看脚本。基本上，可以将这些服务归类成几个大类: 
 
-- 特殊文件系统设备的挂载：包括 dev-hugepages.mount dev-mqueue.mount 等挂载服务，主要挂载与hugepage、消息队列相关功能。挂载成功后，会在 /dev 底下建立 /dev/hugepages/, /dev/mqueue/ 等目录；
+- 特殊文件系统设备的挂载: 包括 dev-hugepages.mount dev-mqueue.mount 等挂载服务，主要挂载与hugepage、消息队列相关功能。挂载成功后，会在 /dev 底下建立 /dev/hugepages/, /dev/mqueue/ 等目录；
 
-- 特殊文件系统的启用：包括磁盘阵列、网络磁盘(iscsi)、LVM文件系统、文件系统对照服务 (multipath) 等等；
+- 特殊文件系统的启用: 包括磁盘阵列、网络磁盘(iscsi)、LVM文件系统、文件系统对照服务 (multipath) 等等；
 
-- 开机过程的信息传递与动画执行：使用 plymouthd 服务搭配 plymouth 指令传递；
+- 开机过程的信息传递与动画执行: 使用 plymouthd 服务搭配 plymouth 指令传递；
 
-- 日志式登录档的使用：即systemd-journald 服务的启用
+- 日志式登录档的使用: 即systemd-journald 服务的启用
 
-- 额外的核心模块：通过 /etc/modules-load.d/*.conf 文件的设定，让核心额外载入核心模块！
+- 额外的核心模块: 通过 /etc/modules-load.d/*.conf 文件的设定，让核心额外载入核心模块！
 
-- 额外的核心参数设定：包括 /etc/sysctl.conf 以及 /etc/sysctl.d/*.conf 内部设定！
+- 额外的核心参数设定: 包括 /etc/sysctl.conf 以及 /etc/sysctl.d/*.conf 内部设定！
 
-- 系统的乱数产生器：乱数产生器可以帮助系统进行一些密码加密演算的功能
+- 系统的乱数产生器: 乱数产生器可以帮助系统进行一些密码加密演算的功能
 
 - 设定终端 (console) 字形
 
-- 启动动态装置管理员：就是 udevd ！用在动态对应实际装置存取与装置档名对应的一个服务！
+- 启动动态装置管理员: 就是 udevd ！用在动态对应实际装置存取与装置档名对应的一个服务！
 
-执行完 sysinit.target 之后，再来则是 basic.target 这个项目了。 sysinit.target 在初始化系统。这个 basic.target 的阶段主要启动的服务大概有这些：
+执行完 sysinit.target 之后，再来则是 basic.target 这个项目了。 sysinit.target 在初始化系统。这个 basic.target 的阶段主要启动的服务大概有这些: 
 
-- 载入 alsa 音效驱动程式：这个 alsa 是个音效相关的驱动程序；
+- 载入 alsa 音效驱动程式: 这个 alsa 是个音效相关的驱动程序；
 
-- 载入 firewalld 防火墙：CentOS 7.x 以后使用 firewalld 取代 iptables 的防火墙设定，虽然最终都是使用 iptables 的架构， 不过在设定上面差很多喔！
+- 载入 firewalld 防火墙: CentOS 7.x 以后使用 firewalld 取代 iptables 的防火墙设定，虽然最终都是使用 iptables 的架构， 不过在设定上面差很多喔！
 
 - 载入 CPU 的微指令功能；
 
-- 启动与设定 SELinux 的安全本文：如果由 disable 的状态改成 enable 的状态，或者是管理员设定强制重新设定一次 SELinux 的安全本文，也在这个阶段处理！
+- 启动与设定 SELinux 的安全本文: 如果由 disable 的状态改成 enable 的状态，或者是管理员设定强制重新设定一次 SELinux 的安全本文，也在这个阶段处理！
 
 - 将开机过程所产生的开机信息写入到 /var/log/dmesg 当中
 
@@ -424,17 +424,17 @@ backup.timer         libvirtd.service        sshd2.service
 
 在这个阶段完成之后，你的系统已经可以顺利的运作！就差一堆你需要的登入服务、网路服务、本机认证服务等等的 service 类别。
 
-## 1.5 systemd启动multi-user.target服务：相容的rc.local、getty.target启动
+## 1.5 systemd启动multi-user.target服务: 相容的rc.local、getty.target启动
 
 加载核心驱动硬件后，sysinit.target进行初始化，basic.target系统基础，之后服务器要顺利运行，需要进行各种主机服务和网络服务启动。这些服务的启动则大多是附挂在 multi-user.target 下。
 
-也就是说，一般来说服务的启动脚本设定都是放在底下的目录内：
+也就是说，一般来说服务的启动脚本设定都是放在底下的目录内: 
 
 - /usr/lib/systemd/system (系统预设的服务启动脚本设定)
 
 - /etc/systemd/system (管理员自己开发与设定的脚本设定)
 
-将服务放到 /etc/systemd/system/multi-user.target.wants/ 这个目录底下再做个链接 这样就可以在开机的时候去启动他。这时回想一下，你在第十七章使用 systemctl enable/disable 时，系统的回应是什么呢？再次回想一下：
+将服务放到 /etc/systemd/system/multi-user.target.wants/ 这个目录底下再做个链接 这样就可以在开机的时候去启动他。这时回想一下，你在第十七章使用 systemctl enable/disable 时，系统的回应是什么呢？再次回想一下: 
 
 ```
 # 将 vsftpd.service 先 disable 再 enable 看看输出的信息？
@@ -453,7 +453,7 @@ ln -s '/usr/lib/systemd/system/vsftpd.service' '/etc/systemd/system/multi-user.t
 
 过去用 Linux 的朋友大概都知道，当系统完成开机后，还想要让系统额外执行某些程序的话，可以将该指令或脚本的绝对路径名称写入到 /etc/rc.d/rc.local 文件！新的 systemd 机制中，它建议直接写一个 systemd 的启动脚本设定档到 /etc/systemd/system 底下，然后使用 systemctl enable 的方式来设定启用它，而不要直接使用 rc.local 这个文件！
 
-那新版的 systemd 有没有支持rc.local呢？那就是 rc-local.service 这个服务的功能了！这个服务不需要启动，它会自己判断 /etc/rc.d/rc.local 是否具有可执行的权限来判断要不要启动这个服务！ 你可以这样检查看看：
+那新版的 systemd 有没有支持rc.local呢？那就是 rc-local.service 这个服务的功能了！这个服务不需要启动，它会自己判断 /etc/rc.d/rc.local 是否具有可执行的权限来判断要不要启动这个服务！ 你可以这样检查看看: 
 
 ```
 # 1. 先看 /etc/rc.d/rc.local 的权限，再检查 multi-user.target 有没有这个服务
@@ -511,15 +511,15 @@ graphical.target
 
 基本上，systemd 有自己的设置处理方式，不过为了兼容 systemV ，很多的服务脚本设置还是会读取位于 /etc/sysconfig/ 底下的环境设置文件！ 底下我们就来谈谈几个常见的比较重要的设置文件！
 
-### 1.7.1 关于模块： /etc/modprobe.d/*.conf 及 /etc/modules-load.d/*.conf
+### 1.7.1 关于模块:  /etc/modprobe.d/*.conf 及 /etc/modules-load.d/*.conf
 
-还记得我们在 sysinit.target 系统初始化当中谈到的载入使用者自定义程序的地方吗？其实有两个地方可以处理模块载入的问题，包括：
+还记得我们在 sysinit.target 系统初始化当中谈到的载入使用者自定义程序的地方吗？其实有两个地方可以处理模块载入的问题，包括: 
 
-- /etc/modules-load.d/*.conf：单纯要核心载入模块的位置；
+- /etc/modules-load.d/*.conf: 单纯要核心载入模块的位置；
 
-- /etc/modprobe.d/*.conf：可以加上模块参数的位置
+- /etc/modprobe.d/*.conf: 可以加上模块参数的位置
 
-基本上 systemd 已经帮我们将开机会用到的模块全部载入了，如果你有某些特定的参数要处理时，应该就得要在这里进行。举例来说， vsftpd 这个服务，将这个服务的端口更改到 555 上！那我们可能需要修改防火墙设定，其中一个针对 FTP 很重要的防火墙程序为 nf_conntrack_ftp， 因此，你可以将这个程序写入到系统开机流程中，例如：
+基本上 systemd 已经帮我们将开机会用到的模块全部载入了，如果你有某些特定的参数要处理时，应该就得要在这里进行。举例来说， vsftpd 这个服务，将这个服务的端口更改到 555 上！那我们可能需要修改防火墙设定，其中一个针对 FTP 很重要的防火墙程序为 nf_conntrack_ftp， 因此，你可以将这个程序写入到系统开机流程中，例如: 
 
 ```
 [root@study ~]# vim /etc/modules-load.d/vbird.conf
@@ -533,7 +533,7 @@ nf_conntrack_ftp
 options nf_conntrack_ftp ports=555
 ```
 
-之后重新开机就能够顺利的载入并且处理好这个程序了。不过，如果你不想要开机测试，想现在处理呢？有个方式可以来进行看看：
+之后重新开机就能够顺利的载入并且处理好这个程序了。不过，如果你不想要开机测试，想现在处理呢？有个方式可以来进行看看: 
 
 ```
 [root@study ~]# lsmod | grep nf_conntrack_ftp
@@ -556,21 +556,21 @@ nf_conntrack          105702  1 nf_conntrack_ftp
 
 ### 1.7.2 /etc/sysconfig/*
 
-还有哪些常见的环境设置文件呢？我们找几个比较重要的来谈谈：
+还有哪些常见的环境设置文件呢？我们找几个比较重要的来谈谈: 
 
-- **authconfig**：  
+- **authconfig**:   
 
     这个文件主要在规范使用者的身份认证的机制，包括是否使用本机的 /etc/passwd, /etc/shadow 等， 以及 /etc/shadow 密码记录使用何种加密演算法，还有是否使用外部密码伺服器提供的帐号验证 (NIS, LDAP) 等。 系统预设使用 SHA512 加密演算法，并且不使用外部的身份验证机制；另外，不建议手动修改这个文件！你应该使用『 authconfig-tui 』指令来修改较佳！
 
-- **cpupower**：
+- **cpupower**: 
 
     如果你有启动 cpupower.service 服务时，他就会读取这个设置文件。主要是 Linux 如何操作 CPU 的原则。 一般来说，启动 cpupower.service 之后，系统会让 CPU 以最大效能的方式来运作，否则预设就是用多少算多少的模式来处理的。
 
-- **firewalld, iptables-config, ip6tables-config, ebtables-config**：
+- **firewalld, iptables-config, ip6tables-config, ebtables-config**: 
 
     与防火墙服务的启动的参数有关。
 
-- **network-scripts/**：
+- **network-scripts/**: 
 
     至于 network-scripts 里面的档案，则是主要用在设置网络
 

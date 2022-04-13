@@ -47,22 +47,22 @@ CFS负责处理普通非实时进程, 这类进程是我们linux中最普遍的�
 
 **CFS调度算法的思想**
 
-理想状态下每个进程都能获得相同的时间片，并且同时运行在CPU上，但实际上一个CPU同一时刻运行的进程只能有一个。也就是说，当一个进程占用CPU时，其他进程就必须等待。CFS为了实现公平，必须惩罚当前正在运行的进程，以使那些正在等待的进程下次被调度.
+理想状态下每个进程都能获得相同的时间片, 并且同时运行在CPU上, 但实际上一个CPU同一时刻运行的进程只能有一个. 也就是说, 当一个进程占用CPU时, 其他进程就必须等待. CFS为了实现公平, 必须惩罚当前正在运行的进程, 以使那些正在等待的进程下次被调度.
 
 ##1.2  负荷权重和虚拟时钟
 
 **虚拟时钟是红黑树排序的依据**
 
-具体实现时，CFS通过每个进程的**虚拟运行时间(vruntime)**来衡量哪个进程最值得被调度. CFS中的就绪队列是一棵以vruntime为键值的红黑树，虚拟时间越小的进程越靠近整个红黑树的最左端。因此，调度器每次选择位于红黑树最左端的那个进程，该进程的vruntime最小.
+具体实现时, CFS通过每个进程的**虚拟运行时间(vruntime)**来衡量哪个进程最值得被调度. CFS中的就绪队列是一棵以vruntime为键值的红黑树, 虚拟时间越小的进程越靠近整个红黑树的最左端. 因此, 调度器每次选择位于红黑树最左端的那个进程, 该进程的vruntime最小.
 
 **优先级计算负荷权重, 负荷权重和当前时间计算出虚拟运行时间**
 
-虚拟运行时间是通过进程的实际运行时间和进程的权重(weight)计算出来的。在CFS调度器中，将进程优先级这个概念弱化，而是强调进程的权重。一个进程的权重越大，则说明这个进程更需要运行，因此它的虚拟运行时间就越小，这样被调度的机会就越大。而，CFS调度器中的权重在内核是对用户态进程的优先级nice值, 通过prio_to_weight数组进行nice值和权重的转换而计算出来的
+虚拟运行时间是通过进程的实际运行时间和进程的权重(weight)计算出来的. 在CFS调度器中, 将进程优先级这个概念弱化, 而是强调进程的权重. 一个进程的权重越大, 则说明这个进程更需要运行, 因此它的虚拟运行时间就越小, 这样被调度的机会就越大. 而, CFS调度器中的权重在内核是对用户态进程的优先级nice值, 通过prio_to_weight数组进行nice值和权重的转换而计算出来的
 
 
 **虚拟时钟相关公式**
 
- linux内核采用了计算公式：
+ linux内核采用了计算公式: 
 
 | 属性 | 公式 | 描述 |
 |:-------:|:-------:|
@@ -71,20 +71,20 @@ CFS负责处理普通非实时进程, 这类进程是我们linux中最普遍的�
 | se.weight |  | 当前进程的权重 |
 | cfs.weight |  | 整个cfs_rq的总权重 |
 
-这里se.weight和cfs.weight根据上面讲解我们可以算出, sum_runtime是怎们计算的呢，linux内核中这是个经验值，其经验公式是
+这里se.weight和cfs.weight根据上面讲解我们可以算出, sum_runtime是怎们计算的呢, linux内核中这是个经验值, 其经验公式是
 
 | 条件 | 公式 |
 |:-------:|:-------:|
 | 进程数 > sched_nr_latency | sum_runtime=sysctl_sched_min_granularity *nr_running |
 | 进程数 <=sched_nr_latency | sum_runtime=sysctl_sched_latency = 20ms |
 
->注：sysctl_sched_min_granularity =4ms
+>注: sysctl_sched_min_granularity =4ms
 >
 >sched_nr_latency是内核在一个延迟周期中处理的最大活动进程数目
 
-linux内核代码中是通过一个叫vruntime的变量来实现上面的原理的，即：
+linux内核代码中是通过一个叫vruntime的变量来实现上面的原理的, 即: 
 
-每一个进程拥有一个vruntime,每次需要调度的时候就选运行队列中拥有最小vruntime的那个进程来运行，vruntime在时钟中断里面被维护，每次时钟中断都要更新当前进程的vruntime,即vruntime以如下公式逐渐增长：
+每一个进程拥有一个vruntime,每次需要调度的时候就选运行队列中拥有最小vruntime的那个进程来运行, vruntime在时钟中断里面被维护, 每次时钟中断都要更新当前进程的vruntime,即vruntime以如下公式逐渐增长: 
 
 
 | 条件 | 公式 |
@@ -210,7 +210,7 @@ simple:
     {
         /*  选出下一个可执行调度实体(进程)  */
         se = pick_next_entity(cfs_rq, NULL);
-        /*  把选中的进程从红黑树移除，更新红黑树  
+        /*  把选中的进程从红黑树移除, 更新红黑树  
          *  set_next_entity会调用__dequeue_entity完成此工作  */
         set_next_entity(cfs_rq, se);
         /*  group_cfs_rq return NULL when !CONFIG_FAIR_GROUP_SCHED
@@ -235,7 +235,7 @@ simple:
 | !cfs_rq->nr_running -=>  goto idle; | 如果nr_running计数器为0, 当前队列上没有可运行进程, 则需要调度idle进程 |
 | put_prev_task(rq, prev); | 将当前进程放入运行队列的合适位置, 每次当进程被调度后都会使用set_next_entity从红黑树中移除, 因此被抢占时需要重新加如红黑树中等待被调度 |
 | se = pick_next_entity(cfs_rq, NULL); | 选出下一个可执行调度实体 |
-| set_next_entity(cfs_rq, se); | set_next_entity会调用__dequeue_entity把选中的进程从红黑树移除，并更新红黑树 |
+| set_next_entity(cfs_rq, se); | set_next_entity会调用__dequeue_entity把选中的进程从红黑树移除, 并更新红黑树 |
 
 
 ##2.2  put_prev_task
@@ -263,7 +263,7 @@ static inline void put_prev_task(struct rq *rq, struct task_struct *prev)
 
 然后我们来分析一下CFS的put_prev_task_fair函数, 其定义在[kernel/sched/fair.c, line 5572](http://lxr.free-electrons.com/source/kernel/sched/fair.c?v=4.6#L5572)
 
-在选中了下一个将被调度执行的进程之后，回到pick_next_task_fair中，执行set_next_entity
+在选中了下一个将被调度执行的进程之后, 回到pick_next_task_fair中, 执行set_next_entity
 
 ```c
 /*
@@ -307,7 +307,7 @@ static void put_prev_task_fair(struct rq *rq, struct task_struct *prev)
  * 4) do not run the "skip" process, if something else is available
  *
  *  1. 首先要确保任务组之间的公平, 这也是设置组的原因之一
- *  2. 其次, 挑选下一个合适的（优先级比较高的）进程
+ *  2. 其次, 挑选下一个合适的(优先级比较高的)进程
  *     因为它确实需要马上运行 
  *  3. 如果没有找到条件2中的进程
  *     那么为了保持良好的局部性
@@ -428,14 +428,14 @@ pick_next_entity则从CFS的红黑树中摘取一个最优的进程, 这个进�
 
 在pick_next_entity的最后, 要把红黑树最左下角的进程和另外两个进程(即next和last)做比较, next是抢占失败的进程, 而last则是抢占成功后被抢占的进程, 这三个进程到底哪一个是最优的next进程呢?
 
-Linux CFS实现的判决条件是：
+Linux CFS实现的判决条件是: 
 
 1.	尽可能满足需要刚被唤醒的进程抢占其它进程的需求
 
 2.	尽可能减少以上这种抢占带来的缓存刷新的影响
 
 
-**cfs_rq的last和next指针，last表示最后一个执行wakeup的sched_entity,next表示最后一个被wakeup的sched_entity。他们在进程wakeup的时候会赋值，在pick新sched_entity的时候，会优先选择这些last或者next指针的sched_entity,有利于提高缓存的命中率** **
+**cfs_rq的last和next指针, last表示最后一个执行wakeup的sched_entity,next表示最后一个被wakeup的sched_entity. 他们在进程wakeup的时候会赋值, 在pick新sched_entity的时候, 会优先选择这些last或者next指针的sched_entity,有利于提高缓存的命中率** **
 
 因此我们优选出来的进程必须同last和next指针域进行对比, 其实就是检查就绪队列中的最优进程, 即红黑树中最左节点last是否可以抢占last和next指针域, 检查是否可以抢占是通过wakeup_preempt_entity函数来完成的.
 
@@ -466,7 +466,7 @@ wakeup_preempt_entity(struct sched_entity *curr, struct sched_entity *se)
     /*  vdiff为curr和se vruntime的差值*/
     s64 gran, vdiff = curr->vruntime - se->vruntime;
 
-    /*  cfs_rq的vruntime是单调递增的，也就是一个基准
+    /*  cfs_rq的vruntime是单调递增的, 也就是一个基准
      *  各个进程的vruntime追赶竞争cfsq的vruntime
      *  如果curr的vruntime比较小, 说明curr更加需要补偿, 
      *  即se无法抢占curr */
@@ -475,7 +475,7 @@ wakeup_preempt_entity(struct sched_entity *curr, struct sched_entity *se)
 
     /*  计算curr的最小抢占期限粒度   */
     gran = wakeup_gran(curr, se);
-    /*  当差值大于这个最小粒度的时候才抢占，这可以避免频繁抢占  */
+    /*  当差值大于这个最小粒度的时候才抢占, 这可以避免频繁抢占  */
     if (vdiff > gran)
         return 1;
 
@@ -503,29 +503,29 @@ wakeup_gran(struct sched_entity *curr, struct sched_entity *se)
      * This is especially important for buddies when the leftmost
      * task is higher priority than the buddy.
      *
-     * 计算进程运行的期限，即抢占的粒度
+     * 计算进程运行的期限, 即抢占的粒度
      */
     return calc_delta_fair(gran, se);
 }
 ```
 
-到底能不能选择last和next两个进程, 则是wakeup_preempt_entity函数来决定的, 看下面的图解即可：
+到底能不能选择last和next两个进程, 则是wakeup_preempt_entity函数来决定的, 看下面的图解即可: 
 
 ![last进程next进程和left进程的比较](./images/last_next_left.png)
 
-*	如果S3是left，curr是next或者last，left的vruntime值小于curr和next, 函数wakeup_preempt_entity肯定返回1，那么就说明next和last指针的vruntime和left差距过大，这个时候没有必要选择这个last或者next指针，而是应该优先补偿left
+*	如果S3是left, curr是next或者last, left的vruntime值小于curr和next, 函数wakeup_preempt_entity肯定返回1, 那么就说明next和last指针的vruntime和left差距过大, 这个时候没有必要选择这个last或者next指针, 而是应该优先补偿left
 
-*	如果next或者last是S2，S1，那么vruntime和left差距并不大，并没有超过sysctl_sched_wakeup_granularity ，那么这个next或者last就可以被优先选择，而代替了left
+*	如果next或者last是S2, S1, 那么vruntime和left差距并不大, 并没有超过sysctl_sched_wakeup_granularity , 那么这个next或者last就可以被优先选择, 而代替了left
 
-而清除last和next这两个指针的时机有这么几个：
+而清除last和next这两个指针的时机有这么几个: 
 
-*	sched_tick的时候, 如果一个进程的运行时间超过理论时间（这个时间是根据load和cfs_rq的load, 平均分割sysctl_sched_latency的时间）, 那么如果next或者last指针指向这个正在运行的进程, 需要清除这个指针, 使得pick sched_entity不会因为next或者last指针再次选择到这个sched_entity
+*	sched_tick的时候, 如果一个进程的运行时间超过理论时间(这个时间是根据load和cfs_rq的load, 平均分割sysctl_sched_latency的时间), 那么如果next或者last指针指向这个正在运行的进程, 需要清除这个指针, 使得pick sched_entity不会因为next或者last指针再次选择到这个sched_entity
 
-*	当一个sched_entity调度实体dequeue出运行队列，那么如果有next或者last指针指向这个sched_entity, 那么需要删除这个next或者last指针。
+*	当一个sched_entity调度实体dequeue出运行队列, 那么如果有next或者last指针指向这个sched_entity, 那么需要删除这个next或者last指针. 
 
-*	刚才说的那种case，如果next，last指针在pick的时候被使用了一次，那么这次用完了指针，需要清除相应的指针，避免使用过的next，last指针影响到下次pick
+*	刚才说的那种case, 如果next, last指针在pick的时候被使用了一次, 那么这次用完了指针, 需要清除相应的指针, 避免使用过的next, last指针影响到下次pick
 
-*	当进程yield操作的时候，进程主动放弃了调度机会，那么如果next，last指针指向了这个sched_entity，那么需要清除相应指针。
+*	当进程yield操作的时候, 进程主动放弃了调度机会, 那么如果next, last指针指向了这个sched_entity, 那么需要清除相应指针. 
 
 
 
@@ -662,7 +662,7 @@ idle:
 
 其关键就是调用idle_balance进行任务的迁移
 
- 每个cpu都有自己的运行队列, 如果当前cpu上运行的任务都已经dequeue出运行队列，而且idle_balance也没有移动到当前运行队列的任务，那么schedule函数中，按照stop > idle > rt  > cfs > idle这三种调度方式顺序，寻找各自的运行任务，那么如果rt和cfs都未找到运行任务，那么最后会调用idle schedule的idle进程，作为schedule函数调度的下一个任务
+ 每个cpu都有自己的运行队列, 如果当前cpu上运行的任务都已经dequeue出运行队列, 而且idle_balance也没有移动到当前运行队列的任务, 那么schedule函数中, 按照stop > idle > rt  > cfs > idle这三种调度方式顺序, 寻找各自的运行任务, 那么如果rt和cfs都未找到运行任务, 那么最后会调用idle schedule的idle进程, 作为schedule函数调度的下一个任务
 
 如果某个cpu空闲, 而其他CPU不空闲, 即当前CPU运行队列为NULL, 而其他CPU运行队列有进程等待调度的时候,  则内核会对CPU尝试负载平衡, CPU负载均衡有两种方式: pull和push, 即空闲CPU从其他忙的CPU队列中pull拉一个进程复制到当前空闲CPU上, 或者忙的CPU队列将一个进程push推送到空闲的CPU队列中.
 
@@ -724,7 +724,7 @@ idle_balance其实就是pull的工作.
         /*  选择一个最优的调度实体  */
         se = pick_next_entity(cfs_rq, curr);
         cfs_rq = group_cfs_rq(se);
-    } while (cfs_rq);  /*  如果被调度的进程仍属于当前组，那么选取下一个可能被调度的任务，以保证组间调度的公平性  */
+    } while (cfs_rq);  /*  如果被调度的进程仍属于当前组, 那么选取下一个可能被调度的任务, 以保证组间调度的公平性  */
     /*  获取调度实体se的进程实体信息  */
     p = task_of(se);
 
@@ -823,7 +823,7 @@ pick_next_task_fair的基本流程如下
 | !cfs_rq->nr_running -=>  goto idle; | 如果nr_running计数器为0, 当前队列上没有可运行进程, 则需要调度idle进程 |
 | put_prev_task(rq, prev); | 将当前进程放入运行队列的合适位置, 每次当进程被调度后都会使用set_next_entity从红黑树中移除, 因此被抢占时需要重新加如红黑树中等待被调度 |
 | se = pick_next_entity(cfs_rq, NULL); | 选出下一个可执行调度实体 |
-| set_next_entity(cfs_rq, se); | set_next_entity会调用__dequeue_entity把选中的进程从红黑树移除，并更新红黑树 |
+| set_next_entity(cfs_rq, se); | set_next_entity会调用__dequeue_entity把选中的进程从红黑树移除, 并更新红黑树 |
 
 
 其中最关键的pick_next_entity函数选择出下一个最渴望被公平调度器调度的进程, 函数的执行流程其实很简单
@@ -838,7 +838,7 @@ pick_next_task_fair的基本流程如下
 
 3.	检查left是否可以抢占last和next调度实体, 此项有助于提高缓存的命中率
 
-*	cfs_rq的last和next指针, last表示最后一个执行wakeup的sched_entity, next表示最后一个被wakeup的sched_entity, 在pick新sched_entity的时候，会优先选择这些last或者next指针的sched_entity,有利于提高缓存的命中率
+*	cfs_rq的last和next指针, last表示最后一个执行wakeup的sched_entity, next表示最后一个被wakeup的sched_entity, 在pick新sched_entity的时候, 会优先选择这些last或者next指针的sched_entity,有利于提高缓存的命中率
 
 
 
@@ -849,8 +849,8 @@ pick_next_task_fair的基本流程如下
 | left = __pick_first_entity(cfs_rq) | **红黑树的最左节点**, 这个节点拥有当前队列中vruntime最小的特性, 即应该优先被调度 |
 | second = __pick_first_entity(left) | **红黑树的次左节点**, 为什么这个节点也可能呢, 因为内核支持skip跳过某个进程的抢占权力的, 如果left被标记为skip(由cfs_rq->skip域指定), 那么可能就需要找到次优的那个进程 |
 | cfs_rq的curr结点 | curr节点的vruntime可能比left和second更小, 但是由于它正在运行, 因此它不在红黑树中(进程抢占物理机的时候对应节点同时会从红黑树中删除), 但是如果其vruntime足够小, 意味着cfs调度器应该尽可能的补偿curr进程, 让它再次被调度, 同样这种优化也有助于提高缓存的命中率 |
-|cfs_rq的last或者next |  last表示最后一个执行wakeup的sched_entity, next表示最后一个被wakeup的sched_entity, 在pick新sched_entity的时候，会优先选择这些last或者next指针的sched_entity,有利于提高缓存的命中率 |
+|cfs_rq的last或者next |  last表示最后一个执行wakeup的sched_entity, next表示最后一个被wakeup的sched_entity, 在pick新sched_entity的时候, 会优先选择这些last或者next指针的sched_entity,有利于提高缓存的命中率 |
 
 即红黑树中的最左结点left和次左结点second(检查两个节点是因为cfs_rq的skip指针域标识了内核需要跳过不调度的实体信息, 如果left被跳过, 则需要检查second)
 
-以及cfs_rq的调度实体curr, last和next, curr是当前正在运行的进程, 它虽然已经运行, 但是可能仍然很饥渴, 那么我们应该继续补偿它, 而last表示最后一个执行wakeup的sched_entity, next表示最后一个被wakeup的sched_entity, 刚被唤醒的进程可能更希望得到CPU, 因此在pick新sched_entity的时候，会优先选择这些last或者next指针的sched_entity,有利于提高缓存的命中率
+以及cfs_rq的调度实体curr, last和next, curr是当前正在运行的进程, 它虽然已经运行, 但是可能仍然很饥渴, 那么我们应该继续补偿它, 而last表示最后一个执行wakeup的sched_entity, next表示最后一个被wakeup的sched_entity, 刚被唤醒的进程可能更希望得到CPU, 因此在pick新sched_entity的时候, 会优先选择这些last或者next指针的sched_entity,有利于提高缓存的命中率

@@ -3,15 +3,15 @@ perf bench作为benchmark工具的通用框架，包含sched/mem/numa/futex等�
 
 perf bench可用于评估系统sched/mem等特定性能。
 
-perf bench sched：调度器和IPC机制。包含messaging和pipe两个功能。
+perf bench sched: 调度器和IPC机制。包含messaging和pipe两个功能。
 
-perf bench mem：内存存取性能。包含memcpy和memset两个功能。
+perf bench mem: 内存存取性能。包含memcpy和memset两个功能。
 
-perf bench numa：NUMA架构的调度和内存处理性能。包含mem功能。
+perf bench numa: NUMA架构的调度和内存处理性能。包含mem功能。
 
-perf bench futex：futex压力测试。包含hash/wake/wake-parallel/requeue/lock-pi功能。
+perf bench futex: futex压力测试。包含hash/wake/wake-parallel/requeue/lock-pi功能。
 
-perf bench all：所有bench测试的集合
+perf bench all: 所有bench测试的集合
 
 
 # perf bench sched all
@@ -24,7 +24,7 @@ sched message 是从经典的测试程序 hackbench 移植而来，用来衡量�
 
 该 benchmark 启动 N 个 reader/sender 进程或线程对，通过 IPC(socket 或者 pipe) 进行并发的读写。一般人们将 N 不断加大来衡量调度器的可扩展性。
 
-sched message 的用法及用途和 hackbench 一样，可以通过修改参数进行不同目的测试：
+sched message 的用法及用途和 hackbench 一样，可以通过修改参数进行不同目的测试: 
 
 ```
 -g, --group <n> Specify number of groups
@@ -36,7 +36,7 @@ sched message 的用法及用途和 hackbench 一样，可以通过修改参数�
 -t, --thread Be multi thread instead of multi process
 ```
 
-测试结果：
+测试结果: 
 
 ```
 [root@xx perf]# perf bench sched all
@@ -55,7 +55,7 @@ sched message 的用法及用途和 hackbench 一样，可以通过修改参数�
           56039 ops/sec
 ```
 
-使用pipe()和socketpair()对测试影响：
+使用pipe()和socketpair()对测试影响: 
 
 ```
 [root@xx perf]# perf bench sched messaging

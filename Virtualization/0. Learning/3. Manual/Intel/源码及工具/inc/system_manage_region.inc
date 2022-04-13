@@ -173,10 +173,10 @@ NextSelector                            EQU     68h
 
 ;;
 ;; 虚拟机内存 domain 池，每个虚拟机的物理内存从这个 domain 池中分配
-;; 1）domain pool 物理基址为 0800_0000h
-;; 2）每个 domain 为 8M
+;; 1)domain pool 物理基址为 0800_0000h
+;; 2)每个 domain 为 8M
 ;;
-;; 示例：
+;; 示例: 
 ;; VM1 domain: 0800_0000h 到 087F_FFFFh
 ;; VM2 domain: 0880_0000h 到 08FF_FFFFh
 ;; ... ...
@@ -194,11 +194,11 @@ DOMAIN_POOL_SIZE                        EQU     8000000h
 ;;*
 ;;* 定义 Processor Control Block 结构，使用于 gs 进行维护 
 ;*
-;;* 说明：
+;;* 说明: 
 ;;* 1) 每个 logical processor 有自己的一份 PCB 数据，总共容纳 16 个 logical processor
 ;;* 2) 每份 PCB 数据共 4K size
 ;;* 3) 在 legacy 模式下使用 32 位数据，在 long 模式下更新为 64 位数据
-;;* 4) 大多数数据定义为 64 位宽（QWORD类型），在 legacy 模式下使用低 32，long 模式下使用 full-width
+;;* 4) 大多数数据定义为 64 位宽(QWORD类型)，在 legacy 模式下使用低 32，long 模式下使用 full-width
 ;;* 
 
 
@@ -403,7 +403,7 @@ struc PCB
         .Vendor                 RESD            1               ; 处理器的厂商
 
         ;;
-        ;; 记录处理器的频率,单位 MHz。即：每次/us（每us内ticks次数）!
+        ;; 记录处理器的频率,单位 MHz。即: 每次/us(每us内ticks次数)!
         ;; 1) ProcessorFrequency: 处理器显示出来的频率
         ;; 2) TicksFrequency: 测量出来的处理器频率
         ;; 注意:
@@ -428,7 +428,7 @@ struc PCB
         ;;
         ;; 处理器基本信息
         ;;
-        .CacheLineSize          RESD            1               ; cache line（字节单位）
+        .CacheLineSize          RESD            1               ; cache line(字节单位)
 
         ;;
         ;; 处理器型号信息
@@ -541,7 +541,7 @@ struc PCB
         .MaxVirtualAddr         RESD            1               ; 最大的虚拟地址宽度
 
         ;;
-        ;; SSE 指令支持 level, 分别为：
+        ;; SSE 指令支持 level, 分别为: 
         ;; 1) 0000h - 不支持
         ;; 2) 0100h - SSE
         ;; 3) 0200h - SSE2
@@ -553,10 +553,10 @@ struc PCB
 
 
         ;;
-        ;; MAXPHYADDR = 32 时：select mask = 00000000_FFFFFFFFh
+        ;; MAXPHYADDR = 32 时: select mask = 00000000_FFFFFFFFh
         ;; MAXPHYADDR = 36 时: select mask = 0000000F_FFFFFFFFh
         ;; MAXPHYADDR = 40 时: select mask = 000000FF_FFFFFFFFh
-        ;; MAXPHYADDR = 52 时：select mask = 000FFFFF_FFFFFFFFh
+        ;; MAXPHYADDR = 52 时: select mask = 000FFFFF_FFFFFFFFh
         ;;
         .MaxPhyAddrSelectMask   RESQ            1               ; 最大物理地址的 mask 位
 
@@ -665,7 +665,7 @@ struc PCB
         .VmFunction             RESQ            1
 
         ;;
-        ;; CR0 & CR4 fixed 1 mask（固定为 1 值）
+        ;; CR0 & CR4 fixed 1 mask(固定为 1 值)
         ;;
         .Cr0FixedMask           RESQ            1
         .Cr4FixedMask           RESQ            1
@@ -757,9 +757,9 @@ struc PCB
 
 
         ;;
-        ;; FPU 单元的 32 位的 state image 区域（共 108 字节）
-        ;; *** 1) 头 28 个字节为 FPU environment 信息（使用于 FSTENV/FNSTENV 指令）
-        ;; *** 2) 后 80 个字节为 FPU/MMX 的 stack 寄存器 image 信息（使用于 FSAVE/FNSAVE 指令）
+        ;; FPU 单元的 32 位的 state image 区域(共 108 字节)
+        ;; *** 1) 头 28 个字节为 FPU environment 信息(使用于 FSTENV/FNSTENV 指令)
+        ;; *** 2) 后 80 个字节为 FPU/MMX 的 stack 寄存器 image 信息(使用于 FSAVE/FNSAVE 指令)
         ;;
 
         ALIGNB 16
@@ -770,7 +770,7 @@ struc PCB
 
 
         ;;
-        ;; XMM image 区域，使用于 FXSAVE/FXRSTOR 指令（512字节）
+        ;; XMM image 区域，使用于 FXSAVE/FXRSTOR 指令(512字节)
         ;;
 
         ALIGNB 16
@@ -779,7 +779,7 @@ struc PCB
 
 
         ;;
-        ;; 下面是处理器的 DS(Debug Store）管理指针
+        ;; 下面是处理器的 DS(Debug Store)管理指针
         ;; 1) 指向 DS 管理区记录
         ;;
         ALIGNB 4
@@ -829,7 +829,7 @@ endstruc
 ;;************************************************************
 ;;* 定义 System Data AREA 结构，用于维护系统管理，使用于 fs 段 
 ;;*
-;;* 说明：
+;;* 说明: 
 ;;* 1) 这是系统运行所需要的数据结构，所有处理器共享
 ;;************************************************************
 
@@ -837,7 +837,7 @@ struc SDA
         ;;
         ;; 系统数据区域，提供所有处理器共用使用的数据
         ;;
-        .Base                   RESQ            1               ; 此区域的地址（virtual address）
+        .Base                   RESQ            1               ; 此区域的地址(virtual address)
         .PhysicalBase           RESQ            1               ; 此区域的物理地址
         .Size                   RESD            1               ; 此区域的 size
         .PcbBase                RESQ            1               ; 指向 CPU0 的 PCB 块
@@ -917,7 +917,7 @@ struc SDA
 
 
         ;;
-        ;; 记录处理器空闲的 index mask 标志位（指示 BSP 空闲或忙状态）
+        ;; 记录处理器空闲的 index mask 标志位(指示 BSP 空闲或忙状态)
         ;;
         .UsableProcessorMask    RESD            1
         .ProcessMask            RESQ            1
@@ -995,7 +995,7 @@ struc SDA
         ;; long-mode 下的 paging 管理记录
         ;;
         .PxtBase64              RESQ            1               ; PXT 基址
-        .PptBase64              RESQ            1               ; PPT 表基址（Page Directory Pointer Table）
+        .PptBase64              RESQ            1               ; PPT 表基址(Page Directory Pointer Table)
         .PdtBase64              RESQ            1               ; PDT 表基址
         .PtBase64               RESQ            1               ; PT 表基址
         .PxtTop64               RESQ            1               ; PXT 表顶端
@@ -1006,7 +1006,7 @@ struc SDA
         .PptPhysicalBase64      RESQ            1               ; PPT 表物理基址
 
         ;;
-        ;; 记录 PPT 表区域（2M）是否有效，有效时表明已经映射 PPT 表
+        ;; 记录 PPT 表区域(2M)是否有效，有效时表明已经映射 PPT 表
         ;;
         .PptValid               RESB            1               ; 
 
@@ -1066,7 +1066,7 @@ struc SDA
         ;;
         ;; TSS Pool，用来为每个处理器分配自己的 TSS 块
         ;; 注意:
-        ;; 1) 每个 TSS 分配 size 为：100h 字节
+        ;; 1) 每个 TSS 分配 size 为: 100h 字节
         ;; 2) 共支持 16 个处理器
         ;;
         .TssPoolBase            RESQ            1               ; Tss pool 基址
@@ -1077,7 +1077,7 @@ struc SDA
 
 
         ;;
-        ;; VMX ept（extended page table）管理记录
+        ;; VMX ept(extended page table)管理记录
         ;;
         .EptPxtBase64           RESQ            1               ; PXT 虚拟地址
         .EptPxtPhysicalBase64   RESQ            1               ; PXT 物理地址
@@ -1132,7 +1132,7 @@ struc SDA
 
 
         ;;
-        ;; 定义 Global Descriptor Table 数据区域（共4K）
+        ;; 定义 Global Descriptor Table 数据区域(共4K)
         ;;
         .Gdt:
         .NullDesc               RESQ            1                   
@@ -1140,19 +1140,19 @@ struc SDA
 
 
         ;;
-        ;; 下面是 IDT 所在区域（共4K）
+        ;; 下面是 IDT 所在区域(共4K)
         ;;
         .Idt:                   RESB            (4096 * 3) - $
 
 
         ;;
-        ;; 下面是 TSS 区域（共4K）
+        ;; 下面是 TSS 区域(共4K)
         ;;
         .Tss:                   RESB            (4096 * 4) - $
 
 
         ;;
-        ;; 下面是 IOMAP 区域（共8K）
+        ;; 下面是 IOMAP 区域(共8K)
         ;;
         .Iomap:                 RESB            (4096 * 6) - $
         
@@ -1169,19 +1169,19 @@ struc SDA
 
 
         ;;
-        ;; 下面是 BTS buffer 区域（共4K）
+        ;; 下面是 BTS buffer 区域(共4K)
         ;;
         .BtsBuffer:             RESB            (4096 * 9) - $
 
         ;;
-        ;; 下面是 PEBS buffer 区域（共16*4K）
+        ;; 下面是 PEBS buffer 区域(共16*4K)
         ;;
         .PebsBuffer:            RESB            (4096 * (9+16)) - $
 
 
 %ifdef DEBUG_RECORD_ENABLE
         ;;
-        ;; 下面是 DEBUG_RECORD_STRUCTURE 区域（默认为32K）
+        ;; 下面是 DEBUG_RECORD_STRUCTURE 区域(默认为32K)
         ;;
         .DrsBuffer:             RESB            (4096 * (9+16) + DRS_AREA_SIZE) - $
 %endif
@@ -1198,7 +1198,7 @@ endstruc
 
 
 ;;
-;; LSB（Local Storage Block，本地存储块），每个处理器拥有自己的 LSB 区域。
+;; LSB(Local Storage Block，本地存储块)，每个处理器拥有自己的 LSB 区域。
 ;; 每个 LSB 结构为 8K，保存处理器的 local video buffer, local keyboard buffer 等
 ;;
 
@@ -1261,7 +1261,7 @@ endstruc
 
 
 ;;
-;; 定义系统服务例程表结构（system_service_routine_table）
+;; 定义系统服务例程表结构(system_service_routine_table)
 ;;
 
 struc SRT
@@ -1495,7 +1495,7 @@ ENDSTRUC
 
 
 ;;
-;; MTMR（Memory Type Manange Record）结构
+;; MTMR(Memory Type Manange Record)结构
 ;;
 STRUC MTMR
         .InUsed                 RESB            1               ; 记录是否在使用        　
@@ -1577,7 +1577,7 @@ struc PreStage3Env
 ;; 1) 00h: NULL 描述符
 ;; 2) 08h: CS 描述符
 ;; 3) 10h: SS 描述符
-;; 4) 18h: TSS 描述符（占16个字节）
+;; 4) 18h: TSS 描述符(占16个字节)
 ;;        
 PreStage3Env.CsSelector64  EQU     08h
 PreStage3Env.CsSelector    EQU     10h

@@ -1,15 +1,15 @@
 关于书籍《KVM虚拟化技术实战与原理解析》的记录
 
-参考链接：  
+参考链接:   
 http://blog.csdn.net/dapao123456789/article/details/41018765
 
 https://read.douban.com/reader/ebook/10181845/
 
 https://yuedu.baidu.com/ebook/07b32608caaedd3383c4d3a5?pn=4&pa=43
 
-原书连载：http://smilejay.com/2016/09/kvm-user-mode-networking/
+原书连载: http://smilejay.com/2016/09/kvm-user-mode-networking/
 
-全书一共9章：
+全书一共9章: 
 
 第1章介绍了云计算和虚拟化的概念，并对KVM等几种流行的虚拟化技术做了比较；
 

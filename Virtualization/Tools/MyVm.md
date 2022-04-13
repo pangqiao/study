@@ -123,7 +123,7 @@ Partition 1 has been deleted.
 
 ## 3.5. 创建分区
 
-创建分区，分区号还是1, 注意分区起始位置, 不要删除ext4的签名
+创建分区, 分区号还是1, 注意分区起始位置, 不要删除ext4的签名
 
 ```
 Command (m for help): n

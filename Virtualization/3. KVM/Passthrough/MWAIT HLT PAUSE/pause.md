@@ -2,11 +2,11 @@
 
 实现mwait/hlt/pause指令的透传机制并提供用户态入口来disable, 从而减少了vmexit的开销, 降低了延迟.
 
-绑核场景，pvspinlock有一定开销，同时pause指令导致vm exit也会带来一定开销。
+绑核场景, pvspinlock有一定开销, 同时pause指令导致vm exit也会带来一定开销. 
 
-透传了HLT和PAUSE指令，能减少相应的vm exit开销。
+透传了HLT和PAUSE指令, 能减少相应的vm exit开销. 
 
-透传HLT指令后，边际效应会关闭pvspinlock。
+透传HLT指令后, 边际效应会关闭pvspinlock. 
 
 [Question] About the behavior of HLT in VMX guest mode: https://www.spinics.net/lists/kvm/msg146319.html
 

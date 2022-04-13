@@ -38,7 +38,7 @@ entry:
         mov DWORD [eax + 4], 9FFFh
 
         
-;; 为了完成实验，关闭时间中断和键盘中断
+;; 为了完成实验, 关闭时间中断和键盘中断
         call disable_timer
 
 ;; 开启 CR0.AM 标志
@@ -184,7 +184,7 @@ clear_TF:
         mov esi, db_msg2
         call puts
 do_DB_handler_done:        
-        bts DWORD [esp + 4 * 8 + 8], 16                 ; 设置 eflags.RF 为 1，以便中断返回时，继续执行
+        bts DWORD [esp + 4 * 8 + 8], 16                 ; 设置 eflags.RF 为 1, 以便中断返回时, 继续执行
         popad
         iret
 
