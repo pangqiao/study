@@ -38,3 +38,5 @@ https://blog.csdn.net/weixin_37825861/article/details/78659575
 https://richardweiyang-2.gitbook.io/kernel-exploring/00-memory_a_bottom_up_view/11-users_of_buddy
 
 内存管理(v5.9): https://zhuanlan.zhihu.com/p/270366827
+
+内核: https://oskernellab.com/
