@@ -16,13 +16,13 @@
 
 # 什么是coredump
 
-在使用半导体作为内存的材料前，人类是利用线圈当作内存的材料(发明者为王安)，线圈就叫作core ，用线圈做的内存就叫作“core memory”。(线圈的单词应该是coil)如今，半导体工业澎勃发展，已经没有人用线圈当内存了，不过，在许多情况下，人们还是把内存叫作“core”。所以注意了: 这里的core不是核心，而是内存。不过结合实际来看，好像也有点“内核所占内存”的意思。 
+在使用半导体作为内存的材料前，人类是利用线圈当作内存的材料(发明者为王安)，线圈就叫作core ，用线圈做的内存就叫作“core memory”. (线圈的单词应该是coil)如今，半导体工业澎勃发展，已经没有人用线圈当内存了，不过，在许多情况下，人们还是把内存叫作“core”. 所以注意了: 这里的core不是核心，而是内存. 不过结合实际来看，好像也有点“内核所占内存”的意思.  
 
-core dump又是什么？我们在开发(或使用)一个程序时，最怕的就是程序莫明其妙地挂掉。虽然系统没事，但我们下次仍可能遇到相同的问题。于是，这时操作系统就会把**程序挂掉时的内存内容**写入一个叫做**core的文件**里(这个写入的动作就叫dump，dump的英语意思是垃圾、倾倒。从这里来看，这些内存的内容是程序错误运行的结果，所以算是垃圾，把他弄出来就好比从大的内存池里“倾倒”。)，以便于我们调试。**这个过程**，因此叫做**core dump**。
+core dump又是什么？我们在开发(或使用)一个程序时，最怕的就是程序莫明其妙地挂掉. 虽然系统没事，但我们下次仍可能遇到相同的问题. 于是，这时操作系统就会把**程序挂掉时的内存内容**写入一个叫做**core的文件**里(这个写入的动作就叫dump，dump的英语意思是垃圾、倾倒. 从这里来看，这些内存的内容是程序错误运行的结果，所以算是垃圾，把他弄出来就好比从大的内存池里“倾倒”. )，以便于我们调试. **这个过程**，因此叫做**core dump**. 
 
-通常情况下，core文件会包含了**程序运行时**的**内存**，**寄存器状态**，**堆栈指针**，**内存管理信息**还有**各种函数调用堆栈信息**等，我们可以理解为是**程序工作当前状态**存储生成**一个文件**，许多的程序出错的时候都会产生一个core文件，通过工具分析这个文件，我们可以定位到程序异常退出的时候对应的堆栈调用等信息，找出问题所在并进行及时解决。
+通常情况下，core文件会包含了**程序运行时**的**内存**，**寄存器状态**，**堆栈指针**，**内存管理信息**还有**各种函数调用堆栈信息**等，我们可以理解为是**程序工作当前状态**存储生成**一个文件**，许多的程序出错的时候都会产生一个core文件，通过工具分析这个文件，我们可以定位到程序异常退出的时候对应的堆栈调用等信息，找出问题所在并进行及时解决. 
 
-Linux下的C程序常常会因为内存访问错误等原因造成segment fault(段错误)，此时如果系统core dump功能是打开的，那么将会有内存映像转储到硬盘上来，之后可以用gdb对core文件进行分析，还原系统发生段错误时刻的堆栈情况。这对于我们发现程序bug很有帮助。
+Linux下的C程序常常会因为内存访问错误等原因造成segment fault(段错误)，此时如果系统core dump功能是打开的，那么将会有内存映像转储到硬盘上来，之后可以用gdb对core文件进行分析，还原系统发生段错误时刻的堆栈情况. 这对于我们发现程序bug很有帮助. 
 
 # coredump文件的存储位置
 
@@ -33,9 +33,9 @@ cat  /proc/sys/kernel/core_pattern
 缺省值是core
 ```
 
-注意: 这里是指**在进程当前工作目录的下创建**。通常与程序在相同的路径下。但如果程序中调用了**chdir函数**，则有可能改变了当前工作目录。这时core文件创建在chdir指定的路径下。有好多程序崩溃了，我们却找不到core文件放在什么位置。和chdir函数就有关系。当然程序崩溃了不一定都产生 core 文件。
+注意: 这里是指**在进程当前工作目录的下创建**. 通常与程序在相同的路径下. 但如果程序中调用了**chdir函数**，则有可能改变了当前工作目录. 这时core文件创建在chdir指定的路径下. 有好多程序崩溃了，我们却找不到core文件放在什么位置. 和chdir函数就有关系. 当然程序崩溃了不一定都产生 core 文件. 
 
-如下程序代码: 则会把生成的core文件存储在/data/coredump/wd，而不是大家认为的跟可执行文件在同一目录。
+如下程序代码: 则会把生成的core文件存储在/data/coredump/wd，而不是大家认为的跟可执行文件在同一目录. 
 
 ```cpp
 #include <stdio.h>
@@ -62,9 +62,9 @@ int main(){
 echo "1" > /proc/sys/kernel/core_uses_pid
 ```
 
-如果这个文件的内容被配置成1，那么即使core_pattern中没有设置%p，最后生成的core dump文件名仍会加上进程ID。
+如果这个文件的内容被配置成1，那么即使core_pattern中没有设置%p，最后生成的core dump文件名仍会加上进程ID. 
 
-3. 还可以通过下面命令控制core文件保存位置和文件名格式。
+3. 还可以通过下面命令控制core文件保存位置和文件名格式. 
 
 ```
 mkdir -p /root/corefile
@@ -90,7 +90,7 @@ echo "/root/corefile/core-%e-%p-%t" > /proc/sys/kernel/core_pattern
 echo “/data/coredump/core”> /proc/sys/kernel/core_pattern
 ```
 
-注意，这里当前用户必须具有对/proc/sys/kernel/core_pattern的写权限。
+注意，这里当前用户必须具有对/proc/sys/kernel/core_pattern的写权限. 
 
 5. 使用下面的命令使kernel生成名字为core.filename.pid格式的core dump文件: 
 
@@ -98,13 +98,13 @@ echo “/data/coredump/core”> /proc/sys/kernel/core_pattern
 echo “/data/coredump/core.%e.%p” >/proc/sys/kernel/core_pattern
 ```
 
-这样配置后，产生的core文件中将带有崩溃的程序名、以及它的进程ID。上面的%e和%p会被替换成程序文件名以及进程ID。
+这样配置后，产生的core文件中将带有崩溃的程序名、以及它的进程ID. 上面的%e和%p会被替换成程序文件名以及进程ID. 
 
-如果在上述文件名中包含目录分隔符“/”，那么所生成的core文件将会被放到指定的目录中。
+如果在上述文件名中包含目录分隔符“/”，那么所生成的core文件将会被放到指定的目录中. 
 
 # 如何判断一个文件是coredump文件
 
-在类unix系统下，coredump文件本身主要的格式也是ELF格式，因此，我们可以通过readelf命令进行判断。
+在类unix系统下，coredump文件本身主要的格式也是ELF格式，因此，我们可以通过readelf命令进行判断. 
 
 > readelf -h coredump/core-crash-11117-1623309639
 
@@ -118,9 +118,9 @@ echo “/data/coredump/core.%e.%p” >/proc/sys/kernel/core_pattern
 
 # 产生coredum的一些条件总结
 
-1. 产生coredump的条件，首先需要确认当前会话打开了core dump。
+1. 产生coredump的条件，首先需要确认当前会话打开了core dump. 
 
-`ulimit –c`，若为0，则不会产生对应的coredump，需要进行修改和设置。
+`ulimit –c`，若为0，则不会产生对应的coredump，需要进行修改和设置. 
 
 使用`ulimit -a`可以查看系统core文件的大小限制
 
@@ -149,7 +149,7 @@ echo "ulimit -c unlimited"  >> /etc/profile
 ```
 
 
-方法二: 修改/etc/security/limits.conf文件，添加【* soft core 0】，这个方法可以针对指定用户或用户组打开core dump【user soft core 0或@group soft core 0】。不过要使用这个方法一定要将方法一提到的那行注释掉，不可同时存在
+方法二: 修改/etc/security/limits.conf文件，添加【* soft core 0】，这个方法可以针对指定用户或用户组打开core dump【user soft core 0或@group soft core 0】. 不过要使用这个方法一定要将方法一提到的那行注释掉，不可同时存在
 
 ## 查看保存路径和文件名格式
 
@@ -165,7 +165,7 @@ kernel.core_pattern = /data/coredump/core.%e.%p
 
 更多ulimit的命令使用，可以参考: https://baike.baidu.com/item/ulimit
 
-2. 当前用户，即执行对应程序的用户具有对写入core目录的写权限以及有足够的空间。
+2. 当前用户，即执行对应程序的用户具有对写入core目录的写权限以及有足够的空间. 
 
 3. 几种不会产生core文件的情况说明: 
 
@@ -180,7 +180,7 @@ The core file will not be generated if
 
 # coredump产生的几种可能情况
 
-发生doredump一般都是在**进程收到某个信号**的时候，linux上现在大概有60多个信号，可以使用 kill -l 命令全部列出来。
+发生doredump一般都是在**进程收到某个信号**的时候，linux上现在大概有60多个信号，可以使用 kill -l 命令全部列出来. 
 
 ```
 [root@bogon coredump_test]# kill -l
@@ -199,7 +199,7 @@ The core file will not be generated if
 63) SIGRTMAX-1	64) SIGRTMAX
 ```
 
-针对**特定的信号**，应用程序可以写**对应的信号处理函数**。如果**不指定**，则采取**默认的处理方式**, **默认处理是coredump的信号**如下: 
+针对**特定的信号**，应用程序可以写**对应的信号处理函数**. 如果**不指定**，则采取**默认的处理方式**, **默认处理是coredump的信号**如下: 
 
 ```
 3)SIGQUIT   4)SIGILL    6)SIGABRT   8)SIGFPE    11)SIGSEGV    
@@ -207,21 +207,21 @@ The core file will not be generated if
 29)SIGIOT
 ```
 
-我们看到**SIGSEGV**在其中，一般**数组越界**或是**访问空指针**都会产生这个信号。另外虽然默认是这样的，但是你也可以写自己的信号处理函数改变默认行为，更多信号相关可以看参考网络。
+我们看到**SIGSEGV**在其中，一般**数组越界**或是**访问空指针**都会产生这个信号. 另外虽然默认是这样的，但是你也可以写自己的信号处理函数改变默认行为，更多信号相关可以看参考网络. 
 
 造成程序coredump的原因有很多，这里总结一些比较常用的经验吧: 
 
 1. 内存访问越界
 
-a) 由于使用错误的下标，导致数组访问越界。 
+a) 由于使用错误的下标，导致数组访问越界.  
 
-b) 搜索字符串时，依靠字符串结束符来判断字符串是否结束，但是字符串没有正常的使用结束符。 
+b) 搜索字符串时，依靠字符串结束符来判断字符串是否结束，但是字符串没有正常的使用结束符.  
 
-c) 使用strcpy, strcat, sprintf, strcmp,strcasecmp等字符串操作函数，将目标字符串读/写爆。应该使用strncpy, strlcpy, strncat, strlcat, snprintf, strncmp, strncasecmp等函数防止读写越界。
+c) 使用strcpy, strcat, sprintf, strcmp,strcasecmp等字符串操作函数，将目标字符串读/写爆. 应该使用strncpy, strlcpy, strncat, strlcat, snprintf, strncmp, strncasecmp等函数防止读写越界. 
 
-2. 多线程程序使用了线程不安全的函数。
+2. 多线程程序使用了线程不安全的函数. 
 
-3. 多线程读写的数据未加锁保护。
+3. 多线程读写的数据未加锁保护. 
 
 对于会被多个线程同时访问的全局数据，应该注意加锁保护，否则很容易造成coredump
 
@@ -229,17 +229,17 @@ c) 使用strcpy, strcat, sprintf, strcmp,strcasecmp等字符串操作函数，�
 
 a) 使用空指针
 
-b) 随意使用指针转换。一个指向一段内存的指针，除非确定这段内存原先就分配为某种结构或类型，或者这种结构或类型的数组，否则不要将它转换为这种结构或类型的指针，而应该将这段内存拷贝到一个这种结构或类型中，再访问这个结构或类型。这是因为如果这段内存的开始地址不是按照这种结构或类型对齐的，那么访问它时就很容易因为bus error而core dump。
+b) 随意使用指针转换. 一个指向一段内存的指针，除非确定这段内存原先就分配为某种结构或类型，或者这种结构或类型的数组，否则不要将它转换为这种结构或类型的指针，而应该将这段内存拷贝到一个这种结构或类型中，再访问这个结构或类型. 这是因为如果这段内存的开始地址不是按照这种结构或类型对齐的，那么访问它时就很容易因为bus error而core dump. 
 
 5. 堆栈溢出
 
-不要使用大的局部变量(因为局部变量都分配在栈上)，这样容易造成堆栈溢出，破坏系统的栈和堆结构，导致出现莫名其妙的错误。  
+不要使用大的局部变量(因为局部变量都分配在栈上)，这样容易造成堆栈溢出，破坏系统的栈和堆结构，导致出现莫名其妙的错误.   
 
 # 利用gdb进行coredump的定位
 
 - 第一个例子
 
-1. 我们写一段代码往受到系统保护的地址写内容。
+1. 我们写一段代码往受到系统保护的地址写内容. 
 
 ```cpp
 #include <stdio.h>
@@ -261,7 +261,7 @@ int main(){
 }
 ```
 
-2. 按如下方式进行编译和执行，注意这里需要-g选项编译。
+2. 按如下方式进行编译和执行，注意这里需要-g选项编译. 
 
 ```
 [root@bogon coredump_test]# gcc -g -o test access_protected_addr.c 
@@ -314,7 +314,7 @@ Program received signal SIGSEGV, Segmentation fault.
 
 ![gdb_core](images/gdb_core.png)
 
-从红色方框截图可以看到，程序中止是因为信号11，且从bt(backtrace)命令(或者where)可以看到函数的调用栈，即程序执行到access_protected_addr.c的第5行，且里面调用scanf 函数，而该函数其实内部会调用__GI__IO_vfscanf ()函数。
+从红色方框截图可以看到，程序中止是因为信号11，且从bt(backtrace)命令(或者where)可以看到函数的调用栈，即程序执行到access_protected_addr.c的第5行，且里面调用scanf 函数，而该函数其实内部会调用__GI__IO_vfscanf ()函数. 
 
 关于gdb用法详见其他资料
 
@@ -322,29 +322,29 @@ Program received signal SIGSEGV, Segmentation fault.
 
 一些常用signal的含义
 
-SIGABRT: 调用abort函数时产生此信号。进程异常终止。
+SIGABRT: 调用abort函数时产生此信号. 进程异常终止. 
 
-SIGBUS: 指示一个实现定义的硬件故障。
+SIGBUS: 指示一个实现定义的硬件故障. 
 
-SIGEMT: 指示一个实现定义的硬件故障。EMT这一名字来自PDP-11的emulator trap 指令。
+SIGEMT: 指示一个实现定义的硬件故障. EMT这一名字来自PDP-11的emulator trap 指令. 
 
-SIGFPE: 此信号表示一个算术运算异常，例如除以0，浮点溢出等。
+SIGFPE: 此信号表示一个算术运算异常，例如除以0，浮点溢出等. 
 
-SIGILL: 此信号指示进程已执行一条非法硬件指令。4.3BSD由abort函数产生此信号。SIGABRT现在被用于此。
+SIGILL: 此信号指示进程已执行一条非法硬件指令. 4.3BSD由abort函数产生此信号. SIGABRT现在被用于此. 
 
-SIGIOT: 这指示一个实现定义的硬件故障。IOT这个名字来自于PDP-11对于输入／输出TRAP(input/outputTRAP)指令的缩写。系统V的早期版本，由abort函数产生此信号。SIGABRT现在被用于此。
+SIGIOT: 这指示一个实现定义的硬件故障. IOT这个名字来自于PDP-11对于输入／输出TRAP(input/outputTRAP)指令的缩写. 系统V的早期版本，由abort函数产生此信号. SIGABRT现在被用于此. 
 
-SIGQUIT: 当用户在终端上按退出键(一般采用Ctrl-/)时，产生此信号，并送至前台进程组中的所有进程。此信号不仅终止前台进程组(如SIGINT所做的那样)，同时产生一个core文件。
+SIGQUIT: 当用户在终端上按退出键(一般采用Ctrl-/)时，产生此信号，并送至前台进程组中的所有进程. 此信号不仅终止前台进程组(如SIGINT所做的那样)，同时产生一个core文件. 
 
-SIGSEGV: 指示进程进行了一次无效的存储访问。名字SEGV表示“段违例(segmentationviolation)”。
+SIGSEGV: 指示进程进行了一次无效的存储访问. 名字SEGV表示“段违例(segmentationviolation)”. 
 
-SIGSYS: 指示一个无效的系统调用。由于某种未知原因，进程执行了一条系统调用指令，但其指示系统调用类型的参数却是无效的。
+SIGSYS: 指示一个无效的系统调用. 由于某种未知原因，进程执行了一条系统调用指令，但其指示系统调用类型的参数却是无效的. 
 
-SIGTRAP: 指示一个实现定义的硬件故障。此信号名来自于PDP-11的TRAP指令。
+SIGTRAP: 指示一个实现定义的硬件故障. 此信号名来自于PDP-11的TRAP指令. 
 
-SIGXCPUSVR4和4.3+BSD支持资源限制的概念。如果进程超过了其软C P U时间限制，则产生此信号。
+SIGXCPUSVR4和4.3+BSD支持资源限制的概念. 如果进程超过了其软C P U时间限制，则产生此信号. 
 
-SIGXFSZ: 如果进程超过了其软文件长度限制，则SVR4和4.3+BSD产生此信号。
+SIGXFSZ: 如果进程超过了其软文件长度限制，则SVR4和4.3+BSD产生此信号. 
 
 - 第二个例子
 
@@ -449,9 +449,9 @@ Missing separate debuginfos, use: debuginfo-install glibc-2.17-105.el7.x86_64
 (gdb) 
 ```
 
-从上述输出可以清楚的看到，段错误出现在segment_fault.cc的第15行，问题已经清晰地定位到了。
+从上述输出可以清楚的看到，段错误出现在segment_fault.cc的第15行，问题已经清晰地定位到了. 
 
-很多系统默认的core文件大小都是0，我们可以通过在shell的启动脚本/etc/bashrc或者~/.bashrc等地方来加入 ulimit -c 命令来指定core文件大小，从而确保core文件能够生成。
+很多系统默认的core文件大小都是0，我们可以通过在shell的启动脚本/etc/bashrc或者~/.bashrc等地方来加入 ulimit -c 命令来指定core文件大小，从而确保core文件能够生成. 
 
-除此之外，还可以在/proc/sys/kernel/core_pattern里设置core文件的文件名模板，详情请看core的官方man手册。
+除此之外，还可以在/proc/sys/kernel/core_pattern里设置core文件的文件名模板，详情请看core的官方man手册. 
 

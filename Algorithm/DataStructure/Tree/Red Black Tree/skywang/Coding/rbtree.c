@@ -126,7 +126,7 @@ int iterative_rbtree_search(RBRoot *root, Type key)
 }
 
 /* 
- * 查找最小结点: 返回tree为根结点的红黑树的最小结点。
+ * 查找最小结点: 返回tree为根结点的红黑树的最小结点. 
  */
 static Node* minimum(RBTree tree)
 {
@@ -153,7 +153,7 @@ int rbtree_minimum(RBRoot *root, int *val)
 }
  
 /* 
- * 查找最大结点: 返回tree为根结点的红黑树的最大结点。
+ * 查找最大结点: 返回tree为根结点的红黑树的最大结点. 
  */
 static Node* maximum(RBTree tree)
 {
@@ -180,17 +180,17 @@ int rbtree_maximum(RBRoot *root, int *val)
 }
 
 /* 
- * 找结点(x)的后继结点。即，查找"红黑树中数据值大于该结点"的"最小结点"。
+ * 找结点(x)的后继结点. 即，查找"红黑树中数据值大于该结点"的"最小结点". 
  */
 static Node* rbtree_successor(RBTree x)
 {
-    // 如果x存在右孩子，则"x的后继结点"为 "以其右孩子为根的子树的最小结点"。
+    // 如果x存在右孩子，则"x的后继结点"为 "以其右孩子为根的子树的最小结点". 
     if (x->right != NULL)
         return minimum(x->right);
 
-    // 如果x没有右孩子。则x有以下两种可能: 
-    // (01) x是"一个左孩子"，则"x的后继结点"为 "它的父结点"。
-    // (02) x是"一个右孩子"，则查找"x的最低的父结点，并且该父结点要具有左孩子"，找到的这个"最低的父结点"就是"x的后继结点"。
+    // 如果x没有右孩子. 则x有以下两种可能: 
+    // (01) x是"一个左孩子"，则"x的后继结点"为 "它的父结点". 
+    // (02) x是"一个右孩子"，则查找"x的最低的父结点，并且该父结点要具有左孩子"，找到的这个"最低的父结点"就是"x的后继结点". 
     Node* y = x->parent;
     while ((y!=NULL) && (x==y->right))
     {
@@ -202,17 +202,17 @@ static Node* rbtree_successor(RBTree x)
 }
  
 /* 
- * 找结点(x)的前驱结点。即，查找"红黑树中数据值小于该结点"的"最大结点"。
+ * 找结点(x)的前驱结点. 即，查找"红黑树中数据值小于该结点"的"最大结点". 
  */
 static Node* rbtree_predecessor(RBTree x)
 {
-    // 如果x存在左孩子，则"x的前驱结点"为 "以其左孩子为根的子树的最大结点"。
+    // 如果x存在左孩子，则"x的前驱结点"为 "以其左孩子为根的子树的最大结点". 
     if (x->left != NULL)
         return maximum(x->left);
 
-    // 如果x没有左孩子。则x有以下两种可能: 
-    // (01) x是"一个右孩子"，则"x的前驱结点"为 "它的父结点"。
-    // (01) x是"一个左孩子"，则查找"x的最低的父结点，并且该父结点要具有右孩子"，找到的这个"最低的父结点"就是"x的前驱结点"。
+    // 如果x没有左孩子. 则x有以下两种可能: 
+    // (01) x是"一个右孩子"，则"x的前驱结点"为 "它的父结点". 
+    // (01) x是"一个左孩子"，则查找"x的最低的父结点，并且该父结点要具有右孩子"，找到的这个"最低的父结点"就是"x的前驱结点". 
     Node* y = x->parent;
     while ((y!=NULL) && (x==y->left))
     {
@@ -285,7 +285,7 @@ static void rbtree_left_rotate(RBRoot *root, Node *x)
  */
 static void rbtree_right_rotate(RBRoot *root, Node *y)
 {
-    // 设置x是当前节点的左孩子。
+    // 设置x是当前节点的左孩子. 
     Node *x = y->left;
 
     // 将 “x的右孩子” 设为 “y的左孩子”; 
@@ -321,7 +321,7 @@ static void rbtree_right_rotate(RBRoot *root, Node *y)
  * 红黑树插入修正函数
  *
  * 在向红黑树中插入节点之后(失去平衡)，再调用该函数; 
- * 目的是将它重新塑造成一颗红黑树。
+ * 目的是将它重新塑造成一颗红黑树. 
  *
  * 参数说明: 
  *     root 红黑树的根
@@ -362,7 +362,7 @@ static void rbtree_insert_fixup(RBRoot *root, Node *node)
                 node = tmp;
             }
 
-            // Case 3条件: 叔叔是黑色，且当前节点是左孩子。
+            // Case 3条件: 叔叔是黑色，且当前节点是左孩子. 
             rb_set_black(parent);
             rb_set_red(gparent);
             rbtree_right_rotate(root, gparent);
@@ -392,7 +392,7 @@ static void rbtree_insert_fixup(RBRoot *root, Node *node)
                 node = tmp;
             }
 
-            // Case 3条件: 叔叔是黑色，且当前节点是右孩子。
+            // Case 3条件: 叔叔是黑色，且当前节点是右孩子. 
             rb_set_black(parent);
             rb_set_red(gparent);
             rbtree_left_rotate(root, gparent);
@@ -415,7 +415,7 @@ static void rbtree_insert(RBRoot *root, Node *node)
     Node *y = NULL;
     Node *x = root->node;
 
-    // 1. 将红黑树当作一颗二叉查找树，将节点添加到二叉查找树中。
+    // 1. 将红黑树当作一颗二叉查找树，将节点添加到二叉查找树中. 
     while (x != NULL)
     {
         y = x;
@@ -449,10 +449,10 @@ static void rbtree_insert(RBRoot *root, Node *node)
  * 创建结点
  *
  * 参数说明: 
- *     key 是键值。
- *     parent 是父结点。
- *     left 是左孩子。
- *     right 是右孩子。
+ *     key 是键值. 
+ *     parent 是父结点. 
+ *     left 是左孩子. 
+ *     right 是右孩子. 
  */
 static Node* create_rbtree_node(Type key, Node *parent, Node *left, Node* right)
 {
@@ -483,12 +483,12 @@ int insert_rbtree(RBRoot *root, Type key)
 {
     Node *node;    // 新建结点
 
-    // 不允许插入相同键值的节点。
+    // 不允许插入相同键值的节点. 
     // (若想允许插入相同键值的节点，注释掉下面两句话即可！)
     if (search(root->node, key) != NULL)
         return -1;
 
-    // 如果新建结点失败，则返回。
+    // 如果新建结点失败，则返回. 
     if ((node=create_rbtree_node(key, NULL, NULL, NULL)) == NULL)
         return -1;
 
@@ -501,7 +501,7 @@ int insert_rbtree(RBRoot *root, Type key)
  * 红黑树删除修正函数
  *
  * 在从红黑树中删除插入节点之后(红黑树失去平衡)，再调用该函数; 
- * 目的是将它重新塑造成一颗红黑树。
+ * 目的是将它重新塑造成一颗红黑树. 
  *
  * 参数说明: 
  *     root 红黑树的根
@@ -536,13 +536,13 @@ static void rbtree_delete_fixup(RBRoot *root, Node *node, Node *parent)
             {
                 if (!other->right || rb_is_black(other->right))
                 {
-                    // Case 3: x的兄弟w是黑色的，并且w的左孩子是红色，右孩子为黑色。  
+                    // Case 3: x的兄弟w是黑色的，并且w的左孩子是红色，右孩子为黑色.   
                     rb_set_black(other->left);
                     rb_set_red(other);
                     rbtree_right_rotate(root, other);
                     other = parent->right;
                 }
-                // Case 4: x的兄弟w是黑色的; 并且w的右孩子是红色的，左孩子任意颜色。
+                // Case 4: x的兄弟w是黑色的; 并且w的右孩子是红色的，左孩子任意颜色. 
                 rb_set_color(other, rb_color(parent));
                 rb_set_black(parent);
                 rb_set_black(other->right);
@@ -574,13 +574,13 @@ static void rbtree_delete_fixup(RBRoot *root, Node *node, Node *parent)
             {
                 if (!other->left || rb_is_black(other->left))
                 {
-                    // Case 3: x的兄弟w是黑色的，并且w的左孩子是红色，右孩子为黑色。  
+                    // Case 3: x的兄弟w是黑色的，并且w的左孩子是红色，右孩子为黑色.   
                     rb_set_black(other->right);
                     rb_set_red(other);
                     rbtree_left_rotate(root, other);
                     other = parent->left;
                 }
-                // Case 4: x的兄弟w是黑色的; 并且w的右孩子是红色的，左孩子任意颜色。
+                // Case 4: x的兄弟w是黑色的; 并且w的右孩子是红色的，左孩子任意颜色. 
                 rb_set_color(other, rb_color(parent));
                 rb_set_black(parent);
                 rb_set_black(other->left);
@@ -606,11 +606,11 @@ void rbtree_delete(RBRoot *root, Node *node)
     Node *child, *parent;
     int color;
 
-    // 被删除节点的"左右孩子都不为空"的情况。
+    // 被删除节点的"左右孩子都不为空"的情况. 
     if ( (node->left!=NULL) && (node->right!=NULL) ) 
     {
-        // 被删节点的后继节点。(称为"取代节点")
-        // 用它来取代"被删节点"的位置，然后再将"被删节点"去掉。
+        // 被删节点的后继节点. (称为"取代节点")
+        // 用它来取代"被删节点"的位置，然后再将"被删节点"去掉. 
         Node *replace = node;
 
         // 获取后继节点
@@ -627,11 +627,11 @@ void rbtree_delete(RBRoot *root, Node *node)
                 rb_parent(node)->right = replace;
         } 
         else 
-            // "node节点"是根节点，更新根节点。
+            // "node节点"是根节点，更新根节点. 
             root->node = replace;
 
-        // child是"取代节点"的右孩子，也是需要"调整的节点"。
-        // "取代节点"肯定不存在左孩子！因为它是一个后继节点。
+        // child是"取代节点"的右孩子，也是需要"调整的节点". 
+        // "取代节点"肯定不存在左孩子！因为它是一个后继节点. 
         child = replace->right;
         parent = rb_parent(replace);
         // 保存"取代节点"的颜色
@@ -739,7 +739,7 @@ void destroy_rbtree(RBRoot *root)
  * key        -- 节点的键值 
  * direction  --  0，表示该节点是根节点;
  *               -1，表示该节点是它的父结点的左孩子;
- *                1，表示该节点是它的父结点的右孩子。
+ *                1，表示该节点是它的父结点的右孩子. 
  */
 static void rbtree_print(RBTree tree, Type key, int direction)
 {

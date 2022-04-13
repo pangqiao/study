@@ -11,14 +11,14 @@
 
 1. 通过`stap`工具将脚本语句翻译成`C`语句, 编译成内核模块
 2. 模块加载之后, 将所有探测的事件以钩子的方式挂到内核上, 当任何处理器上的某个事件发生时, 相应钩子上句柄就会被执行
-3. 最后，当systemtap会话结束之后，钩子从内核上取下，移除模块。整个过程用一个命令 stap 就可以完成。
+3. 最后，当systemtap会话结束之后，钩子从内核上取下，移除模块. 整个过程用一个命令 stap 就可以完成. 
 
 可见, 除了必须安装 `systemtap` 包之外, 我们必须有内核头文件和开发包用于构建驱动, 还需要 `systemtap` 可识别的带 `kprobe`的内核, 同时`systemtap` 依赖于 `elfutils`, 因此我们需要下载其源码包, 最好选择最新版下载.
 
 综上如果您需要使用`systemtap`, 则系统中必须包含以下包或者内核配置
 
 * 内核支持并配置了kprobe(2.6.11和以上)调试内核需要,在进行内核编译之前的配置
-* 内核模块编译环境(即编译内核模块所需的内核头文件以及模块配置信息，对于Fedora core或Redhat指kernel-devel或kernel-smp-devel RPM包, Uuuntu的),对应自己编译的内核就是内核头文件。
+* 内核模块编译环境(即编译内核模块所需的内核头文件以及模块配置信息，对于Fedora core或Redhat指kernel-devel或kernel-smp-devel RPM包, Uuuntu的),对应自己编译的内核就是内核头文件. 
 * 内核调试信息debuginfo(对于Fedora core或Redhat指kernel-debuginfo RPM包)
 * C编译环境(即libc库头文件和编译工具链), 对于自己编译的内核, 这一点比较好满足，因为运行环境和我们编译内核的环境是一致的, 不用特殊处理
 * 有 `libdwfl` 的 `elfutils`(只有支持 `libwdfl` 的 `elfutils`, `systemtap`才能正常工作
@@ -37,7 +37,7 @@ uname -r
 #  如果您是自己编译的内核, 官方自然就没有对应内核头文件了
 dpkg-query -s linux-headers-$(uname -r)
 
-#  安装匹配的内核头文件。
+#  安装匹配的内核头文件. 
 sudo apt-get install linux-headers-$(uname -r)
 ```
 
@@ -315,7 +315,7 @@ make install
 
 ## 验证安装
 
-安装完成以后，我们使用下面的shell命令进行测试，如果输出hello world，说明systemtap安装成功。
+安装完成以后，我们使用下面的shell命令进行测试，如果输出hello world，说明systemtap安装成功. 
 
 ```cpp
 stap -ve 'probe begin { log("hello world") exit() }'

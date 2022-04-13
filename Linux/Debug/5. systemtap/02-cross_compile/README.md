@@ -2,12 +2,12 @@
 `Systemtap` 是内核调试的强大工具, `systemtap` 从版本 `1.0` 开始变支持 `arm` 处理器, 但是只支持 `OMAP` 的, 由于"工作"需要将 `systemtap` 移植到运行 `Android`.
 
 
-`systemtap` 里面有三个重要的工具: translator，compiler，staprun。
+`systemtap` 里面有三个重要的工具: translator，compiler，staprun. 
 translator负责将stp脚本翻译为c代码; 
 compiler根据runtime环境和内核路径来生成module; 
-staprun负责装载、卸载模块，输出模块探测的信息。
+staprun负责装载、卸载模块，输出模块探测的信息. 
 
-translator和compiler都是在宿主机上运行，staprun在目标板上运行。
+translator和compiler都是在宿主机上运行，staprun在目标板上运行. 
 
 官方资料 http://omappedia.org/wiki/Systemtap
 

@@ -67,7 +67,7 @@ https://blog.csdn.net/ace_an/article/details/53813242
     - Remove (key)   删除
     - Value = Lookup (key)   查找
     - Allocate   插入键值对，产生UID
-- Linux内核提供了简单、有效的映射数据结构。但是它并非一个通用的映射; 
+- Linux内核提供了简单、有效的映射数据结构. 但是它并非一个通用的映射; 
 - Linux内核提供它的目标是: 映射一个唯一的标识数(UID)到一个指针;  (因此并不适合其它场景)
 - idr数据结构: 用于映射用户空间的UID
     - idr_init   初始化静态/动态分配的idr

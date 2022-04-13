@@ -31,7 +31,7 @@ SETUP_BEGIN:
 setup_length        dw (SETUP_END - SETUP_BEGIN)        ; SETUP_END-SETUP_BEGIN 是这个模块的 size
 
 
-setup_entry:                            ; 这是模块代码的入口点。
+setup_entry:                            ; 这是模块代码的入口点. 
 
         cli
         NMI_DISABLE

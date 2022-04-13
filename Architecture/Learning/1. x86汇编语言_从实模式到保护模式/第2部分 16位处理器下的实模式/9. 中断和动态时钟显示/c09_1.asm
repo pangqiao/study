@@ -32,7 +32,7 @@ new_int_0x70:
       push es
       
   .w0:                                    
-      mov al,0x0a                        ;阻断NMI。当然, 通常是不必要的
+      mov al,0x0a                        ;阻断NMI. 当然, 通常是不必要的
       or al,0x80                          
       out 0x70,al
       in al,0x71                         ;读寄存器A
@@ -57,7 +57,7 @@ new_int_0x70:
       in al,0x71                         ;读RTC当前时间(时)
       push ax
 
-      mov al,0x0c                        ;寄存器C的索引。且开放NMI 
+      mov al,0x0c                        ;寄存器C的索引. 且开放NMI 
       out 0x70,al
       in al,0x71                         ;读一下RTC的寄存器C, 否则只发生一次中断
                                          ;此处不考虑闹钟和周期性中断的情况 
@@ -143,7 +143,7 @@ start:
       push es
       mov ax,0x0000
       mov es,ax
-      mov word [es:bx],new_int_0x70      ;偏移地址。
+      mov word [es:bx],new_int_0x70      ;偏移地址. 
                                           
       mov word [es:bx+2],cs              ;段地址
       pop es
@@ -186,7 +186,7 @@ start:
       jmp .idle
 
 ;-------------------------------------------------------------------------------
-put_string:                              ;显示串(0结尾)。
+put_string:                              ;显示串(0结尾). 
                                          ;输入: DS:BX=串地址
          mov cl,[bx]
          or cl,cl                        ;cl=0 ?
@@ -224,7 +224,7 @@ put_char:                                ;显示一个字符
          mov bx,ax                       ;BX=代表光标位置的16位数
 
          cmp cl,0x0d                     ;回车符？
-         jnz .put_0a                     ;不是。看看是不是换行等字符 
+         jnz .put_0a                     ;不是. 看看是不是换行等字符 
          mov ax,bx                       ; 
          mov bl,80                       
          div bl

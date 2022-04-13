@@ -1,4 +1,4 @@
-本文是笔者在今年中国 Linux 内核开发者大会上的演讲稿，全文发表如下。由于原文就是用 Markdown 撰写的，所以只是稍作格式调整。
+本文是笔者在今年中国 Linux 内核开发者大会上的演讲稿，全文发表如下. 由于原文就是用 Markdown 撰写的，所以只是稍作格式调整. 
 
 - CLK 官网: http://ckernel.org
 - CLK 2016: https://github.com/leonsvic/CLK

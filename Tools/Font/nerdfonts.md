@@ -1,5 +1,5 @@
 
-Nerd Fonts 是一个使用大量字体图标来解决程序员在开发过程中缺少合适字体的问题的项目。
+Nerd Fonts 是一个使用大量字体图标来解决程序员在开发过程中缺少合适字体的问题的项目. 
 
 官方github: https://github.com/ryanoasis/nerd-fonts/ 
 

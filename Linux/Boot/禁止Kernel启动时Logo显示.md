@@ -7,4 +7,4 @@ make ARCH=x86_64 menuconfig
             [*] Bootup logo
 ```
 
-将Bootup Logo特性关闭设置为N，默认是Y。
+将Bootup Logo特性关闭设置为N，默认是Y. 
