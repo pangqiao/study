@@ -42,7 +42,7 @@ https://github.com/hurley25/Hurlex-II
 
 ### 2.2. lmosem
 
-支持ARM，x86平台的嵌入式操作系统内核
+支持ARM, x86平台的嵌入式操作系统内核
 
 https://github.com/Gerry-Lee/lmosem
 

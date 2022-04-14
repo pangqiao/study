@@ -50,11 +50,11 @@ int32_t kernel_thread(int (*fn)(void *), void *arg)
 
 	new_task->context.esp = (uint32_t)new_task + STACK_SIZE - sizeof(uint32_t) * 3;
 
-	// 设置新任务的标志寄存器未屏蔽中断，很重要
+	// 设置新任务的标志寄存器未屏蔽中断, 很重要
 	new_task->context.eflags = 0x200;
 	new_task->next = running_proc_head;
 	
-	// 找到当前进任务队列，插入到末尾
+	// 找到当前进任务队列, 插入到末尾
 	struct task_struct *tail = running_proc_head;
 	assert(tail != NULL, "Must init sched!");
 

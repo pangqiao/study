@@ -20,9 +20,9 @@
 #include "common.h"
 
 /*
- * VGA(Video Graphics Array，视频图形阵列)是使用模拟信号的一种视频传输标准，内核可以通过它来控制屏幕上字符或者图形的显示. 
- * 在默认的文本模式(Text-Mode)下，VGA控制器保留了一块内存(0x8b000~0x8bfa0)作为屏幕上字符显示的缓冲区，
- * 若要改变屏幕上字符的显示，只需要修改这块内存就好了. 
+ * VGA(Video Graphics Array, 视频图形阵列)是使用模拟信号的一种视频传输标准, 内核可以通过它来控制屏幕上字符或者图形的显示. 
+ * 在默认的文本模式(Text-Mode)下, VGA控制器保留了一块内存(0x8b000~0x8bfa0)作为屏幕上字符显示的缓冲区, 
+ * 若要改变屏幕上字符的显示, 只需要修改这块内存就好了. 
  *
  */
 
@@ -39,10 +39,10 @@ static void move_cursor()
 	// 屏幕是 80 字节宽
 	uint16_t cursorLocation = cursor_y * 80 + cursor_x;
 	
-	// VGA 内部的寄存器多达300多个，显然无法一一映射到I/O端口的地址空间. 
-	// 对此 VGA 控制器的解决方案是，将一个端口作为内部寄存器的索引: 0x3D4，
+	// VGA 内部的寄存器多达300多个, 显然无法一一映射到I/O端口的地址空间. 
+	// 对此 VGA 控制器的解决方案是, 将一个端口作为内部寄存器的索引: 0x3D4, 
 	// 再通过 0x3D5 端口来设置相应寄存器的值. 
-	// 在这里用到的两个内部寄存器的编号为14与15，分别表示光标位置的高8位与低8位. 
+	// 在这里用到的两个内部寄存器的编号为14与15, 分别表示光标位置的高8位与低8位. 
 
 	outb(0x3D4, 14);                  	// 告诉 VGA 我们要设置光标的高字节
 	outb(0x3D5, cursorLocation >> 8); 	// 发送高 8 位
@@ -57,20 +57,20 @@ static void scroll()
 	uint8_t attribute_byte = (0 << 4) | (15 & 0x0F);
 	uint16_t blank = 0x20 | (attribute_byte << 8);  // space 是 0x20
 
-	// cursor_y 到 25 的时候，就该换行了
+	// cursor_y 到 25 的时候, 就该换行了
 	if (cursor_y >= 25) {
-		// 将所有行的显示数据复制到上一行，第一行永远消失了...
+		// 将所有行的显示数据复制到上一行, 第一行永远消失了...
 		int i;
 		for (i = 0 * 80; i < 24 * 80; i++) {
 		      video_memory[i] = video_memory[i+80];
 		}
 
-		// 最后的一行数据现在填充空格，不显示任何字符
+		// 最后的一行数据现在填充空格, 不显示任何字符
 		for (i = 24 * 80; i < 25 * 80; i++) {
 		      video_memory[i] = blank;
 		}
 
-		// 向上移动了一行，所以 cursor_y 现在是 24
+		// 向上移动了一行, 所以 cursor_y 现在是 24
 		cursor_y = 24;
 	}
 }
@@ -116,7 +116,7 @@ void console_putc_color(char c, real_color_t back, real_color_t fore)
 		cursor_x++;
 	}
 
-	// 每 80 个字符一行，满80就必须换行了
+	// 每 80 个字符一行, 满80就必须换行了
 	if (cursor_x >= 80) {
 		cursor_x = 0;
 		cursor_y ++;

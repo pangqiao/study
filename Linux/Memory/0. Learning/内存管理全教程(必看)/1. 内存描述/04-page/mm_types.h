@@ -65,8 +65,8 @@ struct page {
         union {
             pgoff_t index;      /* Our offset within mapping.
             在映射的虚拟空间(vma_area)内的偏移; 
-            一个文件可能只映射一部分，假设映射了1M的空间，
-            index指的是在1M空间内的偏移，而不是在整个文件内的偏移.  */
+            一个文件可能只映射一部分, 假设映射了1M的空间, 
+            index指的是在1M空间内的偏移, 而不是在整个文件内的偏移.  */
             void *freelist;     /* sl[aou]b first free object */
             /* page_deferred_list().prev    -- second tail page */
         };
@@ -185,7 +185,7 @@ struct page {
                          * swp_entry_t if PageSwapCache;
                          * indicates order in the buddy
                          * system if PG_buddy is set.
-                         * 私有数据指针，由应用场景确定其具体的含义
+                         * 私有数据指针, 由应用场景确定其具体的含义
                          */
 #if USE_SPLIT_PTE_PTLOCKS
 #if ALLOC_SPLIT_PTLOCKS

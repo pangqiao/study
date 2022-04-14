@@ -85,12 +85,12 @@ struct zone {
      * 不活动页的比例, 
      * 接着是一些很少使用或者大部分情况下是只读的字段: 
      * wait_table wait_table_hash_nr_entries wait_table_bits
-     * 形成等待列队，可以等待某一页可供进程使用  */
+     * 形成等待列队, 可以等待某一页可供进程使用  */
     unsigned int inactive_ratio;
 
     /*  指向这个zone所在的pglist_data对象  */
     struct pglist_data      *zone_pgdat;
-    /*/这个数组用于实现每个CPU的热/冷页帧列表. 内核使用这些列表来保存可用于满足实现的“新鲜”页. 但冷热页帧对应的高速缓存状态不同: 有些页帧很可能在高速缓存中，因此可以快速访问，故称之为热的; 未缓存的页帧与此相对，称之为冷的. */
+    /*/这个数组用于实现每个CPU的热/冷页帧列表. 内核使用这些列表来保存可用于满足实现的“新鲜”页. 但冷热页帧对应的高速缓存状态不同: 有些页帧很可能在高速缓存中, 因此可以快速访问, 故称之为热的; 未缓存的页帧与此相对, 称之为冷的. */
     struct per_cpu_pageset __percpu *pageset;
 
     /*
@@ -162,8 +162,8 @@ struct zone {
      * touching zone->managed_pages and totalram_pages.
      */
     unsigned long       managed_pages;
-    unsigned long       spanned_pages;             /*  总页数，包含空洞  */
-    unsigned long       present_pages;              /*  可用页数，不包哈空洞  */
+    unsigned long       spanned_pages;             /*  总页数, 包含空洞  */
+    unsigned long       present_pages;              /*  可用页数, 不包哈空洞  */
 
     /*  指向管理区的传统名字, "DMA", "NROMAL"或"HIGHMEM" */
     const char          *name;
@@ -216,12 +216,12 @@ struct zone {
     ZONE_PADDING(_pad1_)
 
     /* free areas of different sizes 
-       页面使用状态的信息，以每个bit标识对应的page是否可以分配
-       是用于伙伴系统的，每个数组元素指向对应阶也表的数组开头
+       页面使用状态的信息, 以每个bit标识对应的page是否可以分配
+       是用于伙伴系统的, 每个数组元素指向对应阶也表的数组开头
        以下是供页帧回收扫描器(page reclaim scanner)访问的字段
        scanner会跟据页帧的活动情况对内存域中使用的页进行编目
-       如果页帧被频繁访问，则是活动的，相反则是不活动的，
-       在需要换出页帧时，这样的信息是很重要的:    */
+       如果页帧被频繁访问, 则是活动的, 相反则是不活动的, 
+       在需要换出页帧时, 这样的信息是很重要的:    */
     struct free_area    free_area[MAX_ORDER];
 
     /* zone flags, see below 描述当前内存的状态, 参见下面的enum zone_flags结构 */
@@ -243,8 +243,8 @@ struct zone {
      * when reading the number of free pages to avoid per-cpu counter
      * drift allowing watermarks to be breached
      * 在空闲页的数目少于这个点percpu_drift_mark的时候
-     * 当读取和空闲页数一样的内存页时，系统会采取额外的工作，
-     * 防止单CPU页数漂移，从而导致水印被破坏. 
+     * 当读取和空闲页数一样的内存页时, 系统会采取额外的工作, 
+     * 防止单CPU页数漂移, 从而导致水印被破坏. 
      */
     unsigned long percpu_drift_mark;
 

@@ -143,7 +143,7 @@ static void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags
 	idt_entries[num].sel     = sel;
 	idt_entries[num].always0 = 0;
 
-	// 先留下 0x60 这个魔数，以后实现用户态时候
+	// 先留下 0x60 这个魔数, 以后实现用户态时候
 	// 这个与运算可以设置中断门的特权级别为 3
 	idt_entries[num].flags = flags;  // | 0x60
 }
@@ -168,7 +168,7 @@ void register_interrupt_handler(uint8_t n, interrupt_handler_t h)
 void irq_handler(pt_regs *regs)
 {
 	// 发送中断结束信号给 PICs
-	// 按照我们的设置，从 32 号中断起为用户自定义中断
+	// 按照我们的设置, 从 32 号中断起为用户自定义中断
 	// 因为单片的 Intel 8259A 芯片只能处理 8 级中断
 	// 故大于等于 40 的中断号是由从片处理的
 	if (regs->int_no >= 40) {

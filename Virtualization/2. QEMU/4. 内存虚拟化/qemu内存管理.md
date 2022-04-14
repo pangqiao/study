@@ -21,23 +21,23 @@
 
 # 内存初始化
 
-Qemu中的内存模型，简单来说就是Qemu**申请用户态内存**并进行管理，并将该部分申请的内存**注册**到**对应的加速器(如KVM)中**. 
+Qemu中的内存模型, 简单来说就是Qemu**申请用户态内存**并进行管理, 并将该部分申请的内存**注册**到**对应的加速器(如KVM)中**. 
 
 这样的模型有如下好处: 
 
-1. **策略与机制分离**. **加速的机制**由**KVM**负责，而**如何调用**加速的机制由**Qemu负责**
+1. **策略与机制分离**. **加速的机制**由**KVM**负责, 而**如何调用**加速的机制由**Qemu负责**
 
-2. 可以由**Qemu**设置**多种内存模型**，如**UMA**、**NUMA**等等
+2. 可以由**Qemu**设置**多种内存模型**, 如**UMA**、**NUMA**等等
 
 3. 方便Qemu**对特殊内存的管理**(如MMIO)
 
-4. 内存的**分配**、**回收**、**换出**等都可以采用Linux原有的机制，**不需要**为KVM**单独开发**. 
+4. 内存的**分配**、**回收**、**换出**等都可以采用Linux原有的机制, **不需要**为KVM**单独开发**. 
 
-5. **兼容其他加速器模型**(或者**无加速器**，单纯使用**Qemu做模拟**)
+5. **兼容其他加速器模型**(或者**无加速器**, 单纯使用**Qemu做模拟**)
 
 Qemu需要做的有两方面工作: 
 
-- **向KVM注册用户态内存空间**，
+- **向KVM注册用户态内存空间**, 
 - 申请**用户态内存空间**. 
 
 Qemu主要通过如下结构来维护内存: 
@@ -52,7 +52,7 @@ struct AddressSpace {
     MemoryRegion *root;
 
     /* Accessed via RCU.  */
-    //AddressSpace的一张平面视图，它是AddressSpace所有正在使用的MemoryRegion的集合，这是从CPU的视角来看到的. 
+    //AddressSpace的一张平面视图, 它是AddressSpace所有正在使用的MemoryRegion的集合, 这是从CPU的视角来看到的. 
     struct FlatView *current_map;
 
     int ioeventfd_nb;
@@ -64,7 +64,7 @@ struct AddressSpace {
 
 "memory"的root是`static MemoryRegion system_memory`;
 
-使用**链表**`address_spaces`保存**虚拟机的内存**，该链表保存`AddressSpace address_space_io`和`AddressSpace address_space_memory`等信息
+使用**链表**`address_spaces`保存**虚拟机的内存**, 该链表保存`AddressSpace address_space_io`和`AddressSpace address_space_memory`等信息
 
 ```cpp
 // memory.c
@@ -83,30 +83,30 @@ void address_space_init(AddressSpace *as, MemoryRegion *root, const char *name)
 }
 ```
 
-AddressSpace设置了一段内存，其主要信息存储在root成员中，root成员是个MemoryRegion结构，主要存储内存区的结构. 在Qemu中最主要的两个AddressSpace是 `address_space_memory` 和 `address_space_io`，分别对应的MemoryRegion变量是`system_memory`和 `system\_io`. 
+AddressSpace设置了一段内存, 其主要信息存储在root成员中, root成员是个MemoryRegion结构, 主要存储内存区的结构. 在Qemu中最主要的两个AddressSpace是 `address_space_memory` 和 `address_space_io`, 分别对应的MemoryRegion变量是`system_memory`和 `system\_io`. 
 
-Qemu的**主函数**是**vl.c**中的main函数，其中调用了`configure_accelerator()`，是KVM初始化的配置部分. 
+Qemu的**主函数**是**vl.c**中的main函数, 其中调用了`configure_accelerator()`, 是KVM初始化的配置部分. 
 
-configure\_accelerator中首先根据命令行输入的参数找到对应的accelerator，这里是KVM. 之后调用`accel_list[i].init()`，即`kvm_init()`. 
+configure\_accelerator中首先根据命令行输入的参数找到对应的accelerator, 这里是KVM. 之后调用`accel_list[i].init()`, 即`kvm_init()`. 
 
 在kvm_init()函数中主要做如下几件事情: 
 
-1. `s->fd = qemu_open("/dev/kvm", O_RDWR)`，**打开kvm控制的总设备文件/dev/kvm**
-2. `s->vmfd = kvm_ioctl(s, KVM_CREATE_VM, 0)`，调用**创建虚拟机的API**
-3. `kvm_check_extension`，检查各种extension，并设置对应的features
-4. `ret = kvm_arch_init(s)`，做一些**体系结构相关的初始化**，如**msr**、**identity map**、**mmu pages number**等等
-5. `kvm_irqchip_create`，调用`kvm_vm_ioctl(s, KVM_CREATE_IRQCHIP)`**在KVM中虚拟IRQ芯片**
-6. `memory_listener_register`，该函数是**初始化内存**的主要函数
-7. `memory_listener_register`调用了两次**，分别注册了 `kvm_memory_listener`和`kvm_io_listener`，即**通用的内存**和**MMIO**是**分开管理**的. 
+1. `s->fd = qemu_open("/dev/kvm", O_RDWR)`, **打开kvm控制的总设备文件/dev/kvm**
+2. `s->vmfd = kvm_ioctl(s, KVM_CREATE_VM, 0)`, 调用**创建虚拟机的API**
+3. `kvm_check_extension`, 检查各种extension, 并设置对应的features
+4. `ret = kvm_arch_init(s)`, 做一些**体系结构相关的初始化**, 如**msr**、**identity map**、**mmu pages number**等等
+5. `kvm_irqchip_create`, 调用`kvm_vm_ioctl(s, KVM_CREATE_IRQCHIP)`**在KVM中虚拟IRQ芯片**
+6. `memory_listener_register`, 该函数是**初始化内存**的主要函数
+7. `memory_listener_register`调用了两次**, 分别注册了 `kvm_memory_listener`和`kvm_io_listener`, 即**通用的内存**和**MMIO**是**分开管理**的. 
 
-以**通用的内存注册**为例，函数首先在**全局的memory\_listener链表**中添加了`kvm_memory_listener`，之后调用**listener\_add\_address\_space**分别将**该listener**添加到**address\_space\_memory**和**address\_space\_io**中, address\_space\_io是虚机的io地址空间(**设备的io port**就分布在这个地址空间里). 
+以**通用的内存注册**为例, 函数首先在**全局的memory\_listener链表**中添加了`kvm_memory_listener`, 之后调用**listener\_add\_address\_space**分别将**该listener**添加到**address\_space\_memory**和**address\_space\_io**中, address\_space\_io是虚机的io地址空间(**设备的io port**就分布在这个地址空间里). 
 
-8. 然后**调用listener的region\_add**(即 `kvm_region_add()`)，该函数最终调用了kvm\_set\_user\_memory\_region()，其中调用 `kvm_vm_ioctl(s, KVM_SET_USER_MEMORY_REGION, &mem)`，该调用是最终**将内存区域注册到kvm**中的函数. 
-9. 之后在vl.c的main函数中调用了cpu\_exec\_init\_all() \=\> memory\_map\_init()，设置**system\_memory**和**system\_io**. 
+8. 然后**调用listener的region\_add**(即 `kvm_region_add()`), 该函数最终调用了kvm\_set\_user\_memory\_region(), 其中调用 `kvm_vm_ioctl(s, KVM_SET_USER_MEMORY_REGION, &mem)`, 该调用是最终**将内存区域注册到kvm**中的函数. 
+9. 之后在vl.c的main函数中调用了cpu\_exec\_init\_all() \=\> memory\_map\_init(), 设置**system\_memory**和**system\_io**. 
 
-至此**初始化好**了所有Qemu中需要维护的**相关的内存结构**，并完成了在KVM中的注册. 下面需要初始化KVM中的MMU支持. 
+至此**初始化好**了所有Qemu中需要维护的**相关的内存结构**, 并完成了在KVM中的注册. 下面需要初始化KVM中的MMU支持. 
 
-ram\_size内存大小从内存被读取到ram\_size中，在vl.c的main中调用machine\-\>init()来初始化，**machine**是命令行**指定的机器类型**，默认的init是pc\_init\_pci
+ram\_size内存大小从内存被读取到ram\_size中, 在vl.c的main中调用machine\-\>init()来初始化, **machine**是命令行**指定的机器类型**, 默认的init是pc\_init\_pci
 
 ```c
 pc_memory_init
@@ -164,7 +164,7 @@ typedef struct FlatRange FlatRange;
 
 struct FlatView {
     struct rcu_head rcu;
-    //引用计数，为0就销毁
+    //引用计数, 为0就销毁
     unsigned ref;
     //对应的flatrange数组
     FlatRange *ranges;
@@ -177,13 +177,13 @@ struct FlatView {
 };
 ```
 
-映射是将上面**分配的地址块**映射为**客户机的物理地址**, 函数如下, 输入为映射后的物理地址, 内存偏移，通用内存块的地址
+映射是将上面**分配的地址块**映射为**客户机的物理地址**, 函数如下, 输入为映射后的物理地址, 内存偏移, 通用内存块的地址
 
 ```c
 static void memory_region_add_subregion_common(MemoryRegion mr, hwaddr offset, MemoryRegion subregion)
 ```
 
-MemoryRegion mr: 对应的是system\_memory或者system\_io，通过memory\_listener\_register函数注册内存块. 
+MemoryRegion mr: 对应的是system\_memory或者system\_io, 通过memory\_listener\_register函数注册内存块. 
 
 通用栈如下: 
 
@@ -204,11 +204,11 @@ goto done;
 QTAILQ_INSERT_TAIL(&mr->subregions, subregion, subregions_link);
 ```
 
-memory\_region\_transaction\_commit中引入了新的结构address\_spaces(AS)，内存有不同的应用类型，address_spaces以链表形式存在，commit函数则是对所有AS执行 address\_space\_update\_topology，先看AS在哪里注册的，就是前面提到的kvm\_init里面，执行 memory\_listener\_register，注册了address\_space\_memory和address\_space\_io两个，涉及的另 外一个结构体则是MemoryListener，有kvm\_memory\_listener和kvm\_io\_listener，就是用于监控内存映射关系 发生变化之后执行回调函数. 
+memory\_region\_transaction\_commit中引入了新的结构address\_spaces(AS), 内存有不同的应用类型, address_spaces以链表形式存在, commit函数则是对所有AS执行 address\_space\_update\_topology, 先看AS在哪里注册的, 就是前面提到的kvm\_init里面, 执行 memory\_listener\_register, 注册了address\_space\_memory和address\_space\_io两个, 涉及的另 外一个结构体则是MemoryListener, 有kvm\_memory\_listener和kvm\_io\_listener, 就是用于监控内存映射关系 发生变化之后执行回调函数. 
 
-address_space_update_topology_pass函数比较之前的内存块，做相应的处理
+address_space_update_topology_pass函数比较之前的内存块, 做相应的处理
 
-MEMORY_LISTENER_UPDATE_REGION函数，将变化的FlatRange构造一个MemoryRegionSection，然后 遍历所有的memory_listeners，如果memory_listeners监控的内存区域和MemoryRegionSection一样，则执 行第四个入参函数，如region_del函数，即kvm_region_del函数，这个是在kvm_init中初始化的.  kvm_region_add主要是kvm_set_phys_mem函数，主要是将MemoryRegionSection有效值转换成KVMSlot 形式，在kvm_set_user_memory_region中使用kvm_vm_ioctl(s, KVM_SET_USER_MEMORY_REGION, &mem)传递给kernel. 
+MEMORY_LISTENER_UPDATE_REGION函数, 将变化的FlatRange构造一个MemoryRegionSection, 然后 遍历所有的memory_listeners, 如果memory_listeners监控的内存区域和MemoryRegionSection一样, 则执 行第四个入参函数, 如region_del函数, 即kvm_region_del函数, 这个是在kvm_init中初始化的.  kvm_region_add主要是kvm_set_phys_mem函数, 主要是将MemoryRegionSection有效值转换成KVMSlot 形式, 在kvm_set_user_memory_region中使用kvm_vm_ioctl(s, KVM_SET_USER_MEMORY_REGION, &mem)传递给kernel. 
 
 # 客户机物理地址到主机虚拟地址的转换
 
@@ -230,7 +230,7 @@ MMIO索引, 其中4个固定分配 SUBWIDTH SUBPAGE ROMD
 
 ## 客户机物理地址到主机虚拟地址的转换步骤
 
-虚拟机因mmio退出时，qemu处理该退出事件，相关的函数: 
+虚拟机因mmio退出时, qemu处理该退出事件, 相关的函数: 
 
 ```c
 void cpu_physical_memory_rw(hwaddr addr, uint8_t buf, int len, int is_write)

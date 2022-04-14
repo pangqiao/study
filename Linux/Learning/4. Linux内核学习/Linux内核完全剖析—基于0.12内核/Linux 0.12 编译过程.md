@@ -32,11 +32,11 @@ head.s:231: Error: alignment not a power of 2
 
 出错原因: 
 
-这是由于在64位机器上编译的原因，需要告诉编译器，我们要编译32位的code，在所有Makefile的AS后面添加 --32，CFLAGS中加-m32
+这是由于在64位机器上编译的原因, 需要告诉编译器, 我们要编译32位的code, 在所有Makefile的AS后面添加 --32, CFLAGS中加-m32
 
 解决办法: 
 
-修改head.s，在文件前加.code32
+修改head.s, 在文件前加.code32
 
 - 问题2: 
 
@@ -48,7 +48,7 @@ make: *** [boot/head.o] Error 127
 
 出错原因: 
 
-gas、gld 的名称已经过时，现在GNU assembler的名称是 as
+gas、gld 的名称已经过时, 现在GNU assembler的名称是 as
 
 
 解决办法: 
@@ -78,9 +78,9 @@ boot/head.s:232: Error: alignment not a power of 2
 
 出错原因: 
 
-.align 2 是汇编语言指示符，其含义是指存储边界对齐调整; 
+.align 2 是汇编语言指示符, 其含义是指存储边界对齐调整; 
 
-“2”表示把随后的代码或数据的偏移位置调整到地址值最后2比特位为零的位置(2^2)，即按4字节对齐内存地址. 
+“2”表示把随后的代码或数据的偏移位置调整到地址值最后2比特位为零的位置(2^2), 即按4字节对齐内存地址. 
 
 不过现在GNU as直接是写出对齐的值而非2的次方值了. 
 

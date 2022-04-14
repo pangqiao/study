@@ -33,7 +33,7 @@ void init_timer(uint32_t frequency)
 	register_interrupt_handler(IRQ0, timer_callback);
 
 	// Intel 8253/8254 PIT芯片 I/O端口地址范围是40h~43h
-	// 输入频率为 1193180，frequency 即每秒中断次数
+	// 输入频率为 1193180, frequency 即每秒中断次数
 	uint32_t divisor = 1193180 / frequency;
 
 	// D7 D6 D5 D4 D3 D2 D1 D0

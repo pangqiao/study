@@ -12,13 +12,13 @@ idt_flush:
 	ret
 .end:
 
-; 定义两个构造中断处理函数的宏(有的中断有错误代码，有的没有)
+; 定义两个构造中断处理函数的宏(有的中断有错误代码, 有的没有)
 ; 用于没有错误代码的中断
 %macro ISR_NOERRCODE 1
 [GLOBAL isr%1]
 isr%1:
 	cli                         ; 首先关闭中断
-	push 0                      ; push 无效的中断错误代码(起到占位作用，便于所有isr函数统一清栈)
+	push 0                      ; push 无效的中断错误代码(起到占位作用, 便于所有isr函数统一清栈)
 	push %1                     ; push 中断号
 	jmp isr_common_stub
 %endmacro

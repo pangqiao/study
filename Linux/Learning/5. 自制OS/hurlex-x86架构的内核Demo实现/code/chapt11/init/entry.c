@@ -36,7 +36,7 @@ multiboot_t *glb_mboot_ptr;
 char kern_stack[STACK_SIZE];
 
 // 内核使用的临时页表和页目录
-// 该地址必须是页对齐的地址，内存 0-640KB 肯定是空闲的
+// 该地址必须是页对齐的地址, 内存 0-640KB 肯定是空闲的
 __attribute__((section(".init.data"))) pgd_t *pgd_tmp  = (pgd_t *)0x1000;
 __attribute__((section(".init.data"))) pgd_t *pte_low  = (pgd_t *)0x2000;
 __attribute__((section(".init.data"))) pgd_t *pte_hign = (pgd_t *)0x3000;
@@ -63,7 +63,7 @@ __attribute__((section(".init.text"))) void kern_entry()
 
 	uint32_t cr0;
 
-	// 启用分页，将 cr0 寄存器的分页位置为 1 就好
+	// 启用分页, 将 cr0 寄存器的分页位置为 1 就好
 	asm volatile ("mov %%cr0, %0" : "=r" (cr0));
 	cr0 |= 0x80000000;
 	asm volatile ("mov %0, %%cr0" : : "r" (cr0));

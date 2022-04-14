@@ -93,7 +93,7 @@ void *kmalloc(uint32_t len)
 
 void kfree(void *p)
 {
-	// 指针回退到管理结构，并将已使用标记置 0
+	// 指针回退到管理结构, 并将已使用标记置 0
 	header_t *header = (header_t*)((uint32_t)p - sizeof(header_t));
 	header->allocated = 0;
 

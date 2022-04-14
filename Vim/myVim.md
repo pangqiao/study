@@ -51,9 +51,9 @@ git clone https://github.com/haiwei-li/vinux.git ~/.vim
 
 # 4. 功能开启
 
-打开任意文件，会下载一部分插件，然后 `<SPC>fe`, 输入 all, 打开所有的，会自动下载插件
+打开任意文件, 会下载一部分插件, 然后 `<SPC>fe`, 输入 all, 打开所有的, 会自动下载插件
 
-结束后，修改 `~/.vim/feature.vim`
+结束后, 修改 `~/.vim/feature.vim`
 
 `let g:feat_enable_fun=0`, 关闭番茄时钟
 
@@ -63,7 +63,7 @@ git clone https://github.com/haiwei-li/vinux.git ~/.vim
 
 空格av, 悬浮
 
-空格as，下面
+空格as, 下面
 
 空格ns, 新buffer
 
@@ -115,7 +115,7 @@ let g:vinux_version='vinux V1.2.0-dev @8.2.2434'
 
 LSP: `let g:feat_enable_lsp=1`
 
-当然lsp的话，complete 就要换成 asynccomplete 了
+当然lsp的话, complete 就要换成 asynccomplete 了
 
 `let g:complete_plugin_type.cur_val='asyncomplete'`
 
@@ -127,7 +127,7 @@ ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4
 
 ## 5.2. YouCompleteMe 设置
 
-补全功能使用了 YouCompleteMe, 但是这个比较难以编译，所以只是安装没有编译.
+补全功能使用了 YouCompleteMe, 但是这个比较难以编译, 所以只是安装没有编译.
 
 YouCompleteMe 相关设置在 `rc/complete.vim` 中
 
@@ -211,11 +211,11 @@ filetype plugin indent on
 " 保存时代码自动格式化
 let g:rustfmt_autosave = 1
 
-" 手动调用格式化， Visual 模式下局部格式化，Normal 模式下当前文件内容格式化
-" 有时候代码有错误时，rust.vim 不会调用格式化，手动格式化就很方便
+" 手动调用格式化,  Visual 模式下局部格式化, Normal 模式下当前文件内容格式化
+" 有时候代码有错误时, rust.vim 不会调用格式化, 手动格式化就很方便
 vnoremap <leader>ft :RustFmtRange<CR>
 nnoremap <leader>ft :RustFmt<CR>
-" 设置编译运行 (来自 rust.vim，加命令行参数则使用命令 `:RustRun!`)
+" 设置编译运行 (来自 rust.vim, 加命令行参数则使用命令 `:RustRun!`)
 nnoremap <M-r> :RustRun<CR>
 " 使用 `:verbose nmap <M-t>` 检测 Alt-t是否被占用
 " 使用 `:verbose nmap` 则显示所有快捷键绑定信息
@@ -224,7 +224,7 @@ nnoremap <M-t> :RustTest<CR>
 
 ## 6.2. 代码片段
 
-> Always async, never slows you down. 始终保持异步，永不减慢您的速度
+> Always async, never slows you down. 始终保持异步, 永不减慢您的速度
 
 
 
@@ -234,7 +234,7 @@ https://rust-analyzer.github.io/manual.html#vimneovim
 
 
 
-Racer: Rust Auto-Complete-er, 代码补全. 而 vim 下的 `racer-rust/vim-racer` 插件已经停止开发, 不建议使用. 应该改用LSP插件(vim-lsp，nvim-lspconfig), 补全用 YCM 是否就可以了?
+Racer: Rust Auto-Complete-er, 代码补全. 而 vim 下的 `racer-rust/vim-racer` 插件已经停止开发, 不建议使用. 应该改用LSP插件(vim-lsp, nvim-lspconfig), 补全用 YCM 是否就可以了?
 
 
 

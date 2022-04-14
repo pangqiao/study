@@ -35,12 +35,12 @@ void init_vmm()
 	
 	uint32_t i, j;
 	for (i = kern_pte_first_idx, j = 0; i < PTE_COUNT + kern_pte_first_idx; i++, j++) {
-		// 此处是内核虚拟地址，MMU 需要物理地址，所以减去偏移，下同
+		// 此处是内核虚拟地址, MMU 需要物理地址, 所以减去偏移, 下同
 		pgd_kern[i] = ((uint32_t)pte_kern[j] - PAGE_OFFSET) | PAGE_PRESENT | PAGE_WRITE;
 	}
 
 	uint32_t *pte = (uint32_t *)pte_kern;
-	// 不映射第 0 页，便于跟踪 NULL 指针
+	// 不映射第 0 页, 便于跟踪 NULL 指针
 	for (i = 1; i < PTE_COUNT * PTE_SIZE; i++) {
 		pte[i] = (i << 12) | PAGE_PRESENT | PAGE_WRITE;
 	}
@@ -115,7 +115,7 @@ uint32_t get_mapping(pgd_t *pgd_now, uint32_t va, uint32_t *pa)
 	// 转换到内核线性地址
 	pte = (pte_t *)((uint32_t)pte + PAGE_OFFSET);
 
-	// 如果地址有效而且指针不为NULL，则返回地址
+	// 如果地址有效而且指针不为NULL, 则返回地址
 	if (pte[pte_idx] != 0 && pa) {
 		 *pa = pte[pte_idx] & PAGE_MASK;
 		return 1;
