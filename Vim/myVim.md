@@ -24,7 +24,7 @@
 # 1. 安装软件
 
 ```
-apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev vim-gtk3 npm pip curl git
+apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev vim-gtk3 npm pip curl git zsh
 ```
 
 `vim-gtk` 可以让 vim 有 `+clipboard` feature 支持, 而 vim-nox 没有
@@ -142,6 +142,10 @@ apt install build-essential cmake python3-dev
 ```
 cd ~/.vim/bundle/YouCompleteMe
 git submodule update --init --recursive
+```
+
+```
+python3 install.py --clangd-completer
 ```
 
 ### 5.2.1. rust 支持(optional)
