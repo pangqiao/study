@@ -7,3 +7,5 @@
 - 中文github: https://github.com/MintCN/linux-insides-zh
 
 - 中文gitbook: https://xinqiu.gitbooks.io/linux-insides-cn
+
+x86, 
