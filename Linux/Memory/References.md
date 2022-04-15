@@ -44,3 +44,10 @@ https://richardweiyang-2.gitbook.io/kernel-exploring/00-memory_a_bottom_up_view/
 虚拟地址空间解惑: https://zhuanlan.zhihu.com/p/386398698
 
 https://zhikunhuo.blog.csdn.net/category_10382170_2.html
+
+# 书籍
+
+《深入理解Linux虚拟内存管理》
+
+《深入剖析Linux内核反向映射机制》
+
