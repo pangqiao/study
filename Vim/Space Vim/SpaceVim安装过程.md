@@ -100,7 +100,7 @@ curl -sLf https://spacevim.org/cn/install.sh | bash -s -- -h
 
 7. 安装Powerline font
 
-SpaceVim 默认启用了Powerline 字体，默认的的字体文件是: [SourceCodePro Nerd Font Mono](https://github.com/ryanoasis/nerd-fonts/releases/download/v2.0.0/SourceCodePro.zip), 推荐个人也使用这个
+SpaceVim 默认启用了Powerline 字体, 默认的的字体文件是: [SourceCodePro Nerd Font Mono](https://github.com/ryanoasis/nerd-fonts/releases/download/v2.0.0/SourceCodePro.zip), 推荐个人也使用这个
 
 当然如果终端不识别这个, 可以使用 Source Code Pro for Powerline或者DejaVu Sans Mono for PowerLine 字体
 

@@ -8,8 +8,8 @@
 
 ;;
 ;; ex.asm 说明: 
-;; 1) ex.asm 是实验例子的源代码文件，它嵌入在 protected.asm 和 long.asm 文件内
-;; 2) ex.asm 是通用模块，能在 stage2 和 stage3 阶段运行
+;; 1) ex.asm 是实验例子的源代码文件, 它嵌入在 protected.asm 和 long.asm 文件内
+;; 2) ex.asm 是通用模块, 能在 stage2 和 stage3 阶段运行
 ;;
 
         ;;
@@ -18,7 +18,7 @@
         %include "ex.inc"
         
         ;;
-        ;; 示例6-1: 使用实模式的guest，并启用EPT机制        
+        ;; 示例6-1: 使用实模式的guest, 并启用EPT机制        
         ;;
         
 
@@ -186,7 +186,7 @@ Ex.DoVmxPreemptionTimer:
         DEBUG_RECORD    "[Ex.DoPreemptionTimer]: switch guest !"
         
         ;;
-        ;; 移除当前运行的 guest，放入到 ready 队列
+        ;; 移除当前运行的 guest, 放入到 ready 队列
         ;;
         call out_running_queue
         mov R3, [gs: PCB.VmcsA + R0 * 8]        
@@ -263,7 +263,7 @@ Ex.DoPreemptionTimer.done:
 ;----------------------------------------------
 Ex.DoExternalInterrupt:
         ;;
-        ;; 打开中断 window，由 host 执行中断处理
+        ;; 打开中断 window, 由 host 执行中断处理
         ;;
         sti
         mov eax, VMM_PROCESS_RESUME
@@ -502,7 +502,7 @@ init_guest_a:
 
         
         ;;
-        ;; 启用 VMX-preemption timer，guestA 运行时间为 50us
+        ;; 启用 VMX-preemption timer, guestA 运行时间为 50us
         ;;
         SET_PINBASED_CTLS       ACTIVATE_VMX_PREEMPTION_TIMER      
         SET_VM_EXIT_CTLS        SAVE_VMX_PREEMPTION_TIMER_VALUE
@@ -771,7 +771,7 @@ init_guest_b:
         call append_vmentry_msr_load_entry
                 
         ;;
-        ;; 启用 VMX-preemption timer，guestB 运行时间为 50us
+        ;; 启用 VMX-preemption timer, guestB 运行时间为 50us
         ;;
         SET_PINBASED_CTLS       ACTIVATE_VMX_PREEMPTION_TIMER        
         SET_VM_EXIT_CTLS        SAVE_VMX_PREEMPTION_TIMER_VALUE

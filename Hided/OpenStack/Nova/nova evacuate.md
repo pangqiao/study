@@ -16,15 +16,15 @@
 
 # 1 evacuate实例
 
-nova evacuate 实现当虚拟机所在宿主机出现宕机后，虚拟机可以通过evacuate将虚拟机从宕机的物理节点迁移至其它节点.  
+nova evacuate 实现当虚拟机所在宿主机出现宕机后, 虚拟机可以通过evacuate将虚拟机从宕机的物理节点迁移至其它节点.  
 
-nova evacuate其实是通过虚拟机rebuild的过程完成的，原compute节点在重新恢复后会进行虚拟机删除
+nova evacuate其实是通过虚拟机rebuild的过程完成的, 原compute节点在重新恢复后会进行虚拟机删除
 
-如果您需要把一个实例从一个有故障或已停止运行的 compute 节点上移到同一个环境中的其它主机服务器上时，可以使用 nova evacuate 命令对实例进行撤离(evacuate). 
+如果您需要把一个实例从一个有故障或已停止运行的 compute 节点上移到同一个环境中的其它主机服务器上时, 可以使用 nova evacuate 命令对实例进行撤离(evacuate). 
 
-- 撤离的操作只有在实例的磁盘在共享存储上，或实例的磁盘是块存储卷时才有效. 因为在其它情况下，磁盘无法被新 compute 节点访问. 
+- 撤离的操作只有在实例的磁盘在共享存储上, 或实例的磁盘是块存储卷时才有效. 因为在其它情况下, 磁盘无法被新 compute 节点访问. 
 
-- 实例只有在它所在的服务器停止运行的情况下才可以被撤离; 如果服务器没有被关闭，evacuate 命令会运行失败. 
+- 实例只有在它所在的服务器停止运行的情况下才可以被撤离; 如果服务器没有被关闭, evacuate 命令会运行失败. 
 
 # 2 撤离一个实例
 
@@ -36,13 +36,13 @@ nova evacuate其实是通过虚拟机rebuild的过程完成的，原compute节�
 
 其中: 
 
-- \-\-password pass \- 撤离实例的 admin 密码(如果指定了 \-\-on\-shared\-storage，则无法使用). 如果没有指定密码，一个随机密码会被产生，并在**撤离操作完成后被输出**. 
+- \-\-password pass \- 撤离实例的 admin 密码(如果指定了 \-\-on\-shared\-storage, 则无法使用). 如果没有指定密码, 一个随机密码会被产生, 并在**撤离操作完成后被输出**. 
 
 - \-\-on\-shared\-storage \- 指定所有实例文件都在共享存储中. 
 
 - instance\_name \- 要撤离的实例名称. 
 
-- target\_host \- 实例撤离到的主机; 如果您没有指定这个主机，Compute 调度会为您选择一个主机. 您可以使用以下命令找到可能的主机: 
+- target\_host \- 实例撤离到的主机; 如果您没有指定这个主机, Compute 调度会为您选择一个主机. 您可以使用以下命令找到可能的主机: 
 
 ```
 # nova host-list | grep compute
@@ -65,7 +65,7 @@ nova evacuate其实是通过虚拟机rebuild的过程完成的，原compute节�
 其中: 
 
 
-- \-\-target target\_host \- 实例撤离到的主机; 如果您没有指定这个主机，Compute 调度会为您选择一个主机. 您可以使用以下命令找到可能的主机: 
+- \-\-target target\_host \- 实例撤离到的主机; 如果您没有指定这个主机, Compute 调度会为您选择一个主机. 您可以使用以下命令找到可能的主机: 
 
 ```
 # nova host-list | grep compute
@@ -83,9 +83,9 @@ nova evacuate其实是通过虚拟机rebuild的过程完成的，原compute节�
 
 # 4 源码分析
 
-nova evacuate 实现当虚拟机所在宿主机出现宕机后，虚拟机可以通过evacuate将虚拟机从宕机的物理节点迁移至其它节点.  
+nova evacuate 实现当虚拟机所在宿主机出现宕机后, 虚拟机可以通过evacuate将虚拟机从宕机的物理节点迁移至其它节点.  
 
-nova evacuate其实是通过虚拟机rebuild的过程完成的，原compute节点在重新恢复后会进行虚拟机删除
+nova evacuate其实是通过虚拟机rebuild的过程完成的, 原compute节点在重新恢复后会进行虚拟机删除
 
 ## 4.1 evacuate操作
 
@@ -106,7 +106,7 @@ def evacuate(self, context, instance, host, on_shared_storage,
     # 在这个地方进行了instance host获取
     inst_host = instance.host
     service = objects.Service.get_by_compute_host(context, inst_host)
-    # 判断了host的服务状态，nova-compute service
+    # 判断了host的服务状态, nova-compute service
     if self.servicegroup_api.service_is_up(service):
         LOG.error('Instance compute service state on %s '
                     'expected to be down, but it was up.', inst_host)
@@ -385,7 +385,7 @@ compute_driver = libvirt.LibvirtDriver
 
 ## 4.2 从原主机删除
 
-当原nova\-compue节点恢复后，会对evacuate的虚拟机进行删除清理
+当原nova\-compue节点恢复后, 会对evacuate的虚拟机进行删除清理
 
 入口文件在nova/compute/manager.py中ComputeManager下的init\_host方法
 
@@ -435,7 +435,7 @@ def destroy(self, context, instance, network_info, block_device_info=None,
             destroy_disks=True, migrate_data=None):
     # 先做了关机
     self._destroy(instance)
-    # 这里做了清理，包括删除虚拟机本地存储的信息，以及网络等
+    # 这里做了清理, 包括删除虚拟机本地存储的信息, 以及网络等
     self.cleanup(context, instance, network_info, block_device_info,
                 destroy_disks, migrate_data)
 ```

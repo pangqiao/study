@@ -130,7 +130,7 @@ zero_memory64:
         mov [rdi], rax
         
         ;;
-        ;; 计算调整到 8 字节边界上的差额，下面原理等于 8 - (dest & 07)
+        ;; 计算调整到 8 字节边界上的差额, 下面原理等于 8 - (dest & 07)
         ;; 1) 例如: [2:0] = 011B(3)
         ;; 2) 取反后 = 100B(4)
         ;; 3) 加1后 = 101B(5)
@@ -161,7 +161,7 @@ zero_memory64:
 
 zero_memory64.@1:            
         ;;
-        ;; 一次 1 字节，写入剩余字节数
+        ;; 一次 1 字节, 写入剩余字节数
         ;;
         mov ecx, esi
         and ecx, 07h
@@ -185,13 +185,13 @@ strlen64:
         push rcx
         xor eax, eax
         ;;
-        ;; 输入的 string = NULL 时，返回 0 值
+        ;; 输入的 string = NULL 时, 返回 0 值
         ;;
         test rsi, rsi
         jz strlen64.done
         
         ;;
-        ;; 测试是否支持 SSE4.2 指令，以及是否开启 SSE 指令执行
+        ;; 测试是否支持 SSE4.2 指令, 以及是否开启 SSE 指令执行
         ;; 选择使用 SSE4.2 版本的 strlen 指令
         ;;
         cmp DWORD [gs: PCB.SSELevel], SSE4_2
@@ -310,7 +310,7 @@ append_gdt_descriptor64:
 ; output:
 ;       rax - 返回 selector 值
 ; 描述:
-;       1) 往 GDT 添加系统描述符，包括: TSS，LDT 以及 Call-gate 描述符
+;       1) 往 GDT 添加系统描述符, 包括: TSS, LDT 以及 Call-gate 描述符
 ;-------------------------------------------------------------------
 append_gdt_system_descriptor64:
         ;;
@@ -350,7 +350,7 @@ append_gdt_system_descriptor64:
 ;       rdx:rax - 128 位系统描述符
 ; 描述: 
 ;       1) 移除 GDT 表顶上的一个描述符
-;       2) 返回被移除的描述符，如果属于 system 描述符，返回 128 位描述符
+;       2) 返回被移除的描述符, 如果属于 system 描述符, 返回 128 位描述符
 ;-------------------------------------------------------------------
 remove_gdt_descriptor64:
         xor r9, r9
@@ -436,7 +436,7 @@ write_gdt_descriptor64:
         jbe write_gdt_descriptor64.next
         
         ;;
-        ;; 大于 Top，需更新 Top 
+        ;; 大于 Top, 需更新 Top 
         ;;
         mov [fs: SDA.GdtTop], r8
 
@@ -448,7 +448,7 @@ write_gdt_descriptor64.next:
         jbe write_gdt_descriptor64.done
         
         ;;
-        ;; 超 limit，需更新 GDT limit
+        ;; 超 limit, 需更新 GDT limit
         ;;
         mov [fs: SDA.GdtLimit], esi
         
@@ -472,7 +472,7 @@ write_gdt_descriptor64.done:
 ;       rdx:rax - 128 位系统描述符
 ; 描述: 
 ;       1) 读取 GDT 描述符项
-;       2) 属于系统描述符，则 rdx:rax 返回 128 位描述符
+;       2) 属于系统描述符, 则 rdx:rax 返回 128 位描述符
 ;       3) 失败返回 -1
 ;-------------------------------------------------------------------        
 read_gdt_descriptor64:
@@ -502,7 +502,7 @@ read_gdt_descriptor64:
         jc read_gdt_descriptor64.done
         
         ;;
-        ;; S = 0，属于 system 描述符
+        ;; S = 0, 属于 system 描述符
         ;;
         mov rdx, [r8 + 8]
                 
@@ -517,7 +517,7 @@ read_gdt_descriptor64.done:
 ; input:
 ;       esi - vector  
 ; output:
-;       rdx:rax - 成功时，返回 128 位描述符，失败时，返回 -1 值
+;       rdx:rax - 成功时, 返回 128 位描述符, 失败时, 返回 -1 值
 ;------------------------------------------------------------------- 
 read_idt_descrptor64:
         and esi, 0FFh
@@ -816,7 +816,7 @@ bit_swap64.loop:
 ; output:
 ;       0 - no, otherwise yes.
 ; 描述:
-;       根据提供的字符串，检查是否需要转换
+;       根据提供的字符串, 检查是否需要转换
 ;-------------------------------------------------          
 check_new_line64:
         push rcx
@@ -888,7 +888,7 @@ print_dword_decimal64:
         mov ecx, 10
         
         ;;
-        ;; 指向数组尾部，从数组后面往前写
+        ;; 指向数组尾部, 从数组后面往前写
         ;;
         mov BYTE [crt.digit_array + 60], 0
         lea rsi, [crt.digit_array + 59]
@@ -899,7 +899,7 @@ print_decimal64.loop:
         div rcx                                 ; value / 10
         
         ;;
-        ;; 检查商是否为 0，为 0 时，除 10 结束
+        ;; 检查商是否为 0, 为 0 时, 除 10 结束
         ;;
         test rax, rax
         cmovz rdx, [crt.quotient]
@@ -932,7 +932,7 @@ get_spin_lock64:
         push rdx
         ;;
         ;; 自旋锁操作方法说明:
-        ;; 1) 使用 bts 指令，如下面指令序列
+        ;; 1) 使用 bts 指令, 如下面指令序列
         ;;    lock bts DWORD [rsi], 0
         ;;    jnc AcquireLockOk
         ;;
@@ -952,9 +952,9 @@ get_spin_lock64.acquire:
         je get_spin_lock64.done
 
         ;;
-        ;; 获取失败后，检查 lock 是否开放(未上锁)
-        ;; 1) 是，则再次执行获取锁，并上锁
-        ;; 2) 否，继续不断地检查 lock，直到 lock 开放
+        ;; 获取失败后, 检查 lock 是否开放(未上锁)
+        ;; 1) 是, 则再次执行获取锁, 并上锁
+        ;; 2) 否, 继续不断地检查 lock, 直到 lock 开放
         ;;
 get_spin_lock64.check:        
         mov eax, [rsi]

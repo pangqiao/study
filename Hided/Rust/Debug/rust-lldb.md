@@ -1,7 +1,7 @@
 
-Rust 会使用 DWARF 格式在 binary 中嵌入调试信息，所以可以使用一些通用的调试工具，比如 GDB 和 LLDB. Rust 提供了 `rust-gdb` 和 `rust-lldb` 两个命令用于调试，其相比原生的 gdb 和 lldb 添加了一些方便调试的脚本
+Rust 会使用 DWARF 格式在 binary 中嵌入调试信息, 所以可以使用一些通用的调试工具, 比如 GDB 和 LLDB. Rust 提供了 `rust-gdb` 和 `rust-lldb` 两个命令用于调试, 其相比原生的 gdb 和 lldb 添加了一些方便调试的脚本
 
-下面来初步的了解 rust-lldb 的使用，rustup 会安装 rust-lldb，但不会安装 lldb，需要自行安装
+下面来初步的了解 rust-lldb 的使用, rustup 会安装 rust-lldb, 但不会安装 lldb, 需要自行安装
 
 ```
 apt install lldb
@@ -47,9 +47,9 @@ fn main() {
 }
 ```
 
-cargo build 默认会以 debug 模式进行构建，所以含有用于调试的 symbol，需要注意的是 `cargo install` 会以 release 模式构建，需要 `cargo install --debug`
+cargo build 默认会以 debug 模式进行构建, 所以含有用于调试的 symbol, 需要注意的是 `cargo install` 会以 release 模式构建, 需要 `cargo install --debug`
 
-通过 rust-lldb 命令加载可执行文件(或者在 REPL 中通过 file 载入)，进入 LLDB 的 REPL. 比如
+通过 rust-lldb 命令加载可执行文件(或者在 REPL 中通过 file 载入), 进入 LLDB 的 REPL. 比如
 
 `rust-lldb -- target/debug/<bin-name> first_arg`
 
@@ -59,7 +59,7 @@ cargo build 默认会以 debug 模式进行构建，所以含有用于调试的 
 (lldb) settings set -- target.run-args  "first_arg"
 ```
 
-字样，参数会存到 `target.run-args` 中，可以在 REPL 中重置命令行参数
+字样, 参数会存到 `target.run-args` 中, 可以在 REPL 中重置命令行参数
 
 ```
 (lldb) settings set target.run-args "arg1"
@@ -73,9 +73,9 @@ target.run-args (array of strings) =
   [1]: "arg2"
 ```
 
-gui 命令可以进入 GUI，可以借助 [voltron](https://github.com/snare/voltron) 获得更改的体验
+gui 命令可以进入 GUI, 可以借助 [voltron](https://github.com/snare/voltron) 获得更改的体验
 
-通过 b 命令来设置断点. b 命令是对于 GDB 中 break 命令的模拟，通过 `help b` 查看更多用法
+通过 b 命令来设置断点. b 命令是对于 GDB 中 break 命令的模拟, 通过 `help b` 查看更多用法
 
 ```
 (lldb) help b
@@ -112,7 +112,7 @@ _regexp-break /<source-regex>/
 ```
 
 
-b 命令并**不是 LLDB 中的 breakpoint 的 alias**. `breakpoint set -n <func name>` 设置支持补全，`breakpoint set -f <文件路径>--line 15` 在指定的行设置断点
+b 命令并**不是 LLDB 中的 breakpoint 的 alias**. `breakpoint set -n <func name>` 设置支持补全, `breakpoint set -f <文件路径>--line 15` 在指定的行设置断点
 
 ```
 (lldb) b binary_search
@@ -185,7 +185,7 @@ Process 20123 stopped
 (lldb) thread step-out   // The same as gdb's "finish" or "f"
 ```
 
-在断点处可以设置命令，比如直接打印堆栈
+在断点处可以设置命令, 比如直接打印堆栈
 
 ```
 (lldb) breakpoint command add 1
@@ -196,7 +196,7 @@ Enter your debugger command(s). Type 'DONE' to end.
 
 也可以直接通过 --command 参数设置
 
-一个小例子，在 half == 3 条件成立的时候打印堆栈信息
+一个小例子, 在 half == 3 条件成立的时候打印堆栈信息
 
 ```
 (lldb) list main.rs:10

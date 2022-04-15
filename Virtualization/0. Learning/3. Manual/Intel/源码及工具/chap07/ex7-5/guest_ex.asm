@@ -5,7 +5,7 @@
 ;*************************************************
   
         ;;
-        ;; 例子 ex7-5: 实现外部中断转发，处理 CPU1 guest 的键盘中断
+        ;; 例子 ex7-5: 实现外部中断转发, 处理 CPU1 guest 的键盘中断
         ;; 编译命令可以为: 
         ;;      1) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE -D__X64 -DGUEST_X64
         ;;      2) build -DDEBUG_RECORD_ENABLE -DGUEST_ENABLE -D__X64

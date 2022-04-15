@@ -17,7 +17,7 @@
 %define VMX_REGION_VIRTUAL_BASE                         0B0000000h
 
 ;;
-;; 默认下，每个 VM 拥有 8M 内存区域
+;; 默认下, 每个 VM 拥有 8M 内存区域
 ;;
 %define VM_MEMORY_SIZE                                  800000h
 

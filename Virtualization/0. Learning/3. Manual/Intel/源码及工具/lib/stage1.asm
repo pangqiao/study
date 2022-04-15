@@ -49,7 +49,7 @@ set_stage1_gdt:
         ;;      * CS = 00AF9B00_0000FFFFh (G=L=P=1, D=0, C=0, R=A=1, limit=4G)
         ;;      * SS = 00CF9300_0000FFFFh (G=P=1, B=1, E=0, W=A=1, limit=4G)
         ;;
-        ;; 3) 因此，为了与 host 的描述符达成一致，这里将描述符设为: 
+        ;; 3) 因此, 为了与 host 的描述符达成一致, 这里将描述符设为: 
         ;;      * CS = 00AF9A00_0000FFFFh (G=L=P=1, D=0, C=A=0, R=1, limit=4G)
         ;;      * SS = 00CF9200_0000FFFFh (G=P=1, B=1, E=A=0, W=1, limit=4G)  
         ;
@@ -176,7 +176,7 @@ set_global_gdt:
         ;;      * CS = 00AF9B00_0000FFFFh (G=L=P=1, D=0, C=0, R=A=1, limit=4G)
         ;;      * SS = 00CF9300_0000FFFFh (G=P=1, B=1, E=0, W=A=1, limit=4G)
         ;;
-        ;; 3) 因此，为了与 host 的描述符达成一致，这里将描述符设为: 
+        ;; 3) 因此, 为了与 host 的描述符达成一致, 这里将描述符设为: 
         ;;      * CS = 00AF9A00_0000FFFFh (G=L=P=1, D=0, C=A=0, R=1, limit=4G)
         ;;      * SS = 00CF9200_0000FFFFh (G=P=1, B=1, E=A=0, W=1, limit=4G)  
         ;
@@ -249,8 +249,8 @@ set_global_gdt:
         mov DWORD [eax+2], esi			; GDT base
 
         ;;
-        ;; 注意，为了适应在 64-bit 环境里
-        ;; 1) 当需要进入 longmode 时，需要额外增加一个空的 GDT 描述符 ！
+        ;; 注意, 为了适应在 64-bit 环境里
+        ;; 1) 当需要进入 longmode 时, 需要额外增加一个空的 GDT 描述符 ！
         ;;
         cmp DWORD [fs: SDA.ApLongmode], 1
         jne set_global_gdt.@0
@@ -267,7 +267,7 @@ set_global_gdt.@0:
         mov [esi+tss32.ss0], ax
         
         ;;
-        ;; 分配一个 kernel 使用的 stack，作为中断服务例程使用
+        ;; 分配一个 kernel 使用的 stack, 作为中断服务例程使用
         ;;
         mov eax, 2000h
         lock add [fs:SDA.KernelStackPhysicalBase], eax
@@ -304,8 +304,8 @@ init_system_data_area:
         ;;
         ;; 地址说明: 
         ;; 1) 所有的地址值使用 64 位
-        ;; 2) 低 32 位使用在 legacy 模式下，映射 32 位值
-        ;; 3) 高 32 位使用在 64-bit 模式下，映射 64 位值
+        ;; 2) 低 32 位使用在 legacy 模式下, 映射 32 位值
+        ;; 3) 高 32 位使用在 64-bit 模式下, 映射 64 位值
         ;;
         
         
@@ -315,11 +315,11 @@ init_system_data_area:
         ;;      1.1) legacy 下 SDA_BASE = 8002_0000h
         ;;      1.2) 64-bit 下 SDA_BASE = ffff_f800_8000_0000h
         ;; 2) SDA.PhysicalBase 值: 
-        ;;      2.1) legacy 与 64-bit 下保持不变，为 12_0000h
+        ;;      2.1) legacy 与 64-bit 下保持不变, 为 12_0000h
         ;; 3) SDA.PcbBase 值: 
-        ;;      3.1) 指向 BSP 的 PCB 区域，即: 8000_0000h
+        ;;      3.1) 指向 BSP 的 PCB 区域, 即: 8000_0000h
         ;; 4) SDA.PcbPhysicalBase 值: 
-        ;;      4.1) 指向 BSP 的 PCB 物理地址，即: 10_0000h
+        ;;      4.1) 指向 BSP 的 PCB 物理地址, 即: 10_0000h
         ;;
         mov edx, 0FFFFF800h                                             ; 64 位地址中的高 32 位
         xor ecx, ecx
@@ -341,7 +341,7 @@ init_system_data_area:
         mov DWORD [fs: SDA.TimerCount], ecx
         mov DWORD [fs: SDA.LastStatusCode], ecx
         mov DWORD [fs: SDA.UsableProcessorMask], ecx                    ; UsableProcessorMask 指示不可用
-        mov DWORD [fs: SDA.ProcessMask], ecx                            ; process queue = 0，无任务
+        mov DWORD [fs: SDA.ProcessMask], ecx                            ; process queue = 0, 无任务
         mov DWORD [fs: SDA.ProcessMask + 4], ecx
         mov DWORD [fs: SDA.NmiIpiRequestMask], ecx
         
@@ -361,8 +361,8 @@ init_system_data_area:
         
         ;;
         ;; 如果需要进入 longmode 则定义 __X64 符号
-        ;; 1)SDA.ApLongmode = 1 时，进入所有处理器进入 longmode 模式
-        ;; 2) SDA.ApLongmode = 0 时，使用 legacy 环境
+        ;; 1)SDA.ApLongmode = 1 时, 进入所有处理器进入 longmode 模式
+        ;; 2) SDA.ApLongmode = 0 时, 使用 legacy 环境
         ;;
 %ifdef  __X64
         mov DWORD [fs: SDA.ApLongmode], 1
@@ -375,7 +375,7 @@ init_system_data_area:
         ;; 初始化 PCB pool 分配管理记录
         ;; 1) PCB pool 用来分每个 logical processor 分配私有的 PCB 块
         ;; 2) 共支持 16 个 logical processor
-        ;; 3) PCB pool 基址为 PCB_BASE = 8000_0000h，PCB_POOL_SIZE = 128K
+        ;; 3) PCB pool 基址为 PCB_BASE = 8000_0000h, PCB_POOL_SIZE = 128K
         ;; 4) PCB pool 物理地址 PCB_PHYSICAL_BASE = 10_0000h
         ;;
         mov DWORD [fs: SDA.PcbPoolBase], PCB_BASE                       ; PCB pool 基址
@@ -676,7 +676,7 @@ init_system_data_area:
         mov DWORD [fs: SDA.ExtIntRteCount], 0
         
         ;;
-        ;; 配置 pic8259 及异常处理例程，缺省的中断服务例程
+        ;; 配置 pic8259 及异常处理例程, 缺省的中断服务例程
         ;;
         call setup_pic8259
         call install_default_exception_handler
@@ -739,7 +739,7 @@ alloc_pcb_base:
 ;       edx - Tss 块虚拟地址
 ; 描述:
 ;       1) 从 TSS POOL 里分配一个 TSS 块空间       
-;       2) 如果 TSS Pool 用完，分配失败，返回 0 值
+;       2) 如果 TSS Pool 用完, 分配失败, 返回 0 值
 ;       3) 在 stage1 阶段调用
 ;-------------------------------------------------------------------
 alloc_tss_base:
@@ -889,7 +889,7 @@ init_processor_control_block:
         ;;
         ;; 设置 LDT 管理信息
         ;; 注意: 
-        ;; 1) LDT 此时为空，这里使用虚拟地址
+        ;; 1) LDT 此时为空, 这里使用虚拟地址
         ;; 2) 地址高 32 位使用在 64-bit 模式下
         ;;
         mov DWORD [gs: PCB.LdtBase], SDA_BASE+SDA.Ldt
@@ -1156,7 +1156,7 @@ wait_for_ap_stage1_done:
         mov ebx, [gs: PCB.LapicPhysicalBase]
         
         ;;
-        ;; 发送 IPIs，使用 INIT-SIPI-SIPI 序列
+        ;; 发送 IPIs, 使用 INIT-SIPI-SIPI 序列
         ;; 1) 从 SDA.ApStartupRoutineEntry 提取 startup routine 地址
         ;;      
         mov DWORD [ebx+ICR0], 000c4500h                         ; 发送 INIT IPI, 使所有 processor 执行 INIT
@@ -1164,7 +1164,7 @@ wait_for_ap_stage1_done:
         call delay_with_us
         
         ;;
-        ;; 下面发送两次 SIPI，每次延时 200us
+        ;; 下面发送两次 SIPI, 每次延时 200us
         ;; 1) 提取 Ap Startup Routine 地址
         ;;
         mov edx, [fs: SDA.ApStartupRoutineEntry]
@@ -1201,8 +1201,8 @@ wait_for_ap_stage1_done:
         ;;
         ;; 等待 AP 完成 stage1 工作:
         ;; 检查处理器计数 ProcessorCount 是否等于 LocalProcessorCount 值
-        ;; 1)是，所有 AP 完成 stage1 工作
-        ;; 2)否，在等待
+        ;; 1)是, 所有 AP 完成 stage1 工作
+        ;; 2)否, 在等待
         ;;
 wait_for_ap_stage1_done.@0:        
         xor eax, eax

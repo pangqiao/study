@@ -6,7 +6,7 @@
 
 
 ;;
-;; 这个 setup 模式是共用的，放在 ..\common\ 目录下
+;; 这个 setup 模式是共用的, 放在 ..\common\ 目录下
 ;; 用于写入磁盘的第 1 号扇区 ！
 ;;
 
@@ -68,20 +68,20 @@ SetupEntry:                                             ; 这是模块代码的�
 
         ;;
         ;; 下面进行数据的初始化设置:
-        ;; 1) 首先，初始化 SDA(System Data Area)区域数据
-        ;; 2) 然后，初始化 PCB(Processor Control Block)区域数据
+        ;; 1) 首先, 初始化 SDA(System Data Area)区域数据
+        ;; 2) 然后, 初始化 PCB(Processor Control Block)区域数据
         ;;
         ;; 说明:
-        ;; 1) SDA 数据是所有处理器共享，所以必须先初始化
-        ;; 2) PCB 数据是 logical processor 数据，共支持 16 个 PCB 块
-        ;; 3) PCB 数据是动态分配，每个 PCB 块基址不同
+        ;; 1) SDA 数据是所有处理器共享, 所以必须先初始化
+        ;; 2) PCB 数据是 logical processor 数据, 共支持 16 个 PCB 块
+        ;; 3) PCB 数据是动态分配, 每个 PCB 块基址不同
         ;; 
         ;;
         ;; fs 段说明: 
-        ;;      1) fs 指向 SDA(System Data Area)区域，是所有 logical processor 共享的数据区域
+        ;;      1) fs 指向 SDA(System Data Area)区域, 是所有 logical processor 共享的数据区域
         ;; 注意: 
         ;;      1) 需要在支持 64 位的处理器上才能直接写 IA_FS_BASE 寄存器！
-        ;;      2) 否则，需要开启保护模式来加载 FS 段基址
+        ;;      2) 否则, 需要开启保护模式来加载 FS 段基址
         ;;      3) GS 段基址在后续代码中更新
         ;;        
         call init_system_data_area
@@ -104,9 +104,9 @@ PcbInitEntry:
 
 %ifndef DBG
         ;;
-        ;; Stage1 阶段最后工作，检查是否为 BSP
-        ;; 1) 是，则发送 INIT-SIPI-SIPI 序列
-        ;; 2) 否，则等待接收 SIPI 
+        ;; Stage1 阶段最后工作, 检查是否为 BSP
+        ;; 1) 是, 则发送 INIT-SIPI-SIPI 序列
+        ;; 2) 否, 则等待接收 SIPI 
         ;;
         cmp BYTE [gs: PCB.IsBsp], 1
         jne ApStage1End
@@ -122,8 +122,8 @@ PcbInitEntry:
 
         ;;
         ;; 检查是否需要进入 longmode
-        ;; 1) 是，跳过 stage2, 进入 stage3 阶段(longmode 模式)
-        ;; 2) 否，进入 stage2 阶段
+        ;; 1) 是, 跳过 stage2, 进入 stage3 阶段(longmode 模式)
+        ;; 2) 否, 进入 stage2 阶段
         ;;
         cmp DWORD [fs: SDA.ApLongmode], 1
         mov eax, [PROTECTED_SEGMENT+4]
@@ -156,8 +156,8 @@ ApStage1End:
 %endif
         ;;
         ;; 检查是否需要进入 longmode
-        ;; 1) 是，跳过 stage2, 等待 stage3 锁，进入 stage3 阶段(longmode 模式)
-        ;; 2) 否，等待 stage2 锁，进入 stage2 阶段
+        ;; 1) 是, 跳过 stage2, 等待 stage3 锁, 进入 stage3 阶段(longmode 模式)
+        ;; 2) 否, 等待 stage2 锁, 进入 stage2 阶段
         ;;
         cmp DWORD [fs: SDA.ApLongmode], 1
         je ApStage1End.WaitStage3
@@ -215,7 +215,7 @@ ApStage1Entry:
 ApStage1Entry.Next:        
        
         ;;
-        ;; 检查 ApLock，是否允许 AP 进入 startup routine 执行
+        ;; 检查 ApLock, 是否允许 AP 进入 startup routine 执行
         ;;
         xor eax, eax
         xor esi, esi

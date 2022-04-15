@@ -8,7 +8,7 @@
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
-Homebrew安装成功后，会自动创建目录 /usr/local/Cellar 来存放Homebrew安装的程序.  这时你在命令行状态下面就可以使用 brew 命令了
+Homebrew安装成功后, 会自动创建目录 /usr/local/Cellar 来存放Homebrew安装的程序.  这时你在命令行状态下面就可以使用 brew 命令了
 
 更新Homebrew镜像源(以清华源示例)
 
@@ -24,16 +24,16 @@ brew update
 
 ## 1.2 Homebrew的使用
 
-- 安装软件: brew install 软件名，例: brew install wget
-- 搜索软件: brew search 软件名，例: brew search wget
-- 卸载软件: brew uninstall 软件名，例: brew uninstall wget
+- 安装软件: brew install 软件名, 例: brew install wget
+- 搜索软件: brew search 软件名, 例: brew search wget
+- 卸载软件: brew uninstall 软件名, 例: brew uninstall wget
 - 更新所有软件: brew update
 
->通过 update 可以把包信息更新到最新，不过包更新是通过git命令，所以要先通过 brew install git 命令安装git. 
+>通过 update 可以把包信息更新到最新, 不过包更新是通过git命令, 所以要先通过 brew install git 命令安装git. 
 
-- 更新具体软件: brew upgrade 软件名 ，例: brew upgrade git
+- 更新具体软件: brew upgrade 软件名 , 例: brew upgrade git
 - 显示已安装软件: brew list
-- 查看软件信息: brew info／home 软件名 ，例: brew info git ／ brew home git
+- 查看软件信息: brew info／home 软件名 , 例: brew info git ／ brew home git
 
 >brew home指令是用浏览器打开官方网页查看软件信息
 
@@ -156,7 +156,7 @@ make install
 
 ![config](./images/5.png)
 
-也可以通过命令: echo has('lua')，echo has('python2')和echo has('python3')
+也可以通过命令: echo has('lua'), echo has('python2')和echo has('python3')
 
 - Lua 返回: 1
 - Python 返回: 1

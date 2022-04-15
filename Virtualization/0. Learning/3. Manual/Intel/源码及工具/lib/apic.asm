@@ -55,7 +55,7 @@ enable_apic:
         jnz enable_apic.done
         
         ;;
-        ;; 检查是否开启 paging，没开启下 apic 使用物理基址
+        ;; 检查是否开启 paging, 没开启下 apic 使用物理基址
         ;; 
         mov eax, [gs: PCB.ProcessorStatus]
         test eax, CPU_STATUS_PG
@@ -88,7 +88,7 @@ disable_apic:
         jz disable_apic.done
         
         ;;
-        ;; 检查是否开启 paging，没开启下 apic 使用物理基址
+        ;; 检查是否开启 paging, 没开启下 apic 使用物理基址
         ;; 
         mov eax, [gs: PCB.ProcessorStatus]
         test eax, CPU_STATUS_PG
@@ -157,7 +157,7 @@ set_apic:
 ;------------------------------------------------
 ; set_apic_physical_base()
 ; input:
-;       esi: 低 32 位， edi: 高半部分
+;       esi: 低 32 位,  edi: 高半部分
 ; output:
 ;       none
 ; 描述: 
@@ -262,7 +262,7 @@ get_x2apic_id:
 ; output:
 ;       none
 ; 描述: 
-;       枚举 CPUID 0B leaf，来得到处理器拓扑信息，更新 PCB 内的拓扑记录
+;       枚举 CPUID 0B leaf, 来得到处理器拓扑信息, 更新 PCB 内的拓扑记录
 ;-------------------------------------------------------------------
 init_processor_topology_info:
         push ecx
@@ -279,7 +279,7 @@ init_processor_topology_info:
         jb init_processor_topology_info.done
 
         ;;
-        ;; 检查是否开启 paging，没开启下 PCB 使用物理基址
+        ;; 检查是否开启 paging, 没开启下 PCB 使用物理基址
         ;;
         mov eax, [gs: PCB.ProcessorStatus]
         test eax, CPU_STATUS_PG
@@ -292,7 +292,7 @@ init_processor_topology_info:
                         
         ;;
         ;; 开始枚举: EAX = 0Bh, ECX = 0
-        ;; 然后，每次递增 ECX 值，再执行 CPUID.0BH leaf
+        ;; 然后, 每次递增 ECX 值, 再执行 CPUID.0BH leaf
         ;;
         xor esi, esi                                            ; 开始的 sub-leaf 为 0
         
@@ -303,15 +303,15 @@ init_processor_topology_info.loop:
         inc esi                                                 ; 递增 sub-leaf       
                 
         ;;
-        ;; 执行 CPUID.0BH/ECX 时，返回 ECX[15:8] 为 level type
+        ;; 执行 CPUID.0BH/ECX 时, 返回 ECX[15:8] 为 level type
         ;;
-        ;; 1) 输入 ECX = 0 时，返回: ECX[7:0] = 0, ECX[15:8] = 1
-        ;; 2) 输入 ECX = 1 时，返回: ECX[7:0] = 1, ECX[15:8] = 2
-        ;; 3) 输入 ECX = 2 时，返回: ECX[7:0] = 2，ECX[15:8] = 0
+        ;; 1) 输入 ECX = 0 时, 返回: ECX[7:0] = 0, ECX[15:8] = 1
+        ;; 2) 输入 ECX = 1 时, 返回: ECX[7:0] = 1, ECX[15:8] = 2
+        ;; 3) 输入 ECX = 2 时, 返回: ECX[7:0] = 2, ECX[15:8] = 0
         ;;        
         shr ecx, 8
         and ecx, 0FFh
-        jz init_processor_topology_info.next                  ; 如果 level = 0，停止枚举
+        jz init_processor_topology_info.next                  ; 如果 level = 0, 停止枚举
         
         ;;
         ;; EAX[4:0] 返回 level 的 mask width 值
@@ -320,8 +320,8 @@ init_processor_topology_info.loop:
         
         ;;
         ;; 根据 level type 来进行处理:
-        ;; 1) ECX[15:8] = 1 时，属于 thread level
-        ;; 2) ECX[15:8] = 2 时，属于 core level
+        ;; 1) ECX[15:8] = 1 时, 属于 thread level
+        ;; 2) ECX[15:8] = 2 时, 属于 core level
         ;; 
         cmp ecx, LEVEL_THREAD
         je @@1
@@ -333,7 +333,7 @@ init_processor_topology_info.loop:
         ;; 注意: 
         ;; 1) CoreMaskWidth 值包含了 ThreadMaskWidth 在内
         ;; 2) CoreSelectMask 值包启了 ThreadSelectMask 在内
-        ;; 3) APIC ID 剩余的域归为 PackageId，因此: PackageId = APIC ID >> CoreMaskWidth
+        ;; 3) APIC ID 剩余的域归为 PackageId, 因此: PackageId = APIC ID >> CoreMaskWidth
         ;;　
         mov [ebp + TopologyInfo.CoreMaskWidth], al
         mov ecx, eax
@@ -352,7 +352,7 @@ init_processor_topology_info.loop:
         
         ;;
         ;; 检测 logical processor 数量:
-        ;; 1) 当属于 Core Level(ECX[15:8] = 2)时，EBX[15:0] 返回处理器物理 package 内有的 logical processor 数量
+        ;; 1) 当属于 Core Level(ECX[15:8] = 2)时, EBX[15:0] 返回处理器物理 package 内有的 logical processor 数量
         ;;
         and ebx, 0FFFFh
         mov [ebp + TopologyInfo.LogicalProcessorPerPackage], ebx
@@ -373,7 +373,7 @@ init_processor_topology_info.loop:
         
         ;;
         ;; 检测 logical processor 数量:
-        ;; 1) 当属于 Thread Level(ECX[15:8] = 1)时，EBX[15:0] 返回 core 内有的 logical processor 数量
+        ;; 1) 当属于 Thread Level(ECX[15:8] = 1)时, EBX[15:0] 返回 core 内有的 logical processor 数量
         ;;
         and ebx, 0FFFFh
         mov [ebp + TopologyInfo.LogicalProcessorPerCore], ebx   ; 更新 logical Processor per core 值
@@ -441,14 +441,14 @@ send_eoi_command:
 
 
 ;-----------------------------------------------------
-; get_mask_width(): 得到 mask width，使用于 xAPIC ID中
+; get_mask_width(): 得到 mask width, 使用于 xAPIC ID中
 ; input:
 ;       esi - maximum count(SMT 或 core 的最大 count 值)
 ; output:
 ;       eax - mask width
 ;-------------------------------------------------------
 get_mask_width:
-	xor eax, eax			; 清目标寄存器，用于MSB不为1时
+	xor eax, eax			; 清目标寄存器, 用于MSB不为1时
 	bsr eax, esi			; 查找 count 中的 MSB 位
 	ret
 	

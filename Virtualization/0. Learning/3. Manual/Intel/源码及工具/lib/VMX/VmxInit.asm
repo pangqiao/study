@@ -59,7 +59,7 @@ vmx_operation_enter:
         mov cr4, eax
         
         ;;
-        ;; 更新指令状态，允许执行 VMX 指令
+        ;; 更新指令状态, 允许执行 VMX 指令
         ;;
         or DWORD [ebp + PCB.InstructionStatus], INST_STATUS_VMX
         
@@ -78,8 +78,8 @@ vmx_operation_enter:
 
         ;;
         ;; 检查 VMXON 指令是否执行成功
-        ;; 1) 当 CF = 0 时，WMXON 执行成功
-        ;; 1) 当 CF = 1 时，返回失败
+        ;; 1) 当 CF = 0 时, WMXON 执行成功
+        ;; 1) 当 CF = 1 时, 返回失败
         ;;
         mov eax, STATUS_UNSUCCESS
         jc vmx_operation_enter.done
@@ -94,7 +94,7 @@ vmx_operation_enter:
         
         
         ;;
-        ;; 根据处理器 index 值，生成 VPID 头
+        ;; 根据处理器 index 值, 生成 VPID 头
         ;;
         mov ecx, [ebp + PCB.ProcessorIndex]
         shl ecx, 8
@@ -117,7 +117,7 @@ vmx_operation_enter:
         
         
         ;;
-        ;; 分配 VMCS A 区域，并作为缺省的 VMCS 区域
+        ;; 分配 VMCS A 区域, 并作为缺省的 VMCS 区域
         ;;
         call get_vmcs_pointer
         REX.Wrxb
@@ -223,17 +223,17 @@ initialize_vmxon_region:
         mov ebx, ecx
         
         ;;
-        ;; 检查 CR0.PE 与 CR0.PG 是否符合 fixed 位，这里只检查低 32 位值
-        ;; 1) 对比 Cr0FixedMask 值(固定为1值)，不相同则返回错误码
+        ;; 检查 CR0.PE 与 CR0.PG 是否符合 fixed 位, 这里只检查低 32 位值
+        ;; 1) 对比 Cr0FixedMask 值(固定为1值), 不相同则返回错误码
         ;;
         mov eax, STATUS_VMX_UNEXPECT                    ; 错误码(超出期望值)
-        xor ecx, [ebp + PCB.Cr0FixedMask]               ; 与 Cr0FixedMask 值异或，检查是否相同
+        xor ecx, [ebp + PCB.Cr0FixedMask]               ; 与 Cr0FixedMask 值异或, 检查是否相同
         js initialize_vmxon_region.done                 ; 检查 CR0.PG 位是否相等
         test ecx, 1
         jnz initialize_vmxon_region.done                ; 检查 CR0.PE 位是否相等
         
         ;;
-        ;; 如果 CR0.PE 与 CR0.PG 位相符，设置 CR0 其它位
+        ;; 如果 CR0.PE 与 CR0.PG 位相符, 设置 CR0 其它位
         ;;
         or ebx, [ebp + PCB.Cr0Fixed0]                   ; 设置 Fixed 1 位
         and ebx, [ebp + PCB.Cr0Fixed1]                  ; 设置 Fixed 0 位
@@ -313,7 +313,7 @@ vmx_operation_exit:
         vmxoff
         ;;
         ;; 检查是否成功
-        ;; 1) 当 CF = 0 且 ZF = 0 时，VMXOFF 执行成功
+        ;; 1) 当 CF = 0 且 ZF = 0 时, VMXOFF 执行成功
         ;;
         mov eax, STATUS_VMXOFF_UNSUCCESS
         jc vmx_operation_exit.done
@@ -432,7 +432,7 @@ initialize_vmcs_buffer:
         mov [ebx + VMB.Ep4taPhysicalBase], edx
         
         ;;
-        ;; 下面为 VMCS region 分配相关的 access page，包括: 
+        ;; 下面为 VMCS region 分配相关的 access page, 包括: 
         ;; 1) IoBitmap A page
         ;; 2) IoBitmap B page
         ;; 3) Virtual-access page
@@ -453,8 +453,8 @@ initialize_vmcs_buffer:
         ;; 使用 get_vmcs_access_pointer() 分配一个 access page
         ;; 1) edx:eax 返回对应的 physical address 与 virtual address
         ;; 2) 在 X64 下返回对应的 64 位地址
-        ;; 3) 注意: 这里不检查 get_vmcs_access_pointer() 的返回值，
-        ;;          作为演示，并没设计当超出内存资源的情形！
+        ;; 3) 注意: 这里不检查 get_vmcs_access_pointer() 的返回值, 
+        ;;          作为演示, 并没设计当超出内存资源的情形！
         ;;
         
 initialize_vmcs_buffer.loop:
@@ -541,7 +541,7 @@ initialize_vmcs_buffer.loop:
 
         
         ;;
-        ;; 下面分别初始化各个 VMCS 域，包括: 
+        ;; 下面分别初始化各个 VMCS 域, 包括: 
         ;; 1) VM execution control fields
         ;; 2) VM-exit control fields
         ;; 3) VM-entry control fields
@@ -565,7 +565,7 @@ initialize_vmcs_buffer.loop:
         mov esi, ebx
 
         ;;
-        ;; 如果guest为实模式，则调用 init_realmode_guest_sate
+        ;; 如果guest为实模式, 则调用 init_realmode_guest_sate
         ;;
         mov eax, init_guest_state_area
         mov ebx, init_realmode_guest_state
@@ -638,7 +638,7 @@ init_vm_storage_block:
         mov DWORD [eax + VSB.VmKeyBufferSize], 256
         
         ;;
-        ;; 更新处理器状态，表明存在 guest 环境
+        ;; 更新处理器状态, 表明存在 guest 环境
         ;;
         mov eax, PCB.ProcessorStatus
         or DWORD [gs: eax], CPU_STATUS_GUEST_EXIST
@@ -721,7 +721,7 @@ init_guest_state_area:
         mov edi, cr3                                    ; CR3 当前值
         
         ;;
-        ;; 如果 GUEST_PG 为 0，则清 CR0.PG 位
+        ;; 如果 GUEST_PG 为 0, 则清 CR0.PG 位
         ;;
         test DWORD [edx + VMB.GuestFlags], GUEST_FLAG_PG
         jnz init_guest_state_area.@0
@@ -820,7 +820,7 @@ init_guest_state_area.@01:
 init_guest_state_area.@02:
                         
         ;;
-        ;; 在 IA-32e 模式下的 limit，为了与 host 达成一致，这里 limit 设置为
+        ;; 在 IA-32e 模式下的 limit, 为了与 host 达成一致, 这里 limit 设置为
         ;; 1) ES/CS/SS/DS = 0FFFFFFFFh
         ;; 2) FS/GS = 0FFFFFh
         ;; 3) LDTR = 0
@@ -872,7 +872,7 @@ init_guest_state_area.@02:
         ;;      * CS = 00AF9B00_0000FFFFh (G=L=P=1, D=0, C=0, R=A=1)
         ;;      * SS = 00CF9300_0000FFFFh (G=P=1, B=1, E=0, W=A=1)
         ;;
-        ;; 3) 因此，为了与 host 的描述符达成一致，这里将描述符设为: 
+        ;; 3) 因此, 为了与 host 的描述符达成一致, 这里将描述符设为: 
         ;;      * CS = 00AF9A00_0000FFFFh (G=L=P=1, D=0, C=A=0, R=1)
         ;;      * SS = 00CF9200_0000FFFFh (G=P=1, B=1, E=A=0, W=1)  
         ;;        
@@ -1093,7 +1093,7 @@ init_guest_state_area.@2:
         jnz init_guest_state_area.@3
         
         ;;
-        ;; 当 “IA-32e mode guest”为 0 时，清掉 LME，LMA 以及 SCE 位
+        ;; 当 “IA-32e mode guest”为 0 时, 清掉 LME, LMA 以及 SCE 位
         ;;        
         and eax, ~(EFER_LME | EFER_LMA | EFER_SCE)
 
@@ -1121,7 +1121,7 @@ init_guest_state_area.@3:
         ;; 2. Interruptibility state:
         ;; 说明: 
         ;;    1) 全部设置为 0
-        ;;    2) 除了当 guest processor 处于 SMM 模式时，Block by SMI 必须设为 1 值
+        ;;    2) 除了当 guest processor 处于 SMM 模式时, Block by SMI 必须设为 1 值
         ;; 因此: 
         ;;    [0]: Blocking by STI: No
         ;;    [1]: Blocking by MOV SS: No
@@ -1407,7 +1407,7 @@ init_realmode_guest_state:
         ;; 2. Interruptibility state:
         ;; 说明: 
         ;;    1) 全部设置为 0
-        ;;    2) 除了当 guest processor 处于 SMM 模式时，Block by SMI 必须设为 1 值
+        ;;    2) 除了当 guest processor 处于 SMM 模式时, Block by SMI 必须设为 1 值
         ;; 因此: 
         ;;    [0]: Blocking by STI: No
         ;;    [1]: Blocking by MOV SS: No
@@ -1640,7 +1640,7 @@ init_vm_execution_control_fields:
         ;; 5) [7]  - process posted interrupts: No
         ;;
         ;; 注意: 
-        ;; 1) 如果 VMB.VmxTimerValue = 0 时，不使用 VMX-preemption timer
+        ;; 1) 如果 VMB.VmxTimerValue = 0 时, 不使用 VMX-preemption timer
         ;;
         
         mov ebx, EXTERNAL_INTERRUPT_EXITING | NMI_EXITING
@@ -1650,28 +1650,28 @@ init_vm_execution_control_fields:
         cmove eax, ebx
         
         ;;
-        ;; 注意，PCB.PinBasedCtls 的值在 stage1 阶段时已更新，它的值为: 
-        ;; 1) 当 IA32_VMX_BASIC[55] = 1 时，等于 IA32_VMX_TRUE_PINBASED_CTLS 寄存器
-        ;; 2) 当 IA32_VMX_BASIC[55] = 0 时，等于 IA32_VMX_PINBASED_CTLS 寄存器
+        ;; 注意, PCB.PinBasedCtls 的值在 stage1 阶段时已更新, 它的值为: 
+        ;; 1) 当 IA32_VMX_BASIC[55] = 1 时, 等于 IA32_VMX_TRUE_PINBASED_CTLS 寄存器
+        ;; 2) 当 IA32_VMX_BASIC[55] = 0 时, 等于 IA32_VMX_PINBASED_CTLS 寄存器
         ;; 
         
         ;;######################################################################################
         ;; PCB.PinBasedCtls 值说明: 
         ;; 1) [31:0]  - allowed 0-setting 位
-        ;;              当 bit 为 1 时，Pin-based VM-execution control 位为 0，则出错!
-        ;;              当 bit 为 0 时，Pin-based VM-execution control 位可为 0 值. 
-        ;;     因此:    当 bit 为 1 时，Pin-based VM-execution control 必须为 1 值!!!    
+        ;;              当 bit 为 1 时, Pin-based VM-execution control 位为 0, 则出错!
+        ;;              当 bit 为 0 时, Pin-based VM-execution control 位可为 0 值. 
+        ;;     因此:    当 bit 为 1 时, Pin-based VM-execution control 必须为 1 值!!!    
         ;;              
         ;; 2) [63:32] - allowed 1-setting 位
-        ;;              当 bit 为 0 时，Pin-based VM-execution control 位为 1，则出错！
-        ;;              当 bit 为 1 时，Pin-based VM-execution control 位可为 1 值. 
-        ;;     因此:    当 bit 为 0 时，Pin-based VM-execution control 必须为 0 值!!!
+        ;;              当 bit 为 0 时, Pin-based VM-execution control 位为 1, 则出错！
+        ;;              当 bit 为 1 时, Pin-based VM-execution control 位可为 1 值. 
+        ;;     因此:    当 bit 为 0 时, Pin-based VM-execution control 必须为 0 值!!!
         ;;
-        ;; 3) 当 [31:0] 的位为 0，而 [63:32] 的相应位同时为 1 时，
+        ;; 3) 当 [31:0] 的位为 0, 而 [63:32] 的相应位同时为 1 时, 
         ;;    说明 Pin-based VM-execution control 位允许设置为 0 或 1 值
         ;;
         ;; 生成最终的 Pin-based VM-execution control 值说明: 
-        ;; 1) 当 eax 输入用户设置的值后，下面算法生成最终的值
+        ;; 1) 当 eax 输入用户设置的值后, 下面算法生成最终的值
         ;; 算法一: 
         ;; 1) mask1 = (allowed 0-setting) AND (allowed 1-setting): 得出必须为 1 的 mask 值
         ;; 2) eax = (eax) OR (mask1): 置 1 值
@@ -1682,7 +1682,7 @@ init_vm_execution_control_fields:
         ;; 1) eax = (eax) OR (allowed 0-setting)
         ;; 2) eax = (eax) AND (allowed 1-setting)
         ;;
-        ;; 算法二是算法一的简便实现，它们的结果是一样的！
+        ;; 算法二是算法一的简便实现, 它们的结果是一样的！
         ;; 这是因为当前:
         ;;      1) allowed 0-setting = (allowed 0-setting) AND (allowed 1-setting)
         ;;      2) allowed 1-setting = (allowed 0-setting) OR (allowed 1-setting)
@@ -1691,7 +1691,7 @@ init_vm_execution_control_fields:
         
                        
         ;;
-        ;; 使用算法二，生成最终的 Pin-based VM-execution control 值
+        ;; 使用算法二, 生成最终的 Pin-based VM-execution control 值
         ;;
         or eax, [ebp + PCB.PinBasedCtls]                                ; OR  allowed 0-setting
         and eax, [ebp + PCB.PinBasedCtls + 4]                           ; AND allowed 1-setting
@@ -1761,12 +1761,12 @@ init_vm_execution_control_fields:
         mov edx, 136Dh
         
         ;;
-        ;; 下面情况下之一，使用 unrestricted guest 设置
+        ;; 下面情况下之一, 使用 unrestricted guest 设置
         ;; 1) GUEST_FLAG_PE = 0
         ;; 2) GUEST_FLAG_PG = 0
         ;; 3) GUEST_FLAG_UNRESTRICTED = 1
         ;;
-        ;; "unrestricted guest" = 1 时，"Enable EPT"必须为 1
+        ;; "unrestricted guest" = 1 时, "Enable EPT"必须为 1
         ;;
         mov edi, [esi + VMB.GuestFlags]
         
@@ -1789,7 +1789,7 @@ init_vm_execution_control_fields.@0:
 init_vm_execution_control_fields.@01:
 
         ;;
-        ;; 如果 "Use TPR shadow" 为 0，下面位必须为 0
+        ;; 如果 "Use TPR shadow" 为 0, 下面位必须为 0
         ;; 1) "virtualize x2APIC mode"
         ;; 2) "APIC-registers virtualization"
         ;; 3) "virutal-interrupt delivery"
@@ -1832,22 +1832,22 @@ init_vm_execution_control_fields.@02:
         
         ;;
         ;; 设置 #PF 异常的 PFEC_MASK 与 PFEC_MATCH 值
-        ;; PFEC 与 PFEC_MASK，PFEC_MATCH 说明: 
-        ;; 当 PFEC & PFEC_MASK = PFEC_MATCH 时，#PF 导致 VM exit 发生
-        ;;      1) 当 PFEC_MASK = PFEC_MATCH = 0 时，所有的 #PF 都导致 VM exit
-        ;;      2) 当 PFEC_MASK = 0，而 PFEC_MATCH = FFFFFFFFh 时，任何 #PF 都不会导致 VM exit
+        ;; PFEC 与 PFEC_MASK, PFEC_MATCH 说明: 
+        ;; 当 PFEC & PFEC_MASK = PFEC_MATCH 时, #PF 导致 VM exit 发生
+        ;;      1) 当 PFEC_MASK = PFEC_MATCH = 0 时, 所有的 #PF 都导致 VM exit
+        ;;      2) 当 PFEC_MASK = 0, 而 PFEC_MATCH = FFFFFFFFh 时, 任何 #PF 都不会导致 VM exit
         ;;
         ;; PFEC 说明:
-        ;; 1) [0] - P 位:   为 0 时，#PF 由 not present 产生
-        ;;                  为 1 时，#PF 由其它 voilation 产生
-        ;; 2) [1] - R/W 位: 为 0 时，#PF 由 read access 产生
-        ;;                  为 1 时，#PF 由 write access 产生
-        ;; 3) [2] - U/S 位: 为 0 时，发生 #PF 时，处理器在 supervisor 权限下
-        ;;                  为 1 时，发生 #PF 时，处理器在 user 权限下
-        ;; 4) [3] - RSVD 位: 为 0 时，指示保留位为 0
-        ;;                   为 1 时，指示保留位为 1
-        ;; 5) [4] - I/D 位:  为 0 时，执行页正常
-        ;;                   为 1 时，执行页产生 #PF
+        ;; 1) [0] - P 位:   为 0 时, #PF 由 not present 产生
+        ;;                  为 1 时, #PF 由其它 voilation 产生
+        ;; 2) [1] - R/W 位: 为 0 时, #PF 由 read access 产生
+        ;;                  为 1 时, #PF 由 write access 产生
+        ;; 3) [2] - U/S 位: 为 0 时, 发生 #PF 时, 处理器在 supervisor 权限下
+        ;;                  为 1 时, 发生 #PF 时, 处理器在 user 权限下
+        ;; 4) [3] - RSVD 位: 为 0 时, 指示保留位为 0
+        ;;                   为 1 时, 指示保留位为 1
+        ;; 5) [4] - I/D 位:  为 0 时, 执行页正常
+        ;;                   为 1 时, 执行页产生 #PF
         ;; 6) [31:5] - 保留位
         ;;
         
@@ -1885,15 +1885,15 @@ init_vm_execution_control_fields.@02:
         ;;
         ;; 设置 CR0/CR4 的 guest/host mask 及 read shadows 值
         ;; 说明: 
-        ;; 1) 当 mask 相应位为 1 时，表明此位属于 Host 设置，guest 无权设置
-        ;; 2) 当 mask 相应位为 0 时，表时此位 guest 可以设置
+        ;; 1) 当 mask 相应位为 1 时, 表明此位属于 Host 设置, guest 无权设置
+        ;; 2) 当 mask 相应位为 0 时, 表时此位 guest 可以设置
         ;;
         
         ;;
-        ;; CR0 guest/host mask 设置，根据提供的 guest flags 来进行设置
+        ;; CR0 guest/host mask 设置, 根据提供的 guest flags 来进行设置
         ;; 1) CR0.NE 属 host 权限
-        ;; 2) 当 GUEST_FLAG_PE = 1，CR0.PE 属于 host 权限，否则为 guest 权限
-        ;; 3) 当 GUEST_FLAG_PG = 1，CR0.PG 属于 host 权限，否则为 guest 权限
+        ;; 2) 当 GUEST_FLAG_PE = 1, CR0.PE 属于 host 权限, 否则为 guest 权限
+        ;; 3) 当 GUEST_FLAG_PG = 1, CR0.PG 属于 host 权限, 否则为 guest 权限
         ;; 5) CR0.CD 属于 host 权限
         ;; 6) CR0.NW 属于 host 权限
         ;;
@@ -1917,7 +1917,7 @@ init_vm_execution_control_fields.@02:
         ;;
         ;; CR4 guest/host mask 与 read shadow 设置
         ;; 1)  CR4.VMXE 及 CR4.VME 属于 host 权限
-        ;; 2) 当 GUEST_FLAG_PG = 1 时, CR4.PAE 属于 host 权限，否则 guest 权限
+        ;; 2) 当 GUEST_FLAG_PG = 1 时, CR4.PAE 属于 host 权限, 否则 guest 权限
         ;;
         mov eax, 00002021h
         mov edi, 00002020h        
@@ -1980,7 +1980,7 @@ init_vm_execution_control_fields.Cr4:
         ;;
         ;;  ### 设置 TPR shadow ###
         ;;
-        ;; 1) 当 "Use TPR shadow" = 0 时，TPR threshold = 0
+        ;; 1) 当 "Use TPR shadow" = 0 时, TPR threshold = 0
         ;; 2) 当 "Use TPR shadow" = 1 并且 "Virtual-interrupt delivery" = 0 时, TPR threshold = VPTR[7:4]
         ;; 3) 否则 TPR threshold = 20h
         ;;       
@@ -2057,7 +2057,7 @@ init_vm_execution_control_fields.@1:
 init_vm_execution_control_fields.@2:
         xor eax, eax
         ;;
-        ;; 如果支持 "enable VPID"并开启，则设置 VPID
+        ;; 如果支持 "enable VPID"并开启, 则设置 VPID
         ;;
         test DWORD [ExecutionControlBufBase + EXECUTION_CONTROL.ProcessorControl2], ENABLE_VPID
         jz init_vm_execution_control_fields.@3
@@ -2083,7 +2083,7 @@ init_vm_execution_control_fields.@3:
         mov [ExecutionControlBufBase + EXECUTION_CONTROL.EptpListAddress + 4], eax          
         
         ;;
-        ;; 为了方便，恢复 esi 值
+        ;; 为了方便, 恢复 esi 值
         ;;
         REX.Wrxb
         mov esi, edx
@@ -2130,8 +2130,8 @@ init_vm_exit_control_fields:
         
         ;;
         ;; Host address size 值取决于 host 的模式
-        ;; 1) 在 x86 下，Host address size = 0
-        ;; 2) 在 64-bit 模式下，VM-exit 返回的 host 必须是 64-bit 模式，Host address size = 1
+        ;; 1) 在 x86 下, Host address size = 0
+        ;; 2) 在 64-bit 模式下, VM-exit 返回的 host 必须是 64-bit 模式, Host address size = 1
         ;;
 %ifdef __X64
         mov eax, 3C9004h | HOST_ADDRESS_SPACE_SIZE
@@ -2141,7 +2141,7 @@ init_vm_exit_control_fields:
 
 
         ;;
-        ;; 如果“activity VMX-preemption timer”=1时，“save VMX-preemption timer value”=1
+        ;; 如果“activity VMX-preemption timer”=1时, “save VMX-preemption timer value”=1
         ;;
         test DWORD [ebp + PCB.ExecutionControlBuf + EXECUTION_CONTROL.PinControl], ACTIVATE_VMX_PREEMPTION_TIMER
         jz init_vm_exit_control_fields.@0
@@ -2216,7 +2216,7 @@ init_vm_entry_control_fields:
         ;;
         ;; 在 legacy 模式下设置 VM-Entry control
         ;; 1) [2]  - load debug controls : Yes
-        ;; 2) [9]  - IA-32e mode guest   : No(x86)，Yes(x64)
+        ;; 2) [9]  - IA-32e mode guest   : No(x86), Yes(x64)
         ;; 3) [10] - Entry to SMM        : No
         ;; 4) [11] - deactiveate dual-monitor treatment : No
         ;; 5) [13] - load IA32_PERF_GLOBAL_CTRL : Yes

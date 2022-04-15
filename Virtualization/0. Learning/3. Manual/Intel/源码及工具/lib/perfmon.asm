@@ -59,13 +59,13 @@ get_unhalted_cpi:
         push ecx
         push edx
         ;*
-        ;* 先关闭Fixed计数器，并清为0值
+        ;* 先关闭Fixed计数器, 并清为0值
         ;*
         DISABLE_COUNTER 0, (IA32_FIXED_CTR0_EN | IA32_FIXED_CTR1_EN)
         RESET_FIXED_PMC
 
         ;*
-        ;* 开启Fixed计数器，开始计数
+        ;* 开启Fixed计数器, 开始计数
         ;*
         mov ecx, IA32_FIXED_CTR_CTRL
         mov eax, 0BBh
@@ -76,7 +76,7 @@ get_unhalted_cpi:
         call esi                ; 调用被测量函数
         
         ;*
-        ;* 关闭Fxied计数器，停止计数
+        ;* 关闭Fxied计数器, 停止计数
         DISABLE_COUNTER 0, (IA32_FIXED_CTR0_EN | IA32_FIXED_CTR1_EN)
         
         mov ecx, IA32_FIXED_CTR0
@@ -111,13 +111,13 @@ get_nominal_cpi:
         push ecx
         push edx
         ;*
-        ;* 先关闭Fixed计数器，并清为0值
+        ;* 先关闭Fixed计数器, 并清为0值
         ;*
         DISABLE_COUNTER 0, (IA32_FIXED_CTR0_EN | IA32_FIXED_CTR2_EN)
         RESET_FIXED_PMC
 
         ;*
-        ;* 开启Fixed计数器，开始计数
+        ;* 开启Fixed计数器, 开始计数
         mov ecx, IA32_FIXED_CTR_CTRL
         mov eax, 0B0Bh
         mov edx, 0
@@ -126,7 +126,7 @@ get_nominal_cpi:
         call esi                ; 调用测试函数
         
         ;*
-        ;* 关闭Fxied计数器，停止计数
+        ;* 关闭Fxied计数器, 停止计数
         DISABLE_COUNTER 0, (IA32_FIXED_CTR0_EN | IA32_FIXED_CTR2_EN)
         
         mov ecx, IA32_FIXED_CTR0
@@ -237,7 +237,7 @@ check_pebs_interrupt:
         mov esi, [gs: PCB.PebsIndexPointer]
         mov esi, [esi]                          ; 读当前 PEBS index 值
         cmp esi, eax
-        seta al                                 ; 当前 PEBS index 大于原值，就置 1
+        seta al                                 ; 当前 PEBS index 大于原值, 就置 1
         movzx eax, al
         ret
 

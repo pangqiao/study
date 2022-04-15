@@ -7,8 +7,8 @@
 
 ;;
 ;; ex.asm 说明: 
-;; 1) ex.asm 是实验例子的源代码文件，它嵌入在 protected.asm 和 long.asm 文件内
-;; 2) ex.asm 是通用模块，能在 stage2 和 stage3 阶段运行
+;; 1) ex.asm 是实验例子的源代码文件, 它嵌入在 protected.asm 和 long.asm 文件内
+;; 2) ex.asm 是通用模块, 能在 stage2 和 stage3 阶段运行
 ;;
 
         ;;
@@ -17,7 +17,7 @@
         %include "ex.inc"
         
         ;;
-        ;; 例子 ex3-1: 使用 guest 与 host 相同环境，测试 guest
+        ;; 例子 ex3-1: 使用 guest 与 host 相同环境, 测试 guest
         ;;                
         mov esi, [fs: SDA.ProcessorCount]
         dec esi

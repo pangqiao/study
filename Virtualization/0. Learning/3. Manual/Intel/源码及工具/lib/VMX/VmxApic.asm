@@ -57,7 +57,7 @@ EptHandlerForGuestApicPage:
         jz EptHandlerForGuestApicPage.Write
         
         ;;
-        ;; 处理 guest 尝试执行 APIC-page 页面，注入一个 #PF(0x11) 异常
+        ;; 处理 guest 尝试执行 APIC-page 页面, 注入一个 #PF(0x11) 异常
         ;;
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_PF
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, 0011h
@@ -84,7 +84,7 @@ EptHandlerForGuestApicPage.Write:
         je EptHandlerForGuestApicPage.Write.OpcodeC7
         
         ;;
-        ;; ### 注意，作为示例，这里不处理其它指令情况，包括: 
+        ;; ### 注意, 作为示例, 这里不处理其它指令情况, 包括: 
         ;; 1) 使用其它 opcode 的指令
         ;; 1) 含有 REX prefix(4xH) 指令
         ;;
@@ -98,15 +98,15 @@ EptHandlerForGuestApicPage.Write.OpcodeC7:
         mov cl, al
         and ecx, 7        
         cmp cl, 4
-        sete cl                                 ; 如果 ModRM.r/m = 4，则 cl = 1，否则 cl = 0
+        sete cl                                 ; 如果 ModRM.r/m = 4, 则 cl = 1, 否则 cl = 0
         shr al, 6
-        jz EptHandlerForGuestApicPage.Write.@2  ; ModRM.Mod = 0，则 ecx += 0
-        cmp al, 1                               ; ModRM.Mod = 1，则 ecx += 2
+        jz EptHandlerForGuestApicPage.Write.@2  ; ModRM.Mod = 0, 则 ecx += 0
+        cmp al, 1                               ; ModRM.Mod = 1, 则 ecx += 2
         je EptHandlerForGuestApicPage.Write.OpcodeC7.@1
         add ecx, 2        
 EptHandlerForGuestApicPage.Write.OpcodeC7.@1:
         add ecx, 2                              ; ModRM.Mod = 2, 则 ecx += 4
-                                                ; ModRM.Mod = 3，属于错误 encode
+                                                ; ModRM.Mod = 3, 属于错误 encode
 EptHandlerForGuestApicPage.Write.@2:
         ;;
         ;; 读取写入立即数
@@ -132,7 +132,7 @@ EptHandlerForGuestApicPage.Write.Next:
         mov esi, [ebx + VMB.VirtualApicAddress]   
         
         ;;
-        ;; APIC-page 可写的 offset 为，写其它区域忽略
+        ;; APIC-page 可写的 offset 为, 写其它区域忽略
         ;; 1) 80h:      TPR
         ;; 2) B0h:      EOI
         ;; 3) D0h:      LDR
@@ -174,7 +174,7 @@ EptHandlerForGuestApicPage.Read:
         je EptHandlerForGuestApicPage.Read.Opcode8B
         
         ;;
-        ;; ### 注意，作为示例，这里不处理其它指令情况，包括: 
+        ;; ### 注意, 作为示例, 这里不处理其它指令情况, 包括: 
         ;; 1) 使用其它 opcode 的指令
         ;; 1) 含有 REX prefix(4xH) 指令
         ;;

@@ -125,7 +125,7 @@ struc EXCEPTION_INFO
         .LinearAddress:
 
         ;;
-        ;; #DB 异常则记录 BP， BD， BS
+        ;; #DB 异常则记录 BP,  BD,  BS
         ;;
         .BreakPoint             RESD            1
         .DebugFlags             RESD            1
@@ -289,7 +289,7 @@ struc MOV_CR_INFO
         .InstructionLength      RESD            1  
 
         ;;
-        ;; 如果由 LMSW 指令引发 VM-exit，记录线性地址
+        ;; 如果由 LMSW 指令引发 VM-exit, 记录线性地址
         ;;
         .LinearAddress          RESQ            1
 endstruc

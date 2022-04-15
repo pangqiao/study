@@ -91,7 +91,7 @@ if __name__ == '__main__':
     print exception_loads
     
 ```
-注: Python认为一个元素的元组，例如(123)的类型是int，而不是元组类型; (123,)是tuple
+注: Python认为一个元素的元组, 例如(123)的类型是int, 而不是元组类型; (123,)是tuple
 
 ```
 >>> type((123,))
@@ -100,7 +100,7 @@ if __name__ == '__main__':
 <type 'int'>
 ```
 
-可以查看dumps的结果，reduce是用来序列化时候返回的内容，该内容在反序列化时候，会作为函数参数传递进去. 所以类ParameterError
+可以查看dumps的结果, reduce是用来序列化时候返回的内容, 该内容在反序列化时候, 会作为函数参数传递进去. 所以类ParameterError
 
 
 注意下面情况: 
@@ -291,7 +291,7 @@ init code None
 end
 {'args': [], '--------------errorCode': '123456'}
 ```
-默认情况下，reduce传递的是对象本身，所以能识别出来‘123456’，自己定义的话返回self.__class__，返回的是类. (涉及dumps以及loads的具体实现，建议看源码)
+默认情况下, reduce传递的是对象本身, 所以能识别出来‘123456’, 自己定义的话返回self.__class__, 返回的是类. (涉及dumps以及loads的具体实现, 建议看源码)
 
 ```
 def construct_Error(cls, arg, kw):

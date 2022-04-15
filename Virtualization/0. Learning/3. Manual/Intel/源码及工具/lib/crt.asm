@@ -127,11 +127,11 @@ zero_memory32:
         mov [edi], eax
         
         ;;
-        ;; 计算调整到 DWORD 边界上的差额，原理等于 4 - dest & 03
+        ;; 计算调整到 DWORD 边界上的差额, 原理等于 4 - dest & 03
         ;; 1) 例如: [2:0] = 011B(3)
         ;; 2) 取反后 = 100B(4)
         ;; 3) 加1后 = 101B(5)        
-        ;; 4) 在32位下与03后 = 001B(1)，即差额为 1
+        ;; 4) 在32位下与03后 = 001B(1), 即差额为 1
         ;;
         mov ecx, esi                                    ; 原 count
         mov esi, edi                                    ; 原 dest
@@ -147,14 +147,14 @@ zero_memory32:
         mov esi, ecx
            
         ;;
-        ;; 在 32 位下，以 DWORD 为单位
+        ;; 在 32 位下, 以 DWORD 为单位
         ;; 
         shr ecx, 2
         rep stosd
 
 zero_memory32.@1:                     
         ;;
-        ;; 一次 1 字节，写入剩余字节数
+        ;; 一次 1 字节, 写入剩余字节数
         ;;
         mov ecx, esi
         and ecx, 03h
@@ -177,13 +177,13 @@ strlen32:
         push ecx
         xor eax, eax
         ;;
-        ;; 输入的 string = NULL 时，返回 0 值
+        ;; 输入的 string = NULL 时, 返回 0 值
         ;;
         test esi, esi
         jz strlen32.done
         
         ;;
-        ;; 测试是否支持 SSE4.2 指令，以及是否开启 SSE 指令执行
+        ;; 测试是否支持 SSE4.2 指令, 以及是否开启 SSE 指令执行
         ;; 选择使用 SSE4.2 版本的 strlen 指令
         ;;
         cmp DWORD [gs: PCB.SSELevel], SSE4_2
@@ -285,7 +285,7 @@ bit_swap32.loop:
         rcr eax, 1                              ; CF 移入 eax 高位
         ;;
         ;; 注意: 
-        ;;      1) 使用 FF /1 的 dec 指令，避免在 64-bit 模式下变为 REX prefix
+        ;;      1) 使用 FF /1 的 dec 指令, 避免在 64-bit 模式下变为 REX prefix
         ;;
         DECv ecx
         jnz bit_swap32.loop
@@ -328,7 +328,7 @@ clear_screen:
         call zero_memory
         
         ;;
-        ;; 如果拥有焦点，则清 target video buffer
+        ;; 如果拥有焦点, 则清 target video buffer
         ;;
         mov eax, [ebp + PCB.ProcessorIndex]             ; eax = index
         REX.Wrxb
@@ -359,7 +359,7 @@ clear_screen.done:
 ;       eax - row
 ; 描述:
 ;       1) 得到 video buffer 当前位置的行号
-;       2) 不修改 esi 值，以便后续使用
+;       2) 不修改 esi 值, 以便后续使用
 ;-------------------------------------------------
 video_buffer_row:
         push ebx
@@ -398,7 +398,7 @@ video_buffer_row:
 ;       eax - column
 ; 描述:
 ;       1) 得到 video buffer 当前位置的列号
-;       2) 不修改 esi 值，以便后续使用
+;       2) 不修改 esi 值, 以便后续使用
 ;-------------------------------------------------      
 video_buffer_column:
         push ebx
@@ -490,7 +490,7 @@ set_video_buffer:
         mov [ebx + LSB.LocalVideoBufferPtr], eax
         
         ;;
-        ;; 如果当前处理器拥有焦点，则更新 target video buffer
+        ;; 如果当前处理器拥有焦点, 则更新 target video buffer
         ;;
         REX.Wrxb
         mov ebx, [ebp + PCB.SdaBase]                    ; ebx = SDA
@@ -522,7 +522,7 @@ set_video_buffer.done:
 ; output:
 ;       0 - no, otherwise yes.
 ; 描述:
-;       根据提供的字符串，检查是否需要转换
+;       根据提供的字符串, 检查是否需要转换
 ;-------------------------------------------------          
 check_new_line:
         push ebp
@@ -551,7 +551,7 @@ check_new_line:
         add [ecx + LSB.LocalVideoBufferPtr], eax
         
         ;;
-        ;; 如果当前拥有焦点，则更新 target video buffer
+        ;; 如果当前拥有焦点, 则更新 target video buffer
         ;;
         mov ecx, [ebp + PCB.ProcessorIndex]
         REX.Wrxb
@@ -613,7 +613,7 @@ write_char:
         mov eax, SDA.InFocus
         mov eax, [fs: eax]
         cmp eax, [ebp + PCB.ProcessorIndex]
-        sete dl                                                 ; dl = 1 时，拥有焦点
+        sete dl                                                 ; dl = 1 时, 拥有焦点
         
         REX.Wrxb
         mov ebp, [ebp + PCB.SdaBase]                            ; ebp = SDA
@@ -627,7 +627,7 @@ write_char:
 
         ;;
         ;; 处理换行: 
-        ;; 1) 计算新行所写的位置，更新 video buffer 指针为下一个字符所写位置
+        ;; 1) 计算新行所写的位置, 更新 video buffer 指针为下一个字符所写位置
         ;;
         call video_buffer_column                                ; 得到当前 column 值
         neg eax
@@ -645,8 +645,8 @@ write_char.@1:
         ;;
         ;; 处理TAB键: 
         ;; 检查上一个字符是否为 TAB 键
-        ;; 1) 是，buffer pointer 加上 10h
-        ;; 2) 否，buffer pointer 加上 0Fh
+        ;; 1) 是, buffer pointer 加上 10h
+        ;; 2) 否, buffer pointer 加上 0Fh
         ;;
         add ecx, 0Fh
         cmp BYTE [ebx + LSB.LocalVideoBufferLastChar], 09
@@ -674,7 +674,7 @@ write_char.next:
         mov [edi + ecx], si                                     ; 向 BufferHead[Index] 写入字符
         
         ;;
-        ;; 如果当前拥有焦点，写入 target video buffer
+        ;; 如果当前拥有焦点, 写入 target video buffer
         ;;
         test dl, dl
         jz write_char.next.@0
@@ -688,7 +688,7 @@ write_char.next.@0:
         
 write_char.update:        
         ;;
-        ;; 更新 video buffer 指针，指向指一个字符位置
+        ;; 更新 video buffer 指针, 指向指一个字符位置
         ;;
         REX.Wrxb
         add edi, ecx
@@ -697,7 +697,7 @@ write_char.update:
         mov [ebx + LSB.LocalVideoBufferLastChar], si            ; 更新上一个字符
         
         ;;
-        ;; 如果当前拥有焦点，则更新 target video buffer
+        ;; 如果当前拥有焦点, 则更新 target video buffer
         ;;
         test dl, dl
         jz write_char.done
@@ -802,7 +802,7 @@ print_chars.@0:
         call putc
         ;;
         ;; 注意: 
-        ;;      1) 使用 FF /1 的 dec 指令，避免在 64-bit 模式下变为 REX prefix
+        ;;      1) 使用 FF /1 的 dec 指令, 避免在 64-bit 模式下变为 REX prefix
         ;;
         DECv ecx    
         jnz print_chars.@0
@@ -902,7 +902,7 @@ puts.@1:
 puts.next:        
         ;;
         ;; 注意: 
-        ;;      1) 使用 FF /0 的 inc 指令，避免在 64-bit 模式下变为 REX prefix
+        ;;      1) 使用 FF /0 的 inc 指令, 避免在 64-bit 模式下变为 REX prefix
         ;;        
         REX.Wrxb
         INCv ebx
@@ -1019,7 +1019,7 @@ print_hex_value.loop:
         mov esi, ebx
         ;;
         ;; 注意: 
-        ;;      1) 使用 FF /1 的 dec 指令，避免在 64-bit 模式下变为 REX prefix
+        ;;      1) 使用 FF /1 的 dec 指令, 避免在 64-bit 模式下变为 REX prefix
         ;;
         DECv ecx        
         jnz print_hex_value.loop
@@ -1083,24 +1083,24 @@ print_dword_decimal:
         mov ecx, 10                                     ; 除数
         
         ;;
-        ;; 指向数组尾部，从数组后面往前写
+        ;; 指向数组尾部, 从数组后面往前写
         ;;
         REX.Wrxb
         lea esi, [ebp - DIGIT_ARRAY_OFFSET]
 
 print_decimal.loop:
         REX.Wrxb
-        DECv esi                                ; 指向下一个位置，向前写
+        DECv esi                                ; 指向下一个位置, 向前写
         xor edx, edx
         div ecx                                 ; value / 10
         
         ;;
-        ;; 检查商是否为 0，为 0 时，除 10 结束
+        ;; 检查商是否为 0, 为 0 时, 除 10 结束
         ;;
         test eax, eax
         cmovz edx, [ebx]
         mov [ebx], eax
-        lea edx, [edx + '0']                    ; 余数转化为字符，使用 lea 指令，避免使用 add 指令(不改变eflags)
+        lea edx, [edx + '0']                    ; 余数转化为字符, 使用 lea 指令, 避免使用 add 指令(不改变eflags)
         mov [esi], dl                           ; 写入余数字符
         jnz print_decimal.loop
         
@@ -1131,7 +1131,7 @@ print_decimal.loop:
 ; output:
 ;       none
 ; 描述:
-;       esi 提供需要打印浮点数的地址，函数将加载到 FPU stack 中
+;       esi 提供需要打印浮点数的地址, 函数将加载到 FPU stack 中
 ;--------------------------------------------------------------
 print_dword_float:
         fnsave [gs: PCB.FpuStateImage]
@@ -1150,7 +1150,7 @@ print_dword_float:
 ; output:
 ;       none
 ; 描述:
-;       esi 提供需要打印浮点数的地址，函数将加载到 FPU stack 中
+;       esi 提供需要打印浮点数的地址, 函数将加载到 FPU stack 中
 ;--------------------------------------------------------------
 print_qword_float:
         fnsave [gs: PCB.FpuStateImage]
@@ -1168,7 +1168,7 @@ print_qword_float:
 ; output:
 ;       none
 ; 描述:
-;       esi 提供需要打印浮点数的地址，函数将加载到 FPU stack 中
+;       esi 提供需要打印浮点数的地址, 函数将加载到 FPU stack 中
 ;--------------------------------------------------------------
 print_tword_float:
         fnsave [gs: PCB.FpuStateImage]
@@ -1193,7 +1193,7 @@ print_tword_float:
 ;-------------------------------------------------
 print_float:
         ;;
-        ;; 准备工作，加载常数值
+        ;; 准备工作, 加载常数值
         ;;
         fld TWORD [crt.float_const10]                   ; 加载浮点数 10.0 值　
         fld1                                            ; 加载浮点数 1
@@ -1205,7 +1205,7 @@ print_float:
         ;; ** 2) st1    - 1.0
         ;; ** 3) st2    - 10.0
         ;;                
-        fprem                                           ; st0/st1，取余数值
+        fprem                                           ; st0/st1, 取余数值
         fld st3                                         ; 复制 float value
         fsub st0, st1                                   ; st0 的结果为小数点前面的值
         
@@ -1530,7 +1530,7 @@ upper_to_lower.done:
 ; letter_convert()
 ; input:
 ;       esi - 字符
-;       edi - 选择(1: 转换为大写，0: 转换为小写)
+;       edi - 选择(1: 转换为大写, 0: 转换为小写)
 ; output:
 ;       eax - 结果
 ; 描述:
@@ -1642,7 +1642,7 @@ dump_encodes.loop:
 ; puts_with_select()
 ; input:
 ;       esi - 字符串
-;       edi - select code(select[0] = 1: 大写，0 : 小写)
+;       edi - select code(select[0] = 1: 大写, 0 : 小写)
 ; output:
 ;       none
 ; 描述: 
@@ -1694,9 +1694,9 @@ puts_with_select.done:
 ; output:
 ;       none
 ; 描述:
-;       根据提供的 mask flags 值，来打印 edi 内的值
-;       1) mask flags 置位，则打印大写串
-;       2) mask flags 清位，则打印小写串
+;       根据提供的 mask flags 值, 来打印 edi 内的值
+;       1) mask flags 置位, 则打印大写串
+;       2) mask flags 清位, 则打印小写串
 ; 示例: 
 ;       CPUID.01H:EDX 返回 01 leaf 的功能支持位
 ;       mov esi, edx
@@ -1711,7 +1711,7 @@ dump_string_with_mask:
         mov ebx, edi
 dump_string_with.loop:        
         ;;
-        ;; 取 mask flags 的 MSB 位放到 edi LSB 中，作为 select code
+        ;; 取 mask flags 的 MSB 位放到 edi LSB 中, 作为 select code
         ;;
         shl edx, 1
         rcr edi, 1
@@ -1881,7 +1881,7 @@ division64_32:
         cmp edx, ebx
         jae double_divsion
         ;
-        ; 直接进行 edx:eax / ebx， edx:eax = 商
+        ; 直接进行 edx:eax / ebx,  edx:eax = 商
         ;
         div ebx
         xor edx, edx
@@ -1986,7 +1986,7 @@ do_mul64:
 ;------------------------------------------------------  
 cmp64:
         ;;
-        ;; 先比较高 32 位，不相等时，再比较低 32 位
+        ;; 先比较高 32 位, 不相等时, 再比较低 32 位
         ;;
         cmp edx, ecx
         jne cmp64.done
@@ -2023,13 +2023,13 @@ shl64:
 
 shl64_64:
         ;;
-        ;; 向左移动 32 位数，或者超过 32 位
+        ;; 向左移动 32 位数, 或者超过 32 位
         ;; 1) n = 32 时:  edx:eax << 32, 结果为 eax:0
-        ;; 2) n > 32 时:  edx:eax << n， 结果为 eax<<(n-32):0
+        ;; 2) n > 32 时:  edx:eax << n,  结果为 eax<<(n-32):0
         ;;
         mov edx, eax                                    ; eax 移入 edx
         xor eax, eax                                    ; 低 32 位为 0
-        and ecx, 31                                     ; 取 32 余数值，结果为 64 - n 
+        and ecx, 31                                     ; 取 32 余数值, 结果为 64 - n 
         shl edx, cl                                     ; 当 n = 32 时:  cl = 0
                                                         ; 当 n > 32 时:  32 > cl > 0
 shl64.done:
@@ -2064,13 +2064,13 @@ shr64:
 
 shr64_64:
         ;;
-        ;; 向右移动 32 位数，或者超过 32 位
+        ;; 向右移动 32 位数, 或者超过 32 位
         ;; 1) n = 32 时:  edx:eax >> 32, 结果为 0:edx
-        ;; 2) n > 32 时:  edx:eax >> n， 结果为 0:edx>>(n-32)
+        ;; 2) n > 32 时:  edx:eax >> n,  结果为 0:edx>>(n-32)
         ;;
         mov eax, edx                                    ; edx 移入 eax
         xor edx, edx                                    ; 高 32 位为 0
-        and ecx, 31                                     ; 取 32 余数值，结果为 64 - n 
+        and ecx, 31                                     ; 取 32 余数值, 结果为 64 - n 
         shr eax, cl                                     ; 当 n = 32 时:  cl = 0
                                                         ; 当 n > 32 时:  32 > cl > 0
 shr64.done:
@@ -2086,7 +2086,7 @@ shr64.done:
 ; output:
 ;       edx:eax - 返回被加数原值
 ; 描述: 
-;       1) 执行 lock 的 64 位数相加，结果保存在目标操作数里
+;       1) 执行 lock 的 64 位数相加, 结果保存在目标操作数里
 ;       2) 目标操作数是内存
 ;       3) 函数返回目标操作数原值
 ;------------------------------------------------------
@@ -2103,9 +2103,9 @@ locked_xadd64:
         jc locked_xadd64.ok
         
         ;;
-        ;; 不支持 cmpxchg8b 指令时，直接执行两次 xadd 指令
+        ;; 不支持 cmpxchg8b 指令时, 直接执行两次 xadd 指令
         ;; 警告: 
-        ;;      1) 在这种情况下，并不能真正地执行 64 位的原子 xadd 操作
+        ;;      1) 在这种情况下, 并不能真正地执行 64 位的原子 xadd 操作
         ;;
         lock xadd [esi], eax
         lock xadd [esi + 4], edx
@@ -2114,7 +2114,7 @@ locked_xadd64:
         
         
         ;;
-        ;; 下面使用 cmpxchg8b 指令，可以实现在 32 位下对 64 位数进行原子 xadd 操作
+        ;; 下面使用 cmpxchg8b 指令, 可以实现在 32 位下对 64 位数进行原子 xadd 操作
         ;;
 locked_xadd64.ok:
 
@@ -2135,7 +2135,7 @@ locked_xadd64.loop:
                                                         ; edx:eax = 原值
        
        ;;
-       ;; 执行 edx:eax 与 [esi] 比较，并且交换
+       ;; 执行 edx:eax 与 [esi] 比较, 并且交换
        ;; 1) edx;eax == [esi] 时: [esi] = ecx:ebx
        ;; 2) edx:eax != [esi] 时: edx:eax = [esi]
        ;;
@@ -2144,11 +2144,11 @@ locked_xadd64.loop:
         ;;
         ;; 检查 [esi] 内的原值是否已经被修改
         ;; 注意: 
-        ;; 1) 在执行“回写”目标操作数之前，“可能”已经被其它代码修改了 [esi] 内的原值
+        ;; 1) 在执行“回写”目标操作数之前, “可能”已经被其它代码修改了 [esi] 内的原值
         ;; 2) 因此: 必须检查原值是否相等！
-        ;; 3) 当原值已经被修改时，需要重新加载 [esi] 原值，再进行“相加”，“回写”操作
+        ;; 3) 当原值已经被修改时, 需要重新加载 [esi] 原值, 再进行“相加”, “回写”操作
         ;;
-        jne locked_xadd64.loop                          ; [esi] 原值与 edx:eax 不相等时，重复操作 
+        jne locked_xadd64.loop                          ; [esi] 原值与 edx:eax 不相等时, 重复操作 
 locked_xadd64.done:        
         pop ebp
         pop ebx
@@ -2213,8 +2213,8 @@ delay_with_us32.@0:
 ; 描述: 
 ;       1) 启动 local apic timer
 ; 参数: 
-;       esi - 提供定时时间，单位为 us
-;       edi - LAPIC_TIMER_ONE_SHOT，使用一次性定时
+;       esi - 提供定时时间, 单位为 us
+;       edi - LAPIC_TIMER_ONE_SHOT, 使用一次性定时
 ;             LAPIC_TIMER_PERIODIC, 使用周期性定时
 ;       eax - 提供一个回调函数
 ;------------------------------------------------------
@@ -2350,8 +2350,8 @@ clock:
 ;       1) 向所有处理器发送 INIT 消息(包括BSP)
 ;       2) 此函数引发处理器 INIT RESET
 ; 注意: 
-;       1) INIT RESET 下，MSR 不改变!
-;       2) BSP 执行 boot，所有 AP 等待 SIPI 消息!
+;       1) INIT RESET 下, MSR 不改变!
+;       2) BSP 执行 boot, 所有 AP 等待 SIPI 消息!
 ;------------------------------------------------------
 send_init_command:
 
@@ -2488,7 +2488,7 @@ do_modity_tpl.end:
 ; output:
 ;       eax - scan code
 ; 描述: 
-;       1) 等待按建，返回一个扫描码
+;       1) 等待按建, 返回一个扫描码
 ;       2) 此函数最后将关闭键盘
 ;----------------------------------------------
 read_keyboard:
@@ -2569,9 +2569,9 @@ read_keyboard.done:
 ; output:
 ;       eax - 扫描码
 ; 描述: 
-;       1) 等待按键，返回一个扫描码
+;       1) 等待按键, 返回一个扫描码
 ;       2) wait_a_key()是已经打开键盘时使用
-;       3)read_keyboard() 内部打开键盘，无需已经开启键盘
+;       3)read_keyboard() 内部打开键盘, 无需已经开启键盘
 ;----------------------------------------------
 wait_a_key:
         push ebp
@@ -2592,8 +2592,8 @@ wait_a_key:
         xor eax, eax        
                 
         ;;
-        ;; 在 x64 下，lock xadd [ebp + LSB.LocalKeyBufferPtr], rax
-        ;; 在 x86 下，lock xadd [ebp + LSB.LocalKeybufferPtr], eax
+        ;; 在 x64 下, lock xadd [ebp + LSB.LocalKeyBufferPtr], rax
+        ;; 在 x86 下, lock xadd [ebp + LSB.LocalKeybufferPtr], eax
         ;;
         PREFIX_LOCK
         REX.Wrxb
@@ -2713,7 +2713,7 @@ wait_esc_for_reset.next:
 get_spin_lock:
         ;;
         ;; 自旋锁操作方法说明:
-        ;; 1) 使用 bts 指令，如下面指令序列
+        ;; 1) 使用 bts 指令, 如下面指令序列
         ;;    lock bts DWORD [esi], 0
         ;;    jnc AcquireLockOk
         ;;
@@ -2733,9 +2733,9 @@ get_spin_lock.acquire:
         je get_spin_lock.done
 
         ;;
-        ;; 获取失败后，检查 lock 是否开放(未上锁)
-        ;; 1) 是，则再次执行获取锁，并上锁
-        ;; 2) 否，继续不断地检查 lock，直到 lock 开放
+        ;; 获取失败后, 检查 lock 是否开放(未上锁)
+        ;; 1) 是, 则再次执行获取锁, 并上锁
+        ;; 2) 否, 继续不断地检查 lock, 直到 lock 开放
         ;;
 get_spin_lock.check:        
         mov eax, [esi]
@@ -2756,7 +2756,7 @@ get_spin_lock.done:
 ; output:
 ;       0 - successful, 1 - failure
 ; 描述:
-;       1) 此函数用来获得自旋锁，
+;       1) 此函数用来获得自旋锁, 
 ;       2) 输入参数 esi 为 spin lock 地址
 ;       3) 输入参数 edi 为 计数值
 ;------------------------------------------------------
@@ -2764,7 +2764,7 @@ get_spin_lock_with_count:
         push ecx
         ;;
         ;; 自旋锁操作方法说明:
-        ;; 1) 使用 bts 指令，如下面指令序列
+        ;; 1) 使用 bts 指令, 如下面指令序列
         ;;    lock bts DWORD [esi], 0
         ;;    jnc AcquireLockOk
         ;;
@@ -2784,9 +2784,9 @@ get_spin_lock_with_count.acquire:
         je get_spin_lock_with_count.done
 
         ;;
-        ;; 获取失败后，检查 lock 是否开放(未上锁)
-        ;; 1) 是，则再次执行获取锁，并上锁
-        ;; 2) 否，继续不断地检查 lock，直到 lock 开放
+        ;; 获取失败后, 检查 lock 是否开放(未上锁)
+        ;; 1) 是, 则再次执行获取锁, 并上锁
+        ;; 2) 否, 继续不断地检查 lock, 直到 lock 开放
         ;;
 get_spin_lock_with_count.check:        
         dec ecx
@@ -2814,7 +2814,7 @@ get_spin_lock_with_count.done:
 ;       none
 ; 描述: 
 ;       1) 打印 buffer 数据
-;       2) <UP>键向上翻，<DOWN>向下翻, <ESC>退出
+;       2) <UP>键向上翻, <DOWN>向下翻, <ESC>退出
 ;-----------------------------------------------------
 dump_memory:
         push ebx

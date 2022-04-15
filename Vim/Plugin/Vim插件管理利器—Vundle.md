@@ -16,7 +16,7 @@
 <!-- /code_chunk_output -->
 ## 1. 简介
 
-Vundle是基于Git仓库的插件管理软件. Vundle将插件的安装简化为类似yum软件安装的过程，只要:BundleInstall插件就安装完了，:BundleClean之后插件就卸载了. 
+Vundle是基于Git仓库的插件管理软件. Vundle将插件的安装简化为类似yum软件安装的过程, 只要:BundleInstall插件就安装完了, :BundleClean之后插件就卸载了. 
 
 - 在.vimrc中跟踪和管理插件
 - 安装特定格式的插件(a.k.a. scripts/bundle)
@@ -46,11 +46,11 @@ $ git clone https://github.com/VundleVim/Vundle.vim.git  ~/.vim/bundle/vundle
 2. Github上非vim-scripts仓库的插件 
 3. 不在Github上的插件 
 
-对于不同的插件，vundle自动管理和下载插件的时候，有不同的地址填写方法，有如下三类:  
+对于不同的插件, vundle自动管理和下载插件的时候, 有不同的地址填写方法, 有如下三类:  
 
 1. 在Github上vim-scripts用户下的仓库,只需要写出repos(仓库)名称 
 2. 在Github其他用户下的repos, 需要写出”用户名/repos名” 
-3. 不在Github上的插件，需要写出git全路径
+3. 不在Github上的插件, 需要写出git全路径
 
 ### 3. 配置vundle插件
 
@@ -58,7 +58,7 @@ $ git clone https://github.com/VundleVim/Vundle.vim.git  ~/.vim/bundle/vundle
 
 添加的配置信息(样例) 
 
-注: 以后安装新插件就直接编辑vimrc，添加plugin就行了，在这里我们添加的plugin只是例子，你可以不安装这些插件，换上自己需要安装的插件. 
+注: 以后安装新插件就直接编辑vimrc, 添加plugin就行了, 在这里我们添加的plugin只是例子, 你可以不安装这些插件, 换上自己需要安装的插件. 
 
 ```
 set nocompatible              " 去除VI一致性,必须要添加
@@ -88,7 +88,7 @@ Plugin 'file:///home/gmarik/path/to/plugin'
 " 插件在仓库的子目录中.
 " 正确指定路径用以设置runtimepath. 以下范例插件在sparkup/vim目录下
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
-" 安装L9，如果已经安装过这个插件，可利用以下格式避免命名冲突
+" 安装L9, 如果已经安装过这个插件, 可利用以下格式避免命名冲突
 Plugin 'ascenator/L9', {'name': 'newL9'}
 
 " 你的所有插件需要在下面这行之前
@@ -109,9 +109,9 @@ filetype plugin indent on    " 必须 加载vim自带和插件相应的语法和
 
 ### 4. 安装需要的插件
 
-将想要安装的插件，按照地址填写方法，将地址填写在vundle#begin和vundle#end之间就可以
+将想要安装的插件, 按照地址填写方法, 将地址填写在vundle#begin和vundle#end之间就可以
 
-打开vim，输入:BundleInstall 
+打开vim, 输入:BundleInstall 
 
 ```
 $ vim
@@ -120,7 +120,7 @@ $ vim
 
 ### 5. 卸载插件
 
-如果要卸载插件就只需要删除.vimrc中的Bundle，然后在Vim中执行
+如果要卸载插件就只需要删除.vimrc中的Bundle, 然后在Vim中执行
 
 ```
 :BundleClean

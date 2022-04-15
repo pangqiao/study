@@ -13,7 +13,7 @@
 ;;
 ;; EPT(Extended Page Table)说明: 
 ;; 1) PXT 表区域: SDA.EptPxt
-;; 2) PPT 表区域: C0A0_0000h ~ C0BF_FFFFh 共 2M 空间，对应物理地址 A0_0000h ~ BF_FFFFh
+;; 2) PPT 表区域: C0A0_0000h ~ C0BF_FFFFh 共 2M 空间, 对应物理地址 A0_0000h ~ BF_FFFFh
 ;; 3) PDT 表由 get_ept_page() 函数动态分配
 ;; 4) PT 表由 get_ept_page() 函数动态分配
 ;;
@@ -61,7 +61,7 @@ GET_PAGE_FRAME                  EQU     1 << 25
 ;;
 ;; 定义 EPT violation 相关的常量
 ;;
-EPT_VIOLATION_TRANSLATION       EQU     100h                    ;; translation 位，指示是否在 guest paging-structure内发生 EPT violation
+EPT_VIOLATION_TRANSLATION       EQU     100h                    ;; translation 位, 指示是否在 guest paging-structure内发生 EPT violation
 
 
 
@@ -69,7 +69,7 @@ EPT_VIOLATION_TRANSLATION       EQU     100h                    ;; translation �
 ;; 定义 EPT misconfiguration 的定义码
 ;;
 EPT_MISCONF_NONREADABLE         EQU     10001h                  ;; 由于不可读引起
-EPT_MISCONF_ONLYEXECUTE         EQU     10002h                  ;; 由于 only-execute，但VMX不支持而引起
+EPT_MISCONF_ONLYEXECUTE         EQU     10002h                  ;; 由于 only-execute, 但VMX不支持而引起
 EPT_MISCONF_RESERVED            EQU     10004h                  ;; 由于保留位不为0引起
 EPT_MISCONF_MEMTYPE             EQU     10008h                  ;; 由于 memory type 而引起
 

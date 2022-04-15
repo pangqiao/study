@@ -234,9 +234,9 @@ nmi_handler32:
         pusha        
         
         ;;
-        ;; 读取处理器index，判断NMI handler处理方式
-        ;; 1) 当处理器index 相应的 RequestMask 位为 1时，执行 IPI routine
-        ;; 2) RequestMask 为 0时，执行缺省的异常处理例程
+        ;; 读取处理器index, 判断NMI handler处理方式
+        ;; 1) 当处理器index 相应的 RequestMask 位为 1时, 执行 IPI routine
+        ;; 2) RequestMask 为 0时, 执行缺省的异常处理例程
         ;;        
         mov ecx, [gs: PCB.ProcessorIndex]
         lock btr DWORD [fs: SDA.NmiIpiRequestMask], ecx
@@ -549,14 +549,14 @@ error_code_default_handler32:
 ; 描述: 
 ;       1)缺省的异常服务例程
 ;       2)所有缺省的异常处理放在下半部分
-;       3)在下半部分中，允许被中断
+;       3)在下半部分中, 允许被中断
 ;-----------------------------------------------------
 exception_default_handler32:
         pusha
         mov ebp, esp
 exception_default_handler32.@0:
         ;;
-        ;; 打印异常 context 信息，ebp 指向当前栈顶
+        ;; 打印异常 context 信息, ebp 指向当前栈顶
         ;;
         DO_EXCEPTION_REPORT
         
@@ -580,7 +580,7 @@ exception_default_handler32.@0:
 ;       esi - vector
 ;       edi - handler
 ; 描述:
-;       在 IDT 里设置描述符，以供 kernel 权限使用
+;       在 IDT 里设置描述符, 以供 kernel 权限使用
 ;-----------------------------------------------------------------------
 install_kernel_interrupt_handler32:
         push ebx
@@ -606,7 +606,7 @@ install_kernel_interrupt_handler32:
 ;       esi - vector
 ;       edi - handler
 ; 描述:
-;       在 IDT 里设置描述符，以供 user 代码调用
+;       在 IDT 里设置描述符, 以供 user 代码调用
 ;-----------------------------------------------------------------------
 install_user_interrupt_handler32:     
         push ebx

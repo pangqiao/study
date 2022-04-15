@@ -255,7 +255,7 @@
 %define IA32_TSC_DEADLINE                                          6E0H
 
 
-;;; 下面是 06_25H(DisplayFamily_DisplayModel) 处理器的 MSRs， 适用于 Nehalem/Westmere 微架构
+;;; 下面是 06_25H(DisplayFamily_DisplayModel) 处理器的 MSRs,  适用于 Nehalem/Westmere 微架构
 
 %define MSR_LBR_SELECT                                             1C8H
 %define MSR_LASTBRANCH_TOS                                         1C9H
@@ -897,7 +897,7 @@
 ; output:
 ;       none
 ; 描述: 
-;       1) 在 32 位下编译，目标平台为 x64，保存 PCB 数据
+;       1) 在 32 位下编译, 目标平台为 x64, 保存 PCB 数据
 ;----------------------------------------------------------
 %macro StoreToPcb 2
         ;;
@@ -1008,7 +1008,7 @@
 ; output:
 ;       none
 ; 描述: 
-;       1) 在 32 位下编译，目标平台为 x64，读取 PCB 数据
+;       1) 在 32 位下编译, 目标平台为 x64, 读取 PCB 数据
 ;----------------------------------------------------------
 %macro LoadFromPcb 2
         ;;
@@ -1120,7 +1120,7 @@
 ; output:
 ;       none
 ; 描述: 
-;       1) 在 32 位下编译，目标平台为 x64，保存 SDA 数据
+;       1) 在 32 位下编译, 目标平台为 x64, 保存 SDA 数据
 ;----------------------------------------------------------
 %macro StoreToSda 2
         ;;
@@ -1231,7 +1231,7 @@
 ; output:
 ;       none
 ; 描述: 
-;       1) 在 32 位下编译，目标平台为 x64，读取 SDA 数据
+;       1) 在 32 位下编译, 目标平台为 x64, 读取 SDA 数据
 ;----------------------------------------------------------
 %macro LoadFromSda 2
         ;;
@@ -1536,11 +1536,11 @@
 %macro MWAIT_IDLE_WITH_NEQ 2
 ;;
 ;; 说明: 
-;;      1) 参数1 提供一个内存操作数，参数2是一个目标值
-;;      2) 比较内存操作数的值是否等于目标值，不等于的话进入 mwait idle
+;;      1) 参数1 提供一个内存操作数, 参数2是一个目标值
+;;      2) 比较内存操作数的值是否等于目标值, 不等于的话进入 mwait idle
 ;;
 ;; 示例: 
-;;      MWAIT_IDLE_WITH_NEQ [eax], 1            ; 当 [eax] != 1 时，进入 mwait idle
+;;      MWAIT_IDLE_WITH_NEQ [eax], 1            ; 当 [eax] != 1 时, 进入 mwait idle
 ;;
 
         ;;
@@ -1557,7 +1557,7 @@
         ;;
         REX.Wrxb
         cmp DWORD %1, %2
-        je %%0                                  ; 比较两个值，相等时直接返回
+        je %%0                                  ; 比较两个值, 相等时直接返回
         sti                                     ; C1-state mwait
         xor eax, eax
         xor ecx, ecx
@@ -1583,11 +1583,11 @@
 %macro MWAIT_IDLE_WITH_NEQ32 2
 ;;
 ;; 说明: 
-;;      1) 参数1 提供一个内存操作数，参数2是一个目标值
-;;      2) 比较内存操作数的值是否等于目标值，不等于的话进入 mwait idle
+;;      1) 参数1 提供一个内存操作数, 参数2是一个目标值
+;;      2) 比较内存操作数的值是否等于目标值, 不等于的话进入 mwait idle
 ;;
 ;; 示例: 
-;;      MWAIT_IDLE_WITH_NEQ32 [eax], 1          ; 当 [eax] != 1 时，进入 idle loop，直到 [eax] == 1 为止
+;;      MWAIT_IDLE_WITH_NEQ32 [eax], 1          ; 当 [eax] != 1 时, 进入 idle loop, 直到 [eax] == 1 为止
 ;;
 
         ;;
@@ -1603,7 +1603,7 @@
         ;; 检查内存操作数是否改变
         ;;
         cmp DWORD %1, %2
-        je %%0                                  ; 比较两个值，不相等时进入 mwait idle
+        je %%0                                  ; 比较两个值, 不相等时进入 mwait idle
         sti                                     ; C1-state
         xor eax, eax
         xor ecx, ecx
@@ -1626,11 +1626,11 @@
 %macro MWAIT_IDLE_WITH_EQU 2
 ;;
 ;; 说明: 
-;;      1) 参数1 提供一个内存操作数，参数2是一个目标值
-;;      2) 比较内存操作数的值是否等于目标值，等于的话进入 idle
+;;      1) 参数1 提供一个内存操作数, 参数2是一个目标值
+;;      2) 比较内存操作数的值是否等于目标值, 等于的话进入 idle
 ;;
 ;; 示例: 
-;;      MWAIT_IDLE_WITH_EQU [eax], 0            ; 当 [eax] == 0 时，进入 mwait idle
+;;      MWAIT_IDLE_WITH_EQU [eax], 0            ; 当 [eax] == 0 时, 进入 mwait idle
 ;;
 
         ;;
@@ -1647,7 +1647,7 @@
         ;;
         REX.Wrxb
         cmp DWORD %1, %2
-        jne %%0                                 ; 比较两个值，不相等时退出
+        jne %%0                                 ; 比较两个值, 不相等时退出
         sti
         xor eax, eax
         xor ecx, ecx
@@ -1672,11 +1672,11 @@
 %macro MWAIT_IDLE_WITH_EQU32 2
 ;;
 ;; 说明: 
-;;      1) 参数1 提供一个内存操作数，参数2是一个目标值
-;;      2) 比较内存操作数的值是否等于目标值，等于的话进入 idle
+;;      1) 参数1 提供一个内存操作数, 参数2是一个目标值
+;;      2) 比较内存操作数的值是否等于目标值, 等于的话进入 idle
 ;;
 ;; 示例: 
-;;      MWAIT_IDLE_WITH_EQU32 [eax], 0          ; 当 [eax] == 0 时，进入 mwait idle
+;;      MWAIT_IDLE_WITH_EQU32 [eax], 0          ; 当 [eax] == 0 时, 进入 mwait idle
 ;;
 
         ;;
@@ -1692,7 +1692,7 @@
         ;; 检查内存操作数是否改变
         ;;
         cmp DWORD %1, %2
-        jne %%0                                 ; 比较两个值，不相等时退出
+        jne %%0                                 ; 比较两个值, 不相等时退出
         sti
         xor eax, eax
         xor ecx, ecx

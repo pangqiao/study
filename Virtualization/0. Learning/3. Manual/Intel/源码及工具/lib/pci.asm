@@ -197,7 +197,7 @@ get_GPIOBASE:
 	ret
 
 ;----------------------------------------------
-; enable_GPIO(): 开启 GPIO，使用 GPIOBASE 有效
+; enable_GPIO(): 开启 GPIO, 使用 GPIOBASE 有效
 ;-----------------------------------------------
 enable_GPIO:
 	READ_PCI_DWORD 0, 31, 0, 4Ch

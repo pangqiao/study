@@ -74,7 +74,7 @@ struc VMB
         .GuestFlags             RESD    1
 
         ;;
-        ;; 某些情况下，传给 VMM do_xxx函数的参数！
+        ;; 某些情况下, 传给 VMM do_xxx函数的参数！
         ;;
         .DoProcessParam         RESD    1
         .VmmDumpVmcsMask        RESQ    1
@@ -134,19 +134,19 @@ struc VMB
         .VmExitMsrLoadPhyAddress        RESQ    1
 
         ;;
-        ;; IO 值列表 buffer，用来记录 guest 向 IO 端写入的值 
+        ;; IO 值列表 buffer, 用来记录 guest 向 IO 端写入的值 
         ;;
         .IoVteBuffer                    RESQ    1
         .IoVteBufferPhyAddr             RESQ    1
 
         ;;
-        ;; MSR 值列表 buffer，用来记录 guest 向 MSR 写的值
+        ;; MSR 值列表 buffer, 用来记录 guest 向 MSR 写的值
         ;;
         .MsrVteBuffer                   RESQ    1
         .MsrVteBufferPhyAddr            RESQ    1
 
         ;;
-        ;; EPT page-fault 处理例程表 buffer，用来记录 GPA 的特殊处理
+        ;; EPT page-fault 处理例程表 buffer, 用来记录 GPA 的特殊处理
         ;;
         .GpaHteBuffer                   RESQ    1
         .GpaHteBufferPhyAddr            RESQ    1
@@ -221,7 +221,7 @@ endstruc
 
 
 ;;
-;; VSB(VM Storage Block，虚拟机存储块)
+;; VSB(VM Storage Block, 虚拟机存储块)
 ;;
 struc VSB
         .Base                   RESQ            1
@@ -276,22 +276,22 @@ struc VSB
         .FpuStackImage:         RESB            80
 
         ;;
-        ;; XMM image 区域，使用于 FXSAVE/FXRSTOR 指令(512字节)
+        ;; XMM image 区域, 使用于 FXSAVE/FXRSTOR 指令(512字节)
         ;;
         ALIGNB 16
         .XMMStateImage:         RESB            512
 
 
         ;;
-        ;; VM keyboard buffer 区域，共 256 个字节，保存按键扫描码
+        ;; VM keyboard buffer 区域, 共 256 个字节, 保存按键扫描码
         ;;
         .VmKeyBuffer            RESB            256
         .Reserve                RESB            4096 - $
 
 
         ;;
-        ;; VM video buffer 区域，存放处理器的屏幕信息
-        ;; 4K，存放约 25 * 80 * 2 信息
+        ;; VM video buffer 区域, 存放处理器的屏幕信息
+        ;; 4K, 存放约 25 * 80 * 2 信息
         ;;
         .VmVideoBuffer          RESB            (4096 * 2 - $)
 

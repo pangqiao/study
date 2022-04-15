@@ -25,7 +25,7 @@
 
         ;;
         ;; 说明: 
-        ;; 1) 此时，处理器处于 stage1 阶段(即，未分页保护模式)
+        ;; 1) 此时, 处理器处于 stage1 阶段(即, 未分页保护模式)
         ;; 2) stage3 阶段将切换到 longmode         
         ;;
         bits 32        
@@ -63,7 +63,7 @@ ApLongEntry:
         call update_stage3_kernel_stack        
 
         ;;
-        ;; 读 GS base 值，以备下一步更新
+        ;; 读 GS base 值, 以备下一步更新
         ;;
         mov esi, [gs: PCB.Base]
         mov edi, [gs: PCB.Base + 4]
@@ -90,7 +90,7 @@ ApLongEntry:
         ;;
 
         ;;
-        ;; 设置 EFER 寄存器，开启 long mode
+        ;; 设置 EFER 寄存器, 开启 long mode
         ;;
         mov ecx, IA32_EFER
         rdmsr 
@@ -98,7 +98,7 @@ ApLongEntry:
         wrmsr
 
         ;;
-        ;; 激活 long mode，进入 compatibility 模式
+        ;; 激活 long mode, 进入 compatibility 模式
         ;;
         mov eax, cr0
         bts eax, 31
@@ -175,9 +175,9 @@ ApLongEntry:
         
 %ifndef DBG               
         ;;
-        ;; stage3 阶段最后工作，检查是否为 BSP        
-        ;; 1) 是，则等待 AP 完成 stage3 阶段工作(即: 等待所有 AP 完成切换到 long mode)
-        ;; 2) 否，则转入 ApStage3End
+        ;; stage3 阶段最后工作, 检查是否为 BSP        
+        ;; 1) 是, 则等待 AP 完成 stage3 阶段工作(即: 等待所有 AP 完成切换到 long mode)
+        ;; 2) 否, 则转入 ApStage3End
         ;;
         cmp BYTE [gs: PCB.IsBsp], 1
         jne ApStage3End
@@ -253,7 +253,7 @@ ApLongEntry:
 ;;
 ;; 下面是 APs 的 pre-stage3 入口
 ;; 说明: 
-;;      1) 每个 AP 在 stage2 阶段里，需要等待 stage3 lock 有效后才允许进入
+;;      1) 每个 AP 在 stage2 阶段里, 需要等待 stage3 lock 有效后才允许进入
 ;;      2) ApStage3Routine 跳转到 ApLongEntry 执行属于 APs 流程
 ;;
         
@@ -277,7 +277,7 @@ ApStage3Routine:
 ;; 下面是 APs 在 stage3 阶段的最后工作
 ;; 说明: 
 ;       1) 增加处理器计数
-;;      2) 开放 stage3 lock，允许其它的 APs 进入执行
+;;      2) 开放 stage3 lock, 允许其它的 APs 进入执行
 ;;      3) 将 AP 放入 HLT 状态
 ;;
 
@@ -297,14 +297,14 @@ ApStage3End:
         lock inc DWORD [fs: SDA.ApInitDoneCount]      
           
         ;;
-        ;; 1) 开放 stage3 锁，允许其他 AP 进入 stage3
+        ;; 1) 开放 stage3 锁, 允许其他 AP 进入 stage3
         ;;
         xor eax, eax
         mov ebx, [fs: SDA.Stage3LockPointer]        
         xchg [rbx], eax
 
         ;;
-        ;; 设置 UsableProcessMask 值，指示 logical processor 处于可用状态
+        ;; 设置 UsableProcessMask 值, 指示 logical processor 处于可用状态
         ;;
         mov eax, [gs: PCB.ProcessorIndex]                       ; 处理器 index 
         lock bts DWORD [fs: SDA.UsableProcessorMask], eax       ; 设 Mask 位

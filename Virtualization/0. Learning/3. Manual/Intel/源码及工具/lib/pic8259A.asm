@@ -283,7 +283,7 @@ keyboard_8259_handler.next:
         REX.Wrxb
         cmp esi, ecx
         REX.Wrxb
-        cmovae esi, edi                                         ; 如果到达缓冲区尾部，则指向头部
+        cmovae esi, edi                                         ; 如果到达缓冲区尾部, 则指向头部
         mov [esi], al                                           ; 写入扫描码
         REX.Wrxb
         xchg [ebx], esi                                         ; 更新缓冲区指针 
@@ -312,7 +312,7 @@ keyboard_8259_handler.SendExtIntIpi:
         jz keyboard_8259_handler.SendExtIntIpi.Next
 
         ;;
-        ;; 检查目标处理器是否处于 guest，并且拥有焦点
+        ;; 检查目标处理器是否处于 guest, 并且拥有焦点
         ;;
         mov esi, [eax + PCB.ProcessorStatus]
         xor esi, CPU_STATUS_GUEST | CPU_STATUS_GUEST_FOCUS
@@ -362,7 +362,7 @@ keyboard_8259_handler.done:
 ;--------------------------------------------------
 Keyboard_8259_handler.BottomHalf:
         ;;
-        ;; 此时，栈中数据为: 
+        ;; 此时, 栈中数据为: 
         ;; 1) 保存的 context
         ;; 2) 返回参数
         ;;
@@ -398,8 +398,8 @@ Keyboard_8259_handler.BottomHalf:
 
         ;;
         ;; 检查处理器是否拥有焦点
-        ;; 1) 否，将转入 HLT 状态
-        ;; 2) 是，返回被中断者
+        ;; 1) 否, 将转入 HLT 状态
+        ;; 2) 是, 返回被中断者
         ;;        
         mov eax, PCB.ProcessorIndex
         mov ecx, [gs: eax]                                      ; 读处理器的 index 值
@@ -415,7 +415,7 @@ Keyboard_8259_handler.BottomHalf.@0:
         hlt
         
         ;;
-        ;; 当处理器收到外部中断请求，从 HLT 中唤醒！
+        ;; 当处理器收到外部中断请求, 从 HLT 中唤醒！
         ;; 重新执行下次检查是否拥有焦点
         ;;
         cmp ecx, [fs: eax]

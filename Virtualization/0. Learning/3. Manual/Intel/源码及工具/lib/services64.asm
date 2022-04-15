@@ -153,9 +153,9 @@ nmi_handler64:
         pusha64        
         mov rbp, rsp
         ;; 
-        ;; 读取处理器index，判断NMI handler处理方式
-        ;; 1) 当处理器index 相应的 RequestMask 位为 1时，执行 IPI routine
-        ;; 2) RequestMask 为 0时，执行缺省 NMI 例程
+        ;; 读取处理器index, 判断NMI handler处理方式
+        ;; 1) 当处理器index 相应的 RequestMask 位为 1时, 执行 IPI routine
+        ;; 2) RequestMask 为 0时, 执行缺省 NMI 例程
         ;;
         mov ecx, [gs: PCB.ProcessorIndex]
         lock btr DWORD [fs: SDA.NmiIpiRequestMask], ecx
@@ -324,14 +324,14 @@ lapic_timer_handler64:
         cmp eax, 60
         jb lapic_timer_handler64.@1
         ;;
-        ;; 如果大于 59 秒，则增加分钟数
+        ;; 如果大于 59 秒, 则增加分钟数
         ;;
         mov ecx, [rbx + LSB.Minute]
         inc ecx                                                 ; 增加分钟数
         cmp ecx, 60
         jb lapic_timer_handler64.@0
         ;;
-        ;; 如果大于 59 分，则增加小时数
+        ;; 如果大于 59 分, 则增加小时数
         ;;
         xor ecx, ecx
         inc DWORD [rbx + LSB.Hour]
@@ -348,7 +348,7 @@ lapic_timer_handler.next:
         inc DWORD [rbx + LSB.LapicTimerCount]
 
         ;;
-        ;; 如果有回调函数，则执行
+        ;; 如果有回调函数, 则执行
         ;;        
         mov rsi, [rbx + LSB.LapicTimerRoutine]
         test rsi, rsi

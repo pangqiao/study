@@ -8,8 +8,8 @@ Rust 学习心得＜4＞: async/await 如何工作: https://blog.csdn.net/m0_378
 
 Rust 异步编程:
 
-* 001，Why Async: https://www.jianshu.com/p/c7fa3cfda43e
+* 001, Why Async: https://www.jianshu.com/p/c7fa3cfda43e
 * 002, async await简单介绍: https://www.jianshu.com/p/18778b535d19
-* 003，Future trait介绍: https://www.jianshu.com/p/2b0d4e12ea53
-* 004，async await 的详细用法: https://www.jianshu.com/p/ae118a607529
+* 003, Future trait介绍: https://www.jianshu.com/p/2b0d4e12ea53
+* 004, async await 的详细用法: https://www.jianshu.com/p/ae118a607529
 * 

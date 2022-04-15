@@ -6,8 +6,8 @@
 
 ;;
 ;; ex.asm 说明: 
-;; 1) ex.asm 是实验例子的源代码文件，它嵌入在 protected.asm 和 long.asm 文件内
-;; 2) ex.asm 是通用模块，能在 stage2 和 stage3 阶段运行
+;; 1) ex.asm 是实验例子的源代码文件, 它嵌入在 protected.asm 和 long.asm 文件内
+;; 2) ex.asm 是通用模块, 能在 stage2 和 stage3 阶段运行
 ;;
 
 

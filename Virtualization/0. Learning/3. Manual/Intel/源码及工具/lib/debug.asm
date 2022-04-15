@@ -131,7 +131,7 @@ init_debug_unit.done:
 ; input:
 ;       none
 ; output:
-;       成功时返回 Bts buffer，　失败时返回 0
+;       成功时返回 Bts buffer, 　失败时返回 0
 ; 描述: 
 ;       得到 BTS buffer 基址(在开启 paging 后使用)
 ;-------------------------------------------------
@@ -151,7 +151,7 @@ get_bts_buffer_base:
 ; input:
 ;       none
 ; output:
-;       成功时返回 PEBS buffer，　失败时返回 0
+;       成功时返回 PEBS buffer, 　失败时返回 0
 ; 描述: 
 ;       得到 PEBS buffer 基址(在开启 paging 后使用)
 ;-------------------------------------------------
@@ -176,7 +176,7 @@ get_pebs_buffer_base:
 ; output:
 ;       0 - succssful, error code - failure
 ; 描述:
-;       开启 bts 机制，成功后返回 0，失败返回错误码
+;       开启 bts 机制, 成功后返回 0, 失败返回错误码
 ;-----------------------------------------------------
 enable_bts:
 enable_branch_trace_store:
@@ -236,7 +236,7 @@ enable_branch_trace_store.done:
 ; output:
 ;       eax - status
 ; 描述: 
-;       开启 BTINT 机制，应在 enable_bts() 之后调用
+;       开启 BTINT 机制, 应在 enable_bts() 之后调用
 ; 示例: 
 ;       call enable_bts                 ; 开启 BTS 机制
 ;       ...
@@ -597,8 +597,8 @@ set_debug_store_area:
 ; output:
 ;       status code
 ; 描述:
-;       缺省情况下，配置为环形回路 buffer 形式，
-;       threshold 值大于 maximum，避免产生 DS buffer 溢出中断
+;       缺省情况下, 配置为环形回路 buffer 形式, 
+;       threshold 值大于 maximum, 避免产生 DS buffer 溢出中断
 ;--------------------------------------------------------------------
 set_ds_management_record:
 	push ebx
@@ -613,7 +613,7 @@ set_ds_management_record:
         mov [gs: PCB.DebugStatus], edx
         
         ;;
-        ;; 分配一个 BTS buffer，设置 BTS buffer Base 值
+        ;; 分配一个 BTS buffer, 设置 BTS buffer Base 值
         ;;
         call get_bts_buffer_base
         mov esi, eax
@@ -622,7 +622,7 @@ set_ds_management_record:
         jz set_ds_management_record.done                                ; 分配 BTS buffer 失败
 
         ;;
-        ;; 设置 bts 管理记录，初始状态下: 
+        ;; 设置 bts 管理记录, 初始状态下: 
         ;; 1) BTS base = BTS buffer
         ;; 2) BTS index = BTS buffer
         ;; 3) BTS maximum = BTS record size * maximum
@@ -642,7 +642,7 @@ set_ds_management_record:
         mov [ebx], eax
       
         ;;
-        ;; 设置 pebs 管理记录，初始状态下: 
+        ;; 设置 pebs 管理记录, 初始状态下: 
         ;; 1) PEBS base = PEBS buffer
         ;; 2) PEBS index = PEBS buffer
         ;; 3) PEBS maximum = PEBS record size * maximum
@@ -814,7 +814,7 @@ reset_pebs_index:
 ; output:
 ;       none
 ; 描述: 
-;       更新 [gs: PCB.PebsBufferIndex]变量的值，保持检测 PEBS 中断
+;       更新 [gs: PCB.PebsBufferIndex]变量的值, 保持检测 PEBS 中断
 ;       [gs: PCB.PebsBufferIndex] 记录着“当前”的 PEBS index 值
 ;------------------------------------------------------------
 update_pebs_index_track:
@@ -880,7 +880,7 @@ set_bts_index:
 ;---------------------------------------------------------
 ; get_last_pebs_record_pointer()
 ; output:
-;       eax - PEBS 记录的地址值，返回 0 时表示无 PEBS 记录
+;       eax - PEBS 记录的地址值, 返回 0 时表示无 PEBS 记录
 ;----------------------------------------------------------
 get_last_pebs_record_pointer:
         mov eax, [gs: PCB.PebsIndexPointer]

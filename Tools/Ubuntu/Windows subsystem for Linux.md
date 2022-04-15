@@ -12,9 +12,9 @@
 
 ### 4. 启用root以及ssh
 
-替换掉/etc/shadow或者修改里面内容，将root密码删掉(置空)
+替换掉/etc/shadow或者修改里面内容, 将root密码删掉(置空)
 
-修改ssh服务的配置文件(一般在/etc/ssh/sshd_config)，参照当前目录下文件. 
+修改ssh服务的配置文件(一般在/etc/ssh/sshd_config), 参照当前目录下文件. 
 
 在/root/.bashrc尾添加下面内容
 

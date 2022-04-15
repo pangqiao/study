@@ -37,11 +37,11 @@ ZeroMemory:
         mov [edi], eax
         
         ;;
-        ;; 计算调整到 DWORD 边界上的差额，原理等于 4 - dest & 03
+        ;; 计算调整到 DWORD 边界上的差额, 原理等于 4 - dest & 03
         ;; 1) 例如: [2:0] = 011B(3)
         ;; 2) 取反后 = 100B(4)
         ;; 3) 加1后 = 101B(5)        
-        ;; 4) 在32位下与03后 = 001B(1)，即差额为 1
+        ;; 4) 在32位下与03后 = 001B(1), 即差额为 1
         ;;
         mov ecx, esi                                    ; 原 count        
         mov esi, edi                                    ; 原 dest
@@ -57,14 +57,14 @@ ZeroMemory:
         mov esi, ecx
            
         ;;
-        ;; 在 32 位下，以 DWORD 为单位
+        ;; 在 32 位下, 以 DWORD 为单位
         ;; 
         shr ecx, 2
         rep stosd
 
 ZeroMemory.@1:                     
         ;;
-        ;; 一次 1 字节，写入剩余字节数
+        ;; 一次 1 字节, 写入剩余字节数
         ;;
         mov ecx, esi
         and ecx, 03h
@@ -278,7 +278,7 @@ init_longmode_page:
         mov DWORD [ecx + 100h * 8 + 4], 0
         
         ;;
-        ;; 设置 FFFF8000_80020000h，00020000h 的 PTE
+        ;; 设置 FFFF8000_80020000h, 00020000h 的 PTE
         ;;
         mov ecx, 20h
         mov esi, 20000h | RW | P

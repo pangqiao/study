@@ -702,7 +702,7 @@ dump_vmcs:
 %endif
 
         ;;
-        ;; 清 VMCS buffer，再读 VMCS 
+        ;; 清 VMCS buffer, 再读 VMCS 
         ;;
         mov esi, EXIT_INFO_SIZE
         REX.Wrxb
@@ -751,7 +751,7 @@ dump_vmcs:
 
 dump_vmcs.@0:
         ;;
-        ;; 从 (2, 0) 位置，开始清 screen
+        ;; 从 (2, 0) 位置, 开始清 screen
         ;;
         mov esi, 2
         mov edi, 0
@@ -845,7 +845,7 @@ dump_exit_info:
         
         
         ;;
-        ;;　假如发生指令执行错误，则打印 ExitReason 值
+        ;;　假如发生指令执行错误, 则打印 ExitReason 值
         ;;       
         movzx esi, WORD [ebp + EXIT_INFO.ExitReason]
         cmp DWORD [ebp + EXIT_INFO.InstructionError], 0

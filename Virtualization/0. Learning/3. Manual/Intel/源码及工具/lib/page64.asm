@@ -12,9 +12,9 @@
 
 ;;
 ;; page64 模块说明: 
-;; 1) page64 模块代码前半部分为 legacy 下的 32 位而写，在未进入 long mode 之前使用
-;; 2) 后半部分为 64-bit 代码而写，在进入 64-bit 环境后使用
-;; 3) legacy 代码后缀使用 "32"，64-bit 代码后缀使用 "64"
+;; 1) page64 模块代码前半部分为 legacy 下的 32 位而写, 在未进入 long mode 之前使用
+;; 2) 后半部分为 64-bit 代码而写, 在进入 64-bit 环境后使用
+;; 3) legacy 代码后缀使用 "32", 64-bit 代码后缀使用 "64"
 ;;
 
 
@@ -22,7 +22,7 @@
 
 
 ;;
-;; 定义 page table entry 标志位，对应 entry[11:9]
+;; 定义 page table entry 标志位, 对应 entry[11:9]
 ;;
 
 PTE_INVALID                     EQU             0
@@ -53,7 +53,7 @@ VALID_FLAGS                     EQU             801h
 clear_2m_for_longmode_ppt:
         push ecx
         ;;
-        ;; 清 PPT 表区域，共 2M 空间
+        ;; 清 PPT 表区域, 共 2M 空间
         ;;
         mov esi, [fs: SDA.PptPhysicalBase64]
         mov edi, 200000h / 1000h
@@ -71,14 +71,14 @@ clear_2m_for_longmode_ppt:
 ; output:
 ;       edx:eax - physical address of PT 
 ; 描述: 
-;       1) 在 PT Pool 里分配一个 4K 的物理块，作为 PT 或 PDT　
+;       1) 在 PT Pool 里分配一个 4K 的物理块, 作为 PT 或 PDT　
 ;       2) 此函数在 legacy 模式下使用
 ;---------------------------------------------------------------
 get_pt_physical_base32:
         push ebx  
         ;;
         ;; 在 PtPoolPhysicalBase 池里分配 PT 物理地址
-        ;; 1) 现在处于 stage1 阶段，使用PtPool物理地址
+        ;; 1) 现在处于 stage1 阶段, 使用PtPool物理地址
         ;;    
         mov esi, SDA_PHYSICAL_BASE + SDA.PtPoolPhysicalBase
         xor edx, edx                                            ; 分配粒度为 4K
@@ -337,7 +337,7 @@ map_longmode_page_transition_table32.@1:
 ;       0 - succssful, otherwise - error code
 ; 描述:
 ;       1) 执行 64 位的虚拟地址映射操作
-;       2) 成功返回 0，出错返回错误码
+;       2) 成功返回 0, 出错返回错误码
 ;       3) 在 legacy 模式下使用
 ;
 ; attribute 描述: 
@@ -353,8 +353,8 @@ map_longmode_page_transition_table32.@1:
 ;       [8] - G
 ;       [12] - PAT
 ;       [28] - INGORE
-;       [29] - FORCE，置位时，强制进行映射
-;       [30] - PHYSICAL，置位时，表示基于物理地址进行映射(用于初始化时)
+;       [29] - FORCE, 置位时, 强制进行映射
+;       [30] - PHYSICAL, 置位时, 表示基于物理地址进行映射(用于初始化时)
 ;       [31] - XD
 ;---------------------------------------------------------------
 do_prev_stage3_virtual_address_mapping32:
@@ -369,7 +369,7 @@ do_prev_stage3_virtual_address_mapping32:
         ;;
         ;; 检查映射的虚拟地址是否在 PPT 表区域内: 
         ;; ffff_f6fb_7da0_0000h - ffff_f6fb_7dbf_ffffh(2M 空间)
-        ;; 1) 是的话，忽略眏射
+        ;; 1) 是的话, 忽略眏射
         ;;
         mov eax, esi
         mov edx, edi
@@ -401,7 +401,7 @@ do_prev_stage3_virtual_address_mapping32.next:
         jne do_prev_stage3_virtual_address_mapping32.write_ppe
         
         ;;
-        ;; PPE 有效时，读 PDT 表地址，下一步继续检查 PDE
+        ;; PPE 有效时, 读 PDT 表地址, 下一步继续检查 PDE
         ;;
         mov eax, [ebp]
         and eax, 0FFFFF000h
@@ -418,7 +418,7 @@ do_prev_stage3_virtual_address_mapping32.write_ppe:
         ;;
         call get_pt_physical_base32                             ; edx:eax - 4K空间物理地址
         mov ecx, [esp + 20]                                     ; page attribute
-        and ecx, 07h                                            ; 保留 U/S, R/W 及 P 属性，PCD/PWT 属性不设置
+        and ecx, 07h                                            ; 保留 U/S, R/W 及 P 属性, PCD/PWT 属性不设置
         or ecx, VALID_FLAGS                                     ; 加上 VALAGS_FLAGS 标志　
         or ecx, eax
         ;;
@@ -444,7 +444,7 @@ do_prev_stage3_virtual_address_mapping32.check_pde:
         cmp eax, VALID_FLAGS
         jne do_prev_stage3_virtual_address_mapping32.write_pde
         ;;
-        ;; PDE 有效时，读取 PT 表地址，下一步继续检查 PTE 项
+        ;; PDE 有效时, 读取 PT 表地址, 下一步继续检查 PTE 项
         ;;
         mov eax, [ebp]
         and eax, 0FFFFF000h
@@ -454,11 +454,11 @@ do_prev_stage3_virtual_address_mapping32.check_pde:
         
 do_prev_stage3_virtual_address_mapping32.write_pde:
         ;;
-        ;; PDE 无效时，需要写入 PDE: 
+        ;; PDE 无效时, 需要写入 PDE: 
         ;; 注意: 
-        ;; 1) 首先，检查是否使用 2M 页映射
-        ;; 2) 属于 2M 页映射，则不需要分配 PT 表
-        ;; 3) 属于 4K 页映射，则需要分配 PT 表　
+        ;; 1) 首先, 检查是否使用 2M 页映射
+        ;; 2) 属于 2M 页映射, 则不需要分配 PT 表
+        ;; 3) 属于 4K 页映射, 则需要分配 PT 表　
         ;; 
         
         ;;
@@ -469,7 +469,7 @@ do_prev_stage3_virtual_address_mapping32.write_pde:
         jnz do_prev_stage3_virtual_address_mapping32.write_pde.@1
         ;;
         ;; 属于 4K 页映射
-        ;; 1) 分配 4K 空间，作为 PT 表地址
+        ;; 1) 分配 4K 空间, 作为 PT 表地址
         ;; 2) 写入 PDE 中
         ;;
         call get_pt_physical_base32
@@ -489,7 +489,7 @@ do_prev_stage3_virtual_address_mapping32.write_pde:
         
 do_prev_stage3_virtual_address_mapping32.write_pde.@1:        
         ;;
-        ;; 属于 2M 页映射，写入 page frame 地址值
+        ;; 属于 2M 页映射, 写入 page frame 地址值
         ;;
         mov eax, [esp + 24]
         mov edx, [esp + 16]                                     ; edx:eax = page frame 地址
@@ -516,7 +516,7 @@ do_prev_stage3_virtual_address_mapping32.write_pde.@1:
         or ecx, eax
         
         ;;
-        ;; 写入 PDE，完成映射
+        ;; 写入 PDE, 完成映射
         ;;
         mov [ebp], ecx
         mov [ebp + 4], edx
@@ -542,7 +542,7 @@ do_prev_stage3_virtual_address_mapping32.check_pte:
 do_prev_stage3_virtual_address_mapping32.write_pte:
         
         ;;
-        ;; 无效时，写入 page frame 地址值
+        ;; 无效时, 写入 page frame 地址值
         ;;
         
         mov eax, [esp + 24]
@@ -580,9 +580,9 @@ do_prev_stage3_virtual_address_mapping32.write_pte:
 
 do_prev_stage3_virtual_address_mapping32.check_mapping:
         ;;
-        ;; 假如 PTE 是有效的，表明 va 已经被映射
+        ;; 假如 PTE 是有效的, 表明 va 已经被映射
         ;; 1) 检查是否强行映射
-        ;; 2) 不是的话，忽略映射
+        ;; 2) 不是的话, 忽略映射
         ;;
         mov ecx, [esp + 20]
         test ecx, FORCE
@@ -664,7 +664,7 @@ do_prev_stage3_virtual_address_mapping32_n.done:
 ; intput:
 ;       rsi - physical address of PT
 ; output:
-;       rax - virtual address of PT，失败时返回 0 值
+;       rax - virtual address of PT, 失败时返回 0 值
 ; 描述: 
 ;       1) 返回 PT pool 中物理地址对应的虚拟地址
 ;---------------------------------------------------------------
@@ -673,7 +673,7 @@ get_pt_virtual_base64:
         xor eax, eax
         
         ;;
-        ;; 需要检查物理地址是在主 PT pool 内，还是备用 PT pool 内
+        ;; 需要检查物理地址是在主 PT pool 内, 还是备用 PT pool 内
         ;;
         cmp rsi, PT_POOL_PHYSICAL_BASE64
         jb get_pt_virtual_base64.check_backup
@@ -709,9 +709,9 @@ get_pt_virtual_base64.done:
 ; output:
 ;       rax - physical address of PT 
 ; 描述: 
-;       1) 在 PT Pool 里分配一个 4K 的物理块，作为 PT 或 PDT　
-;       2) 首先在主 PT Pool 里分配，当主 PT pool 用完后，在备用 PT pool 分配
-;       3) 当备用 PT Pool 也分配完，返回 0 值
+;       1) 在 PT Pool 里分配一个 4K 的物理块, 作为 PT 或 PDT　
+;       2) 首先在主 PT Pool 里分配, 当主 PT pool 用完后, 在备用 PT pool 分配
+;       3) 当备用 PT Pool 也分配完, 返回 0 值
 ;---------------------------------------------------------------
 get_pt_physical_base64:
         push rbx
@@ -725,7 +725,7 @@ get_pt_physical_base64:
         jne get_pt_physical_base64.check_backup
         
         ;;
-        ;; 可用时，从 Pt pool 里分配一个 4K 物理块
+        ;; 可用时, 从 Pt pool 里分配一个 4K 物理块
         ;;
         lock xadd [fs: SDA.PtPoolPhysicalBase], rax
         
@@ -746,7 +746,7 @@ get_pt_physical_base64:
 get_pt_physical_base64.check_backup:       
         ;;
         ;; 检查备用 Pt Pool 是否空闲可用
-        ;; 备用 Pt Pool 非空闲时，返回 0 值
+        ;; 备用 Pt Pool 非空闲时, 返回 0 值
         ;;
         cmp BYTE [fs: SDA.PtPool2Free], 1
         cmovne eax, esi
@@ -764,7 +764,7 @@ get_pt_physical_base64.check_backup:
         jb get_pt_physical_base64.ok
         
         ;;
-        ;; 超限时，清 Free 标志
+        ;; 超限时, 清 Free 标志
         ;;
         mov BYTE [fs: SDA.PtPool2Free], 0
         mov eax, esi
@@ -800,7 +800,7 @@ get_pt_physical_base64.done:
 ;       0 - succssful, otherwise - error code
 ; 描述:
 ;       1) 执行 64 位的虚拟地址映射操作
-;       2) 成功返回 0，出错返回错误码
+;       2) 成功返回 0, 出错返回错误码
 ;
 ; attribute 描述: 
 ;       r8 传递过来的 attribute 由下面标志位组成: 
@@ -817,8 +817,8 @@ get_pt_physical_base64.done:
 ;       [26:13] - 忽略
 ;       [27] - GET_PHY_PAGE_FRAME
 ;       [28] - INGORE
-;       [29] - FORCE，置位时，强制进行映射
-;       [30] - PHYSICAL，置位时，表示基于物理地址进行映射(用于初始化时)
+;       [29] - FORCE, 置位时, 强制进行映射
+;       [30] - PHYSICAL, 置位时, 表示基于物理地址进行映射(用于初始化时)
 ;       [31] - XD
 ;---------------------------------------------------------------
 do_virtual_address_mapping64:
@@ -832,7 +832,7 @@ do_virtual_address_mapping64:
         
         ;;
         ;; 检查映射的虚拟地址是否在 PPT 表区域内(PPT_BASE - PPT_TOP64): 
-        ;; 1) 是的话，由于已经映射，需要忽略眏射
+        ;; 1) 是的话, 由于已经映射, 需要忽略眏射
         ;;
         mov rax, PPT_BASE64
         cmp rsi, rax
@@ -858,7 +858,7 @@ do_virtual_address_mapping64.next:
         jne do_virtual_address_mapping64.write_ppe
 
         ;;
-        ;; 读 PDT 表地址，下一步继续检查 PDE
+        ;; 读 PDT 表地址, 下一步继续检查 PDE
         ;;
         mov rax, [rbp]
         and rax, ~0FFFh                                         ; 清 bits 11:0
@@ -881,16 +881,16 @@ do_virtual_address_mapping64.write_ppe:
         ;; 2) 写入 PPE 中
         ;;
         ;; page 属性设置说明: 
-        ;; 1) 从不使用 1G 页面映射，因此需去掉 PS 标志位
+        ;; 1) 从不使用 1G 页面映射, 因此需去掉 PS 标志位
         ;; 2) XD 标志不加在 PPE 上
-        ;; 3) 传递过来的 User 和 Writable 属性，必须要加上!
+        ;; 3) 传递过来的 User 和 Writable 属性, 必须要加上!
         ;; 4) PAT,PCD,PWT 以及 G 属性忽略!(这些属性只加在 page frame 上)
         ;;
         call get_pt_physical_base64                             ; rax - 4K空间物理地址
         
         ;;
         ;; 检查是分配 4K 物理地址是否成功:
-        ;; 1) 不成功时，返回状态码为: MAPPING_NO_RESOURCE
+        ;; 1) 不成功时, 返回状态码为: MAPPING_NO_RESOURCE
         ;;
         test rax, rax
         mov esi, MAPPING_NO_RESOURCE
@@ -923,7 +923,7 @@ do_virtual_address_mapping64.check_pde:
         jne do_virtual_address_mapping64.write_pde
         
         ;;
-        ;; PDE 有效时，检查映射是否有效
+        ;; PDE 有效时, 检查映射是否有效
         ;;
         mov rsi, [rbp]
         mov rdi, r12
@@ -932,7 +932,7 @@ do_virtual_address_mapping64.check_pde:
         jne do_virtual_address_mapping64.done
                 
         ;;
-        ;; 映射有效检查通过: 读取 PT 表地址，下一步继续检查 PTE 项
+        ;; 映射有效检查通过: 读取 PT 表地址, 下一步继续检查 PTE 项
         ;;
         mov rax, [rbp]
         and rax, ~0FFFh
@@ -945,15 +945,15 @@ do_virtual_address_mapping64.check_pde:
         
 do_virtual_address_mapping64.write_pde:
         ;;
-        ;; PDE 无效时，需要写入 PDE: 
+        ;; PDE 无效时, 需要写入 PDE: 
         ;; 注意: 
-        ;; 1) 首先，检查是否使用 2M 页映射
-        ;; 2) 属于 2M 页映射，则不需要分配 PT 表
-        ;; 3) 属于 4K 页映射，则需要分配 PT 表　
+        ;; 1) 首先, 检查是否使用 2M 页映射
+        ;; 2) 属于 2M 页映射, 则不需要分配 PT 表
+        ;; 3) 属于 4K 页映射, 则需要分配 PT 表　
         ;; 
         ;; page 属性设置说明: 
-        ;; 1) 属于 2M page frame 时，参数中的所有 page 属性都要加上
-        ;; 2) 属于 4K 页面映射时，只取 page 属性中的 U/S, R/W 和 P
+        ;; 1) 属于 2M page frame 时, 参数中的所有 page 属性都要加上
+        ;; 2) 属于 4K 页面映射时, 只取 page 属性中的 U/S, R/W 和 P
         ;;
         
         ;;
@@ -964,13 +964,13 @@ do_virtual_address_mapping64.write_pde:
         jnz do_virtual_address_mapping64.write_pde.@1
         ;;
         ;; 属于 4K 页映射
-        ;; 1) 分配 4K 空间，作为 PT 表地址
+        ;; 1) 分配 4K 空间, 作为 PT 表地址
         ;; 2) 写入 PDE 中
         ;;
         call get_pt_physical_base64
         ;;
         ;; 检查是分配 4K 物理地址是否成功:
-        ;; 1) 不成功时，返回状态码为: MAPPING_NO_RESOURCE
+        ;; 1) 不成功时, 返回状态码为: MAPPING_NO_RESOURCE
         ;;
         test rax, rax
         mov esi, MAPPING_NO_RESOURCE
@@ -992,14 +992,14 @@ do_virtual_address_mapping64.write_pde:
         
 do_virtual_address_mapping64.write_pde.@1:        
         ;;
-        ;; 属于 2M 页映射，写入 page frame 地址值
+        ;; 属于 2M 页映射, 写入 page frame 地址值
         ;;
         mov rax, r15
         and rax, ~1FFFFFh                                       ; 保证 2M page frame 边界
         and rax, [gs: PCB.MaxPhyAddrSelectMask]                 ; 保证在处理器的最大物理地址范围内
         
         ;;
-        ;; 保留 page attribute 参数中的 [12] 位，以及 [8:0]
+        ;; 保留 page attribute 参数中的 [12] 位, 以及 [8:0]
         ;; 生成最终 page frame 的属性
         ;;
         mov r8, r12
@@ -1015,7 +1015,7 @@ do_virtual_address_mapping64.write_pde.@1:
         or rax, VALID_FLAGS                                     ; 加上 VALAGS_FLAGS 标志　
         
         ;;
-        ;; 写入 PDE，完成映射
+        ;; 写入 PDE, 完成映射
         ;;
         mov [rbp], rax
 
@@ -1038,8 +1038,8 @@ do_virtual_address_mapping64.check_pte:
         
         ;;
         ;; 检查 PTE 是否有效
-        ;; 1) 如果原来的 PTE 是有效的，那么需要检查映射是否合法
-        ;; 2) 如果 PTE 无效，则写入 PTE 值
+        ;; 1) 如果原来的 PTE 是有效的, 那么需要检查映射是否合法
+        ;; 2) 如果 PTE 无效, 则写入 PTE 值
         ;;
         and eax, VALID_FLAGS
         cmp eax, VALID_FLAGS
@@ -1048,14 +1048,14 @@ do_virtual_address_mapping64.check_pte:
 do_virtual_address_mapping64.write_pte:
         
         ;;
-        ;; 无效时，写入 page frame 地址值
+        ;; 无效时, 写入 page frame 地址值
         ;;
         mov rax, r15
         and rax, ~0FFFh                                         ; 保证 4K page frame 边界
         and rax, [gs: PCB.MaxPhyAddrSelectMask]                 ; 保证在处理器的最大物理地址范围内
         
         ;;
-        ;; 保留 page attribute 参数中的 [8:0] 位，并取 PAT 标志(bit12)
+        ;; 保留 page attribute 参数中的 [8:0] 位, 并取 PAT 标志(bit12)
         ;; 生成最终 page frame 的属性
         ;;
         mov r8, r12
@@ -1084,9 +1084,9 @@ do_virtual_address_mapping64.write_pte:
 
 do_virtual_address_mapping64.check_mapping:
         ;;
-        ;; 假如 PTE 是有效的，表明 va 已经被映射
-        ;; 1) 检查是否强行映射，如果是强行映射则直接写入新的 PTE 值
-        ;; 2) 不是的话，检查映射是否有效
+        ;; 假如 PTE 是有效的, 表明 va 已经被映射
+        ;; 1) 检查是否强行映射, 如果是强行映射则直接写入新的 PTE 值
+        ;; 2) 不是的话, 检查映射是否有效
         ;;
         mov r8, r12
         test r8d, FORCE
@@ -1094,8 +1094,8 @@ do_virtual_address_mapping64.check_mapping:
 
         ;;
         ;; 检查映射是否有效: 
-        ;; 1) 如果检查能过，则返回 MAPPING_USED，指示已经被使用
-        ;; 2) 否则，返回相应的错误码
+        ;; 1) 如果检查能过, 则返回 MAPPING_USED, 指示已经被使用
+        ;; 2) 否则, 返回相应的错误码
         ;;
         mov rsi, [rbp]
         mov rdi, r12
@@ -1109,7 +1109,7 @@ do_virtual_address_mapping64.check_mapping:
         mov eax, MAPPING_USED          
         
         ;;
-        ;; 假如 page attribute [27] = 1 时，返回物理页 frame
+        ;; 假如 page attribute [27] = 1 时, 返回物理页 frame
         ;;          
         test r12, GET_PHY_PAGE_FRAME
         jz do_virtual_address_mapping64.done
@@ -1209,25 +1209,25 @@ get_physical_address_of_virtual_address:
 ; output:
 ;       rax - status code
 ; 描述:
-;       1) 当 PPE，PDE, PTE 有效时，说明已经被映射
+;       1) 当 PPE, PDE, PTE 有效时, 说明已经被映射
 ;       2) 需要检查提交的映射是否有效
-;       3) 函数返回状态码，为 MAPPING_VALID 时，表明映射有效
+;       3) 函数返回状态码, 为 MAPPING_VALID 时, 表明映射有效
 ;---------------------------------------------------------------
 check_valid_for_mapping:
         push rcx
         ;;
         ;; 检查内容说明: 
-        ;; 1) 如果 entry 的 PS = 1 时，而参数中的 PS 为 0 时，返回出错码: MAPPING_PS_MISMATCH
-        ;; 2) 如果 entry 的 R/W = 0，而参数中的 R/W = 1 时，返回出错码: MAPPING_RW_MISMATCH
-        ;; 3) 如果 entry 的 U/S = 0，而参数中的 U/S = 1 时，返回出错码: MAPPING_US_MISMATCH
-        ;; 4) 如果 entry 的 XD = 1，而参数中的 XD = 0 时，返回出错码: MAPPING_XD_MISMATCH
-        ;; 5) PAT, G，PCD, PWT，A 属性将忽略！
+        ;; 1) 如果 entry 的 PS = 1 时, 而参数中的 PS 为 0 时, 返回出错码: MAPPING_PS_MISMATCH
+        ;; 2) 如果 entry 的 R/W = 0, 而参数中的 R/W = 1 时, 返回出错码: MAPPING_RW_MISMATCH
+        ;; 3) 如果 entry 的 U/S = 0, 而参数中的 U/S = 1 时, 返回出错码: MAPPING_US_MISMATCH
+        ;; 4) 如果 entry 的 XD = 1, 而参数中的 XD = 0 时, 返回出错码: MAPPING_XD_MISMATCH
+        ;; 5) PAT, G, PCD, PWT, A 属性将忽略！
         
         mov eax, esi
         
         ;;
         ;; 检查 PS 标志
-        ;; 1) 如果 PS 标志不同，则返回 MAPPING_PS_MISMATCH
+        ;; 1) 如果 PS 标志不同, 则返回 MAPPING_PS_MISMATCH
         ;;
         xor eax, edi
         test eax, PS
@@ -1237,8 +1237,8 @@ check_valid_for_mapping:
         
         ;;
         ;; 检查 R/W 标志:
-        ;; 1) 如果 entry 的 R/W = 1 时，通过！继续往下检查
-        ;; 2) 如果 entry 的 R/W = 0 并且参数的 R/W = 1 时，返回 MAPPING_RW_MISMATCH
+        ;; 1) 如果 entry 的 R/W = 1 时, 通过！继续往下检查
+        ;; 2) 如果 entry 的 R/W = 0 并且参数的 R/W = 1 时, 返回 MAPPING_RW_MISMATCH
         ;;
         mov rax, rsi
         test eax, RW
@@ -1251,8 +1251,8 @@ check_valid_for_mapping:
 check_valid_for_mapping.check_us:
         ;;
         ;; 检查 U/S 标志: 
-        ;; 1) 如果 entry 的 U/S = 1 时，通过！继续往下检查
-        ;; 2) 如果 entry 的 U/S = 0 并且参数的 U/S = 1 时，返回 MAPPING_US_MISMATCH
+        ;; 1) 如果 entry 的 U/S = 1 时, 通过！继续往下检查
+        ;; 2) 如果 entry 的 U/S = 0 并且参数的 U/S = 1 时, 返回 MAPPING_US_MISMATCH
         ;;
         test eax, US
         jnz check_valid_for_mapping.check_xd
@@ -1264,8 +1264,8 @@ check_valid_for_mapping.check_us:
 check_valid_for_mapping.check_xd:
         ;;
         ;; 检查 XD 标志: 
-        ;; 1) 如果 entry 的 XD = 0 时，通过！继续往下检查
-        ;; 2) 如果 entry 的 XD = 1 并且参数的 U/S = 0 时，返回 MAPPING_XD_MISMATCH
+        ;; 1) 如果 entry 的 XD = 0 时, 通过！继续往下检查
+        ;; 2) 如果 entry 的 XD = 1 并且参数的 U/S = 0 时, 返回 MAPPING_XD_MISMATCH
         ;;
         bt rax, 63
         mov eax, MAPPING_VALID

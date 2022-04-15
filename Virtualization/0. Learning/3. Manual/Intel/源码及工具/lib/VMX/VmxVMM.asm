@@ -21,7 +21,7 @@
 ;-----------------------------------------------------------------------  
 VmmEntry:
         ;;
-        ;; 回到 host 环境，清 CPU_STATUS_GUEST 位
+        ;; 回到 host 环境, 清 CPU_STATUS_GUEST 位
         ;;
 %ifdef __X64
         DB 65h                          ; GS
@@ -38,7 +38,7 @@ VmmEntry:
 %endif
 
         ;;
-        ;; VM-exit 后，必须保存 guest context 信息
+        ;; VM-exit 后, 必须保存 guest context 信息
         ;;
         call store_guest_context
 
@@ -70,7 +70,7 @@ VmmEntry:
         mov esi, [eax + VMB.DoProcessParam]
 
         ;;
-        ;; 读取 VM-exit 原因码，转入执行相应的处理例程
+        ;; 读取 VM-exit 原因码, 转入执行相应的处理例程
         ;;
         movzx eax, WORD [ebp + PCB.ExitInfoBuf + EXIT_INFO.ExitReason]
         mov eax, [DoVmExitRoutineTable + eax * 4]
@@ -83,7 +83,7 @@ VmmEntry:
         je VmmEntry.done
         
         ;;
-        ;; 是否 RESUME，回到 guest 执行
+        ;; 是否 RESUME, 回到 guest 执行
         ;;
         cmp eax, VMM_PROCESS_RESUME
         je VmmEntry.resume
@@ -119,7 +119,7 @@ VmmEntry.resume:
         DEBUG_RECORD    "[VMM]: resume to guest !"
 
         ;;
-        ;; resume 前，必须恢复 guest context 信息
+        ;; resume 前, 必须恢复 guest context 信息
         ;;
         call restore_guest_context                      ; 恢复 guest context
         
@@ -386,7 +386,7 @@ DoTaskSwitch:
 
         ;;
         ;; step 1: 处理当前的 TSS 描述符
-        ;; a) JMP， IRET 指令发起: 则清 busy 位. 
+        ;; a) JMP,  IRET 指令发起: 则清 busy 位. 
         ;; b) CALL, 中断或异常发起: 则 busy 位保持不变(原 busy 为 1)
         ;;        
 DoTaskSwitch.Step1:
@@ -482,7 +482,7 @@ DoTaskSwitch.Step3:
         ;;
         ;; step 4: 处理目标 TSS 的 eflags.NT 位
         ;; a) CALL, 中断或异常发起: 置 TSS 内的 eflags.NT 位
-        ;; b) IRET，JMP 发起: 保持 TSS 内的 eflags.NT 位不变
+        ;; b) IRET, JMP 发起: 保持 TSS 内的 eflags.NT 位不变
         ;;
 DoTaskSwitch.Step4:
         REX.Wrxb
@@ -1088,7 +1088,7 @@ DoControlRegisterAccess:
         
         
         ;;
-        ;; ### 分析 MOV-CR 指令信息，有 4 类指令 ###
+        ;; ### 分析 MOV-CR 指令信息, 有 4 类指令 ###
         ;; 1) MOV to CRn 指令
         ;; 2) MOV from CRn 指令
         ;; 3) CLTS 指令
@@ -1115,7 +1115,7 @@ DoControlRegisterAccess.MovToCr:
         mov edx, [ebp + PCB.GuestExitInfo + MOV_CR_INFO.Register]               ; edx = register
 
         ;;
-        ;; 分析目标控制寄存器，并读取源寄存器值
+        ;; 分析目标控制寄存器, 并读取源寄存器值
         ;;                
         cmp ebx, 0
         je DoControlRegisterAccess.MovToCr.@0
@@ -1184,7 +1184,7 @@ DoControlRegisterAccess.MovToCr.@0.NE:
 DoControlRegisterAccess.MovToCr.@0.CD_NW:
         ;;
         ;; 检查 CR0.CD 与 CR0.NW 的设置
-        ;; 1) 如果属于 CR0.CD = 0，CR0.NW = 1 时，直接注入 #GP(0) 异常给 guest OS
+        ;; 1) 如果属于 CR0.CD = 0, CR0.NW = 1 时, 直接注入 #GP(0) 异常给 guest OS
         ;;
         mov eax, edx
         and eax, (CR0_CD | CR0_NW)
@@ -1532,7 +1532,7 @@ DoMTF:
 
         
         ;;
-        ;; 如果不需要decode，则跳过
+        ;; 如果不需要decode, 则跳过
         ;;
         cmp esi, DO_PROCESS_DECODE
         jne DoMTF.done
@@ -1740,7 +1740,7 @@ DoGDTR_IDTR:
 DoGDTR_IDTR.GetLinearAddress:        
 
         ;;
-        ;; 计算线性地址值，分析内存操作数的 base, index 及 scale
+        ;; 计算线性地址值, 分析内存操作数的 base, index 及 scale
         ;;
         test DWORD [edx + INSTRUCTION_INFO.Flags], INSTRUCTION_FLAGS_BASE
         jnz DoGDTR_IDTR.GetLinearAddress.@1        
@@ -1801,7 +1801,7 @@ DoGDTR_IDTR.GetLinearAddress.@2:
         lea ebx, [ebx + eax]
 
         ;;
-        ;; 分析 address size，得到最终的线性地址值
+        ;; 分析 address size, 得到最终的线性地址值
         ;;
         mov eax, [edx + INSTRUCTION_INFO.AddressSize]
         cmp eax, INSTRUCTION_ADRS_WORD
@@ -1830,7 +1830,7 @@ DoGDTR_IDTR.GetLinearAddress.GetHostVa:
         jnz DoGDTR_IDTR.CheckType
         
         ;;
-        ;; 地址无效，注入 #PF 异常
+        ;; 地址无效, 注入 #PF 异常
         ;;
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_PF
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, 0
@@ -1874,7 +1874,7 @@ DoGDTR_IDTR.SgdtSidt:
         mov [ebx + 2], eax
 
         ;;
-        ;; 检查 operand size，如果是 64 位则写入 10 bytes
+        ;; 检查 operand size, 如果是 64 位则写入 10 bytes
         ;;
         cmp DWORD [edx + INSTRUCTION_INFO.OperandSize], INSTRUCTION_OPS_QWORD
         jne DoGDTR_IDTR.Done
@@ -1918,7 +1918,7 @@ DoGDTR_IDTR.Lidt:
         mov [ecx + GIMB.IdtLimit], ax                           ; 保存 guest 原 IDTR.limit
 
         ;;
-        ;; 在 IA-32e 模式下是 1FFh，否则为 0FFh
+        ;; 在 IA-32e 模式下是 1FFh, 否则为 0FFh
         ;;
         GetVmcsField    GUEST_IA32_EFER_FULL
         mov esi, (31 * 8 + 7)
@@ -1982,8 +1982,8 @@ DoLDTR_TR:
    
         ;;
         ;; 检查操作数类型: 
-        ;; 1) 内存操作数，则获到线性地址值
-        ;; 2) 寄存器操作数，则读取寄存器值
+        ;; 1) 内存操作数, 则获到线性地址值
+        ;; 2) 寄存器操作数, 则读取寄存器值
         ;;
         test DWORD [edx + INSTRUCTION_INFO.Flags], INSTRUCTION_FLAGS_REG
         jnz DoLDTR_TR.GetRegister
@@ -1991,7 +1991,7 @@ DoLDTR_TR:
         xor ebx, ebx
 
         ;;
-        ;; 计算线性地址值，分析内存操作数的 base, index 及 scale
+        ;; 计算线性地址值, 分析内存操作数的 base, index 及 scale
         ;;
         test DWORD [edx + INSTRUCTION_INFO.Flags], INSTRUCTION_FLAGS_BASE
         jnz DoLDTR_TR.GetLinearAddress.@1        
@@ -2051,7 +2051,7 @@ DoLDTR_TR.GetLinearAddress.@2:
         REX.Wrxb
         lea ebx, [ebx + eax]
         ;;
-        ;; 分析 address size，得到最终的线性地址值
+        ;; 分析 address size, 得到最终的线性地址值
         ;;
         mov eax, [edx + INSTRUCTION_INFO.AddressSize]
         cmp eax, INSTRUCTION_ADRS_WORD
@@ -2080,7 +2080,7 @@ DoLDTR_TR.GetLinearAddress.GetHostVa:
         jnz DoLDTR_TR.CheckType
 
         ;;
-        ;; 地址无效，注入 #PF 异常
+        ;; 地址无效, 注入 #PF 异常
         ;;
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_PF
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, 0
@@ -2223,7 +2223,7 @@ DoEptViolaton:
         call eax
         
         ;;
-        ;; 处理完毕后，是否需要修复 EPT violation 故障
+        ;; 处理完毕后, 是否需要修复 EPT violation 故障
         ;; a)需要则执行下面的修复工作
         ;; b)否则直接返回
         ;;
@@ -2233,8 +2233,8 @@ DoEptViolaton:
 DoEptViolaton.next:        
         ;;
         ;; 检查页面是否属于 not-present
-        ;; 1) 如果属于 not-present，则分配物理页面，进行重新映射
-        ;; 2) 如果属于无访问权限时，修复映射
+        ;; 1) 如果属于 not-present, 则分配物理页面, 进行重新映射
+        ;; 2) 如果属于无访问权限时, 修复映射
         ;;
         mov eax, [ebp + PCB.ExitInfoBuf + EXIT_INFO.ExitQualification]
         test eax, (EPT_READ | EPT_WRITE | EPT_EXECUTE) << 3                     ; ExitQualification[5:3]
@@ -2278,8 +2278,8 @@ DoEptViolaton.remaping:
         
         ;;
         ;; 下面进行 guest-physical address 映射
-        ;; 注意: 这里添加所有访问权限，read/write/execute
-        ;; 1) 因为，guest-physical address 访问，可能会进行多种访问，需要多种权限
+        ;; 注意: 这里添加所有访问权限, read/write/execute
+        ;; 1) 因为, guest-physical address 访问, 可能会进行多种访问, 需要多种权限
         ;;
 %ifdef __X64
         ;;
@@ -2374,7 +2374,7 @@ DoEptMisconfiguration:
         push edx
         
         ;;
-        ;; 发生 EPT misconfiguration 时，进行修复工作
+        ;; 发生 EPT misconfiguration 时, 进行修复工作
         ;;
 
         REX.Wrxb

@@ -172,7 +172,7 @@ NextSelector                            EQU     68h
 
 
 ;;
-;; 虚拟机内存 domain 池，每个虚拟机的物理内存从这个 domain 池中分配
+;; 虚拟机内存 domain 池, 每个虚拟机的物理内存从这个 domain 池中分配
 ;; 1)domain pool 物理基址为 0800_0000h
 ;; 2)每个 domain 为 8M
 ;;
@@ -192,19 +192,19 @@ DOMAIN_POOL_SIZE                        EQU     8000000h
 
 
 ;;*
-;;* 定义 Processor Control Block 结构，使用于 gs 进行维护 
+;;* 定义 Processor Control Block 结构, 使用于 gs 进行维护 
 ;*
 ;;* 说明: 
-;;* 1) 每个 logical processor 有自己的一份 PCB 数据，总共容纳 16 个 logical processor
+;;* 1) 每个 logical processor 有自己的一份 PCB 数据, 总共容纳 16 个 logical processor
 ;;* 2) 每份 PCB 数据共 4K size
-;;* 3) 在 legacy 模式下使用 32 位数据，在 long 模式下更新为 64 位数据
-;;* 4) 大多数数据定义为 64 位宽(QWORD类型)，在 legacy 模式下使用低 32，long 模式下使用 full-width
+;;* 3) 在 legacy 模式下使用 32 位数据, 在 long 模式下更新为 64 位数据
+;;* 4) 大多数数据定义为 64 位宽(QWORD类型), 在 legacy 模式下使用低 32, long 模式下使用 full-width
 ;;* 
 
 
 struc PCB
         ;;
-        ;; 系统管理区域基址, gs:[0] 取得 PCB 管理区基址，这个基址是 virtual address
+        ;; 系统管理区域基址, gs:[0] 取得 PCB 管理区基址, 这个基址是 virtual address
         ;; 而 PhysicalBase 记录着物理地址!
         ;;
         .Base                   RESQ            1               ; 保存 PCB 基址
@@ -229,7 +229,7 @@ struc PCB
         .DomainTop              RESQ            1               ; domain 顶部
 
         ;;
-        ;; 当前与上一个优先级，用于管理中断
+        ;; 当前与上一个优先级, 用于管理中断
         ;;
         .CurrentTpl             RESD            1
         .PrevTpl                RESD            1
@@ -275,7 +275,7 @@ struc PCB
         .VmcsPhysicalPointer    RESQ            1
         
         ;;
-        ;; 记录 4 个 VMCS 管理指针，指向 VMCS_MANAGE_BLOCK
+        ;; 记录 4 个 VMCS 管理指针, 指向 VMCS_MANAGE_BLOCK
         ;;
         .VmcsA                  RESQ            1
         .VmcsB                  RESQ            1
@@ -312,7 +312,7 @@ struc PCB
 
 
         ;;
-        ;; Guest flag 值，记录是否处于 Guest
+        ;; Guest flag 值, 记录是否处于 Guest
         ;;
         .EptEnableFlag          RESB            1
         
@@ -339,7 +339,7 @@ struc PCB
         ;;
         ;; GDT 表 selector
         ;;
-        ;; GS 用于管理 PCB 区域，FS 用于管理 SDA 区域
+        ;; GS 用于管理 PCB 区域, FS 用于管理 SDA 区域
         ;;
         .GsSelector             RESW            1
         .TssSelector            RESW            1
@@ -407,16 +407,16 @@ struc PCB
         ;; 1) ProcessorFrequency: 处理器显示出来的频率
         ;; 2) TicksFrequency: 测量出来的处理器频率
         ;; 注意:
-        ;; 1) ProcessorFrequency 与 TicksFrequency 有些偏差，基于乘除运算下，会产生误差
+        ;; 1) ProcessorFrequency 与 TicksFrequency 有些偏差, 基于乘除运算下, 会产生误差
         ;; 2) ProcessorFrequency 稍微比 TicksFrequency 大
-        ;; 2.1) 在一台 2.4GHz 处理器上，ProcessorFrequency 的值为 2400
+        ;; 2.1) 在一台 2.4GHz 处理器上, ProcessorFrequency 的值为 2400
         ;; 2.2) 那么 TicksFrequency 的值大约为 2394
         ;;
 
-        .ProcessorFrequency     RESD            1               ; 处理器 core 频率，
+        .ProcessorFrequency     RESD            1               ; 处理器 core 频率, 
         .TicksFrequency         RESD            1               ; 这时测量出来的 ticks 频率数
 
-        .LapicTimerFrequency    RESD            1               ; local timer 的计数频率，单位为 us
+        .LapicTimerFrequency    RESD            1               ; local timer 的计数频率, 单位为 us
 
 
         ;;
@@ -563,7 +563,7 @@ struc PCB
 
 
         ;;
-        ;; 处理器 ID，APIC 以及多线程相关信息
+        ;; 处理器 ID, APIC 以及多线程相关信息
         ;;
         .LapicVersion           RESD            1               ; local APIC 版本
         .InitialApicId          RESD            1               ; 处理器初始 ID
@@ -571,7 +571,7 @@ struc PCB
         .LogicalId              RESD            1               ; 处理器逻辑 ID
         .MaxLogicalProcessor    RESD            1               ; package 内最大逻辑处理器数
         .MaxProcessorCore       RESD            1               ; package 内最大 core 数
-        .ProcessorIndex         RESD            1               ; 处理器编号 #0，#1 ...
+        .ProcessorIndex         RESD            1               ; 处理器编号 #0, #1 ...
         .LapicBase              RESQ            1               ; local APIC 虚拟映射基址
         .LapicPhysicalBase      RESQ            1               ; local APIC 物理基址
         .IapicBase              RESQ            1               ; IO APIC 虚拟映射基址
@@ -587,7 +587,7 @@ struc PCB
 
         ;;
         ;;
-        ;; 处理器 cache 信息，定义 4 个 cache 信息结构
+        ;; 处理器 cache 信息, 定义 4 个 cache 信息结构
         ;;      1) L1D(level-1 data):           level-1 数据 cache
         ;;      2) L1I(level-1 Instruction):    level-1 指令 cache
         ;;      3) L2(level-2 unified):         level-2 统一的 cache
@@ -770,7 +770,7 @@ struc PCB
 
 
         ;;
-        ;; XMM image 区域，使用于 FXSAVE/FXRSTOR 指令(512字节)
+        ;; XMM image 区域, 使用于 FXSAVE/FXRSTOR 指令(512字节)
         ;;
 
         ALIGNB 16
@@ -827,15 +827,15 @@ endstruc
 
 
 ;;************************************************************
-;;* 定义 System Data AREA 结构，用于维护系统管理，使用于 fs 段 
+;;* 定义 System Data AREA 结构, 用于维护系统管理, 使用于 fs 段 
 ;;*
 ;;* 说明: 
-;;* 1) 这是系统运行所需要的数据结构，所有处理器共享
+;;* 1) 这是系统运行所需要的数据结构, 所有处理器共享
 ;;************************************************************
 
 struc SDA
         ;;
-        ;; 系统数据区域，提供所有处理器共用使用的数据
+        ;; 系统数据区域, 提供所有处理器共用使用的数据
         ;;
         .Base                   RESQ            1               ; 此区域的地址(virtual address)
         .PhysicalBase           RESQ            1               ; 此区域的物理地址
@@ -871,7 +871,7 @@ struc SDA
         .SignalPointer          RESQ            1               ; 引用外部提供的信号
 
         ;;
-        ;; NMI handler 使用的功能号，缺省为 0 值，由硬件触发
+        ;; NMI handler 使用的功能号, 缺省为 0 值, 由硬件触发
         ;;
         .NmiIpiRequestMask      RESD            1
         .NmiIpiRoutine          RESQ            1
@@ -906,7 +906,7 @@ struc SDA
 
         ALIGNB 4
         ;;
-        ;; system timer counter，记录中断次数
+        ;; system timer counter, 记录中断次数
         ;;        
         .TimerCount             RESD            1
 
@@ -974,7 +974,7 @@ struc SDA
         ;;
         ;; paging 管理记录
         ;;
-        .XdValue                RESD            1               ; 保存 XD 中的值，这个值需要开启 XD 功能
+        .XdValue                RESD            1               ; 保存 XD 中的值, 这个值需要开启 XD 功能
         .PtBase                 RESD            1               ; PT 表基址
         .PtTop                  RESD            1               ; PT 表顶端
         .PtPhysicalBase         RESD            1               ; PT 表物理基址
@@ -1006,7 +1006,7 @@ struc SDA
         .PptPhysicalBase64      RESQ            1               ; PPT 表物理基址
 
         ;;
-        ;; 记录 PPT 表区域(2M)是否有效，有效时表明已经映射 PPT 表
+        ;; 记录 PPT 表区域(2M)是否有效, 有效时表明已经映射 PPT 表
         ;;
         .PptValid               RESB            1               ; 
 
@@ -1064,7 +1064,7 @@ struc SDA
 
         ALIGNB 4
         ;;
-        ;; TSS Pool，用来为每个处理器分配自己的 TSS 块
+        ;; TSS Pool, 用来为每个处理器分配自己的 TSS 块
         ;; 注意:
         ;; 1) 每个 TSS 分配 size 为: 100h 字节
         ;; 2) 共支持 16 个处理器
@@ -1073,7 +1073,7 @@ struc SDA
         .TssPoolPhysicalBase    RESQ            1               ; Tss pool 物理基址
         .TssPoolTop             RESQ            1               ; Tss pool 顶部
         .TssPoolPhysicalTop     RESQ            1               ; Tss pool 物理顶部
-        .TssPoolGranularity     RESD            1               ; Tss pool 分配的粒度，默认为 100h 字节
+        .TssPoolGranularity     RESD            1               ; Tss pool 分配的粒度, 默认为 100h 字节
 
 
         ;;
@@ -1198,8 +1198,8 @@ endstruc
 
 
 ;;
-;; LSB(Local Storage Block，本地存储块)，每个处理器拥有自己的 LSB 区域. 
-;; 每个 LSB 结构为 8K，保存处理器的 local video buffer, local keyboard buffer 等
+;; LSB(Local Storage Block, 本地存储块), 每个处理器拥有自己的 LSB 区域. 
+;; 每个 LSB 结构为 8K, 保存处理器的 local video buffer, local keyboard buffer 等
 ;;
 
 struc LSB
@@ -1238,15 +1238,15 @@ struc LSB
         .Second                 RESD            1
 
         ;;
-        ;; 本地 keyboard buffer 区域，共 256 个字节，保存按键扫描码
+        ;; 本地 keyboard buffer 区域, 共 256 个字节, 保存按键扫描码
         ;;
         .LocalKeyBuffer         RESB            256
      
         .Reserved               RESB            4096 - $
 
         ;;
-        ;; 本地 video buffer 区域，存放处理器的屏幕信息
-        ;; 4K，存放约 25 * 80 * 2 信息
+        ;; 本地 video buffer 区域, 存放处理器的屏幕信息
+        ;; 4K, 存放约 25 * 80 * 2 信息
         ;;
         .LocalVideoBuffer       RESB            (4096 * 2 - $)
 
@@ -1266,7 +1266,7 @@ endstruc
 
 struc SRT
         ;;
-        ;; 使用于 fs 管理，接着 SDA 区域
+        ;; 使用于 fs 管理, 接着 SDA 区域
 
         RESB    ((SYSTEM_DATA_AREA_SIZE + 0xfff) & 0xfffff000)
 
@@ -1624,8 +1624,8 @@ struc VGA
         
         ;;
         ;; 如果 bit55 of IA32_VMX_BASIC 为 1 时, 支持 4 个 capability 寄存器
-        ;; 1) 支持时，TrueFlag 的值为 1
-        ;; 2) 不支持时，TrueFlag 的值为 0
+        ;; 1) 支持时, TrueFlag 的值为 1
+        ;; 2) 不支持时, TrueFlag 的值为 0
         ;;
         .TrueFlag               RESD    1
 

@@ -38,7 +38,7 @@ vm_alloc_domain:
         xadd [ebp + SDA.DomainPhysicalBase], edx
 
         ;;
-        ;; 在 x64 下使用 2M 页面，在 x86 下使用 4K 页面
+        ;; 在 x64 下使用 2M 页面, 在 x86 下使用 4K 页面
         ;;
 %ifdef __X64
         REX.Wrxb
@@ -80,7 +80,7 @@ vm_alloc_domain:
 ;       eax - physical address
 ; 描述: 
 ;       1) 在 VM domain 里分配物理内存
-;       2) 成功时，返回物理地址，失败返回 0 值
+;       2) 成功时, 返回物理地址, 失败返回 0 值
 ;-------------------------------------------------------------------
 vm_alloc_pool_physical_page:
         push ebp
@@ -108,7 +108,7 @@ vm_alloc_pool_physical_page:
         jb  vm_alloc_pool_physical_page.done
         
         ;;
-        ;; 返回 0 值，设置状态码
+        ;; 返回 0 值, 设置状态码
         ;;
         REX.Wrxb
         mov [ebx + VMB.DomainPhysicalBase], eax
@@ -255,7 +255,7 @@ get_guest_pa_of_guest_va.Pae.Walk:
         mov ebx, [ebp]
 
         ;;
-        ;; 检查是否为 present，如果是 not-present 返回 -1
+        ;; 检查是否为 present, 如果是 not-present 返回 -1
         ;;
         test ebx, PAGE_P
         mov eax, -1
@@ -326,7 +326,7 @@ get_guest_pa_of_guest_va.Longmode.Walk:
 
         ;;
         ;; 检查表项是否为 not present
-        ;; 1) 是 not present 时，返回 -1 值
+        ;; 1) 是 not present 时, 返回 -1 值
         ;;
         test ebx, PAGE_P
         mov eax, -1
@@ -495,8 +495,8 @@ get_system_va_of_guest_os:
         
         ;;
         ;; 检 guest OS 是否开启 paging
-        ;; 1) 是，调用 get_system_va_of_guest_va
-        ;; 2) 否，调用 get_system_va_of_guest_pa
+        ;; 1) 是, 调用 get_system_va_of_guest_va
+        ;; 2) 否, 调用 get_system_va_of_guest_pa
         ;;
         GetVmcsField    GUEST_CR0
         test eax, CR0_PG
@@ -538,9 +538,9 @@ init_eptp_field:
         ;; [2:0]     - EPT memory type: 支持 UC 和 WB 两类
         ;; [5:3]     - 3(指示 EPT 的 page walk legnth 为 4 级)
         ;; [6]       - 1(由 IA32_VMX_EPT_VPID_CAP[21]决定)
-        ;; [11:7]    - 保留位，为 0
+        ;; [11:7]    - 保留位, 为 0
         ;; [N-1:12]  - EPT pointer 值
-        ;; [63:N]    - 保留位，为 0
+        ;; [63:N]    - 保留位, 为 0
         ;;
         REX.Wrxb
         and esi, ~0FFFh                         ; 保证 4K 边界
@@ -556,7 +556,7 @@ init_eptp_field:
 %endif
 
         ;;
-        ;; 读 IA32_VMX_EPT_VPID_CAP[21] 位，决定是否支持 dirty 标志
+        ;; 读 IA32_VMX_EPT_VPID_CAP[21] 位, 决定是否支持 dirty 标志
         ;;
         xor eax, eax
         test DWORD [ebp + PCB.EptVpidCap], (1 << 21)
@@ -1031,7 +1031,7 @@ set_realmode_guest_segment:
 ; output:
 ;       none
 ; 描述: 
-;       1)设置 guest 使用I/O无条件退VM，这时关闭“I/O bitmap”功能
+;       1)设置 guest 使用I/O无条件退VM, 这时关闭“I/O bitmap”功能
 ;-------------------------------------------------------------------        
 set_guest_unconditional_ioexit:
         ;;
@@ -2178,10 +2178,10 @@ load_guest_cs_register:
         mov edx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.GuestGdtBase]
 
         ;;
-        ;; 进行检查，包括: 
+        ;; 进行检查, 包括: 
         ;; 1) CS selector 是否为 NULL selector
         ;; 2) CS selector 是否超出 limit
-        ;; 3) CS.RPL == SS.DPL == SS.RPL，CS.DPL 视情况而定
+        ;; 3) CS.RPL == SS.DPL == SS.RPL, CS.DPL 视情况而定
         ;; 4) CS 段是否为代码段
         ;;
         test cx, 0FFF8h
@@ -2226,7 +2226,7 @@ load_guest_cs_register:
         jz load_guest_cs_register.@1
 
         ;;
-        ;; CS.DPL <> SS.DPL 时，检查是否为 conforming 段
+        ;; CS.DPL <> SS.DPL 时, 检查是否为 conforming 段
         ;;
         test esi, (1 << 10)
         jz load_guest_cs_register.Error
@@ -2312,7 +2312,7 @@ load_guest_cs_register.@2:
         
 load_guest_cs_register.Error:
         ;;
-        ;; 发生错误时，注入 #TS 异常
+        ;; 发生错误时, 注入 #TS 异常
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, ecx  
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_TS
@@ -2358,8 +2358,8 @@ load_guest_es_register:
         
         
         ;;
-        ;; 如果 ES selector 是 NULL，则直接设置
-        ;; 否则，检查: 
+        ;; 如果 ES selector 是 NULL, 则直接设置
+        ;; 否则, 检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
         ;; 3) 描述符为 code segment: 
@@ -2379,7 +2379,7 @@ load_guest_es_register:
         ;;
         ;; 检查是否超出 limit
         ;; 注意: 
-        ;;      作为示例，这里忽略了 LDT 
+        ;;      作为示例, 这里忽略了 LDT 
         ;;
         ;;
         ;; (selector & 0xFFF8 + 7) > limit ?
@@ -2406,7 +2406,7 @@ load_guest_es_register:
         jnz load_guest_es_register.Next
         
         ;;
-        ;; 属于 non-conforming 段，检查权限
+        ;; 属于 non-conforming 段, 检查权限
         ;; 需要满足: 
         ;; 1) DPL >= SS.RPL
         ;; 2) DPL >= RPL
@@ -2433,7 +2433,7 @@ load_guest_es_register.Next:
         and esi, 0F0000h                                        ; limit bits 19:16
         or eax, esi
         ;;
-        ;; 检查 G 位，G = 1 时 limit32 = limit20 * 1000h + 0FFFh
+        ;; 检查 G 位, G = 1 时 limit32 = limit20 * 1000h + 0FFFh
         ;;
         test DWORD [edx + 4], (1 << 23)
         jz load_guest_es_register.@1
@@ -2484,7 +2484,7 @@ load_guest_es_register.NullSelector:
 
 load_guest_es_register.Error:
         ;;
-        ;; 发生错误时，注入 #TS 异常
+        ;; 发生错误时, 注入 #TS 异常
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, ecx  
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_TS
@@ -2530,8 +2530,8 @@ load_guest_ds_register:
         
         
         ;;
-        ;; 如果 DS selector 是 NULL，则直接设置
-        ;; 否则，检查: 
+        ;; 如果 DS selector 是 NULL, 则直接设置
+        ;; 否则, 检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
         ;; 3) 描述符为 code segment: 
@@ -2551,7 +2551,7 @@ load_guest_ds_register:
         ;;
         ;; 检查是否超出 limit
         ;; 注意: 
-        ;;      作为示例，这里忽略了 LDT 
+        ;;      作为示例, 这里忽略了 LDT 
         ;;
         ;;
         ;; (selector & 0xFFF8 + 7) > limit ?
@@ -2578,7 +2578,7 @@ load_guest_ds_register:
         jnz load_guest_ds_register.Next
         
         ;;
-        ;; 属于 non-conforming 段，检查权限
+        ;; 属于 non-conforming 段, 检查权限
         ;; 需要满足: 
         ;; 1) DPL >= SS.RPL
         ;; 2) DPL >= RPL
@@ -2605,7 +2605,7 @@ load_guest_ds_register.Next:
         and esi, 0F0000h                                        ; limit bits 19:16
         or eax, esi
         ;;
-        ;; 检查 G 位，G = 1 时 limit32 = limit20 * 1000h + 0FFFh
+        ;; 检查 G 位, G = 1 时 limit32 = limit20 * 1000h + 0FFFh
         ;;
         test DWORD [edx + 4], (1 << 23)
         jz load_guest_ds_register.@1
@@ -2656,7 +2656,7 @@ load_guest_ds_register.NullSelector:
 
 load_guest_ds_register.Error:
         ;;
-        ;; 发生错误时，注入 #TS 异常
+        ;; 发生错误时, 注入 #TS 异常
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, ecx  
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_TS
@@ -2700,10 +2700,10 @@ load_guest_ss_register:
         mov edx, [ebp + PCB.GuestExitInfo + TASK_SWITCH_INFO.GuestGdtBase]
 
         ;;
-        ;; 进行检查，包括: 
+        ;; 进行检查, 包括: 
         ;; 1) SS selector 是否为 NULL selector
         ;; 2) SS selector 是否超出 limit
-        ;; 3) SS.RPL == SS.DPL == CS.RPL，CS.DPL 视情况而定
+        ;; 3) SS.RPL == SS.DPL == CS.RPL, CS.DPL 视情况而定
         ;; 4) SS 段是否为可写数据段
         ;;
         test cx, 0FFF8h
@@ -2748,7 +2748,7 @@ load_guest_ss_register:
         jz load_guest_ss_register.@1
                         
         ;;
-        ;; SS.DPL <> CS.DPL 时，检查是否为 conforming 段
+        ;; SS.DPL <> CS.DPL 时, 检查是否为 conforming 段
         ;;
         xor esi, eax        
         test esi, (1 << 10)
@@ -2834,7 +2834,7 @@ load_guest_ss_register.@2:
         
 load_guest_ss_register.Error:
         ;;
-        ;; 发生错误时，注入 #TS 异常
+        ;; 发生错误时, 注入 #TS 异常
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, ecx  
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_TS
@@ -2881,8 +2881,8 @@ load_guest_fs_register:
         
         
         ;;
-        ;; 如果 FS selector 是 NULL，则直接设置
-        ;; 否则，检查: 
+        ;; 如果 FS selector 是 NULL, 则直接设置
+        ;; 否则, 检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
         ;; 3) 描述符为 code segment: 
@@ -2902,7 +2902,7 @@ load_guest_fs_register:
         ;;
         ;; 检查是否超出 limit
         ;; 注意: 
-        ;;      作为示例，这里忽略了 LDT 
+        ;;      作为示例, 这里忽略了 LDT 
         ;;
         ;;
         ;; (selector & 0xFFF8 + 7) > limit ?
@@ -2929,7 +2929,7 @@ load_guest_fs_register:
         jnz load_guest_fs_register.Next
         
         ;;
-        ;; 属于 non-conforming 段，检查权限
+        ;; 属于 non-conforming 段, 检查权限
         ;; 需要满足: 
         ;; 1) DPL >= SS.RPL
         ;; 2) DPL >= RPL
@@ -2956,7 +2956,7 @@ load_guest_fs_register.Next:
         and esi, 0F0000h                                        ; limit bits 19:16
         or eax, esi
         ;;
-        ;; 检查 G 位，G = 1 时 limit32 = limit20 * 1000h + 0FFFh
+        ;; 检查 G 位, G = 1 时 limit32 = limit20 * 1000h + 0FFFh
         ;;
         test DWORD [edx + 4], (1 << 23)
         jz load_guest_fs_register.@1
@@ -3007,7 +3007,7 @@ load_guest_fs_register.NullSelector:
 
 load_guest_fs_register.Error:
         ;;
-        ;; 发生错误时，注入 #TS 异常
+        ;; 发生错误时, 注入 #TS 异常
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, ecx  
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_TS
@@ -3053,8 +3053,8 @@ load_guest_gs_register:
         
         
         ;;
-        ;; 如果 GS selector 是 NULL，则直接设置
-        ;; 否则，检查: 
+        ;; 如果 GS selector 是 NULL, 则直接设置
+        ;; 否则, 检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
         ;; 3) 描述符为 code segment: 
@@ -3074,7 +3074,7 @@ load_guest_gs_register:
         ;;
         ;; 检查是否超出 limit
         ;; 注意: 
-        ;;      作为示例，这里忽略了 LDT 
+        ;;      作为示例, 这里忽略了 LDT 
         ;;
         ;;
         ;; (selector & 0xFFF8 + 7) > limit ?
@@ -3101,7 +3101,7 @@ load_guest_gs_register:
         jnz load_guest_gs_register.Next
         
         ;;
-        ;; 属于 non-conforming 段，检查权限
+        ;; 属于 non-conforming 段, 检查权限
         ;; 需要满足: 
         ;; 1) DPL >= SS.RPL
         ;; 2) DPL >= RPL
@@ -3128,7 +3128,7 @@ load_guest_gs_register.Next:
         and esi, 0F0000h                                        ; limit bits 19:16
         or eax, esi
         ;;
-        ;; 检查 G 位，G = 1 时 limit32 = limit20 * 1000h + 0FFFh
+        ;; 检查 G 位, G = 1 时 limit32 = limit20 * 1000h + 0FFFh
         ;;
         test DWORD [edx + 4], (1 << 23)
         jz load_guest_gs_register.@1
@@ -3179,7 +3179,7 @@ load_guest_gs_register.NullSelector:
 
 load_guest_gs_register.Error:
         ;;
-        ;; 发生错误时，注入 #TS 异常
+        ;; 发生错误时, 注入 #TS 异常
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, ecx  
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_TS
@@ -3226,8 +3226,8 @@ load_guest_ldtr_register:
         
         
         ;;
-        ;; 如果 LDTR selector 是 NULL，则直接设置
-        ;; 否则，检查: 
+        ;; 如果 LDTR selector 是 NULL, 则直接设置
+        ;; 否则, 检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
         ;; 
@@ -3275,7 +3275,7 @@ load_guest_ldtr_register:
         and esi, 0F0000h                                        ; limit bits 19:16
         or eax, esi
         ;;
-        ;; 检查 G 位，G = 1 时 limit32 = limit20 * 1000h + 0FFFh
+        ;; 检查 G 位, G = 1 时 limit32 = limit20 * 1000h + 0FFFh
         ;;
         test DWORD [edx + 4], (1 << 23)
         jz load_guest_ldtr_register.@1
@@ -3326,7 +3326,7 @@ load_guest_ldtr_register.NullSelector:
 
 load_guest_ldtr_register.Error:
         ;;
-        ;; 发生错误时，注入 #TS 异常
+        ;; 发生错误时, 注入 #TS 异常
         ;;
         SetVmcsField    VMENTRY_EXCEPTION_ERROR_CODE, ecx  
         SetVmcsField    VMENTRY_INTERRUPTION_INFORMATION, INJECT_EXCEPTION_TS
@@ -3379,8 +3379,8 @@ do_load_ldtr_register:
 
 
         ;;
-        ;; 如果 LDT selector 是 NULL，则产生 #GP(0)
-        ;; 否则，检查: 
+        ;; 如果 LDT selector 是 NULL, 则产生 #GP(0)
+        ;; 否则, 检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
         ;; 
@@ -3406,7 +3406,7 @@ do_load_ldtr_register:
         
         ;;
         ;; 检查描述符 P = 1, S = 0
-        ;; 1) P = 0，产生 #NP(selector)
+        ;; 1) P = 0, 产生 #NP(selector)
         ;; 2) S = 0, 产生 #GP(selector)
         ;;
         mov eax, [edx + 4]
@@ -3434,7 +3434,7 @@ do_load_ldtr_register:
         and esi, 0F0000h                                        ; limit bits 19:16
         or eax, esi
         ;;
-        ;; 检查 G 位，G = 1 时 limit32 = limit20 * 1000h + 0FFFh
+        ;; 检查 G 位, G = 1 时 limit32 = limit20 * 1000h + 0FFFh
         ;;
         test DWORD [edx + 4], (1 << 23)
         jz do_load_ldtr_register.@1
@@ -3546,8 +3546,8 @@ do_load_tr_register:
 
 
         ;;
-        ;; 如果 TR selector 是 NULL，则产生 #GP(0)
-        ;; 否则，检查: 
+        ;; 如果 TR selector 是 NULL, 则产生 #GP(0)
+        ;; 否则, 检查: 
         ;; 1) selector 是否超出 limit
         ;; 2) 检查描述符的 P 与 S 位
         ;; 
@@ -3573,7 +3573,7 @@ do_load_tr_register:
         
         ;;
         ;; 检查描述符 P = 1, S = 0
-        ;; 1) P = 0，产生 #NP(selector)
+        ;; 1) P = 0, 产生 #NP(selector)
         ;; 2) S = 0, 产生 #GP(selector)
         ;;
         mov eax, [edx + 4]
@@ -3609,7 +3609,7 @@ do_load_tr_register:
         and esi, 0F0000h                                        ; limit bits 19:16
         or eax, esi
         ;;
-        ;; 检查 G 位，G = 1 时 limit32 = limit20 * 1000h + 0FFFh
+        ;; 检查 G 位, G = 1 时 limit32 = limit20 * 1000h + 0FFFh
         ;;
         test DWORD [edx + 4], (1 << 23)
         jz do_load_tr_register.@1

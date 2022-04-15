@@ -188,12 +188,12 @@
 
 %if __BITS__ == 64
         ;;
-        ;; 如果在 64 位下编译，则使用 native 方式
+        ;; 如果在 64 位下编译, 则使用 native 方式
         ;;
         mov rax, [gs: rax]
 %else
         ;;
-        ;; 如果在 32 位下编译，则使用硬编码方式. 
+        ;; 如果在 32 位下编译, 则使用硬编码方式. 
         ;; 1) 定义了 __X64 符号则是: mov rax, [gs: rax]
         ;; 2) 否则为: mov eax, [gs: eax]
         ;;
@@ -256,7 +256,7 @@
 ; output:
 ;       none
 ; 描述:
-;       1) 广播 IPI 消息，不包括自己        
+;       1) 广播 IPI 消息, 不包括自己        
 ;---------------------------------------------
 %macro BROADCASE_MESSAGE_EXCLUDE_SELF   0
         GET_LAPIC_BASE
@@ -277,7 +277,7 @@
 ; output:
 ;       none
 ; 描述:
-;       1) 广播 IPI 消息，包括自己        
+;       1) 广播 IPI 消息, 包括自己        
 ;---------------------------------------------
 %macro BROADCASE_MESSAGE_INCLUDE_SELF   0
         GET_LAPIC_BASE

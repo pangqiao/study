@@ -42,3 +42,5 @@ https://richardweiyang-2.gitbook.io/kernel-exploring/00-memory_a_bottom_up_view/
 内核: https://oskernellab.com/
 
 虚拟地址空间解惑: https://zhuanlan.zhihu.com/p/386398698
+
+https://zhikunhuo.blog.csdn.net/category_10382170_2.html

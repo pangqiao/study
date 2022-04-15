@@ -8,7 +8,7 @@
 - 底层和内核: http://blog.csdn.net/yuzhihui_no1/article/category/3117997/2
 - 操作系统、BMC、UEFI等: http://blog.csdn.net/jiangwei0512/article/category/6259511
 - 全知识博客: https://blog.csdn.net/ljy1988123
-- 个人主站，主要是Linux，给community提过patch: https://consen.github.io/archives/
+- 个人主站, 主要是Linux, 给community提过patch: https://consen.github.io/archives/
 
 
 

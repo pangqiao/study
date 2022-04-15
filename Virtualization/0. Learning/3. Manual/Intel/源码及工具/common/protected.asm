@@ -49,9 +49,9 @@ ApProtectedEntry:
 
 %ifndef DBG
         ;;
-        ;; Stage2 阶段最后工作，检查是否为 BSP
-        ;; 1) 是，等待所有 AP 完成 stage2 工作
-        ;; 2) 否，转入ApStage3End
+        ;; Stage2 阶段最后工作, 检查是否为 BSP
+        ;; 1) 是, 等待所有 AP 完成 stage2 工作
+        ;; 2) 否, 转入ApStage3End
         ;;
         cmp BYTE [gs: PCB.IsBsp], 1
         jne ApStage2End
@@ -110,7 +110,7 @@ ApProtectedEntry:
         bits 32
         
         ;;
-        ;; 嵌入实验例子代码，在 ex.asm 文件里实现
+        ;; 嵌入实验例子代码, 在 ex.asm 文件里实现
         ;;
         %include "ex.asm"
 
@@ -181,7 +181,7 @@ ApStage2End:
         xchg [ebx], eax
  
         ;;
-        ;; 设置 UsableProcessMask 值，指示 logical processor 处于可用状态
+        ;; 设置 UsableProcessMask 值, 指示 logical processor 处于可用状态
         ;;
         mov eax, [gs: PCB.ProcessorIndex]                       ; 处理器 index 
         lock bts DWORD [fs: SDA.UsableProcessorMask], eax       ; 设 Mask 位

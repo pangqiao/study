@@ -14,14 +14,14 @@
 
 ![config](./images/4.png)
 
-xshell默认的配色是8位的，土黑色，很不好看，我们可以用命令tput colors查看: 
+xshell默认的配色是8位的, 土黑色, 很不好看, 我们可以用命令tput colors查看: 
 
 ```
 [root@localhost ~]# tput colors
 8
 ```
 
-第一步, 修改/etc/profile 文件或者\~/.bashrc文件，再最后面添加如下代码: 
+第一步, 修改/etc/profile 文件或者\~/.bashrc文件, 再最后面添加如下代码: 
 
 ```c
 if [ -e /usr/share/terminfo/x/xterm-256color ]; then
@@ -41,12 +41,12 @@ source \~/.bashrc
 
 让修改生效. 
 
-第二步, 修改vim配置文件，让vim支持256位颜色. 
+第二步, 修改vim配置文件, 让vim支持256位颜色. 
 
-打开\~/.vim/vimrc文件，添加:
+打开\~/.vim/vimrc文件, 添加:
 
 ```
 set t_Co=256
 ```
 
-好了，执行tput colors看一下吧，如果输出256，表示配置生效，可以尽情的使用vim下的配色方案了. 
+好了, 执行tput colors看一下吧, 如果输出256, 表示配置生效, 可以尽情的使用vim下的配色方案了. 

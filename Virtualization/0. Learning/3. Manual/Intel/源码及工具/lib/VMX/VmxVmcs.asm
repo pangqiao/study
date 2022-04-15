@@ -57,8 +57,8 @@ get_vmcs_page_memory_type:
         
         ;;
         ;; 是否支持 WirteBack(06h)
-        ;; 1) 是，返回 PCD = 0, PWT = 0
-        ;; 2) 否，返回 PCD = 1, PWT = 1
+        ;; 1) 是, 返回 PCD = 0, PWT = 0
+        ;; 2) 否, 返回 PCD = 1, PWT = 1
         ;;
         mov esi, PCD | PWT                              ; 对应 UC 类型
         cmp eax, MEM_TYPE_WB
@@ -78,8 +78,8 @@ get_vmcs_page_memory_type:
 ;       edx - vmcs pointer(物理地址)
 ; 描述:  
 ;       1) 获得 vmcs pointer/vmcs access page pointer
-;       2) eax 返回虚拟地址，edx 返回物理地址
-;       3) 64-bit 下，rax 64 位返回虚拟地址， rdx 64 位返回物理地址
+;       2) eax 返回虚拟地址, edx 返回物理地址
+;       3) 64-bit 下, rax 64 位返回虚拟地址,  rdx 64 位返回物理地址
 ;----------------------------------------------------------
 get_vmcs_access_pointer:
 get_vmcs_pointer:
@@ -96,8 +96,8 @@ get_vmcs_pointer:
 ;       edx - vmcs pointer(物理地址)
 ; 描述:  
 ;       1) 获得 vmcs pointer
-;       2) eax 返回虚拟地址，edx 返回物理地址
-;       3) 64-bit 下，rax 64 位返回虚拟地址， rdx 64 位返回物理地址
+;       2) eax 返回虚拟地址, edx 返回物理地址
+;       3) 64-bit 下, rax 64 位返回虚拟地址,  rdx 64 位返回物理地址
 ;----------------------------------------------------------
 get_vmcs_region_pointer:
         push ebx
@@ -681,13 +681,13 @@ flush_execution_control:
         
         ;;
         ;; 写入 IoBitmap A & B 地址值(物理地址)
-        ;; 1) 在开启 "Use I/O bitmap" 时写入，否则忽略！
+        ;; 1) 在开启 "Use I/O bitmap" 时写入, 否则忽略！
         ;; 
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl1], USE_IO_BITMAP
         jz flush_execution_control.@1
         
         ;;
-        ;; 地址值固定为 64 位，在 x86 下分两次写入
+        ;; 地址值固定为 64 位, 在 x86 下分两次写入
         ;;
         DoVmWrite CONTROL_IOBITMAPA_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.IoBitmapAddressA]
         DoVmWrite CONTROL_IOBITMAPB_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.IoBitmapAddressB]
@@ -702,13 +702,13 @@ flush_execution_control:
 flush_execution_control.@1:        
         ;;
         ;; 写入 time-stamp counter offset 值
-        ;; 1) 在 "Use TSC offsetting" = 1 时写入，否则忽略
+        ;; 1) 在 "Use TSC offsetting" = 1 时写入, 否则忽略
         ;;
         test DWORD [ebp + EXECUTION_CONTROL.ProcessorControl1], USE_TSC_OFFSETTING
         jz flush_execution_control.@2
         
         ;;
-        ;; TSC offset 值为 64 位，在 x86 下分两次写入
+        ;; TSC offset 值为 64 位, 在 x86 下分两次写入
         ;;
         DoVmWrite CONTROL_TSC_OFFSET_FULL, [ebp + EXECUTION_CONTROL.TscOffset]        
 %ifndef __X64
@@ -748,7 +748,7 @@ flush_execution_control.@2:
         jz flush_execution_control.@3
         
         ;;
-        ;; APIC-access address 值为 64 位，在 x86 下分两次写入
+        ;; APIC-access address 值为 64 位, 在 x86 下分两次写入
         ;;
         DoVmWrite CONTROL_APIC_ACCESS_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.ApicAccessAddress]
 %ifndef __X64
@@ -764,7 +764,7 @@ flush_execution_control.@3:
         jz flush_execution_control.@4
         
         ;;
-        ;; Virtual-APIC address 为 64 位，在 x86 下分两次写入
+        ;; Virtual-APIC address 为 64 位, 在 x86 下分两次写入
         ;;
         DoVmWrite CONTROL_VIRTUAL_APIC_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.VirtualApicAddress]
 %ifndef __X64
@@ -782,7 +782,7 @@ flush_execution_control.@4:
         jz flush_execution_control@5
 
         ;;
-        ;; EOI bitmap 为 64 位，在 x86 下分两次写入
+        ;; EOI bitmap 为 64 位, 在 x86 下分两次写入
         ;; 1) EOI bitmap 0 对应 0 - 63 号 vector
         ;; 2) EOI bitmap 1 对应 64 - 127 号 vector
         ;; 3) EOI bitmap 2 对应 128 - 191 号 vector
@@ -809,7 +809,7 @@ flush_execution_control@5:
         jz flush_execution_control.@6
         
         ;;
-        ;; vector 值为 16 位，descriptor address 值为 64 位
+        ;; vector 值为 16 位, descriptor address 值为 64 位
         ;;
         DoVmWrite CONTROL_POSTED_INTERRUPT_NOTIFICATION_VECTOR, [ebp + EXECUTION_CONTROL.PostedInterruptVector]
         DoVmWrite CONTROL_POSTED_INTERRUPT_DESCRIPTOR_ADDRESS_FULL, [ebp + EXECUTION_CONTROL.PostedInterruptDescriptorAddr]

@@ -21,7 +21,7 @@
 ; output:
 ;       none
 ; 描述: 
-;       在下面的情况下，VMM 需要 reflect exception 给 guest 执行:
+;       在下面的情况下, VMM 需要 reflect exception 给 guest 执行:
 ;       1) VM exit 是由于 exception 引发
 ;       2) exception 的是由于 guest OS 条件而产生的
 ;----------------------------------------------------------
@@ -34,7 +34,7 @@ reflect_exception_to_guest:
         sub esp, 8
         
         ;;
-        ;; 当 VM-exit IDT-vectoring information 的 bit31 为 1 时，说明 VM-exit 产生在 event delivery 过程中
+        ;; 当 VM-exit IDT-vectoring information 的 bit31 为 1 时, 说明 VM-exit 产生在 event delivery 过程中
         ;; 那么 reflect exception 由两大情况分别对待:
         ;; 1) 直接 reflect 给 guest
         ;; 2) reflect #DF exception 给 guest
@@ -50,8 +50,8 @@ reflect_exception_to_guest:
         
         ;;
         ;; 检查 bit12 位(NMI unblocking due to IRET)
-        ;; 1) bit12 为 0 时，不修改 blocking by NMI 位
-        ;; 2) bit12 为 1 时，检查 VM-exit event 是否为 #DF
+        ;; 1) bit12 为 0 时, 不修改 blocking by NMI 位
+        ;; 2) bit12 为 1 时, 检查 VM-exit event 是否为 #DF
         ;; 
         xor esi, esi
         btr ebx, 12
@@ -79,7 +79,7 @@ reflect_exception_to_guest.@0:
         jz reflect_exception_to_guest.inject
         
         ;;
-        ;; 当 IDT-vectoring information 有效时，NMI unblocking due to IRET 位属于 undefined 值
+        ;; 当 IDT-vectoring information 有效时, NMI unblocking due to IRET 位属于 undefined 值
         ;;
         xor esi, esi                                                    ; 清 blocking by NMI 位
         
@@ -91,7 +91,7 @@ reflect_exception_to_guest.@0:
         jne reflect_exception_to_guest.inject
         
         ;;
-        ;; 当原始 event 是 #DF 时，表明 guest 遇到 triple fault
+        ;; 当原始 event 是 #DF 时, 表明 guest 遇到 triple fault
         ;;
         cmp dl, 8
         jne reflect_exception_to_guest.@1
@@ -105,10 +105,10 @@ reflect_exception_to_guest.@0:
         
         
         ;;
-        ;; 下面的情形之一，需要 reflect #DF exception 给 guest
-        ;; 1) 如果原始 event(记录在 IDT-vectoring 里)和引发 VM-exit 的 event 都是属于 #DE，#TS，#NP，#SS 或 #GP
-        ;;   (对应的 vector 为 0, 10, 11, 12，13)
-        ;; 2) 如果原始 event 为 #PF，并且引发 VM-exit 的 event 为 #PF 或 #DE，#TS，#NP，#SS, #GP
+        ;; 下面的情形之一, 需要 reflect #DF exception 给 guest
+        ;; 1) 如果原始 event(记录在 IDT-vectoring 里)和引发 VM-exit 的 event 都是属于 #DE, #TS, #NP, #SS 或 #GP
+        ;;   (对应的 vector 为 0, 10, 11, 12, 13)
+        ;; 2) 如果原始 event 为 #PF, 并且引发 VM-exit 的 event 为 #PF 或 #DE, #TS, #NP, #SS, #GP
         ;;   (对应的 vector 为 14, 0, 10, 11, 12, 13)
         ;; 上面情形之一表明: event delivery 期间发生了 #DF 异常
         ;;
@@ -254,7 +254,7 @@ do_NMI:
         DEBUG_RECORD    "[do_NMI]: call NMI handler !"
 
         ;;
-        ;; 下面采用，主动调用 NMI handler 方式在VMM内完成 NMI
+        ;; 下面采用, 主动调用 NMI handler 方式在VMM内完成 NMI
         ;;
         int NMI_VECTOR
 
@@ -458,7 +458,7 @@ do_GP:
         call get_interrupt_info                 ; 收集中断相关信息
         
         ;;
-        ;; 属于 software interrupt, external-interrupt 以及 privileged interrupt 时，执行中断处理
+        ;; 属于 software interrupt, external-interrupt 以及 privileged interrupt 时, 执行中断处理
         ;;
         movzx eax, BYTE [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.InterruptType]
         cmp al, INTERRUPT_TYPE_SOFTWARE
@@ -470,8 +470,8 @@ do_GP:
 
         ;;
         ;; 反射处理: 
-        ;; 1) 当 IDT-vectoring information 记录异常为 #DE，#TS，#NP, #SS 或者 #GP 时，需要反射 #DF 异常
-        ;; 2) 当 IDT-vectoring information 记录异常为 #DF 异常，需要处理 triple fault
+        ;; 1) 当 IDT-vectoring information 记录异常为 #DE, #TS, #NP, #SS 或者 #GP 时, 需要反射 #DF 异常
+        ;; 2) 当 IDT-vectoring information 记录异常为 #DF 异常, 需要处理 triple fault
         ;;
         cmp eax, INTERRUPT_TYPE_HARD_EXCEPTION
         jne do_GP.ReflectGp
@@ -680,8 +680,8 @@ do_int_process:
                         
         ;;
         ;; 检查是否处于 IA-32e 模式
-        ;; 1) 是，处理 IA-32e 模式下的 INT 指令
-        ;; 2) 否，处理 protected 模式下的 INT 指令
+        ;; 1) 是, 处理 IA-32e 模式下的 INT 指令
+        ;; 2) 否, 处理 protected 模式下的 INT 指令
         ;;
         test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.GuestStatus], GUEST_STATUS_LONGMODE
         jnz do_int_process.Longmode
@@ -781,7 +781,7 @@ do_int_process.Protected.CheckType:
         
 do_int_process.Protected.CheckPrivilege:
         ;;
-        ;; step 4: 当属于software-interrupt 时，检查权限: CPL <= IDT-gate.DPL
+        ;; step 4: 当属于software-interrupt 时, 检查权限: CPL <= IDT-gate.DPL
         ;;
         movzx eax, BYTE [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.InterruptType]
         cmp eax, INTERRUPT_TYPE_SOFTWARE
@@ -844,7 +844,7 @@ do_int_process.InterruptTrap:
 
      
         ;;
-        ;; step 10: 检查描述符 C/D 位，是否为 code-segment
+        ;; step 10: 检查描述符 C/D 位, 是否为 code-segment
         ;;
         test edi, (1 << 11)
         jz do_int_process.Gp_CsSelector_01B
@@ -869,8 +869,8 @@ do_int_process.InterruptTrap.Next:
         ;;
         ;; step 13: 根据权限进行相应处理
         ;;
-        ;; 注意:  ### 作为例子，保留实现对 conforming 类型段的处理 ###
-        ;;        ### 作为例子，保留实现对 virutal-8086 模式下的中断处理 ###
+        ;; 注意:  ### 作为例子, 保留实现对 conforming 类型段的处理 ###
+        ;;        ### 作为例子, 保留实现对 virutal-8086 模式下的中断处理 ###
         ;;
         mov eax, do_interrupt_for_inter_privilege
         mov edi, do_interrupt_for_intra_privilege        
@@ -928,7 +928,7 @@ do_int_process.Longmode:
         
 do_int_process.Longmode.CheckPrivilege:
         ;;
-        ;; step 4: 当属于software-interrupt 时，检查权限: CPL <= IDT-gate.DPL
+        ;; step 4: 当属于software-interrupt 时, 检查权限: CPL <= IDT-gate.DPL
         ;;
         movzx eax, BYTE [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.InterruptType]
         cmp eax, INTERRUPT_TYPE_SOFTWARE
@@ -1012,7 +1012,7 @@ do_interrupt_for_inter_privilege.Tss16:
         
         ;;
         ;; step 1: 检查 stack pointer 地址是否超出 TSS limit: (DPL << 2) + 2 + 3 > limit ?
-        ;; 1) 超出 limit，则产生 #TS(TSS_selector, 0, EXT)
+        ;; 1) 超出 limit, 则产生 #TS(TSS_selector, 0, EXT)
         ;;
         lea esi, [ecx + 3]
         cmp esi, [ebx + VMB.GuestTmb + GTMB.TssLimit]
@@ -1069,7 +1069,7 @@ do_interrupt_for_inter_privilege.Ts_SsSelector_01B:
         
 do_interrupt_for_inter_privilege.IdtGate16: 
         ;;
-        ;; 检查 16 位 IDT-gate 里，stack 是否能容纳 10 bytes(5 *  2)，根据 stack 段是否属于 expand-down 段
+        ;; 检查 16 位 IDT-gate 里, stack 是否能容纳 10 bytes(5 *  2), 根据 stack 段是否属于 expand-down 段
         ;; 1) expand-down:  esp - 10 > SS.limit && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit 
         ;;
@@ -1091,7 +1091,7 @@ do_interrupt_for_inter_privilege.IdtGate16.ExpandDown:
         ;;
         test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], (1 << 22)  ; SS.B 位
         jnz do_interrupt_for_inter_privilege.GetCsLimit
-        mov eax, 0FFFFFh                                ;; SS.B = 0 时，expand-down 段上限为 0FFFFFh
+        mov eax, 0FFFFFh                                ;; SS.B = 0 时, expand-down 段上限为 0FFFFFh
         
 do_interrupt_for_inter_privilege.IdtGate16.ExpandUp:
         ;;
@@ -1148,13 +1148,13 @@ do_interrupt_for_inter_privilege.ReadStack32:
 
 do_interrupt_for_inter_privilege.CheckSsSelector:        
         ;;
-        ;; step 3: 检查 SS selector 是否为 NULL，属于 NULL 则产生 #TS(EXT)
+        ;; step 3: 检查 SS selector 是否为 NULL, 属于 NULL 则产生 #TS(EXT)
         ;;
         test ecx, 0FFF8h
         jz do_interrupt_for_inter_privilege.Ts_01B
 
         ;;
-        ;; step 4: 检查 SS selector 是否超出 limit，超出则产生 #TS(SS_selector, 0, EXT)
+        ;; step 4: 检查 SS selector 是否超出 limit, 超出则产生 #TS(SS_selector, 0, EXT)
         ;; 
         ;; 注意: #### 此处保留检查 LDT ####
         ;;
@@ -1165,7 +1165,7 @@ do_interrupt_for_inter_privilege.CheckSsSelector:
         ja do_interrupt_for_inter_privilege.Ts_SsSelector_01B
 
         ;;
-        ;; step 5: 检查 SS.RPL 是否等于 CS.DPL，不等于则产生 #TS(SS_selector, 0, EXT)
+        ;; step 5: 检查 SS.RPL 是否等于 CS.DPL, 不等于则产生 #TS(SS_selector, 0, EXT)
         ;;
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetCsDesc + 4]                ; code segment
         shr eax, 13                                                                     ; CS.DPL
@@ -1186,7 +1186,7 @@ do_interrupt_for_inter_privilege.CheckSsSelector:
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], edi
 
         ;;
-        ;; step 7: 检查 SS 描述符，以及 SS.DPL 与 CS.DPL
+        ;; step 7: 检查 SS 描述符, 以及 SS.DPL 与 CS.DPL
         ;;
         test edi, (1 << 9)                                                              ; 检查是否可写
         jz do_interrupt_for_inter_privilege.Ts_SsSelector_01B                           ;               
@@ -1218,7 +1218,7 @@ do_interrupt_for_inter_privilege.CheckSsLimit:
         jz do_interrupt_for_inter_privilege.IdtGate16
 
         ;;
-        ;; 检查 32 位 stack 是否能容纳 20 bytes(5 *  4)，根据 stack 段是否属于 expand-down 段
+        ;; 检查 32 位 stack 是否能容纳 20 bytes(5 *  4), 根据 stack 段是否属于 expand-down 段
         ;; 1) expand-down:  esp - 20 > SS.limit  && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit
         ;;
@@ -1240,7 +1240,7 @@ do_interrupt_for_inter_privilege.CheckSsLimit.ExpandDown:
         ;;
         test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetSsDesc + 4], (1 << 22)  ; SS.B 位
         jnz do_interrupt_for_inter_privilege.GetCsLimit
-        mov eax, 0FFFFFh                                ;; SS.B = 0 时，expand-down 段上限为 0FFFFFh
+        mov eax, 0FFFFFh                                ;; SS.B = 0 时, expand-down 段上限为 0FFFFFh
         
 do_interrupt_for_inter_privilege.CheckSsLimit.ExpandUp:
         ;;
@@ -1276,7 +1276,7 @@ do_interrupt_for_inter_privilege.CheckCsLimit:
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRip], esi                   ; 保存目标 RIP
 
         ;;
-        ;; step 12: 检查 Eip 是否超出 Cs.limit，超出则产生 #GP(EXT)
+        ;; step 12: 检查 Eip 是否超出 Cs.limit, 超出则产生 #GP(EXT)
         ;;
         cmp esi, eax
         ja do_interrupt_for_inter_privilege.Gp_01B
@@ -1453,7 +1453,7 @@ do_interrupt_for_inter_privilege_longmode:
                                                                         ;; SS selector 被加载为 NULL
 
         ;;
-        ;; step 4: 检查 RSP 是否为 canonical 地址形式，否则产生 #SS(EXT)
+        ;; step 4: 检查 RSP 是否为 canonical 地址形式, 否则产生 #SS(EXT)
         ;;
         shrd eax, edi, 16
         sar eax, 16
@@ -1473,7 +1473,7 @@ do_interrupt_for_inter_privilege_longmode:
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp], eax         ;; 保存 RSP
 
         ;;
-        ;; step 6: 检查 RIP 是否为 canonical 地址形式，否则产生 #GP(EXT)
+        ;; step 6: 检查 RIP 是否为 canonical 地址形式, 否则产生 #GP(EXT)
         ;;
         movzx esi, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc]
         mov edi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 4]
@@ -1488,7 +1488,7 @@ do_interrupt_for_inter_privilege_longmode:
         jne do_interrupt_for_inter_privilege_longmode.Gp_01B
         
         ;;
-        ;; step 7: 加载 RSP，SS = NULL-selector
+        ;; step 7: 加载 RSP, SS = NULL-selector
         ;;
         REX.Wrxb
         mov eax, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.TargetRsp]
@@ -1650,7 +1650,7 @@ do_interrupt_for_intra_privilege.CheckSsLimit:
         jz do_interrupt_for_intra_privilege.IdtGate16
 
         ;;
-        ;; 检查 32 位 stack 是否能容纳 12 bytes(3 * 4)，根据 stack 段是否属于 expand-down 段
+        ;; 检查 32 位 stack 是否能容纳 12 bytes(3 * 4), 根据 stack 段是否属于 expand-down 段
         ;; 1) expand-down:  esp - 12 > SS.limit && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit 
         ;;
@@ -1672,7 +1672,7 @@ do_interrupt_for_intra_privilege.CheckSsLimit.ExpandDown:
         ;;
         test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.CurrentSsDesc + 4], (1 << 22)  ; SS.B 位
         jnz do_interrupt_for_intra_privilege.GetCsLimit
-        mov eax, 0FFFFFh                                ;; SS.B = 0 时，expand-down 段上限为 0FFFFFh
+        mov eax, 0FFFFFh                                ;; SS.B = 0 时, expand-down 段上限为 0FFFFFh
         
 do_interrupt_for_intra_privilege.CheckSsLimit.ExpandUp:
         ;;
@@ -1788,7 +1788,7 @@ do_interrupt_for_intra_privilege.Push16:
         
 do_interrupt_for_intra_privilege.IdtGate16: 
         ;;
-        ;; 检查 16 位 IDT-gate 里，stack 是否能容纳 6 bytes(3 * 2)，根据 stack 段是否属于 expand-down 段
+        ;; 检查 16 位 IDT-gate 里, stack 是否能容纳 6 bytes(3 * 2), 根据 stack 段是否属于 expand-down 段
         ;; 1) expand-down:  esp - 6 > SS.limit && esp <= SS.Top
         ;; 2) expand-up:    esp <= SS.limit 
         ;;
@@ -1810,7 +1810,7 @@ do_interrupt_for_intra_privilege.IdtGate16.ExpandDown:
         ;;
         test DWORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.CurrentSsDesc + 4], (1 << 22)  ; SS.B 位
         jnz do_interrupt_for_intra_privilege.GetCsLimit
-        mov eax, 0FFFFFh                                ;; SS.B = 0 时，expand-down 段上限为 0FFFFFh
+        mov eax, 0FFFFFh                                ;; SS.B = 0 时, expand-down 段上限为 0FFFFFh
         
 do_interrupt_for_intra_privilege.IdtGate16.ExpandUp:
         ;;
@@ -1929,7 +1929,7 @@ do_interrupt_for_intra_privilege_longmode.CheckRsp:
         mov [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.Rsp], eax         ;; 保存 RSP
 
         ;;
-        ;; step 3: 读取 RIP，并检查 RIP 是否为 canonical 地址
+        ;; step 3: 读取 RIP, 并检查 RIP 是否为 canonical 地址
         ;;
         movzx esi, WORD [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc]              ; offset[15:0]
         mov edi, [ebp + PCB.GuestExitInfo + INTERRUPT_INFO.IdtDesc + 4]

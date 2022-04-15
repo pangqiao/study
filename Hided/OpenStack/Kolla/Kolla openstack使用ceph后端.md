@@ -1,9 +1,9 @@
 
 OpenStack 里有三个地方可以和 Ceph 块设备结合: 
 
-- Images:  OpenStack 的 Glance 管理着 VM 的 image . Image 相对恒定， OpenStack 把它们当作二进制文件、并以此格式下载. 
-- Volumes:  Volume 是块设备， OpenStack 用它们引导虚拟机、或挂载到运行中的虚拟机上.  OpenStack 用 Cinder 服务管理 Volumes . 
-- Guest Disks: Guest disks 是装有客户操作系统的磁盘. 默认情况下，启动一台虚拟机时，它的系统盘表现为 hypervisor 文件系统的一个文件(通常位于 /var/lib/nova/instances/<uuid>/). 在 Openstack Havana 版本前，在 Ceph 中启动虚拟机的唯一方式是使用 Cinder 的 boot-from-volume 功能. 不过，现在能够在 Ceph 中直接启动虚拟机而不用依赖于 Cinder，这一点是十分有益的，因为可以通过热迁移更方便地进行维护操作. 另外，如果你的 hypervisor 挂掉了，也可以很方便地触发 nova evacuate ，并且几乎可以无缝迁移虚拟机到其他地方. 
+- Images:  OpenStack 的 Glance 管理着 VM 的 image . Image 相对恒定,  OpenStack 把它们当作二进制文件、并以此格式下载. 
+- Volumes:  Volume 是块设备,  OpenStack 用它们引导虚拟机、或挂载到运行中的虚拟机上.  OpenStack 用 Cinder 服务管理 Volumes . 
+- Guest Disks: Guest disks 是装有客户操作系统的磁盘. 默认情况下, 启动一台虚拟机时, 它的系统盘表现为 hypervisor 文件系统的一个文件(通常位于 /var/lib/nova/instances/<uuid>/). 在 Openstack Havana 版本前, 在 Ceph 中启动虚拟机的唯一方式是使用 Cinder 的 boot-from-volume 功能. 不过, 现在能够在 Ceph 中直接启动虚拟机而不用依赖于 Cinder, 这一点是十分有益的, 因为可以通过热迁移更方便地进行维护操作. 另外, 如果你的 hypervisor 挂掉了, 也可以很方便地触发 nova evacuate , 并且几乎可以无缝迁移虚拟机到其他地方. 
 
 # 1 配置ceph
 
@@ -191,12 +191,12 @@ nova_backend_ceph: "yes"
 kolla网络相关参数
 
 - network\_interface: 为下面几种interface提供默认值
-- api_interface: 用于management network,即openstack内部服务间通信，以及服务于数据库通信的网络. 这是系统的风险点，所以，这个网络推荐使用内网，不能够接出到外网，默认值为: network_interface
-- kolla_external_vip_interface: 这是一个公网网段，当你想要HAProxy Public endpoint暴漏在不同的网络中的时候，需要用到. 当kolla_enables_tls_external设置为yes的时候，是个必选项. 默认值为: network\_interface
-- storage\_interface: 虚拟机与Ceph通信接口，这个接口负载较重，推荐放在10Gig网口上. 默认值为: network\_interface
-- cluster\_interface: 这是Ceph用到的另外一个接口，用于数据的replication，这个接口同样负载很重，当其成为bottleneck的时候，会影响数据的一致性和整个集群的性能, 只有当前节点是ceph节点时候才有效. 默认: network_interface
-- tunnel_interface: 这个接口用于虚拟机与虚拟机之间的通信，通过 tunneled网路进行，比如: Vxlan，GRE等，默认为: network_interface
-- neutron_external_interface: 这是Neutron提供VM对外网络的接口，Neutron会将其绑定在br-ex上，既可以是flat网络，也可以是tagged vlan网络，必须单独设置
+- api_interface: 用于management network,即openstack内部服务间通信, 以及服务于数据库通信的网络. 这是系统的风险点, 所以, 这个网络推荐使用内网, 不能够接出到外网, 默认值为: network_interface
+- kolla_external_vip_interface: 这是一个公网网段, 当你想要HAProxy Public endpoint暴漏在不同的网络中的时候, 需要用到. 当kolla_enables_tls_external设置为yes的时候, 是个必选项. 默认值为: network\_interface
+- storage\_interface: 虚拟机与Ceph通信接口, 这个接口负载较重, 推荐放在10Gig网口上. 默认值为: network\_interface
+- cluster\_interface: 这是Ceph用到的另外一个接口, 用于数据的replication, 这个接口同样负载很重, 当其成为bottleneck的时候, 会影响数据的一致性和整个集群的性能, 只有当前节点是ceph节点时候才有效. 默认: network_interface
+- tunnel_interface: 这个接口用于虚拟机与虚拟机之间的通信, 通过 tunneled网路进行, 比如: Vxlan, GRE等, 默认为: network_interface
+- neutron_external_interface: 这是Neutron提供VM对外网络的接口, Neutron会将其绑定在br-ex上, 既可以是flat网络, 也可以是tagged vlan网络, 必须单独设置
 
 使用ceph的话需要修改storage\_interface和cluster\_interface
 
@@ -277,7 +277,7 @@ $ cp /etc/ceph/ceph.client.glance.keyring /etc/kolla/config/glance/ceph.client.g
 
 ## 2.3 配置Cinder
 
-配置Cinder卷服务使用Ceph的cinder-volume用户使用volume存储池，Cinder卷备份服务使用Ceph的cinder-backup用户使用backups存储池: 
+配置Cinder卷服务使用Ceph的cinder-volume用户使用volume存储池, Cinder卷备份服务使用Ceph的cinder-backup用户使用backups存储池: 
 
 ### 2.3.1 cinder\-volume服务的存储池相关配置文件
 

@@ -25,7 +25,7 @@
 ;; 14) C0_0000h ~ FF_FFFFh : 保留未用
 ;;
 ;;
-;; 假设物理内存为256M，地址从 0000_0000h - 0FFF_FFFFh
+;; 假设物理内存为256M, 地址从 0000_0000h - 0FFF_FFFFh
 ;;
 ;; VM 内存 domain 分配说明: 
 ;; 1) VM 0: 0000_0000h - 087F_FFFFh
@@ -89,7 +89,7 @@ PCB_SIZE                EQU     PROCESSOR_CONTROL_BLOCK_SIZE
 PCB_POOL_SIZE           EQU     (PCB_SIZE * PROCESSOR_MAX)
 
 ;;
-;; PCB pool 物理基址，每个处理器的 PCB 块从这里分配
+;; PCB pool 物理基址, 每个处理器的 PCB 块从这里分配
 ;;
 PCB_PHYSICAL_POOL       EQU     100000h
 
@@ -130,7 +130,7 @@ SDA_PHYSICAL_BASE       EQU     (PCB_PHYSICAL_POOL + PCB_POOL_SIZE)
 ; output:
 ;       none
 ; 描述: 
-;       通过 apic 的开启，否则处理器进入 HLT 状态
+;       通过 apic 的开启, 否则处理器进入 HLT 状态
 ;---------------------------------------------------
 init_apic:
         push ecx
@@ -176,7 +176,7 @@ init_apic.error:
 ; output:
 ;       eax - 返回 selector 值
 ; 描述: 
-;       1) 添加一个描述符，并更新 GDTR 
+;       1) 添加一个描述符, 并更新 GDTR 
 ;-------------------------------------------------------------------
 append_gdt_descriptor:
         mov esi, [fs: SDA.GdtTop]                       ; 读取 GDT 顶端原值
@@ -250,7 +250,7 @@ set_gdt_descriptor:
 set_gdt_descriptor.next:
         ;;
         ;; 如果设置的 GDT entry 位置超出了 GDT limit
-        ;; 就更新 limit，并刷新 gdtr 寄存器
+        ;; 就更新 limit, 并刷新 gdtr 寄存器
         ;;
         cmp esi, [fs: SDA.GdtLimit]
         jbe set_gdt_descriptor.done
@@ -267,7 +267,7 @@ set_gdt_descriptor.done:
 ; input:
 ;       esi - selector 
 ; output:
-;       edx:eax - 成功时，返回 64 位描述符，失败时，返回 -1 值
+;       edx:eax - 成功时, 返回 64 位描述符, 失败时, 返回 -1 值
 ;------------------------------------------------------------------- 
 get_gdt_descriptor:
         push ebx
@@ -297,7 +297,7 @@ get_gdt_descriptor.done:
 ; input:
 ;       esi - vector  
 ; output:
-;       edx:eax - 成功时，返回 64 位描述符，失败时，返回 -1 值
+;       edx:eax - 成功时, 返回 64 位描述符, 失败时, 返回 -1 值
 ;------------------------------------------------------------------- 
 get_idt_descrptor:
         push ebx
@@ -645,7 +645,7 @@ init_processor_basic_info.@5:
         call smep_enable
         
         ;;
-        ;; 开启 CR4.OSFXSR 位，允许执行 SSE 指令        
+        ;; 开启 CR4.OSFXSR 位, 允许执行 SSE 指令        
         ;;
         mov eax, cr4
         bts eax, 9                                      ; CR4.OSFXSR = 1
@@ -653,7 +653,7 @@ init_processor_basic_info.@5:
         or DWORD [gs: PCB.InstructionStatus], INST_STATUS_SSE
 
         ;;
-        ;; 开启 Read/Write FS/GS base 功能，允许使用 RD/WR FS/GS base 指令
+        ;; 开启 Read/Write FS/GS base 功能, 允许使用 RD/WR FS/GS base 指令
         ;;
         test DWORD [gs: PCB.FeatureAddition], 1         ; 检查 RWFSBASE 功能位
         jz init_processor_basic_info.@6
@@ -664,7 +664,7 @@ init_processor_basic_info.@5:
         
 init_processor_basic_info.@6:
         ;;
-        ;; 支持 VMX 时，读取 VMX capabilities MSR
+        ;; 支持 VMX 时, 读取 VMX capabilities MSR
         ;;                
         test DWORD [gs: PCB.FeatureEcx], CPU_FLAGS_VMX
         jz init_processor_basic_info.@7
@@ -1002,7 +1002,7 @@ get_cache_level_base:
         je get_cache_level_base.done
 
         ;;
-        ;; 如果是 unified cache 则，检查 level 级
+        ;; 如果是 unified cache 则, 检查 level 级
         ;;
         mov ebx, PCB.L2
         cmp ecx, 2                                      ; 是否为 level-2
@@ -1111,8 +1111,8 @@ INTERVAL_IN_TICKS               EQU     18
 %ifdef REAL
         ;;
         ;; 检查是否支持 IA32_MPERF
-        ;; 1) 支持时，使用 IA32_MPERF 来计数
-        ;; 2) 否则，使用 time stamp 来计数
+        ;; 1) 支持时, 使用 IA32_MPERF 来计数
+        ;; 2) 否则, 使用 time stamp 来计数
         ;;
         test DWORD [gs: PCB.CpuidLeaf06Ecx], 1                  ; 检查 CPUID.06H:ECX[0]
         jnz init_processor_frequency.enh
@@ -1131,7 +1131,7 @@ init_processor_frequency.@0:
         je init_processor_frequency.@0
       
         ;;
-        ;; 读 time stamp 值，作为计数开始值
+        ;; 读 time stamp 值, 作为计数开始值
         ;;
         rdtsc
         mov [UPF.TscLow32], eax                                 ; BeginTscLow32 值
@@ -1146,7 +1146,7 @@ init_processor_frequency.@0:
         
         ;;
         ;; 设置 timer 中断延时计数值
-        ;; 1) 设置 5 秒的延时值: 18.2 * 5 = 91(PIT 每秒中断18.2次，5秒内产生91次中断)
+        ;; 1) 设置 5 秒的延时值: 18.2 * 5 = 91(PIT 每秒中断18.2次, 5秒内产生91次中断)
         ;; 2) 增加 1 次的延时
         ;;
         
@@ -1157,14 +1157,14 @@ init_processor_frequency.@0:
         add ebx, INTERVAL_IN_TICKS + 1
         
         ;;
-        ;; 下面等待测量时间到来，即等待 1 秒钟
+        ;; 下面等待测量时间到来, 即等待 1 秒钟
         ;;
 init_processor_frequency.@1:        
         cmp ebx, [fs: SDA.TimerCount]
         ja init_processor_frequency.@1
         
         ;;
-        ;; 读取结束的 TSC 值，计算两段 TSC 差值
+        ;; 读取结束的 TSC 值, 计算两段 TSC 差值
         ;;
         rdtsc
         sub eax, [UPF.TscLow32]
@@ -1204,7 +1204,7 @@ init_processor_frequency.@2:
         je init_processor_frequency.@2
         
         ;;
-        ;; 清 C0_MCNT 值，从 0 开始计数
+        ;; 清 C0_MCNT 值, 从 0 开始计数
         ;;
         wrmsr
         
@@ -1216,7 +1216,7 @@ init_processor_frequency.@2:
         add ebx, INTERVAL_IN_TICKS + 1
         
         ;;
-        ;; 下面等待测量时间到来，即等待 5 秒钟
+        ;; 下面等待测量时间到来, 即等待 5 秒钟
         ;;
 init_processor_frequency.@3:        
         cmp ebx, [fs: SDA.TimerCount]
@@ -1231,7 +1231,7 @@ init_processor_frequency.@3:
 init_processor_frequency.next:       
         ;;
         ;; 下面计算 CPU 频率
-        ;; 1) MHz 单位值: 54945 = (1 / 18.2) * 1,000,000，即: 55ms产生一次中断，100万次中断需要54945秒
+        ;; 1) MHz 单位值: 54945 = (1 / 18.2) * 1,000,000, 即: 55ms产生一次中断, 100万次中断需要54945秒
         ;; 2) tick_interval = 54945 * INTERVAL_IN_TICKS
         ;; 3) CpuFreq = TSC / tick_interval
         ;;
@@ -1369,7 +1369,7 @@ get_vmx_global_data:
 
         ;;
         ;; ### step 1: 读取 VMX MSR 值 ###
-        ;; 1) 当 CPUID.01H:ECX[5]=1时，IA32_VMX_BASIC 到 IA32_VMX_VMCS_ENUM 寄存器有效
+        ;; 1) 当 CPUID.01H:ECX[5]=1时, IA32_VMX_BASIC 到 IA32_VMX_VMCS_ENUM 寄存器有效
         ;; 2) 首先读取 IA32_VMX_BASIC 到 IA32_VMX_VMCS_ENUM 寄存器值
         ;;
         
@@ -1387,7 +1387,7 @@ get_vmx_global_data.@1:
         
         ;;
         ;; ### step 2: 接着读取 IA32_VMX_PROCBASED_CTLS2 ###
-        ;; 1) 当 CPUID.01H:ECX[5]=1，并且 IA32_VMX_PROCBASED_CTLS[63] = 1时，IA32_VMX_PROCBASED_CTLS2 寄存器有效
+        ;; 1) 当 CPUID.01H:ECX[5]=1, 并且 IA32_VMX_PROCBASED_CTLS[63] = 1时, IA32_VMX_PROCBASED_CTLS2 寄存器有效
         ;;
         test DWORD [gs: PCB.ProcessorBasedCtls + 4], ACTIVATE_SECONDARY_CONTROL
         jz get_vmx_global_data.@5
@@ -1399,7 +1399,7 @@ get_vmx_global_data.@1:
 
         ;;
         ;; ### step 3: 接着读取 IA32_VMX_EPT_VPID_CAP
-        ;; 1) 当 CPUID.01H:ECX[5]=1，IA32_VMX_PROCBASED_CTLS[63]=1，并且 IA32_PROCBASED_CTLS2[33]=1 时，IA32_VMX_EPT_VPID_CAP 寄存器有效
+        ;; 1) 当 CPUID.01H:ECX[5]=1, IA32_VMX_PROCBASED_CTLS[63]=1, 并且 IA32_PROCBASED_CTLS2[33]=1 时, IA32_VMX_EPT_VPID_CAP 寄存器有效
         ;;
         test edx, ENABLE_EPT
         jz get_vmx_global_data.@5        
@@ -1411,7 +1411,7 @@ get_vmx_global_data.@1:
         
         ;;
         ;; ### step 4: 读取 IA32_VMX_VMFUNC　###
-        ;; 1) IA32_VMX_VMFUNC 寄存器仅在支持 "enable VM functions" 1-setting 时有效，因此需要检测是否支持!
+        ;; 1) IA32_VMX_VMFUNC 寄存器仅在支持 "enable VM functions" 1-setting 时有效, 因此需要检测是否支持!
         ;; 2) 检查 IA32_VMX_PROCBASED_CTLS2[45] 是否为 1 值
         ;;
         test DWORD [gs: PCB.ProcessorBasedCtls2 + 4], ENABLE_VM_FUNCTION
@@ -1439,7 +1439,7 @@ get_vmx_global_data.@5:
 
         mov BYTE [gs: PCB.TrueFlag], 1                                  ; 设置 TrueFlag 标志位
         ;;
-        ;; 如果支持 TRUE MSR 的话，那么就更新下面 MSR:
+        ;; 如果支持 TRUE MSR 的话, 那么就更新下面 MSR:
         ;; 1) IA32_VMX_PINBASED_CTLS
         ;; 2) IA32_VMX_PROCBASED_CTLS
         ;; 3) IA32_VMX_EXIT_CTLS
@@ -1485,23 +1485,23 @@ get_vmx_global_data.@6:
         
         ;;
         ;; 关于 IA32_FEATURE_CONTROL.lock 位: 
-        ;; 1) 当 lock = 0 时，执行 VMXON 产生 #GP 异常
-        ;; 2) 当 lock = 1 时，写 IA32_FEATURE_CONTROL 寄存器产生 #GP 异常
+        ;; 1) 当 lock = 0 时, 执行 VMXON 产生 #GP 异常
+        ;; 2) 当 lock = 1 时, 写 IA32_FEATURE_CONTROL 寄存器产生 #GP 异常
         ;;
         
         ;;
         ;; 下面将检查 IA32_FEATURE_CONTROL 寄存器
-        ;; 1) 当 lock 位为 0 时，需要进行一些设置，然后锁上 IA32_FEATURE_CONTROL
+        ;; 1) 当 lock 位为 0 时, 需要进行一些设置, 然后锁上 IA32_FEATURE_CONTROL
         ;;        
         mov ecx, IA32_FEATURE_CONTROL
         rdmsr
-        bts eax, 0                                                      ; 检查 lock 位，并上锁
+        bts eax, 0                                                      ; 检查 lock 位, 并上锁
         jc get_vmx_global_data.@7
         
         ;; lock 未上锁时: 
         ;; 1) 对 lock 置位(锁上 IA32_FEATURE_CONTROL 寄存器)
         ;; 2) 对 bit 2 置位(启用 enable VMXON outside SMX)
-        ;; 3) 如果支持 enable VMXON inside SMX 时，对 bit 1 置位!
+        ;; 3) 如果支持 enable VMXON inside SMX 时, 对 bit 1 置位!
         ;; 
         mov esi, 6                                                      ; enable VMX outside SMX = 1, enable VMX inside SMX = 1
         mov edi, 4                                                      ; enable VMX outside SMX = 1, enable VMX inside SMX = 0
@@ -1518,7 +1518,7 @@ get_vmx_global_data.@6:
 get_vmx_global_data.@7:        
 
         ;;
-        ;; 假如使用 enable VMX inside SMX 功能，则根据 IA32_FEATURE_CONTROL[1] 来决定是否必须开启 CR4.SMXE
+        ;; 假如使用 enable VMX inside SMX 功能, 则根据 IA32_FEATURE_CONTROL[1] 来决定是否必须开启 CR4.SMXE
         ;; 1) 本书例子中没有开启 CR4.SMXE
         ;;
 %ifdef ENABLE_VMX_INSIDE_SMX
@@ -1527,7 +1527,7 @@ get_vmx_global_data.@7:
         ;;
         ;; 再次读取 IA32_FEATURE_CONTROL 寄存器
         ;; 1) 检查 enable VMX inside SMX 位(bit1)
-        ;;    1.1) 如果是 inside SMX(即 bit1 = 1)，则设置 CR4FixedMask 位的相应位
+        ;;    1.1) 如果是 inside SMX(即 bit1 = 1), 则设置 CR4FixedMask 位的相应位
         ;; 
         rdmsr
         and eax, 2                                                      ; 取 enable VMX inside SMX 位的值(bit1)
@@ -1540,7 +1540,7 @@ get_vmx_global_data.@8:
         ;;
         ;; ### step 8: 查询 Vmcs 以及 access page 的内存 cache 类型 ###
         ;; 1) VMCS 区域内存类型
-        ;; 2) VMCS 内的各种 bitmap 区域，access page 内存类型
+        ;; 2) VMCS 内的各种 bitmap 区域, access page 内存类型
         ;;
         mov eax, [gs: PCB.VmxBasic + 4]
         shr eax, 50-32                                                  ; 读取 IA32_VMX_BASIC[53:50]
@@ -1552,7 +1552,7 @@ get_vmx_global_data.@9:
         ;;
         ;; ### step 9: 检查 VMX 所支持的 EPT page memory attribute ###
         ;; 1) 如果支持 WB 类型则使用 WB, 否则使用 UC
-        ;; 2) 在 EPT 设置 memory type 时，直接或上 [gs: PCB.EptMemoryType]
+        ;; 2) 在 EPT 设置 memory type 时, 直接或上 [gs: PCB.EptMemoryType]
         ;;
         mov esi, MEM_TYPE_WB                                            ; WB 
         mov eax, MEM_TYPE_UC                                            ; UC        

@@ -47,7 +47,7 @@ alloc_stage3_kernel_stack_4k_base:
 ;---------------------------------------------------------------
 init_longmode_basic_page32:
         ;;
-        ;; 下面映射 PPT 表区域(2M)，包括 PXT 表区域(4K)
+        ;; 下面映射 PPT 表区域(2M), 包括 PXT 表区域(4K)
         ;;
         call map_longmode_page_transition_table32
         
@@ -117,7 +117,7 @@ init_longmode_basic_page32:
         ;;
         ;; 3) 映射 64-bit 模式下的 LONG_SEGMENT 区域: 
         ;;      3.1) 虚拟地址 ffff_ff80_4000_0000 - ffff_ff80_4000_3fffh 
-        ;;      3.2) 映射到 2_0000h - 2_3000h 物理页面，使用 4K 页
+        ;;      3.2) 映射到 2_0000h - 2_3000h 物理页面, 使用 4K 页
         ;; 
         mov eax, LONG_LENGTH + 0FFFh
         shr eax, 12
@@ -238,8 +238,8 @@ init_longmode_basic_page32:
 ;-----------------------------------------------------
 update_stage3_gdt_idt_pointer:
         ;;
-        ;; 更新 GDT/IDT pointer，使用 64-bit 虚拟地址
-        ;; 1) 地址中的高 32 位值为 ffff_ff800h，已经在 stage1 设置
+        ;; 更新 GDT/IDT pointer, 使用 64-bit 虚拟地址
+        ;; 1) 地址中的高 32 位值为 ffff_ff800h, 已经在 stage1 设置
         ;;
         mov DWORD [fs: SDA.IdtBase], SDA_BASE + SDA.Idt
         mov DWORD [fs: SDA.IdtTop], SDA_BASE + SDA.Idt
@@ -306,7 +306,7 @@ map_stage3_pcb:
 ; output:
 ;       none
 ; 描述: 
-;       1) 为 paging 在使用原 kernel stack，需分配一个 VA 映射原 stack
+;       1) 为 paging 在使用原 kernel stack, 需分配一个 VA 映射原 stack
 ;-----------------------------------------------------------------------
 update_stage3_kernel_stack:
         ;;
@@ -396,7 +396,7 @@ update_stage3_tss:
         mov rbx, [gs: PCB.TssBase]
         
         ;;
-        ;; 分配一个 kernel 使用的 stack 虚拟地址，映射原物理地址
+        ;; 分配一个 kernel 使用的 stack 虚拟地址, 映射原物理地址
         ;;
         call alloc_kernel_stack_4k_base
         mov rsi, rax                                            ; 虚拟地址
@@ -568,7 +568,7 @@ install_default_local_interrupt_handler:
 ;-----------------------------------------------------
 wait_for_ap_stage3_done:            
         ;;
-        ;; 1) 开放 pre-stage3 锁，允许 AP 进入 pre-stage3
+        ;; 1) 开放 pre-stage3 锁, 允许 AP 进入 pre-stage3
         ;;
         xor eax, eax
         mov ebx, [fs: SDA.Stage3LockPointer]        
@@ -578,8 +578,8 @@ wait_for_ap_stage3_done:
         ;;
         ;; 等待 AP 完成 pre-stage3 工作:
         ;; 检查处理器计数 ApInitDoneCount 是否等于 LocalProcessorCount 值
-        ;; 1)是，所有 AP 完成 pre-stage3 工作
-        ;; 2)否，继续等待
+        ;; 1)是, 所有 AP 完成 pre-stage3 工作
+        ;; 2)否, 继续等待
         ;;
 wait_for_ap_stage3_done.@0:     
         mov eax, [fs: SDA.ApInitDoneCount]

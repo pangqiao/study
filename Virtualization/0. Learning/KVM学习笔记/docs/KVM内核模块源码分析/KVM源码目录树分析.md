@@ -12,7 +12,7 @@
 <!-- /TOC -->
 # KVM源码目录树分析
 
-* linux 4.* 内核源码囊括KVM模块源码，拆分一下看看
+* linux 4.* 内核源码囊括KVM模块源码, 拆分一下看看
 
 ![1532753517013.png](image/1532753517013.png)
 
@@ -199,7 +199,7 @@ root@ubuntu16x64:~/kernel/linux-4.4.124# find ./ -name "*kvm*"
 
 ```
 
-当然不可能只有这些，毕竟有些文件名字不含kvm字样，但是可以推断出目录包括哪些
+当然不可能只有这些, 毕竟有些文件名字不含kvm字样, 但是可以推断出目录包括哪些
 
 ```
 ./include/kvm
@@ -212,7 +212,7 @@ root@ubuntu16x64:~/kernel/linux-4.4.124# find ./ -name "*kvm*"
 
 ## KVM模块入口点搜索
 
-每个内核模块都有入口. 那么kvm如果是个单独内核模块，它的入口在哪里？
+每个内核模块都有入口. 那么kvm如果是个单独内核模块, 它的入口在哪里？
 ```
 root@ubuntu16x64:~/kernel/linux-4.4.124# find ./ -type f -name "*.c"|xargs grep "module_init" |grep kvm
 ./arch/s390/kvm/kvm-s390.c:module_init(kvm_s390_init);
@@ -235,14 +235,14 @@ root@ubuntu16x64:~/kernel/linux-4.4.124# find ./ -type f -name "*.c"|xargs grep 
 ./arch/x86/kvm/mmu.c:int kvm_mmu_module_init(void)
 ./arch/x86/kvm/vmx.c:module_init(vmx_init)
 ```
-正常模块入口应该是module_init()，那就剩它两个了，如果有点虚拟化概念的都知道. SVM是AMD家的，VMX是intel家的. 没毛病. 这里肯定是个条件编译区分开来. 
+正常模块入口应该是module_init(), 那就剩它两个了, 如果有点虚拟化概念的都知道. SVM是AMD家的, VMX是intel家的. 没毛病. 这里肯定是个条件编译区分开来. 
 
 ```
 ./arch/x86/kvm/svm.c:module_init(svm_init)
 ./arch/x86/kvm/vmx.c:module_init(vmx_init)
 ```
 
-找到入口就好分析了，来看看vmx.c，毕竟我用的是intel的，只分析vmx
+找到入口就好分析了, 来看看vmx.c, 毕竟我用的是intel的, 只分析vmx
 
 ## KVM模块Kconfig
 
@@ -397,7 +397,7 @@ root@ubuntu16x64:~/kernel/linux-4.4.124/arch/x86/kvm#
 
 ![1532753950385.png](image/1532753950385.png)
 
-一万多行，没毛病~果断用SourceInsight阅读源码
+一万多行, 没毛病~果断用SourceInsight阅读源码
 
 
 

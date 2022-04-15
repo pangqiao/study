@@ -106,7 +106,7 @@ ioapic_keyboard_handler.next:
         REX.Wrxb
         cmp esi, ecx
         REX.Wrxb
-        cmovae esi, edi                                         ; 如果到达缓冲区尾部，则指向头部
+        cmovae esi, edi                                         ; 如果到达缓冲区尾部, 则指向头部
         mov [esi], al                                           ; 写入扫描码
         REX.Wrxb
         xchg [ebx], esi                                         ; 更新缓冲区指针 

@@ -19,7 +19,7 @@
 ;       eax - MSR VTE(value table entry)地址
 ; 描述: 
 ;       1) 返回 MSR 对应的 VTE 表项地址
-;       2) 不存在 MSR 时，返回 0 值　
+;       2) 不存在 MSR 时, 返回 0 值　
 ;-----------------------------------------------------------------------
 GetMsrVte:
         push ebp
@@ -139,16 +139,16 @@ DoWriteMsrForApicBase:
                 
         ;;
         ;; ### 检查写入值是否合法 ###
-        ;; 1) 保留位(bits 7:0, bit 9，bits 63:N)需为 0
+        ;; 1) 保留位(bits 7:0, bit 9, bits 63:N)需为 0
         ;; 2) 检查 bit 11 与 bit 10 的设置
-        ;;      a) 当 bit 11 = 1, bit 10 = 0 时，设置 bit 11 = 1， bit 10 = 1 开启 x2APIC 模式
-        ;;      b) 当 bit 11 = 0, bit 10 = 1 时，无效
-        ;;      c) 当 bit 11 = 0, bit 10 = 0 时，关闭 local APIC
-        ;;      d) 当 bit 11 = 1, bit 10 = 1 时，设置 bit 11 = 1, bit 10 = 0 时，产生 #GP 异常 
+        ;;      a) 当 bit 11 = 1, bit 10 = 0 时, 设置 bit 11 = 1,  bit 10 = 1 开启 x2APIC 模式
+        ;;      b) 当 bit 11 = 0, bit 10 = 1 时, 无效
+        ;;      c) 当 bit 11 = 0, bit 10 = 0 时, 关闭 local APIC
+        ;;      d) 当 bit 11 = 1, bit 10 = 1 时, 设置 bit 11 = 1, bit 10 = 0 时, 产生 #GP 异常 
         ;;
         
         ;;
-        ;; 检查保留位，不为 0 时注入 #GP 异常
+        ;; 检查保留位, 不为 0 时注入 #GP 异常
         ;;
         test eax, 2FFh
         jnz DoWriteMsrForApicBase.Error
@@ -164,14 +164,14 @@ DoWriteMsrForApicBase:
         jz DoWriteMsrForApicBase.Check.@1
 
         ;;
-        ;; 当 bit 10 = 1 时，检查 CPUID.01H:ECX[21].x2APIC 位
-        ;; 1) 为 0 时表明不支持 x2APIC 模式，注入 #GP(0) 异常
+        ;; 当 bit 10 = 1 时, 检查 CPUID.01H:ECX[21].x2APIC 位
+        ;; 1) 为 0 时表明不支持 x2APIC 模式, 注入 #GP(0) 异常
         ;; 
         test DWORD [ebp + PCB.CpuidLeaf01Ecx], (1 << 21)
         jz DoWriteMsrForApicBase.Error
 
         ;;
-        ;; 当 bit 10 = 1 时，bit 11 = 0，无效设置则注入 #GP(0) 异常
+        ;; 当 bit 10 = 1 时, bit 11 = 0, 无效设置则注入 #GP(0) 异常
         ;;
         test eax, APIC_BASE_ENABLE
         jz DoWriteMsrForApicBase.Error
@@ -188,15 +188,15 @@ DoWriteMsrForApicBase.x2APIC:
 
         ;;
         ;; 检查 secondary prcessor-based VM-execution control 字段“virtualize x2APIC mode”位
-        ;; 1) 为 1 时，使用 VMX 原生的 x2APIC 虚拟化，直接返回
-        ;; 2) 为 0 时，监控 800H - 8FFH MSR 的读写
+        ;; 1) 为 1 时, 使用 VMX 原生的 x2APIC 虚拟化, 直接返回
+        ;; 2) 为 0 时, 监控 800H - 8FFH MSR 的读写
         ;;
         GetVmcsField    CONTROL_PROCBASED_SECONDARY
         test eax, VIRTUALIZE_X2APIC_MODE
         jnz DoWriteMsrForApicBase.Done
         
         ;;
-        ;; 现在监控 x2APIC MSR 的读写，范围从 800H 到 8FFH
+        ;; 现在监控 x2APIC MSR 的读写, 范围从 800H 到 8FFH
         ;;
         call set_msr_read_bitmap_for_x2apic
         call set_msr_write_bitmap_for_x2apic
@@ -204,7 +204,7 @@ DoWriteMsrForApicBase.x2APIC:
                 
 DoWriteMsrForApicBase.Check.@1:
         ;;
-        ;; bit 10 = 0, bit 11 = 0，关闭 local APIC，不进行虚拟化处理
+        ;; bit 10 = 0, bit 11 = 0, 关闭 local APIC, 不进行虚拟化处理
         ;; 1)写入 IA32_APIC_BASE 寄存器
         ;; 2)恢复映射
         ;;
@@ -241,7 +241,7 @@ DoWriteMsrForApicBase.Check.@1:
 DoWriteMsrForApicBase.Check.@2:
         ;;
         ;; 读取原 guest 设置的 APIC_APIC_BASE 值
-        ;; 1) 假如返回 0 值，则表明 guest 第 1 次写 IA32_APIC_BASE
+        ;; 1) 假如返回 0 值, 则表明 guest 第 1 次写 IA32_APIC_BASE
         ;;
         mov esi, IA32_APIC_BASE
         call GetMsrVte
@@ -249,7 +249,7 @@ DoWriteMsrForApicBase.Check.@2:
         jz DoWriteMsrForApicBase.xAPIC
                 
         ;;
-        ;; 如果原值 bit 11 = 1, bit 10 = 1 时，当设置 bit 11 = 1, bit 10 = 0 时，将产生 #GP 异常
+        ;; 如果原值 bit 11 = 1, bit 10 = 1 时, 当设置 bit 11 = 1, bit 10 = 0 时, 将产生 #GP 异常
         ;;
         test DWORD [eax + MSR_VTE.Value], APIC_BASE_X2APIC
         jnz DoWriteMsrForApicBase.Error
@@ -269,11 +269,11 @@ DoWriteMsrForApicBase.xAPIC:
         
         ;;
         ;; 1)检查是否开启了“virtualize APIC access ”
-        ;;     a) 是，则设置 APIC-access page 页面
-        ;;     b) 否，则提供 GPA 例程处理 local APIC 访问
+        ;;     a) 是, 则设置 APIC-access page 页面
+        ;;     b) 否, 则提供 GPA 例程处理 local APIC 访问
         ;; 2)检查是否开启了“enable EPT”
-        ;;     a)是，则映射 IA32_APIC_BASE[N-1:12]，将 APIC-access page 设置为该 HPA 值
-        ;;     b)否，则直接将 IA32_APIC_BASE[N-1:12] 设为 APIC-access page
+        ;;     a)是, 则映射 IA32_APIC_BASE[N-1:12], 将 APIC-access page 设置为该 HPA 值
+        ;;     b)否, 则直接将 IA32_APIC_BASE[N-1:12] 设为 APIC-access page
         ;;
         
         GetVmcsField    CONTROL_PROCBASED_SECONDARY
@@ -326,7 +326,7 @@ DoWriteMsrForApicBase.SetApicAccessPage:
 DoWriteMsrForApicBase.SetForEptViolation:
         ;;
         ;; 处理 guest 写入 IA32_APIC_BASE 寄存器的值: 
-        ;; 1)将 IA32_APIC_BASE[N-1:12] 映射到 host 的 IA32_APIC_BASE 值，但是为 not-present
+        ;; 1)将 IA32_APIC_BASE[N-1:12] 映射到 host 的 IA32_APIC_BASE 值, 但是为 not-present
         ;; 2)GPA 不进行任何映射
         ;;        
         
@@ -669,7 +669,7 @@ DoWriteMsrEfer:
         jz DoWriteMsrEfer.Write
         
         ;;
-        ;; 在 long-mode 模式下，更新 IDT 的 limit 为 1FFh
+        ;; 在 long-mode 模式下, 更新 IDT 的 limit 为 1FFh
         ;;
         SetVmcsField    GUEST_IDTR_LIMIT, 1FFh
         

@@ -7,8 +7,8 @@
 
 ;;
 ;; ex.asm 说明: 
-;; 1) ex.asm 是实验例子的源代码文件，它嵌入在 protected.asm 和 long.asm 文件内
-;; 2) ex.asm 是通用模块，能在 stage2 和 stage3 阶段运行
+;; 1) ex.asm 是实验例子的源代码文件, 它嵌入在 protected.asm 和 long.asm 文件内
+;; 2) ex.asm 是通用模块, 能在 stage2 和 stage3 阶段运行
 ;;
         ;;
         ;; 加入 ex.asm 模块使用的头文件
@@ -17,11 +17,11 @@
         
         
         ;;
-        ;; 示例4-1: 观察注入事件下，单步调试与数据断点 #DB 异常的 delivery
+        ;; 示例4-1: 观察注入事件下, 单步调试与数据断点 #DB 异常的 delivery
         ;; 说明: 
-        ;;      1) 打开两个虚拟机，分别由 CPU1 与 CPU2 执行
-        ;;      2) guest1 产生单步调试#DB，并且pending debug exception
-        ;;      3) guest2 产生数据断点#DB，并且pending debug exception
+        ;;      1) 打开两个虚拟机, 分别由 CPU1 与 CPU2 执行
+        ;;      2) guest1 产生单步调试#DB, 并且pending debug exception
+        ;;      3) guest2 产生数据断点#DB, 并且pending debug exception
         ;;
 
         
@@ -141,7 +141,7 @@ TargetCpuVmentry1:
         
 
         ;;
-        ;; #BP 产生 VM-exit，#DB 保持执行
+        ;; #BP 产生 VM-exit, #DB 保持执行
         ;;     
         SET_EXCEPTION_BITMAP            BP_VECTOR
         CLEAR_EXCEPTION_BITMAP          DB_VECTOR
@@ -283,7 +283,7 @@ TargetCpuVmentry2:
         
 
         ;;
-        ;; #BP 产生 VM-exit，#DB 保持执行
+        ;; #BP 产生 VM-exit, #DB 保持执行
         ;;     
         SET_EXCEPTION_BITMAP            BP_VECTOR
         CLEAR_EXCEPTION_BITMAP          DB_VECTOR
