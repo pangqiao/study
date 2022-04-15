@@ -2,12 +2,12 @@
 `Systemtap` 是内核调试的强大工具, `systemtap` 从版本 `1.0` 开始变支持 `arm` 处理器, 但是只支持 `OMAP` 的, 由于"工作"需要将 `systemtap` 移植到运行 `Android`.
 
 
-`systemtap` 里面有三个重要的工具: translator，compiler，staprun. 
+`systemtap` 里面有三个重要的工具: translator, compiler, staprun. 
 translator负责将stp脚本翻译为c代码; 
 compiler根据runtime环境和内核路径来生成module; 
-staprun负责装载、卸载模块，输出模块探测的信息. 
+staprun负责装载、卸载模块, 输出模块探测的信息. 
 
-translator和compiler都是在宿主机上运行，staprun在目标板上运行. 
+translator和compiler都是在宿主机上运行, staprun在目标板上运行. 
 
 官方资料 http://omappedia.org/wiki/Systemtap
 
@@ -25,7 +25,7 @@ translator和compiler都是在宿主机上运行，staprun在目标板上运行.
 
 *	每台目标机器仅仅需要被安装一个 `RPM` 包, 为了使用生成的 `SystemTap` 测量模块 : `systemtap-runtime` 包
 
-为了简单起见，在这一节中使用以下术语: 
+为了简单起见, 在这一节中使用以下术语: 
 
 *	测量模块 - 从 `SystemTap` 脚本构建的内核模. `SystemTap` 模块在主机系统上被构建, 将在目标系统的内核上被加载.
 
@@ -33,7 +33,7 @@ translator和compiler都是在宿主机上运行，staprun在目标板上运行.
 
 *	目标系统 - SystemTap 脚本构建测量模块系统
 
-*	目标内核 - 目标系统的内核，这个内核用于你加载或运行测量模块
+*	目标内核 - 目标系统的内核, 这个内核用于你加载或运行测量模块
 
 为了配置一个主机系统和一个目标系统, 需要完成以下步骤 :
 
@@ -41,7 +41,7 @@ translator和compiler都是在宿主机上运行，staprun在目标板上运行.
 
 *	通过在每台主机上运行 `uname -r` 命令来决定运行在每台目标系统上的内核
 
-*	在主机系统上安装 `SystemTap`. 在主机系统上，你将可以为目标系统构建测量指令. 关于怎样安装 `SystemTap` 的指令, 可以参考"SystemTap 学习笔记 - 安装篇".
+*	在主机系统上安装 `SystemTap`. 在主机系统上, 你将可以为目标系统构建测量指令. 关于怎样安装 `SystemTap` 的指令, 可以参考"SystemTap 学习笔记 - 安装篇".
 
 *	前期确定目标系统的内核版本, 安装目标内核和在主机系统上的相关的 `RPM` 包, 如 "SystemTap 学习笔记 - 安装篇" 中的 "手动安装必需的内核信息包" 所述. 如果多个目标系统使用不同的目标内核, 为在目标系统上使用的每个不同的内核重复这一步骤.
 
@@ -69,7 +69,7 @@ staprun module_name.ko
 #示例
 -------
 
-例如， 为 `2.6.18-92.1.10.el5` (`x86_64` 架构) 的目标内核从一个名称为 `simple.stp` 的 `SystemTap` 脚本创建一个测量模块 `simple.ko`， 使用以下命令 :
+例如,  为 `2.6.18-92.1.10.el5` (`x86_64` 架构) 的目标内核从一个名称为 `simple.stp` 的 `SystemTap` 脚本创建一个测量模块 `simple.ko`,  使用以下命令 :
 
 ```cpp
 stap -r 2.6.18-92.1.10.el5 -e 'probe vfs.read {exit()}' -m simple

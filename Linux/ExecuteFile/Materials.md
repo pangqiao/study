@@ -18,4 +18,4 @@
 - [elf文件格式](http://www.360doc.com/content/13/0821/12/7377734_308735271.shtml)
 - [elf文件格式总结](http://www.lxway.com/805909004.htm)
 - [elf文件格式与动态链接库(非常之好)-----不可不看](http://blog.chinaunix.net/uid-26404697-id-3181837.html)
-- Executable and Linkable Format (ELF) (这专门介绍ELF文件格式的ABI的好文章，网络版在 [www.skyfree.org/linux/references/ELF_Format.pdf](http://www.skyfree.org/linux/references/ELF_Format.pdf)可以得到)
+- Executable and Linkable Format (ELF) (这专门介绍ELF文件格式的ABI的好文章, 网络版在 [www.skyfree.org/linux/references/ELF_Format.pdf](http://www.skyfree.org/linux/references/ELF_Format.pdf)可以得到)

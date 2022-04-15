@@ -32,12 +32,12 @@ perf sched [<options>] {record|latency|map|replay|script|timehist}
 ```
 
 * Callsite: 内核代码中调用kmalloc和kfree的地方. 
-* Total_alloc/Per: 总共分配的内存大小，平均每次分配的内存大小. 
-* Total_req/Per: 总共请求的内存大小，平均每次请求的内存大小. 
+* Total_alloc/Per: 总共分配的内存大小, 平均每次分配的内存大小. 
+* Total_req/Per: 总共请求的内存大小, 平均每次请求的内存大小. 
 * Hit: 调用的次数. 
-* Ping-pong: kmalloc和kfree不被同一个CPU执行时的次数，这会导致cache效率降低. 
-* Frag: 碎片所占的百分比，碎片 = 分配的内存 - 请求的内存，这部分是浪费的. 
-有使用–alloc选项，还会看到Alloc Ptr，即所分配内存的地址. 
+* Ping-pong: kmalloc和kfree不被同一个CPU执行时的次数, 这会导致cache效率降低. 
+* Frag: 碎片所占的百分比, 碎片 = 分配的内存 - 请求的内存, 这部分是浪费的. 
+有使用–alloc选项, 还会看到Alloc Ptr, 即所分配内存的地址. 
 
 最后还有一个Summary: 
 
@@ -55,9 +55,9 @@ Cross CPU allocations: 2/509
 
 ```
 --i <file>: 输入文件
---caller: show per-callsite statistics，显示内核中调用kmalloc和kfree的地方. 
---alloc: show per-allocation statistics，显示分配的内存地址. 
--l <num>: print n lines only，只显示num行. 
+--caller: show per-callsite statistics, 显示内核中调用kmalloc和kfree的地方. 
+--alloc: show per-allocation statistics, 显示分配的内存地址. 
+-l <num>: print n lines only, 只显示num行. 
 -s <key[,key2...]>: sort the output (default: frag,hit,bytes)
 ```
 

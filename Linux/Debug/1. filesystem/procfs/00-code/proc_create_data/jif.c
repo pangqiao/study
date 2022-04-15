@@ -100,7 +100,7 @@ static ssize_t proc_seq_write(struct file *file, const char __user *buffer, size
         return -EFAULT;
     }
 
-    //将str的旧空间释放，然后将tmp赋值给str
+    //将str的旧空间释放, 然后将tmp赋值给str
     kfree(str);
     str = tmp;
 

@@ -30,7 +30,7 @@ static int my_proc_write(struct file *filp, const char __user *buf, unsigned lon
 		return -EFAULT;
 	}
 
-	//将str的旧空间释放，然后将tmp赋值给str
+	//将str的旧空间释放, 然后将tmp赋值给str
 	kfree(str);
 	str = tmp;
 

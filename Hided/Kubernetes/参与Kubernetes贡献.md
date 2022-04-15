@@ -22,7 +22,7 @@
 - [8. SIGs](#8-sigs)
 - [9. Kubernetes Developer Guide](#9-kubernetes-developer-guide)
   - [9.1. 开发以及贡献代码到Kuberentes project的流程](#91-开发以及贡献代码到kuberentes-project的流程)
-  - [9.2. 建立你的开发环境，coding以及debugging](#92-建立你的开发环境coding以及debugging)
+  - [9.2. 建立你的开发环境, coding以及debugging](#92-建立你的开发环境coding以及debugging)
 
 <!-- /code_chunk_output -->
 
@@ -58,12 +58,12 @@ http://slack.k8s.io/
 
 ## 2.4. Mailing lists
 
-Kubernetes邮件列表通过谷歌组托管. 要接收这些列表的电子邮件，加入相关的组即可.
+Kubernetes邮件列表通过谷歌组托管. 要接收这些列表的电子邮件, 加入相关的组即可.
 
-* [kubernets-announce](https://groups.google.com/forum/#!forum/kubernetes-announce): 广播主要的项目公告，如release和安全问题
+* [kubernets-announce](https://groups.google.com/forum/#!forum/kubernetes-announce): 广播主要的项目公告, 如release和安全问题
 * [kubernetes-dev](https://groups.google.com/forum/#!forum/kubernetes-dev): 围绕开发kubernetes进行讨论
 * [Discuss Kubernetes](https://discuss.kubernetes.io/): Kubernetes用户交流讨论的地方
-* 存在额外的谷歌组，并且可以加入到与每个团体和工作组相关的讨论中. 这些链接来自SIG列表. 
+* 存在额外的谷歌组, 并且可以加入到与每个团体和工作组相关的讨论中. 这些链接来自SIG列表. 
 
 ## 2.5. Issues
 
@@ -87,7 +87,7 @@ Office Hours每月举行一次. 参照 [这个](https://github.com/kubernetes/co
 
 直播地址: https://www.youtube.com/c/KubernetesCommunity/live
 
-您可以在Slack 上的 [\#office-hours频道](https://kubernetes.slack.com/messages/office-hours) 上发布问题，或者可以将问题提交给Stack Overflow. 
+您可以在Slack 上的 [\#office-hours频道](https://kubernetes.slack.com/messages/office-hours) 上发布问题, 或者可以将问题提交给Stack Overflow. 
 
 所有会议的档案都保存在这里: 
 
@@ -100,15 +100,15 @@ Office Hours每月举行一次. 参照 [这个](https://github.com/kubernetes/co
 
 查看所有K8s的会议安排: https://calendar.google.com/calendar/embed?src=cgnt364vd8s86hr2phapfjc6uk@group.calendar.google.com&ctz=America/Los_Angeles&pli=1
 
-在[calendar.google.com](https://calendar.google.com/calendar/embed?src=cgnt364vd8s86hr2phapfjc6uk%40group.calendar.google.com&ctz=America/Los_Angeles)网站上查看，或将[此iCal网址](https://calendar.google.com/calendar/ical/cgnt364vd8s86hr2phapfjc6uk%40group.calendar.google.com/public/basic.ics)粘贴到任何iCal客户端. 
+在[calendar.google.com](https://calendar.google.com/calendar/embed?src=cgnt364vd8s86hr2phapfjc6uk%40group.calendar.google.com&ctz=America/Los_Angeles)网站上查看, 或将[此iCal网址](https://calendar.google.com/calendar/ical/cgnt364vd8s86hr2phapfjc6uk%40group.calendar.google.com/public/basic.ics)粘贴到任何iCal客户端. 
 
-要添加到日历项目，请加入Google [网上论坛kubernetes-community-video-chat](https://groups.google.com/forum/#!forum/kubernetes-community-video-chat)以获取进一步说明. 
+要添加到日历项目, 请加入Google [网上论坛kubernetes-community-video-chat](https://groups.google.com/forum/#!forum/kubernetes-community-video-chat)以获取进一步说明. 
 
-如果您有想要讨论或想要讨论的主题，请在[Kubernetes社区会议议程](https://docs.google.com/document/d/1VQDIAB0OqiSjIHI8AWMvSdceWhnz56jNpZrLs6o7NJY/edit#)上提出具体日期. 
+如果您有想要讨论或想要讨论的主题, 请在[Kubernetes社区会议议程](https://docs.google.com/document/d/1VQDIAB0OqiSjIHI8AWMvSdceWhnz56jNpZrLs6o7NJY/edit#)上提出具体日期. 
 
 ## 2.9. 会议
 
-Kubernetes是KubeCon + CloudNativeCon的主要焦点，每年春季在欧洲，夏季在中国，冬季在北美举行. 
+Kubernetes是KubeCon + CloudNativeCon的主要焦点, 每年春季在欧洲, 夏季在中国, 冬季在北美举行. 
 
 有关这些和其他社区活动的信息可在[CNCF 活动页面](https://www.cncf.io/events/)上找到. 
 
@@ -171,7 +171,7 @@ kuberntes.io　－－教程
 
 kubeweekly －－－案例分享 
 
-design-proposal 设计方案说明(https://github.com/kubernetes/community/blob/master/contributors/design-proposals/)，同样可以用来学习插件的开发． 
+design-proposal 设计方案说明(https://github.com/kubernetes/community/blob/master/contributors/design-proposals/), 同样可以用来学习插件的开发． 
 
 kubernets项目更好的参与 https://github.com/kubernetes/community/tree/master/contributors/devel
 
@@ -229,14 +229,14 @@ https://github.com/kubernetes/community/blob/master/contributors/guide/github-wo
 * ci最新编译的ｉ去那个看
 * 自动化的工具
 
-## 9.2. 建立你的开发环境，coding以及debugging
+## 9.2. 建立你的开发环境, coding以及debugging
 
 * 建立开发环境
 * 测试(unit, integration and e2e test)
 
 ```
 unit测试
-运行unit测试，下面是一些常用的例子
+运行unit测试, 下面是一些常用的例子
 cd kubernetes
 make test #Run all unit tests
 make test WHAT=./pkg/api  #Run tests for pkg/api        
@@ -273,7 +273,7 @@ flake free tests
 glog日志打印级别 
 glog.Errorf() 
 glog.Warningf() 
-glog.Infof　info级别的日志又分成五个级别，范围依次变高 
+glog.Infof　info级别的日志又分成五个级别, 范围依次变高 
 glog.V(0) ＜glog.V(1)＜glog.V(２)＜glog.V(３) ＜glog.V(４) 
 可以通过－ｖ＝X来设置X is the descired maximum level to log.
 profiling kubernetes

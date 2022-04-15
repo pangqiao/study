@@ -35,7 +35,7 @@ ftrace使用、nm(导出ko符号表)以及trace模块初始化: https://blog.csd
 
 [内核性能调试–ftrace](http://blog.chinaunix.net/uid-20589411-id-3501525.html)
 
-[使用 ftrace 调试 Linux 内核，第 1 部分](https://www.ibm.com/developerworks/cn/linux/l-cn-ftrace1)
+[使用 ftrace 调试 Linux 内核, 第 1 部分](https://www.ibm.com/developerworks/cn/linux/l-cn-ftrace1)
 
 [ftrace的使用](http://blog.csdn.net/cybertan/article/details/8258394)
 

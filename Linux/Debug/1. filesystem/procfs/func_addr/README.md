@@ -61,7 +61,7 @@ cat /proc/kallsyms | grep ffffffff811fdb90
 
 # 使用内核函数接口
 
-*	已知内核符号，获取内核符号地址
+*	已知内核符号, 获取内核符号地址
 
 使用 `kallsyms_lookup_name( )`
 
@@ -93,13 +93,13 @@ int sprint_symbol(char *buffer, unsigned long address)
 
 | 参数 | 说明 |
 |:---:|:----:|
-| buffer | 文本缓冲区， 它用来记录内核符号的信息， 它是一个输出型参数 |
-| address | 内核符号中的某一地址， 为输入型参数 |
+| buffer | 文本缓冲区,  它用来记录内核符号的信息,  它是一个输出型参数 |
+| address | 内核符号中的某一地址,  为输入型参数 |
 
 
 返回参数说明
 
-返回值是一个 `int` 型， 它表示内核符号基本信息串的长度， 也即是 `buffer` 所表示的字符串的长度.
+返回值是一个 `int` 型,  它表示内核符号基本信息串的长度,  也即是 `buffer` 所表示的字符串的长度.
 
 
 
@@ -109,4 +109,4 @@ int sprint_symbol(char *buffer, unsigned long address)
 
 *	采用<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="知识共享许可协议" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">知识共享署名-非商业性使用-相同方式共享 4.0 国际许可协议</a>进行许可. 欢迎转载、使用、重新发布, 但务必保留文章署名[成坚gatieme](http://blog.csdn.net/gatieme) ( 包含链接: http://blog.csdn.net/gatieme ), 不得用于商业目的.
 
-*	基于本文修改后的作品务必以相同的许可发布. 如有任何疑问，请与我联系.
+*	基于本文修改后的作品务必以相同的许可发布. 如有任何疑问, 请与我联系.

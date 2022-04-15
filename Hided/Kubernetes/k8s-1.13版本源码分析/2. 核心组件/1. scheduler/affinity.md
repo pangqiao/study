@@ -4,7 +4,7 @@
 
 ## 简介
 
-在未分析和深入理解scheduler源码逻辑之前，本人在操作配置亲和性上，由于官方和第三方文档者说明不清楚等原因，在亲和性理解上有遇到过一些困惑，如:  
+在未分析和深入理解scheduler源码逻辑之前, 本人在操作配置亲和性上, 由于官方和第三方文档者说明不清楚等原因, 在亲和性理解上有遇到过一些困惑, 如:  
 
 1. 亲和性的operator的 “*In*”底层是什么匹配操作？正则匹配吗？“*Gt/Lt*”底层又是什么操作实现的？ 
 
@@ -14,22 +14,22 @@
    *failure-domain.beta.kubernetes.io/region* 
    为什么？真的只支持这三个key？不能自定义？ 
 
-3. Pod与Node亲和性两种类型的差异是什么？而Pod亲和性正真要去匹配的是什么，其内在逻辑是？ 
-   不知道你们是否有同样类似的问题或困惑呢？当你清晰的理解了代码逻辑实现后，那么你会觉得一切是那么的 
-   清楚明确了，不再有“隐性知识”问题存在. 所以我希望本文所述内容能给大家在kubernetes亲和性的解惑上有所帮助.  
+3. Pod与Node亲和性两种类型的差异是什么？而Pod亲和性正真要去匹配的是什么, 其内在逻辑是？ 
+   不知道你们是否有同样类似的问题或困惑呢？当你清晰的理解了代码逻辑实现后, 那么你会觉得一切是那么的 
+   清楚明确了, 不再有“隐性知识”问题存在. 所以我希望本文所述内容能给大家在kubernetes亲和性的解惑上有所帮助.  
 
 ### 约束调度
 
-  在展开源码分析之前为更好的理解亲和性代码逻辑，补充一些kubernetes调度相关的基础知识:  
+  在展开源码分析之前为更好的理解亲和性代码逻辑, 补充一些kubernetes调度相关的基础知识:  
 
-1. 亲和性目的是为了实现用户可以按需将pod调度到`指定Node`上，我称之为`“约束调度”`.  
+1. 亲和性目的是为了实现用户可以按需将pod调度到`指定Node`上, 我称之为`“约束调度”`.  
 2. 约束调度操作上常用以下三类:  
 
 - **NodeSelector / NodeName**     *node标签选择器 和 "nodeName"匹配*
 - **Affinity (Node/Pod/Service)**  *亲和性*
 - **Taint / Toleration**                       *污点和容忍* 
 
-3. 本文所述主题是亲和性，亲和性分为三种类型Node、Pod、Service亲和，以下是亲和性预选和优选阶段代码实现的策略对应表(*后面有详细分析*):  
+3. 本文所述主题是亲和性, 亲和性分为三种类型Node、Pod、Service亲和, 以下是亲和性预选和优选阶段代码实现的策略对应表(*后面有详细分析*):  
 
 |       预选阶段策略        |                         Pod.Spec配置                         |  类别   | 次序 |
 | :-----------------------: | :----------------------------------------------------------: | :-----: | :--: |
@@ -44,9 +44,9 @@
 
 ### Labels.selector标签选择器
 
-labels selector是亲和性代码底层使用最基础的代码工具，不论是nodeAffinity还是podAffinity都是需要用到它. 在使用yml类型deployment定义一个pod，配置其亲和性时须指定匹配表达式，其根本的匹配都是要对Node或pod的labels标签进行条件匹配. 而这些labels标签匹配计算就必须要用到labels.selector工具(公共使用部分).  所以在将此块最底层的匹配计算分析部分放在最前面，以便于后面源码分析部分更容易理解.  
+labels selector是亲和性代码底层使用最基础的代码工具, 不论是nodeAffinity还是podAffinity都是需要用到它. 在使用yml类型deployment定义一个pod, 配置其亲和性时须指定匹配表达式, 其根本的匹配都是要对Node或pod的labels标签进行条件匹配. 而这些labels标签匹配计算就必须要用到labels.selector工具(公共使用部分).  所以在将此块最底层的匹配计算分析部分放在最前面, 以便于后面源码分析部分更容易理解.  
 
-> labels.selector接口定义，关键的方法是Matchs()
+> labels.selector接口定义, 关键的方法是Matchs()
 
 !FILENAME vendor/k8s.io/apimachinery/pkg/labels/selector.go:36
 
@@ -61,7 +61,7 @@ type Selector interface {
 }
 ```
 
-> 看一下调用端，如下面的几个实例的func，调用labels.NewSelector()实例化一个labels.selector对象返回.
+> 看一下调用端, 如下面的几个实例的func, 调用labels.NewSelector()实例化一个labels.selector对象返回.
 
 ```go
 func LabelSelectorAsSelector(ps *LabelSelector) (labels.Selector, error) {
@@ -84,7 +84,7 @@ func TopologySelectorRequirementsAsSelector(tsm []v1.TopologySelectorLabelRequir
 
 ```
 
-> NewSelector返回的是一个InternelSelector类型，而InternelSelector类型是一个Requirement(必要条件) 
+> NewSelector返回的是一个InternelSelector类型, 而InternelSelector类型是一个Requirement(必要条件) 
 >
 > 类型的列表.  
 
@@ -182,7 +182,7 @@ func (r *Requirement) Matches(ls Labels) bool {
 ```
 
 *注: *
-*除了LabelsSelector外还有NodeSelector 、FieldsSelector、PropertySelector等，但基本都是类似的Selector接口实现，逻辑上都基本一致，后在源码分析过程有相应的说明. *
+*除了LabelsSelector外还有NodeSelector 、FieldsSelector、PropertySelector等, 但基本都是类似的Selector接口实现, 逻辑上都基本一致, 后在源码分析过程有相应的说明. *
 
 
 
@@ -285,7 +285,7 @@ func podMatchesNodeSelectorAndAffinityTerms(pod *v1.Pod, node *v1.Node) bool {
 			return false
 		}
 	}
-  //如果设置了NodeAffinity，则进行Node亲和性匹配  nodeMatchesNodeSelectorTerms() *[后面有详细分析]* 
+  //如果设置了NodeAffinity, 则进行Node亲和性匹配  nodeMatchesNodeSelectorTerms() *[后面有详细分析]* 
 	nodeAffinityMatches := true
 	affinity := pod.Spec.Affinity
 	if affinity != nil && affinity.NodeAffinity != nil {
@@ -313,9 +313,9 @@ func podMatchesNodeSelectorAndAffinityTerms(pod *v1.Pod, node *v1.Node) bool {
 
 - *如果NodeSelector失败则直接false,不处理NodeAffinity;*
 
-- *如果指定了多个 NodeSelectorTerms，那 node只要满足`其中一个`条件;*
+- *如果指定了多个 NodeSelectorTerms, 那 node只要满足`其中一个`条件;*
 
-- *如果指定了多个 MatchExpressions，那必须要满足`所有`条件.*
+- *如果指定了多个 MatchExpressions, 那必须要满足`所有`条件.*
 
   
 
@@ -323,7 +323,7 @@ func podMatchesNodeSelectorAndAffinityTerms(pod *v1.Pod, node *v1.Node) bool {
 调用v1helper.MatchNodeSelectorTerms()进行NodeSelectorTerm定义的必要条件进行检测是否符合. 
 关键的配置定义分为两类(matchExpressions/matchFileds): 
 *-“requiredDuringSchedulingIgnoredDuringExecution.**matchExpressions**”定义检测(匹配key与value)*
-*-“requiredDuringSchedulingIgnoredDuringExecution.**matchFileds**”定义检测(不匹配key，只value)*
+*-“requiredDuringSchedulingIgnoredDuringExecution.**matchFileds**”定义检测(不匹配key, 只value)*
 
 !FILENAME  pkg/scheduler/algorithm/predicates/predicates.go:797
 
@@ -371,7 +371,7 @@ func MatchNodeSelectorTerms( nodeSelectorTerms []v1.NodeSelectorTerm,
 ```
 
 ①  *NodeSelectorRequirementAsSelector()*
-是对“requiredDuringSchedulingIgnoredDuringExecution.matchExpressions"所配置的表达式进行Selector表达式进行格式化加工，返回一个labels.Selector实例化对象. [*本文开头1.2章节有分析*]
+是对“requiredDuringSchedulingIgnoredDuringExecution.matchExpressions"所配置的表达式进行Selector表达式进行格式化加工, 返回一个labels.Selector实例化对象. [*本文开头1.2章节有分析*]
 
 !FILENAME   pkg/apis/core/v1/helper/helpers.go:222
 
@@ -411,7 +411,7 @@ func NodeSelectorRequirementsAsSelector(nsm []v1.NodeSelectorRequirement) (label
 ```
 
  ② *NodeSelectorRequirementAs`Field`Selector()*
-是对“requiredDuringSchedulingIgnoredDuringExecution.matchFields"所配置的表达式进行Selector表达式进行格式化加工，返回一个Fields.Selector实例化对象.
+是对“requiredDuringSchedulingIgnoredDuringExecution.matchFields"所配置的表达式进行Selector表达式进行格式化加工, 返回一个Fields.Selector实例化对象.
 
 !FILENAME  pkg/apis/core/v1/helper/helpers.go:256
 
@@ -505,7 +505,7 @@ func (t *notHasTerm) Matches(ls Fields) bool {
 
 **策略说明: **
 
-通过被调度的pod亲和性配置定义条件，对潜在可被调度运行的Nodes进行亲和性匹配并评分.
+通过被调度的pod亲和性配置定义条件, 对潜在可被调度运行的Nodes进行亲和性匹配并评分.
 
 **适用NodeAffinity配置项**:  
 
@@ -515,8 +515,8 @@ NodeAffinity.PreferredDuringSchedulingIgnoredDuringExecution
 
 1. ***策略注册***: defaultPriorities()注册了一条名为“NodeAffinityPriority”优选策略项.并注册了策略的两个方法Map/Reduce:  
 
-   - CalculateNodeAffinityPriorityMap()  map计算， 对潜在被调度Node进行亲和匹配，并为其计权重得分. 
-   - CalculateNodeAffinityPriorityReduce()  reduce计算，重新统计得分,取值区间0~10. 
+   - CalculateNodeAffinityPriorityMap()  map计算,  对潜在被调度Node进行亲和匹配, 并为其计权重得分. 
+   - CalculateNodeAffinityPriorityReduce()  reduce计算, 重新统计得分,取值区间0~10. 
 
 !FILENAME   pkg/scheduler/algorithmprovider/defaults/defaults.go:266
 
@@ -535,7 +535,7 @@ factory.RegisterPriorityFunction2("NodeAffinityPriority", priorities.CalculateNo
 2. ***策略Func***:
 
    > `map计算`  **CalculateNodeAffinityPriorityMap()**
-   >        遍历affinity.NodeAffinity.PreferredDuringSchedulingIgnoredDuringExecution所 定义的Terms解NodeSelector对象(labels.selector)后，对潜在被调度Node的labels进行Match匹配检测，如果匹配则将条件所给定的Weight权重值累计.  最后将返回各潜在的被调度Node最后分值.  
+   >        遍历affinity.NodeAffinity.PreferredDuringSchedulingIgnoredDuringExecution所 定义的Terms解NodeSelector对象(labels.selector)后, 对潜在被调度Node的labels进行Match匹配检测, 如果匹配则将条件所给定的Weight权重值累计.  最后将返回各潜在的被调度Node最后分值.  
 
 !FILENAME   pkg/scheduler/algorithm/priorities/node_affinity.go:34
 
@@ -559,12 +559,12 @@ func CalculateNodeAffinityPriorityMap(pod *v1.Pod, meta interface{}, nodeInfo *s
     // 遍历PreferredDuringSchedulingIgnoredDuringExecution定义的`必要条件项`(Terms)
 		for i := range affinity.NodeAffinity.PreferredDuringSchedulingIgnoredDuringExecution {
 			preferredSchedulingTerm := &affinity.NodeAffinity.PreferredDuringSchedulingIgnoredDuringExecution[i]
-			if preferredSchedulingTerm.Weight == 0 {  //注意前端的配置，如果weight为0则不做任何处理
+			if preferredSchedulingTerm.Weight == 0 {  //注意前端的配置, 如果weight为0则不做任何处理
 				continue
 			}
 
 			// TODO: Avoid computing it for all nodes if this becomes a performance problem.
-      // 获取node亲和MatchExpression表达式条件，实例化label.Selector对象.  
+      // 获取node亲和MatchExpression表达式条件, 实例化label.Selector对象.  
 			nodeSelector, err := v1helper.NodeSelectorRequirementsAsSelector(preferredSchedulingTerm.Preference.MatchExpressions)
 			if err != nil {
 				return schedulerapi.HostPriority{}, err
@@ -591,7 +591,7 @@ func CalculateNodeAffinityPriorityMap(pod *v1.Pod, meta interface{}, nodeInfo *s
 >
 >  将各个node的最后得分重新计算分布区间在0〜10.
 >
->  代码内给定一个NormalizeReduce()方法，MaxPriority值为10,reverse取反false关闭
+>  代码内给定一个NormalizeReduce()方法, MaxPriority值为10,reverse取反false关闭
 
 !FILENAME   pkg/scheduler/algorithm/priorities/node_affinity.go:77
 
@@ -603,7 +603,7 @@ var CalculateNodeAffinityPriorityReduce = NormalizeReduce(schedulerapi.MaxPriori
 NormalizeReduce() 
 
 - 结果评分取值0〜MaxPriority
-- reverse取反为true时，最终评分=(MaxPriority-其原评分值) 
+- reverse取反为true时, 最终评分=(MaxPriority-其原评分值) 
 
 !FILENAME   pkg/scheduler/algorithm/priorities/reduce.go:29
 
@@ -622,7 +622,7 @@ func NormalizeReduce(maxPriority int, reverse bool) algorithm.PriorityReduceFunc
 				maxCount = result[i].Score
 			}
 		}
-    // 如果最大的值为0，且取反设为真，则将所有的评分设置为MaxPriority
+    // 如果最大的值为0, 且取反设为真, 则将所有的评分设置为MaxPriority
 		if maxCount == 0 {
 			if reverse {
 				for i := range result {
@@ -680,7 +680,7 @@ spec:
         ports:
         - containerPort: 80
           name: nginx_web_Lab
-      affinity:                     #为实现高可用，三个pod应该分布在不同Node上
+      affinity:                     #为实现高可用, 三个pod应该分布在不同Node上
         podAntiAffinity: 
           requiredDuringSchedulingIgnoredDuringExecution:  
           - labelSelector:
@@ -696,7 +696,7 @@ spec:
 
 **策略说明: **
 
-对需被调度的Pod进行亲和/反亲和配置匹配检测目标Pods，然后获取满足亲和条件的Pods所运行的Nodes
+对需被调度的Pod进行亲和/反亲和配置匹配检测目标Pods, 然后获取满足亲和条件的Pods所运行的Nodes
 ​的 **TopologyKey的值**(亲和性pod定义topologyKey)与目标 Nodes进行一一匹配是否符合条件. 
 
 **适用NodeAffinity配置项**:  
@@ -780,8 +780,8 @@ func (c *PodAffinityChecker) InterPodAffinityMatches(pod *v1.Pod, meta algorithm
 
 ① satisfiesExistingPodsAntiAffinity()
 检测当pod被调度到目标node上是否触犯了其它pods所定义的反亲和配置.
-*即: 当调度一个pod到目标Node上，而某个或某些Pod定义了反亲和配置与被*
-        *调度的Pod相匹配(触犯)，那么就不应该将此Node加入到可选的潜在调度Nodes列表内.*
+*即: 当调度一个pod到目标Node上, 而某个或某些Pod定义了反亲和配置与被*
+        *调度的Pod相匹配(触犯), 那么就不应该将此Node加入到可选的潜在调度Nodes列表内.*
 
 !FILENAME  pkg/scheduler/algorithm/predicates/predicates.go:1293
 
@@ -813,7 +813,7 @@ func (c *PodAffinityChecker) satisfiesExistingPodsAntiAffinity(pod *v1.Pod, meta
 		}
 	}
 
-  // 遍历所有topology pairs(所有反亲和topologyKey/Value)，检测Node是否有影响.
+  // 遍历所有topology pairs(所有反亲和topologyKey/Value), 检测Node是否有影响.
 	for topologyKey, topologyValue := range node.Labels {
 		if topologyMaps.topologyPairToPods[topologyPair{key: topologyKey, value: topologyValue}] != nil {
 			klog.V(10).Infof("Cannot schedule pod %+v onto node %v", podName(pod), node.Name)
@@ -853,8 +853,8 @@ func (c *PodAffinityChecker) getMatchingAntiAffinityTopologyPairsOfPods(pod *v1.
 	return topologyMaps, nil
 }
 
-//1)是否ExistingPod定义了反亲和配置，如果没有直接返回
-//2)如果有定义，是否有任务一个反亲和Term匹配需被调度的pod.
+//1)是否ExistingPod定义了反亲和配置, 如果没有直接返回
+//2)如果有定义, 是否有任务一个反亲和Term匹配需被调度的pod.
 //  如果配置则将返回term定义的TopologyKey和Node的topologyValue.
 func getMatchingAntiAffinityTopologyPairsOfPod(newPod *v1.Pod, existingPod *v1.Pod, node *v1.Node) (*topologyPairsMaps, error) {
 	affinity := existingPod.Spec.Affinity
@@ -882,7 +882,7 @@ func getMatchingAntiAffinityTopologyPairsOfPod(newPod *v1.Pod, existingPod *v1.P
 
 ②  satisfiesPodsAffinityAntiAffinity() 
 满足Pods亲和与反亲和配置.
-我们先看一下代码结构，我将共分为两个部分if{}部分,else{}部分,依赖于是否指定了预处理的预选metadata.
+我们先看一下代码结构, 我将共分为两个部分if{}部分,else{}部分,依赖于是否指定了预处理的预选metadata.
 
 !FILENAME  pkg/scheduler/algorithm/predicates/predicates.go:1367
 
@@ -905,9 +905,9 @@ func (c *PodAffinityChecker) satisfiesPodsAffinityAntiAffinity(pod *v1.Pod,
 
 `partI` if{...}
 
-- 如果指定了预处理metadata，则使用此逻辑，否则跳至else{...} 
-- 获取所有pod亲和性定义AffinityTerms，如果存在亲和性定义，基于指定的metadata判断AffinityTerms所定义的nodeTopoloykey与值**是否所有都存在于**metadata.topologyPairsPotential`Affinity`Pods之内(潜在匹配亲和定义的pod list).   
-- 获取所有pod亲和性定义AntiAffinityTerms，如果存在反亲和定义，基于指定的metadata判断AntiAffinityTerms所定义的nodeTopoloykey与值 **是否有一个存在于** metadata.topologyPairsPotential`AntiAffinity`Pods之内的情况(潜在匹配anti反亲和定义的pod list).  
+- 如果指定了预处理metadata, 则使用此逻辑, 否则跳至else{...} 
+- 获取所有pod亲和性定义AffinityTerms, 如果存在亲和性定义, 基于指定的metadata判断AffinityTerms所定义的nodeTopoloykey与值**是否所有都存在于**metadata.topologyPairsPotential`Affinity`Pods之内(潜在匹配亲和定义的pod list).   
+- 获取所有pod亲和性定义AntiAffinityTerms, 如果存在反亲和定义, 基于指定的metadata判断AntiAffinityTerms所定义的nodeTopoloykey与值 **是否有一个存在于** metadata.topologyPairsPotential`AntiAffinity`Pods之内的情况(潜在匹配anti反亲和定义的pod list).  
 
 ```go
 	if predicateMeta, ok := meta.(*predicateMetadata); ok {
@@ -941,7 +941,7 @@ func (c *PodAffinityChecker) satisfiesPodsAffinityAntiAffinity(pod *v1.Pod,
 以下说明继续if{…}内所用的各个**子逻辑函数分析**(按代码位置的先后顺序): 
 
 *GetPodAffinityTerms()* 
-*如果存在podAffinity硬件配置，获取所有"匹配必要条件”Terms*
+*如果存在podAffinity硬件配置, 获取所有"匹配必要条件”Terms*
 
 !FILENAME  pkg/scheduler/algorithm/predicates/predicates.go:1217
 
@@ -962,13 +962,13 @@ func GetPodAffinityTerms(podAffinity *v1.PodAffinity) (terms []v1.PodAffinityTer
 !FILENAME  pkg/scheduler/algorithm/predicates/predicates.go:1336
 
 ```go
-// 目标Node须匹配所有Affinity terms所定义的TopologyKey，且值须与nodes(运行被亲和匹配表达式匹配的Pods)
+// 目标Node须匹配所有Affinity terms所定义的TopologyKey, 且值须与nodes(运行被亲和匹配表达式匹配的Pods)
 // 的TopologyKey和值相匹配. 
 // 注: 此逻辑内metadata预计算了topologyPairs
 func (c *PodAffinityChecker) nodeMatchesAllTopologyTerms(pod *v1.Pod, topologyPairs *topologyPairsMaps, nodeInfo *schedulercache.NodeInfo, terms []v1.PodAffinityTerm) bool {
 	node := nodeInfo.Node()
 	for _, term := range terms {
-    // 判断目标node上是否存在亲和配置定义的TopologyKey的key，取出其topologykey值
+    // 判断目标node上是否存在亲和配置定义的TopologyKey的key, 取出其topologykey值
     // 根据key与值创建topologyPair
     // 基于metadata.topologyPairsPotentialAffinityPods(潜在亲和pods的topologyPairs)判断\
        //目标node上的ToplogyKey与value是否相互匹配.
@@ -1011,7 +1011,7 @@ func targetPodMatchesAffinityOfPod(pod, targetPod *v1.Pod) bool {
 	return podMatchesAllAffinityTermProperties(targetPod, affinityProperties)
 }
 
-// ① 获取affinityTerms所定义所有的namespaces 和 selector 列表，
+// ① 获取affinityTerms所定义所有的namespaces 和 selector 列表, 
 //    返回affinityTermProperites数组. 数组的每项定义{namesapces,selector}.
 func getAffinityTermProperties(pod *v1.Pod, terms []v1.PodAffinityTerm) (properties []*affinityTermProperties, err error) {
 	if terms == nil {
@@ -1020,7 +1020,7 @@ func getAffinityTermProperties(pod *v1.Pod, terms []v1.PodAffinityTerm) (propert
 
 	for _, term := range terms {
 		namespaces := priorityutil.GetNamespacesFromPodAffinityTerm(pod, &term)
-    // 基于定义的亲和性term，创建labels.selector
+    // 基于定义的亲和性term, 创建labels.selector
 		selector, err := metav1.LabelSelectorAsSelector(term.LabelSelector) 
 		if err != nil {
 			return nil, err
@@ -1041,7 +1041,7 @@ func GetNamespacesFromPodAffinityTerm(pod *v1.Pod, podAffinityTerm *v1.PodAffini
 	return names
 }
 
-// ② 遍历properties所有定义的namespaces 和 selector 列表，调用PodMatchesTermsNamespaceAndSelector()进行一一匹配.
+// ② 遍历properties所有定义的namespaces 和 selector 列表, 调用PodMatchesTermsNamespaceAndSelector()进行一一匹配.
 func podMatchesAllAffinityTermProperties(pod *v1.Pod, properties []*affinityTermProperties) bool {
 	if len(properties) == 0 {
 		return false
@@ -1054,8 +1054,8 @@ func podMatchesAllAffinityTermProperties(pod *v1.Pod, properties []*affinityTerm
 	return true
 }
 //  检测NameSpaces一致性和Labels.selector是否匹配.
-//  - 如果pod.Namespaces不相等于指定的NameSpace值则返回false，如果true则继续labels match.
-//  - 如果pod.labels不能Match Labels.selector选择器，则返回false,反之true
+//  - 如果pod.Namespaces不相等于指定的NameSpace值则返回false, 如果true则继续labels match.
+//  - 如果pod.labels不能Match Labels.selector选择器, 则返回false,反之true
 func PodMatchesTermsNamespaceAndSelector(pod *v1.Pod, namespaces sets.String, selector labels.Selector) bool {
 	if !namespaces.Has(pod.Namespace) {
 		return false
@@ -1108,9 +1108,9 @@ func (c *PodAffinityChecker) nodeMatchesAnyTopologyTerm(pod *v1.Pod, topologyPai
 
 `partII` else{...}
 
-- 如果没有预处理的Metadata，则通过指定podFilter过滤器获取满足条件的pod列表
-- 获取所有亲和配置定义，如果存在则，通过获取PodAffinity所定义的所有namespaces和标签条件表达式进行匹配”目标pod",完全符合则获取**此目标pod的运行node的topologykey(此为affinity指定的topologykey)的 `值`**和"潜在Node"的topologykey的值比对是否一致.  
-- 与上类似，获取所有anti反亲和配置定义，如果存在则，通过获取PodAntiAffinity所定义的所有namespaces和标签条件表达式进行匹配”目标pod",完全符合则获取此目标pod的运行node的topologykey(此为AntiAffinity指定的topologykey)的值和"潜在Node"的topologykey的值比对是否一致.  
+- 如果没有预处理的Metadata, 则通过指定podFilter过滤器获取满足条件的pod列表
+- 获取所有亲和配置定义, 如果存在则, 通过获取PodAffinity所定义的所有namespaces和标签条件表达式进行匹配”目标pod",完全符合则获取**此目标pod的运行node的topologykey(此为affinity指定的topologykey)的 `值`**和"潜在Node"的topologykey的值比对是否一致.  
+- 与上类似, 获取所有anti反亲和配置定义, 如果存在则, 通过获取PodAntiAffinity所定义的所有namespaces和标签条件表达式进行匹配”目标pod",完全符合则获取此目标pod的运行node的topologykey(此为AntiAffinity指定的topologykey)的值和"潜在Node"的topologykey的值比对是否一致.  
 
 ```go
 else { 
@@ -1143,7 +1143,7 @@ else {
 				}
 			}
 
-			// 同上，遍历所有目标Pod,检测所有Anti反亲和配置"匹配条件"Terms.
+			// 同上, 遍历所有目标Pod,检测所有Anti反亲和配置"匹配条件"Terms.
 			if len(antiAffinityTerms) > 0 {
 				antiAffTermsMatch, _, err := c.podMatchesPodAffinityTerms(pod, targetPod, nodeInfo, antiAffinityTerms)
 				if err != nil || antiAffTermsMatch {
@@ -1188,8 +1188,8 @@ func (c *PodAffinityChecker) podMatchesPodAffinityTerms(pod, targetPod *v1.Pod, 
 	if err != nil {
 		return false, false, err
 	}
-	// 匹配目标pod是否在affinityTerm定义的{namespaces,selector}列表内所有项，如果不匹配则返回false,
-	// 如果匹配则获取此pod的运行node信息(称为目标Node)，
+	// 匹配目标pod是否在affinityTerm定义的{namespaces,selector}列表内所有项, 如果不匹配则返回false,
+	// 如果匹配则获取此pod的运行node信息(称为目标Node), 
 	// 通过“目标Node”所定义的topologykey(此为affinity指定的topologykey)的值来匹配“潜在被调度的Node”的topologykey是否一致. 
 	if !podMatchesAllAffinityTermProperties(targetPod, props) {
 		return false, false, nil
@@ -1242,8 +1242,8 @@ func NodesHaveSameTopologyKey(nodeA, nodeB *v1.Node, topologyKey string) bool {
 ### Pod亲和性`优选策略InterPodAffinityPriority` 
 
 **策略说明: **
-并发遍历所有潜在的目标Nodes，对Pods与需被调度Pod的亲和和反亲性检测，对亲性匹配则增，对反亲性
-匹配则减， 最终对每个Node进行统计分数.   
+并发遍历所有潜在的目标Nodes, 对Pods与需被调度Pod的亲和和反亲性检测, 对亲性匹配则增, 对反亲性
+匹配则减,  最终对每个Node进行统计分数.   
 
 **适用NodeAffinity配置项**:  
 PodAffinity.`Preferred`DuringSchedulingIgnoredDuringExecution             
@@ -1378,14 +1378,14 @@ func (ipa *InterPodAffinity) CalculateInterPodAffinityPriority(pod *v1.Pod, node
 ```
 
 ① **ProcessTerms()**
-给定Pod和此Pod的定义的亲和性配置(podAffinityTerm)、被测目标pod、运行被测目标pod的Node信息，对所有潜在可被调度的Nodes列表进行一一检测,并对根据检测结果为node进行weight累计.  
+给定Pod和此Pod的定义的亲和性配置(podAffinityTerm)、被测目标pod、运行被测目标pod的Node信息, 对所有潜在可被调度的Nodes列表进行一一检测,并对根据检测结果为node进行weight累计.  
 流程如下:  
 
 1. “被测Pod”的namespaces是否与“给定的pod”的namespaces是否一致;  
 
 2. “被测Pod”的labels是否与“给定的pod”的podAffinityTerm定义匹配;
 
-3. 如果前两条件都为True，则对运行“被测的pod”的node的TopologyKey的值与所有潜在可被调度的Node进行遍历检测 TopologyKey的值是否一致，true则累计weight值.
+3. 如果前两条件都为True, 则对运行“被测的pod”的node的TopologyKey的值与所有潜在可被调度的Node进行遍历检测 TopologyKey的值是否一致, true则累计weight值.
 
    > > 逻辑理解: 
    > >
@@ -1466,7 +1466,7 @@ func PodMatchesTermsNamespaceAndSelector(pod *v1.Pod, namespaces sets.String, se
 }
 ```
 
-② **processPod() ** 处理亲和和反亲和逻辑层，调用processTerms()进行检测与统计权重值. 
+② **processPod() ** 处理亲和和反亲和逻辑层, 调用processTerms()进行检测与统计权重值. 
 
 !FILENAME  pkg/scheduler/algorithm/priorities/interpod_affinity.go:136
 
@@ -1483,17 +1483,17 @@ func PodMatchesTermsNamespaceAndSelector(pod *v1.Pod, namespaces sets.String, se
 		existingPodAffinity := existingPod.Spec.Affinity
 		existingHasAffinityConstraints := existingPodAffinity != nil && existingPodAffinity.PodAffinity != nil
 		existingHasAntiAffinityConstraints := existingPodAffinity != nil && existingPodAffinity.PodAntiAffinity != nil
-    //如果"需被调度的Pod"存在亲和约束，则与"亲和目标Pod"和"亲和目标Node"进行一次ProcessTerms()检测，如果成立则wieght权重值加1倍.
+    //如果"需被调度的Pod"存在亲和约束, 则与"亲和目标Pod"和"亲和目标Node"进行一次ProcessTerms()检测, 如果成立则wieght权重值加1倍.
 		if hasAffinityConstraints {
 			terms := affinity.PodAffinity.PreferredDuringSchedulingIgnoredDuringExecution
 			pm.processTerms(terms, pod, existingPod, existingPodNode, 1)
 		}
-    // 如果"需被调度的Pod"存在反亲和约束，则与"亲和目标Pod"和"亲和目标Node"进行一次ProcessTerms()检测，如果成立则wieght权重值减1倍.
+    // 如果"需被调度的Pod"存在反亲和约束, 则与"亲和目标Pod"和"亲和目标Node"进行一次ProcessTerms()检测, 如果成立则wieght权重值减1倍.
 		if hasAntiAffinityConstraints {
 			terms := affinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution
 			pm.processTerms(terms, pod, existingPod, existingPodNode, -1)
 		}
-   //如果"亲和目标Pod"存在亲和约束，则反过来与"需被调度的Pod"和"亲和目标Node"进行一次ProcessTerms()检测，如果成立则wieght权重值加1倍. 
+   //如果"亲和目标Pod"存在亲和约束, 则反过来与"需被调度的Pod"和"亲和目标Node"进行一次ProcessTerms()检测, 如果成立则wieght权重值加1倍. 
 		if existingHasAffinityConstraints {
 			if ipa.hardPodAffinityWeight > 0 {
 				terms := existingPodAffinity.PodAffinity.RequiredDuringSchedulingIgnoredDuringExecution
@@ -1504,7 +1504,7 @@ func PodMatchesTermsNamespaceAndSelector(pod *v1.Pod, namespaces sets.String, se
 			terms := existingPodAffinity.PodAffinity.PreferredDuringSchedulingIgnoredDuringExecution
 			pm.processTerms(terms, existingPod, pod, existingPodNode, 1)
 		}
-    // 如果"亲和目标Pod"存在反亲和约束，则反过来与"需被调度的Pod"和"亲和目标Node"进行一次ProcessTerms()检测，如果成立则wieght权重值减1倍.
+    // 如果"亲和目标Pod"存在反亲和约束, 则反过来与"需被调度的Pod"和"亲和目标Node"进行一次ProcessTerms()检测, 如果成立则wieght权重值减1倍.
 		if existingHasAntiAffinityConstraints {
 			terms := existingPodAffinity.PodAntiAffinity.PreferredDuringSchedulingIgnoredDuringExecution
 			pm.processTerms(terms, existingPod, pod, existingPodNode, -1)
@@ -1513,7 +1513,7 @@ func PodMatchesTermsNamespaceAndSelector(pod *v1.Pod, namespaces sets.String, se
 	}
 ```
 
-③ **processNode ** 如果"被调度pod"未定义亲和配置，则检测潜在Nodes的亲和性定义.
+③ **processNode ** 如果"被调度pod"未定义亲和配置, 则检测潜在Nodes的亲和性定义.
 
 !FILENAME  pkg/scheduler/algorithm/priorities/interpod_affinity.go:193
 
@@ -1555,18 +1555,18 @@ const (
 
 ## Service亲和性
 
-在default调度器代码内并未注册此预选策略，仅有代码实现. 连google/baidu上都无法查询到相关使用案例，配置用法不予分析，仅看下面源码详细分析.  
+在default调度器代码内并未注册此预选策略, 仅有代码实现. 连google/baidu上都无法查询到相关使用案例, 配置用法不予分析, 仅看下面源码详细分析.  
 
 代码场景应用注释译文: 
-*一个服务的第一个Pod被调度到带有Label “region=foo”的Nodes(资源集群)上， 那么其服务后面的其它Pod都将调度至Label “region=foo”的Nodes. * 
+*一个服务的第一个Pod被调度到带有Label “region=foo”的Nodes(资源集群)上,  那么其服务后面的其它Pod都将调度至Label “region=foo”的Nodes. * 
 
 ### Serice亲和性`预选策略checkServiceAffinity ` 
 
-> 通过NewServiceAffinityPredicate()创建一个ServiceAffinity类对象，并返回两个预选策略所必须的处理Func:
+> 通过NewServiceAffinityPredicate()创建一个ServiceAffinity类对象, 并返回两个预选策略所必须的处理Func:
 >
-> - affinity.checkServiceAffinity      基于预选元数据Meta，对被调度的pod检测Node是否满足服务亲和性. 
+> - affinity.checkServiceAffinity      基于预选元数据Meta, 对被调度的pod检测Node是否满足服务亲和性. 
 >
-> - affinity.serverAffinityMetadataProducer  基于预选Meta的pod信息，获取**服务信息**和在相同NameSpace下的的**Pod列表**，供亲和检测时使用.  
+> - affinity.serverAffinityMetadataProducer  基于预选Meta的pod信息, 获取**服务信息**和在相同NameSpace下的的**Pod列表**, 供亲和检测时使用.  
 >
 > *后面将详述处理func* 
 
@@ -1619,7 +1619,7 @@ func (s *ServiceAffinity) serviceAffinityMetadataProducer(pm *predicateMetadata)
 ```
 
 **affinity.checkServiceAffinity()**
-基于预处理的MetaData，对被调度的pod检测Node是否满足服务亲和性. 
+基于预处理的MetaData, 对被调度的pod检测Node是否满足服务亲和性. 
 
 > > 最终的亲和检测Labels: 
 > >
@@ -1644,7 +1644,7 @@ func (s *ServiceAffinity) checkServiceAffinity(pod *v1.Pod, meta algorithm.Predi
 		s.serviceAffinityMetadataProducer(pm)
 		pods, services = pm.serviceAffinityMatchingPodList, pm.serviceAffinityMatchingPodServices
 	}
-	// 筛选掉存在于Node(nodeinfo)上pods，且与之进行podKey比对不相等的pods.           ①
+	// 筛选掉存在于Node(nodeinfo)上pods, 且与之进行podKey比对不相等的pods.           ①
 	filteredPods := nodeInfo.FilterOutPods(pods)
 	node := nodeInfo.Node()
 	if node == nil {
@@ -1680,7 +1680,7 @@ func (s *ServiceAffinity) checkServiceAffinity(pod *v1.Pod, meta algorithm.Predi
 ```
 
 ① *FilterOutPods()* 
-筛选掉存在于Node(nodeinfo)上pods，且与之进行podKey比对不相等的pods
+筛选掉存在于Node(nodeinfo)上pods, 且与之进行podKey比对不相等的pods
 filteredPods = 未在Node上的pods + 在node上但podKey相同的pods
 
 !FILENAME  pkg/scheduler/cache/node_info.go:656
@@ -1694,13 +1694,13 @@ func (n *NodeInfo) FilterOutPods(pods []*v1.Pod) []*v1.Pod {
 	}
 	filtered := make([]*v1.Pod, 0, len(pods))
 	for _, p := range pods {
- 		//如果pod(亲和matched)的NodeName 不等于Spec配置的nodeNmae (即pod不在此Node上)，将pod放入filtered.
+ 		//如果pod(亲和matched)的NodeName 不等于Spec配置的nodeNmae (即pod不在此Node上), 将pod放入filtered.
 		if p.Spec.NodeName != node.Name {
 			filtered = append(filtered, p)
 			continue
 		}
-		//如果在此Node上，则获取podKey(pod.UID)
-		//遍历此Node上所有的目标Pods，获取每个podKey进行与匹配pod的podkey是否相同，
+		//如果在此Node上, 则获取podKey(pod.UID)
+		//遍历此Node上所有的目标Pods, 获取每个podKey进行与匹配pod的podkey是否相同, 
     //相同则将pod放入filtered并返回
 		podKey, _ := GetPodKey(p)
 		for _, np := range n.Pods() {
@@ -1718,7 +1718,7 @@ func (n *NodeInfo) FilterOutPods(pods []*v1.Pod) []*v1.Pod {
 ② *FindLabelsInSet() * 
 参数一:  (B)定义的亲和性Labels配置
 参数二:  (A)被调度pod的定义NodeSelector配置Selector
-检测存在的于NodeSelector的亲和性Labels配置，则取两者的交集部分. (A ∩ B) 
+检测存在的于NodeSelector的亲和性Labels配置, 则取两者的交集部分. (A ∩ B) 
 
 !FILENAME  pkg/scheduler/algorithm/predicates/utils.go:26
 
@@ -1738,7 +1738,7 @@ func FindLabelsInSet(labelsToKeep []string, selector labels.Set) map[string]stri
 参数一:  (N)在FindLabelsInSet()计算出来的交集Labels 
 参数二:  (B)定义的亲和性Labels配置
 参数三:  (C)"被选出的亲和Node"上的Lables
- 检测存在的于"被选出的亲和Node"上的亲和性配置Labels，则取两者的交集部分存放至N.      (B ∩ C)=>N
+ 检测存在的于"被选出的亲和Node"上的亲和性配置Labels, 则取两者的交集部分存放至N.      (B ∩ C)=>N
 
 !FILENAME  pkg/scheduler/algorithm/predicates/utils.go:37
 
@@ -1751,7 +1751,7 @@ func AddUnsetLabelsToMap(aL map[string]string, labelsToAdd []string, labelSet la
 		if _, exists := aL[l]; exists {
 			continue
 		}
-		// 反之，计算包含的交集部分 C ∩ B
+		// 反之, 计算包含的交集部分 C ∩ B
 		if labelSet.Has(l) {
 			aL[l] = labelSet.Get(l)
 		}

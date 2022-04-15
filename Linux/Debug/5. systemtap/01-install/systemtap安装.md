@@ -11,16 +11,16 @@
 
 1. 通过`stap`工具将脚本语句翻译成`C`语句, 编译成内核模块
 2. 模块加载之后, 将所有探测的事件以钩子的方式挂到内核上, 当任何处理器上的某个事件发生时, 相应钩子上句柄就会被执行
-3. 最后，当systemtap会话结束之后，钩子从内核上取下，移除模块. 整个过程用一个命令 stap 就可以完成. 
+3. 最后, 当systemtap会话结束之后, 钩子从内核上取下, 移除模块. 整个过程用一个命令 stap 就可以完成. 
 
 可见, 除了必须安装 `systemtap` 包之外, 我们必须有内核头文件和开发包用于构建驱动, 还需要 `systemtap` 可识别的带 `kprobe`的内核, 同时`systemtap` 依赖于 `elfutils`, 因此我们需要下载其源码包, 最好选择最新版下载.
 
 综上如果您需要使用`systemtap`, 则系统中必须包含以下包或者内核配置
 
 * 内核支持并配置了kprobe(2.6.11和以上)调试内核需要,在进行内核编译之前的配置
-* 内核模块编译环境(即编译内核模块所需的内核头文件以及模块配置信息，对于Fedora core或Redhat指kernel-devel或kernel-smp-devel RPM包, Uuuntu的),对应自己编译的内核就是内核头文件. 
+* 内核模块编译环境(即编译内核模块所需的内核头文件以及模块配置信息, 对于Fedora core或Redhat指kernel-devel或kernel-smp-devel RPM包, Uuuntu的),对应自己编译的内核就是内核头文件. 
 * 内核调试信息debuginfo(对于Fedora core或Redhat指kernel-debuginfo RPM包)
-* C编译环境(即libc库头文件和编译工具链), 对于自己编译的内核, 这一点比较好满足，因为运行环境和我们编译内核的环境是一致的, 不用特殊处理
+* C编译环境(即libc库头文件和编译工具链), 对于自己编译的内核, 这一点比较好满足, 因为运行环境和我们编译内核的环境是一致的, 不用特殊处理
 * 有 `libdwfl` 的 `elfutils`(只有支持 `libwdfl` 的 `elfutils`, `systemtap`才能正常工作
 
 如果您前期的运行支持, 比如内核头文件, `kernel-debuginfo` 包, 只想知道如果自行编译 `systemtap`, 那么请您自行忽略第2节和第3节
@@ -50,7 +50,7 @@ sudo apt-get install linux-headers-$(uname -r)
 #  查看当前yum仓库中的kernel-headers的版本是否和内核版本一致
 yum list | grep kernel-headers
 
-#  如果一致，直接
+#  如果一致, 直接
 yum install kernel-headers
 ```
 
@@ -120,7 +120,7 @@ kernel-debuginfo-xxxx
 如果提示没有源, 可以为 `debuginfo` 包增加 `repository`, 然后直接用源安装
 
 如果`Centos yum repository`上没有`kernel-debuginfo`包, 方法一把这个包及依赖包 `rpm`文件下载到本地安装. 我们也可以手工添加有这个包的`repository`, 然后直接用`yum`安装
-在 `/etc/yum.repos.d`新建一个文件，我把他命令为debuginfo 
+在 `/etc/yum.repos.d`新建一个文件, 我把他命令为debuginfo 
 然后在debuginfo中加入
 
 ```cpp
@@ -148,7 +148,7 @@ debuinfo-install kernel-debuginfo-`uname -r`
 
 我的系统是 `Ubuntu 14.04.5`, 内核`4.4.0-72-generic`
 
-查看当前内核版本`uname -r`，
+查看当前内核版本`uname -r`, 
 
 ### 直接从源中安装
 
@@ -223,7 +223,7 @@ cp get-dbgsym /usr/bin
 
 如果你需要自己编译内核, 那么意味着 `apt-get install` 的 `systemtap` 是不能直接使用的, 内核的准备过程如下 :
 
-首先，编译生成带有内核符号表和调试信息的内核镜像和相关内核头文件.
+首先, 编译生成带有内核符号表和调试信息的内核镜像和相关内核头文件.
 
 对应自己编译的内核, 我们需要开启下列选项 :
 
@@ -315,7 +315,7 @@ make install
 
 ## 验证安装
 
-安装完成以后，我们使用下面的shell命令进行测试，如果输出hello world，说明systemtap安装成功. 
+安装完成以后, 我们使用下面的shell命令进行测试, 如果输出hello world, 说明systemtap安装成功. 
 
 ```cpp
 stap -ve 'probe begin { log("hello world") exit() }'

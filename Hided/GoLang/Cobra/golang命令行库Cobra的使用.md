@@ -44,19 +44,19 @@
 
 Cobra 是一个**创建 CLI 命令行**的 **golang 库**, 比如**git**与**go工具**. 
 
-Cobra同时也是一个程序, 用来生成个人应用框架，从而开发以Cobra为基础的应用. Docker源码中使用了Cobra. 
+Cobra同时也是一个程序, 用来生成个人应用框架, 从而开发以Cobra为基础的应用. Docker源码中使用了Cobra. 
 
 Cobra提供的功能:
 
-* 简易的子命令行模式，如 app server， app fetch等等
+* 简易的子命令行模式, 如 app server,  app fetch等等
 * 完全兼容posix命令行模式
 * 嵌套子命令subcommand
-* 支持全局，局部，串联flags
-* 使用Cobra很容易的生成应用程序和命令，使用cobra create appname和cobra add cmdname
-* 如果命令输入错误，将提供智能建议，如 app srver，将提示srver没有，是否是app server
+* 支持全局, 局部, 串联flags
+* 使用Cobra很容易的生成应用程序和命令, 使用cobra create appname和cobra add cmdname
+* 如果命令输入错误, 将提供智能建议, 如 app srver, 将提示srver没有, 是否是app server
 * 自动生成commands和flags的帮助信息
-* 自动生成详细的help信息，如app help
-* 自动识别-h，--help帮助flag
+* 自动生成详细的help信息, 如app help
+* 自动识别-h, --help帮助flag
 * 自动生成应用程序在bash下命令自动完成功能
 * 自动生成应用程序的man手册
 * 命令行别名
@@ -67,8 +67,8 @@ Cobra提供的功能:
 
 Cobra基于三个基本概念commands,arguments和flags. 其中
 
-- commands代表行为，
-- arguments代表数值，
+- commands代表行为, 
+- arguments代表数值, 
 - flags代表对行为的改变. 
 
 基本模型是
@@ -83,13 +83,13 @@ APPNAME VERB NOUN --ADJECTIVE
 APPNAME COMMAND ARG --FLAG
 ```
 
-比如下面的例子，**server**是**command**，port是flag:
+比如下面的例子, **server**是**command**, port是flag:
 
 ```
 # hugo server --port=1313
 ```
 
-在下面的命令，我们告诉Git克隆url地址bare, **clone**是**command**, **URL**是**args**, bare是flags
+在下面的命令, 我们告诉Git克隆url地址bare, **clone**是**command**, **URL**是**args**, bare是flags
 
 ```
 # git clone URL --bare
@@ -99,7 +99,7 @@ APPNAME COMMAND ARG --FLAG
 
 Commands是应用程序的中心点. 应用程序支持的每个交互都将包含在命令中, 命令可以具有子命令(children commands), 其分别包含不同的行为. 
 
-在上面的示例中，'server'是命令. 
+在上面的示例中, 'server'是命令. 
 
 [更多关于cobra.Command](https://godoc.org/github.com/spf13/cobra#Command)
 
@@ -114,7 +114,7 @@ type Command struct {
 }
 ```
 
-前三个是不同场景下的说明，最后一个是要执行的函数. 
+前三个是不同场景下的说明, 最后一个是要执行的函数. 
 
 **命令**代表**操作**, **参数和标志**是这些**行动的修饰符**. 
 
@@ -122,15 +122,15 @@ type Command struct {
 
 Flag是一种修改命令行为的方法. 
 
-Flags用来改变commands的行为. 其完全支持POSIX命令行模式和Go的flag包. 这里的flag使用的是[spf13/pflag](https://github.com/spf13/pflag)包，具体可以参考[Golang之使用Flag和Pflag](https://o-my-chenjian.com/2017/09/20/Using-Flag-And-Pflag-With-Golang/).
+Flags用来改变commands的行为. 其完全支持POSIX命令行模式和Go的flag包. 这里的flag使用的是[spf13/pflag](https://github.com/spf13/pflag)包, 具体可以参考[Golang之使用Flag和Pflag](https://o-my-chenjian.com/2017/09/20/Using-Flag-And-Pflag-With-Golang/).
 
-Cobra支持完全符合POSIX标准的标志以及[Go 标志包](https://golang.org/pkg/flag/). Cobra命令可以定义持久保存到子命令和标志的标志，这些命令和标志仅对该命令可用. 
+Cobra支持完全符合POSIX标准的标志以及[Go 标志包](https://golang.org/pkg/flag/). Cobra命令可以定义持久保存到子命令和标志的标志, 这些命令和标志仅对该命令可用. 
 
 Go 标志包: https://golang.org/pkg/flag/ 
 
-在上面的例子中，'port'是flag. 
+在上面的例子中, 'port'是flag. 
 
-标志功能由[pflag库](https://github.com/spf13/pflag)提供，pflag库是flag标准库的一个分支，它兼容POSIX接口. 
+标志功能由[pflag库](https://github.com/spf13/pflag)提供, pflag库是flag标准库的一个分支, 它兼容POSIX接口. 
 
 pflag库: https://github.com/spf13/pflag
 
@@ -138,7 +138,7 @@ pflag库: https://github.com/spf13/pflag
 
 使用Cobra很简单. 
 
-首先，使用go get安装最新版本, 这个命令会安装Cobra框架生成工具和依赖.
+首先, 使用go get安装最新版本, 这个命令会安装Cobra框架生成工具和依赖.
 
 ```
 # go get -u github.com/spf13/cobra/cobra
@@ -176,7 +176,7 @@ cobra_test.go             LICENSE.txt        zsh_completions_test.go
 export PATH=$PATH:$GOROOT/bin:$GOPATH/bin
 ```
 
-注: 也可以下载cobra的zip包，丢到GOPATH下对应目录，然后解决依赖，再build
+注: 也可以下载cobra的zip包, 丢到GOPATH下对应目录, 然后解决依赖, 再build
 
 然后在你项目里引用Cobra
 
@@ -188,7 +188,7 @@ import "github.com/spf13/cobra"
 
 ## 4.1. 基本结构
 
-通常**基于Cobra的应用程序**将遵循下面的**组织结构**，当然你也可以遵循自己的接口: 
+通常**基于Cobra的应用程序**将遵循下面的**组织结构**, 当然你也可以遵循自己的接口: 
 
 一般用 cobra 命令生成的项目结构如下: 
 
@@ -204,7 +204,7 @@ import "github.com/spf13/cobra"
 
 ## 4.2. main.go
 
-在Cobra应用程序中，通常**main.go**文件非常空洞. 它主要只干一件事: **初始化Cobra**. 
+在Cobra应用程序中, 通常**main.go**文件非常空洞. 它主要只干一件事: **初始化Cobra**. 
 
 ```go
 // main.go
@@ -240,7 +240,7 @@ go get github.com/spf13/cobra/cobra
 
 ## 5.1. cobra init
 
-命令cobra init \[yourApp]将会创建初始化应用，同时提供正确的文件结构. 同时，其非常智能，你只需给它一个绝对路径，或者一个简单的路径. 
+命令cobra init \[yourApp]将会创建初始化应用, 同时提供正确的文件结构. 同时, 其非常智能, 你只需给它一个绝对路径, 或者一个简单的路径. 
 
 ```
 # pwd
@@ -362,7 +362,7 @@ func initConfig() {
 }
 ```
 
-看到 Execute() 函数中调用 RootCmd.Execute()，RootCmd 是开始将组成 Command 结构的一个实例. 
+看到 Execute() 函数中调用 RootCmd.Execute(), RootCmd 是开始将组成 Command 结构的一个实例. 
 
 运行看看
 
@@ -383,13 +383,13 @@ exit status 1
 
 ## 5.2. cobra add
 
-这个命令用来创建子命令，子命令就是像下面这样: 
+这个命令用来创建子命令, 子命令就是像下面这样: 
 
 * app serve
 * app config
 * app config create
 
-在你项目的目录下，运行下面这些命令: 
+在你项目的目录下, 运行下面这些命令: 
 
 ```
 # cobra add serve
@@ -580,15 +580,15 @@ var cfgFile, projectBase, userLicense string
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	// 在此可以定义自己的flag或者config设置，Cobra支持持久标签(persistent flag)，它对于整个应用为全局
-	// 在StringVarP中需要填写`shorthand`，详细见pflag文档
+	// 在此可以定义自己的flag或者config设置, Cobra支持持久标签(persistent flag), 它对于整个应用为全局
+	// 在StringVarP中需要填写`shorthand`, 详细见pflag文档
 	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (defalut in $HOME/.cobra.yaml)")
 	RootCmd.PersistentFlags().StringVarP(&projectBase, "projectbase", "b", "", "base project directory eg. github.com/spf13/")
 	RootCmd.PersistentFlags().StringP("author", "a", "YOUR NAME", "Author name for copyright attribution")
 	RootCmd.PersistentFlags().StringVarP(&userLicense, "license", "l", "", "Name of license for the project (can provide `licensetext` in config)")
 	RootCmd.PersistentFlags().Bool("viper", true, "Use Viper for configuration")
 
-	// Cobra同样支持局部标签(local flag)，并只在直接调用它时运行
+	// Cobra同样支持局部标签(local flag), 并只在直接调用它时运行
 	RootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 
 	// 使用viper可以绑定flag
@@ -604,7 +604,7 @@ func Execute() {
 }
 
 func initConfig() {
-	// 勿忘读取config文件，无论是从cfgFile还是从home文件
+	// 勿忘读取config文件, 无论是从cfgFile还是从home文件
 	if cfgFile != "" {
 		viper.SetConfigName(cfgFile)
 	} else {
@@ -671,7 +671,7 @@ func main() {
 
 其它的命令通常定义在cmd/目录下的自己文件内
 
-如果你想创建一个version命令，你可以创建cmd/version.go文件，并在文件里这么写:
+如果你想创建一个version命令, 你可以创建cmd/version.go文件, 并在文件里这么写:
 
 ```go
 // cmd/version.go
@@ -703,7 +703,7 @@ var versionCmd = &cobra.Command{
 * app config
 * app config create
 
-同时，可以将命令**添加到父项**中，这个例子中**RootCmd便是父项**. 只需要添加: 
+同时, 可以将命令**添加到父项**中, 这个例子中**RootCmd便是父项**. 只需要添加: 
 
 ```
 RootCmd.AddCommand(versionCmd)
@@ -738,7 +738,7 @@ var versionCmd = &cobra.Command{
 
 ## 7.1. 给命令分配一个标志
 
-由于flag是在不同的位置定义和使用，我们需要定义一个变量来关联标志
+由于flag是在不同的位置定义和使用, 我们需要定义一个变量来关联标志
 
 ```
 var Verbose bool
@@ -749,11 +749,11 @@ var Source string
 
 ### 7.1.1. 持久标志(Persistent Flags)
 
-persistent意思是说这个flag能**任何子命令**下均可使用，适合**全局flag**: 
+persistent意思是说这个flag能**任何子命令**下均可使用, 适合**全局flag**: 
 
 '持久'表示每个在**那个命令下的命令**都将能**分配到这个标志**. 
 
-对于**全局标志**，'持久'的标志**绑定在root**上. 
+对于**全局标志**, '持久'的标志**绑定在root**上. 
 
 ```go
 rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose output")
@@ -761,9 +761,9 @@ rootCmd.PersistentFlags().BoolVarP(&Verbose, "verbose", "v", false, "verbose out
 
 ### 7.1.2. 本地标志(Local Flags)
 
-Cobra**默认只在目标命令上解析标志**，父命令忽略任何局部标志. 
+Cobra**默认只在目标命令上解析标志**, 父命令忽略任何局部标志. 
 
-Cobra同样支持局部标签(local flag)，并只在直接调用它时运行
+Cobra同样支持局部标签(local flag), 并只在直接调用它时运行
 
 通过**打开Command.TraverseChildren**, Cobra将会在执行任意目标命令前解析标志
 
@@ -791,11 +791,11 @@ func init() {
 }
 ```
 
-在这个例子中，**永久的标记 author** 被**viper绑定**, 注意, 当用户没有给\-\-author提供值, author不会被赋值. 
+在这个例子中, **永久的标记 author** 被**viper绑定**, 注意, 当用户没有给\-\-author提供值, author不会被赋值. 
 
 ## 7.3. 必须的标记
 
-标记默认是可选的，如果你希望当**一个标记没有设置**时，**命令行报错**，你可以标记它为必须的
+标记默认是可选的, 如果你希望当**一个标记没有设置**时, **命令行报错**, 你可以标记它为必须的
 
 ```go
 rootCmd.Flags().StringVarP(&Region, "region", "r", "", "AWS region (required)")
@@ -810,12 +810,12 @@ rootCmd.MarkFlagRequired("region")
 
 内置下列验证方法
 
-* NoArgs \- 如果有任何参数，命令行将会报错. 
+* NoArgs \- 如果有任何参数, 命令行将会报错. 
 * ArbitraryArgs \- 命令行将会接收任何参数.
-* OnlyValidArgs \- 如果有如何参数不属于Command的ValidArgs字段，命令行将会报错. 
-* MinimumNArgs(int) \- 如果参数个数少于N个，命令行将会报错. 
-* MaximumNArgs(int) \- 如果参数个数多余N个，命令行将会报错. 
-* ExactArgs(int) \- 如果参数个数不能等于N个，命令行将会报错. 
+* OnlyValidArgs \- 如果有如何参数不属于Command的ValidArgs字段, 命令行将会报错. 
+* MinimumNArgs(int) \- 如果参数个数少于N个, 命令行将会报错. 
+* MaximumNArgs(int) \- 如果参数个数多余N个, 命令行将会报错. 
+* ExactArgs(int) \- 如果参数个数不能等于N个, 命令行将会报错. 
 * RangeArgs(min, max) \- 如果参数个数不在min和max之间, 命令行将会报错.
 
 ## 8.2. 自定义参数
@@ -842,7 +842,7 @@ var cmd = &cobra.Command{
 
 # 9. 例子
 
-定义了**3个命令**. **2个在顶级**，一个(cmdTimes)是其中一个顶级命令的子命令. 
+定义了**3个命令**. **2个在顶级**, 一个(cmdTimes)是其中一个顶级命令的子命令. 
 
 我们仅为**一个命令定义了标记Flag**. 
 
@@ -906,7 +906,7 @@ a count and a string.`,
 }
 ```
 
-在这个例子里，由于**没有给rootCmd提供Run**，**单独的root**是**不能运行的**，必须要有子命令. 
+在这个例子里, 由于**没有给rootCmd提供Run**, **单独的root**是**不能运行的**, 必须要有子命令. 
 
 ```
 # go build main.go
@@ -952,11 +952,11 @@ Echo: a
 
 # 10. help命令
 
-当你的**程序有子命令**时，Cobra 会**自动给你程序添加help命令**. 当你运行‘app help’，会调用help命令. 另外，help同样支持其它输入命令. 例如，你有一个没有任何其它配置的命令叫‘create’，当你调用‘app help create’ Corbra 将会起作用. 
+当你的**程序有子命令**时, Cobra 会**自动给你程序添加help命令**. 当你运行‘app help’, 会调用help命令. 另外, help同样支持其它输入命令. 例如, 你有一个没有任何其它配置的命令叫‘create’, 当你调用‘app help create’ Corbra 将会起作用. 
 
 ## 10.1. 例子
 
-下面的输入是 Cobra 自动生成的. 除了命令和标志的定义，其它不再需要. 
+下面的输入是 Cobra 自动生成的. 除了命令和标志的定义, 其它不再需要. 
 
 ```
 $ cobra help
@@ -983,7 +983,7 @@ Flags:
 Use "cobra [command] --help" for more information about a command.
 ```
 
-help 就跟其它命令一样，并没有特殊的逻辑或行为. 事实上，你也可以提供你自己help如果你想的话. 
+help 就跟其它命令一样, 并没有特殊的逻辑或行为. 事实上, 你也可以提供你自己help如果你想的话. 
 
 ## 10.2. 定义自己的help
 
@@ -1076,7 +1076,7 @@ func init() {
 
 	cmdTimes.Flags().IntVarP(&echoTimes, "times", "t", 1, "times to echo the input")
 
-	// 两个顶层的命令，和一个cmdEcho命令下的子命令cmdTimes
+	// 两个顶层的命令, 和一个cmdEcho命令下的子命令cmdTimes
 	RootCmd.AddCommand(cmdPrint, cmdEcho)
 	cmdEcho.AddCommand(cmdTimes)
 }
@@ -1086,7 +1086,7 @@ func Execute() {
 }
 
 func initConfig() {
-	// 勿忘读取config文件，无论是从cfgFile还是从home文件
+	// 勿忘读取config文件, 无论是从cfgFile还是从home文件
 	if cfgFile != "" {
 		viper.SetConfigName(cfgFile)
 	} else {

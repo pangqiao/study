@@ -377,7 +377,7 @@ nm kerneloops.o | grep hello_init
 
 地址信息是0x0000000000000000
 
-gdb调试驱动kerneloops.ko， 并添加调试信息
+gdb调试驱动kerneloops.ko,  并添加调试信息
 
 ```cpp
 gdb kerneloops.ko
@@ -411,7 +411,7 @@ l *(0x0000000000000027)
 同样可以得到最后异常的代码在地12行
 
 
-此方法对于内核OOPS同样适用, 调试时将驱动 `KO` 文件或者 `OBJ` 文件替换为内核 `vmlinux` 文件， 通过 `nm vmlinux`和 `cat /proc/kallsyms` 获取到对应的地址信息
+此方法对于内核OOPS同样适用, 调试时将驱动 `KO` 文件或者 `OBJ` 文件替换为内核 `vmlinux` 文件,  通过 `nm vmlinux`和 `cat /proc/kallsyms` 获取到对应的地址信息
 
 ### 2.5.4. 使用objdump反汇编代码得到地址
 

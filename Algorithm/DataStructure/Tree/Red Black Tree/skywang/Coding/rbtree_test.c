@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include "rbtree.h"
 
-#define CHECK_INSERT 0    // "插入"动作的检测开关(0，关闭; 1，打开)
-#define CHECK_DELETE 0    // "删除"动作的检测开关(0，关闭; 1，打开)
+#define CHECK_INSERT 0    // "插入"动作的检测开关(0, 关闭; 1, 打开)
+#define CHECK_DELETE 0    // "删除"动作的检测开关(0, 关闭; 1, 打开)
 #define LENGTH(a) ( (sizeof(a)) / (sizeof(a[0])) )
 
 void main()

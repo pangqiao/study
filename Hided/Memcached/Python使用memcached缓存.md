@@ -63,42 +63,42 @@ memcached客户端可采用一致性hash算法作为路由策略, 如图, 相对
 
 ## 3.1 存储方式
 
-为了提高性能, memcached中保存的数据都存储在memcached内置的内存存储空间中. 由于数据仅存在于内存中, 因此重启memcached、重启操作系统会导致全部数据消失. 另外, 缓存的内容容量达到指定值之后，就基于LRU(Least Recently Used)算法自动删除不使用的缓存. memcached本身是为缓存而设计的服务，因此并没有过多考虑数据的永久性问题. 
+为了提高性能, memcached中保存的数据都存储在memcached内置的内存存储空间中. 由于数据仅存在于内存中, 因此重启memcached、重启操作系统会导致全部数据消失. 另外, 缓存的内容容量达到指定值之后, 就基于LRU(Least Recently Used)算法自动删除不使用的缓存. memcached本身是为缓存而设计的服务, 因此并没有过多考虑数据的永久性问题. 
 
 ## 3.2 内存结构
 
 memcached仅支持基础的key-value键值对类型数据存储. 在memcached内存结构中有两个非常重要的概念: slab和chunk.  
-slab是一个内存块，它是memcached一次申请内存的最小单位. 在启动memcached的时候一般会使用参数-m指定其可用内存，但是并不是在启动的那一刻所有的内存就全部分配出去了，只有在需要的时候才会去申请，而且每次申请一定是一个slab. Slab的大小固定为1M(1048576 Byte)，一个slab由若干个大小相等的chunk组成. 每个chunk中都保存了一个item结构体、一对key和value. 
+slab是一个内存块, 它是memcached一次申请内存的最小单位. 在启动memcached的时候一般会使用参数-m指定其可用内存, 但是并不是在启动的那一刻所有的内存就全部分配出去了, 只有在需要的时候才会去申请, 而且每次申请一定是一个slab. Slab的大小固定为1M(1048576 Byte), 一个slab由若干个大小相等的chunk组成. 每个chunk中都保存了一个item结构体、一对key和value. 
 
-虽然在同一个slab中chunk的大小相等的，但是在不同的slab中chunk的大小并不一定相等，在memcached中按照chunk的大小不同，可以把slab分为很多种类(class)，默认情况下memcached把slab分为40类(class1～class40)，在class 1中，chunk的大小为80字节，由于一个slab的大小是固定的1048576字节(1M)，因此在class1中最多可以有13107个chunk(也就是这个slab能存最多13107个小于80字节的key-value数据).  
+虽然在同一个slab中chunk的大小相等的, 但是在不同的slab中chunk的大小并不一定相等, 在memcached中按照chunk的大小不同, 可以把slab分为很多种类(class), 默认情况下memcached把slab分为40类(class1～class40), 在class 1中, chunk的大小为80字节, 由于一个slab的大小是固定的1048576字节(1M), 因此在class1中最多可以有13107个chunk(也就是这个slab能存最多13107个小于80字节的key-value数据).  
 
 ![config](./images/3.png)
 
-memcached内存管理采取预分配、分组管理的方式，分组管理就是我们上面提到的slab class，按照chunk的大小slab被分为很多种类. 内存预分配过程是怎样的呢？向memcached添加一个item时候，memcached首先会根据item的大小，来选择最合适的slab class: 例如item的大小为190字节，默认情况下class 4的chunk大小为160字节显然不合适，class 5的chunk大小为200字节，大于190字节，因此该item将放在class 5中(显然这里会有10字节的浪费是不可避免的)，计算好所要放入的chunk之后，memcached会去检查该类大小的chunk还有没有空闲的，如果没有，将会申请1M(1个slab)的空间并划分为该种类chunk. 例如我们第一次向memcached中放入一个190字节的item时，memcached会产生一个slab class 2(也叫一个page)，并会用去一个chunk，剩余5241个chunk供下次有适合大小item时使用，当我们用完这所有的5242个chunk之后，下次再有一个在160～200字节之间的item添加进来时，memcached会再次产生一个class 5的slab(这样就存在了2个pages). 
+memcached内存管理采取预分配、分组管理的方式, 分组管理就是我们上面提到的slab class, 按照chunk的大小slab被分为很多种类. 内存预分配过程是怎样的呢？向memcached添加一个item时候, memcached首先会根据item的大小, 来选择最合适的slab class: 例如item的大小为190字节, 默认情况下class 4的chunk大小为160字节显然不合适, class 5的chunk大小为200字节, 大于190字节, 因此该item将放在class 5中(显然这里会有10字节的浪费是不可避免的), 计算好所要放入的chunk之后, memcached会去检查该类大小的chunk还有没有空闲的, 如果没有, 将会申请1M(1个slab)的空间并划分为该种类chunk. 例如我们第一次向memcached中放入一个190字节的item时, memcached会产生一个slab class 2(也叫一个page), 并会用去一个chunk, 剩余5241个chunk供下次有适合大小item时使用, 当我们用完这所有的5242个chunk之后, 下次再有一个在160～200字节之间的item添加进来时, memcached会再次产生一个class 5的slab(这样就存在了2个pages). 
 
 # 3.3 注意事项
 
-- chunk是在page里面划分的，而page固定为1m，所以chunk最大不能超过1m. 
-- chunk实际占用内存要加48B，因为chunk数据结构本身需要占用48B. 
-- 如果用户数据大于1m，则memcached会将其切割，放到多个chunk内. 
+- chunk是在page里面划分的, 而page固定为1m, 所以chunk最大不能超过1m. 
+- chunk实际占用内存要加48B, 因为chunk数据结构本身需要占用48B. 
+- 如果用户数据大于1m, 则memcached会将其切割, 放到多个chunk内. 
 - 已分配出去的page不能回收. 
-- 对于key-value信息，最好不要超过1m的大小; 同时信息长度最好相对是比较均衡稳定的，这样能够保障最大限度的使用内存; 同时，memcached采用的LRU清理策略，合理甚至过期时间，提高命中率. 
+- 对于key-value信息, 最好不要超过1m的大小; 同时信息长度最好相对是比较均衡稳定的, 这样能够保障最大限度的使用内存; 同时, memcached采用的LRU清理策略, 合理甚至过期时间, 提高命中率. 
 
 # 4 使用场景
 
-key\-value能满足需求的前提下，使用memcached分布式集群是较好的选择，搭建与操作使用都比较简单; 分布式集群在单点故障时，只影响小部分数据异常，目前还可以通过Magent缓存代理模式，做单点备份，提升高可用; 整个缓存都是基于内存的，因此响应时间是很快，不需要额外的序列化、反序列化的程序，但同时由于基于内存，数据没有持久化，集群故障重启数据无法恢复. 高版本的memcached已经支持CAS模式的原子操作，可以低成本的解决并发控制问题. 
+key\-value能满足需求的前提下, 使用memcached分布式集群是较好的选择, 搭建与操作使用都比较简单; 分布式集群在单点故障时, 只影响小部分数据异常, 目前还可以通过Magent缓存代理模式, 做单点备份, 提升高可用; 整个缓存都是基于内存的, 因此响应时间是很快, 不需要额外的序列化、反序列化的程序, 但同时由于基于内存, 数据没有持久化, 集群故障重启数据无法恢复. 高版本的memcached已经支持CAS模式的原子操作, 可以低成本的解决并发控制问题. 
 
 # 5 安装启动
 
 ```
 $ sudo apt-get install memcached
 $ memcached -m 32 -p 11211 -d
-# memcached将会以守护程序的形式启动 memcached(-d)，为其分配32M内存(-m 32)，并指定监听 localhost的11211端口. 
+# memcached将会以守护程序的形式启动 memcached(-d), 为其分配32M内存(-m 32), 并指定监听 localhost的11211端口. 
 ```
 
 # 6 python操作memcached
 
-在python中可通过memcache库来操作memcached，这个库使用很简单，声明一个client就可以读写memcached缓存了. 
+在python中可通过memcache库来操作memcached, 这个库使用很简单, 声明一个client就可以读写memcached缓存了. 
 
 ## 6.1 python访问memcached
 
@@ -120,7 +120,7 @@ mc.incr("key")
 mc.decr("key")
 ```
 
-然而，python-memcached默认的路由策略没有使用一致性哈希. 
+然而, python-memcached默认的路由策略没有使用一致性哈希. 
 
 ```
     def _get_server(self, key):
@@ -141,7 +141,7 @@ mc.decr("key")
         return None, None
 ```
 
-从源码中可以看到: server = self.buckets[serverhash \% len(self.buckets)]，只是根据key进行了简单的取模. 我们可以通过重写\_get\_server方法，让python\-memcached支持一致性哈希. 
+从源码中可以看到: server = self.buckets[serverhash \% len(self.buckets)], 只是根据key进行了简单的取模. 我们可以通过重写\_get\_server方法, 让python\-memcached支持一致性哈希. 
 
 ```
 import memcache

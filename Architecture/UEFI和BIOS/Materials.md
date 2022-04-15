@@ -1,8 +1,8 @@
-深入了解UEFI，这里有几个问题可以深入思考一下: 
+深入了解UEFI, 这里有几个问题可以深入思考一下: 
 
-1. 为什么UEFI采用PE/COFF格式作为UEFI驱动和应用的标准，而不是ELF格式？
+1. 为什么UEFI采用PE/COFF格式作为UEFI驱动和应用的标准, 而不是ELF格式？
 
-2. 绝大多数UEFI核心代码都是C语言写的，为什么不用C++，可以不可以用C++？热门的OO和他有什么关系？
+2. 绝大多数UEFI核心代码都是C语言写的, 为什么不用C++, 可以不可以用C++？热门的OO和他有什么关系？
 
 3. UEFI和其他的uboot, coreboot等各自的优点和关系如何？
 
@@ -25,7 +25,7 @@
 
 ACPI与UEFI核心概念的区别: https://zhuanlan.zhihu.com/p/25893464
 
-ACPI提供了OS可用的硬件抽象和接口(method)，UEFI也提供了抽象和接口，是不是也有冲突？其实两者面向的方面不同，ACPI主要是从硬件抽象的角度来抽象硬件，UEFI是从软件一致方向定义规范. 这也是他们不但没有替代关系，反而从ACPI 5.0 开始ACPI并入UEFI论坛管理的原因. 需要指出的是ACPI和UEFI没有绑定关系，ACPI可以在uboot上实现，而UEFI也可以报告DT，但他们一起工作起来会更加顺畅. UEFI提供了帮助安装更新ACPI table的接口(protocol).大家可以在UEFI/PI spec里面找到相应的接口定义. 
+ACPI提供了OS可用的硬件抽象和接口(method), UEFI也提供了抽象和接口, 是不是也有冲突？其实两者面向的方面不同, ACPI主要是从硬件抽象的角度来抽象硬件, UEFI是从软件一致方向定义规范. 这也是他们不但没有替代关系, 反而从ACPI 5.0 开始ACPI并入UEFI论坛管理的原因. 需要指出的是ACPI和UEFI没有绑定关系, ACPI可以在uboot上实现, 而UEFI也可以报告DT, 但他们一起工作起来会更加顺畅. UEFI提供了帮助安装更新ACPI table的接口(protocol).大家可以在UEFI/PI spec里面找到相应的接口定义. 
 
 
 

@@ -134,7 +134,7 @@ EXPORT_SYMBOL(printk);
 
 为了更好地控制不同级别的信息显示在控制台上, 内核设置了控制台的日志级别 `console_loglevel`. `printk` 日志级别的作用是打印一定级别的消息, 与之类似, 控制台只显示一定级别的消息. 
 
-当日志级别小于console_loglevel时，消息才能显示出来. 控制台相应的日志级别定义如下, 参见[`kernel/printk/printk.c?v=4.10, line 59`](http://lxr.free-electrons.com/source/kernel/printk/printk.c?v=4.10#L59)
+当日志级别小于console_loglevel时, 消息才能显示出来. 控制台相应的日志级别定义如下, 参见[`kernel/printk/printk.c?v=4.10, line 59`](http://lxr.free-electrons.com/source/kernel/printk/printk.c?v=4.10#L59)
 
 ```cpp
 //  http://lxr.free-electrons.com/source/kernel/printk/printk.c?v=4.10#L59
@@ -202,7 +202,7 @@ extern int console_printk[];
 
 在控制台(这里指的是虚拟终端 `Ctrl+Alt+(F1~F6)` )加载模块以后, 我们在伪终端(如果对伪终端不是很清楚可以看相关的内容)上运行命令 `dmesg` 查看日志文件刚才得到的运行记录
 
-可以发现 `messages` 中的值为 `KERN_WARNING` 级别之后所要求输出到信息值. 而如果我们在文件 `syslog` 和 `kern-log` 中查看系统日志文件，一般情况下可以得到所有的输出信息, 即一般情况下, `syslog` 和 `kern.log` 两个文件中记录的内容从编程这个角度来看是基本一致的.
+可以发现 `messages` 中的值为 `KERN_WARNING` 级别之后所要求输出到信息值. 而如果我们在文件 `syslog` 和 `kern-log` 中查看系统日志文件, 一般情况下可以得到所有的输出信息, 即一般情况下, `syslog` 和 `kern.log` 两个文件中记录的内容从编程这个角度来看是基本一致的.
 
 在目录 `/var/log/` 下有一下四个文件可以查看日志
 `syslog`, `kern.log`, `messages`, `debug`.

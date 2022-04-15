@@ -1,5 +1,5 @@
 
-ACPI, 全称又叫 Advanced Configuration and Power Management Interface， 高级配置和电源管理接口. BIOS过程中就会生成这些表格，然后Linux系统中很多时候需要访问ACPI表格来获得一些硬件的内存地址. 
+ACPI, 全称又叫 Advanced Configuration and Power Management Interface,  高级配置和电源管理接口. BIOS过程中就会生成这些表格, 然后Linux系统中很多时候需要访问ACPI表格来获得一些硬件的内存地址. 
 
 所有的ACPI表位于目录“`/sys/firmware/acpi/tables/`”
 
