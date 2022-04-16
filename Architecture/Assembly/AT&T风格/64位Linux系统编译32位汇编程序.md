@@ -1,6 +1,6 @@
 ## 1. 问题
 
-64位Linux系统编译32位汇编程序的时候需要仿真32位系统的需求，发现使用-m32参数后，编译提示错误，如下: 
+64位Linux系统编译32位汇编程序的时候需要仿真32位系统的需求发现使用-m32参数后编译提示错误如下: 
 
 ```
 /usr/bin/ld: 未知的仿真模式: 32  
@@ -14,7 +14,7 @@ collect2: error: ld returned 1 exit status
 
 ### 2.1 打开64位系统对32位的支持
 
-第一步，确认64为架构的内核
+第一步确认64为架构的内核
 
 ubuntu下
 
@@ -32,7 +32,7 @@ root@Gerry:~# dpkg --print-foreign-architectures
 i386
 ```
 
-说明已打开，如果没有需要手动打开
+说明已打开如果没有需要手动打开
 
 打开多架构支持
 
@@ -42,7 +42,7 @@ sudo apt -get update
 sudo apt-get dist-upgrade
 ```
 
-这样，64位系统对32位程序的支持
+这样64位系统对32位程序的支持
 
 ### 2.2 安装gcc multilab
 
@@ -81,7 +81,7 @@ GNU ld (GNU Binutils for Ubuntu) 2.26.1
    i386pe
 ```
 
-如果汇编中引用了C函数，链接时候需要如下: 
+如果汇编中引用了C函数链接时候需要如下: 
 
 ```
 ld -m elf_i386 -dynamic-linker /lib/ld-linux.so.2 -o hello hello.o /usr/lib/libc.so.6
