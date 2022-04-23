@@ -43,7 +43,18 @@ https://richardweiyang-2.gitbook.io/kernel-exploring/00-memory_a_bottom_up_view/
 
 虚拟地址空间解惑: https://zhuanlan.zhihu.com/p/386398698
 
-https://zhikunhuo.blog.csdn.net/category_10382170_2.html
+内存管理: https://zhikunhuo.blog.csdn.net/category_10382170_2.html
+* linux内核那些事之物理内存模型之FLATMEM（1）: https://zhikunhuo.blog.csdn.net/article/details/108549107
+* linux内核那些事之物理内存模型之DISCONTIGMEM（2）: https://zhikunhuo.blog.csdn.net/article/details/117046538
+* linux内核那些事之物理内存模型之SPARSE（3）: https://zhikunhuo.blog.csdn.net/article/details/117197315
+* si_meminfo获取当前系统物理内存使用情况: https://zhikunhuo.blog.csdn.net/article/details/117629859
+* linux内核那些事之Sparse内存模型初始化: https://zhikunhuo.blog.csdn.net/article/details/117840820
+* linux内核那些事之early boot memory-memblock: https://zhikunhuo.blog.csdn.net/article/details/117911931
+* linux内核那些事之E820: https://zhikunhuo.blog.csdn.net/article/details/118265431
+* linux内核那些事之Sparse vmemmap: https://zhikunhuo.blog.csdn.net/article/details/118582882
+* linux内核那些事之ZONE: https://zhikunhuo.blog.csdn.net/article/details/118821795
+* linux内核那些事之pg_data_t、zone结构初始化: https://zhikunhuo.blog.csdn.net/article/details/118913868
+* 
 
 # 书籍
 

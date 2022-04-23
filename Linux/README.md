@@ -13,3 +13,5 @@ Linux相关的领域知识, 非工具、软件、网站使用
 - Linus, 一生只为寻找欢笑:https://zhuanlan.zhihu.com/p/19796979?columnSlug=mactalk
 
 - 陈莉君老师课程: http://www.osforce.cn/user/7668
+
+- 各个模块, 2021: https://zhikunhuo.blog.csdn.net/category_10382170_2.html
