@@ -4,8 +4,8 @@
 <!-- code_chunk_output -->
 
 - [1. 下载qcow2镜像](#1-下载qcow2镜像)
-- [暂时启动guest](#暂时启动guest)
 - [2. 镜像密码修改](#2-镜像密码修改)
+- [暂时启动guest](#暂时启动guest)
 - [开启root账号ssh远程登录](#开启root账号ssh远程登录)
 - [3. 扩大根分区](#3-扩大根分区)
   - [3.1. 磁盘整体扩容](#31-磁盘整体扩容)
@@ -32,6 +32,10 @@
 
 链接: https://cloud-images.ubuntu.com/
 
+# 2. 镜像密码修改
+
+qcow2 镜像改密码: https://leux.cn/doc/Debian%E5%AE%98%E6%96%B9qcow2%E9%95%9C%E5%83%8F%E4%BF%AE%E6%94%B9root%E5%AF%86%E7%A0%81.html
+
 # 暂时启动guest
 
 如果没有enable virtio 的话, 可以使用下面命令:
@@ -41,10 +45,6 @@
 如果host上支持 virtio, 可以使用下面命令
 
 > qemu-system-x86_64 -name ubuntu-hirsute --enable-kvm -cpu host -smp 4,sockets=1,cores=2,threads=2 -m 3G -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=./debian-10.12.2-20220419-openstack-amd64.qcow2,if=none,id=drive-virtio-disk1,format=qcow2,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,id=virtio-disk1,bootindex=1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
-
-# 2. 镜像密码修改
-
-qcow2 镜像改密码: https://leux.cn/doc/Debian%E5%AE%98%E6%96%B9qcow2%E9%95%9C%E5%83%8F%E4%BF%AE%E6%94%B9root%E5%AF%86%E7%A0%81.html
 
 # 开启root账号ssh远程登录
 
