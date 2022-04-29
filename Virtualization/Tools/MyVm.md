@@ -4,6 +4,7 @@
 <!-- code_chunk_output -->
 
 - [1. 下载qcow2镜像](#1-下载qcow2镜像)
+- [暂时启动guest](#暂时启动guest)
 - [2. 镜像密码修改](#2-镜像密码修改)
 - [开启root账号ssh远程登录](#开启root账号ssh远程登录)
 - [3. 扩大根分区](#3-扩大根分区)
@@ -31,11 +32,13 @@
 
 链接: https://cloud-images.ubuntu.com/
 
+# 暂时启动guest
+
 如果没有enable virtio 的话, 可以使用下面命令:
 
-qemu-system-x86_64 -name ubuntu -accel kvm -cpu host -m 32G -smp 48,sockets=1,cores=24,threads=2 ./ubuntu-22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
+>qemu-system-x86_64 -name ubuntu -accel kvm -cpu host -m 32G -smp 48,sockets=1,cores=24,threads=2 ./ubuntu-22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
 
-
+如果host上支持 virtio, 可以使用下面命令
 
 > qemu-system-x86_64 -name ubuntu-hirsute --enable-kvm -cpu host -smp 4,sockets=1,cores=2,threads=2 -m 3G -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=./debian-10.12.2-20220419-openstack-amd64.qcow2,if=none,id=drive-virtio-disk1,format=qcow2,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,id=virtio-disk1,bootindex=1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
 
