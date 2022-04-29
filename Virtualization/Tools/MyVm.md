@@ -31,9 +31,13 @@
 
 链接: https://cloud-images.ubuntu.com/
 
+
+
 # 2. 镜像密码修改
 
 qcow2 镜像改密码: https://leux.cn/doc/Debian%E5%AE%98%E6%96%B9qcow2%E9%95%9C%E5%83%8F%E4%BF%AE%E6%94%B9root%E5%AF%86%E7%A0%81.html
+
+
 
 # 开启root账号ssh远程登录
 
