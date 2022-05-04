@@ -5,8 +5,11 @@
 
 - [1. 下载qcow2镜像](#1-下载qcow2镜像)
 - [2. 镜像密码修改](#2-镜像密码修改)
+  - [guestfish工具](#guestfish工具)
+  - [qemu-nbd方式](#qemu-nbd方式)
+- [开启root的ssh登录](#开启root的ssh登录)
+- [基本设置](#基本设置)
 - [暂时启动guest](#暂时启动guest)
-- [开启root账号ssh远程登录](#开启root账号ssh远程登录)
 - [3. 扩大根分区](#3-扩大根分区)
   - [3.1. 磁盘整体扩容](#31-磁盘整体扩容)
   - [3.2. 查看磁盘扩容后状态](#32-查看磁盘扩容后状态)
@@ -30,11 +33,162 @@
 
 根据ubuntu发行版, 找最新的下载
 
-链接: https://cloud-images.ubuntu.com/
+链接:
+
+https://cloud-images.ubuntu.com/
+
+或者 
+
+https://cdimage.debian.org/cdimage/openstack/
 
 # 2. 镜像密码修改
 
-qcow2 镜像改密码: https://leux.cn/doc/Debian%E5%AE%98%E6%96%B9qcow2%E9%95%9C%E5%83%8F%E4%BF%AE%E6%94%B9root%E5%AF%86%E7%A0%81.html
+使用 openssl 生成加密的密码, `-1` 表示使用 MD5 算法对密码进行加密
+
+```
+root@haiwei:~# openssl passwd -1 123456
+$1$WcWo5KOD$o6Fsb.72vc9yH3Uv.0P1h0
+```
+
+然后可以选择通过 guestfish 工具修改或者 qemu_nbd 方式修改
+
+## guestfish工具
+
+```
+apt install libguestfs-tools
+```
+
+```
+# guestfish --rw -a debian-amd64.qcow2
+
+Welcome to guestfish, the guest filesystem shell for
+editing virtual machine filesystems and disk images.
+
+Type: 'help' for help on commands
+      'man' to read the manual
+      'quit' to quit the shell
+
+><fs> run
+><fs> list-filesystems
+/dev/sda1: ext4
+><fs> mount /dev/sda1 /
+><fs>
+```
+
+然后修改 root 密码
+
+```
+><fs> vi /etc/shadow
+```
+
+```
+root:*:18873:0:99999:7:::
+daemon:*:18737:0:99999:7:::
+bin:*:18737:0:99999:7:::
+sys:*:18737:0:99999:7:::
+sync:*:18737:0:99999:7:::
+games:*:18737:0:99999:7:::
+man:*:18737:0:99999:7:::
+lp:*:18737:0:99999:7:::
+mail:*:18737:0:99999:7:::
+news:*:18737:0:99999:7:::
+uucp:*:18737:0:99999:7:::
+proxy:*:18737:0:99999:7:::
+www-data:*:18737:0:99999:7:::
+backup:*:18737:0:99999:7:::
+list:*:18737:0:99999:7:::
+irc:*:18737:0:99999:7:::
+gnats:*:18737:0:99999:7:::
+nobody:*:18737:0:99999:7:::
+systemd-network:*:18737:0:99999:7:::
+systemd-resolve:*:18737:0:99999:7:::
+systemd-timesync:*:18737:0:99999:7:::
+messagebus:*:18737:0:99999:7:::
+syslog:*:18737:0:99999:7:::
+```
+
+将 `root:` 后面的第一个 `*` 替换为加密之后的密码
+
+替换后第一行为/etc/shadow第一行为
+
+```
+root:$1$WcWo5KOD$o6Fsb.72vc9yH3Uv.0P1h0:18873:0:99999:7:::
+```
+
+> 也可以直接删掉第一个 `*`, 从而 root 用户没有密码
+
+## qemu-nbd方式
+
+见 `Virtualization\Tools\qemu-nbd方式挂载镜像.md`
+
+# 开启root的ssh登录
+
+编辑 `/etc/ssh/sshd_config`, 修改下面两行内容
+
+```
+><fs> vi /etc/ssh/sshd_config
+#PermitRootLogin prohibit-password
+...
+#PasswordAuthentication yes
+```
+
+去掉注释, 改成 yes
+
+```
+PermitRootLogin yes
+...
+PasswordAuthentication yes
+```
+
+# 基本设置
+
+开启ssh语法高亮以及内置命令别名
+
+```
+><fs> vi /root/.bashrc
+```
+
+之前的内容是
+
+```
+# Note: PS1 and umask are already set in /etc/profile. You should not
+# need this unless you want different defaults for root.
+# PS1='${debian_chroot:+($debian_chroot)}\h:\w\$ '
+# umask 022
+
+# You may uncomment the following lines if you want `ls' to be colorized:
+# export LS_OPTIONS='--color=auto'
+# eval "`dircolors`"
+# alias ls='ls $LS_OPTIONS'
+# alias ll='ls $LS_OPTIONS -l'
+# alias l='ls $LS_OPTIONS -lA'
+#
+# Some more alias to avoid making mistakes:
+# alias rm='rm -i'
+# alias cp='cp -i'
+# alias mv='mv -i'
+```
+
+去掉注释
+
+```
+# Note: PS1 and umask are already set in /etc/profile. You should not
+# need this unless you want different defaults for root.
+PS1='${debian_chroot:+($debian_chroot)}\h:\w\$ '
+umask 022
+
+# You may uncomment the following lines if you want `ls' to be colorized:
+export LS_OPTIONS='--color=auto'
+eval "`dircolors`"
+alias ls='ls $LS_OPTIONS'
+alias ll='ls $LS_OPTIONS -l'
+alias l='ls $LS_OPTIONS -lA'
+#
+# Some more alias to avoid making mistakes:
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+```
 
 # 暂时启动guest
 
@@ -59,10 +213,6 @@ sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host,-xsave,
 如果host上支持 virtio, 可以使用下面命令
 
 > /usr/local/bin/qemu-system-x86_64 -name ubuntu-hirsute --enable-kvm -cpu host -smp 4,sockets=1,cores=2,threads=2 -m 3G -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=./debian-10.12.2-20220419-openstack-amd64.qcow2,if=none,id=drive-virtio-disk1,format=qcow2,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,id=virtio-disk1,bootindex=1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
-
-# 开启root账号ssh远程登录
-
-
 
 # 3. 扩大根分区
 
