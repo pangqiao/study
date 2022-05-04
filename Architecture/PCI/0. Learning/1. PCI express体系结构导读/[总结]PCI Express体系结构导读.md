@@ -121,7 +121,7 @@ HOST主桥中设置了许多寄存器HOST处理器通过操作这些寄存器管
 
 ![config](./images/7.png)
 
-2)处理器包括多个CPU外部cache中断控制器DRAM控制器
+2)处理器包括多个CPU外部 cache 中断控制器DRAM控制器
 
 x86中PCI总线统一管理全部外部设备
 
