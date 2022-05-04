@@ -6,9 +6,9 @@
 - [1. 分区方案](#1-分区方案)
 - [2. 虚拟机](#2-虚拟机)
 - [3. grub修改](#3-grub修改)
-- [磁盘扩容](#磁盘扩容)
-- [4. 网络代理](#4-网络代理)
-- [5. 重要配置](#5-重要配置)
+- [4. 磁盘扩容](#4-磁盘扩容)
+- [5. 网络代理](#5-网络代理)
+- [6. 重要配置](#6-重要配置)
 
 <!-- /code_chunk_output -->
 
@@ -106,11 +106,11 @@ GRUB_CMDLINE_LINUX=""
 update-grub
 ```
 
-# 磁盘扩容
+# 4. 磁盘扩容
 
 见 `Virtualization\Tools\MyVm.md`
 
-# 4. 网络代理
+# 5. 网络代理
 
 https://blog.csdn.net/kan2016/article/details/90411137
 
@@ -118,7 +118,7 @@ https://blog.csdn.net/kan2016/article/details/90411137
 
 
 
-# 5. 重要配置
+# 6. 重要配置
 
 * `~/.bashrc`
 * `~/.gitconfig`

@@ -5,27 +5,27 @@
 
 - [1. 下载qcow2镜像](#1-下载qcow2镜像)
 - [2. 镜像密码修改](#2-镜像密码修改)
-  - [guestfish工具](#guestfish工具)
-  - [qemu-nbd方式](#qemu-nbd方式)
-- [开启root的ssh登录](#开启root的ssh登录)
-- [基本设置](#基本设置)
-- [暂时启动guest](#暂时启动guest)
-- [3. 扩大根分区](#3-扩大根分区)
-  - [3.1. 磁盘整体扩容](#31-磁盘整体扩容)
-  - [3.2. 查看磁盘扩容后状态](#32-查看磁盘扩容后状态)
-  - [3.3. 进行分区扩展磁盘](#33-进行分区扩展磁盘)
-  - [3.4. 删除根分区](#34-删除根分区)
-  - [3.5. 创建分区](#35-创建分区)
-  - [3.6. 保存退出并刷新分区](#36-保存退出并刷新分区)
-  - [3.7. 查看磁盘分区和文件系统状态](#37-查看磁盘分区和文件系统状态)
-  - [3.8. 刷新根分区](#38-刷新根分区)
-- [4. 创建数据盘并使用](#4-创建数据盘并使用)
-- [5. 修改镜像内容](#5-修改镜像内容)
-- [6. 键盘输入设置](#6-键盘输入设置)
-- [7. 虚拟机最终启动命令](#7-虚拟机最终启动命令)
-- [8. 修改 grub](#8-修改-grub)
-- [9. 防火墙](#9-防火墙)
-- [10. vncserver](#10-vncserver)
+  - [2.1. guestfish工具](#21-guestfish工具)
+  - [2.2. qemu-nbd方式](#22-qemu-nbd方式)
+- [3. 开启root的ssh登录](#3-开启root的ssh登录)
+- [4. 基本设置](#4-基本设置)
+- [5. 暂时启动guest](#5-暂时启动guest)
+- [6. 扩大根分区](#6-扩大根分区)
+  - [6.1. 磁盘整体扩容](#61-磁盘整体扩容)
+  - [6.2. 查看磁盘扩容后状态](#62-查看磁盘扩容后状态)
+  - [6.3. 进行分区扩展磁盘](#63-进行分区扩展磁盘)
+  - [6.4. 删除根分区](#64-删除根分区)
+  - [6.5. 创建分区](#65-创建分区)
+  - [6.6. 保存退出并刷新分区](#66-保存退出并刷新分区)
+  - [6.7. 查看磁盘分区和文件系统状态](#67-查看磁盘分区和文件系统状态)
+  - [6.8. 刷新根分区](#68-刷新根分区)
+- [7. 创建数据盘并使用](#7-创建数据盘并使用)
+- [8. 修改镜像内容](#8-修改镜像内容)
+- [9. 键盘输入设置](#9-键盘输入设置)
+- [10. 虚拟机最终启动命令](#10-虚拟机最终启动命令)
+- [11. 修改 grub](#11-修改-grub)
+- [12. 防火墙](#12-防火墙)
+- [13. vncserver](#13-vncserver)
 
 <!-- /code_chunk_output -->
 
@@ -52,7 +52,7 @@ $1$WcWo5KOD$o6Fsb.72vc9yH3Uv.0P1h0
 
 然后可以选择通过 guestfish 工具修改或者 qemu_nbd 方式修改
 
-## guestfish工具
+## 2.1. guestfish工具
 
 ```
 apt install libguestfs-tools
@@ -117,11 +117,11 @@ root:$1$WcWo5KOD$o6Fsb.72vc9yH3Uv.0P1h0:18873:0:99999:7:::
 
 > 也可以直接删掉第一个 `*`, 从而 root 用户没有密码
 
-## qemu-nbd方式
+## 2.2. qemu-nbd方式
 
 见 `Virtualization\Tools\qemu-nbd方式挂载镜像.md`
 
-# 开启root的ssh登录
+# 3. 开启root的ssh登录
 
 编辑 `/etc/ssh/sshd_config`, 修改下面两行内容
 
@@ -140,7 +140,7 @@ PermitRootLogin yes
 PasswordAuthentication yes
 ```
 
-# 基本设置
+# 4. 基本设置
 
 开启ssh语法高亮以及内置命令别名
 
@@ -190,7 +190,7 @@ alias cp='cp -i'
 alias mv='mv -i'
 ```
 
-# 暂时启动guest
+# 5. 暂时启动guest
 
 如果没有enable virtio 的话, 可以使用下面命令:
 
@@ -214,13 +214,13 @@ sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host,-xsave,
 
 > /usr/local/bin/qemu-system-x86_64 -name ubuntu-hirsute --enable-kvm -cpu host -smp 4,sockets=1,cores=2,threads=2 -m 3G -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=./debian-10.12.2-20220419-openstack-amd64.qcow2,if=none,id=drive-virtio-disk1,format=qcow2,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,id=virtio-disk1,bootindex=1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
 
-# 3. 扩大根分区
+# 6. 扩大根分区
 
 Linux 扩容 / 根分区(LVM+非LVM)参照: https://zhuanlan.zhihu.com/p/83340525
 
 磁盘空间扩容: https://blog.csdn.net/byn12345/article/details/88829984
 
-## 3.1. 磁盘整体扩容
+## 6.1. 磁盘整体扩容
 
 先将原有镜像备份
 
@@ -241,7 +241,7 @@ Format specific information:
 
 建议直接扩大到50G
 
-## 3.2. 查看磁盘扩容后状态
+## 6.2. 查看磁盘扩容后状态
 
 进入虚拟机命令如下
 
@@ -279,7 +279,7 @@ tmpfs          tmpfs  4.0M     0  4.0M   0% /sys/fs/cgroup
 tmpfs          tmpfs  299M  4.0K  299M   1% /run/user/0
 ```
 
-## 3.3. 进行分区扩展磁盘
+## 6.3. 进行分区扩展磁盘
 
 记住根分区起始位置和结束位置
 
@@ -289,7 +289,7 @@ fdisk /dev/vda
 
 ![images](./images/2021-08-24_10-23-27.png)
 
-## 3.4. 删除根分区
+## 6.4. 删除根分区
 
 切记一定不要保存！！！
 
@@ -300,7 +300,7 @@ Partition number (1,14,15, default 15): 1
 Partition 1 has been deleted.
 ```
 
-## 3.5. 创建分区
+## 6.5. 创建分区
 
 创建分区, 分区号还是1, 注意分区起始位置, 不要删除ext4的签名
 
@@ -330,7 +330,7 @@ Device      Start      End  Sectors  Size Type
 /dev/vda15  10240   227327   217088  106M EFI System
 ```
 
-## 3.6. 保存退出并刷新分区
+## 6.6. 保存退出并刷新分区
 
 ```
 Command (m for help): w
@@ -341,7 +341,7 @@ Syncing disks.
 root@ubuntu-vm:~# partprobe /dev/vda
 ```
 
-## 3.7. 查看磁盘分区和文件系统状态
+## 6.7. 查看磁盘分区和文件系统状态
 
 ```
 root@ubuntu-vm:~# lsblk
@@ -371,7 +371,7 @@ tmpfs          tmpfs  299M  4.0K  299M   1% /run/user/0
 
 * df没变化, 文件系统还没有变化
 
-## 3.8. 刷新根分区
+## 6.8. 刷新根分区
 
 使用 resize2fs或xfs_growfs 对挂载目录在线扩容 
 
@@ -396,15 +396,15 @@ tmpfs          tmpfs  4.0M     0  4.0M   0% /sys/fs/cgroup
 tmpfs          tmpfs  299M  4.0K  299M   1% /run/user/0
 ```
 
-# 4. 创建数据盘并使用
+# 7. 创建数据盘并使用
 
 数据盘格式化并挂载: https://www.cnblogs.com/jyzhao/p/4778657.html
 
-# 5. 修改镜像内容
+# 8. 修改镜像内容
 
 通过 `qmeu-nbd` 工具
 
-# 6. 键盘输入设置
+# 9. 键盘输入设置
 
 ubuntu中启用page up/down进行补全功能: https://blog.csdn.net/jingtaohuang/article/details/109628105
 
@@ -416,7 +416,7 @@ ubuntu中启用page up/down进行补全功能: https://blog.csdn.net/jingtaohuan
 "\e[6~": history-search-forward
 ```
 
-# 7. 虚拟机最终启动命令
+# 10. 虚拟机最终启动命令
 
 > ubuntu hirsute image -- quick start
 > 
@@ -426,7 +426,7 @@ ubuntu中启用page up/down进行补全功能: https://blog.csdn.net/jingtaohuan
 >
 >/usr/bin/qemu-system-x86_64  -name ubuntu-hirsute -machine pc-i440fx-hirsute,accel=kvm,usb=off,dump-guest-core=off -cpu host -m 4G -smp 4,sockets=1,cores=2,threads=2 -uuid 982ab310-b608-49f9-8e0f-afdf7fa3fdda -smbios type=1,serial=982ab310-b608-49f9-8e0f-afdf7fa3fdda,uuid=982ab310-b608-49f9-8e0f-afdf7fa3fdda -no-user-config -nodefaults -chardev socket,id=montest,server=on,wait=off,path=/tmp/mon_test -mon chardev=montest,mode=readline -rtc base=utc,clock=vm -global kvm-pit.lost_tick_policy=discard -no-hpet -no-shutdown -boot strict=on -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=/images/ubuntu_hirsute.qcow2,format=qcow2,if=none,id=drive-virtio-disk0,cache=none,aio=native -object iothread,id=iothread0 -device virtio-blk-pci,iothread=iothread0,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -drive file=/images/data.qcow2,format=qcow2,if=none,id=drive-virtio-disk1,cache=none,aio=native -object iothread,id=iothread1 -device virtio-blk-pci,iothread=iothread1,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,id=virtio-disk1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -chardev pty,id=charserial0 -device isa-serial,chardev=charserial0,id=serial0 -vnc 0.0.0.0:1 -k en-us -device cirrus-vga,id=video0,bus=pci.0,addr=0x6 -device virtio-balloon-pci,id=balloon0,bus=pci.0,addr=0x7 -msg timestamp=on -daemonize
 
-# 8. 修改 grub
+# 11. 修改 grub
 
 ```
 # vim /etc/default/grub
@@ -446,13 +446,13 @@ GRUB_CMDLINE_LINUX=""
 
 ubuntu修改默认启动内核: https://cdmana.com/2021/03/20210328153654881n.html
 
-# 9. 防火墙
+# 12. 防火墙
 
 ufw disable
 
 ufw status
 
-# 10. vncserver
+# 13. vncserver
 
 https://www.linode.com/docs/guides/install-vnc-on-ubuntu-21-04/
 
