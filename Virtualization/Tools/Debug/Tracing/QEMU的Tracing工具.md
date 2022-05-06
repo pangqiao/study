@@ -62,6 +62,20 @@ QEME是模拟处理器的自由软件, 可以实现虚拟机, Android的虚拟�
 
 当然除了trace-events定义的一些默认函数外, 依据例子也可以自己定义一些trace, 定义的规则符合c语言函数的命名规则, 在使用的文件中加入 #include "trace.h" , 需要trace的地方在name前加入trace_即可, 具体参考 qemu/trace-event 和 qemu/docs/tracing.txt文档. 
 
+
+
+
+https://blog.csdn.net/daxiatou/article/details/103450929
+
+./configure --enable-trace-backends=log --enable-debug --target-list=x86_64-softmmu
+
+./configure  --target-list=x86_64-softmmu --enable-kvm --prefix=/usr --enable-debug --enable-numa --enable-trace-backends=log
+
+
+
+sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu-hirsute -accel kvm -cpu host -smp 4,sockets=1,cores=2,threads=2 -m 3G -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=/data/images/ubuntu_hirsute.qcow2,if=none,id=drive-virtio-disk0,format=qcow2,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -drive file=/data/images/data.qcow2,format=qcow2,if=none,id=drive-virtio-disk1,cache=none -object iothread,id=iothread1 -device virtio-blk-pci,iothread=iothread1,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,id=virtio-disk1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen -D /data/images/qemu.log
+
+
 # 参考
 
 https://blog.csdn.net/scaleqiao/article/details/50787340
