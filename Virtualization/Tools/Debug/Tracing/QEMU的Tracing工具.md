@@ -4,7 +4,7 @@ Qemu有自己的Trace框架并支持多个debug/trace后端包括: nop, dtrace, 
 1) 编译qemu时要enable trace backend
 
 ```
-$ ./configure --enable-trace-backends=simple --enable-debug --enable-kvm --target-list=x86_64-softmmu,x86_64-linux-user
+$ ./configure --enable-trace-backends=simple --enable-debug --enable-kvm --target-list=x86_64-softmmu
 $ make
 $ make install
 ```
@@ -69,11 +69,22 @@ https://blog.csdn.net/daxiatou/article/details/103450929
 
 ./configure --enable-trace-backends=log --enable-debug --target-list=x86_64-softmmu
 
-./configure  --target-list=x86_64-softmmu --enable-kvm --prefix=/usr --enable-debug --enable-numa --enable-trace-backends=log
+sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu-hirsute -accel kvm -cpu host -smp 4,sockets=1,cores=2,threads=2 -m 3G -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=/data/images/ubuntu_hirsute.qcow2,if=none,id=drive-virtio-disk0,format=qcow2,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -drive file=/data/images/data.qcow2,format=qcow2,if=none,id=drive-virtio-disk1,cache=none -object iothread,id=iothread1 -device virtio-blk-pci,iothread=iothread1,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,id=virtio-disk1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen -chardev socket,id=montest,server=on,wait=off,path=/tmp/mon_test -mon chardev=montest,mode=readline -D /data/images/qemu.log
 
+```
+# nc -U /tmp/mon_test
+QEMU 7.0.50 monitor - type 'help' for more information
+(qemu) trace-event virtio_blk_req_complete on
+trace-event virtio_blk_req_complete on
+(qemu) trace-event virtio_blk_rw_complete on
+trace-event virtio_blk_rw_complete on
+(qemu) trace-event virtio_blk_handle_write on
+trace-event virtio_blk_handle_write on
+(qemu) trace-event virtio_blk_handle_read on
+trace-event virtio_blk_handle_read on
+```
 
-
-sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu-hirsute -accel kvm -cpu host -smp 4,sockets=1,cores=2,threads=2 -m 3G -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=/data/images/ubuntu_hirsute.qcow2,if=none,id=drive-virtio-disk0,format=qcow2,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -drive file=/data/images/data.qcow2,format=qcow2,if=none,id=drive-virtio-disk1,cache=none -object iothread,id=iothread1 -device virtio-blk-pci,iothread=iothread1,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,id=virtio-disk1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen -D /data/images/qemu.log
+查看 /data/images/qemu.log 可得
 
 
 # 参考
