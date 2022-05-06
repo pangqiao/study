@@ -24,12 +24,15 @@ virtio_blk_handle_read
 $ qemu-system-x86_64 /root/CentOS---6.6-64bit---2015-03-06-a.qcow2 -smp 4 -m 4096 --enable-kvm -nographic -net nic -net tap,ifname=tap0,script=no,downscript=no -trace events=/tmp/events,file=trace.bin
 ```
 
-其中, 在正常启动的的qemu程序中加入`"-trace events=/tmp/events,file=trace.bin"`, 其中`/tmp/events`就是要跟踪的event, 而`trace.bin`就是trace产生的文件, 不能直接读, 而要通过工具来读. 
+其中, 在正常启动的的qemu程序中加入 `"-trace events=/tmp/events,file=trace.bin"`, 其中
+
+* `/tmp/events`就是要跟踪的event;
+* `trace.bin`就是trace产生的文件, 不能直接读, 而要通过工具来读. 
 
 4)获取trace结果
 
 ```
-$ ./scripts/simpletrace.py trace-events trace.bin
+$ ./scripts/simpletrace.py /tmp/events trace.bin
 ```
 
 5)有些模块也实现了自己的pretty-print工具, 可以更方便的查看结果. 比如你trace了9p的模块, 可以通过以下工具查看. 
