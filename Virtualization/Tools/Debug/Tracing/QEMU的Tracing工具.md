@@ -37,9 +37,9 @@ $ ./scripts/simpletrace.py /tmp/events trace.bin
 
 5)有些模块也实现了自己的pretty-print工具, 可以更方便的查看结果. 比如你trace了9p的模块, 可以通过以下工具查看. 
 
+```
 $ ./scripts/analyse-9p-simpletrace.py trace-events trace.bin
-
-
+```
 
 
 QEME是模拟处理器的自由软件, 可以实现虚拟机, Android的虚拟机就是使用QEMU实现的. QEMU中有一个trace模块, 可以对于一些函数进行跟踪, 例如qemu_malloc,  qemu_free等, 对于QEMU本身的调试很用帮助. 下面就介绍一些如何使用. 
