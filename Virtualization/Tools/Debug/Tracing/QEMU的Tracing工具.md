@@ -103,6 +103,8 @@ trace-event virtio_blk_handle_read on
 查看 /data/images/qemu.log 可得
 
 
+
+
 # 参考
 
 https://blog.csdn.net/scaleqiao/article/details/50787340
