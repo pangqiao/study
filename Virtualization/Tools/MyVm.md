@@ -8,6 +8,7 @@
   - [2.1. guestfish工具](#21-guestfish工具)
   - [2.2. qemu-nbd方式](#22-qemu-nbd方式)
 - [3. 开启root的ssh登录](#3-开启root的ssh登录)
+- [修改default.target](#修改defaulttarget)
 - [4. 基本设置](#4-基本设置)
 - [5. 暂时启动guest](#5-暂时启动guest)
 - [6. 扩大根分区](#6-扩大根分区)
@@ -139,6 +140,10 @@ PermitRootLogin yes
 ...
 PasswordAuthentication yes
 ```
+
+# 修改default.target
+
+/lib/systemd/system/default.target
 
 # 4. 基本设置
 
