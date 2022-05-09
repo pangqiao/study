@@ -143,7 +143,9 @@ PasswordAuthentication yes
 
 # 修改default.target
 
-/lib/systemd/system/default.target
+
+
+Created symlink /etc/systemd/system/default.target → /lib/systemd/system/multi-user.target
 
 # 4. 基本设置
 
