@@ -26,6 +26,7 @@
 - [10. 虚拟机最终启动命令](#10-虚拟机最终启动命令)
 - [11. 修改 grub](#11-修改-grub)
 - [12. 防火墙](#12-防火墙)
+- [selinux](#selinux)
 - [13. vncserver](#13-vncserver)
 
 <!-- /code_chunk_output -->
@@ -456,9 +457,19 @@ ubuntu修改默认启动内核: https://cdmana.com/2021/03/20210328153654881n.ht
 
 # 12. 防火墙
 
+sudo apt-get install ufw
+
 ufw disable
 
 ufw status
+
+# selinux
+
+apt install selinux-utils
+
+getenforce
+
+ll /etc/sysconfig/selinux
 
 # 13. vncserver
 
