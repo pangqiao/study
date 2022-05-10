@@ -8,9 +8,9 @@
   - [2.1. guestfish工具](#21-guestfish工具)
   - [2.2. qemu-nbd方式](#22-qemu-nbd方式)
 - [3. 开启root的ssh登录](#3-开启root的ssh登录)
+- [5. 暂时启动guest](#5-暂时启动guest)
 - [修改default.target](#修改defaulttarget)
 - [4. 基本设置](#4-基本设置)
-- [5. 暂时启动guest](#5-暂时启动guest)
 - [6. 扩大根分区](#6-扩大根分区)
   - [6.1. 磁盘整体扩容](#61-磁盘整体扩容)
   - [6.2. 查看磁盘扩容后状态](#62-查看磁盘扩容后状态)
@@ -141,18 +141,43 @@ PermitRootLogin yes
 PasswordAuthentication yes
 ```
 
+# 5. 暂时启动guest
+
+如果没有enable virtio 的话, 可以使用下面命令:
+
+> sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host -m 32G -smp 48,sockets=1,cores=24,threads=2 ./ubuntu-22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
+
+> BOOT_IMAGE=/boot/vmlinuz-5.15.0-25-generic root=LABEL=cloudimg-rootfs ro console=tty1 console=ttyS0
+
+> use custom kernel
+
+sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host -m 32G -smp 48,sockets=1,cores=24,threads=2 -kernel /boot/vmlinuz-5.15.0 -initrd /boot/initrd.img-5.15.0 -append "root=/dev/sda1 ro console=tty1 console=ttyS0" ./ubuntu-22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
+
+> use custom kernel with -drive 
+
+sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host -m 32G -smp 48,sockets=1,cores=24,threads=2 -kernel /boot/vmlinuz-5.15.0 -initrd /boot/initrd.img-5.15.0 -append "root=/dev/sda1 ro console=tty1 console=ttyS0" -drive file=/home/test/workspace/ubuntu-22.04.qcow2,if=ide -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
+
+> remove xsave
+
+sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host,-xsave,-xsavec,-xsaveopt,-xsaves -m 32G -smp 48,sockets=1,cores=24,threads=2 ./ubuntu-22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
+
+如果host上支持 virtio, 可以使用下面命令
+
+> /usr/local/bin/qemu-system-x86_64 -name ubuntu-hirsute --enable-kvm -cpu host -smp 4,sockets=1,cores=2,threads=2 -m 3G -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=./debian-10.12.2-20220419-openstack-amd64.qcow2,if=none,id=drive-virtio-disk1,format=qcow2,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,id=virtio-disk1,bootindex=1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
+
+
 # 修改default.target
 
 
-
 Created symlink /etc/systemd/system/default.target → /lib/systemd/system/multi-user.target
+
 
 # 4. 基本设置
 
 开启ssh语法高亮以及内置命令别名
 
 ```
-><fs> vi /root/.bashrc
+vi /root/.bashrc
 ```
 
 之前的内容是
@@ -196,30 +221,6 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 ```
-
-# 5. 暂时启动guest
-
-如果没有enable virtio 的话, 可以使用下面命令:
-
-> sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host -m 32G -smp 48,sockets=1,cores=24,threads=2 ./ubuntu-22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
-
-> BOOT_IMAGE=/boot/vmlinuz-5.15.0-25-generic root=LABEL=cloudimg-rootfs ro console=tty1 console=ttyS0
-
-> use custom kernel
-
-sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host -m 32G -smp 48,sockets=1,cores=24,threads=2 -kernel /boot/vmlinuz-5.15.0 -initrd /boot/initrd.img-5.15.0 -append "root=/dev/sda1 ro console=tty1 console=ttyS0" ./ubuntu-22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
-
-> use custom kernel with -drive 
-
-sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host -m 32G -smp 48,sockets=1,cores=24,threads=2 -kernel /boot/vmlinuz-5.15.0 -initrd /boot/initrd.img-5.15.0 -append "root=/dev/sda1 ro console=tty1 console=ttyS0" -drive file=/home/test/workspace/ubuntu-22.04.qcow2,if=ide -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
-
-> remove xsave
-
-sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host,-xsave,-xsavec,-xsaveopt,-xsaves -m 32G -smp 48,sockets=1,cores=24,threads=2 ./ubuntu-22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
-
-如果host上支持 virtio, 可以使用下面命令
-
-> /usr/local/bin/qemu-system-x86_64 -name ubuntu-hirsute --enable-kvm -cpu host -smp 4,sockets=1,cores=2,threads=2 -m 3G -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=./debian-10.12.2-20220419-openstack-amd64.qcow2,if=none,id=drive-virtio-disk1,format=qcow2,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,id=virtio-disk1,bootindex=1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
 
 # 6. 扩大根分区
 
