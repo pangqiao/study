@@ -481,7 +481,7 @@ struct virtio_iommu_req_attach {
 };
 ```
 
-将设备 attach 到 address space. 对 guest 来讲, 每个 "address_space" 都是一个唯一的标识符('address_space' is an identifier unique to the guest). 如果 IOMMU 设备中不存在这个 address space, 则创建一个.
+将设备 attach 到 address space. 对 guest 来讲, 每个 "address_space" 都是一个唯一的标识符 ('address_space' is an identifier unique to the guest). 如果 IOMMU 设备中不存在这个 address space, 则创建一个.
 
 > 也就是说, 一个 guest 中的 address_space 是不同的, 类似于 domain 的概念.
 
