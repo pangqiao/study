@@ -288,7 +288,7 @@ IORT: IO Remapping Table, DEN0049B, http://infocenter.arm.com/help/topic/com.arm
 
 requests 是 guest 往 request virtqueue 中添加的一堆小的 buffers. guest可以在 queue 中添加一批 requests, 并向设备发送通知(kick), 以便设备处理它们.
 
-virtio-iommu 设备管理来自一个或多个 endpoint 的 DMA 操作. 它可以充当物理 IOMMU 的代理, 来管理分配给 guest 的设备; 也可以充当虚拟 IOMMU, 管理模拟设备和半虚设备. 
+virtio-iommu 设备管理来自一个或多个 endpoint 的 DMA 操作. 它可以充当物理 IOMMU 的代理, 来管理分配给 guest 的设备; 也可以充当虚拟 IOMMU, 管理模拟设备和半虚设备.
 
 驱动程序首先发现由 virtio-iommu 设备使用平台特定机制管理的 endpoints. 然后, 它会发送请求, 为这些 endpoints 创建 address space 和 GVA-> GPA 的映射.
 
@@ -704,10 +704,10 @@ index 000000000000..1cf4f57b7817
 ```
 
 * `struct viommu_dev`: viommu 设备.
-* `struct viommu_mapping`: 一个mapping, iova -> gpa. 
+* `struct viommu_mapping`: 一个mapping, iova -> gpa.
 * `struct viommu_domain`: 一个 address space(一个 group 对应一个). domain 指向 VM domain(per VM); viommu 指向 viommu 设备; mappings 是一棵 rb tree, 每个 node 是 viommu_mapping 中的 iova
 * `struct viommu_endpoint`: 由 viommu 管理的一个设备. `viommu` 指向所属的 viommu 设备; `vdomain` 指向所 attached 的 address space
-* `struct viommu_request`: viommu 请求. 
+* `struct viommu_request`: viommu 请求.
 
 ```diff
 diff --git a/include/uapi/linux/virtio_iommu.h b/include/uapi/linux/virtio_iommu.h
@@ -777,7 +777,7 @@ new file mode 100644
 index 000000000000..1cf4f57b7817
 --- /dev/null
 +++ b/drivers/iommu/virtio-iommu.c
-@@ -0,0 +1,980 @@ 
+@@ -0,0 +1,980 @@
 +static struct virtio_driver virtio_iommu_drv = {
 +	.driver.name		= KBUILD_MODNAME,
 +	.driver.owner		= THIS_MODULE,
@@ -807,8 +807,8 @@ index 000000000000..1cf4f57b7817
 3. `virtio_cread(vdev, struct virtio_iommu_config, page_sizes, &viommu->pgsize_bitmap);`, 获取 page_sizes 配置
 4. `virtio_cread_feature()`, 获取 input_range 的 start 和 end
 5. `iommu_device_sysfs_add()`, 初始化 `viommu->iommu` (`struct iommu_device`), 并添加到 sysfs
-6. `iommu_device_set_ops()`, 设置了 `viommu->iommu` (`struct iommu_device`) 的ops, viommu_ops. 
-7. `iommu_device_set_fwnode()`, 
+6. `iommu_device_set_ops()`, 设置了 `viommu->iommu` (`struct iommu_device`) 的ops, viommu_ops.
+7. `iommu_device_set_fwnode()`,
 8. `iommu_device_register()`, 注册 `viommu->iommu` 到全局 `iommu_device_list` 链表
 9. `bus_set_iommu(&pci_bus_type, &viommu_ops)`, 设置 pci bus, 下面细讲
 10. `bus_set_iommu(&platform_bus_type, &viommu_ops);`, 设置 platform bus, 下面细讲
@@ -842,7 +842,7 @@ index 000000000000..1cf4f57b7817
 bus_set_iommu()
  ├─ bus->iommu_ops = ops;, 设置 bus 的 iommu ops
  └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化.
-   ├─ nb->notifier_call = iommu_bus_notifier; 
+   ├─ nb->notifier_call = iommu_bus_notifier;
    ├─ bus_register_notifier(bus, nb); 注册 bus notifier, 回调是 `iommu_bus_notifier()`
    └─ bus_for_each_dev(bus, NULL, &group_list, add_iommu_group); 遍历总线下所有设备, 给每个设备调用 `add_iommu_group()`, 将设备添加到 iommu group 中
       └─ iommu_ops->add_device(struct device dev);, 添加设备, 调用了 `viommu_add_device()`
@@ -895,7 +895,7 @@ bus_set_iommu()
 
 初始化 virtio-iommu 中会涉及到两个 command, map 和 attach, backend 实现可以看 kvm tool 部分
 
-疑问 1: 会先有 map request, 再 attach request? 
+疑问 1: 会先有 map request, 再 attach request?
 
 ??
 
@@ -903,10 +903,10 @@ bus_set_iommu()
 
  `iommu_detach_device()` -> `__iommu_detach_group` -> `iommu_group_do_attach_device()`
 
-detach 的场景: 
+detach 的场景:
 
 * device delete: unhot-plug
-* group delete: 
+* group delete:
 * vfio release domain: 走下面逻辑
 
 首先, 每个 device 肯定属于某个 group, 而 group 有两个属性, default_domain 和 domain.
@@ -989,7 +989,7 @@ https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
 @@ -11,11 +11,15 @@ enum device_bus_type {
  	DEVICE_BUS_MAX,
  };
- 
+
 +struct iommu_ops;
 +
  struct device_header {
@@ -1000,7 +1000,7 @@ https://lore.kernel.org/all/c19161b2-b32f-4039-67a2-633ee57bcd07@arm.com/
 +	struct iommu_ops	*iommu_ops;
 +	void			*iommu_data;
  };
- 
+
  int device__register(struct device_header *dev);
 ```
 
@@ -1033,7 +1033,7 @@ static int viommu_handle_attach(struct viommu_dev *viommu,
 
 ```cpp
 viommu_handle_attach(viommu, *req_attach)
- ├─ u32 device_id = le32_to_cpu(attach->device); 
+ ├─ u32 device_id = le32_to_cpu(attach->device);
  ├─ u32 ioasid	= le32_to_cpu(attach->address_space);
  ├─ viommu_alloc_ioas(viommu, device, ioasid);
  ├─ viommu_detach_device(viommu, vdev);
@@ -1049,10 +1049,10 @@ viommu_handle_attach(viommu, *req_attach)
 viommu_handle_attach(struct viommu_dev *viommu, struct virtio_iommu_req_attach *attach)
  ├─ u32 device_id = le32_to_cpu(attach->device); 从 request 中获取 deviceid
  ├─ u32 ioasid	= le32_to_cpu(map->address_space); 解析 request, 获取 ioasid, 即上面的 vdomain->id, 每个 group 一个
- ├─ struct device_header *device = iommu_get_device(device_id); 根据 device_id 获取 device 
+ ├─ struct device_header *device = iommu_get_device(device_id); 根据 device_id 获取 device
  │  ├─ enum device_bus_type bus = ((device_id) / BUS_SIZE)
  │  ├─ u32 dev_num = ((device_id) % BUS_SIZE)
- │  └─ return device__find_dev(bus, dev_num); 
+ │  └─ return device__find_dev(bus, dev_num);
  ├─ struct viommu_endpoint *vdev = viommu_alloc_device(device); 获取 endpoint
  ├─ viommu_alloc_device(device); 没有 endpoint, 那就分配一个
  ├─ struct viommu_ioas *ioas = viommu_find_ioas(viommu, ioasid); 获取 address space
@@ -1075,8 +1075,8 @@ viommu_handle_attach(struct viommu_dev *viommu, struct virtio_iommu_req_attach *
  │  │  └─ return 0; 什么都没做, 对应的 attach 没做什么
  │  ├─ viommu_ioas_del_device(ioas, vdev); 从 ioas 中删除 viommu_endpoint
  │  │  ├─ list_del(&vdev->list); 从 ioas->devices 链表删除
- │  │  ├─ ioas->nr_devices--; 
- │  │  └─ vdev->ioas = NULL; 
+ │  │  ├─ ioas->nr_devices--;
+ │  │  └─ vdev->ioas = NULL;
  │  └─ viommu_free_ioas(viommu, ioas); ioas->nr_devices 没有设备的话, 则删除 ioas(domain)
  │  │  ├─ ioas->ops->free_address_space(ioas->priv); 释放 as, 上面 alloc 的逆操作
  │  │  ├─ rb_erase(&ioas->node, &viommu->address_spaces);
@@ -1112,7 +1112,7 @@ viommu_handle_map(struct viommu_dev *viommu, struct virtio_iommu_req_map *map)
 
 ```cpp
 viommu_handle_map(viommu, *req_map)
- ├─ u32 ioasid	= le32_to_cpu(map->address_space); 
+ ├─ u32 ioasid	= le32_to_cpu(map->address_space);
  ├─ u64 virt_addr = le64_to_cpu(map->virt_addr);
  ├─ u64 phys_addr = le64_to_cpu(map->phys_addr);
  ├─ u64 size = le64_to_cpu(map->size);
@@ -1208,14 +1208,14 @@ virtio 设备初始化时候, `virtio_pci__init`, 初始化了 ops
 
 教 virtio core 如何访问分散的 vring 结构. 当在 virtio 设备前向 guest 呈现了 vIOMMU, virtio ring 和 buffer 将分散在不连续的 guest 物理页面中. vIOMMU 设备必须将所有 IOVA 转换为 host 虚拟地址, 并在访问任何结构之前收集这些页面(gather the pages).
 
-vring.desc 描述的 buffers 信息已经通过 iovec 返回给设备. 我们仅仅需要用更精细的粒度填充这些 buffers, 并希望: 
+vring.desc 描述的 buffers 信息已经通过 iovec 返回给设备. 我们仅仅需要用更精细的粒度填充这些 buffers, 并希望:
 
-1. 驱动程序不会一次性提供太多的描述符 descriptors, 因为 iovec 只有描述符数目一样大, 而现在可能出现溢出. 
-2. 设备不会对来自 vectors 的消息框架做出假设(即, 信息现在可以被包含在比以前更多的 vectors 中). 这是virtio 1.0所禁止的(以及 legacy with ANY_LAYOUT), 但我们的 virtio-net, 例如, 假设第一个 vector 总是包含一个完整的vnet header. 实际上, 这很好, 但仍然非常脆弱. 
+1. 驱动程序不会一次性提供太多的描述符 descriptors, 因为 iovec 只有描述符数目一样大, 而现在可能出现溢出.
+2. 设备不会对来自 vectors 的消息框架做出假设(即, 信息现在可以被包含在比以前更多的 vectors 中). 这是virtio 1.0所禁止的(以及 legacy with ANY_LAYOUT), 但我们的 virtio-net, 例如, 假设第一个 vector 总是包含一个完整的vnet header. 实际上, 这很好, 但仍然非常脆弱.
 
-为了访问 vring 和间接描述表, 我们现在分配一个 iovec 来描述 IOMMU 结构的 mapping, 并通过此 iovec 进行所有访问. 
+为了访问 vring 和间接描述表, 我们现在分配一个 iovec 来描述 IOMMU 结构的 mapping, 并通过此 iovec 进行所有访问.
 
-更优雅的方法是每个 address-space 创建一个子进程, 并以连续的方式 remap guest 内存片段 fragments: 
+更优雅的方法是每个 address-space 创建一个子进程, 并以连续的方式 remap guest 内存片段 fragments:
 
 ```
                                 .---- virtio-blk process
@@ -1225,7 +1225,7 @@ vring.desc 描述的 buffers 信息已经通过 iovec 返回给设备. 我们仅
                                 '---- some other device
 ```
 
-(0) 最初, viommu 为每个模拟设备都 fork 一个进程. 每个子进程都通过 `mmap(base)` 保留一大块虚拟内存, 代表了 IOVA 空间, 但不会填充它. 
+(0) 最初, viommu 为每个模拟设备都 fork 一个进程. 每个子进程都通过 `mmap(base)` 保留一大块虚拟内存, 代表了 IOVA 空间, 但不会填充它.
 
 (1) virtio-dev 想要访问 guest 内存, 比如读 vring. 它通过 pipe 或 socket 给父进程(viommu  process)发送一个 IOVA 的 TLB miss.
 
@@ -1233,7 +1233,7 @@ vring.desc 描述的 buffers 信息已经通过 iovec 返回给设备. 我们仅
 
 (3) 子进程在它的 IOVA 空间进行 mmap, 使用 `mmap(base + iova, pgsize, SHARED|FIXED, fd, offset)`
 
-这真的很酷, 但我怀疑它增加了很多复杂性, 因为不清楚哪些设备是完全自成一体的, 哪些设备需要访问父内存. 因此, 请暂缓使用散射收集访问. 
+这真的很酷, 但我怀疑它增加了很多复杂性, 因为不清楚哪些设备是完全自成一体的, 哪些设备需要访问父内存. 因此, 请暂缓使用散射收集访问.
 
 
 
@@ -1241,16 +1241,16 @@ vring.desc 描述的 buffers 信息已经通过 iovec 返回给设备. 我们仅
 
 > 使用 viommu 翻译 MSI
 
-当 virtio 设备位于 vIOMMU 后面时, guest 写入 MSI-X table 的 doorbell 地址是 IOVA, 而不是物理地址.  注入 MSI 时, KVM 需要物理地址来识别 doorbell 和相关的 IRQ 芯片. 将 guest 提供的地址转换为物理地址, 并将其存储在辅助表中, 以便于访问. 
+当 virtio 设备位于 vIOMMU 后面时, guest 写入 MSI-X table 的 doorbell 地址是 IOVA, 而不是物理地址.  注入 MSI 时, KVM 需要物理地址来识别 doorbell 和相关的 IRQ 芯片. 将 guest 提供的地址转换为物理地址, 并将其存储在辅助表中, 以便于访问.
 
 
 **patch 11**, virtio: set VIRTIO_F_IOMMU_PLATFORM when necessary
 
 > 当一个设备被 viommu 管理, 则启用这个功能位
 
-Virtio 中的其他功能位不依赖于设备类型, 针对 viommu, 我们也可以这样. 例如, 我们的 vring 实现始终支持间接描述(VIRTIO_RING_F_INDIRECT_DESC), 因此我们可以同时为所有设备(目前只有 net、scsi 和 blk)进行 advertise. 但是, 这可能会改变guest的行为: 在 Linux 中, 每当驱动尝试添加一系列描述符时, 它都会分配一个间接表并使用单个 ring 描述符, 这可能会稍微降低性能. 
+Virtio 中的其他功能位不依赖于设备类型, 针对 viommu, 我们也可以这样. 例如, 我们的 vring 实现始终支持间接描述(VIRTIO_RING_F_INDIRECT_DESC), 因此我们可以同时为所有设备(目前只有 net、scsi 和 blk)进行 advertise. 但是, 这可能会改变guest的行为: 在 Linux 中, 每当驱动尝试添加一系列描述符时, 它都会分配一个间接表并使用单个 ring 描述符, 这可能会稍微降低性能.
 
-VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能, 但需要设备在向 guest 发出信号之前调用 virtio_queue__should_signal. 可以说, 我们可以考虑所有对 signal_vq 的调用, 但让我们保持这个 patch 简单. 
+VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能, 但需要设备在向 guest 发出信号之前调用 virtio_queue__should_signal. 可以说, 我们可以考虑所有对 signal_vq 的调用, 但让我们保持这个 patch 简单.
 
 ```cpp
 /*
@@ -1269,7 +1269,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能, 但需要设备在向 gues
 
 上面注释也说了:
 
-* 清位, 设备具有平台 DMA(例如 IOMMU)旁路功能. 
+* 清位, 设备具有平台 DMA(例如 IOMMU)旁路功能.
 * 置位, 使用平台 DMA 工具(vIOMMU)访问内存
 
 ```diff
@@ -1283,7 +1283,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能, 但需要设备在向 gues
 @@ -266,6 +267,11 @@ bool virtio_queue__should_signal(struct virt_queue *vq)
  	return false;
  }
- 
+
 +u32 virtio_get_common_features(struct kvm *kvm, struct virtio_device *vdev)
 +{
 +	return vdev->use_iommu ? VIRTIO_F_IOMMU_PLATFORM : 0;
@@ -1343,7 +1343,7 @@ VIRTIO_RING_F_EVENT_IDX 是 vring 的另一个功能, 但需要设备在向 gues
 +++ b/include/kvm/vfio.h
 @@ -55,6 +55,7 @@ struct vfio_device {
  	struct device_header		dev_hdr;
- 
+
  	int				fd;
 +	struct vfio_group		*group;
  	struct vfio_device_info		info;
@@ -1426,13 +1426,13 @@ vfio__init()
 * reset device, `ioctl(vdev->fd, VFIO_DEVICE_RESET)`
 * bus 相关初始化, PCI 类型的调用 `vfio_pci_setup_device(kvm, vdev)`; MMIO 类型的调用 `vfio_plat_setup_device(kvm, vdev)`
   * PCI 类型:
-    * 配置 regions, `vfio_pci_configure_dev_regions(kvm, vdev)`; 
+    * 配置 regions, `vfio_pci_configure_dev_regions(kvm, vdev)`;
       * config space 信息获取, `vfio_pci_parse_cfg_space(vdev)`
       * 创建 msix table, `vfio_pci_create_msix_table(kvm, pdev)`, 会将 msix table 和 msix pba 调用 `kvm__register_mmio` 注册为 mmio, guest 调用会发生 vm-exit 并被相应的回调处理
       * 创建 msi capability, `vfio_pci_create_msi_cap(kvm, pdev)`
       * 配置 bar space, `vfio_pci_configure_bar(kvm, vdev, i)`
       * `vfio_pci_fixup_cfg_space(vdev)`
-    * 注册 vfio 设备, `device__register(&vdev->dev_hdr)`; 
+    * 注册 vfio 设备, `device__register(&vdev->dev_hdr)`;
     * 配置 IRQs, `vfio_pci_configure_dev_irqs(kvm, vdev)`.
 
 对 viommu 的支持, 将所有 contianer 替换成 viommu 的 container, iommu ops 也被替换成 viommu ops
@@ -1514,7 +1514,7 @@ vfio__init()
 +static int vfio_groups_init(struct kvm *kvm)
  {
  	int api, i, ret, iommu_type;;
- 
+
 -	/* Create a container for our IOMMU groups */
 -	vfio_container = open(VFIO_DEV_NODE, O_RDWR);
 -	if (vfio_container == -1) {
@@ -1528,7 +1528,7 @@ vfio__init()
  		pr_err("Failed to open %s", VFIO_DEV_NODE);
  		return ret;
  	}
- 
+
 -	api = ioctl(vfio_container, VFIO_GET_API_VERSION);
 +	api = ioctl(vfio_host_container, VFIO_GET_API_VERSION);
  	if (api != VFIO_API_VERSION) {
@@ -1537,14 +1537,14 @@ vfio__init()
 @@ -1119,15 +1337,20 @@ static int vfio_container_init(struct kvm *kvm)
  		return iommu_type;
  	}
- 
+
 -	/* Sanity check our groups and add them to the container */
  	for (i = 0; i < kvm->cfg.num_vfio_groups; ++i) {
  		ret = vfio_group_init(kvm, &kvm->cfg.vfio_group[i]);
  		if (ret)
  			return ret;
  	}
- 
+
 +	if (kvm->cfg.viommu) {
 +		close(vfio_host_container);
 +		vfio_host_container = -1;
@@ -1554,12 +1554,12 @@ vfio__init()
 @@ -1147,10 +1370,16 @@ static int vfio__init(struct kvm *kvm)
  	if (!kvm->cfg.num_vfio_groups)
  		return 0;
- 
+
 -	ret = vfio_container_init(kvm);
 +	ret = vfio_groups_init(kvm);
  	if (ret)
  		return ret;
- 
+
 +	if (kvm->cfg.viommu) {
 +		viommu = viommu_register(kvm, &vfio_viommu_props);
 +		if (!viommu)
@@ -1579,7 +1579,7 @@ vfio__init()
 @@ -912,6 +1084,8 @@ static int vfio_configure_device(struct kvm *kvm, struct vfio_group *group,
  		return -ENOMEM;
  	}
- 
+
 +	device->group = group;
 +
  	device->fd = ioctl(group->fd, VFIO_GROUP_GET_DEVICE_FD, dirent->d_name);
@@ -1628,7 +1628,7 @@ static struct iommu_ops vfio_iommu_ops = {
 * 对 pci_msix_pba 的访问
 * 对 pci_msix_table 的访问
 
-当访问 msix_table 时候会发生 VM-exit, 进而返回给 kvmtool 处理. 如果 container 存在, 说明独立, 调用 `iommu_translate_msi`, 
+当访问 msix_table 时候会发生 VM-exit, 进而返回给 kvmtool 处理. 如果 container 存在, 说明独立, 调用 `iommu_translate_msi`,
 
 ```diff
 --- a/vfio.c
@@ -1644,13 +1644,13 @@ static struct iommu_ops vfio_iommu_ops = {
  	struct vfio_pci_msix_table *table = &pdev->msix_table;
  	struct vfio_device *device = container_of(pdev, struct vfio_device, pci);
 +	struct vfio_guest_container *container = device->group->container;
- 
+
  	u64 offset = addr - table->guest_phys_addr;
- 
+
 @@ -88,11 +103,16 @@ static void vfio_pci_msix_table_access(struct kvm_cpu *vcpu, u64 addr, u8 *data,
- 
+
  	memcpy((void *)&entry->config + field, data, len);
- 
+
 -	if (field != PCI_MSIX_ENTRY_VECTOR_CTRL)
 +	if (field != PCI_MSIX_ENTRY_VECTOR_CTRL || entry->config.ctrl & 1)
 +		return;
@@ -1659,7 +1659,7 @@ static struct iommu_ops vfio_iommu_ops = {
 +
 +	if (container && iommu_translate_msi(container->msi_doorbells, &msg))
  		return;
- 
+
  	if (entry->gsi < 0) {
 ```
 
@@ -1674,12 +1674,12 @@ static struct iommu_ops vfio_iommu_ops = {
  	struct vfio_pci_device *pdev = &device->pci;
 +	struct vfio_guest_container *container = device->group->container;
  	struct msi_cap_64 *msi_cap_64 = (void *)&pdev->hdr + pdev->msi.pos;
- 
+
  	/* Only modify routes when guest sets the enable bit */
 @@ -144,6 +165,9 @@ static void vfio_pci_msi_write(struct kvm *kvm, struct vfio_device *device,
  		msi.data = msi_cap_32->data;
  	}
- 
+
 +	if (container && iommu_translate_msi(container->msi_doorbells, &msi))
 +		return;
 +
@@ -1737,7 +1737,7 @@ viommu_probe()
  ├─ iommu_device_sysfs_add();
  └─ bus_set_iommu(&pci_bus_type, &viommu_ops);
     ├─ LIST_HEAD(group_list);
-    ├─ bus_for_each_dev(..,probe_iommu_group); 
+    ├─ bus_for_each_dev(..,probe_iommu_group);
     │  ├─ iommu_ops->probe_device();
     │  ├─ group = iommu_group_get_for_dev(dev);
     │  ├─ list_add_tail(&group->entry, group_list);
@@ -1799,7 +1799,7 @@ bus_set_iommu()
       │  │  │  ├─ phys_addr = iommu_iova_to_phys(domain, addr), 看是否已经有了 iova -> pa 的 map. 调用 viommu_iova_to_phys
       │  │  │  │  ├─ interval_tree_iter_first(&viommu_domain->mappings, iova, iova); 在 vdomain 中查找 iova 所在的 node
       │  │  │  │  ├─ struct viommu_mapping *mapping = container_of(node, struct viommu_mapping, iova); 得到对应的 vmapping
-      │  │  │  │  └─ paddr = mapping->paddr + (iova - mapping->iova.start); 
+      │  │  │  │  └─ paddr = mapping->paddr + (iova - mapping->iova.start);
       │  │  │  ├─ map_size += pg_size; 如果没有得到物理地址, 说明已经还没有 map, 准备map_size, 继续处理下一个 page
       │  │  │  ├─ iommu_map(domain, addr - map_size, addr - map_size, map_size, entry->prot), map_size 大于 0, 即有需要map的, 则将每段虚拟地址空间都映射到相应的物理内存页上, iova = paddr = addr - map_size, 所以初始化的 msi iova = pa
       │  │  │  │  ├─ domain->ops->map(domain, iova, paddr, pgsize, prot); 根据 iommu pgsize(pgsize), 逐个 page 进行map, 调用 viommu_map
@@ -1824,9 +1824,9 @@ viommu_map(domain, iova, paddr, size, prot)
  ├─ struct viommu_domain *vdomain = to_viommu_domain(domain);
  ├─ viommu_add_mapping(vdomain, iova, paddr, size);
  │  ├─ alloc viommu_mapping and init
- │  └─ interval_tree_insert(&mapping->iova, &vdomain->mappings); 
+ │  └─ interval_tree_insert(&mapping->iova, &vdomain->mappings);
  ├─ struct virtio_iommu_req_map req;
- └─ viommu_send_req_sync(vdomain->viommu, &req); 
+ └─ viommu_send_req_sync(vdomain->viommu, &req);
     ├─ __viommu_add_req(viommu, buf, len, true);
     └─ __viommu_sync_req(viommu);
 ```
@@ -1836,7 +1836,7 @@ bus_set_iommu()
  ├─ if (bus->iommu_ops != NULL) return -EBUSY, bus 已经有iommu_ops
  ├─ bus->iommu_ops = ops;, 设置 bus 的 iommu ops
  └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化.
-   ├─ nb->notifier_call = iommu_bus_notifier; 
+   ├─ nb->notifier_call = iommu_bus_notifier;
    ├─ bus_register_notifier(bus, nb); 注册 bus notifier, 回调是 `iommu_bus_notifier()`
    └─ bus_for_each_dev(bus, NULL, &group_list, add_iommu_group); 遍历总线下所有设备, 给每个设备调用 `add_iommu_group()`, 将设备添加到 iommu group 中
       └─ iommu_ops->add_device(struct device dev);, 添加设备, 调用了 `viommu_add_device()`
