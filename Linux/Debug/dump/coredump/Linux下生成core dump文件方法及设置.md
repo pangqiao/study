@@ -142,14 +142,14 @@ ulimit -c unlimited 不限制core文件大小
 
 ## 打开core dump
 
-方法一:   配置profile文件, 打开/etc/profile文件, 在里面可以找到【ulimit -S -c 0 > /dev/null 2>&1】, 将它改成【ulimit -S -c unlimited > /dev/null 2>&1】; 或者下面命令
+方法一:   配置profile文件, 打开 `/etc/profile` 文件, 在里面可以找到【`ulimit -S -c 0 > /dev/null 2>&1`】, 将它改成【`ulimit -S -c unlimited > /dev/null 2>&1`】; 或者下面命令
 
 ```
 echo "ulimit -c unlimited"  >> /etc/profile
 ```
 
 
-方法二: 修改/etc/security/limits.conf文件, 添加【* soft core 0】, 这个方法可以针对指定用户或用户组打开core dump【user soft core 0或@group soft core 0】. 不过要使用这个方法一定要将方法一提到的那行注释掉, 不可同时存在
+方法二: 修改 `/etc/security/limits.conf` 文件, 添加【* soft core 0】, 这个方法可以针对指定用户或用户组打开core dump【user soft core 0或@group soft core 0】. 不过要使用这个方法一定要将方法一提到的那行注释掉, 不可同时存在
 
 ## 查看保存路径和文件名格式
 
