@@ -120,7 +120,7 @@ echo “/data/coredump/core.%e.%p” >/proc/sys/kernel/core_pattern
 
 1. 产生coredump的条件, 首先需要确认当前会话打开了core dump. 
 
-`ulimit –c`, 若为0, 则不会产生对应的coredump, 需要进行修改和设置. 
+`ulimit -c`, 若为0, 则不会产生对应的coredump, 需要进行修改和设置. 
 
 使用`ulimit -a`可以查看系统core文件的大小限制
 
