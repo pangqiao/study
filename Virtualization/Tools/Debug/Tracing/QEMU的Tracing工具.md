@@ -1,5 +1,9 @@
 
-Qemu有自己的Trace框架并支持多个debug/trace后端包括: nop, dtrace, ftrace, log, simple, ust, 可以帮助我们分析Qemu中的问题. 关于这些backend的介绍, 可以看这个链接:  https://repo.or.cz/w/qemu/stefanha.git/blob_plain/refs/heads/tracing:/docs/tracing.txt , 如果现有的trace point不能满足你的需求, 里面还有介绍如何添加新的trace point. 这篇文章主要介绍一下Qemu内嵌的一个backend: Simple trace 的使用, 它不需要安装任何其他软件就可以使用. 
+Qemu有自己的Trace框架并支持多个debug/trace后端包括: nop, dtrace, ftrace, log, simple, ust, 可以帮助我们分析Qemu中的问题. 关于这些backend的介绍, 可以看这个链接:  https://repo.or.cz/w/qemu/stefanha.git/blob_plain/refs/heads/tracing:/docs/tracing.txt , 如果现有的trace point不能满足你的需求, 里面还有介绍如何添加新的trace point. 
+
+# simple
+
+Simple trace, 不需要安装任何其他软件就可以使用. 
 
 1) 编译qemu时要enable trace backend
 
@@ -25,9 +29,7 @@ $ qemu-system-x86_64 /root/CentOS---6.6-64bit---2015-03-06-a.qcow2 -smp 4 -m 409
 
 > 替换 vtd_inv_desc 为相应的 event, 如果想要所有那就用 `*`
 
->sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu-hirsute -accel kvm -cpu host -smp 4,sockets=1,cores=2,threads=2 -m 3G -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=/data/images/ubuntu_hirsute.qcow2,if=none,id=drive-virtio-disk0,format=qcow2,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk0,id=virtio-disk0,bootindex=1 -drive file=/data/images/data.qcow2,format=qcow2,if=none,id=drive-virtio-disk1,cache=none -object iothread,id=iothread1 -device virtio-blk-pci,iothread=iothread1,scsi=off,bus=pci.0,addr=0x4,drive=drive-virtio-disk1,id=virtio-disk1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen -trace events=/data/code/qemu/hw/block/trace-events,file=/tmp/trace.bin
-
-其中, 在正常启动的的qemu程序中加入 `"-trace events=/data/code/qemu/hw/block/trace-events,file=/tmp/trace.bin"`, 其中
+其中, 在正常启动的的qemu程序中加入 `"-trace enable=vtd_inv_desc,events=/data/code/qemu/hw/block/trace-events,file=/tmp/trace.bin"`, 其中
 
 * `/data/code/qemu/hw/block/trace-events` 就是要跟踪的event;
 * `/tmp/trace.bin` 就是trace产生的文件, 不能直接读, 而要通过工具来读. 
