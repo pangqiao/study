@@ -45,28 +45,11 @@ $ ./scripts/simpletrace.py /data/code/qemu/hw/block/trace-events /tmp/trace.bin
 $ ./scripts/analyse-9p-simpletrace.py trace-events trace.bin
 ```
 
+正常运行QEMU, 为了调试可以在运行QEMU的时候加入monitor功能, 即在运行的命令中加入 -monitor stdio, 这样就启动了monitor并且和用户在console中进行交互
 
-QEME是模拟处理器的自由软件, 可以实现虚拟机, Android的虚拟机就是使用QEMU实现的. QEMU中有一个trace模块, 可以对于一些函数进行跟踪, 例如qemu_malloc,  qemu_free等, 对于QEMU本身的调试很用帮助. 下面就介绍一些如何使用. 
-
-1, 在configure的时候加入 --enable-trace-backend=simple 选项, 其中trace的方式有几种, 这里使用simple, 具体可以参考文档
-
-2, 在trace-events文件中enable需要进行trace的函数, 这个文件中默认的都是disable的, 只要删除需要trace的函数前面的disable即可
-
-3, make
-
-4, 正常运行QEMU, 为了调试可以在运行QEMU的时候加入monitor功能, 即在运行的命令中加入 -monitor stdio, 这样就启动了monitor并且和用户在console中进行交互
-
-5, 可以在console中运行(qemu)info trace-events 参考那些event已经被trace, 其中state为1的是已经enable的;  运行(qemu)info trace查看缓存的trace
-
-6, 退出QEMU, 可以输入quit进行退出
-
-7, 这样在当前目录下可以发现一个命名为trace-*的二进制文档即为trace的结果
-
-8, 把`trace-*`和`trace-events`文件copy到 `qemu/script/` 目录下, 运行 `./simpletrace.py trace-events trace-*` 就可以得到格式化了得trace log了
+(qemu)info trace-events 参考那些event已经被trace, 其中state为1的是已经enable的;  运行(qemu)info trace查看缓存的trace
 
 当然除了trace-events定义的一些默认函数外, 依据例子也可以自己定义一些trace, 定义的规则符合c语言函数的命名规则, 在使用的文件中加入 #include "trace.h" , 需要trace的地方在name前加入trace_即可, 具体参考 qemu/trace-event 和 qemu/docs/tracing.txt文档. 
-
-
 
 # log 方式
 
@@ -105,12 +88,9 @@ trace-event virtio_blk_handle_read on
 
 运行 `(qemu)info trace` 查看缓存的trace
 
-
-
 查看 event log
 
 查看 /data/images/qemu.log 可得
-
 
 
 
