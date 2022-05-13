@@ -21,20 +21,19 @@ $ make install
 $ cat ./hw/block/trace-events
 ```
 
-3)启动虚拟机, 启用想要的 event
+3) 启动虚拟机, 并启用想要的 event
 
 ```
 $ qemu-system-x86_64 /root/CentOS---6.6-64bit---2015-03-06-a.qcow2 -smp 4 -m 4096 --enable-kvm -nographic -net nic -net tap,ifname=tap0,script=no,downscript=no -trace enable=vtd_inv_desc,events=/tmp/events,file=trace.bin
 ```
 
-> 替换 vtd_inv_desc 为相应的 event, 如果想要所有那就用 `*`
+加入 `"-trace enable=vtd_inv_desc,events=/data/code/qemu/hw/block/trace-events,file=/tmp/trace.bin"`, 其中
 
-其中, 在正常启动的的qemu程序中加入 `"-trace enable=vtd_inv_desc,events=/data/code/qemu/hw/block/trace-events,file=/tmp/trace.bin"`, 其中
+* `enable=vtd_inv_desc`, 想要启用的 event, 如果想要启用所有那就用 `*`, 所有 event 默认是 disable 的
+* `events=/data/code/qemu/hw/block/trace-events` 就是要跟踪的event;
+* `file=/tmp/trace.bin` 就是trace产生的文件, 不能直接读, 而要通过工具来读. 
 
-* `/data/code/qemu/hw/block/trace-events` 就是要跟踪的event;
-* `/tmp/trace.bin` 就是trace产生的文件, 不能直接读, 而要通过工具来读. 
-
-4)获取trace结果
+4) 获取trace结果
 
 ```
 $ ./scripts/simpletrace.py /data/code/qemu/hw/block/trace-events /tmp/trace.bin
@@ -101,6 +100,12 @@ trace-event virtio_blk_handle_write on
 (qemu) trace-event virtio_blk_handle_read on
 trace-event virtio_blk_handle_read on
 ```
+
+`(qemu)info trace-events` 那些event已经被trace, 其中state为1的是已经enable的;
+
+运行 `(qemu)info trace` 查看缓存的trace
+
+
 
 查看 event log
 
