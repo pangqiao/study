@@ -93,6 +93,7 @@ sdb      8:16   0    50G  0 disk
 
 ```
 GRUB_DEFAULT="0> 4"
+#GRUB_DEFAULT="Advanced options for Ubuntu>Ubuntu, with Linux 5.4"
 GRUB_TIMEOUT_STYLE=menu
 GRUB_TIMEOUT=10
 GRUB_DISTRIBUTOR=`lsb_release -i -s 2> /dev/null || echo Debian`
