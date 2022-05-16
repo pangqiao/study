@@ -4,7 +4,7 @@
 ```
 进入KVM代码目录
 
-cd /home/liufeng/workspace/src/open/linux/arch/x86/kvm
+cd /home/sdp/workspace/src/open/linux/arch/x86/kvm
 
 
 
