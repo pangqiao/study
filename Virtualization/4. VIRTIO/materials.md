@@ -19,7 +19,7 @@ VirtIO实现原理——前端通知机制(core): https://blog.csdn.net/huang987
 
 `Develop\virtio-iommu\vqueue.md`
 
-KVM中ioeventfd创建与触发的大致流程（十三）: https://www.codeleading.com/article/90763981910/
+KVM中ioeventfd创建与触发的大致流程（十三）: https://www.codeleading.com/article/90763981910/ , https://blog.csdn.net/LPSTC123/article/details/45111949
 
-
+virtio-blk请求发起: https://blog.csdn.net/LPSTC123/article/details/44983707
 
