@@ -10,3 +10,11 @@ Linux虚拟化KVM-Qemu分析(九)之virtio设备: https://www.cnblogs.com/LoyenW
 qemu Virtio设备创建流程: https://www.blogsebastian.cn/?p=58
 
 virtio前端通知机制分析: http://lihanlu.cn/virtio-frontend-kick/
+
+VIRTIO VRING工作机制分析: https://oenhan.com/virtio-vring
+
+virtIO前后端notify机制详解: https://www.cnblogs.com/ck1020/p/6066007.html
+
+VirtIO实现原理——前端通知机制: https://blog.csdn.net/huang987246510/article/details/105496843
+
+
