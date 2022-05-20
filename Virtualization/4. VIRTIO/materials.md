@@ -17,4 +17,9 @@ virtIO前后端notify机制详解: https://www.cnblogs.com/ck1020/p/6066007.html
 
 VirtIO实现原理——前端通知机制(core): https://blog.csdn.net/huang987246510/article/details/105496843
 
+`Develop\virtio-iommu\vqueue.md`
+
+KVM中ioeventfd创建与触发的大致流程（十三）: https://www.codeleading.com/article/90763981910/
+
+
 
