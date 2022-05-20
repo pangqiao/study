@@ -120,13 +120,13 @@ function unhide_pci() {
 
 function usage()
 {
-        echo "Usage: vfio-pci.sh -h pcidev "
+        echo "Usage: vfio_pci.sh -h pcidev "
         echo " -h pcidev: <pcidev> is BDF number of the device you want to hide"
         echo " -u pcidev: Optional. <pcidev> is BDF number of the device you want to unhide."
         echo " -d driver: Optional. When unhiding the device, bind the device with <driver>. The option should be used together with '-u' option"
         echo ""
-        echo "Example1: sh vfio-pci.sh -h 06:10.0          Hide device 06:10.0 to 'vfio-pci' driver"
-        echo "Example2: sh vfio-pci.sh -u 08:00.0 -d e1000e   Unhide device 08:00.0 and bind the device with 'e1000e' driver"
+        echo "Example1: sh vfio_pci.sh -h 06:10.0          Hide device 06:10.0 to 'vfio-pci' driver"
+        echo "Example2: sh vfio_pci.sh -u 08:00.0 -d e1000e   Unhide device 08:00.0 and bind the device with 'e1000e' driver"
         exit 1
 }
 
