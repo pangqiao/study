@@ -67,3 +67,5 @@ KVM是一个开源软件. KVM的核心组件被包含在Linux的主线版本中(
 https://github.com/luohao-brian/interrupt-virtualization
 
 https://www.blogsebastian.cn/?cat=1
+
+逻辑很清晰: https://blog.csdn.net/huang987246510/category_6939709.html

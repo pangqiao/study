@@ -1422,7 +1422,7 @@ vfio__init()
 2. vfio_configure_groups() 配置 vfio groups, 遍历每一个 vfio group
 * 将 `/sys/kernel/iommu_groups/ID/reserved_regions` 中每一行内存地址范围(gpa)进行保留, `ioctl(kvm->vm_fd, KVM_SET_USER_MEMORY_REGION, &mem)`
 3. vfio_configure_devices() 配置所有 devices, 遍历每一个 vfio device
-* 获取 fd, 调用 `ioctl(group->fd, VFIO_GROUP_GET_DEVICE_FD,vdev->params->name)`, vfio 从`group->device_list` 中查找device，并通过匿名node和fd建立关系
+* 获取 fd, 调用 `ioctl(group->fd, VFIO_GROUP_GET_DEVICE_FD,vdev->params->name)`, vfio 从`group->device_list` 中查找device, 并通过匿名node和fd建立关系
 * reset device, `ioctl(vdev->fd, VFIO_DEVICE_RESET)`
 * bus 相关初始化, PCI 类型的调用 `vfio_pci_setup_device(kvm, vdev)`; MMIO 类型的调用 `vfio_plat_setup_device(kvm, vdev)`
   * PCI 类型:
