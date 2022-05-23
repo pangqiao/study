@@ -11,6 +11,8 @@ qemu Virtio设备创建流程: https://www.blogsebastian.cn/?p=58
 
 
 
+逻辑清晰: https://blog.csdn.net/huang987246510/category_9626816.html
+
 
 virtio前端通知机制分析: http://lihanlu.cn/virtio-frontend-kick/
 
