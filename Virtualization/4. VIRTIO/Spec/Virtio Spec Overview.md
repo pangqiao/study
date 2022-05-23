@@ -309,7 +309,9 @@ Virtio 前后端通信概括起来只有两个方向, 即 **GuestOS 通知 QEMU*
 
 ```cpp
 前端驱动通知后端:
+
 内核流程 mark 一下, PCI 设备驱动流程这个后面可以学习一下, 先扫描 PCI bus 发现是 virtio 设备再扫描 virtio-bus.
+
 worker_thread --> process_one_work --> pciehp_power_thread --> pciehp_enable_slot -->
 pciehp_configure_device --> pci_bus_add_devices --> pci_bus_add_device --> device_attach -->
 __device_attach --> bus_for_each_drv --> __device_attach_driver --> driver_probe_device -->
@@ -383,11 +385,11 @@ ioeventfd_write (struct kvm_vcpu *vcpu, struct kvm_io_device *this, gpa_t addr,
 
 不了解 MMIO 是如何模拟的童鞋, 可以结合本站的文章 MMIO 模拟实现分析去了解一下, 如果还是不懂的可以在文章下面评论.
 
-后端通知前端, 是通过中断的方式, QEMU/KVM 中有一套完整的中断模拟实现框架,
+**后端通知前端**, 是通过**中断**的方式, QEMU/KVM 中有一套完整的中断模拟实现框架,
 
 如果对 QEMU/KVM 中断模拟不熟悉的童鞋, 建议阅读一下这篇文章: QEMU 学习笔记 - 中断. 对于 virtio-pci 设备, 可以通过 Cap 呈现 MSIx 给虚拟机, 这样在前端驱动加载的时候就会尝试去使能 MSIx 中断, 后端在这个时候建立起 MSIx 通道.
 
-前端驱动加载 (probe) 的过程中, 会去初始化 virtqueue, 这个时候会去申请 MSIx 中断并注册中断处理函数:
+**前端驱动加载** (probe) 的过程中, 会去**初始化 virtqueue**, 这个时候会去申请 MSIx 中断并注册中断处理函数:
 
 ```cpp
 virtnet_probe
