@@ -736,6 +736,7 @@ static int virtnet_find_vqs (struct virtnet_info *vi)
 ```
 
 ## virtio-net 网卡收发在 virtqueue 上的实现
+
 这里以 virtio-net 为例 (非 vhost-net 模式) 来分析一下网卡收发报文在 virtio 协议上的具体实现. virtio-net 模式下网卡收发包的流程为:
 
 * 收包: Hardware => Host Kernel => Qemu => Guest
@@ -763,8 +764,7 @@ static const struct net_device_ops netdev_ops = {
 
 Guest 内核里面的 virtio-net 驱动发包:
 
-```
-Copy
+```cpp
 内核驱动 virtio_net.c
 start_xmit
     // 将 skb 放到 virtqueue 队列中
