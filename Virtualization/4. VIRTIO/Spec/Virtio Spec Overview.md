@@ -666,7 +666,7 @@ static int vp_find_vqs_msix (struct virtio_device *vdev, unsigned nvqs,
     }
 ```
 
-vp_setup_vq 流程再往下走就开始分配共享内存页, 至此建立起共享内存通信通道. 值得注意的是一路传下来的 callbacks 参数其实传入了发送队列和接收队列的回调处理函数, 好家伙, 从 virtnet_find_vqs 一路传递到了__vring_new_virtqueue 中最终赋值给了 vq->vq.callback.
+vp_setup_vq 流程再往下走就开始分配共享内存页, 至此建立起共享内存通信通道. 值得注意的是一路传下来的 callbacks 参数其实传入了发送队列和接收队列的回调处理函数, 好家伙, 从 virtnet_find_vqs 一路传递到了 __vring_new_virtqueue 中最终赋值给了 vq->vq.callback.
 
 ```cpp
 Copy
