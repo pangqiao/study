@@ -492,8 +492,8 @@ void virtio_notify_irqfd (VirtIODevice *vdev, VirtQueue *vq)
      * Note: it's safe to update ISR from any thread as it was switched
      * to an atomic operation.
      */
-    virtio_set_isr (vq->vdev, 0x1);
-    event_notifier_set (&vq->guest_notifier);   // 写 vq->guest_notifier, 即 irqfd
+    virtio_set_isr(vq->vdev, 0x1);
+    event_notifier_set(&vq->guest_notifier);   // 写 vq->guest_notifier, 即 irqfd
 }
 ```
 
