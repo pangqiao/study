@@ -637,7 +637,7 @@ static int virtnet_probe (struct virtio_device *vdev)
 }
 ```
 
-其中关键的流程是 init_vqs, 在 vp_find_vqs_msix 流程中会尝试去申请 MSIx 中断, 这里前面已经有分析过了. 其中, "configuration changed" 中断服务程序 vp_config_changed, virtqueue 队列的中断服务程序是 vp_vring_interrupt.
+其中关键的流程是 `init_vqs`, 在 `vp_find_vqs_msix` 流程中会尝试去申请 MSIx 中断, 这里前面已经有分析过了. 其中, "configuration changed" 中断服务程序 `vp_config_changed`, virtqueue 队列的中断服务程序是 `vp_vring_interrupt`.
 
 ```cpp
 Copy
