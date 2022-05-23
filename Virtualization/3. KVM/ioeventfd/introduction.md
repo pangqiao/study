@@ -1,11 +1,28 @@
 
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. eventfd 和 ioeventfd](#1-eventfd-和-ioeventfd)
+- [2. KVM](#2-kvm)
+  - [2.1. 数据结构](#21-数据结构)
+  - [2.2. 注册流程](#22-注册流程)
+  - [2.3. 触发流程](#23-触发流程)
+- [3. QEMU](#3-qemu)
+  - [3.1. 数据结构](#31-数据结构)
+  - [3.2. 注册流程](#32-注册流程)
+
+<!-- /code_chunk_output -->
+
+# 1. eventfd 和 ioeventfd
+
 eventfd 是内核实现的高效线程通信机制, 还适合于内核与用户态的通信, KVM模块利用 eventfd 实现了 KVM 和 qemu 的高效通信机制 ioeventfd.
 
 分为 KVM 的实现和 qemu 的使用两部分.
 
-# KVM
+# 2. KVM
 
-## 数据结构
+## 2.1. 数据结构
 
 ioeventfd 是内核kvm模块向qemu提供的一个 vm ioctl 命令字 KVM_IOEVENTFD, 对应调用 kvm_vm_ioctl 函数, 原型如下:
 
@@ -91,7 +108,7 @@ enum kvm_bus {
 
 ![2022-05-22-22-40-24.png](./images/2022-05-22-22-40-24.png)
 
-## 注册流程
+## 2.2. 注册流程
 
 KVM_IOEVENTFD ioctl 命令字的主要功能是在 kvm 上注册这个 ioevent, 最终目的是将 ioevenfd 信息添加到 kvm 结构的 buses 和 ioeventfds 两个成员中, 注册流程如下:
 
@@ -150,7 +167,7 @@ static const struct kvm_io_device_ops ioeventfd_ops = {
 * 4: 将 `_ioeventfd` 中的地址信息和钩子函数封装成 kvm_io_range, 放到 kvm->buses 的range[]数组中. 之后kvm在处理缺页就可以查询到缺页地址是否在已注册的 ioeventfd 的地址区间
 * 5: 更新 ioeventfd 的计数, 将ioeventfd放到kvm的ioeventfds链表中, 维护起来
 
-## 触发流程
+## 2.3. 触发流程
 
 当 kvm 检查 VM-Exit 退出原因, 如果是缺页引起的退出并且原因是 EPT misconfiguration, 首先检查缺页的物理地址是否落在已注册 ioeventfd 的物理区间, 如果是, 调用对应区间的 write 函数. 虚机触发缺页的流程如下:
 
@@ -227,7 +244,7 @@ static int ioeventfd_write(struct kvm_vcpu *vcpu, struct kvm_io_device *this, gp
 
 * 7: 根据从 bus 总线上取下的 `range[]`, 取出其dev成员, 由于dev结构体是 `_ioeventfd` 的一个成员, 通过 container 转化可以取出 `_ioeventfd`
 * 8: 检查缺页物理地址和 range 中注册的地址是否匹配
-* 9: 取出 `_ioeventfd` 中的 eventfd_ctx 结构体, 往它维护的计数器中加1
+* 9: 取出 `_ioeventfd` 中的 `eventfd_ctx` 结构体, 往它维护的计数器中加1
 
 `eventfd_signal` 实现如下:
 
@@ -263,18 +280,17 @@ __u64 eventfd_signal(struct eventfd_ctx *ctx, __u64 n)
 EXPORT_SYMBOL_GPL(eventfd_signal);
 ```
 
-* 10: 首先判断下计数器是否即将溢出. 如果计数器加上1之后溢出了, 让计数器直接等于最大值, 内核态写eventfd与用户态有所区别, 它不允许阻
-* 塞, 因此当计数器溢出时直接设置其为最大值
+* 10: 首先判断下**计数器**是否即将溢出. 如果计数器加上 1 之后溢出了, 让计数器直接等于最大值, 内核态写eventfd与用户态有所区别, 它不允许阻塞, 因此当计数器溢出时直接设置其为最大值
 * 11: 增加计数器的值
-* 12: 唤醒阻塞在eventfd上的读线程, 如果计数器原来为0, 有读线程阻塞在这个eventfd上, 那么此时计数器加1后, 就可以唤醒这些线程
+* 12: **唤醒**阻塞在 eventfd 上的**读线程**, 如果计数器原来为0, 有读线程阻塞在这个 eventfd 上, 那么此时计数器加1后, 就可以唤醒这些线程
 
-# QEMU
+# 3. QEMU
 
 传统的QEMU设备模拟, 当虚机访问到 pci 的配置空间或者 BAR 空间时, 会触发缺页异常而 `VM-Exit`, kvm 检查到虚机访问的是用户 QEMU模拟 的用户态设备的空间, 这是 IO 操作, 会退出到用户态交给 QEMU 处理. 梳理整个流程, 需要经过**两次 cpu 模式切换**, 一次是**非根模式**到**根模式**, 一次是**内核态**到**用户态**. 分析内核态切换到用户态的原因, 是**kvm没有模拟这个设备**, 处理不了这种情况才退出到用户态让QEMU处理, 但还有一种解决方法就是让 kvm 通知 QEMU, 把要处理 IO 这件事情通知到 QEMU 就可以了, 这样就节省了一个内核态到用户态的开销.
 
 如果以这样的方式实现, 假设虚机所有 IO 操作 kvm 都一股脑儿通知 QEMU, 那 QEMU 也不知道到底是哪个设备需要处理, 所以需要一个东西作为 QEMU 和 KVM 之间通知的载体, 当 QEMU 模拟一个设备时, 首先将这个设备的物理地址空间信息摘出来, 对应关联一个回调函数, 然后传递给 KVM, 其目的是告知 KVM, 当虚机内部有访问该物理地址空间的动作时, KVM 调用 QEMU 关联的回调函数通知 QEMU, 这样就能实现针对具体物理区间的通知. 这个实现就是 ioeventfd.
 
-## 数据结构
+## 3.1. 数据结构
 
 以virtio磁盘为例, virtio磁盘是一个pci设备, 它有pci空间, 这些空间的内存都是QEMU模拟的, 当虚机写这些pci空间时, QEMU需要做对应的处理, 在virtio磁盘初始化成功后, 它就会将自己的地址空间信息提取出来, 封装成ioeventfd, 通过ioctl命令字传递给KVM, ioeventfd中包含一个QEMU提前通过eventfd创建好的fd, KVM通知QEMU是就往这个fd中写1. 以下就是这个ioeventfd的结构, 具体含义见前面的分析.
 
@@ -320,7 +336,7 @@ struct MemoryRegionIoeventfd {
 * 4: 是否匹配写入的值, 如果 match_data 这个为真, 只有当写入 addr 地址的值为 data 时, KVM 才通知 QEMU
 * 5: 当满足上面的所有条件后, KVM 通过增加 `EventNotifier->wfd` 对应的内核计数器, 通知 QEMU
 
-## 注册流程
+## 3.2. 注册流程
 
 QEMU 注册 ioeventfd 的时间点是在 virtio 磁盘驱动初始化成功之后, 流程如下:
 
