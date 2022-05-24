@@ -445,7 +445,7 @@ static int kvm_irqchip_assign_irqfd (KVMState *s, int fd, int rfd, int virq,
 }
 
 # KVM 内核代码 virt/kvm/eventfd.c
-kvm_vm_ioctl (s, KVM_IRQFD, &irqfd)
+kvm_vm_ioctl(s, KVM_IRQFD, &irqfd)
   --> kvm_irqfd_assign
     --> vfs_poll (f.file, &irqfd->pt) // 在内核中 poll 这个 irqfd
 ```
