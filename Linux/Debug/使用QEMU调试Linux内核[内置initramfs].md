@@ -333,7 +333,7 @@ drwxrwxrwt    2 0        0               40 May 30 08:21 tmp
 
 因为 qemu 没有加载 rootfs, 所以内核最后挂 VFS 的时候会出错. 可以用 busybox 构建一个文件系统镜像, 然后 qemu 增加 -initrd 选项指向该文件系统镜像即可. 
 
-5. “cannot create /proc/sys/kernel/hotplug: nonexistent directory”错误. 
+5. ”cannot create /proc/sys/kernel/hotplug: nonexistent directory"错误. 
 
 内核里面没有勾上hotplug选项
 

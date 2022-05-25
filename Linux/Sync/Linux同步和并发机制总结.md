@@ -409,7 +409,7 @@ Tree通过三个维度确定层次关系: **每个叶子的CPU数量(CONFIG\_RCU
 
 2. 总结: 每次**时钟中断**处理函数**tick\_periodic**(), 检查**本地CPU**上**所有的rcu\_state(！！！**)对应的**rcu\_data**成员**nxttail链表有没有写者注册的回调函数**, 有的话**触发一个软中断raise\_softirq**().
 
-3. **软中断处理函数**, 针对**每一个rcu\_state(！！！**): 检查rcu\_data成员nxttail链表**有没有写者注册的回调函数**, 有的话, 调整链表, 设置**rsp\->gp\_flags**标志位为**RCU\_GP\_FLAG\_INIT**, rcu\_gp\_kthread\_wake()唤醒**rcu\_state对应的内核线程(！！！**), 现在的状态变成了“**newreq**”, 表示有**一个新的GP请求**, **rcu\_gp\_kthread\_wake**()唤醒**rcu\_state对应的内核线程(！！！**)
+3. **软中断处理函数**, 针对**每一个rcu\_state(！！！**): 检查rcu\_data成员nxttail链表**有没有写者注册的回调函数**, 有的话, 调整链表, 设置**rsp\->gp\_flags**标志位为**RCU\_GP\_FLAG\_INIT**, rcu\_gp\_kthread\_wake()唤醒**rcu\_state对应的内核线程(！！！**), 现在的状态变成了”**newreq**", 表示有**一个新的GP请求**, **rcu\_gp\_kthread\_wake**()唤醒**rcu\_state对应的内核线程(！！！**)
 
 ### 7.4.4 初始化一个GP
 
@@ -438,13 +438,13 @@ RCU内核线程就会继续执行, 继续上面初始化后的动作, 执行里�
 
 (1) 将**所有节点(！！！CPU的不是节点)rcu\_node**\->completed都设置成rsp\-\>gpnum, 当前CPU的rdp\-\>completed赋值为rnp\-\>completed, GP状态"cpuend"
 
-(2) **rsp\-\>completed**值也设置成与**rsp\-\>gpnum一样**, 把状态标记为“end”, 最后把**rsp\-\>fqs\_state**的状态设置为**初始值RCU\_GP\_IDLE**, 一个GP的生命周期真正完成
+(2) **rsp\-\>completed**值也设置成与**rsp\-\>gpnum一样**, 把状态标记为”end", 最后把**rsp\-\>fqs\_state**的状态设置为**初始值RCU\_GP\_IDLE**, 一个GP的生命周期真正完成
 
 ### 7.4.7 回调函数
 
 整个GP结束, RCU调用回调函数做一些销毁动作, 还是在**RCU软中断中触发**.
 
-从代码中的**trace功能定义**的状态来看, **一个GP需要经历的状态转换**为: “**newreq \-\> start \-\> cpustart \-\> fqswait \-\> cpuend \-\>end**”. 
+从代码中的**trace功能定义**的状态来看, **一个GP需要经历的状态转换**为: ”**newreq \-\> start \-\> cpustart \-\> fqswait \-\> cpuend \-\>end**". 
 
 总结Tree RCU的实现中有如下几点需要大家再仔细体会. 
 

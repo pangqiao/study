@@ -7,7 +7,7 @@ global syscalls         #  定义全局变量
 function print_top( )    #  定义函数
 {
         cnt = 0         #  局部变量
-        log ("SYSCALL\t\t\t\tCOUNT")      #  打印表头标题“SYSCALL COUNT”
+        log ("SYSCALL\t\t\t\tCOUNT")      #  打印表头标题”SYSCALL COUNT"
 
         foreach ([name] in syscalls-) {   #  查询每个系统调用的计数值
                 printf("%-20s\t\t%5d\n",name, syscalls[name])  #  按格式打印

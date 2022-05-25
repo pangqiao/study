@@ -220,7 +220,7 @@ static void remove_my_cache( void )
 
 proc 文件系统提供了一种简单的方法来监视系统中所有活动的 slab 缓存. 这个文件称为 /proc/slabinfo, 它除了提供一些可以从用户空间访问的可调整参数之外, 还提供了有关所有 slab 缓存的详细信息. 当前版本的 slabinfo 提供了一个标题, 这样输出结果就更具可读性. 对于系统中的每个 slab 缓存来说, 这个文件提供了对象数量、活动对象数量以及对象大小的信息(除了每个 slab 的对象和页面之外). 另外还提供了一组可调整的参数和 slab 数据. 
 
-要调优特定的 slab 缓存, 可以简单地向 /proc/slabinfo 文件中以字符串的形式回转 slab 缓存名称和 3 个可调整的参数. 下面的例子展示了如何增加 limit 和 batchcount 的值, 而保留 shared factor 不变(格式为 “cache name limit batchcount shared factor”): 
+要调优特定的 slab 缓存, 可以简单地向 /proc/slabinfo 文件中以字符串的形式回转 slab 缓存名称和 3 个可调整的参数. 下面的例子展示了如何增加 limit 和 batchcount 的值, 而保留 shared factor 不变(格式为 ”cache name limit batchcount shared factor"): 
 
 ```
 # echo "my_cache 128 64 8" > /proc/slabinfo
@@ -236,7 +236,7 @@ limit 字段表示每个 CPU 可以缓存的对象的最大数量.  batchcount �
 
 # 8 链接
 
-- “[The Slab Allocator: An Object-Caching Kernel Memory Allocator (1994)](http://citeseer.ist.psu.edu/bonwick94slab.html)” 是 Jeff Bonwick 最初的论文, 其中介绍了在 SunOS 5.4 内核内存分配器中出现的第一个 slab 分配器. 
-- “[The Linux Slab Allocator (200)](http://citeseer.ist.psu.edu/fitzgibbons00linux.html)” 介绍了 Linux 版本的 slab 分配器. 这篇文章介绍了 2.4 内核版本, 此后进行过更新. 
+- ”[The Slab Allocator: An Object-Caching Kernel Memory Allocator (1994)](http://citeseer.ist.psu.edu/bonwick94slab.html)" 是 Jeff Bonwick 最初的论文, 其中介绍了在 SunOS 5.4 内核内存分配器中出现的第一个 slab 分配器. 
+- ”[The Linux Slab Allocator (200)](http://citeseer.ist.psu.edu/fitzgibbons00linux.html)" 介绍了 Linux 版本的 slab 分配器. 这篇文章介绍了 2.4 内核版本, 此后进行过更新. 
 - [SLOB 分配器](http://lwn.net/Articles/157944/) 是内存受限系统中的一个 SLAB 缓存实现. 可以通过内核配置启用该分配器. 
 - 在线书籍 [Understanding the Linux Virtual Memory Manager](http://www.phptr.com/content/images/0131453483/downloads/gorman_book.pdf)(PDF 格式)由 Mel Gorman 撰写, 详细介绍了 Linux 中的内存管理. 您可以从 Prentice Hall 下载. 

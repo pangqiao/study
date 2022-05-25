@@ -437,7 +437,7 @@ do_ept_page_fault64:
         ;; 3) bits 8:7 = 3 时, 由 guest-physical address 引起 EPT violation
         ;;
         ;; 修复 EPT violation 说明: 
-        ;; 1) 由“MOV to CR3” 及 guest paging-structure 引起的 EPT violation, 修复时 GPA 与 HPA 一一对应
+        ;; 1) 由”MOV to CR3" 及 guest paging-structure 引起的 EPT violation, 修复时 GPA 与 HPA 一一对应
         ;; 2) 由 guest-physical address 引起的 EPT violation, 修复时动态分配 EPT 页面
         ;;       
         mov ebx, [gs: PCB.ExitInfoBuf + EXIT_INFO.ExitQualification]
@@ -627,7 +627,7 @@ do_ept_entry_violation_fixing64:
         ;; 1) 访问 guest-physical address 时, 出现 not-present
         ;; 2) 对 guest-physical address 进行读访问, 而 EPT paging-structure 表项的 bit0 为 0
         ;; 3) 对 guest-physical address 进行写访问, 而 EPT paging-structure 表项的 bit1 为 0
-        ;; 4) EPTP[6] = 1 时, 在更新 guest paging-structure 表项的 accessed 或 dirty 位时被作为“写访问”
+        ;; 4) EPTP[6] = 1 时, 在更新 guest paging-structure 表项的 accessed 或 dirty 位时被作为”写访问"
         ;;                    此时 EPT paging-structure 表项的 bit1 为 0
         ;; 5) 对 guest-physical address 进行 fetch操作(execute), 而 EPT paging-structure 表项的 bit2 为 0
         ;;

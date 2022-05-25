@@ -61,9 +61,9 @@ The Kubernetes scheduler runs as a process alongside the other master components
 ```
 Scheduler为每个pod寻找一个适合其运行的node, 大体分成三步: 
 
-1. 通过一系列的“predicates”过滤掉不能运行pod的node, 比如一个pod需要500M的内存, 有些节点剩余内存只有100M了, 就会被剔除; 
-2. 通过一系列的“priority functions”给剩下的node排一个等级, 分出三六九等, 寻找能够运行pod的若干node中最合适的一个node; 
-3. 得分最高的一个node, 也就是被“priority functions”选中的node胜出了, 获得了跑对应pod的资格. 
+1. 通过一系列的”predicates"过滤掉不能运行pod的node, 比如一个pod需要500M的内存, 有些节点剩余内存只有100M了, 就会被剔除; 
+2. 通过一系列的”priority functions"给剩下的node排一个等级, 分出三六九等, 寻找能够运行pod的若干node中最合适的一个node; 
+3. 得分最高的一个node, 也就是被”priority functions"选中的node胜出了, 获得了跑对应pod的资格. 
 
 ## Predicates 和 priorities 策略
 

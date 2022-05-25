@@ -86,7 +86,7 @@ Base Board Information
 
 recode id(Handle): **DMI表**中的**记录标识符**, 这是唯一的, 比如上例中的Handle 0x0002.
 
-DMI type id: **记录的类型**, 譬如说: BIOS, Memory, 上例是type 2, 即“Base Board Information”.
+DMI type id: **记录的类型**, 譬如说: BIOS, Memory, 上例是type 2, 即”Base Board Information".
 
 recode size: DMI表中对应**记录的大小**, 上例为95 bytes. (不包括文本信息, 所有实际输出的内容比这个size要更大). 记录头之后就是记录的值. 
 
@@ -130,7 +130,7 @@ bios |  bios的各项信息
 -----|-----------
  system |  系统信息, 在我的笔记本上可以看到版本、型号、序号等信息. 
  baseboard |  主板信息
- chassis |  “底板”, 不太理解其含意, 期待大家补充
+ chassis |  ”底板", 不太理解其含意, 期待大家补充
  processor |  CPU的详细信息
  memory |  内存信息, 包括目前插的内存条数及大小, 支持的单条最大内存和总内存大小等等. 
  cache |  缓存信息, 似乎是CPU的缓存信息

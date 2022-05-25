@@ -6,7 +6,7 @@
 
 在未分析和深入理解scheduler源码逻辑之前, 本人在操作配置亲和性上, 由于官方和第三方文档者说明不清楚等原因, 在亲和性理解上有遇到过一些困惑, 如:  
 
-1. 亲和性的operator的 “*In*”底层是什么匹配操作？正则匹配吗？“*Gt/Lt*”底层又是什么操作实现的？ 
+1. 亲和性的operator的 ”*In*"底层是什么匹配操作？正则匹配吗？”*Gt/Lt*"底层又是什么操作实现的？ 
 
 2. 所有能查到的文档描述pod亲和性的topoloykey有三个:  
    *kubernetes.io/hostname* 
@@ -16,13 +16,13 @@
 
 3. Pod与Node亲和性两种类型的差异是什么？而Pod亲和性正真要去匹配的是什么, 其内在逻辑是？ 
    不知道你们是否有同样类似的问题或困惑呢？当你清晰的理解了代码逻辑实现后, 那么你会觉得一切是那么的 
-   清楚明确了, 不再有“隐性知识”问题存在. 所以我希望本文所述内容能给大家在kubernetes亲和性的解惑上有所帮助.  
+   清楚明确了, 不再有”隐性知识"问题存在. 所以我希望本文所述内容能给大家在kubernetes亲和性的解惑上有所帮助.  
 
 ### 约束调度
 
   在展开源码分析之前为更好的理解亲和性代码逻辑, 补充一些kubernetes调度相关的基础知识:  
 
-1. 亲和性目的是为了实现用户可以按需将pod调度到`指定Node`上, 我称之为`“约束调度”`.  
+1. 亲和性目的是为了实现用户可以按需将pod调度到`指定Node`上, 我称之为`”约束调度"`.  
 2. 约束调度操作上常用以下三类:  
 
 - **NodeSelector / NodeName**     *node标签选择器 和 "nodeName"匹配*
@@ -154,7 +154,7 @@ func (r *Requirement) Matches(ls Labels) bool {
 		if !ls.Has(r.key) {
 			return false
 		}
-		lsValue, err := strconv.ParseInt(ls.Get(r.key), 10, 64)   //能转化为数值的”字符数值“
+		lsValue, err := strconv.ParseInt(ls.Get(r.key), 10, 64)   //能转化为数值的"字符数值”
 		if err != nil {
 			klog.V(10).Infof("ParseInt failed for value %+v in label %+v, %+v", ls.Get(r.key), ls, err)
 			return false
@@ -236,7 +236,7 @@ NodeAffinity.`Required`DuringSchedulingIgnoredDuringExecution
 
 **预选策略源码分析: **
 
-1. ***策略注册***:  defaults.init()注册了一条名为“MatchNodeSelectorPred”预选策略项,策略Func是PodMatchNodeSelector()
+1. ***策略注册***:  defaults.init()注册了一条名为”MatchNodeSelectorPred"预选策略项,策略Func是PodMatchNodeSelector()
 
 !FILENAME  pkg/scheduler/algorithmprovider/defaults/defaults.go:78
 
@@ -322,8 +322,8 @@ func podMatchesNodeSelectorAndAffinityTerms(pod *v1.Pod, node *v1.Node) bool {
  **nodeMatchesNodeSelectorTerms()** 
 调用v1helper.MatchNodeSelectorTerms()进行NodeSelectorTerm定义的必要条件进行检测是否符合. 
 关键的配置定义分为两类(matchExpressions/matchFileds): 
-*-“requiredDuringSchedulingIgnoredDuringExecution.**matchExpressions**”定义检测(匹配key与value)*
-*-“requiredDuringSchedulingIgnoredDuringExecution.**matchFileds**”定义检测(不匹配key, 只value)*
+*-”requiredDuringSchedulingIgnoredDuringExecution.**matchExpressions**"定义检测(匹配key与value)*
+*-”requiredDuringSchedulingIgnoredDuringExecution.**matchFileds**"定义检测(不匹配key, 只value)*
 
 !FILENAME  pkg/scheduler/algorithm/predicates/predicates.go:797
 
@@ -371,7 +371,7 @@ func MatchNodeSelectorTerms( nodeSelectorTerms []v1.NodeSelectorTerm,
 ```
 
 ①  *NodeSelectorRequirementAsSelector()*
-是对“requiredDuringSchedulingIgnoredDuringExecution.matchExpressions"所配置的表达式进行Selector表达式进行格式化加工, 返回一个labels.Selector实例化对象. [*本文开头1.2章节有分析*]
+是对”requiredDuringSchedulingIgnoredDuringExecution.matchExpressions"所配置的表达式进行Selector表达式进行格式化加工, 返回一个labels.Selector实例化对象. [*本文开头1.2章节有分析*]
 
 !FILENAME   pkg/apis/core/v1/helper/helpers.go:222
 
@@ -411,7 +411,7 @@ func NodeSelectorRequirementsAsSelector(nsm []v1.NodeSelectorRequirement) (label
 ```
 
  ② *NodeSelectorRequirementAs`Field`Selector()*
-是对“requiredDuringSchedulingIgnoredDuringExecution.matchFields"所配置的表达式进行Selector表达式进行格式化加工, 返回一个Fields.Selector实例化对象.
+是对”requiredDuringSchedulingIgnoredDuringExecution.matchFields"所配置的表达式进行Selector表达式进行格式化加工, 返回一个Fields.Selector实例化对象.
 
 !FILENAME  pkg/apis/core/v1/helper/helpers.go:256
 
@@ -513,7 +513,7 @@ NodeAffinity.PreferredDuringSchedulingIgnoredDuringExecution
 
 **预选策略源码分析: **
 
-1. ***策略注册***: defaultPriorities()注册了一条名为“NodeAffinityPriority”优选策略项.并注册了策略的两个方法Map/Reduce:  
+1. ***策略注册***: defaultPriorities()注册了一条名为”NodeAffinityPriority"优选策略项.并注册了策略的两个方法Map/Reduce:  
 
    - CalculateNodeAffinityPriorityMap()  map计算,  对潜在被调度Node进行亲和匹配, 并为其计权重得分. 
    - CalculateNodeAffinityPriorityReduce()  reduce计算, 重新统计得分,取值区间0~10. 
@@ -705,7 +705,7 @@ PodAntiAffinity.`Required`DuringSchedulingIgnoredDuringExecution
 
 **预选策略源码分析: **
 
-1. ***策略注册***: defaultPredicates()注册了一条名为“MatchInterPodAffinity”预选策略项.
+1. ***策略注册***: defaultPredicates()注册了一条名为”MatchInterPodAffinity"预选策略项.
 
 !FILENAME  pkg/scheduler/algorithmprovider/defaults/defaults.go:143
 
@@ -941,7 +941,7 @@ func (c *PodAffinityChecker) satisfiesPodsAffinityAntiAffinity(pod *v1.Pod,
 以下说明继续if{…}内所用的各个**子逻辑函数分析**(按代码位置的先后顺序): 
 
 *GetPodAffinityTerms()* 
-*如果存在podAffinity硬件配置, 获取所有"匹配必要条件”Terms*
+*如果存在podAffinity硬件配置, 获取所有"匹配必要条件"Terms*
 
 !FILENAME  pkg/scheduler/algorithm/predicates/predicates.go:1217
 
@@ -1109,8 +1109,8 @@ func (c *PodAffinityChecker) nodeMatchesAnyTopologyTerm(pod *v1.Pod, topologyPai
 `partII` else{...}
 
 - 如果没有预处理的Metadata, 则通过指定podFilter过滤器获取满足条件的pod列表
-- 获取所有亲和配置定义, 如果存在则, 通过获取PodAffinity所定义的所有namespaces和标签条件表达式进行匹配”目标pod",完全符合则获取**此目标pod的运行node的topologykey(此为affinity指定的topologykey)的 `值`**和"潜在Node"的topologykey的值比对是否一致.  
-- 与上类似, 获取所有anti反亲和配置定义, 如果存在则, 通过获取PodAntiAffinity所定义的所有namespaces和标签条件表达式进行匹配”目标pod",完全符合则获取此目标pod的运行node的topologykey(此为AntiAffinity指定的topologykey)的值和"潜在Node"的topologykey的值比对是否一致.  
+- 获取所有亲和配置定义, 如果存在则, 通过获取PodAffinity所定义的所有namespaces和标签条件表达式进行匹配"目标pod",完全符合则获取**此目标pod的运行node的topologykey(此为affinity指定的topologykey)的 `值`**和"潜在Node"的topologykey的值比对是否一致.  
+- 与上类似, 获取所有anti反亲和配置定义, 如果存在则, 通过获取PodAntiAffinity所定义的所有namespaces和标签条件表达式进行匹配"目标pod",完全符合则获取此目标pod的运行node的topologykey(此为AntiAffinity指定的topologykey)的值和"潜在Node"的topologykey的值比对是否一致.  
 
 ```go
 else { 
@@ -1190,7 +1190,7 @@ func (c *PodAffinityChecker) podMatchesPodAffinityTerms(pod, targetPod *v1.Pod, 
 	}
 	// 匹配目标pod是否在affinityTerm定义的{namespaces,selector}列表内所有项, 如果不匹配则返回false,
 	// 如果匹配则获取此pod的运行node信息(称为目标Node), 
-	// 通过“目标Node”所定义的topologykey(此为affinity指定的topologykey)的值来匹配“潜在被调度的Node”的topologykey是否一致. 
+	// 通过”目标Node"所定义的topologykey(此为affinity指定的topologykey)的值来匹配”潜在被调度的Node"的topologykey是否一致. 
 	if !podMatchesAllAffinityTermProperties(targetPod, props) {
 		return false, false, nil
 	}
@@ -1227,7 +1227,7 @@ func NodesHaveSameTopologyKey(nodeA, nodeB *v1.Node, topologyKey string) bool {
 		return false
 	}
 
-	nodeALabel, okA := nodeA.Labels[topologyKey]   //取Node一个被意义化的“Label”的值value
+	nodeALabel, okA := nodeA.Labels[topologyKey]   //取Node一个被意义化的”Label"的值value
 	nodeBLabel, okB := nodeB.Labels[topologyKey]
 
 	// If found label in both nodes, check the label
@@ -1251,7 +1251,7 @@ PodAntiAffinity.`Preferred`DuringSchedulingIgnoredDuringExecution
 
 **预选策略源码分析: **
 
-1. ***策略注册***: defaultPriorities()注册了一条名为“InterPodAffinityPriority”优选策略项.
+1. ***策略注册***: defaultPriorities()注册了一条名为”InterPodAffinityPriority"优选策略项.
 
 !FILENAME  pkg/scheduler/algorithmprovider/defaults/defaults.go:145
 
@@ -1298,7 +1298,7 @@ func NewInterPodAffinityPriority(
 
 
 > **CalculateInterPodAffinityPriority()**
-> 基于pod亲和性配置匹配"必要条件项”Terms,并发处理所有目标nodes,为其目标node统计亲和weight得分.
+> 基于pod亲和性配置匹配"必要条件项"Terms,并发处理所有目标nodes,为其目标node统计亲和weight得分.
 > 我们先来看一下它的代码结构: 
 >
 > - processPod := func(existingPod *v1.Pod) error {… `pm.processTerms()`}
@@ -1311,7 +1311,7 @@ func NewInterPodAffinityPriority(
 > hasAffinityConstraints                        "被调度的pod"是否有定义亲和配置 
 > hasAntiAffinityConstraints                "被调度的pod"是否有定义亲和配置
 > existingPod                                            一个待处理的"**亲和目标pod**" 
-> existingPodNode                                  运行此“亲和目标pod”的节点--“**目标Node**”
+> existingPodNode                                  运行此”亲和目标pod"的节点--”**目标Node**"
 > existingHasAffinityConstraints          "亲和目标pod"是否存在亲和约束  
 > existingHasAntiAffinityConstraints    "亲和目标pod"是否存在反亲和约束 
 
@@ -1381,17 +1381,17 @@ func (ipa *InterPodAffinity) CalculateInterPodAffinityPriority(pod *v1.Pod, node
 给定Pod和此Pod的定义的亲和性配置(podAffinityTerm)、被测目标pod、运行被测目标pod的Node信息, 对所有潜在可被调度的Nodes列表进行一一检测,并对根据检测结果为node进行weight累计.  
 流程如下:  
 
-1. “被测Pod”的namespaces是否与“给定的pod”的namespaces是否一致;  
+1. ”被测Pod"的namespaces是否与”给定的pod"的namespaces是否一致;  
 
-2. “被测Pod”的labels是否与“给定的pod”的podAffinityTerm定义匹配;
+2. ”被测Pod"的labels是否与”给定的pod"的podAffinityTerm定义匹配;
 
-3. 如果前两条件都为True, 则对运行“被测的pod”的node的TopologyKey的值与所有潜在可被调度的Node进行遍历检测 TopologyKey的值是否一致, true则累计weight值.
+3. 如果前两条件都为True, 则对运行”被测的pod"的node的TopologyKey的值与所有潜在可被调度的Node进行遍历检测 TopologyKey的值是否一致, true则累计weight值.
 
    > > 逻辑理解: 
    > >
    > > `   1`与`2`实现了找出在同一个namespace下满足被调pod所配置podAffinityTerm的pods;
    > >
-   > > `3`则实现获取topologyKey的值与潜在被调度的Node进行匹配检测” .
+   > > `3`则实现获取topologyKey的值与潜在被调度的Node进行匹配检测" .
    > >
    > > `                          此处则可清楚的理解pod亲和性配置匹配的内在含义与逻辑. `
 
@@ -1414,7 +1414,7 @@ func (p *podAffinityPriorityMap) processTerm(term *v1.PodAffinityTerm, podDefini
 		p.setError(err)
 		return
 	}
-	//判断“被检测的Pod”的Namespace和Selector Labels是否匹配
+	//判断”被检测的Pod"的Namespace和Selector Labels是否匹配
 	match := priorityutil.PodMatchesTermsNamespaceAndSelector(podToCheck, namespaces, selector)
 	if match {
 		func() {
@@ -1558,7 +1558,7 @@ const (
 在default调度器代码内并未注册此预选策略, 仅有代码实现. 连google/baidu上都无法查询到相关使用案例, 配置用法不予分析, 仅看下面源码详细分析.  
 
 代码场景应用注释译文: 
-*一个服务的第一个Pod被调度到带有Label “region=foo”的Nodes(资源集群)上,  那么其服务后面的其它Pod都将调度至Label “region=foo”的Nodes. * 
+*一个服务的第一个Pod被调度到带有Label ”region=foo"的Nodes(资源集群)上,  那么其服务后面的其它Pod都将调度至Label ”region=foo"的Nodes. * 
 
 ### Serice亲和性`预选策略checkServiceAffinity ` 
 

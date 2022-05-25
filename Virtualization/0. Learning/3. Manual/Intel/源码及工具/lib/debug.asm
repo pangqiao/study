@@ -815,7 +815,7 @@ reset_pebs_index:
 ;       none
 ; 描述: 
 ;       更新 [gs: PCB.PebsBufferIndex]变量的值, 保持检测 PEBS 中断
-;       [gs: PCB.PebsBufferIndex] 记录着“当前”的 PEBS index 值
+;       [gs: PCB.PebsBufferIndex] 记录着”当前"的 PEBS index 值
 ;------------------------------------------------------------
 update_pebs_index_track:
         mov eax, [gs: PCB.PebsIndexPointer]

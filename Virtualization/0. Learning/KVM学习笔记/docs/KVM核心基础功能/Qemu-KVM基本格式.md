@@ -255,7 +255,7 @@ cat /proc/cpuinfo | grep "cpu cores" | uniq | awk -F: '{print $2}'
 cat /proc/cpuinfo | grep "core id"
 
  #是否为超线程？
- #如果有两个逻辑CPU具有相同的”core id”, 那么超线程是打开的. 
+ #如果有两个逻辑CPU具有相同的"core id", 那么超线程是打开的. 
  #每个物理CPU中逻辑CPU(可能是core, threads或both)的个数: 
 cat /proc/cpuinfo | grep "siblings"
 ```

@@ -1,11 +1,11 @@
 
 # Kernel PANIC/OOPS
 
->wiki:A kernel panic is an action taken by an operating system upon detecting an internal fatal error from which it cannot safely recover. The term is largely specific to Unix and Unix-like systems; for Microsoft Windowsoperating systems the equivalent term is “Bug check” (or, colloquially, “Blue Screen of Death“).
+>wiki:A kernel panic is an action taken by an operating system upon detecting an internal fatal error from which it cannot safely recover. The term is largely specific to Unix and Unix-like systems; for Microsoft Windowsoperating systems the equivalent term is ”Bug check" (or, colloquially, ”Blue Screen of Death”).
 The kernel routines that handle panics (in AT&T-derived and BSD Unix source code, a routine known as panic()) are generally designed to output an error message to the console, dump an image of kernel memory to disk for post-mortemdebugging and then either wait for the system to be manually rebooted, or initiate an automatic reboot. The information provided is of highly technical nature and aims to assist a system administrator or software developer in diagnosing the problem.
 Attempts by the operating system to read an invalid or non-permitted memory address are a common source of kernel panics. A panic may also occur as a result of a hardware failure or a bug in the operating system. In many cases, the operating system could continue operation after memory violations have occurred. However, the system is in an unstable state and rather than risking security breaches and data corruption, the operating system stops to prevent further damage and facilitate diagnosis of the error.
           The kernel panic was introduced in an early version of Unix and demonstrated a major difference between the design philosophies of Unix and its predecessor Multics. Multics developer Tom van Vleck recalls a discussion of this change with Unix developer Dennis Ritchie:
-I remarked to Dennis that easily half the code I was writing in Multics was error recovery code. He said, “We left all that stuff out. If there’s an error, we have this routine called panic, and when it is called, the machine crashes, and you holler down the hall, ‘Hey, reboot it.’”[1]
+I remarked to Dennis that easily half the code I was writing in Multics was error recovery code. He said, ”We left all that stuff out. If there’s an error, we have this routine called panic, and when it is called, the machine crashes, and you holler down the hall, ‘Hey, reboot it.’"[1]
 The original panic() function was essentially unchanged from Fifth Edition UNIX to the VAX-based UNIX 32V and output only an error message with no other information, then dropped the system into an endless idle loop. As the Unixcodebase was enhanced, the panic() function was also enhanced to dump various forms of debugging information to the console.
 
 ## 什么是 `Kernel PANIC`
@@ -83,7 +83,7 @@ setvesablank off
 
 **栈跟踪信息**(`stack trace`)是排查 `kernel panic` 最重要的信息, 该信息如果在/var/log/messages日志里当然最好, 因为可以看到全部的信息, 如果仅仅只是在屏幕上, 那么最上面的信息可能因为滚屏消失了, 只剩下栈跟踪信息的一部分. 
 
-如果你有一个**完整栈跟踪信息**的话, 那么就可能根据这些充分的信息来定位panic的根本原因. 要确认**是否**有一个足够的栈跟踪信息, 你只要查找包含”`EIP`”的一行, 它显示了是**什么函数**和**模块**调用时导致panic
+如果你有一个**完整栈跟踪信息**的话, 那么就可能根据这些充分的信息来定位panic的根本原因. 要确认**是否**有一个足够的栈跟踪信息, 你只要查找包含"`EIP`"的一行, 它显示了是**什么函数**和**模块**调用时导致panic
 
 使用内核调试工具(`kenrel debugger ,aka KDB`)
 
@@ -129,7 +129,7 @@ KDB编译到内核里, panic发生时, 他将内核引导到一个shell环境而
 
 *	如果内核自己犯了这样的错误, 则会打出 `Oops` 信息.
 
-处理器使用的所有地址几乎都是通过一个复杂的页表结构对物理地址映射而得到的虚拟地址(除了内存管理子系统自己所使用的物理地址). 当一个非法的指针被废弃时, 内存分页机制将不能为指针映射一个物理地址, 处理器就会向操作系统发出一个页故障信号. 如果地址不合法, 那么内核将不能在该地址“布页”; 这时如果处理器处于超级用户模式, 内核就会生成一条oops消息. 
+处理器使用的所有地址几乎都是通过一个复杂的页表结构对物理地址映射而得到的虚拟地址(除了内存管理子系统自己所使用的物理地址). 当一个非法的指针被废弃时, 内存分页机制将不能为指针映射一个物理地址, 处理器就会向操作系统发出一个页故障信号. 如果地址不合法, 那么内核将不能在该地址”布页"; 这时如果处理器处于超级用户模式, 内核就会生成一条oops消息. 
 
 # 参考资料
 

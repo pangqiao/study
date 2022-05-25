@@ -138,7 +138,7 @@ b, 修改内核启动参数, 使IOMMU生效, CentOS7上修改稍微不同:
 ```
 # cat /etc/default/grub
 …
-GRUB_CMDLINE_LINUX=”crashkernel=auto rd.lvm.lv=centos/root rd.lvm.lv=centos/swap rhgb quiet intel_iommu=on”
+GRUB_CMDLINE_LINUX="crashkernel=auto rd.lvm.lv=centos/root rd.lvm.lv=centos/swap rhgb quiet intel_iommu=on"
 …
 ```
 
@@ -192,7 +192,7 @@ bus-info: 0000:08:00.0
 08:00.0 0200: 8086:10c9 (rev 01)
 # modprobe pci_stub
 # echo 0000:08:00.0 > /sys/bus/pci/devices/0000\:08\:00.0/driver/unbind
-# echo “8086 10c9″ > /sys/bus/pci/drivers/pci-stub/new_id
+# echo ”8086 10c9″ > /sys/bus/pci/drivers/pci-stub/new_id
 ```
 
 驱动确认(注意里面的: **Kernel driver in use: pci-stub**): 
@@ -223,7 +223,7 @@ kvm -name centos7 -smp 4 -m 8192 \
 
 执行上面命令, 我这里出现一个错误: 
 ```
-kvm: -device pci-assign,host=0000:08:00.0: No IOMMU found. Unable to assign device “(null)”
+kvm: -device pci-assign,host=0000:08:00.0: No IOMMU found. Unable to assign device ”(null)"
 kvm: -device pci-assign,host=0000:08:00.0: Device initialization failed.
 kvm: -device pci-assign,host=0000:08:00.0: Device ‘kvm-pci-assign’ could not be initialized
 ```
@@ -244,7 +244,7 @@ kvm: -device pci-assign,host=0000:08:00.0: Device ‘kvm-pci-assign’ could not
 # modprobe vfio-pci
 # lspci -s 0000:08:00.0 -n
 08:00.0 0200: 8086:10c9 (rev 01)
-# echo “8086 10c9″ > /sys/bus/pci/drivers/vfio-pci/new_id
+# echo ”8086 10c9″ > /sys/bus/pci/drivers/vfio-pci/new_id
 # echo 0000:08:00.0 > /sys/bus/pci/devices/0000\:08\:00.0/driver/unbind
 # echo 0000:08:00.0 > /sys/bus/pci/drivers/vfio-pci/bind
 # lspci -s 0000:08:00.0 -k
@@ -287,7 +287,7 @@ Hypervisor能将一个或者多个VF分配给一个虚机. 在某一时刻, 一�
 a, 检查设备是否支持SR-IOV: 
 
 ```
-# lspci -s 0000:08:00.0 -vvv | grep -i “Single Root I/O Virtualization”
+# lspci -s 0000:08:00.0 -vvv | grep -i ”Single Root I/O Virtualization"
 Capabilities: [160 v1] Single Root I/O Virtualization (SR-IOV)
 ```
 
@@ -297,9 +297,9 @@ b, 重新绑定到igb驱动:
 
 ```
 # echo 0000:08:00.0 > /sys/bus/pci/devices/0000\:08\:00.0/driver/unbind
-# echo “8086 10c9″ > /sys/bus/pci/drivers/igb/new_id
+# echo ”8086 10c9″ > /sys/bus/pci/drivers/igb/new_id
 bash: echo: write error: File exists
-# echo “8086 10c9″ > /sys/bus/pci/drivers/igb/bind
+# echo ”8086 10c9″ > /sys/bus/pci/drivers/igb/bind
 bash: echo: write error: No such device
 ```
 
@@ -324,13 +324,13 @@ c, 创建VF, 可以通过重新加载内核模块参数来创建VF:
 如果远程网卡也是用的igb, 则会导致断网. 因此还是直接只对0000:08:00.0网卡开启VF: 
 
 ```
-# lspci -nn | grep “Virtual Function”
+# lspci -nn | grep ”Virtual Function"
 # echo 2 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
-# lspci -nn | grep “Virtual Function”
+# lspci -nn | grep ”Virtual Function"
 08:10.0 Ethernet controller [0200]: Intel Corporation 82576 Virtual Function [8086:10ca] (rev 01)
 08:10.2 Ethernet controller [0200]: Intel Corporation 82576 Virtual Function [8086:10ca] (rev 01)
 # echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
-# lspci -nn | grep “Virtual Function”
+# lspci -nn | grep ”Virtual Function"
 ```
 
 
@@ -339,7 +339,7 @@ c, 创建VF, 可以通过重新加载内核模块参数来创建VF:
 如果要**重启生效**, 那还是在**模块加载时指定参数**: 
 
 ```
-# echo “options igb max_vfs=2″ >>/etc/modprobe.d/igb.conf
+# echo ”options igb max_vfs=2″ >>/etc/modprobe.d/igb.conf
 ```
 
 
@@ -360,7 +360,7 @@ bus-info: 0000:08:10.0
 # modprobe vfio
 # modprobe vfio-pci
 # echo 0000:08:10.0 > /sys/bus/pci/devices/0000\:08\:10.0/driver/unbind
-# echo “8086 10ca” > /sys/bus/pci/drivers/vfio-pci/new_id
+# echo ”8086 10ca" > /sys/bus/pci/drivers/vfio-pci/new_id
 # echo 0000:08:10.0 > /sys/bus/pci/drivers/vfio-pci/bind
 # lspci -s 0000:08:10.0 -k
 08:10.0 Ethernet controller: Intel Corporation 82576 Virtual Function (rev 01)

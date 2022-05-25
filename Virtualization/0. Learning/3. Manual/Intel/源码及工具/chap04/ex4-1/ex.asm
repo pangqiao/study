@@ -356,7 +356,7 @@ guest_entry2:
         mov [R4], ax
         SET_BREAKPOINT  0, BP_READ_WRITE2, R4
                   
-        mov ss, [R4]                                            ; 触发数据断点与“blocking by MOV-SS”
+        mov ss, [R4]                                            ; 触发数据断点与”blocking by MOV-SS"
         int3                                                    ; 产生 VM-exit
         mov eax, 3
         mov eax, 5

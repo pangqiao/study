@@ -30,7 +30,7 @@ Kconfig按照一定的格式来书写, menuconfig程序可以识别这种格式,
 
 menuconfig: 表示菜单(本身属于一个菜单中的项目, 但是他又有子菜单项目)、config表示菜单中的一个配置项(本身并没有子菜单下的项目). 一个menuconfig后面跟着的所有config项就是这个menuconfig的子菜单. 这就是Kconfig中表示的目录关系. 
 
-NETDEVICES: menuconfig或者config后面空格隔开的大写字母表示的类似于 NETDEVICES 的就是这个配置项的配置项名字, 这个字符串前面添加CONFIG_后就构成了“.config”文件中的配置项名字. 
+NETDEVICES: menuconfig或者config后面空格隔开的大写字母表示的类似于 NETDEVICES 的就是这个配置项的配置项名字, 这个字符串前面添加CONFIG_后就构成了”.config"文件中的配置项名字. 
 
 source: 内核源码目录树中每一个Kconfig都会用source引入其所有子目录下的Kconfig, 从而保证了所有的Kconfig项目都被包含进menuconfig中. 这个也说明了: 如果你自己在linux内核中添加了一个文件夹, 一定要在这个文件夹下创建一个Kconfig文件, 然后在这个文件夹的上一层目录的Kconfig中source引入这个文件夹下的Kconfig文件. 
 
@@ -48,11 +48,11 @@ help: 帮助信息, 解释这个配置项的含义, 以及如何去配置他.
 
 # Kconfig和.config文件和Makefile三者的关联
 
-配置项被配置成Y、N、M会影响“`.config`”文件中的`CONFIG_XXX`变量的配置值. “.config”中的配置值(=y、=m、没有)会影响最终的编译链接过程. 如果=y则会被编入(`built-in`), 如果=m会被单独连接成一个”.ko”模块, 如果没有则对应的代码不会被编译. 那么这是怎么实现的？都是通过makefile实现的. 
+配置项被配置成Y、N、M会影响”`.config`"文件中的`CONFIG_XXX`变量的配置值. ”.config"中的配置值(=y、=m、没有)会影响最终的编译链接过程. 如果=y则会被编入(`built-in`), 如果=m会被单独连接成一个".ko"模块, 如果没有则对应的代码不会被编译. 那么这是怎么实现的？都是通过makefile实现的. 
 
 如makefile中: `obj-$(CONFIG_DM9000) += dm9000.o`,  
 
-如果`CONFIG_DM9000`变量值为y, 则obj += dm9000.o, 因此dm9000.c会被编译; 如果CONFIG_DM9000变量未定义, 则dm9000.c不会被编译. 如果CONFIG_DM9000变量的值为m则会被连接成“.ko”模块. 
+如果`CONFIG_DM9000`变量值为y, 则obj += dm9000.o, 因此dm9000.c会被编译; 如果CONFIG_DM9000变量未定义, 则dm9000.c不会被编译. 如果CONFIG_DM9000变量的值为m则会被连接成”.ko"模块. 
 
 ## 何为Kconfig? 它的作用是什么?
 
@@ -375,9 +375,9 @@ config的类型有5种, 分别是bool(y/n), tristate(y/m/n), string(字符串), 
 
 >1) prompt: 提示, 显示在make menuconfig中的名称, 一般省略. 下面两种写法相同. 
 >
->a. bool “Networking Support”
+>a. bool ”Networking Support"
 >
->b. bool prompt “Networking Support”
+>b. bool prompt ”Networking Support"
 >
 >2) default: 默认值
 >

@@ -79,7 +79,7 @@ func (sched *Scheduler) preempt(preemptor *v1.Pod, scheduleErr error) (string, e
 	var nodeName = ""
 	if node != nil {
 		nodeName = node.Name
-		// 更新队列中“任命pod”队列
+		// 更新队列中”任命pod"队列
 		sched.config.SchedulingQueue.UpdateNominatedPodForNode(preemptor, nodeName)
 
 		// 设置pod的Status.NominatedNodeName
@@ -334,11 +334,11 @@ func (npm *nominatedPodMap) add(p *v1.Pod, nodeName string) {
    npm.delete(p)
 
    nnn := nodeName
-    // 如果传入的 nodeName 是 “”
+    // 如果传入的 nodeName 是 ”"
    if len(nnn) == 0 {
        // 查询 pod 的 pod.Status.NominatedNodeName
       nnn = NominatedNodeName(p)
-       // 如果 pod.Status.NominatedNodeName 也是 “”,return
+       // 如果 pod.Status.NominatedNodeName 也是 ”",return
       if len(nnn) == 0 {
          return
       }
@@ -439,16 +439,16 @@ type ScheduleAlgorithm interface {
 
 `Preempt()`同样由`genericScheduler`类型(`pkg/scheduler/core/generic_scheduler.go:98`)实现, 方法前的一大串英文注释先来理解一下: 
 
-- Preempt 寻找一个在发生抢占之后能够成功调度“pod”的node.
+- Preempt 寻找一个在发生抢占之后能够成功调度”pod"的node.
 - Preempt 选择一个 node 然后抢占上面的 pods 资源, 返回: 
   - 这个 node 信息
   - 被抢占的 pods 信息
   - nominated node name 需要被清理的 node 列表
   - 可能有的 error
 - Preempt 过程不涉及快照更新(快照的逻辑以后再讲)
-- 避免出现这种情况: preempt 发现一个不需要驱逐任何 pods 就能够跑“pod”的 node.
+- 避免出现这种情况: preempt 发现一个不需要驱逐任何 pods 就能够跑”pod"的 node.
 - 当有很多 pending pods 在调度队列中的时候, a nominated pod 会排到队列中相同优先级的 pod 后面. 
-- The nominated pod 会阻止其他 pods 使用“指定”的资源, 哪怕花费了很多时间来等待其他 pending 的 pod.
+- The nominated pod 会阻止其他 pods 使用”指定"的资源, 哪怕花费了很多时间来等待其他 pending 的 pod.
 
 我们先过整体流程, 然后逐个分析子流程调用: 
 
@@ -663,11 +663,11 @@ func selectNodesForPreemption(pod *v1.Pod,
 }
 ```
 
-上面这个函数的核心逻辑在 **selectVictimsOnNode** 中, 这个函数尝试在给定的 node 中寻找最少数量的需要被驱逐的 pods, 同时需要保证驱逐了这些 pods 之后, 这个 noode 能够满足“pod”运行需求. 
+上面这个函数的核心逻辑在 **selectVictimsOnNode** 中, 这个函数尝试在给定的 node 中寻找最少数量的需要被驱逐的 pods, 同时需要保证驱逐了这些 pods 之后, 这个 noode 能够满足”pod"运行需求. 
 
 这些被驱逐的 pods 计算同时需要满足一个约束, 就是能够删除低优先级的 pod 绝不先删高优先级的 pod.
 
-这个算法首选计算当这个 node 上所有的低优先级 pods 被驱逐之后能否调度“pod”. 如果可以, 那就按照优先级排序, 根据 PDB 是否破坏分成两组, 一组是影响 PDB 限制的, 另外一组是不影响 PDB. 两组各自按照优先级排序. 然后开始逐渐释放影响 PDB 的 group 中的 pod, 然后逐渐释放不影响 PDB 的 group 中的 pod, 在这个过程中要保持“pod”能够 fit 这个 node. 也就是说一旦放过某一个 pod 导致“pod”不 fit 这个 node 了, 那就说明这个 pod 不能放过, 也就是意味着已经找到了最少 pods 集. 
+这个算法首选计算当这个 node 上所有的低优先级 pods 被驱逐之后能否调度”pod". 如果可以, 那就按照优先级排序, 根据 PDB 是否破坏分成两组, 一组是影响 PDB 限制的, 另外一组是不影响 PDB. 两组各自按照优先级排序. 然后开始逐渐释放影响 PDB 的 group 中的 pod, 然后逐渐释放不影响 PDB 的 group 中的 pod, 在这个过程中要保持”pod"能够 fit 这个 node. 也就是说一旦放过某一个 pod 导致”pod"不 fit 这个 node 了, 那就说明这个 pod 不能放过, 也就是意味着已经找到了最少 pods 集. 
 
 看一下具体的实现吧: 
 
@@ -714,7 +714,7 @@ func selectVictimsOnNode(
    }
     // 排个序
    potentialVictims.Sort()
-   // 如果删除了所有的低优先级 pods 之后还不能跑这个新 pod, 那么差不多就可以判断这个 node 不适合 preemption 了, 还有一点点需要考虑的是这个“pod”的不 fit 的原因是由于 pod affinity 不满足了. 
+   // 如果删除了所有的低优先级 pods 之后还不能跑这个新 pod, 那么差不多就可以判断这个 node 不适合 preemption 了, 还有一点点需要考虑的是这个”pod"的不 fit 的原因是由于 pod affinity 不满足了. 
     // 后续可能会增加当前 pod 和低优先级 pod 之间的 优先级检查. 
     
     // 这个函数调用其实就是之前讲到过的预选函数的调用逻辑, 判断这个 pod 是否合适跑在这个 node 上. 

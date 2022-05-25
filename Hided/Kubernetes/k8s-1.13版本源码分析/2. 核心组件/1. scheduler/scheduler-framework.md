@@ -106,7 +106,7 @@ func (sched *Scheduler) scheduleOne() {
 
 ## 潜入第三层前的一点逻辑
 
-ok, 这时候重点就转移到了`suggestedHost, err := sched.schedule(pod)`这个过程, 强调一下这个过程是“同步”执行的. 
+ok, 这时候重点就转移到了`suggestedHost, err := sched.schedule(pod)`这个过程, 强调一下这个过程是”同步"执行的. 
 
 !FILENAME pkg/scheduler/scheduler.go:290
 

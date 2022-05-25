@@ -240,7 +240,7 @@ unit测试
 cd kubernetes
 make test #Run all unit tests
 make test WHAT=./pkg/api  #Run tests for pkg/api        
-make test WHAT=”./pkg/api  ./pkg/kubelet”  # run tests for pkg/api and pkg/kubelet
+make test WHAT="./pkg/api  ./pkg/kubelet"  # run tests for pkg/api and pkg/kubelet
 指定需要运行的test方法
 
 # Runs TestValidatePod in pkg/api/validation with the verbose flag set

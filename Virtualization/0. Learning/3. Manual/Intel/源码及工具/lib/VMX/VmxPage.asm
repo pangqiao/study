@@ -806,7 +806,7 @@ do_ept_entry_violation_fixing32:
         ;; 1) 访问 guest-physical address 时, 出现 not-present
         ;; 2) 对 guest-physical address 进行读访问, 而 EPT paging-structure 表项的 bit0 为 0
         ;; 3) 对 guest-physical address 进行写访问, 而 EPT paging-structure 表项的 bit1 为 0
-        ;; 4) EPTP[6] = 1 时, 在更新 guest paging-structure 表项的 accessed 或 dirty 位时被作为“写访问”
+        ;; 4) EPTP[6] = 1 时, 在更新 guest paging-structure 表项的 accessed 或 dirty 位时被作为”写访问"
         ;;                    此时 EPT paging-structure 表项的 bit1 为 0
         ;; 5) 对 guest-physical address 进行 fetch操作(execute), 而 EPT paging-structure 表项的 bit2 为 0
         ;;

@@ -242,31 +242,31 @@ static void rbtree_left_rotate(RBRoot *root, Node *x)
     // 设置x的右孩子为y
     Node *y = x->right;
 
-    // 将 “y的左孩子” 设为 “x的右孩子”; 
-    // 如果y的左孩子非空, 将 “x” 设为 “y的左孩子的父亲”
+    // 将 ”y的左孩子" 设为 ”x的右孩子"; 
+    // 如果y的左孩子非空, 将 ”x" 设为 ”y的左孩子的父亲"
     x->right = y->left;
     if (y->left != NULL)
         y->left->parent = x;
 
-    // 将 “x的父亲” 设为 “y的父亲”
+    // 将 ”x的父亲" 设为 ”y的父亲"
     y->parent = x->parent;
 
     if (x->parent == NULL)
     {
-        //tree = y;            // 如果 “x的父亲” 是空节点, 则将y设为根节点
-        root->node = y;            // 如果 “x的父亲” 是空节点, 则将y设为根节点
+        //tree = y;            // 如果 ”x的父亲" 是空节点, 则将y设为根节点
+        root->node = y;            // 如果 ”x的父亲" 是空节点, 则将y设为根节点
     }
     else
     {
         if (x->parent->left == x)
-            x->parent->left = y;    // 如果 x是它父节点的左孩子, 则将y设为“x的父节点的左孩子”
+            x->parent->left = y;    // 如果 x是它父节点的左孩子, 则将y设为”x的父节点的左孩子"
         else
-            x->parent->right = y;    // 如果 x是它父节点的左孩子, 则将y设为“x的父节点的左孩子”
+            x->parent->right = y;    // 如果 x是它父节点的左孩子, 则将y设为”x的父节点的左孩子"
     }
     
-    // 将 “x” 设为 “y的左孩子”
+    // 将 ”x" 设为 ”y的左孩子"
     y->left = x;
-    // 将 “x的父节点” 设为 “y”
+    // 将 ”x的父节点" 设为 ”y"
     x->parent = y;
 }
 
@@ -288,32 +288,32 @@ static void rbtree_right_rotate(RBRoot *root, Node *y)
     // 设置x是当前节点的左孩子. 
     Node *x = y->left;
 
-    // 将 “x的右孩子” 设为 “y的左孩子”; 
-    // 如果"x的右孩子"不为空的话, 将 “y” 设为 “x的右孩子的父亲”
+    // 将 ”x的右孩子" 设为 ”y的左孩子"; 
+    // 如果"x的右孩子"不为空的话, 将 ”y" 设为 ”x的右孩子的父亲"
     y->left = x->right;
     if (x->right != NULL)
         x->right->parent = y;
 
-    // 将 “y的父亲” 设为 “x的父亲”
+    // 将 ”y的父亲" 设为 ”x的父亲"
     x->parent = y->parent;
 
     if (y->parent == NULL) 
     {
-        //tree = x;            // 如果 “y的父亲” 是空节点, 则将x设为根节点
-        root->node = x;            // 如果 “y的父亲” 是空节点, 则将x设为根节点
+        //tree = x;            // 如果 ”y的父亲" 是空节点, 则将x设为根节点
+        root->node = x;            // 如果 ”y的父亲" 是空节点, 则将x设为根节点
     }
     else
     {
         if (y == y->parent->right)
-            y->parent->right = x;    // 如果 y是它父节点的右孩子, 则将x设为“y的父节点的右孩子”
+            y->parent->right = x;    // 如果 y是它父节点的右孩子, 则将x设为”y的父节点的右孩子"
         else
-            y->parent->left = x;    // (y是它父节点的左孩子) 将x设为“x的父节点的左孩子”
+            y->parent->left = x;    // (y是它父节点的左孩子) 将x设为”x的父节点的左孩子"
     }
 
-    // 将 “y” 设为 “x的右孩子”
+    // 将 ”y" 设为 ”x的右孩子"
     x->right = y;
 
-    // 将 “y的父节点” 设为 “x”
+    // 将 ”y的父节点" 设为 ”x"
     y->parent = x;
 }
 
@@ -331,12 +331,12 @@ static void rbtree_insert_fixup(RBRoot *root, Node *node)
 {
     Node *parent, *gparent;
 
-    // 若“父节点存在, 并且父节点的颜色是红色”
+    // 若”父节点存在, 并且父节点的颜色是红色"
     while ((parent = rb_parent(node)) && rb_is_red(parent))
     {
         gparent = rb_parent(parent);
 
-        //若“父节点”是“祖父节点的左孩子”
+        //若”父节点"是”祖父节点的左孩子"
         if (parent == gparent->left)
         {
             // Case 1条件: 叔叔节点是红色
@@ -367,7 +367,7 @@ static void rbtree_insert_fixup(RBRoot *root, Node *node)
             rb_set_red(gparent);
             rbtree_right_rotate(root, gparent);
         } 
-        else//若“z的父节点”是“z的祖父节点的右孩子”
+        else//若”z的父节点"是”z的祖父节点的右孩子"
         {
             // Case 1条件: 叔叔节点是红色
             {
@@ -429,9 +429,9 @@ static void rbtree_insert(RBRoot *root, Node *node)
     if (y != NULL)
     {
         if (node->key < y->key)
-            y->left = node;                // 情况2: 若“node所包含的值” < “y所包含的值”, 则将node设为“y的左孩子”
+            y->left = node;                // 情况2: 若”node所包含的值" < ”y所包含的值", 则将node设为”y的左孩子"
         else
-            y->right = node;            // 情况3: (“node所包含的值” >= “y所包含的值”)将node设为“y的右孩子” 
+            y->right = node;            // 情况3: (”node所包含的值" >= ”y所包含的值")将node设为”y的右孩子" 
     }
     else
     {

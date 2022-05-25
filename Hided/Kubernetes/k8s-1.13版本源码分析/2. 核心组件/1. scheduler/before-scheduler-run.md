@@ -103,7 +103,7 @@ func main() {
 
 多了一个`version.go`, 在这个源文件的init()函数里面调用了一个`rootCmd.AddCommand(versionCmd)`, 这里可以猜到是根命令下添加一个子命令的意思, 根命令表示的就是我们直接执行这个可执行文件, 子命令就是version, 放在一起的感觉就类似大家使用`kubectl version`的感觉. 
 
-另外注意到这里的Run属性是一个匿名函数, 这个函数中输出了“version called”字样, 也就是说我们执行version子命令的时候其实是调用到了这里的Run.
+另外注意到这里的Run属性是一个匿名函数, 这个函数中输出了”version called"字样, 也就是说我们执行version子命令的时候其实是调用到了这里的Run.
 
 最后我们实践一下多级子命令: 
 
@@ -211,7 +211,7 @@ func Run(cc schedulerserverconfig.CompletedConfig, stopCh <-chan struct{}) error
 
 可以看到这里最终是要跑`sched.Run()`这个方法来启动scheduler, `sched.Run()`方法已经在pkg下, 具体位置是`pkg/scheduler/scheduler.go:276`, 也就是scheduler框架真正运行的逻辑了. 于是我们已经从main出发, 找到了scheduler主框架的入口, 具体的scheduler逻辑我们下一讲再来仔细分析. 
 
-最后我们来看一下sched的定义, 在linux里我们经常会看到一些软件叫做什么什么d, d也就是daemon, 守护进程的意思, 也就是一直跑在后台的一个程序. 这里的sched也就是“scheduler daemon”的意思. sched的其实是`*Scheduler`类型, 定义在: 
+最后我们来看一下sched的定义, 在linux里我们经常会看到一些软件叫做什么什么d, d也就是daemon, 守护进程的意思, 也就是一直跑在后台的一个程序. 这里的sched也就是”scheduler daemon"的意思. sched的其实是`*Scheduler`类型, 定义在: 
 
 !FILENAME pkg/scheduler/scheduler.go:58
 

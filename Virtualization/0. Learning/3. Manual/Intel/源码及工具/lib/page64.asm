@@ -1104,7 +1104,7 @@ do_virtual_address_mapping64.check_mapping:
         jne do_virtual_address_mapping64.done
         
         ;;
-        ;; 返回“已经在使用”状态码
+        ;; 返回”已经在使用"状态码
         ;;
         mov eax, MAPPING_USED          
         

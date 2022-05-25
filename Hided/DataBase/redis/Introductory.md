@@ -19,7 +19,7 @@
 
 丰富的数据结构, 超越了一般的Key-Value数据库而被认为是一个数据结构服务器. 组合各种结构, 限制Redis用途的是你的想象力, 作者自己写的[用途入门](http://oldblog.antirez.com/post/take-advantage-of-redis-adding-it-to-your-stack.html). 
 
-因为是个人作品, Redis的源代码只有2、3万行, Keep it simple的死硬做法, 使得普通公司也能吃透. [Redis宣言](http://oldblog.antirez.com/post/redis-manifesto.html)就是作者的自白. “代码像首诗”, ”设计是一场与复杂性的战斗“, “Coding是一件艰苦的事情, 唯一的办法是享受它. 如果它已不能带来快乐就停止它. 为了防止这一天的出现, 我们要尽量避免把Redis往乏味的路上带. ”
+因为是个人作品, Redis的源代码只有2、3万行, Keep it simple的死硬做法, 使得普通公司也能吃透. [Redis宣言](http://oldblog.antirez.com/post/redis-manifesto.html)就是作者的自白. ”代码像首诗", "设计是一场与复杂性的战斗”, ”Coding是一件艰苦的事情, 唯一的办法是享受它. 如果它已不能带来快乐就停止它. 为了防止这一天的出现, 我们要尽量避免把Redis往乏味的路上带. "
 
 单线程结构, 使得代码不用处理平时最让人头疼的并发而大量简化, 也不用担心作者的并发没有写对, 但也带来CPU的瓶颈, 而且单线程被慢操作所阻塞时, 其他请求的延时变的不确定. 
 

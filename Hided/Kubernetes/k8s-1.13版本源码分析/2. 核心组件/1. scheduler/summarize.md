@@ -46,7 +46,7 @@
 
 上述流程图涉及到两个关键步骤: Predicate 和 Priority.
 
-- Predicate: 对应大家平时说的预选过程. 在 predicate 过程中 scheduler 需要过滤掉无法满足 pod 正常运行需求的 node, 比如不满足 pod 的“硬亲和性”需求. 在 predicate 过程过滤后剩下的 node 理论上都可以成功让 pod 运行起来. 
+- Predicate: 对应大家平时说的预选过程. 在 predicate 过程中 scheduler 需要过滤掉无法满足 pod 正常运行需求的 node, 比如不满足 pod 的”硬亲和性"需求. 在 predicate 过程过滤后剩下的 node 理论上都可以成功让 pod 运行起来. 
 - Priority: 对于大家平时说的优选过程. Pod 运行毕竟只需要1个 node, 所以在预选结束后剩下的 node 要经过第二次计算从而得出最合适跑给定 pod 的 node.
 
 ## 代码层级工作流程

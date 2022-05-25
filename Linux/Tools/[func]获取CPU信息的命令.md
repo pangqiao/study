@@ -219,7 +219,7 @@ Linux系统信息:
 
 ![](./images/2019-04-18-15-55-31.png)
 
-它还使您能够通过单击“ 生成报告 ”按钮生成系统硬件信息报告.  从下面的界面, 点击“ 生成 ”继续.  请注意, 您可以选择要生成的硬件信息类别. 
+它还使您能够通过单击” 生成报告 "按钮生成系统硬件信息报告.  从下面的界面, 点击” 生成 "继续.  请注意, 您可以选择要生成的硬件信息类别. 
 
 生成系统信息报告:
 
@@ -257,4 +257,4 @@ cpuinfo: https://github.com/workhorsy/py-cpuinfo
 - [Cpustat - 通过在Linux中运行进程监视CPU利用率](https://www.howtoing.com/cpustat-monitors-cpu-utilization-by-processes-in-linux/)
 - [CoreFreq - 用于Linux系统的强大的CPU监控工具](https://www.howtoing.com/corefreq-linux-cpu-monitoring-tool/)
 - [通过Linux中最高内存和CPU使用情况查找最高运行进程](https://www.howtoing.com/find-linux-processes-memory-ram-cpu-usage/)
-- [如何使用“压力”工具在Linux上强加高CPU负载和压力测试](https://www.howtoing.com/linux-cpu-load-stress-test-with-stress-ng-tool/)
+- [如何使用”压力"工具在Linux上强加高CPU负载和压力测试](https://www.howtoing.com/linux-cpu-load-stress-test-with-stress-ng-tool/)

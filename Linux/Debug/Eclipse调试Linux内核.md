@@ -89,21 +89,21 @@ Eclipse的C/C++插件CDT已经很好的支持gdb在远程调试了. 调试一个
 
 3. Remote Attach Launcher : **远程依附运行**. 类似于上一种, 但它不是重新运行程序开启一个debug会话, 而是**直接Attach到一个已经运行的程序**, 然后调试
 
-在Debug Configurations 对话框中, 创建一个远程调试配置, 这个配置在创建时会根据项目情况提供一个默认的配置, **默认**将使用第一种Automatic Remote Launcher方式, 这在Main标签中下方“GDB (DSF) Automatic Remote Debugging Launcher”可以看出, 点击右边的“**Select other**…”可以切换其它方式. 
+在Debug Configurations 对话框中, 创建一个远程调试配置, 这个配置在创建时会根据项目情况提供一个默认的配置, **默认**将使用第一种Automatic Remote Launcher方式, 这在Main标签中下方”GDB (DSF) Automatic Remote Debugging Launcher"可以看出, 点击右边的”**Select other**…"可以切换其它方式. 
 
 #### 1.3.2.1 远程手动运行方式
 
-我们希望Eclipse**每次生成一个项目**之后, **自动**把生成出来的**二进制程序拷贝到目标板上**, 这可以通过**NFS挂载共享目录来实现**, 我们只需要配置项目属性(依次展开: C/C\+\+Build > Settings > Build Steps > Post\-build steps, 在Command中输入“cp ProgramBin /mnt/share”)即可. 
+我们希望Eclipse**每次生成一个项目**之后, **自动**把生成出来的**二进制程序拷贝到目标板上**, 这可以通过**NFS挂载共享目录来实现**, 我们只需要配置项目属性(依次展开: C/C\+\+Build > Settings > Build Steps > Post\-build steps, 在Command中输入”cp ProgramBin /mnt/share")即可. 
 
 接下来配置CDT的Debug选项, 步骤如下: 
 
-1. 选中项目→菜单栏 ”Run“→Debug Configurations…
+1. 选中项目→菜单栏 "Run”→Debug Configurations…
 
 2. 双击 C/C++ Remote Application 新建一个配置, Eclipse会根据当前选择的项目初始化大部分配置, Project选择我们的linux\-debug项目, application填上面的带有调试信息的vmlinux, 选中 Disable auto build
 
 ![](./images/2019-05-31-22-28-18.png)
 
-3. 在右下方点击“**Select other**”, 选择“**GDB(DSF) Manual Remote Debugging Launcher**”, 确认
+3. 在右下方点击”**Select other**", 选择”**GDB(DSF) Manual Remote Debugging Launcher**", 确认
 
 ![](./images/2019-05-31-22-03-57.png)
 
@@ -113,11 +113,11 @@ Eclipse的C/C++插件CDT已经很好的支持gdb在远程调试了. 调试一个
 
 5. 在Debugger配置页的Shared Libraries标签中, 可以添加库路径, 比如调试过程中要步入**外部函数**, 就必须在这里给出**带调试信息的库文件路径**, 否则会找不到该函数的定义
 
-6. 在Debugger配置页的Connection标签中, Type选“TCP”, 并填写目标板上gdbserver监听的IP和端口号
+6. 在Debugger配置页的Connection标签中, Type选”TCP", 并填写目标板上gdbserver监听的IP和端口号
 
 ![](./images/2019-05-31-22-33-21.png)
 
-所有配置完成后, 点“**Apply**”保存配置, 并关掉配置窗口, 不要直接"debug"
+所有配置完成后, 点”**Apply**"保存配置, 并关掉配置窗口, 不要直接"debug"
 
 接下来在目标板上运行 gdbserver, 即上面的执行虚拟机命令
 
@@ -133,7 +133,7 @@ Eclipse的C/C++插件CDT已经很好的支持gdb在远程调试了. 调试一个
 
 **TM/RSE** 就是这样一个工具, 全称是 Target Management / Remote Systems Explorer, 是Eclipse上的一个插件. Eclipse的远程管理插件有很多, 但这个最常用, 所以我们安装了 Eclipse 的C++版, 就自带了这个插件. ARM的软件开发环境DS-5  也使用了这个插件, 其实整个DS-5的基础都是Eclipse社区的开源软件搭建起来的. 关于TM/RSE的更多介绍, 可参考其官方资料: TM and RSE FAQ
 
-我们可以在安装了TM/RSE的Eclipse上, 点击右上角的“Open Perspective”按钮, 打开“Remote System Explorer”, 在 Remote System Explorer 上, 你可以很方便的管理多个远程连接, 查看远程文件和进程, 运行远程程序等. 
+我们可以在安装了TM/RSE的Eclipse上, 点击右上角的”Open Perspective"按钮, 打开”Remote System Explorer", 在 Remote System Explorer 上, 你可以很方便的管理多个远程连接, 查看远程文件和进程, 运行远程程序等. 
 
 RSE 支持很多网络连接类型, 常用的有: 
 
@@ -148,7 +148,7 @@ CDT调用RSE的API接口实现远程调试的过程可分解为:
 通过文件服务接口下载编译的程序到目标板(可用的文件服务有: FTP、SFTP)
 通过Shell运行目标板上的gdbserver加载下载的程序(可用的Shell服务有: SSH、Telnet)
 
-上面的第一步不是必需的, 我们可以通过其它手段来实现, 如在目标板上mount一个NFS文件系统, 让开发主机(也挂载了同一个NFT文件系统)在编译后执行一条拷贝命令即可, 这可以在项目的编译选项中配置. 需要注意的是, 如果想忽略这一步骤, 还要在项目的Debug Configuration 中, 勾选“Skip download to target path”, 这样CDT才不会每次启动调试时都尝试打开文件服务接口. 
+上面的第一步不是必需的, 我们可以通过其它手段来实现, 如在目标板上mount一个NFS文件系统, 让开发主机(也挂载了同一个NFT文件系统)在编译后执行一条拷贝命令即可, 这可以在项目的编译选项中配置. 需要注意的是, 如果想忽略这一步骤, 还要在项目的Debug Configuration 中, 勾选”Skip download to target path", 这样CDT才不会每次启动调试时都尝试打开文件服务接口. 
 
 为了方便, 我们还是希望让目标板同时提供文件服务和Shell服务. 我们有两种选择: 
 

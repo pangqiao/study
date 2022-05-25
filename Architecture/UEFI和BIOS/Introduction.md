@@ -20,7 +20,7 @@ UEFI大事年表
 
 ## 基本概念
 
-新型UEFI, 全称“统一的可扩展固件接口”(Unified Extensible Firmware Interface), 是一种详细描述类型接口的标准. 这种接口用于操作系统自动从预启动的操作环境, 加载到一种操作系统上. 
+新型UEFI, 全称”统一的可扩展固件接口"(Unified Extensible Firmware Interface), 是一种详细描述类型接口的标准. 这种接口用于操作系统自动从预启动的操作环境, 加载到一种操作系统上. 
 
 可扩展固件接口(Extensible Firmware Interface, EFI)是 Intel 为 PC 固件的体系结构、接口和服务提出的建议标准. 其主要目的是为了提供一组在OS加载之前(启动前)在所有平台上一致的、正确指定的启动服务, 被看做是有近20多年历史的 BIOS 的继任者. 
 

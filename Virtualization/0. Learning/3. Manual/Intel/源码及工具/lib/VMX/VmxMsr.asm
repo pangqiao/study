@@ -187,7 +187,7 @@ DoWriteMsrForApicBase.x2APIC:
         
 
         ;;
-        ;; 检查 secondary prcessor-based VM-execution control 字段“virtualize x2APIC mode”位
+        ;; 检查 secondary prcessor-based VM-execution control 字段”virtualize x2APIC mode"位
         ;; 1) 为 1 时, 使用 VMX 原生的 x2APIC 虚拟化, 直接返回
         ;; 2) 为 0 时, 监控 800H - 8FFH MSR 的读写
         ;;
@@ -268,10 +268,10 @@ DoWriteMsrForApicBase.xAPIC:
         mov edx, eax
         
         ;;
-        ;; 1)检查是否开启了“virtualize APIC access ”
+        ;; 1)检查是否开启了”virtualize APIC access "
         ;;     a) 是, 则设置 APIC-access page 页面
         ;;     b) 否, 则提供 GPA 例程处理 local APIC 访问
-        ;; 2)检查是否开启了“enable EPT”
+        ;; 2)检查是否开启了”enable EPT"
         ;;     a)是, 则映射 IA32_APIC_BASE[N-1:12], 将 APIC-access page 设置为该 HPA 值
         ;;     b)否, 则直接将 IA32_APIC_BASE[N-1:12] 设为 APIC-access page
         ;;

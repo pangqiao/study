@@ -121,7 +121,7 @@ vfio\-pci驱动是专门为现在支持DMAR和中断地址重映射的PCI设备�
 modprobe vfio
 modprobe vfio-pci
 
-# 加载vfio-iommu-type1以允许中断地址重映射, 如果主机的主板不支持中断重映射功能则需要指定参数“allow_unsafe_interrupt=1”
+# 加载vfio-iommu-type1以允许中断地址重映射, 如果主机的主板不支持中断重映射功能则需要指定参数”allow_unsafe_interrupt=1"
 [root@node3 ~]# modprobe vfio-iommu-type1 allow_unsafe_interrupt=1
 ```
 
@@ -221,7 +221,7 @@ echo 10 > /sys/bus/pci/devices/0000:00:01.0/sriov_numvfs
 
 #### 确认使能成功
 
-一般情况下VF的设备名会带有”Virtual Function”字样, 所以通过搜索lspci的输出可以确认是否使能成功. 
+一般情况下VF的设备名会带有"Virtual Function"字样, 所以通过搜索lspci的输出可以确认是否使能成功. 
 
 ```
 # 再次查看网络设备, 可发现多了4个虚拟网卡, 并且设备ID不同于物理网卡
@@ -293,7 +293,7 @@ Subsystem: Intel Corporation Device 7b11
 Kernel driver in use: vfio-pci
 ```
 
-然后我们即可在虚拟机中使用这些虚拟网卡, 需要在QEMU命令行中添加设备选项, 形似“-device vfio-pci,host=04:10.0,id=hostdev0,bus=pci.0,multifunction=on,addr=0x9”
+然后我们即可在虚拟机中使用这些虚拟网卡, 需要在QEMU命令行中添加设备选项, 形似”-device vfio-pci,host=04:10.0,id=hostdev0,bus=pci.0,multifunction=on,addr=0x9"
 
 
 大功告成～现在你就可以执行最开始的那段代码运行带有直通设备的虚拟机了～

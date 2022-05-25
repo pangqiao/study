@@ -1031,12 +1031,12 @@ set_realmode_guest_segment:
 ; output:
 ;       none
 ; 描述: 
-;       1)设置 guest 使用I/O无条件退VM, 这时关闭“I/O bitmap”功能
+;       1)设置 guest 使用I/O无条件退VM, 这时关闭”I/O bitmap"功能
 ;-------------------------------------------------------------------        
 set_guest_unconditional_ioexit:
         ;;
         ;; 读 primary processor-based VM-execution control 字段
-        ;; 1) "unconditional I/O exitting” = 1
+        ;; 1) "unconditional I/O exitting" = 1
         ;; 2) "use I/O bitmap" = 0
         ;;
         GetVmcsField    CONTROL_PROCBASED_PRIMARY
