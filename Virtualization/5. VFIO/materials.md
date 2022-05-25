@@ -14,4 +14,5 @@ vfio 概述: https://www.cnblogs.com/yi-mu-xi/p/12370626.html
 
 相关实现可以看 kvmtool, 代码很简单
 
+IOMMU历史知识及与VFIO的联系: https://www.cnblogs.com/haiyonghao/p/14440760.html
 
