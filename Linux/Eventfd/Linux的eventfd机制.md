@@ -42,7 +42,7 @@ do_eventfd
 
 # eventfd_ctx
 
-ctx 是一个 eventfd_ctx 结构, 该结构的形式如下：
+ctx 是一个 eventfd_ctx 结构, 该结构的形式如下: 
 
 ```cpp
 struct eventfd_ctx {
