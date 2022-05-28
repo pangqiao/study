@@ -1,7 +1,7 @@
 
 # 介绍
 
-irqfd 机制与 ioeventfd 机制类似, 其基本原理都是基于eventfd. 
+irqfd 机制与 ioeventfd 机制类似, 其基本原理都是基于 eventfd. 
 
 > Linux\Eventfd\Linux的eventfd机制.md
 

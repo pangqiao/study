@@ -1,0 +1,12 @@
+
+https://www.linux-kvm.org/page/KVM-unit-tests
+
+```
+$ git clone https://gitlab.com/kvm-unit-tests/kvm-unit-tests.git
+$ cd kvm-unit-tests/
+$ ./configure
+$ make
+$ ./run_tests.sh
+$ ./x86-run x86/vmexit.flat
+```
+
