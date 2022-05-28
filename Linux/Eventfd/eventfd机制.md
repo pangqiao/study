@@ -40,7 +40,7 @@ SYSCALL_DEFINE1(eventfd, unsigned int, count)
 
 ## eventfd_ctx
 
-该结构如下: 
+该结构如下:
 
 ```cpp
 struct eventfd_ctx {

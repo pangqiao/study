@@ -25,15 +25,15 @@ ioeventfd 正是为 IO 通知提供机制的东西, QEMU 可以将虚拟机特�
 
 eventfd 是内核实现的高效线程通信机制, 还适合于内核与用户态的通信, KVM模块利用 eventfd 实现了 KVM 和 qemu 的高效通信机制 ioeventfd.
 
-> Linux\Eventfd\Linux的eventfd机制.md
->
+> `Linux\Eventfd\Linux\` 的 `eventfd机制.md`
+
 分为 KVM 的实现和 qemu 的使用两部分.
 
 # 2. KVM
 
 ## 2.1. 数据结构
 
-ioeventfd 是内核kvm模块向qemu提供的一个 vm ioctl 命令字 KVM_IOEVENTFD, 对应调用 kvm_vm_ioctl 函数, 原型如下:
+ioeventfd 是内核 kvm 模块向 qemu 提供的一个 vm ioctl 命令字 `KVM_IOEVENTFD`, 对应调用 `kvm_vm_ioctl` 函数, 原型如下:
 
 ```cpp
 // "include/linux/kvm_host.h"
@@ -76,8 +76,8 @@ struct _ioeventfd {
 * addr: 客户机PIO/MMIO地址, 当客户机向该地址写入数据时触发event
 * length: 客户机向该地址写入数据时数据的长度, 当length为0时, 忽略写入数据的长度
 * eventfd: 关联的eventfd
-* datamatch: 用户态程序设置的match data, 当ioeventfd被设置了KVM_IOEVENTFD_FLAG_DATAMATCH, 只有满足客户机写入的值等于datamatch的条件时才触发event
-* dev: VM-Exit退出时调用dev->ops的write操作, 对应ioeventfd_write
+* datamatch: 用户态程序设置的match data, 当 ioeventfd 被设置了 KVM_IOEVENTFD_FLAG_DATAMATCH, 只有满足客户机写入的值等于 datamatch 的条件时才触发event
+* dev: VM-Exit退出时调用dev->ops的write操作, 对应 ioeventfd_write
 * bus_idx: 客户机的地址被分为了4类, MMIO, PIO, VIRTIO_CCW_NOTIFY, FAST_MMIO, bus_idx用来区分注
 
 用户态下发 KVM_IOEVENTFD 命令字最终会生成 `_ioeventfd` 结构体, 存放在内核中, 由于它是**和一个虚机关联的**, 因此被放到了 kvm 结构体中维护, kvm 结构体中有两个字段, 存放了 ioeventfd 相关的信息, 如下:
