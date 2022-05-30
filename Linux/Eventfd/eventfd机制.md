@@ -54,11 +54,9 @@ struct eventfd_ctx {
 
 ### count和wqh
 
-* 在**一个 eventfd** 上执行 **write 系统调用**, 会向 `count` **加上被写入的值**, 并**唤醒等待队列 wqh** 中的元素;
+* 在**一个 eventfd** 上执行 **write 系统调用**, 会向 `count` **加上！！！被写入的值**, 并**唤醒等待队列 wqh** 中的元素;
 * **内核**中的 `eventfd_signal` 函数**也**会**增加** count 的值并唤醒 wqh 中的元素;
 * 在 eventfd 上执行 **read 系统调用**, 会向 **用户空间！！！** 返回 count 的值, 并且该 eventfd 对应的 `eventfd_ctx` 结构中的 **count 会被清 0**.
-
-`do_eventfd` 为 `eventfd_ctx` 分配了空间, 即 `ctx = kmalloc(sizeof(*ctx), GFP_KERNEL)`.
 
 ### kref
 
@@ -66,13 +64,7 @@ struct eventfd_ctx {
 
 `kref_init(&ctx->kref)` 将 `eventfd_ctx->kref.refcount` 值**初始化为了 1**, 表明 `eventfd_ctx` 正在一处代码中使用.
 
-### count、flags、id
-
-`eventfd_ctx` 中 `count` 的值在前面介绍过:
-
-* 对 eventfd 写则会增加 count 并唤醒等待队列元素;
-* 对 eventfd 读则向用户空间返回 count 值并清 count 值为0;
-* `event_signal()` 也会增加 count 并唤醒等待队列元素.
+### flags
 
 flags 由**系统调用 eventfd2** 的调用者传入(eventfd 的 flags 恒为0), 可能取值为 `EFD_CLOEXEC`、`EFD_NONBLOCK`、`EFD_SEMAPHORE` 三者的任意或组合.
 
@@ -149,7 +141,7 @@ do_eventfd
 3. 初始化 `eventfd_ctx` 结构中的等待队列
 4. 为 `eventfd_ctx` 结构中的 **count**(读写 eventfd 时要操作的量)**赋上**系统调用**传入的 count**
 5. 为 `eventfd_ctx` 结构中的 id 通过 Linux 提供的 **ida 机制**申请一个 id
-6. 最后通过 `anon_inode_getfd` 创建一个文件实例, **该文件**的**操作方法**为 `eventfd_fops`, `fd->private_data` 为 **eventfd_ctx**, **文件实例名**`为eventfd`.
+6. 最后通过 `anon_inode_getfd` 创建一个**文件实例**, **该文件**的**操作方法**为 `eventfd_fops`, `fd->private_data` 为 **eventfd_ctx**, **文件实例名**`为eventfd`.
 7. 返回该文件实例的**文件描述符**
 
 # 使用eventfd
@@ -177,12 +169,13 @@ static const struct file_operations eventfd_fops = {
 读 eventfd 动作由 `eventfd_read` 函数提供支持, 只有在 `eventfd_ctx->count` **大于0**的情况下, eventfd **才是可读的**, 然后调用 `eventfd_ctx_do_read` 对 `eventfd_ctx` 的 **count** 进行处理:
 
 * 如果 `eventfd_ctx->flags` 中的 `EFD_SEMAPHORE` **置位**, 就将 `eventfd_ctx->count` **减一**(因为 semaphore 只有 0 和 1 **两个值**, 因此该操作即为**置 0 操作**);
-* 如果 `eventfd_ctx->flags` 中的 `EFD_SEMAPHORE` 为**0**, 就将 `eventfd_ctx->count` **减去自身**, 即**置** `eventfd_ctx->count` 为 **0**, 也是对 **count** 变量的**置 0 操作**.
+* 如果 `eventfd_ctx->flags` 中的 `EFD_SEMAPHORE` 为**0**, 就将 `eventfd_ctx->count` **减去自身**, 即**置** `eventfd_ctx->count` 为 **0**.
 
-如果 `eventfd_ctx->count` 等于**0**, 即该 eventfd **当前不可读**, 此时如果检查 `eventfd_ctx->flags` 中的 `O_NONBLOCK` **没有置位**, 那么将发起读 eventfd 动作的进程放入属于 `eventfd_ctx` 的等待队列, 并重新调度新的进程运行.
+如果 `eventfd_ctx->count` 等于**0**, 即该 eventfd **当前不可读**, 此时如果检查 `eventfd_ctx->flags` 中的 `O_NONBLOCK` **没有置位**, 那么将发起读 eventfd 动作的进程放入属于 `eventfd_ctx` 的**等待队列**, 并**重新调度新的进程**运行.
 
 如果 `eventfd_ctx->count`大于0, 就将该 count 置0, 激活正在等待队列中等待的 EPOLLOUT 进程.
-如果 `eventfd_ctx->count` 等于0且该 eventfd 提供阻塞标志, 就将读进程放入等待队列中.
+
+如果 `eventfd_ctx->count` 等于 0 且该 eventfd 提供阻塞标志, 就将读进程放入等待队列中.
 
 ## 写eventfd
 
@@ -201,7 +194,7 @@ Poll(查询) eventfd 动作由 `eventfd_poll` 函数提供支持, 该函数中�
 1. 进程 poll eventfd 的 POLLIN 事件, 如果在某个时间点, 其它进程或内核向 eventfd 写入一个值, 即可让 poll eventfd 的进程返回.
 2. 进程 poll eventfd 的 POLLOUT 事件, 如果在某个时间点, 其它进程或内核读取 eventfd, 即可让 poll eventfd 的进程返回.
 
-Linux 内核使用第一种通知方案, 即进程 poll eventfd 的 POLLIN 事件, Linux 提供了功能与 eventfd_write 类似的 eventfd_signal 函数, 用于触发对 poll eventfd 的进程的通知.
+Linux 内核使用第一种通知方案, 即进程 poll eventfd 的 POLLIN 事件, Linux 提供了功能与 `eventfd_write` 类似的 `eventfd_signal` 函数, 用于触发对 poll eventfd 的进程的通知.
 
 # reference
 

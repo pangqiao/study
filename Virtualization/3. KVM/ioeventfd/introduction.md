@@ -4,6 +4,8 @@
 <!-- code_chunk_output -->
 
 - [1. 背景](#1-背景)
+  - [同步/异步IO](#同步异步io)
+  - [ioeventfd](#ioeventfd)
 - [2. KVM](#2-kvm)
   - [2.1. 数据结构](#21-数据结构)
   - [2.2. 注册流程](#22-注册流程)
@@ -16,14 +18,21 @@
 
 # 1. 背景
 
-Guest 一个完整的 IO 流程包括从虚拟机内部到 KVM, 再到 QEMU, 并由 QEMU 最终进行分发, IO 完成之后的原路返回. 这样的一次路径称为**同步 IO**, 即指 Guest 需要等待 IO 操作的结果才能继续运行, 但是存在这样一种情况, 即某次 IO 操作只是作为一个通知事件, 用于通知 `QEMU/KVM` 完成另一个具体的 IO, 这种情况下没有必要像普通 IO 一样等待数据完全写完, 只需要触发通知并等待具体 IO 完成即可.
+## 同步/异步IO
 
-ioeventfd 正是为 IO 通知提供机制的东西, QEMU 可以将虚拟机特定地址关联一个 eventfd, 对该 eventfd 进行 POLL, 并利用 `ioctl(KVM_IOEVENTFD)` 向KVM注册这段特定地址, 当 Guest 进行 IO 操作 exit 到 kvm 后, kvm 可以判断本次 exit 是否发生在这段特定地址中, 如果是, 则直接调用 `eventfd_signal` 发送信号到对应的 eventfd, 导致 QEMU 的监听循环返回, 触发具体的操作函数, 进行普通 IO 操作. 这样的一次 IO 操作相比于不使用 ioeventfd 的 IO 操作, 能节省一次在 QEMU 中分发 IO 请求和处理 IO 请求的时间.
+Guest 一个完整的 IO 流程包括从**虚拟机内部**到 **KVM**, 再到 **QEMU**, 并由 **QEMU 最终进行分发**, IO 完成之后的原路返回. 这样的一次路径称为**同步 IO**, 即指 Guest 需要等待 IO 操作的结果才能继续运行.
 
+但是存在这样一种情况, 即**某次 IO 操作**只是作为一个**通知事件**, 用于**通知** `QEMU/KVM` 完成**另一个具体的 IO**, 这种情况下没有必要像普通 IO 一样等待数据完全写完, **只需要触发通知**并等待具体 IO 完成即可.
 
+## ioeventfd
 
+ioeventfd 正是为 IO 提供**通知机制**的东西.
 
-eventfd 是内核实现的高效线程通信机制, 还适合于内核与用户态的通信, KVM模块利用 eventfd 实现了 KVM 和 qemu 的高效通信机制 ioeventfd.
+**QEMU** 可以将**虚拟机特定地址**关联一个 **eventfd**, 对该 eventfd 进行 **POLL**, 并利用 `ioctl(KVM_IOEVENTFD)` 向 KVM 注册这段特定地址, 当 Guest 进行 IO 操作 exit 到 kvm 后, kvm 可以判断本次 exit 是否发生在这段特定地址中, 如果是, 则直接调用 `eventfd_signal` 发送信号到对应的 eventfd, 导致 QEMU 的监听循环返回, 触发具体的操作函数, 进行普通 IO 操作.
+
+这样的一次 IO 操作相比于不使用 ioeventfd 的 IO 操作, 能**节省**一次在 **QEMU** 中**分发 IO 请求**和**处理 IO 请求**的时间.
+
+ioeventfd 基本原理是基于 eventfd, eventfd 是内核实现的高效**线程通信机制**, 还适合于**内核与用户态的通信**, KVM模块利用 eventfd 实现了 KVM 和 qemu 的高效通信机制 ioeventfd.
 
 > `Linux\Eventfd\Linux\` 的 `eventfd机制.md`
 

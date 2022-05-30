@@ -130,7 +130,7 @@ list_for_each_entry(tmp, &kvm->irqfds.items, list) {
 
 `kvm_irq_assign` 以 `irqfd->pt` 为参数, 调用 eventfd 的 poll 函数, 也就是 `eventfd_poll`, 后者会调用 `poll_wait` 函数, 也就是之前为 poll table 注册的 `irqfd_ptable_queue_proc` 函数. `irqfd_ptable_queue_proc` 将 `irqfd->wait` 加入到了 eventfd 的 wqh 等待队列中. 这样, 当有其它进程或者内核对 eventfd 进行 write 时, 就会导致 eventfd 的 wqh 等待队列上的对象函数得到执行, 也就是 `irqfd_wakeup` 函数.
 
-这里只讨论有数据, 即 flgas 中的 EPOLLIN 置位时, 会调用 `kvm_arch_set_irq_inatomic` 进行中断注入.
+这里只讨论有数据, 即 flgas 中的 `EPOLLIN` 置位时, 会调用 `kvm_arch_set_irq_inatomic` 进行中断注入.
 
 ```cpp
 kvm_arch_set_irq_inatomic
@@ -138,7 +138,7 @@ kvm_arch_set_irq_inatomic
 => kvm_irq_delivery_to_apic_fast
 ```
 
-如果 `kvm_arch_set_irq_inatomic` 无法注入中断(即非MSI中断或非HV_SINT中断), 那么就调用 `irqfd->inject`, 即调用 `irqfd_inject` 函数.
+如果 `kvm_arch_set_irq_inatomic` 无法注入中断(即非 MSI 中断或非 `HV_SINT` 中断), 那么就调用 `irqfd->inject`, 即调用 `irqfd_inject` 函数.
 
 ```cpp
 static void irqfd_inject(struct work_struct *work)
