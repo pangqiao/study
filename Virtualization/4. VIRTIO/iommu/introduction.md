@@ -1710,7 +1710,7 @@ static struct iommu_ops vfio_iommu_ops = {
 
 ## linux driver
 
-virtio-iommu driver 模块初始化相关代码
+`virtio-iommu driver` 模块初始化相关代码
 
 利用了原本的virtio框架. 重点在两个: `viommu_probe` 和 `viommu_remove`.
 
@@ -1752,8 +1752,8 @@ bus_set_iommu()
  ├─ bus->iommu_ops = ops; 设置 bus 的 iommu ops
  └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化. 注册了 bus notifier, 回调是 `iommu_bus_notifier`; 然后调用 `bus_iommu_probe(bus)`
    ├─ LIST_HEAD(group_list); 生成一个 group_list 链表
-   ├─ bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group); 遍历总线下所有设备, 给每个设备调用回调函数 `probe_iommu_group`, 将设备添加到 iommu group (`iommu_init` 中初始化) 中. 会调用 `__iommu_probe_device()`
-   │  ├─ iommu_dev = dev->bus->iommu_ops->probe_device(struct device dev);, 添加设备, 调用了 `viommu_probe_device()`
+   ├─ bus_for_each_dev(bus, NULL, &group_list, probe_iommu_group); 遍历总线下所有设备, 给每个设备调用回调函数 `probe_iommu_group`, 将设备添加到 iommu group(`iommu_init` 中初始化) 中. 会调用`__iommu_probe_device()`
+   │  ├─ iommu_dev = dev->bus->iommu_ops->probe_device(struct device dev);, 添加设备, 调用了`viommu_probe_device()`
    │  │  ├─ struct viommu_endpoint *vdev = kzalloc(sizeof(*vdev), GFP_KERNEL); 结构体分配
    │  │  ├─ vdev->viommu = viommu;
    │  │  ├─ INIT_LIST_HEAD(&vdev->resv_regions);
