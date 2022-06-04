@@ -4,10 +4,15 @@
 <!-- code_chunk_output -->
 
 - [1. 背景](#1-背景)
-  - [同步/异步IO](#同步异步io)
-  - [ioeventfd](#ioeventfd)
+  - [1.1. 同步/异步IO](#11-同步异步io)
+  - [1.2. ioeventfd](#12-ioeventfd)
 - [2. KVM](#2-kvm)
   - [2.1. 数据结构](#21-数据结构)
+    - [KVM_IOEVENTFD命令字](#kvm_ioeventfd命令字)
+    - [用户态结构体kvm_ioeventfd](#用户态结构体kvm_ioeventfd)
+      - [用户态用法](#用户态用法)
+    - [内核态结构体_ioeventfd](#内核态结构体_ioeventfd)
+    - [虚拟机kvm关联信息](#虚拟机kvm关联信息)
   - [2.2. 注册流程](#22-注册流程)
   - [2.3. 触发流程](#23-触发流程)
 - [3. QEMU](#3-qemu)
@@ -18,17 +23,17 @@
 
 # 1. 背景
 
-## 同步/异步IO
+## 1.1. 同步/异步IO
 
-Guest 一个完整的 IO 流程包括从**虚拟机内部**到 **KVM**, 再到 **QEMU**, 并由 **QEMU 最终进行分发**, IO 完成之后的原路返回. 这样的一次路径称为**同步 IO**, 即指 Guest 需要等待 IO 操作的结果才能继续运行.
+Guest 一个完整的 IO 流程包括从**虚拟机内部**到 **KVM**, 再到 **QEMU**, 并由 **QEMU 最终进行分发**, IO 完成之后的**原路返回**. 这样的一次路径称为**同步 IO**, 即指 Guest 需要等待 IO 操作的结果才能继续运行.
 
 但是存在这样一种情况, 即**某次 IO 操作**只是作为一个**通知事件**, 用于**通知** `QEMU/KVM` 完成**另一个具体的 IO**, 这种情况下没有必要像普通 IO 一样等待数据完全写完, **只需要触发通知**并等待具体 IO 完成即可.
 
-## ioeventfd
+## 1.2. ioeventfd
 
 ioeventfd 正是为 IO 提供**通知机制**的东西.
 
-**QEMU** 可以将**虚拟机特定地址**关联一个 **eventfd**, 对该 eventfd 进行 **POLL**, 并利用 `ioctl(KVM_IOEVENTFD)` 向 KVM 注册这段特定地址, 当 Guest 进行 IO 操作 exit 到 kvm 后, kvm 可以判断本次 exit 是否发生在这段特定地址中, 如果是, 则直接调用 `eventfd_signal` 发送信号到对应的 eventfd, 导致 QEMU 的监听循环返回, 触发具体的操作函数, 进行普通 IO 操作.
+**QEMU** 可以将**虚拟机特定地址**关联一个 **eventfd**, 对该 eventfd 进行 **POLL**, 并利用 `ioctl(KVM_IOEVENTFD)` 向 KVM 注册这段**特定地址**, 当 Guest 进行 IO 操作 exit 到 kvm 后, kvm 可以**判断**本次 exit 是否发生在这段特定地址中, 如果是, 则直接调用 `eventfd_signal` 发送信号到对应的 eventfd, 导致 QEMU 的监听循环返回, 触发具体的操作函数, 进行普通 IO 操作.
 
 这样的一次 IO 操作相比于不使用 ioeventfd 的 IO 操作, 能**节省**一次在 **QEMU** 中**分发 IO 请求**和**处理 IO 请求**的时间.
 
@@ -42,14 +47,32 @@ ioeventfd 基本原理是基于 eventfd, eventfd 是内核实现的高效**线�
 
 ## 2.1. 数据结构
 
-ioeventfd 是内核 kvm 模块向 qemu 提供的一个 vm ioctl 命令字 `KVM_IOEVENTFD`, 对应调用 `kvm_vm_ioctl` 函数, 原型如下:
+### KVM_IOEVENTFD命令字
+
+ioeventfd 是内核 kvm 模块向 qemu 提供的一个 vm ioctl 命令字 `KVM_IOEVENTFD`, 对应调用 `kvm_vm_ioctl` 函数:
+
+```cpp
+// virt/kvm/kvm_main.c
+kvm_vm_ioctl
+=> case KVM_IOEVENTFD:
+{
+    copy_from_user(&data, argp, sizeof(data))
+    kvm_ioeventfd(kvm, &data)
+}
+```
+
+kvm 在获得了 QEMU 传入的参数，也就是 `struct kvm_ioeventfd` 结构的值之后，会调用 `kvm_ioeventfd` 函数, 原型如下:
 
 ```cpp
 // "include/linux/kvm_host.h"
 int kvm_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args);
 ```
 
-这个命令字的功能是将一个 **eventfd** 绑定到**一段客户机的地址空间**, 这个空间可以是 **mmio**, 也可以是 **pio**. 当 **guest 写**这段地址空间时, 会触发 `EPT_MISCONFIGURATION` **缺页异常**, **KVM** 处理时如果发现这段地址落在了**已注册的 ioeventfd 地址区间**里, 会通过**写关联 eventfd 通知 qemu**, 从而**节约**一次**内核态到用户态的切换开销**. 用户态传入的参数如下:
+这个命令字的功能是将一个 **eventfd** 绑定到**一段客户机的地址空间**, 这个空间可以是 **mmio**, 也可以是 **pio**. 当 **guest 写**这段地址空间时, 会触发 `EPT_MISCONFIGURATION` **缺页异常**, **KVM** 处理时如果发现这段地址落在了**已注册的 ioeventfd 地址区间**里, 会通过**写关联 eventfd 通知 qemu**, 从而**节约**一次**内核态到用户态的切换开销**.
+
+### 用户态结构体kvm_ioeventfd
+
+**用户态**传入的参数如下:
 
 ```cpp
 // "include/uapi/linux/kvm.h"
@@ -63,10 +86,20 @@ struct kvm_ioeventfd {
 };
 ```
 
-* datamatch: 如果 flags 设置了 `KVM_IOEVENTFD_FLAG_DATAMATCH`, 只有当客户机向 addr 地址写入的值与 datamatch 值相等, 才会触发event
-* fd: eventfd 关联的fd, `eventfd_ctx` 的结构在初始化时被放在了 file 结构的 `private_data` 中, 首先通过 fd 从进程的 fd 表中可以找到 file 结构, 顺藤摸瓜可以找到 `eventfd_ctx`, 从这里能够看出, eventfd 的用法是**用户态**注册好 evenfd 并获得 fd, 然后将 fd 和感兴趣的地址区间封装成 `kvm_ioeventfd` 结构体作为参数, 调用 `ioctl KVM_IOEVENTFD` **命令字**, 注册到kvm
+* datamatch: 如果 flags 设置了 `KVM_IOEVENTFD_FLAG_DATAMATCH`, 只有当**客户机**向 addr 地址**写入的值**与 datamatch 值**相等**, 才会**触发 event**
+* fd: eventfd 关联的 fd, `eventfd_ctx` 的结构在初始化时被放在了 file 结构的 `private_data` 中, 首先**通过 fd** 从**进程**的 **fd 表**中可以**找到 file 结构**, 顺藤摸瓜可以找到 `eventfd_ctx`.
 
-用户态信息 `kvm_ioeventfd` 需要转化成内核态存放, 当 guest 写地址时找到对应的结构体, 触发 event, ioeventfd 内核态结构体基于 eventfd, 如下:
+#### 用户态用法
+
+从这里能够看出, **ioeventfd 的用法**是:
+
+1. **用户态**先注册好 **evenfd** 并获得 fd(通过**系统调用** `eventfd2` 或 `eventfd`);
+2. 然后将 fd 和感兴趣的**地址区间**封装成 `kvm_ioeventfd` **结构体**作为**参数**;
+3. 最后调用 `ioctl KVM_IOEVENTFD` **命令字**, 注册到kvm
+
+### 内核态结构体_ioeventfd
+
+用户态信息 `kvm_ioeventfd` 需要转化成**内核态存放**, 当 **guest** 写地址时**找到对应的结构体**, 触发 event, ioeventfd **内核态结构体**基于 eventfd, 如下:
 
 ```cpp
 // "virt/kvm/eventfd.c"
@@ -83,11 +116,13 @@ struct _ioeventfd {
 ```
 
 * addr: 客户机 `PIO/MMIO` 地址, 当客户机向该地址写入数据时触发 event
-* length: 客户机向该地址写入数据时数据的长度, 当 length 为0时, 忽略写入数据的长度
+* length: 客户机向该地址写入数据时数据的**长度**, 当 length 为0时, **忽略写入数据的长度**
 * eventfd: 关联的 eventfd
 * datamatch: 用户态程序设置的 match data, 当 ioeventfd 被设置了 `KVM_IOEVENTFD_FLAG_DATAMATCH`, 只有满足客户机写入的值等于 datamatch 的条件时才触发event
 * dev: `VM-Exit` 退出时调用 `dev->ops` 的 write 操作, 对应 `ioeventfd_write`
 * bus_idx: 客户机的地址被分为了4类, MMIO, PIO, `VIRTIO_CCW_NOTIFY`, `FAST_MMIO`, `bus_idx` 用来区分注
+
+### 虚拟机kvm关联信息
 
 用户态下发 `KVM_IOEVENTFD` 命令字最终会生成 `_ioeventfd` 结构体, 存放在内核中, 由于它是**和一个虚机关联的**, 因此被放到了 kvm 结构体中维护, kvm 结构体中有两个字段, 存放了 ioeventfd 相关的信息, 如下:
 
@@ -128,7 +163,7 @@ enum kvm_bus {
 
 ## 2.2. 注册流程
 
-KVM_IOEVENTFD ioctl 命令字的主要功能是在 kvm 上注册这个 ioevent, 最终目的是将 ioevenfd 信息添加到 kvm 结构的 buses 和 ioeventfds 两个成员中, 注册流程如下:
+`KVM_IOEVENTFD` ioctl **命令字**的主要功能是在 kvm 上注册这个 ioevent, **最终目的**是将 **ioevenfd 信息**添加到 **kvm 结构**的 **buses** 和 **ioeventfds** 两个成员中, 注册流程如下:
 
 ```cpp
 
