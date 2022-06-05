@@ -1,5 +1,18 @@
 
-# 介绍
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [1. 介绍](#1-介绍)
+- [2. QEMU注册irqfd](#2-qemu注册irqfd)
+- [3. 向kvm发送注册中断irqfd请求](#3-向kvm发送注册中断irqfd请求)
+- [4. kvm注册irqfd](#4-kvm注册irqfd)
+- [5. 总结](#5-总结)
+- [6. reference](#6-reference)
+
+<!-- /code_chunk_output -->
+
+# 1. 介绍
 
 irqfd 机制与 ioeventfd 机制类似, 其基本原理都是基于 eventfd.
 
@@ -9,11 +22,11 @@ ioeventfd 机制为 Guest 提供了向 qemu-kvm 发送通知的快捷通道, 对
 
 irqfd 机制将一个 eventfd 与一个全局中断号联系起来, 当向这个 eventfd 发送信号时, 就会导致对应的中断注入到虚拟机中.
 
-# QEMU注册irqfd
+# 2. QEMU注册irqfd
 
 与 ioeventfd 类似, irqfd 在使用前必须先初始化一个 EventNotifier 对象(利用 `event_notifier_init` 函数初始化), 初始化 EventNotifier 对象完成之后获得了一个 eventfd.
 
-# 向kvm发送注册中断irqfd请求
+# 3. 向kvm发送注册中断irqfd请求
 
 获得一个 eventfd 之后, QEMU 通过 `kvm_irqchip_add_irqfd_notifier_gsi=>kvm_irqchip_assign_irqfd` 构造 `kvm_irqchip` 结构, 并向 kvm 发送 `ioctl(KVM_IRQFD)`.
 
@@ -52,7 +65,7 @@ static int kvm_irqchip_assign_irqfd(KVMState *s, int fd, int rfd, int virq,
 
 `kvm_irqchip_assign_irqfd` 最后调用 `kvm_vm_ioctl(s, KVM_IRQFD, &irqfd)`, 向 kvm 请求注册包含上面构造的 `kvm_irqfd` 信息的 irqfd.
 
-# kvm注册irqfd
+# 4. kvm注册irqfd
 
 收到 `ioctl(KVM_IRQFD)` 之后, kvm首先获取传入的数据结构 `kvm_irqfd` 的信息, 然后调用 `kvm_irqfd` 函数.
 
@@ -160,12 +173,12 @@ static void irqfd_inject(struct work_struct *work)
 
 在 `irqfd_inject` 函数中, 如果该 irqfd 配置的中断为边沿触发, 则调用 2 次 `kvm_set_irq`, 形成一个中断脉冲, 以便 kvm 中的中断芯片(irqchip)能够感知到这个中断. 如果该irqfd配置的中断为电平触发, 则调用一次 `kvm_set_irq`, 将中断拉至高电平, 使 irqchip 感知到, 电平触发的中断信号拉低动作会由后续的 irqchip 的 EOI 触发.
 
-# 总结
+# 5. 总结
 
 ![2022-05-25-09-00-46.png](./images/2022-05-25-09-00-46.png)
 
-irqfd 基于 eventfd 机制, qemu 中将一个 gsi(全局系统中断号) 与 eventfd 捆绑后, 向 kvm 发送注册 irqfd 请求, kvm 收到请求后将带有 gsi 信息的 eventfd 加入到与 irqfd 有关的等待队列中, 一旦有进程向该 eventfd 写入, 等待队列中的元素就会唤醒, 并调用相应唤醒函数(`irqfd_wakeup`)向 Guest 注入中断, 而注入中断这一步骤相关知识与特定的中断芯片如 PIC、APIC 有关.
+irqfd 基于 eventfd 机制, qemu 中将一个 gsi(全局系统中断号) 与 eventfd 捆绑后, 向 kvm 发送注册 irqfd 请求, kvm 收到请求后将带有 gsi 信息的 eventfd 加入到与 irqfd 有关的等待队列中, 一旦有进程向该 eventfd 写入, 等待队列中的元素就会唤醒, 并调用相应唤醒函数(`irqfd_wakeup`)向 Guest 注入中断, 而**注入中断**这一步骤相关知识与特定的中断芯片如 PIC、APIC 有关.
 
-# reference
+# 6. reference
 
 https://www.cnblogs.com/haiyonghao/p/14440723.html
