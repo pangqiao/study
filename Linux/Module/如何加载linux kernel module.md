@@ -27,28 +27,7 @@ drwxr-xr-x 15 root root    4096 6月   2 16:09 kernel/
 drwxr-xr-x  3 root root    4096 6月   2 16:09 vdso/
 ```
 
-
-
-`modules.dep`, 所有的模块都在这个文件中, 在安装模块时，依赖这个文件査找所有的模块，所以不需要指定模块所在位置的绝对路径，而且也依靠这个文件来解决模块的依赖性。
-
-比如, `kvm-intel.ko` 就依赖 `kvm.ko`
-
-```
-kernel/arch/x86/kvm/kvm.ko:
-kernel/arch/x86/kvm/kvm-intel.ko: kernel/arch/x86/kvm/kvm.ko
-```
-
-如果这个文件丢失可以使用 depmod 命令会自动扫描系统中已有的模块，并生成 modules.dep 文件, 不加任何选项，depmod命令会扫描系统中的内核模块，并写入 modules.dep 文件
-
-```
-# depmod [选项]
-```
-
-选项：
-* -a：扫描所有模块；
-* -A：扫描新模块，只有有新模块时，才会更新modules.dep文件；
-* -n：把扫描结果不写入modules.dep文件，而是输出到屏幕上
-
+# kernel 目录
 
 大部分的 module file 都按类别分好类存放在其中的 kernel 目录中。
 
@@ -71,4 +50,28 @@ drwxr-xr-x  16 root root 4096 6月   2 16:09 sound/
 drwxr-xr-x   3 root root 4096 6月   2 16:09 ubuntu/
 drwxr-xr-x   2 root root 4096 6月   2 16:09 zfs/
 ```
+
+# modules.dep
+
+`modules.dep`, 所有的模块都在这个文件中, 在**安装模块**时，依赖这个文件**査找所有的模块**，所以不需要指定模块所在位置的绝对路径，而且也依靠这个文件来解决模块的依赖性。
+
+比如, `kvm-intel.ko` 就依赖 `kvm.ko`
+
+```
+kernel/arch/x86/kvm/kvm.ko:
+kernel/arch/x86/kvm/kvm-intel.ko: kernel/arch/x86/kvm/kvm.ko
+```
+
+如果这个文件丢失可以使用 depmod 命令会自动扫描系统中已有的模块，并生成 modules.dep 文件, 不加任何选项，depmod命令会扫描系统中的内核模块，并写入 modules.dep 文件
+
+```
+# depmod [选项]
+```
+
+选项：
+* -a：扫描所有模块；
+* -A：扫描新模块，只有有新模块时，才会更新modules.dep文件；
+* -n：把扫描结果不写入modules.dep文件，而是输出到屏幕上
+
+
 
