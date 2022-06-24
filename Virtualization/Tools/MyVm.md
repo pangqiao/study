@@ -169,9 +169,9 @@ sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host,-xsave,
 
 # 修改default.target
 
+systemctl set-default multi-user
 
 Created symlink /etc/systemd/system/default.target → /lib/systemd/system/multi-user.target
-
 
 # 4. 基本设置
 
