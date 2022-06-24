@@ -49,3 +49,5 @@ qemu-参数解析:
 * https://blog.csdn.net/woai110120130/article/details/107169226
 * https://www.cnblogs.com/tuilinengshou/p/12818895.html
 
+使用 QEMU 监视器管理虚拟机: https://documentation.suse.com/zh-cn/sles/15-SP2/html/SLES-all/cha-qemu-monitor.html
+

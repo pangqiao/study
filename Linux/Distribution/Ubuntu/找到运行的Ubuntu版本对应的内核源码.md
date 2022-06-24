@@ -1,4 +1,3 @@
-https://cloud.tencent.com/developer/article/1439068
 
 首先，按照下面链接里的内容，下载对应的内核源码仓库。
 
