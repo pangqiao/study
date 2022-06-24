@@ -42,5 +42,10 @@ qemu源码: 《QEMU/KVM源码解析与应用》, 李强, https://item.jd.com/127
 
 
 
-qemu tcg vs apple rosetta2 漫谈编译器核心技术 - 好好休息的文章 - 知乎
-https://zhuanlan.zhihu.com/p/393803092
+qemu tcg vs apple rosetta2 漫谈编译器核心技术 - https://zhuanlan.zhihu.com/p/393803092
+
+
+qemu-参数解析:
+* https://blog.csdn.net/woai110120130/article/details/107169226
+* https://www.cnblogs.com/tuilinengshou/p/12818895.html
+
