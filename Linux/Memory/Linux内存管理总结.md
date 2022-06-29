@@ -3520,7 +3520,7 @@ struct page *__rmqueue_smallest(struct zone *zone, unsigned int order,
 
 ### 11.4.2. 伙伴系统核心__alloc_pages_nodemask实质性的内存分配
 
-__alloc_pages_nodemask是伙伴系统的心脏
+__alloc_pages_nodemask 是伙伴系统的心脏
 
 ```cpp
 struct page *
