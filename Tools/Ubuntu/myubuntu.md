@@ -32,15 +32,15 @@ https://www.jianshu.com/p/fe4e3915495e
 
 > 我分配了 1G, /dev/sda1, 作用类似于 /boot 分区
 
-2. swap交换空间, 这个也就是虚拟内存的地方, 选择”逻辑分区"和”空间起始位置". 其大小最好和你的物理内存相等. 
+2. swap交换空间, 这个也就是虚拟内存的地方, 选择”逻辑分区"和”空间起始位置". 其大小最好和你的物理内存相等.
 
 > 我没分配
 
-3. 挂载”/", 类型为”EXT4日志文件系统", 选中”主分区"和”空间起始位置". 这个空间可以理解成共用空间, 尽量大一些, 因为有些软件是无法更改他的安装位置到自己的个人目录下的, 只能放在这个空间里边. 
+3. 挂载”/", 类型为”EXT4日志文件系统", 选中”主分区"和”空间起始位置". 这个空间可以理解成共用空间, 尽量大一些, 因为有些软件是无法更改他的安装位置到自己的个人目录下的, 只能放在这个空间里边.
 
 > 20G ~ 50G, 我分配了 30G
 
-4. 挂载”/home", 类型为”EXT4日志文件系统", 选中”逻辑分区"和”空间起始位置", 这个相当于你的个人文件夹, 类似Windows里的User, 建议最好能分配稍微大点, 因为你的图片、视频、下载内容、有些自定义的软件安装路径基本都在这里面, 这些东西可不像在Win上面你想移动就能移动的. 
+4. 挂载”/home", 类型为”EXT4日志文件系统", 选中”逻辑分区"和”空间起始位置", 这个相当于你的个人文件夹, 类似Windows里的User, 建议最好能分配稍微大点, 因为你的图片、视频、下载内容、有些自定义的软件安装路径基本都在这里面, 这些东西可不像在Win上面你想移动就能移动的.
 
 > 其他的空间, 一定要创建, 防止数据有问题
 
@@ -128,9 +128,9 @@ https://blog.csdn.net/kan2016/article/details/90411137
 >export socks_proxy='http://XXX.com:port'
 >export no_proxy='XXX.com,.XXX.com,localhost,127.0.0.1,10.0.0.0/8,192.168.0.0/16,172.16.0.0/12'
 
-* `~/.ssh/config`, 
+* `~/.ssh/config`,
 * `~/.tmux.conf` 和 `~/.tmux/*`
-* `~/.cargo/config` 
+* `~/.cargo/config`
 
 # 软件卸载
 
@@ -142,7 +142,7 @@ https://blog.csdn.net/kan2016/article/details/90411137
 
 # 网络
 
-有两套网络管理软件：server 版对应 netplan，desktop 版对应NetworkManager。可能因此netplan的默认renderer仍然没有改成NetworkManager。
+有两套网络管理软件：server 版对应 netplan, desktop 版对应NetworkManager. 可能因此 netplan 的默认 renderer 仍然没有改成NetworkManager.
 
 全部让通过 NetworkManager 管理
 
