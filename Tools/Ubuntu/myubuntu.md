@@ -10,6 +10,7 @@
 - [5. 网络代理](#5-网络代理)
 - [6. 重要配置](#6-重要配置)
 - [软件卸载](#软件卸载)
+- [网络](#网络)
 
 <!-- /code_chunk_output -->
 
@@ -138,3 +139,8 @@ https://blog.csdn.net/kan2016/article/details/90411137
 然后通过 `apt remove XXX && sudo apt autoremove` 卸载
 
 或者使用系统的 "Ubuntu Software" 来卸载
+
+# 网络
+
+systemctl status NetworkManager
+
