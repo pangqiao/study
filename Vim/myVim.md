@@ -224,9 +224,11 @@ ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4
 
 叫做.clang_xxxx之类的
 
-错误2
+错误2:
 
+```
 "Retrieving declaration not supported for c"
+```
 
 需要配置项目
 
@@ -289,7 +291,7 @@ ninja build 也支持生成，如：
 ninja -C out/Release -t compdb cxx cc > compile_commands.json
 ```
 
-meson会自动生成：
+meson 会自动生成：
 
 ```
 meson build # generates compile_commands.json in the `build` directory
