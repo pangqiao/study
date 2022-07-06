@@ -13,7 +13,7 @@
     - [5.2.1. rust 支持(optional)](#521-rust-支持optional)
 - [lsp 功能](#lsp-功能)
   - [项目配置](#项目配置)
-    - [compile_commands.json 法](#compile_commandsjson-法)
+    - [法一: compile_commands.json](#法一-compile_commandsjson)
       - [基于 CMake 的项目](#基于-cmake-的项目)
       - [基于其它构建系统的项目](#基于其它构建系统的项目)
 - [6. Rust(Optional)](#6-rustoptional)
@@ -227,6 +227,8 @@ ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4
 
 "Retrieving declaration not supported for c"
 
+需要配置项目
+
 ## 项目配置
 
 > https://ttys3.dev/post/neovim-c-cpp-lsp-integration-tips/#%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE----%E6%94%AF%E6%8C%81clangd
@@ -237,7 +239,7 @@ ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4
 
 对于 clangd 来说，主要有两种解决办法：
 
-### compile_commands.json 法
+### 法一: compile_commands.json
 
 虽然 clangd 的文档里说 clangd 会在你所编辑的文件的父目录中查找 compile_commands.json， 但实际使用中老灯发现能自动加载 build/compile_commands.json 文件，不知道是 neovim hack了还是 clangd 本身支持？
 
