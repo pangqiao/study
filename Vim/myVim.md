@@ -13,6 +13,9 @@
     - [5.2.1. rust 支持(optional)](#521-rust-支持optional)
 - [lsp 功能](#lsp-功能)
   - [项目配置](#项目配置)
+    - [compile_commands.json 法](#compile_commandsjson-法)
+      - [基于 CMake 的项目](#基于-cmake-的项目)
+      - [基于其它构建系统的项目](#基于其它构建系统的项目)
 - [6. Rust(Optional)](#6-rustoptional)
   - [6.1. 语法增强](#61-语法增强)
   - [6.2. 代码片段](#62-代码片段)
@@ -234,6 +237,64 @@ ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4
 
 对于 clangd 来说，主要有两种解决办法：
 
+### compile_commands.json 法
+
+虽然 clangd 的文档里说 clangd 会在你所编辑的文件的父目录中查找 compile_commands.json， 但实际使用中老灯发现能自动加载 build/compile_commands.json 文件，不知道是 neovim hack了还是 clangd 本身支持？
+
+#### 基于 CMake 的项目
+
+这里又分两种情况，对于基于 CMake 的项目，只需要启用 `CMAKE_EXPORT_COMPILE_COMMANDS` 即可**自动生成** `compile_commands.json` 文件。
+
+启用 `CMAKE_EXPORT_COMPILE_COMMANDS` 的方法主要有两种：
+
+一是直接在**命令行参数**中指定，比如：
+
+```
+cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .
+
+# or
+
+cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=1
+```
+
+二是在 CMakeLists.txt 中添加：
+
+```
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+```
+
+#### 基于其它构建系统的项目
+
+对于其它构建系统 （ 主要是一些上古的 Makefile 类项目），要生成 compile_commands.json 需要用到一个叫 Bear 的工具。
+
+```
+sudo apt-get install -y bear
+```
+
+Bear 的用法比较简单，直接在构建命令前面加 bear 即可
+
+```
+bear -- make -j16
+```
+
+除了 Bear, 还有其它工具也能生成 `compile_commands.json`：
+
+ninja build 也支持生成，如：
+
+```
+# Format: ninja -t compdb rule_names... > compile_commands.json
+ninja -C out/Release -t compdb cxx cc > compile_commands.json
+```
+
+meson会自动生成：
+
+```
+meson build # generates compile_commands.json in the `build` directory
+```
+
+https://github.com/nickdiego/compiledb (基于python)
+
+https://github.com/rizsotto/scan-build (python版，基于libear, uses Bear as a backend)
 
 
 # 6. Rust(Optional)
