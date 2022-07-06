@@ -12,6 +12,7 @@
     - [错误1](#错误1)
     - [错误2](#错误2)
   - [5.2. YouCompleteMe 设置](#52-youcompleteme-设置)
+    - [项目配置](#项目配置)
     - [5.2.1. rust 支持(optional)](#521-rust-支持optional)
 - [6. Rust(Optional)](#6-rustoptional)
   - [6.1. 语法增强](#61-语法增强)
@@ -163,6 +164,11 @@ git submodule update --init --recursive
 ```
 python3 install.py --clangd-completer
 ```
+
+### 项目配置
+
+目的是让 clang 找到那些头文件.
+
 
 ### 5.2.1. rust 支持(optional)
 
