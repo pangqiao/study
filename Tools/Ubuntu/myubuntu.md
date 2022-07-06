@@ -11,6 +11,7 @@
 - [6. 重要配置](#6-重要配置)
 - [软件卸载](#软件卸载)
 - [网络](#网络)
+- [时区时间](#时区时间)
 
 <!-- /code_chunk_output -->
 
@@ -166,6 +167,27 @@ network:
 
 https://blog.csdn.net/liyilong2000/article/details/113705942
 
-
-
 systemctl status NetworkManager
+
+# 时区时间
+
+data -R
+
+`tzselect` 选择时区
+
+cp /usr/share/zoneinfo/Asia/Shanghai  /etc/localtime
+
+data -R 再次查看
+
+修改时间
+
+```
+sudo date -s MM/DD/YY //修改日期
+sudo date -s hh:mm:ss //修改时间
+```
+
+在修改时间以后，修改硬件CMOS的时间
+
+```
+sudo hwclock --systohc //非常重要，如果没有这一步的话，后面时间还是不准
+```
