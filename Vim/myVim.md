@@ -16,6 +16,7 @@
     - [法一: compile_commands.json](#法一-compile_commandsjson)
       - [基于 CMake 的项目](#基于-cmake-的项目)
       - [基于其它构建系统的项目](#基于其它构建系统的项目)
+    - [法二: compile_flags.txt](#法二-compile_flagstxt)
 - [6. Rust(Optional)](#6-rustoptional)
   - [6.1. 语法增强](#61-语法增强)
   - [6.2. 代码片段](#62-代码片段)
@@ -298,6 +299,20 @@ https://github.com/nickdiego/compiledb (基于python)
 
 https://github.com/rizsotto/scan-build (python版，基于libear, uses Bear as a backend)
 
+### 法二: compile_flags.txt
+
+compile_flags.txt 法主要是针对于项目中的所有文件都使用相同的 build flags 的情况。这个时候，你可以手撸一个 compile_flags.txt 来帮助 clangd 理解你的代码。
+
+需要注意的是，This should contain one argument per line.
+
+```
+-xc++
+-I
+libwidget/include/
+这里 -I libwidget/include 是两个参数，因此要各放一行 （ one argument per line ）。
+```
+
+如果是相对路径，则该路径相对于 compile_flags.txt 文件所在目录。
 
 # 6. Rust(Optional)
 
