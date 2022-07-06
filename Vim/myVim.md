@@ -9,8 +9,8 @@
 - [4. 功能开启](#4-功能开启)
 - [5. complete 插件](#5-complete-插件)
   - [5.1. Lsp](#51-lsp)
-  - [错误1](#错误1)
-  - [错误2](#错误2)
+    - [错误1](#错误1)
+    - [错误2](#错误2)
   - [5.2. YouCompleteMe 设置](#52-youcompleteme-设置)
     - [5.2.1. rust 支持(optional)](#521-rust-支持optional)
 - [6. Rust(Optional)](#6-rustoptional)
@@ -26,10 +26,8 @@
 # 1. 安装软件
 
 ```
-sudo apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev vim-gtk3 npm pip curl git zsh pycodestyle 
+sudo apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev vim-athena npm pip curl git zsh pycodestyle 
 ```
-
-`vim-gtk` 可以让 vim 有 `+clipboard` feature 支持, 而 vim-nox 没有
 
 # 2. 下载字体
 
@@ -123,7 +121,9 @@ LSP: `let g:feat_enable_lsp=1`
 
 需要`:LspInstallServer`
 
-## 错误1
+`:LspStatus`
+
+### 错误1
 
 ```
 apt update
@@ -136,7 +136,7 @@ ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4
 
 叫做.clang_xxxx之类的
 
-## 错误2
+### 错误2
 
 "Retrieving declaration not supported for c"
 
