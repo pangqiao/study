@@ -290,6 +290,8 @@ tmpfs          tmpfs  4.0M     0  4.0M   0% /sys/fs/cgroup
 tmpfs          tmpfs  299M  4.0K  299M   1% /run/user/0
 ```
 
+docbook-xml 
+
 ## 6.3. 进行分区扩展磁盘
 
 记住根分区起始位置和结束位置
