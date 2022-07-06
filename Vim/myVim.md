@@ -12,7 +12,7 @@
   - [5.2. YouCompleteMe](#52-youcompleteme)
     - [5.2.1. rust 支持(optional)](#521-rust-支持optional)
 - [lsp 功能](#lsp-功能)
-    - [错误2](#错误2)
+  - [项目配置](#项目配置)
 - [6. Rust(Optional)](#6-rustoptional)
   - [6.1. 语法增强](#61-语法增强)
   - [6.2. 代码片段](#62-代码片段)
@@ -198,6 +198,8 @@ let g:ycm_rust_src_path = '/root/.rustup/toolchains/nightly-x86_64-unknown-linux
 
 # lsp 功能
 
+> https://ttys3.dev/post/neovim-c-cpp-lsp-integration-tips/#%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE----%E6%94%AF%E6%8C%81clangd
+
 ```
 let g:feat_enable_lsp=1
 ```
@@ -218,13 +220,19 @@ ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4
 
 叫做.clang_xxxx之类的
 
-### 错误2
+错误2
 
 "Retrieving declaration not supported for c"
 
+## 项目配置
 
+> https://ttys3.dev/post/neovim-c-cpp-lsp-integration-tips/#%E9%A1%B9%E7%9B%AE%E9%85%8D%E7%BD%AE----%E6%94%AF%E6%8C%81clangd
 
-目的是让 clang 找到那些头文件.
+目的是让 lsp server(clangd) 找到那些头文件.
+
+主要原因在于，C 和 C++ 这俩语言比较古老，不像 Rust 或 Golang 那样自带包管理， 因此需要外部工具来帮助 lang server 理解代码. 
+
+对于 clangd 来说，主要有两种解决办法：
 
 
 
