@@ -7,12 +7,12 @@
 - [2. 下载字体](#2-下载字体)
 - [3. 下载 vim 配置](#3-下载-vim-配置)
 - [4. 功能开启](#4-功能开启)
-- [5. complete 插件](#5-complete-插件)
-  - [5.1. Lsp](#51-lsp)
+- [项目配置](#项目配置)
+- [5. complete 功能](#5-complete-功能)
+  - [5.1. asynccomplete](#51-asynccomplete)
     - [错误1](#错误1)
     - [错误2](#错误2)
-  - [5.2. YouCompleteMe 设置](#52-youcompleteme-设置)
-    - [项目配置](#项目配置)
+  - [5.2. YouCompleteMe](#52-youcompleteme)
     - [5.2.1. rust 支持(optional)](#521-rust-支持optional)
 - [6. Rust(Optional)](#6-rustoptional)
   - [6.1. 语法增强](#61-语法增强)
@@ -110,16 +110,28 @@ let g:feat_enable_help=1
 let g:vinux_version='vinux V1.2.0-dev @8.2.2434'
 ```
 
-# 5. complete 插件
 
-## 5.1. Lsp
+# 项目配置
 
-LSP: `let g:feat_enable_lsp=1`
 
-当然lsp的话, complete 就要换成 asynccomplete 了
+
+目的是让 clang 找到那些头文件.
+
+# 5. complete 功能
+
+```
+let g:feat_enable_complete=1
+```
+
+## 5.1. asynccomplete
 
 `let g:complete_plugin_type.cur_val='asyncomplete'`
 
+这个是支持 lsp 功能的
+
+LSP: `let g:feat_enable_lsp=1`
+
+当然lsp的话, 
 需要`:LspInstallServer`
 
 `:LspStatus`
@@ -142,7 +154,11 @@ ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4
 "Retrieving declaration not supported for c"
 
 
-## 5.2. YouCompleteMe 设置
+## 5.2. YouCompleteMe
+
+```
+
+```
 
 补全功能使用了 YouCompleteMe, 但是这个比较难以编译, 所以只是安装没有编译.
 
@@ -165,9 +181,6 @@ git submodule update --init --recursive
 python3 install.py --clangd-completer
 ```
 
-### 项目配置
-
-目的是让 clang 找到那些头文件.
 
 
 ### 5.2.1. rust 支持(optional)
