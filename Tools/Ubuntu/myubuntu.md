@@ -133,4 +133,6 @@ https://blog.csdn.net/kan2016/article/details/90411137
 
 # 软件卸载
 
-通过 `dpkg --list | grep -i XXX` 查找相关 package, 好处在于 有
+通过 `dpkg --list | grep -i XXX` 查找相关 package, 好处在于可以查找 description 中的信息
+
+然后通过 `apt remove XXX && sudo apt autoremove` 卸载
