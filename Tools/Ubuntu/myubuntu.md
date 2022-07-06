@@ -142,5 +142,30 @@ https://blog.csdn.net/kan2016/article/details/90411137
 
 # 网络
 
-systemctl status NetworkManager
+有两套网络管理软件：server 版对应 netplan，desktop 版对应NetworkManager。可能因此netplan的默认renderer仍然没有改成NetworkManager。
 
+全部让通过 NetworkManager 管理
+
+```
+# sudo apt install netplan.io
+# sudo apt install network-manager
+```
+
+```
+$ cat /etc/netplan/01-network-manager-all.yaml
+# Let NetworkManager manage all devices on this system
+network:
+  version: 2
+  renderer: NetworkManager
+  ethernets:
+    ens33:
+      dhcp4: true
+```
+
+`netplan apply`
+
+https://blog.csdn.net/liyilong2000/article/details/113705942
+
+
+
+systemctl status NetworkManager
