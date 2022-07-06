@@ -9,6 +9,8 @@
 - [4. 功能开启](#4-功能开启)
 - [5. complete 插件](#5-complete-插件)
   - [5.1. Lsp](#51-lsp)
+  - [错误1](#错误1)
+  - [错误2](#错误2)
   - [5.2. YouCompleteMe 设置](#52-youcompleteme-设置)
     - [5.2.1. rust 支持(optional)](#521-rust-支持optional)
 - [6. Rust(Optional)](#6-rustoptional)
@@ -121,9 +123,23 @@ LSP: `let g:feat_enable_lsp=1`
 
 需要`:LspInstallServer`
 
+## 错误1
+
+```
+apt update
+apt install libz3-dev
+apt-cache show libz3-dev |grep -i version
+```
+
+
 ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4.8
 
 叫做.clang_xxxx之类的
+
+## 错误2
+
+"Retrieving declaration not supported for c"
+
 
 ## 5.2. YouCompleteMe 设置
 
