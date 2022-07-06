@@ -7,13 +7,12 @@
 - [2. 下载字体](#2-下载字体)
 - [3. 下载 vim 配置](#3-下载-vim-配置)
 - [4. 功能开启](#4-功能开启)
-- [项目配置](#项目配置)
 - [5. complete 功能](#5-complete-功能)
   - [5.1. asynccomplete](#51-asynccomplete)
-    - [错误1](#错误1)
-    - [错误2](#错误2)
   - [5.2. YouCompleteMe](#52-youcompleteme)
     - [5.2.1. rust 支持(optional)](#521-rust-支持optional)
+- [lsp 功能](#lsp-功能)
+    - [错误2](#错误2)
 - [6. Rust(Optional)](#6-rustoptional)
   - [6.1. 语法增强](#61-语法增强)
   - [6.2. 代码片段](#62-代码片段)
@@ -110,13 +109,6 @@ let g:feat_enable_help=1
 let g:vinux_version='vinux V1.2.0-dev @8.2.2434'
 ```
 
-
-# 项目配置
-
-
-
-目的是让 clang 找到那些头文件.
-
 # 5. complete 功能
 
 ```
@@ -127,40 +119,17 @@ let g:feat_enable_complete=1
 
 `let g:complete_plugin_type.cur_val='asyncomplete'`
 
-这个是支持 lsp 功能的
-
-LSP: `let g:feat_enable_lsp=1`
-
-当然lsp的话, 
-需要`:LspInstallServer`
-
-`:LspStatus`
-
-### 错误1
-
-```
-apt update
-apt install libz3-dev
-apt-cache show libz3-dev |grep -i version
-```
-
-
-ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4.8
-
-叫做.clang_xxxx之类的
-
-### 错误2
-
-"Retrieving declaration not supported for c"
-
+vim8 以上, 这个是支持 lsp 功能的
 
 ## 5.2. YouCompleteMe
 
 ```
-
+let g:complete_plugin_type.cur_val='YouCompleteMe'
 ```
 
-补全功能使用了 YouCompleteMe, 但是这个比较难以编译, 所以只是安装没有编译.
+vim 应该 enable `+python` 或者 `+python3` feature; YouCompleteMe 不支持 lsp
+
+这个比较难以编译, 所以只是安装没有编译.
 
 YouCompleteMe 相关设置在 `rc/complete.vim` 中
 
@@ -226,6 +195,38 @@ YCM 已经没有这个配置项了
 ```
 let g:ycm_rust_src_path = '/root/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src'
 ```
+
+# lsp 功能
+
+```
+let g:feat_enable_lsp=1
+```
+
+`:LspInstallServer`, 会根据相应的文件类型安装 server, linux kernel 代码下默认是 clangd
+
+`:LspStatus`, 查看状态
+
+安装 server 错误:
+
+```
+apt update
+apt install libz3-dev
+apt-cache show libz3-dev |grep -i version
+```
+
+ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4.8
+
+叫做.clang_xxxx之类的
+
+### 错误2
+
+"Retrieving declaration not supported for c"
+
+
+
+目的是让 clang 找到那些头文件.
+
+
 
 # 6. Rust(Optional)
 
