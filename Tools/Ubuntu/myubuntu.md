@@ -9,6 +9,7 @@
 - [4. 磁盘扩容](#4-磁盘扩容)
 - [5. 网络代理](#5-网络代理)
 - [6. 重要配置](#6-重要配置)
+- [软件卸载](#软件卸载)
 
 <!-- /code_chunk_output -->
 
@@ -114,7 +115,6 @@ https://blog.csdn.net/kan2016/article/details/90411137
 
 其实在终端配置代理就可行了, 即通过 export 能解决大多数
 
-
 # 6. 重要配置
 
 * `~/.bashrc`
@@ -130,3 +130,7 @@ https://blog.csdn.net/kan2016/article/details/90411137
 * `~/.ssh/config`, 
 * `~/.tmux.conf` 和 `~/.tmux/*`
 * `~/.cargo/config` 
+
+# 软件卸载
+
+通过 `dpkg --list | grep -i XXX` 查找相关 package, 好处在于 有
