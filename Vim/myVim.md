@@ -291,7 +291,7 @@ ninja build 也支持生成，如：
 ninja -C out/Release -t compdb cxx cc > compile_commands.json
 ```
 
-meson 会自动生成：
+meson 也会自动生成：
 
 ```
 meson build # generates compile_commands.json in the `build` directory
