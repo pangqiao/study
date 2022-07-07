@@ -121,7 +121,7 @@ let g:feat_enable_complete=1
 
 ## 5.1. asynccomplete
 
-`let g:complete_plugin_type.cur_val='asyncomplete'`
+`let g:complete_plugin_type.cur_val='asyncomplete.vim'`
 
 vim8 以上, 这个是支持 lsp 功能的
 
