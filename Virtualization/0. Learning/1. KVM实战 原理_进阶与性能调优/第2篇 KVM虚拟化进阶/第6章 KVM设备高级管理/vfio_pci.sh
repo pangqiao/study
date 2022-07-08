@@ -67,12 +67,12 @@ function hide_pci()
                 pre_driver=$(basename $(readlink /sys/bus/pci/devices/"$pcidev"/driver))
 
                 echo "Unbinding $pcidev from $pre_driver"
-                #echo -n "$pciid" > /sys/bus/pci/drivers/vfio-pci/remove_id
+                echo -n "$pciid" > /sys/bus/pci/drivers/vfio-pci/remove_id
                 echo -n "$pcidev" > /sys/bus/pci/devices/"$pcidev"/driver/unbind
 
                 echo "Binding $pcidev to vfio-pci"
                 echo -n "$pciid" > /sys/bus/pci/drivers/vfio-pci/new_id
-                #echo -n "$pcidev" > /sys/bus/pci/drivers/vfio-pci/bind
+                echo -n "$pcidev" > /sys/bus/pci/drivers/vfio-pci/bind
                 return $?
         fi
 
@@ -111,7 +111,7 @@ function unhide_pci() {
 
         if [ $driver != 0 ]; then
                 echo "Binding $pcidev to $driver"
-                #echo -n "$pciid" > /sys/bus/pci/drivers/$driver/new_id
+                echo -n "$pciid" > /sys/bus/pci/drivers/$driver/new_id
                 echo -n "$pcidev" > /sys/bus/pci/drivers/$driver/bind
         fi
 
