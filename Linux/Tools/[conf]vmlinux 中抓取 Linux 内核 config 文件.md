@@ -118,7 +118,7 @@ dump_config()
 }
 ```
 
-这个脚本写得有点晦涩, 大体意思是先找到 ”IKCFG_ST", 算出 kconfig data 位置, 再用 tail 取出来. 
+这个脚本写得有点晦涩, 大体意思是先找到 "IKCFG_ST", 算出 kconfig data 位置, 再用 tail 取出来. 
 
 # 4. 换个思路
 
@@ -137,7 +137,7 @@ $ egrep -abo "IKCFG_ST|IKCFG_ED" boards/loongson/ls2k/bsp/kernel/v3.10/vmlinux
 14529536:IKCFG_ED
 ```
 
-`kernel/config_data.gz` 的起始地址需要加上 ”`IKCFG_ST`" 的长度, 即 `+8: $((14508864+8))`, 而结束地址刚好是 ”`IKCFG_ED`" 的地址 `-1: $((14529536-1))`, 总的 size 是: 
+`kernel/config_data.gz` 的起始地址需要加上 "`IKCFG_ST`" 的长度, 即 `+8: $((14508864+8))`, 而结束地址刚好是 "`IKCFG_ED`" 的地址 `-1: $((14529536-1))`, 总的 size 是: 
 
 ```
 $ echo $(((14529536-1) - (14508864+8) + 1))

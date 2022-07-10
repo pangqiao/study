@@ -36,11 +36,11 @@
 8: 系统管理员可以使用的管理命令
 9: 与kernel相关的文件
     
-注: man null会显示”NULL(4)", 可以看出null是一个设备文件
+注: man null会显示"NULL(4)", 可以看出null是一个设备文件
 ```
  - man page大致分为如下部分, 见图  
  ![man page](images/man1.PNG "man page 说明")  
- - man page的数据也是存放在目录下面, 不同distribution通常有点区别, 通常在/usr/share/man目录, 不过可以通过修改man page的查询路径. /etc/man.config(有些是man.conf或manpath.conf), 更多信息通过”man man"查询. 
+ - man page的数据也是存放在目录下面, 不同distribution通常有点区别, 通常在/usr/share/man目录, 不过可以通过修改man page的查询路径. /etc/man.config(有些是man.conf或manpath.conf), 更多信息通过"man man"查询. 
  - 查询出来的结果取决于配置文件(/etc/man.conf)的顺序, **先查询到的说明文件就先显示出来**. 
  - man -f <命令或数据>: 查询更多的说明文件. 该命令的简略写法:  whatis <命令或数据> 
  - man -k <命令或数据>: 根据关键字查询说明文件. 该命令的简略写法: apropos <命令或数据> 
@@ -58,4 +58,4 @@
 
 # 4. 其他文件
 
- - 一般, 命令或软件开发者都会将自己命令或软件的说明制作成”在线帮助文档", 会放置在/usr/share/doc这个目录下, 包括bash信息等. 
+ - 一般, 命令或软件开发者都会将自己命令或软件的说明制作成"在线帮助文档", 会放置在/usr/share/doc这个目录下, 包括bash信息等. 

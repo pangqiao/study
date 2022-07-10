@@ -602,7 +602,7 @@ __init修饰的初始化函数在内核初始化过程中调用的顺序和.init
 
 　　关于usb_init函数, 第二个问题是, 第868行的nousb表示什么?
 　　
-　　知道C语言的人都会知道nousb是一个标志, 只是不同的标志有不一样的精彩, 这里的nousb是用来让我们在启动内核的时候通过内核参数去掉USB子系统的, Linux社会是一个很人性化的世界, 它不会去逼迫我们接受USB, 一切都只关乎我们自己的需要. 不过我想我们一般来说是不会去指定nousb的吧. 如果你真的指定了nousb, 那它就只会幽怨的说一句”USB support disabled", 然后退出usb_init. 
+　　知道C语言的人都会知道nousb是一个标志, 只是不同的标志有不一样的精彩, 这里的nousb是用来让我们在启动内核的时候通过内核参数去掉USB子系统的, Linux社会是一个很人性化的世界, 它不会去逼迫我们接受USB, 一切都只关乎我们自己的需要. 不过我想我们一般来说是不会去指定nousb的吧. 如果你真的指定了nousb, 那它就只会幽怨的说一句"USB support disabled", 然后退出usb_init. 
 　　
 nousb在drivers/usb/core/usb.c文件中定义为: 
 
@@ -617,7 +617,7 @@ MODULE_PARM_DESC(autosuspend, "default autosuspend delay");
 
 kernel /boot/vmlinuz-2.6.18-kdb root=/dev/sda1 ro splash=silent vga=0x314
 
-其中的root, splash, vga等都表示内核参数. 当某一模块被编译进内核的时候, 它的模块参数便需要在kernel行来指定, 格式为”模块名.参数=值", 比如: 
+其中的root, splash, vga等都表示内核参数. 当某一模块被编译进内核的时候, 它的模块参数便需要在kernel行来指定, 格式为"模块名.参数=值", 比如: 
 
 modprobe usbcore autosuspend=2
 
@@ -625,7 +625,7 @@ modprobe usbcore autosuspend=2
 
 usbcore.autosuspend=2
 
-通过命令”modinfo -p ${modulename}"可以得知一个模块有哪些参数可以使用. 同时, 对于已经加载到内核里的模块, 它们的模块参数会列举在/sys/module /${modulename}/parameters/目录下面, 可以使用”echo -n ${value} > /sys/module/${modulename}/parameters/${parm}"这样的命令去修改. 
+通过命令"modinfo -p ${modulename}"可以得知一个模块有哪些参数可以使用. 同时, 对于已经加载到内核里的模块, 它们的模块参数会列举在/sys/module /${modulename}/parameters/目录下面, 可以使用"echo -n ${value} > /sys/module/${modulename}/parameters/${parm}"这样的命令去修改. 
 
 (3)可变参数宏. 
 
@@ -638,7 +638,7 @@ usbcore.autosuspend=2
 
 #define debug(format, ...) fprintf (stderr, format, __VA_ARGS__)
 
-里面的”…"就表示可变参数, 调用时, 它们就会替代宏体里的__VA_ARGS__. GCC总是会显得特立独行一些, 它支持更复杂的形式, 可以给可变参数取个名字, 比如
+里面的"…"就表示可变参数, 调用时, 它们就会替代宏体里的__VA_ARGS__. GCC总是会显得特立独行一些, 它支持更复杂的形式, 可以给可变参数取个名字, 比如
 
 #define debug(format, args...) fprintf (stderr, format, args)
 
@@ -714,7 +714,7 @@ Documentation/HOWTO
 
 7. 经典书籍
 
-有关内核的书籍可以用汗牛充栋来形容, 不过只有一些经典的神作经住了考验. 首先是5本久经考验的神作(个人概括为”2+1+2", 第一个2是指2本全面讲 解内核的书, 中间的1指1本讲解驱动开发的书, 后面的2则指2本有关内核具体子系统的书, 你是否想到了某某广告里三个人突然站起单臂齐举高呼”1比1 比 1"的场景?). 
+有关内核的书籍可以用汗牛充栋来形容, 不过只有一些经典的神作经住了考验. 首先是5本久经考验的神作(个人概括为"2+1+2", 第一个2是指2本全面讲 解内核的书, 中间的1指1本讲解驱动开发的书, 后面的2则指2本有关内核具体子系统的书, 你是否想到了某某广告里三个人突然站起单臂齐举高呼"1比1 比 1"的场景?). 
 
 《Linux内核设计与实现》
 

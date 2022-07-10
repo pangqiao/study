@@ -59,7 +59,7 @@ type HostPriority struct {
 type HostPriorityList []HostPriority
 ```
 
-着重分析一下这2个type, 虽然很简单, 还是有必要啰嗦一下, 必须记在心里. **HostPriority**这个struct的属性是*Host*和*Score*, 一个是string一个是int, 所以很明显**HostPriority**所能够保存的信息是一个节点的名字和分值, 再仔细一点说就是这个结构保存的是一个node在一个priority算法计算后所得到的结果; 然后看**HostPriorityList**类型, 这个类型是上一个类型的”集合", 集合表达的是一个node多个算法还是多个node一个算法呢？稍微思考一下可以知道**HostPriorityList**中存的是多个Host和Score的组合, 所以**HostPriorityList**这个结构是要保存一个算法作用于所有node之后, 得到的所有node的Score信息的. (这里我们先理解成一个算法的结果, 作为函数返回值这里肯定是要保留所有算法作用后的最终node的Score, 所以函数后半部分肯定有combine分值的步骤. )
+着重分析一下这2个type, 虽然很简单, 还是有必要啰嗦一下, 必须记在心里. **HostPriority**这个struct的属性是*Host*和*Score*, 一个是string一个是int, 所以很明显**HostPriority**所能够保存的信息是一个节点的名字和分值, 再仔细一点说就是这个结构保存的是一个node在一个priority算法计算后所得到的结果; 然后看**HostPriorityList**类型, 这个类型是上一个类型的"集合", 集合表达的是一个node多个算法还是多个node一个算法呢？稍微思考一下可以知道**HostPriorityList**中存的是多个Host和Score的组合, 所以**HostPriorityList**这个结构是要保存一个算法作用于所有node之后, 得到的所有node的Score信息的. (这里我们先理解成一个算法的结果, 作为函数返回值这里肯定是要保留所有算法作用后的最终node的Score, 所以函数后半部分肯定有combine分值的步骤. )
 
 ## PrioritizeNodes整体流程
 
@@ -77,7 +77,7 @@ if len(priorityConfigs) == 0 && len(extenders) == 0 {
     // 这个result是要当作返回值的, HostPriorityList类型前面唠叨了很多了, 大家得心里有数; 
    result := make(schedulerapi.HostPriorityList, 0, len(nodes))
    for i := range nodes {
-       // 这一行代码是唯一的”逻辑了", 下面直到for结束都是简单代码; 所以我们看一下EqualPriorityMap
+       // 这一行代码是唯一的"逻辑了", 下面直到for结束都是简单代码; 所以我们看一下EqualPriorityMap
        // 函数的作用就行了. 这里我不贴代码, 这个函数很短, 作用就是设置每个node的Score相同(都为1)
        // hostPriority的类型也就是schedulerapi.HostPriority类型, 再次强调这个类型是要烂熟于心的; 
       hostPriority, err := EqualPriorityMap(pod, meta, nodeNameToInfo[nodes[i].Name])
@@ -111,7 +111,7 @@ results := make([]schedulerapi.HostPriorityList, len(priorityConfigs), len(prior
 
 ### Old Priority Function
 
-我们既然讲到”老式", 后面肯定有对应的”新式". 虽然这种函数已经DEPRECATED了, 不过对于我们学习掌握优选流程还是很有帮助的. 默认的优选算法里其实也只有1个是这在old形式的了: 
+我们既然讲到"老式", 后面肯定有对应的"新式". 虽然这种函数已经DEPRECATED了, 不过对于我们学习掌握优选流程还是很有帮助的. 默认的优选算法里其实也只有1个是这在old形式的了: 
 
 ![1552985082506](image/priority/1552985082506.png)
 
@@ -450,4 +450,4 @@ func NormalizeReduce(maxPriority int, reverse bool) algorithm.PriorityReduceFunc
 - Function: 一个算法一次性计算出所有node的Score, 这个Score的范围是规定的[0-10]; 
 - Map-Reduce: 一个Map算法计算1个node的Score, 这个Score可以灵活处理, 可能是20, 可能是-3; Map过程并发进行; 最终得到的结果result通过Reduce归约, 将这个算法对应的所有node的分值归约为[0-10]; 
 
-本节有几张图是goland debug的截图, 我们目前还没有提到如何debug; 不过本节内容的阅读基本是不影响的. 下一节源码分析内容发出来前我会在”环境准备"这一章中增加如何开始debug的内容, 大家可以选择开始debug的时机. 
+本节有几张图是goland debug的截图, 我们目前还没有提到如何debug; 不过本节内容的阅读基本是不影响的. 下一节源码分析内容发出来前我会在"环境准备"这一章中增加如何开始debug的内容, 大家可以选择开始debug的时机. 

@@ -125,7 +125,7 @@ atrace 转储的 tracing buffer 内容, 以及载入到 Chrome 浏览器, 进行
 
 - `_mcount` 处: 除了 hook entry , 还通过修改返回地址, 来 hook return. 
 
-Linux kernel 热补丁方案, "kernel livepatch”, 便借用了 ftrace 的原理: 替换有漏洞的函数实现, 从而实现热补丁. 
+Linux kernel 热补丁方案, "kernel livepatch", 便借用了 ftrace 的原理: 替换有漏洞的函数实现, 从而实现热补丁. 
 
 更多关于 ftrace 使用, 参考[「Advanced Features of Ftrace」](https://events.static.linuxfound.org/sites/events/files/slides/linuxconjapan-ftrace-2014.pdf)
 
@@ -234,9 +234,9 @@ fail:
 
 uprobe 的工作流中, 需要**指定位置**方能埋点. 除了上述提及的函数 **entry** & **return**, 在**函数中间某处埋点**, 意味着要**反汇编**, 找到源代码行对应汇编地址, 有些反人类. 
 
-于是, 可以**预先在代码中埋”标记**", 再通过 uprobe 找到”标记", 进行**埋点** —— [**USDT**(User Statically-Defined Tracing)](https://lwn.net/Articles/753601/) 就是这样一个技术, 其实现简介参见这个链接. 
+于是, 可以**预先在代码中埋"标记**", 再通过 uprobe 找到"标记", 进行**埋点** —— [**USDT**(User Statically-Defined Tracing)](https://lwn.net/Articles/753601/) 就是这样一个技术, 其实现简介参见这个链接. 
 
-节末, 再提一个 uprobe 应用 ”[malloc() Flame Graph](http://www.brendangregg.com/FlameGraphs/memoryflamegraphs.html)" , 通过埋点 malloc() / free() 来剖析目标进程的内存使用情况, 分析是否存在泄漏. 
+节末, 再提一个 uprobe 应用 "[malloc() Flame Graph](http://www.brendangregg.com/FlameGraphs/memoryflamegraphs.html)" , 通过埋点 malloc() / free() 来剖析目标进程的内存使用情况, 分析是否存在泄漏. 
 
 # 7. 性能计数采样工作原理
 
@@ -244,11 +244,11 @@ uprobe 的工作流中, 需要**指定位置**方能埋点. 除了上述提及�
 - 手机上: 需要有效降低延时; 
 - 计算密集型的神经网络中: GPU 需要极致优化的 kernel. 
 
-借助诸如**硬件性能监控单元**(PMU), 可以统计高速硬件上的各种 ”塞车" 事件, 指出程序为何跑的慢. 进一步对其采样, 还可将 ”塞车事件", 对应到造成 ”塞车" 的热点代码行上. 
+借助诸如**硬件性能监控单元**(PMU), 可以统计高速硬件上的各种 "塞车" 事件, 指出程序为何跑的慢. 进一步对其采样, 还可将 "塞车事件", 对应到造成 "塞车" 的热点代码行上. 
 
->[”Cache Line 伪共享发现与优化”](https://yq.aliyun.com/articles/465504)一文, 介绍了如何发现名为 ”Cache Line 伪共享" 的 ”塞车事件", 并对应到代码行上. 
+>["Cache Line 伪共享发现与优化"](https://yq.aliyun.com/articles/465504)一文, 介绍了如何发现名为 "Cache Line 伪共享" 的 "塞车事件", 并对应到代码行上. 
 
-下图简示了采样的工作原理: 当 ”塞车" 计数达到采样频率时, 产生一次中断, 转储现场, 从而回溯到代码行和相关上下文. 
+下图简示了采样的工作原理: 当 "塞车" 计数达到采样频率时, 产生一次中断, 转储现场, 从而回溯到代码行和相关上下文. 
 
 图7:
 

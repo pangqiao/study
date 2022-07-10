@@ -117,7 +117,7 @@ Examples are:
 weight = w1_multiplier * norm(w1) + w2_multiplier * norm(w2) + ...
 ```
 
-每一项都由”权重系数"(wN_multiplier)乘以”称重值"(norm(wN)), ”权重系数"通过配置文件获取, ”称重值"由”称重对象"(Weight Object)动态生成, 目前可用的”称重对象"主要有: RAMWeigher, DiskWeigher, MetricsWeigher, IoOpsWeigher, PCIWeigher, ServerGroupSoftAffinityWeigher和ServerGroupSoftAntiAffinityWeigher. 
+每一项都由"权重系数"(wN_multiplier)乘以"称重值"(norm(wN)), "权重系数"通过配置文件获取, "称重值"由"称重对象"(Weight Object)动态生成, 目前可用的"称重对象"主要有: RAMWeigher, DiskWeigher, MetricsWeigher, IoOpsWeigher, PCIWeigher, ServerGroupSoftAffinityWeigher和ServerGroupSoftAntiAffinityWeigher. 
 
 ## 1.3 常见策略
 

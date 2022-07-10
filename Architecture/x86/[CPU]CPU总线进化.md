@@ -52,7 +52,7 @@ QPI的全称是**快速通道互联**其实QPI总线在早期已经用于**安�
 
 # 5 UPI(Ultra Path Interconnect)
 
-Ultra Path Interconnect(超级通道互连)数据传输率可达9.6GT/s、10.4GT/s带宽更足灵活性更强每条消息可以发送多个请求. Intel还曾经用过”KTI"(Keizer Technology Interconnect)的名字. 
+Ultra Path Interconnect(超级通道互连)数据传输率可达9.6GT/s、10.4GT/s带宽更足灵活性更强每条消息可以发送多个请求. Intel还曾经用过"KTI"(Keizer Technology Interconnect)的名字. 
 
 从Skylake\-SP(Scalable Processor)微架构处理器(即Intel Xeon Scalable)开始, 采用了新一代高速互连UPI(Ultra Path Interconnect)系统汇流排设计来取现有的QPI系统汇流排新Xeon Scalable系列同样搭配有最多3个UPI系统汇流排UPI最高速度可以达到每秒最高10.4GT至于原本Xeon E5 v4的QPI最高只到9.6GT/s
 

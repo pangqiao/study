@@ -529,10 +529,10 @@ static void __acct_update_integrals(struct task_struct *tsk,
     trace_sched_process_exit(tsk);
 ```
 
-**释放用户空间的”信号量"**
+**释放用户空间的"信号量"**
 
 ```c
-exit_sem(tsk);   /*  释放用户空间的”信号量"  */
+exit_sem(tsk);   /*  释放用户空间的"信号量"  */
 ```
 遍历current->sysvsem.undo\_list链表, 并**清除进程所涉及的每个IPC信号量的操作痕迹**
 

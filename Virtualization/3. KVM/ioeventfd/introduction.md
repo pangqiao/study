@@ -359,7 +359,7 @@ static int __kvm_io_bus_write(struct kvm_vcpu *vcpu, struct kvm_io_bus *bus,
 ```
 
 * 1: 用于获得 bus 上由 `kvm_io_range` 指定的具体**地址和长度范围内**的**第一个设备**的 id
-* 2: 然后在 bus 的这个**地址范围内**, 针对**每一个设备**调用 `kvm_iodevice_write`, 该函数会调用**每个设备**之前注册好的 `kvm_io_device_ops` 操作函数 `kvm_io_device->write()` 触发 eventfd, 对于 ioeventfd ”设备”来说, 就是 `ioeventfd_write`
+* 2: 然后在 bus 的这个**地址范围内**, 针对**每一个设备**调用 `kvm_iodevice_write`, 该函数会调用**每个设备**之前注册好的 `kvm_io_device_ops` 操作函数 `kvm_io_device->write()` 触发 eventfd, 对于 ioeventfd "设备"来说, 就是 `ioeventfd_write`
 
 ```cpp
 // "virt/kvm/eventfd.c"

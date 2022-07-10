@@ -19,9 +19,9 @@
 ;;
 ;; 说明: 
 ;; 1) 模块开始点是 SETUP_SEGMENT
-;; 2) 模块头的存放是”模块 size"
+;; 2) 模块头的存放是"模块 size"
 ;; 3) load_module() 函数将模块加载到 SETUP_SEGMENT 位置上
-;; 4) SETUP 模块的”入口点"是: SETUP_SEGMENT + 0x18
+;; 4) SETUP 模块的"入口点"是: SETUP_SEGMENT + 0x18
         
         [SECTION .text]
         org SETUP_SEGMENT

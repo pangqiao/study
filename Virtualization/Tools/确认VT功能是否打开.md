@@ -70,9 +70,9 @@ Intel硬件虚拟化技术大致分为如下3个类别(这个顺序也基本上�
 
 ### 处理器虚拟化
 
-在x86和x86\-64平台中, **Intel**系列**CPU支持虚拟化**的标志为”**vmx**", **AMD**系列CPU的标志为”**svm**". 
+在x86和x86\-64平台中, **Intel**系列**CPU支持虚拟化**的标志为"**vmx**", **AMD**系列CPU的标志为"**svm**". 
 
-所以可以用以下命令行查看”vmx"或者”svm"标志: 
+所以可以用以下命令行查看"vmx"或者"svm"标志: 
 
 ```
 [root@kvm-host ~]# grep -E "svm|vmx" /proc/cpuinfo
@@ -83,7 +83,7 @@ Intel硬件虚拟化技术大致分为如下3个类别(这个顺序也基本上�
 对于内存虚拟化**EPT**以及**vpid**的支持查询
 
 ```
-[root@kvm-host ~]# grep -E ”ept|vpid" /proc/cpuinfo 
+[root@kvm-host ~]# grep -E "ept|vpid" /proc/cpuinfo 
 ```
 
 如果查找到了表示你当前的CPU是**支持虚拟化功能**的, 但是**不代表你现在的VT功能是开启**的. 

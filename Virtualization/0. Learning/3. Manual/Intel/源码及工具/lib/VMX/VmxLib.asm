@@ -1031,7 +1031,7 @@ set_realmode_guest_segment:
 ; output:
 ;       none
 ; 描述: 
-;       1)设置 guest 使用I/O无条件退VM, 这时关闭”I/O bitmap"功能
+;       1)设置 guest 使用I/O无条件退VM, 这时关闭"I/O bitmap"功能
 ;-------------------------------------------------------------------        
 set_guest_unconditional_ioexit:
         ;;

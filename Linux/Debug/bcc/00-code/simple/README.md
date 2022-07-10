@@ -200,7 +200,7 @@ can be stored within map.
 
 		BPF_PROG_TYPE_PERF_EVENT,
 
-	insns: 	is pointer to ”struct bpf_insn" which has bpf instruction to
+	insns: 	is pointer to "struct bpf_insn" which has bpf instruction to
 		be executed by in-kernel bpf VM.
 
 	insn_cnt: total number of instructions present at insns.
@@ -228,7 +228,7 @@ compile this code we get two executable, memcpy_kprobe and memcpy_stat.
 Lets first see what memcpy_kprobe* files do.
 
 For each application we have one *_kern file and another *_user file.
-*_kern file has a function ”int bpf_prog1(struct pt_regs *ctx)".  This
+*_kern file has a function "int bpf_prog1(struct pt_regs *ctx)".  This
 function is executed in kernel, so it can access kernel variable and
 functions. memcpy_kprobe_kern.c  has three section mappings for program,
 license and version respectively. Data from these sections are made part of
@@ -237,7 +237,7 @@ loaded bpf instructions as per prog_type attribute. So, bpf code in
 memcpy_kprobe_kern.c will be executed when a kprobe instrumented at the
 entry of kernel memcpy() is hit. When this bpf code is executed, it will
 read 3rd argument of memcpy() ie size of copy and then will print one
-statement for ”memcpy size" in trace buffer. memcpy_kprobe_user.c loads
+statement for "memcpy size" in trace buffer. memcpy_kprobe_user.c loads
 kernel program and keeps on reading trace buffer to show what kernel ebpf
 program is writing into it.
 

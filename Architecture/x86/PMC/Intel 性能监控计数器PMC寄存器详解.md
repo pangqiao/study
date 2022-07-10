@@ -65,7 +65,7 @@ IA32_PERFEVTSELx寄存器的bit位布局如下:
 - 16: USR (user mode) flag设置仅对用户模式(privilege levels 1, 2 or 3)进行计数可以和OS flag一起使用. 
 - 17: OS (operating system mode) flag设置仅对内核模式(privilege levels 0)进行计数可以和USR flag一起使用. 
 - 18: E (edge detect) flag
-- 19: PC (pin control) flag如果设置为1那么当性能监视事件发生时逻辑处理器就会增加一个计数并且”toggles the PMi pins"; 如果清零那么当性能计数溢出时处理器就会”toggles the PMi pins". ”toggles the PMi pins"不好翻译其具体定义为: ”The toggling of a pin is defined as assertion of the pin for a single bus clock followed by deassertion."对于此处我的理解也就是把PMi针脚激活一下从而触发一个PMI中断. 
+- 19: PC (pin control) flag如果设置为1那么当性能监视事件发生时逻辑处理器就会增加一个计数并且"toggles the PMi pins"; 如果清零那么当性能计数溢出时处理器就会"toggles the PMi pins". "toggles the PMi pins"不好翻译其具体定义为: "The toggling of a pin is defined as assertion of the pin for a single bus clock followed by deassertion."对于此处我的理解也就是把PMi针脚激活一下从而触发一个PMI中断. 
 - 20: INT (APIC interrupt enable) flag如果设置为1当性能计数溢出时就会通过local APIC来触发逻辑处理器产生一个异常. 
 - 21: 保留
 - 22: EN (Enable Counters) Flag如果设置为1性能计数器生效否则被禁用. 

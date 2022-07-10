@@ -26,7 +26,7 @@ When a tuple is returned, it must be between two and five elements long. Optiona
 
 A callable object that will be called to create the initial version of the object. The next element of the tuple will provide arguments for this callable, and later elements provide additional state information that will subsequently be used to fully reconstruct the pickled data.
 
-In the unpickling environment this object must be either a class, a callable registered as a ”safe constructor" (see below), or it must have an attribute __safe_for_unpickling__ with a true value. Otherwise, an UnpicklingError will be raised in the unpickling environment. Note that as usual, the callable itself is pickled by name.
+In the unpickling environment this object must be either a class, a callable registered as a "safe constructor" (see below), or it must have an attribute __safe_for_unpickling__ with a true value. Otherwise, an UnpicklingError will be raised in the unpickling environment. Note that as usual, the callable itself is pickled by name.
 
 A tuple of arguments for the callable object.
 

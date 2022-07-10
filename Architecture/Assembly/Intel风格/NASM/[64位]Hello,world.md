@@ -31,7 +31,7 @@ _start:
 root@Gerry:/home/project/nasm# nasm -f elf64 -o hello-world.o  hello-world.asm
 ```
 
-”-f elf64"说明让nasm生成一个elf64格式的目标文件. 
+"-f elf64"说明让nasm生成一个elf64格式的目标文件. 
 
 **通过hexdump工具查看文件的机器码适用于所有文件**
 

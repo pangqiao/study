@@ -6,11 +6,11 @@
 
 2. 搜索
 
-in:name example 名字中有”example"
+in:name example 名字中有"example"
 
-in:readme example readme中有”example"
+in:readme example readme中有"example"
 
-in:description example 描述中有”example"
+in:description example 描述中有"example"
 
 stars:>1000 star>1000
 

@@ -18,7 +18,7 @@
 
 ![2021-09-14-22-22-49.png](./images/2021-09-14-22-22-49.png)
 
-在`acpi_find_root_pointer()`函数中, 会先后在EBDA和0x000E0000 到0x000FFFFF的物理地址范围内调用`acpi_tb_scan_memory_for_rsdp()`函数来检测RSDP表的Signature ”RSD PTR". 
+在`acpi_find_root_pointer()`函数中, 会先后在EBDA和0x000E0000 到0x000FFFFF的物理地址范围内调用`acpi_tb_scan_memory_for_rsdp()`函数来检测RSDP表的Signature "RSD PTR". 
 
 ![2021-09-14-22-23-16.png](./images/2021-09-14-22-23-16.png)
 

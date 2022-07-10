@@ -12,7 +12,7 @@ https://lore.kernel.org/linux-fsdevel/CAJfpegsxgnSRUW-E5HM3uT5QfGyUtn_v=i4Ppkkku
 > Eric W. Biederman
 > 重点是不要欺骗特权应用程序, 而实际上应该更深入地考虑的一些次要效果却被忽略了. 
 
-从理论上讲, 该解决方案也很简单: 将**非特权私有命名空间**中的mount标记为”易失性"(volatile), 并在 unlink 类型操作中分解. 
+从理论上讲, 该解决方案也很简单: 将**非特权私有命名空间**中的mount标记为"易失性"(volatile), 并在 unlink 类型操作中分解. 
 
 > Andy Lutomirski
 > 我实际上更喜欢相反的情况: 无特权的挂载不会阻止 unlink 和 rename.  如果该dentry消失了, 那么在mount点没有文件的情况下, 该挂载仍将存在.  (网络文件系统已支持此功能. )
@@ -27,7 +27,7 @@ https://lore.kernel.org/linux-fsdevel/CAJfpegsxgnSRUW-E5HM3uT5QfGyUtn_v=i4Ppkkku
 > 我认为真正的技术障碍是在某个随机mount命名空间中找到mount t.  一旦我们可以相对有效地做到这一点, 其余的就变得简单了. 
 
 > Miklos Szeredi
-> 我们已经在Dentry上hashed了一个”struct mountpoint".  在那个挂载点上链接挂载是微不足道的.  我们需要一个MNT_VOLATILE标志, 仅此而已.  如果我们担心遍历Dentry上的mount列表以检查非易失性 mount , 则还可以为struct mountpoint添加一个单独的volatile计数器, 并为Dentry添加一个匹配标志.  但是我认为那不是真的必要. 
+> 我们已经在Dentry上hashed了一个"struct mountpoint".  在那个挂载点上链接挂载是微不足道的.  我们需要一个MNT_VOLATILE标志, 仅此而已.  如果我们担心遍历Dentry上的mount列表以检查非易失性 mount , 则还可以为struct mountpoint添加一个单独的volatile计数器, 并为Dentry添加一个匹配标志.  但是我认为那不是真的必要. 
 
 
 当然, 我们在网络文件系统中通过伪装 rename/unlink 方式实现, 实际上没有发生此操作. VFS坚持认为这是谎言, 而不是反映实际发生的情况. (Of course we do this in network filesystems by pretending the rename/unlink did not actually happen.  The vfs insists that it be lied to instead of mirroring what actually happened.)

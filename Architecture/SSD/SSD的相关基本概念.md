@@ -8,7 +8,7 @@
 
 IDE/SATA/MSATA/eSATA/SATA-E/M.2接口/插槽类型, 用于连接硬盘的插槽
 
-- 早期的IDE接口, 全称 Integrated Drive Electronics即”电子集成驱动器"俗称PATA并口, 是2000年以前主流的硬盘传输接口
+- 早期的IDE接口, 全称 Integrated Drive Electronics即"电子集成驱动器"俗称PATA并口, 是2000年以前主流的硬盘传输接口
 
 ![config](./images/3.png)
 

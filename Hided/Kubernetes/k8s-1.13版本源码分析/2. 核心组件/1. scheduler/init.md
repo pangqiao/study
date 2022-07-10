@@ -8,7 +8,7 @@
 
 ## 从 --config 开始
 
-如果我们编译出来一个 **kube-scheduler** 二进制文件, 运行`./kube-scheduler -h`后会看到很多的帮助信息, 这些信息是分组的, 比如第一组 Misc, 差不多是”大杂烩"的意思, 不好分类的几个 flag, 其实也是最重要的几个 flag, 如下: 
+如果我们编译出来一个 **kube-scheduler** 二进制文件, 运行`./kube-scheduler -h`后会看到很多的帮助信息, 这些信息是分组的, 比如第一组 Misc, 差不多是"大杂烩"的意思, 不好分类的几个 flag, 其实也是最重要的几个 flag, 如下: 
 
 ![1554085596345](image/init/1554085596345.png)
 
@@ -40,7 +40,7 @@ func (o *Options) Flags() (nfs apiserverflag.NamedFlagSets) {
 上述代码中有几个点可以关注到: 
 
 1. FlagSet 的含义, 命令行输出的分组和这里的分组是对应的; 
-2. 除了认证授权、选举等”非关键"配置外, 其他配置基本 Deprecated 了, 也就意味着建议使用 config file; 
+2. 除了认证授权、选举等"非关键"配置外, 其他配置基本 Deprecated 了, 也就意味着建议使用 config file; 
 
 上面代码中可以看到`o.ConfigFile`接收了**config**配置, 我们看看Option类型是什么样子的~
 

@@ -1,5 +1,5 @@
 
-[前面的文章](https://zhuanlan.zhihu.com/p/72998605)提到”什么情况下触发direct reclaim, 什么情况下又会触发kswapd, 是由内存的watermark决定的", 那这个"watermark"到底是如何发挥作用的呢？
+[前面的文章](https://zhuanlan.zhihu.com/p/72998605)提到"什么情况下触发direct reclaim, 什么情况下又会触发kswapd, 是由内存的watermark决定的", 那这个"watermark"到底是如何发挥作用的呢？
 
 # kswapd 与 watermark
 

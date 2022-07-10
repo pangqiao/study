@@ -18,7 +18,7 @@
 
 第二步: Cargo 学习
 
-* 不要急于求成, 先熟悉编程语言”周边工具", 这样可以大大提高你学习和使用 Rust 的效率. 我推荐先去熟悉 cargo: Rust 的项目和依赖管理工具. 具体的方法是直接看一本叫做 [The Cargo Book](https://doc.rust-lang.org/cargo/index.html) 的书籍. 
+* 不要急于求成, 先熟悉编程语言"周边工具", 这样可以大大提高你学习和使用 Rust 的效率. 我推荐先去熟悉 cargo: Rust 的项目和依赖管理工具. 具体的方法是直接看一本叫做 [The Cargo Book](https://doc.rust-lang.org/cargo/index.html) 的书籍. 
 * 看 The Cargo Book 的同时在自己配置好的开发环境里面尝试使用 cargo , 通过实践来学习 `cargo.toml` 的作用和写法, 命令, 理解为什么 `cargo.lock` 在工程作为一个 lib 的时候要加入 `.gitignore`, 而作为 command-line application 的时候又要加入 `.git`这类的东西.
 
 第三步: Rust 语言学习

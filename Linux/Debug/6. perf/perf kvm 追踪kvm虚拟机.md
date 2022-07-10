@@ -75,9 +75,9 @@ perf kvm有几个变体:
 在host中运行下面命令: 
 
 ```
-# ssh guest ”cat /proc/kallsyms" > /tmp/guest.kallsyms
+# ssh guest "cat /proc/kallsyms" > /tmp/guest.kallsyms
 
-# ssh guest ”cat /proc/modules" > /tmp/guest.modules
+# ssh guest "cat /proc/modules" > /tmp/guest.modules
 ```
 
 其中guest为host中guest os的名字, 我们也可以用IP地址来代替guest的名字. 

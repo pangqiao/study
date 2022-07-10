@@ -3,7 +3,7 @@
 > 
 参考: [廖雪峰](http://www.liaoxuefeng.com/wiki/001374738125095c955c1e6d8bb493182103fac9270762a000/001386832648091917b035146084c43b05754ec9408dfaf000)
 
-最早的软件都是运行在大型机上的, 软件使用者通过”哑终端"登陆到大型机上去运行软件. 后来随着PC机的兴起, 软件开始主要运行在桌面上, 而数据库这样的软件运行在服务器端, 这种Client/Server模式简称CS架构. 
+最早的软件都是运行在大型机上的, 软件使用者通过"哑终端"登陆到大型机上去运行软件. 后来随着PC机的兴起, 软件开始主要运行在桌面上, 而数据库这样的软件运行在服务器端, 这种Client/Server模式简称CS架构. 
 
 随着互联网的兴起, 人们发现, CS架构不适合Web, 最大的原因是Web应用程序的修改和升级非常迅速, 而CS架构需要每个客户端逐个升级桌面App, 因此, Browser/Server模式开始流行, 简称BS架构. 
 
@@ -43,7 +43,7 @@ HTTP是在网络上传输HTML的协议, 用于浏览器和服务器的通信.
 
 我们需要在浏览器很方便地调试我们的Web应用, 而Chrome提供了一套完整地调试工具, 非常适合Web开发. 
 
-安装好Chrome浏览器后, 打开Chrome, 在菜单中选择”视图", ”开发者", ”开发者工具", 就可以显示开发者工具. 
+安装好Chrome浏览器后, 打开Chrome, 在菜单中选择"视图", "开发者", "开发者工具", 就可以显示开发者工具. 
 
 Elements显示网页的结构, Network显示浏览器和服务器的通信. 我们点Network, 确保第一个小红灯亮着, Chrome就会记录所有浏览器和服务器之间的通信:
 
@@ -87,7 +87,7 @@ Content-Type: text/html
 
 Content-Type指示响应的内容, 这里是text/html表示HTML网页. 请注意, 浏览器就是依靠Content-Type来判断响应的内容是网页还是图片, 是视频还是音乐. 浏览器并不靠URL来判断响应的内容, 所以, 即使URL是http://example.com/abc.jpg, 它也不一定就是图片. 
 
-HTTP响应的Body就是HTML源码, 我们在菜单栏选择”视图", ”开发者", ”查看网页源码"就可以在浏览器中直接查看HTML源码: 
+HTTP响应的Body就是HTML源码, 我们在菜单栏选择"视图", "开发者", "查看网页源码"就可以在浏览器中直接查看HTML源码: 
 
 ![新浪首页](images/web4.jpg)
 
@@ -167,7 +167,7 @@ HTTP响应如果包含body, 也是通过\r\n\r\n来分隔的. 请再次注意, B
 
 当存在Content-Encoding时, Body数据是被压缩的, 最常见的压缩方式是gzip, 所以, 看到Content-Encoding: gzip时, 需要将Body数据先解压缩, 才能得到真正的数据. 压缩的目的在于减少Body的大小, 加快网络传输. 
 
-要详细了解HTTP协议, 推荐”[HTTP: The Definitive Guide](http://shop.oreilly.com/product/9781565925090.do)"一书, 非常不错, 有中文译本: 
+要详细了解HTTP协议, 推荐"[HTTP: The Definitive Guide](http://shop.oreilly.com/product/9781565925090.do)"一书, 非常不错, 有中文译本: 
 
 [HTTP权威指南](http://t.cn/R7FguRq)
 
@@ -191,7 +191,7 @@ HTTP响应如果包含body, 也是通过\r\n\r\n来分隔的. 请再次注意, B
 
 这个接口就是WSGI: Web Server Gateway Interface. 
 
-WSGI接口定义非常简单, 它只要求Web开发者实现一个函数, 就可以响应HTTP请求. 我们来看一个最简单的Web版本的”Hello, web!": 
+WSGI接口定义非常简单, 它只要求Web开发者实现一个函数, 就可以响应HTTP请求. 我们来看一个最简单的Web版本的"Hello, web!": 
 
 ```
 def application(environ, start_response):
@@ -225,7 +225,7 @@ start_response('200 OK', [('Content-Type', 'text/html')])
 
 所以application()函数必须由WSGI服务器来调用. 有很多符合WSGI规范的服务器, 我们可以挑选一个来用. 但是现在, 我们只想尽快测试一下我们编写的application()函数真的可以把HTML输出到浏览器, 所以, 要赶紧找一个最简单的WSGI服务器, 把我们的Web应用程序跑起来. 
 
-好消息是Python内置了一个WSGI服务器, 这个模块叫wsgiref, 它是用纯Python编写的WSGI服务器的参考实现. 所谓”参考实现"是指该实现完全符合WSGI标准, 但是不考虑任何运行效率, 仅供开发和测试使用. 
+好消息是Python内置了一个WSGI服务器, 这个模块叫wsgiref, 它是用纯Python编写的WSGI服务器的参考实现. 所谓"参考实现"是指该实现完全符合WSGI标准, 但是不考虑任何运行效率, 仅供开发和测试使用. 
 
 ### 运行WSGI服务
 

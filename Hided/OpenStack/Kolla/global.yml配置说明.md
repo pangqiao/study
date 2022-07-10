@@ -1,10 +1,10 @@
 1、docker_registry: "192.168.136.137:4000", 此处为配置的source的离线私有docker仓库的IP以及端口号. 
 
-2、docker_namespace: "kolla", 这个是仓库镜像的统一命名空间即是前缀, 我给的镜像的前缀就是”kolla/"开头的. 
+2、docker_namespace: "kolla", 这个是仓库镜像的统一命名空间即是前缀, 我给的镜像的前缀就是"kolla/"开头的. 
 
-3、kolla_internal_vip_address: "17.17.62.2" , 这个是openstack的内部管理网络地址, 走的是”ens37"网卡. 
+3、kolla_internal_vip_address: "17.17.62.2" , 这个是openstack的内部管理网络地址, 走的是"ens37"网卡. 
 
-4、kolla_external_vip_address: "192.168.136.136" , 这个是openstack的外部管理网络地址, 走的是”ens33"网卡, 对外可以访问. 选取的外网136网段的一个空白的没有使用过的地址. 
+4、kolla_external_vip_address: "192.168.136.136" , 这个是openstack的外部管理网络地址, 走的是"ens33"网卡, 对外可以访问. 选取的外网136网段的一个空白的没有使用过的地址. 
 
 5、network_interface: "ens37", 这个是openstack内部的api服务都会绑定到这个网卡接口上, 除此之外, vxlan和隧道和存储网络也默认走这个网络接口. 
 

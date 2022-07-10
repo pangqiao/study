@@ -17,8 +17,8 @@
         
         
 ;
-; 模块开始点是 SETUP_SEG - 2, 减 2 是因为要算上模块头的存放的”模块 size"
-; load_module 加载到 SETUP_SEG-2, 实际效果是 SETUP 模块会被加载到”入口点"即: setup_entry
+; 模块开始点是 SETUP_SEG - 2, 减 2 是因为要算上模块头的存放的"模块 size"
+; load_module 加载到 SETUP_SEG-2, 实际效果是 SETUP 模块会被加载到"入口点"即: setup_entry
 ;
         org SETUP_SEG - 2
         

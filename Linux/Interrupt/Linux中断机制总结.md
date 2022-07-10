@@ -619,11 +619,11 @@ struct workqueue_struct {
 
 系统初始化阶段(init\_workqueue()): 为**所有CPU(包括离线**的)创建**两个工作线程池worker\_pool**(普通优先级和高优先级); 为每个在线CPU的每个工作线程池(每个CPU有两个)创建一个工作线程(create\_worker); 创建UNBOUND类型和ordered类型的workqueue属性, 分别两个, 对应普通优先级和高优先级, 供后续使用; alloc\_workqueue()创建几个默认的workqueue
 
-- **普通优先级BOUND类型**的**工作队列system\_wq**, 名称为”**events**", 可以理解为**默认工作队列**. 
-- **高优先级BOUND类型**的工作队列**system\_highpri\_wq** , 名称为”**events\_highpri**". 
-- **UNBOUND类型**的工作队列**system\_unbound\_wq**, 名称为”**system\_unbound\_wq**". 
-- **Freezable类型**的工作队列**system\_freezable\_wq**, 名称为”**events\_freezable**". 
-- **省电类型**的工作队列**system\_freezable\_wq**, 名称为 ”**events\_power\_efficient**". 
+- **普通优先级BOUND类型**的**工作队列system\_wq**, 名称为"**events**", 可以理解为**默认工作队列**. 
+- **高优先级BOUND类型**的工作队列**system\_highpri\_wq** , 名称为"**events\_highpri**". 
+- **UNBOUND类型**的工作队列**system\_unbound\_wq**, 名称为"**system\_unbound\_wq**". 
+- **Freezable类型**的工作队列**system\_freezable\_wq**, 名称为"**events\_freezable**". 
+- **省电类型**的工作队列**system\_freezable\_wq**, 名称为 "**events\_power\_efficient**". 
 
 创建工作线程worker(参数是worker\_pool): 获取一个ID; 工作线程池对应的内存节点分配一个worker; 在工作线程池对应的node创建一个内核线程, 名字("**kworker/u \+ CPU\_ID \+ : \+ worker\_idH**", 高优先级的才有H, UNBOUND类型的才有u); 设置线程(worker->task->flags)的PF\_NO\_SETAFFINITY标志位(防止修改CPU亲和性); 工作线程池没有绑定到CPU上, 那么设置worker标志位不绑定CPU; 将worker加到工作线程池的workers链表; 使worker进入idle状态; 唤醒worker的内核线程; 返回该worker
 
@@ -733,7 +733,7 @@ Linux内核还提供一个**workqueue机制**和**timer机制**结合的**延时
 
 对于**UNBOUND类型的workqueue**来说, 其**工作线程没有绑定到某个固定的CPU**上. 对于**UMA**机器, 它可以在**全系统的CPU**内运行; 对于**NUMA**机器, **每一个node**节点**创建一个worker\_pool**. 
 
-在**驱动开发**中, **UNBOUND类型**的**workqueue不太常用**, 举一个典型的例子, Linux内核中有一个**优化启动时间(boot time**)的新接口Asynchronous functioncalls, 实现是在kernel/asyn.c文件中. 对于一些**不依赖硬件时序**且不需要串行执行的初始化部分, 可以采用这个接口, 现在电源管理子系统中有一个选项可以把一部分外设在suspend/resume过程中的操作用异步的方式来实现, 从而优化其suspend/resume时间, 详见kemel/power/main.c 中关于”pm\_async\_enabled" 的实现. 
+在**驱动开发**中, **UNBOUND类型**的**workqueue不太常用**, 举一个典型的例子, Linux内核中有一个**优化启动时间(boot time**)的新接口Asynchronous functioncalls, 实现是在kernel/asyn.c文件中. 对于一些**不依赖硬件时序**且不需要串行执行的初始化部分, 可以采用这个接口, 现在电源管理子系统中有一个选项可以把一部分外设在suspend/resume过程中的操作用异步的方式来实现, 从而优化其suspend/resume时间, 详见kemel/power/main.c 中关于"pm\_async\_enabled" 的实现. 
 
 对于**长时间占用CPU资源**的一些负载(标记**WQ\_CPU\_INTENSIVE**), Linux内核倾向于**使用UNBOUND类型的workqueue**, 这样可以利用**系统进程调度器**来优化选择在哪个CPU上运行, 例如**drivers/md/raid5.c**驱动. 
 

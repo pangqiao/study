@@ -229,7 +229,7 @@ dm-2              0.00     0.00    0.00    0.00     0.00     0.00     0.00     0
 
 常见**linux的磁盘IO指标的缩写习惯**: **rq是request**, **r是read**, **w是write**, **qu是queue**, **sz是size**, **a是average**, **tm是time**, **svc是service**. 
 
-rrqm/s和wrqm/s: 每秒**合并的读和写请求**, ”合并的"意味着**操作系统**从**队列**中拿出**多个逻辑请求合并为一个请求**到实际磁盘. 
+rrqm/s和wrqm/s: 每秒**合并的读和写请求**, "合并的"意味着**操作系统**从**队列**中拿出**多个逻辑请求合并为一个请求**到实际磁盘. 
 
 r/s和w/s: 每秒**发送到设备**的读和写请求数. 
 
@@ -505,7 +505,7 @@ ps aux | grep mysqld | grep –v grep | awk ‘{print $2 }’ xargs kill -9
 杀掉僵尸进程: 
 
 ```
-ps –eal | awk ‘{if ($2 == ”Z"){print $4}}’ | xargs kill -9
+ps –eal | awk ‘{if ($2 == "Z"){print $4}}’ | xargs kill -9
 ```
 
 ## 2.11. strace -- 跟踪程序执行过程中系统调用及收到的信号

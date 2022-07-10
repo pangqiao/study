@@ -615,7 +615,7 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// 在home文件夹中搜索以”.cobra"为名称的config
+		// 在home文件夹中搜索以".cobra"为名称的config
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".cobra")
 	}
@@ -1097,7 +1097,7 @@ func initConfig() {
 			os.Exit(1)
 		}
 
-		// 在home文件夹中搜索以”.cobra"为名称的config
+		// 在home文件夹中搜索以".cobra"为名称的config
 		viper.AddConfigPath(home)
 		viper.SetConfigName(".cobra")
 	}

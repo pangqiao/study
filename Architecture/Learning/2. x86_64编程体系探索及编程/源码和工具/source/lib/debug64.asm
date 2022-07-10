@@ -243,7 +243,7 @@ reset_pebs_index:
 ; update_pebs_index_track(): 更新PEBS index 的轨迹
 ; 描述: 
 ;       更新 [pebs_buffer_index]变量的值, 保持检测 PEBS 中断
-;       [pebs_buffer_index] 记录着”当前"的 PEBS index 值
+;       [pebs_buffer_index] 记录着"当前"的 PEBS index 值
 ;------------------------------------------------------------
 update_pebs_index_track:
         mov rax, [pebs_index_pointer]

@@ -1093,7 +1093,7 @@ init_guest_state_area.@2:
         jnz init_guest_state_area.@3
         
         ;;
-        ;; 当 ”IA-32e mode guest"为 0 时, 清掉 LME, LMA 以及 SCE 位
+        ;; 当 "IA-32e mode guest"为 0 时, 清掉 LME, LMA 以及 SCE 位
         ;;        
         and eax, ~(EFER_LME | EFER_LMA | EFER_SCE)
 
@@ -2125,7 +2125,7 @@ init_vm_exit_control_fields:
         ;; 6) [19] - load IA32_PAT: Yes
         ;; 7) [20] - save IA32_EFER: Yes
         ;; 8) [21] - load IA32_EFER: Yes
-        ;; 9) [22] - save VMX-preemption timer value: 取决于”activity VMX-preemption timer"位
+        ;; 9) [22] - save VMX-preemption timer value: 取决于"activity VMX-preemption timer"位
         ;;
         
         ;;
@@ -2141,7 +2141,7 @@ init_vm_exit_control_fields:
 
 
         ;;
-        ;; 如果”activity VMX-preemption timer"=1时, ”save VMX-preemption timer value"=1
+        ;; 如果"activity VMX-preemption timer"=1时, "save VMX-preemption timer value"=1
         ;;
         test DWORD [ebp + PCB.ExecutionControlBuf + EXECUTION_CONTROL.PinControl], ACTIVATE_VMX_PREEMPTION_TIMER
         jz init_vm_exit_control_fields.@0

@@ -130,7 +130,7 @@ Assembly、C/C\+\+、Python、Web
 
 ## 3.7. 搜索
 
-在”理解"中搜索有多个选项. 要获得即时结果, 请使用我们的”即时搜索"功能, 该功能可在打字完成之前提供结果. 了解还提供更多自定义和复杂搜索的搜索选项, 例如正则表达式和通配符搜索. 
+在"理解"中搜索有多个选项. 要获得即时结果, 请使用我们的"即时搜索"功能, 该功能可在打字完成之前提供结果. 了解还提供更多自定义和复杂搜索的搜索选项, 例如正则表达式和通配符搜索. 
 
 ![](./images/2019-05-31-11-12-20.png)
 
@@ -196,7 +196,7 @@ Assembly、C/C\+\+、Python、Web
 
 ![](./images/2019-05-31-11-25-16.png)
 
-5. Contains:展示一个实体中的层级图, 也可以是一个文件, 一条连接线读作"x includes y”; 
+5. Contains:展示一个实体中的层级图, 也可以是一个文件, 一条连接线读作"x includes y"; 
 
 ![](./images/2019-05-31-11-25-31.png)
 
@@ -256,32 +256,32 @@ An architecture is a hierarchical aggregation of source code units (entities). A
 
 ## 6.2. Database 数据库
 
-The database is where the results of the source code analysis, as well as project settings, are stored. By default, this is a project’s ”.udb" file.
+The database is where the results of the source code analysis, as well as project settings, are stored. By default, this is a project’s ".udb" file.
 
-代码经分析后产生的中间结果, 以及工程设置保存在数据库, 其缺省扩展名为”.udb". 
+代码经分析后产生的中间结果, 以及工程设置保存在数据库, 其缺省扩展名为".udb". 
 
 ## 6.3. Entity 实体
 
-An Understand ”entity" is anything it has information about. In practice this means anything declared or used in your source code and the files that contain the project. Subroutines, variables, and source files are all examples of entities.
+An Understand "entity" is anything it has information about. In practice this means anything declared or used in your source code and the files that contain the project. Subroutines, variables, and source files are all examples of entities.
 
-Understand 描述的”实体"表示任何包含信息的事物, 具体来说, 代码中声明或 
+Understand 描述的"实体"表示任何包含信息的事物, 具体来说, 代码中声明或 
 者使用的标识、包含工程的文件、子程序、变量、源文件都可以被称为实体. 
 
 ## 6.4. Project 工程
 
-The set of source code you have analyzed and the settings and parameters chosen. A ”project file" contains the list of source files and the project settings.
+The set of source code you have analyzed and the settings and parameters chosen. A "project file" contains the list of source files and the project settings.
 
 表示源代码的集合以及相关的配置和参数, 工程文件包含源文件清单和工程设置. 
 
 ## 6.5. Relationship 关联
 
-A particular way that entities relate to one another. The names of relationships come from the syntax and semantics of a programming language. For instance, subroutine entities can have ”Call" relationships and ”CalledBy" relationships.
+A particular way that entities relate to one another. The names of relationships come from the syntax and semantics of a programming language. For instance, subroutine entities can have "Call" relationships and "CalledBy" relationships.
 
-互作用的实体之间的关系, 关联的名称来源于编程语言的语法和语义, 例如过程式实体具有”调用"和”被调用"的关联对象. 
+互作用的实体之间的关系, 关联的名称来源于编程语言的语法和语义, 例如过程式实体具有"调用"和"被调用"的关联对象. 
 
 ## 6.6. Script 脚本
 
-Generally a Perl script. These can be run from within Understand’s GUI, or externally via the ”uperl" command. The Understand Perl API provides easy and direct access to all information stored in an Understand database.
+Generally a Perl script. These can be run from within Understand’s GUI, or externally via the "uperl" command. The Understand Perl API provides easy and direct access to all information stored in an Understand database.
 通常指perl脚本, 脚本可以通过Understand 2.5的图形用户界面或者外部的脚本命令执行. Understand Perl API提供了快捷的访问Understand数据库所有信息的接口. 
 
 ## 6.7. parts 部件
@@ -448,7 +448,7 @@ Root Withs:
 
 # 12. 引用查看
 
-信息浏览器的”References"区域显示了所有引用选中实体的相关信息: 
+信息浏览器的"References"区域显示了所有引用选中实体的相关信息: 
 
 ![](./images/2019-05-31-11-41-10.png)
 

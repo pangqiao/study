@@ -129,7 +129,7 @@ void do_exit(long code)
         acct_process();
     trace_sched_process_exit(tsk);
 
-    exit_sem(tsk);   /*  释放用户空间的”信号量"  */
+    exit_sem(tsk);   /*  释放用户空间的"信号量"  */
     exit_shm(tsk);  /* 释放锁  */
     exit_files(tsk); /*  释放已经打开的文件   */
     exit_fs(tsk);   /*  释放用于表示工作目录等结构  */
