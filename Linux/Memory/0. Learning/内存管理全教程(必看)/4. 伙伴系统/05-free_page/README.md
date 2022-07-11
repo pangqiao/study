@@ -1258,7 +1258,7 @@ void free_pages(unsigned long addr, unsigned int order)
 
 
 
-`virt_to_page`将虚拟内存地址转换为指向page实例的指针. 基本上, 这是讲解内存分配函数时介绍的page_address辅助函数的逆过程.
+`virt_to_page` 将虚拟内存地址转换为指向page实例的指针. 基本上, 这是讲解内存分配函数时介绍的page_address辅助函数的逆过程.
 
 
 下图以图形化方式综述了各个内存释放函数之间的关系
