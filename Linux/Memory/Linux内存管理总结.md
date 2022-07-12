@@ -731,7 +731,7 @@ NUMA系统中存在**多个节点**, **每个结点**中可以包含**多个zone
 
 **页帧(page frame**)代表了系统内存的最小单位, 对内存中的**每个页**都会创建一个struct page的一个实例. 内核必须要**保证page结构体足够的小**. 每一页物理内存叫页帧, 以页为单位对内存进行编号, 该编号可作为页数组的索引, 又称为页帧号.
 
-不同于 struct page
+struct page 结构体存放的是 metadata. 页帧 page 大小肯定是 4K, struct page 也代表了一个物理页帧 page, 但它也可能关联了多个物理页帧 page, 里面有相关的 order 属性.
 
 ### 4.3.1. mapping & index
 
