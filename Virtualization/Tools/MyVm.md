@@ -423,7 +423,6 @@ tmpfs          tmpfs  299M  4.0K  299M   1% /run/user/0
 qemu-img create -f qcow2 data.qcow2 50G
 
 
-
 # 8. 修改镜像内容
 
 通过 `qmeu-nbd` 工具
