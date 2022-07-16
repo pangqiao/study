@@ -60,6 +60,13 @@ $1$WcWo5KOD$o6Fsb.72vc9yH3Uv.0P1h0
 apt install libguestfs-tools
 ```
 
+修改成为固定密码
+
+```
+sudo virt-customize -a CentOS-7-x86_64-GenericCloud-1703.qcow2 --root-password password:123
+```
+
+
 ```
 # guestfish --rw -a debian-amd64.qcow2
 
