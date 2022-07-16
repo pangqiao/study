@@ -35,7 +35,7 @@ qemu 有个参数配置 queues 的数目
 -device virtio-blk-pci,num-queues=2
 ```
 
-虚拟机内部查看如下：
+虚拟机内部查看如下: 
 
 ```
 root@ubuntu:/sys/block/vdb# ll mq/

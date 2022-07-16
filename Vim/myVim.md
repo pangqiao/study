@@ -238,21 +238,21 @@ ln -s  /usr/lib/x86_64-linux-gnu/libz3.so.4 /usr/lib/x86_64-linux-gnu/libz3.so.4
 
 目的是让 lsp server(clangd) 找到那些头文件.
 
-主要原因在于，C 和 C++ 这俩语言比较古老，不像 Rust 或 Golang 那样自带包管理， 因此需要外部工具来帮助 lang server 理解代码. 
+主要原因在于, C 和 C++ 这俩语言比较古老, 不像 Rust 或 Golang 那样自带包管理,  因此需要外部工具来帮助 lang server 理解代码. 
 
-对于 clangd 来说，主要有两种解决办法：
+对于 clangd 来说, 主要有两种解决办法: 
 
 ### 法一: compile_commands.json
 
-虽然 clangd 的文档里说 clangd 会在你所编辑的文件的父目录中查找 compile_commands.json， 但实际使用中老灯发现能自动加载 build/compile_commands.json 文件，不知道是 neovim hack了还是 clangd 本身支持？
+虽然 clangd 的文档里说 clangd 会在你所编辑的文件的父目录中查找 compile_commands.json,  但实际使用中老灯发现能自动加载 build/compile_commands.json 文件, 不知道是 neovim hack了还是 clangd 本身支持？
 
 #### 基于 CMake 的项目
 
-这里又分两种情况，对于基于 CMake 的项目，只需要启用 `CMAKE_EXPORT_COMPILE_COMMANDS` 即可**自动生成** `compile_commands.json` 文件。
+这里又分两种情况, 对于基于 CMake 的项目, 只需要启用 `CMAKE_EXPORT_COMPILE_COMMANDS` 即可**自动生成** `compile_commands.json` 文件. 
 
-启用 `CMAKE_EXPORT_COMPILE_COMMANDS` 的方法主要有两种：
+启用 `CMAKE_EXPORT_COMPILE_COMMANDS` 的方法主要有两种: 
 
-一是直接在**命令行参数**中指定，比如：
+一是直接在**命令行参数**中指定, 比如: 
 
 ```
 cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .
@@ -262,7 +262,7 @@ cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=1 .
 cmake -S . -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=1
 ```
 
-二是在 CMakeLists.txt 中添加：
+二是在 CMakeLists.txt 中添加: 
 
 ```
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -270,28 +270,28 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 #### 基于其它构建系统的项目
 
-对于其它构建系统 （ 主要是一些上古的 Makefile 类项目），要生成 compile_commands.json 需要用到一个叫 Bear 的工具。
+对于其它构建系统 ( 主要是一些上古的 Makefile 类项目), 要生成 compile_commands.json 需要用到一个叫 Bear 的工具. 
 
 ```
 sudo apt-get install -y bear
 ```
 
-Bear 的用法比较简单，直接在构建命令前面加 bear 即可
+Bear 的用法比较简单, 直接在构建命令前面加 bear 即可
 
 ```
 bear -- make -j16
 ```
 
-除了 Bear, 还有其它工具也能生成 `compile_commands.json`：
+除了 Bear, 还有其它工具也能生成 `compile_commands.json`: 
 
-ninja build 也支持生成，如：
+ninja build 也支持生成, 如: 
 
 ```
 # Format: ninja -t compdb rule_names... > compile_commands.json
 ninja -C out/Release -t compdb cxx cc > compile_commands.json
 ```
 
-meson 也会自动生成：
+meson 也会自动生成: 
 
 ```
 meson build # generates compile_commands.json in the `build` directory
@@ -299,22 +299,22 @@ meson build # generates compile_commands.json in the `build` directory
 
 https://github.com/nickdiego/compiledb (基于python)
 
-https://github.com/rizsotto/scan-build (python版，基于libear, uses Bear as a backend)
+https://github.com/rizsotto/scan-build (python版, 基于libear, uses Bear as a backend)
 
 ### 法二: compile_flags.txt
 
-compile_flags.txt 法主要是针对于项目中的所有文件都使用相同的 build flags 的情况。这个时候，你可以手撸一个 compile_flags.txt 来帮助 clangd 理解你的代码。
+compile_flags.txt 法主要是针对于项目中的所有文件都使用相同的 build flags 的情况. 这个时候, 你可以手撸一个 compile_flags.txt 来帮助 clangd 理解你的代码. 
 
-需要注意的是，This should contain one argument per line.
+需要注意的是, This should contain one argument per line.
 
 ```
 -xc++
 -I
 libwidget/include/
-这里 -I libwidget/include 是两个参数，因此要各放一行 （ one argument per line ）。
+这里 -I libwidget/include 是两个参数, 因此要各放一行 ( one argument per line ). 
 ```
 
-如果是相对路径，则该路径相对于 compile_flags.txt 文件所在目录。
+如果是相对路径, 则该路径相对于 compile_flags.txt 文件所在目录. 
 
 # 6. Rust(Optional)
 

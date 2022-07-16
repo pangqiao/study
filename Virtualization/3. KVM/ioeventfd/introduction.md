@@ -610,7 +610,7 @@ memory_region_transaction_commit
 						kvm_vm_ioctl(kvm_state, KVM_IOEVENTFD, &kick)
 ```
 
-即 `memory_region_add_eventfd` 最终会调用 `memory_region_transaction_commit`, 而后者会调用 `eventfd_add` 函数, 该 `eventfd_add` 函数在qemu中的定义如下：
+即 `memory_region_add_eventfd` 最终会调用 `memory_region_transaction_commit`, 而后者会调用 `eventfd_add` 函数, 该 `eventfd_add` 函数在qemu中的定义如下: 
 
 ```cpp
 // PIO
@@ -662,7 +662,7 @@ kvm_mem_ioeventfd_add
 
 # 4. 总结
 
-整个 ioeventfd 的逻辑流程如下：
+整个 ioeventfd 的逻辑流程如下: 
 
 1. QEMU 分配一个eventfd, 并将该eventfd加入KVM维护的eventfd数组中
 2. QEMU向KVM发送更新eventfd数组内容的请求

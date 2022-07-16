@@ -1,6 +1,6 @@
 为什么从 u64 到 usize 的类型转换允许使用 `as` 而不是 `From`?
 [英] Why is type conversion from u64 to usize allowed using `as` but not `From`?
-查看：21 发布时间：2022/1/13 8:15:53 rust type-conversion numbers
+查看: 21 发布时间: 2022/1/13 8:15:53 rust type-conversion numbers
 本文介绍了为什么从 u64 到 usize 的类型转换允许使用 `as` 而不是 `From`?的处理方法, 对大家解决问题具有一定的参考价值, 需要的朋友们下面随着小编来一起学习吧！
 问题描述
 使用 'as' 的第一个转换可以编译, 但使用 'From' 特征的第二个转换不会:

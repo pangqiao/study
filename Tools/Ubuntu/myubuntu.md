@@ -143,7 +143,7 @@ https://blog.csdn.net/kan2016/article/details/90411137
 
 # 网络
 
-有两套网络管理软件：server 版对应 netplan, desktop 版对应NetworkManager. 可能因此 netplan 的默认 renderer 仍然没有改成NetworkManager.
+有两套网络管理软件: server 版对应 netplan, desktop 版对应NetworkManager. 可能因此 netplan 的默认 renderer 仍然没有改成NetworkManager.
 
 全部让通过 NetworkManager 管理
 
@@ -186,8 +186,8 @@ sudo date -s MM/DD/YY //修改日期
 sudo date -s hh:mm:ss //修改时间
 ```
 
-在修改时间以后，修改硬件CMOS的时间
+在修改时间以后, 修改硬件CMOS的时间
 
 ```
-sudo hwclock --systohc //非常重要，如果没有这一步的话，后面时间还是不准
+sudo hwclock --systohc //非常重要, 如果没有这一步的话, 后面时间还是不准
 ```
