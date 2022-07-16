@@ -41,7 +41,7 @@ https://cloud-images.ubuntu.com/
 
 或者 
 
-https://cdimage.debian.org/cdimage/openstack/
+https://cdimage.debian.org/images/cloud/
 
 # 2. 镜像密码修改
 
