@@ -9,9 +9,9 @@
 - [4. 磁盘扩容](#4-磁盘扩容)
 - [5. 网络代理](#5-网络代理)
 - [6. 重要配置](#6-重要配置)
-- [软件卸载](#软件卸载)
-- [网络](#网络)
-- [时区时间](#时区时间)
+- [7. 软件卸载](#7-软件卸载)
+- [8. 网络](#8-网络)
+- [9. 时区时间](#9-时区时间)
 
 <!-- /code_chunk_output -->
 
@@ -133,7 +133,7 @@ https://blog.csdn.net/kan2016/article/details/90411137
 * `~/.tmux.conf` 和 `~/.tmux/*`
 * `~/.cargo/config`
 
-# 软件卸载
+# 7. 软件卸载
 
 通过 `dpkg --list | grep -i XXX` 查找相关 package, 好处在于可以查找 description 中的信息
 
@@ -141,7 +141,7 @@ https://blog.csdn.net/kan2016/article/details/90411137
 
 或者使用系统的 "Ubuntu Software" 来卸载
 
-# 网络
+# 8. 网络
 
 有两套网络管理软件: server 版对应 netplan, desktop 版对应NetworkManager. 可能因此 netplan 的默认 renderer 仍然没有改成NetworkManager.
 
@@ -169,7 +169,7 @@ https://blog.csdn.net/liyilong2000/article/details/113705942
 
 systemctl status NetworkManager
 
-# 时区时间
+# 9. 时区时间
 
 data -R
 
