@@ -23,8 +23,8 @@
 
 进入BIOS进行如下设置:
 
-1. Secure Boot设为Disable[禁用启动安全检查]
-2. OS Optimized设置为Others或Disabled[系统类型设置]
+1. Secure Boot设为Disable [禁用启动安全检查]
+2. OS Optimized 设置为 Others 或 Disabled [系统类型设置]
 3. CSM(Compatibility Support Module) Support设置为Yes或Enabled
 4. UEFI/Legacy Boot选项选择成UEFI only
 
