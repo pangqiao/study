@@ -11,6 +11,8 @@
 
 ## 1.1 U盘安装盘制作(可选)
 
+https://www.baiyunxitong.com/jiaocheng/7081.html
+
 1. 将U盘插到电脑上然后打开 UltraISO 软件, 点击文件打开你下载好的Win10光盘镜像ISO文件, 如下图; 
 
 ![config](./images/38.png)
