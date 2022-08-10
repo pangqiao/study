@@ -14,10 +14,10 @@
 
 注意: 在整个VM\-entry操作流程中, 如果VM\-entry失败可能产生下面三种结果:
 
-(1) VMLAUNCH和VMRESUME指令产生异常, 从而执行相应的异常服务例程.
+(1) VMLAUNCH 和 VMRESUME 指令产生异常, 从而执行相应的异常服务例程.
 
-(2) VMLAUCH和VMRESUME指令产生VMfailValid或VMfailValid类型失败, 处理器接着执行下一条指令.
+(2) VMLAUCH 和 VMRESUME 指令产生 VMfailValid 或 VMfailValid 类型失败, 处理器接着执行下一条指令.
 
-(3) VMLAUNCH和VMRESUME指令的执行由于检查guest\-state区域不通过, 或在加载MSR阶段失败而产生VM\-exit, 从而转入host\-RIP的入口点执行.
+(3) VMLAUNCH 和 VMRESUME 指令的执行由于检查 guest-state 区域不通过, 或在加载MSR阶段失败而产生 VM-exit, 从而转入 host-RIP 的入口点执行.
 
-在前面所述的第1阶段检查里, 可能会产生第1种或第2中结果. 在第2阶段检查, 可能会产生第2种结果. 在第3阶段检查可能会产生第3种结果.
+在前面所述的第 1 阶段检查里, 可能会产生第 1 种或第 2 中结果. 在第 2 阶段检查, 可能会产生第 2 种结果. 在第 3 阶段检查可能会产生第3种结果.
