@@ -9,6 +9,7 @@
     - [设备状态域](#设备状态域)
     - [feature bits](#feature-bits)
     - [virtqueue](#virtqueue)
+  - [设备IO工作机制](#设备io工作机制)
   - [transport 选项](#transport-选项)
 - [virtio-pci 呈现](#virtio-pci-呈现)
   - [virtio legacy](#virtio-legacy)
@@ -76,11 +77,13 @@ feature bits 用来标志设备支持**哪个特性**, 其中
 
 ### virtqueue
 
-在 virtio 协议中, **所有的设备**都使用 **virtqueue** 来进行**数据的传输**. 每个设备可以有 0 个或者**多个 virtqueue**, **每个 virtqueue** 占用 **2 个或者更多个 4K 的物理页**.
+在 virtio 协议中, **所有的设备**都使用 **virtqueue** 来进行**数据的传输**.
+
+每个设备可以有 0 个或者**多个 virtqueue**, **每个 virtqueue** 占用 **2 个或者更多个 4K 的物理页**.
 
 virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
 
-在 Split virtqueues 模式下 virtqueue 被分成**若干个部分**, 每个部分都是前端驱动或者后端**单向可写**的 (不能两端同时写). 每个 virtqueue 都有一个 16bit 的 queue size 参数, 表示队列的总长度. 每个 virtqueue 由 3 个部分组成:
+在 Split virtqueues 模式下 virtqueue 被分成**若干个部分**, 每个部分都是前端驱动或者后端**单向可写**的 (**不能两端同时写**). 每个 virtqueue 都有一个 16 bit 的 queue size 参数, 表示队列的总长度. 每个 virtqueue 由 3 个部分组成:
 
 ```
 +-------------------+--------------------------------+-----------------------+
@@ -89,21 +92,25 @@ virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
 ```
 
 * **Descriptor Table**: 存放 **IO 传输请求信息**;
+
 * **Available Ring**: 记录了 Descriptor Table 表中的 I/O 请求下发信息, 前端 Driver 可写后端只读;
+
 * **Used Ring**: 记录 Descriptor Table 表中**已被提交到硬件的信息**, 前端 Driver 只读后端可写.
 
-整个 virtio 协议中设备 IO 请求的工作机制可以简单地概括为:
+## 设备IO工作机制
+
+整个 virtio 协议中**设备 IO 请求**的工作机制可以简单地概括为:
 
 1. **前端驱动**将 **IO 请求**放到 **Descriptor Table** 中, 然后将**索引**更新到 **Available Ring** 中, 最后 **kick 后端**去取数据;
 2. **后端**取出 IO 请求进行**处理**, 然后将**结果刷新到 Descriptor Table** 中再**更新 Using Ring**, 然后**发送中断 notify 前端**.
 
 ## transport 选项
 
-从 virtio 协议可以了解到 virtio 设备支持 3 种设备呈现模式:
+从 virtio 协议可以了解到 virtio 设备支持 **3 种设备呈现模式**:
 
-* Virtio Over PCI BUS, 依旧遵循 PCI 规范, **挂载到 PCI 总线**上, **作为 virtio-pci 设备**呈现;
-* Virtio Over MMIO, 部分**不支持 PCI 协议**的虚拟化平台可以使用这种工作模式, **直接挂载到系统总线**上;
-* Virtio Over Channel I/O: 主要用在 s390 平台上, virtio-ccw 使用这种基于 channel I/O 的机制.
+* Virtio Over **PCI BUS**, 依旧遵循 PCI 规范, **挂载到 PCI 总线**上, **作为 virtio-pci 设备**呈现;
+* Virtio Over **MMIO**, 部分**不支持 PCI 协议**的虚拟化平台可以使用这种工作模式, **直接挂载到系统总线**上;
+* Virtio Over **Channel I/O**: 主要用在 s390 平台上, virtio-ccw 使用这种基于 channel I/O 的机制.
 
 其中, Virtio Over PCI BUS 的使用比较广泛, **作为 PCI 设备**需**按照规范**要**通过 PCI 配置空间**来向**操作系统**报告设备支持的**特性集合**, 这样操作系统才知道这是一个**什么类型**的 virtio 设备, 并调用**对应的前端驱动**和这个设备进行握手, 进而将设备驱动起来. 
 
