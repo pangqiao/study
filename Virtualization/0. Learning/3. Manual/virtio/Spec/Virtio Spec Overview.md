@@ -10,7 +10,7 @@
     - [feature bits](#feature-bits)
     - [virtqueue](#virtqueue)
   - [设备IO工作机制](#设备io工作机制)
-  - [transport 选项](#transport-选项)
+  - [三种呈现模式](#三种呈现模式)
 - [virtio-pci 呈现](#virtio-pci-呈现)
   - [virtio legacy](#virtio-legacy)
   - [virtio modern](#virtio-modern)
@@ -104,7 +104,7 @@ virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
 1. **前端驱动**将 **IO 请求**放到 **Descriptor Table** 中, 然后将**索引**更新到 **Available Ring** 中, 最后 **kick 后端**去取数据;
 2. **后端**取出 IO 请求进行**处理**, 然后将**结果刷新到 Descriptor Table** 中再**更新 Using Ring**, 然后**发送中断 notify 前端**.
 
-## transport 选项
+## 三种呈现模式
 
 从 virtio 协议可以了解到 virtio 设备支持 **3 种设备呈现模式**:
 
@@ -114,7 +114,9 @@ virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
 
 其中, Virtio Over PCI BUS 的使用比较广泛, **作为 PCI 设备**需**按照规范**要**通过 PCI 配置空间**来向**操作系统**报告设备支持的**特性集合**, 这样操作系统才知道这是一个**什么类型**的 virtio 设备, 并调用**对应的前端驱动**和这个设备进行握手, 进而将设备驱动起来. 
 
-**QEMU** 会给 virtio 设备**模拟 PCI 配置空间**, 对于 virtio 设备来说 **PCI Vendor ID** 固定为 `0x1AF4`, **PCI Device ID** 为 `0x1000` 到 `0x107F` 之间的是 virtio 设备. 同时, 在**不支持 PCI 协议**的虚拟化平台上, virtio 设备也可以直接通过 MMIO 进行呈现, [virtio-spec 4.2 Virtio Over MMIO](https://docs.oasis-open.org/virtio/virtio/v1.1/cs01/virtio-v1.1-cs01.html#x1-1440002) 有针对 virtio-mmio 设备呈现方式的详细描述, **mmio 相关信息**可以直接通过**内核参数**报告给 Linux 操作系统. 
+**QEMU** 会给 virtio 设备**模拟 PCI 配置空间**, 对于 virtio 设备来说 **PCI Vendor ID** 固定为 `0x1AF4`, **PCI Device ID** 为 `0x1000` 到 `0x107F` 之间的是 virtio 设备. 
+
+同时, 在**不支持 PCI 协议**的虚拟化平台上, virtio 设备也可以直接通过 MMIO 进行呈现, [virtio-spec 4.2 Virtio Over MMIO](https://docs.oasis-open.org/virtio/virtio/v1.1/cs01/virtio-v1.1-cs01.html#x1-1440002) 有针对 virtio-mmio 设备呈现方式的详细描述, **mmio 相关信息**可以直接通过**内核参数**报告给 Linux 操作系统. 
 
 本文主要基于 virtio-pci 展开讨论.
 
@@ -124,7 +126,7 @@ virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
 
 ## virtio legacy
 
-**virtio legacy** (virtio 0.95) 协议规定, 对应的**配置数据结构** (virtio common configuration structure) 应该存放在设备的 **BAR0** 里面, 我们称之为 virtio legacy interface, 其结构如下:
+**virtio legacy** (virtio 0.95) 协议规定, 对应的**配置数据结构** (virtio common configuration structure) 应该存放在设备的 **BAR0** 里面, 我们称之为 **virtio legacy interface**, 其结构如下:
 
 ```
                        virtio legacy ==> Mapped into PCI BAR0
@@ -145,7 +147,7 @@ virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
 
 ## virtio modern
 
-对于新的 virtio modern, 协议将配置结构划分为 **5 种类型**:
+对于新的 virtio modern, 协议将**配置结构**划分为 **5 种类型**:
 
 ```cpp
 /* Common configuration */
@@ -160,7 +162,7 @@ virtqueue 有 **Split Virtqueues** 和 **Packed Virtqueues** 两种模式.
 #define VIRTIO_PCI_CAP_PCI_CFG           5
 ```
 
-以上的每种配置结构是直接映射到 virtio 设备的 **BAR** 空间内, 那么如何指定**每种配置结构的位置**呢? 答案是通过 **PCI Capability list** 方式去指定, 这和物理 PCI 设备是一样的, 体现了 virtio-pci 的协议兼容性. 只是略微不同的是, virtio-pci 的 Capability 有一个**统一的结构**, 如下.
+以上的**每种配置结构**是直接映射到 virtio 设备的 **BAR** 空间内, 那么如何指定**每种配置结构的位置**呢? 答案是通过 **PCI Capability list** 方式去指定, 这**和物理 PCI 设备是一样**的, 体现了 virtio-pci 的协议兼容性. 只是略微不同的是, virtio-pci 的 Capability 有一个**统一的结构**, 如下.
 
 ```cpp
 struct virtio_pci_cap {
@@ -175,7 +177,9 @@ struct virtio_pci_cap {
 };
 ```
 
-其中 `cfg_type` 表示 Cap 的**类型**, `bar` 表示这个配置结构被映射到的 **BAR 空间号**. 这样每个配置结构都可以**通过 BAR 空间直接访问**, 或者**通过 PCI 配置空间**的 `VIRTIO_PCI_CAP_PCI_CFG` 域进行访问. 每个 Cap 的具体结构定义可以参考 `virtio spec 4.1.4.3` 小节. 为了方便理解这里以一张 virtio-net 网卡为例:
+其中 `cfg_type` 表示 Cap 的**类型**, `bar` 表示这个配置结构被映射到的 **BAR 空间号**. 这样**每个配置结构**都可以**通过 BAR 空间直接访问**, 或者**通过 PCI 配置空间**的 `VIRTIO_PCI_CAP_PCI_CFG` **域**进行访问.
+
+每个 Cap 的具体结构定义可以参考 `virtio spec 4.1.4.3` 小节. 为了方便理解这里以一张 virtio-net 网卡为例:
 
 ```
 [root@localhost ~]# lspci -vvvs 04: 00.0
@@ -204,7 +208,7 @@ struct virtio_pci_cap {
         BAR=4 offset=00000000 size=00001000
 ```
 
-MSI-X 的 vector table 和 PBA 放到了 BAR1 里面, BAR4 里放了 common cfg, 设备 isr 状态信息, device cfg, driver notify 信息等.
+`MSI-X` 的 **vector table** 和 **PBA** 放到了 BAR1 里面, BAR4 里放了 common cfg, 设备 isr 状态信息, device cfg, driver notify 信息等.
 
 # 前后端数据共享
 
