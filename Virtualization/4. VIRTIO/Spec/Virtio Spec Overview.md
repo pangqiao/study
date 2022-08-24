@@ -26,7 +26,9 @@
 
 # 摘要
 
-半虚拟化设备 (Virtio Device) 在当前云计算虚拟化场景下已经得到了非常广泛的应用, 并且现在也有越来越多的物理设备也开始支持 Virtio 协议, 即所谓的 Virtio Offload, 通过将 virtio 协议卸载到硬件上 (例如 virtio-net 网卡卸载, virtio-scsi 卸载) 让物理机和虚拟机都能够获得加速体验. 本文中我们来重点了解一下 virtio 技术中的一些关键点, 方便我们加深对半虚拟化的理解. 本文适合对 IO 虚拟化有一定了解的人群阅读, 本文的目的是对想要了解 virtio 内部机制的读者提供帮助.
+半虚拟化设备 (Virtio Device) 在当前云计算虚拟化场景下已经得到了非常广泛的应用, 并且现在也有越来越多的**物理设备**也开始**支持 Virtio 协议**, 即所谓的 Virtio Offload, 通过将 virtio 协议卸载到硬件上 (例如 virtio-net 网卡卸载, virtio-scsi 卸载) 让物理机和虚拟机都能够获得加速体验. 
+
+本文中我们来重点了解一下 virtio 技术中的一些关键点, 方便我们加深对半虚拟化的理解. 
 
 在开始了解 virtio 之前, 我们先思考一下几个相关问题:
 
@@ -51,10 +53,15 @@ virtio 协议标准最早由 IBM 提出, virtio 作为一套标准协议现在�
 其中**设备状态域**包含 6 种状态:
 
 * `ACKNOWLEDGE` (1): GuestOS 发现了这个设备, 并且认为这是**一个有效的 virtio 设备**;
+
 * `DRIVER` (2): GuestOS **知道该如何驱动这个设备**;
+
 * `FAILED` (128): GuestOS **无法正常驱动这个设备**;
+
 * `FEATURES_OK` (8): GuestOS **认识所有的 feature**, 并且 feature 协商一完成;
+
 * `DRIVER_OK` (4): 驱动加载完成, **设备可以投入使用**了;
+
 * `DEVICE_NEEDS_RESET` (64): **设备触发了错误**, 需要重置才能继续工作.
 
 ### feature bits
