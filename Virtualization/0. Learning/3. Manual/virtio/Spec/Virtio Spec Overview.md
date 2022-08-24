@@ -15,6 +15,8 @@
   - [virtio legacy](#virtio-legacy)
   - [virtio modern](#virtio-modern)
 - [前后端数据共享](#前后端数据共享)
+  - [Desriptor Table](#desriptor-table)
+  - [Available Ring](#available-ring)
 - [前后端通信机制 (irqfd 与 ioeventfd)](#前后端通信机制-irqfd-与-ioeventfd)
 - [virtio 核心代码分析, 以 virtio-net 为例](#virtio-核心代码分析-以-virtio-net-为例)
   - [前后端握手流程](#前后端握手流程)
@@ -222,7 +224,9 @@ virtio 为了提升设备的 IO 性能, 采用了**共享内存机制**, **前�
 
 * **Descriptor Table** 存放了 **IO 请求描述符**;
 
-* **Available Ring** 记录了**当前哪些描述符是可用**的, **Used Ring** 记录了**哪些描述符已经被后端使用**了.
+* **Available Ring** 记录了**当前哪些描述符是可用**的;
+
+* **Used Ring** 记录了**哪些描述符已经被后端使用**了.
 
 ```
                           +------------------------------------+
@@ -253,7 +257,9 @@ virtio 为了提升设备的 IO 性能, 采用了**共享内存机制**, **前�
                            +------------------------------------+
 ```
 
-**Desriptor Table** 中存放的是一个一个的 **virtq_desc 元素**, **每个** virq_desc 元素占用 **16 个字节**(128位).
+## Desriptor Table
+
+**Desriptor Table** 中存放的是**一个一个**的 **virtq_desc 元素**, **每个** `virq_desc` 元素占用 **16 个字节**(128位).
 
 ```
 +-----------------------------------------------------------+
@@ -263,9 +269,18 @@ virtio 为了提升设备的 IO 性能, 采用了**共享内存机制**, **前�
 +-------------------------+-----------------+---------------+
 ```
 
-其中, addr 占用 64bit 存放了单个 IO 请求的 GPA 地址信息, 例如 addr 可能表示某个 DMA buffer 的起始地址. len 占用 32bit 表示 IO 请求的长度, flags 的取值有 3 种, VIRTQ_DESC_F_NEXT 表示这个 IO 请求和下一个 virtq_desc 描述的是连续的, IRTQ_DESC_F_WRITE 表示这段 buffer 是 write only 的, VIRTQ_DESC_F_INDIRECT 表示这段 buffer 里面放的内容是另外一组 buffer 的 virtq_desc (相当于重定向), next 是指向下一个 virtq_desc 的索引号 (前提是 VIRTQ_DESC_F_NEXT & flags).
+其中:
 
-Available Ring 是前端驱动用来告知后端那些 IO buffer 是的请求需要处理, 每个 Ring 中包含一个 virtq_avail 占用 8 个字节. 其中, flags 取值为 VIRTQ_AVAIL_F_NO_INTERRUPT 时表示前端驱动告诉后端: "当你消耗完一个 IO buffer 的时候, 不要立刻给我发中断"(防止中断过多影响效率). idx 表示下次前端驱动要放置 Descriptor Entry 的地方.
+* addr 占用 64bit 存放了**单个 IO 请求**的 **GPA** 地址信息, 例如 addr 可能表示某个 DMA buffer 的起始地址;
+
+* len 占用 32bit 表示 IO 请求的长度;
+
+* flags 的取值有 3 种:
+  * `VIRTQ_DESC_F_NEXT` 表示这个 IO 请求和下一个 virtq_desc 描述的是连续的, `IRTQ_DESC_F_WRITE` 表示这段 buffer 是 write only 的, `VIRTQ_DESC_F_INDIRECT` 表示这段 buffer 里面放的内容是另外一组 buffer 的 virtq_desc (相当于重定向), next 是指向下一个 virtq_desc 的索引号 (前提是 VIRTQ_DESC_F_NEXT & flags).
+
+## Available Ring
+
+**Available Ring** 是前端驱动用来告知后端那些 IO buffer 是的请求需要处理, 每个 Ring 中包含一个 virtq_avail 占用 8 个字节. 其中, flags 取值为 VIRTQ_AVAIL_F_NO_INTERRUPT 时表示前端驱动告诉后端: "当你消耗完一个 IO buffer 的时候, 不要立刻给我发中断"(防止中断过多影响效率). idx 表示下次前端驱动要放置 Descriptor Entry 的地方.
 
 ```
 +--------------+-------------+--------------+---------------------+
