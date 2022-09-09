@@ -40,6 +40,7 @@ PCI设备 支持 DMA，那么在传输数据的时候，我们需要一块 DMA b
 * dma_map_sg/page/single(), 流式DMA, 将之前分配好的物理区域与连续的IOVA建立起映射
 
 
+iommu_dma_ops
 
 
 
