@@ -37,8 +37,11 @@ PCI设备 支持 DMA，那么在传输数据的时候，我们需要一块 DMA b
 
 * dma_alloc_coherent(dev, size, dma_handle, gfp), 一致性DMA, 在分配物理区域的同时，建立物理区域与IOVA的映射，同时返回VA。
 
+> 之前介绍过COHERENT特性，对于一致性DMA，可以保证CPU和IO设备看到的物理地址是一致，因为CPU侧存在CACHE，一致性DMA可通过关CACHE或硬件来保证CPU和IO设备看到的物理地址是一致。函数dma_alloc_coherent()为一致性DMA。一致性DMA通常为静态的，建立起一致性映射后，一般在系统结束时取消映射。
+
 * dma_map_sg/page/single(), 流式DMA, 将之前分配好的物理区域与连续的IOVA建立起映射
 
+> 流式DMA为动态的，每次都会建立映射，然后取消映射。由于CPU侧存在CACHE，需要软件或硬件来维护一致性
 
 iommu_dma_ops
 
