@@ -23,6 +23,22 @@ PCI设备 支持 DMA，那么在传输数据的时候，我们需要一块 DMA b
 4. 将 总线地址 写入 DMA 对应的寄存器，接着就可以执行相关的 DMA操作 了。
 
 
+数据如何在CPU和IO device之间的传递和处理？
+
+（1）**CPU** 通过**MMU**建立起数据的**物理地址PA**到数据的**虚拟地址**之间的映射，CPU 通过访问 **VA** 从而访问到数据（比如CPU填充数据到内存中)；
+
+（2）**IO 设备驱动**得到数据的**PA**，并通过**DMA MAP**将数据的物理地址**PA**和**IOVA**建立**映射**，然后IO设备驱动将IOVA传递给 IOMMU 设备；
+
+（3）IOMMU 将IOVA转换为PA，从而对PA处的数据的处理；
+
+（4）完成数据处理后，通过DMA UNMAP取消IOVA到PA的映射；
+
+都会将物理区域与连续的IOVA建立起映射:
+
+* dma_alloc_coherent(dev, size, dma_handle, gfp), 一致性DMA, 在分配物理区域的同时，建立物理区域与IOVA的映射，同时返回VA。
+
+* dma_map_XX(), 流式DMA, 将之前分配好的物理区域与连续的IOVA建立起映射
+
 
 
 1. kmalloc() 等申请 DMA 缓冲区, 使用 GFP_DMA 标志.
