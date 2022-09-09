@@ -7,6 +7,16 @@ DMA 映射主要为在设备与主存之间建立DMA数据传输通道时，在�
 1. kmalloc() 等申请 DMA 缓冲区, 使用 GFP_DMA 标志.
 
 
+dma_mem_alloc()
+
+
+
+DMA映射包括两个方面的工作：分配一片DMA缓冲区；为这片缓冲区产生设备可访问的地址。
+
+dma_alloc_coherent() 申请一片DMA缓冲区，以进行地址映射并保证该缓冲区的Cache一致性
+
+
+
 
 
 
