@@ -81,3 +81,129 @@ DMA 传输：在 DMA 控制器的引导下，在存储器和外设之间进行�
 DMA 结束：当完成既定操作之后，DMA 控制器释放总线控制权，并向 I/O 接口发出结束信号，当 I/O 接口收到结束信号之后，一方面停止 I/O 设备的工作，另一方面向 CPU 提出中断请求，使 CPU 从不介入状态解脱，并执行一段检查本次 DMA 传输操作正确性的代码。最后带着本次操作的结果以及状态继续执行原来的程序。
 
 
+```cpp
+    /* 申请dma通道，在此之前请确保设备树中的dma相关属性编写正确，否则会引发oops */
+    test_device->dma_chan = dma_request_chan(&pdev->dev, "sdram");
+    if(NULL == test_device->dma_chan)
+    {
+        printk(KERN_INFO"request dma channel error\n");
+        goto DEVICE_FAILE;
+    }
+
+    /* 开辟缓冲区并填充 */
+    int buf_size = 128;
+    void* dma_src = NULL;
+    void* dma_dst = NULL;    
+    dma_addr_t dma_bus_src;
+    dma_addr_t dma_bus_dst;    
+#if 0    
+    /* 一致性映射 */
+    dma_src = dma_alloc_coherent(&pdev->dev, buf_size, &dma_bus_src, GFP_KERNEL|GFP_DMA);
+    if(NULL == dma_src)
+    {
+        printk(KERN_INFO"alloc src buffer error\n");
+        goto DMA_SRC_FAILED;
+    }    
+    printk(KERN_INFO"dma_src = %p, dma_bus_src = %#x\n", dma_src, dma_bus_src);
+
+    dma_dst = dma_alloc_coherent(&pdev->dev, buf_size, &dma_bus_dst, GFP_KERNEL|GFP_DMA);
+    if(NULL == dma_src)
+    {
+        printk(KERN_INFO"alloc src buffer error\n");
+        goto DMA_DST_FAILED;
+    } 
+    printk(KERN_INFO"dma_dst = %p, dma_bus_dst = %#x\n", dma_dst, dma_bus_dst);
+
+    for(int i = 0; i < buf_size; i++)
+    {
+        ((char*)dma_src)[i] = i;
+        printk(KERN_INFO"dma_src[%d] = %d, dma_dst[%d] = %d\n", i, ((char*)dma_src)[i], i, ((char*)dma_dst)[i]);
+    }    
+#else
+    dma_src = devm_kzalloc(&pdev->dev, buf_size, GFP_KERNEL);
+    if(NULL == dma_src)
+    {
+        printk(KERN_INFO"alloc src buffer error\n");
+        goto DEVICE_FAILE;
+    }      
+    dma_dst = devm_kzalloc(&pdev->dev, buf_size, GFP_KERNEL);
+    if(NULL == dma_src)
+    {
+        printk(KERN_INFO"alloc src buffer error\n");
+        goto DEVICE_FAILE;
+    }    
+#if 0     
+    /* 
+        错误的流式映射 
+        在进行映射后不能对缓冲区进行操作，不然DMA拿到的数据与真正的数据不一致
+    */
+    dma_bus_src = dma_map_single(&pdev->dev, dma_src, buf_size, DMA_BIDIRECTIONAL);
+    dma_bus_dst = dma_map_single(&pdev->dev, dma_dst, buf_size, DMA_BIDIRECTIONAL);
+    printk(KERN_INFO"dma_src = %p, dma_bus_src = %#x\n", dma_src, dma_bus_src);
+    printk(KERN_INFO"dma_dst = %p, dma_bus_dst = %#x\n", dma_dst, dma_bus_dst);     
+    for(int i = 0; i < buf_size; i++)
+    {
+        ((char*)dma_src)[i] = i;
+        printk(KERN_INFO"dma_src[%d] = %d, dma_dst[%d] = %d\n", i, ((char*)dma_src)[i], i, ((char*)dma_dst)[i]);
+    } 
+#else
+    /* 
+        正确的流式映射 
+        将数据放入缓冲区后在进行映射，确保DMA拿到正确的数据
+    */
+    for(int i = 0; i < buf_size; i++)
+    {
+        ((char*)dma_src)[i] = i;
+        printk(KERN_INFO"dma_src[%d] = %d, dma_dst[%d] = %d\n", i, ((char*)dma_src)[i], i, ((char*)dma_dst)[i]);
+    } 
+
+    dma_bus_src = dma_map_single(&pdev->dev, dma_src, buf_size, DMA_BIDIRECTIONAL);
+    dma_bus_dst = dma_map_single(&pdev->dev, dma_dst, buf_size, DMA_BIDIRECTIONAL);
+    printk(KERN_INFO"dma_src = %p, dma_bus_src = %#x\n", dma_src, dma_bus_src);
+    printk(KERN_INFO"dma_dst = %p, dma_bus_dst = %#x\n", dma_dst, dma_bus_dst); 
+#endif      
+#endif
+
+    /* 获取传输描述符 */
+    struct  dma_async_tx_descriptor* dma_tx = NULL;
+    dma_tx = dmaengine_prep_dma_memcpy(test_device->dma_chan, dma_bus_dst, dma_bus_src, buf_size, DMA_PREP_INTERRUPT);      
+    if(NULL == dma_tx)
+    {
+        printk(KERN_INFO"prepare dma error\n");
+        goto DEVICE_FAILE;
+    }    
+
+    /* 获取dma cookie */
+    dma_cookie_t dma_cookie;
+    dma_cookie = dmaengine_submit(dma_tx);
+    if (dma_submit_error(dma_cookie))
+    {
+        printk(KERN_INFO"submit dma error\n");
+        goto DEVICE_FAILE;
+    }    
+
+    /* 开始传输 */
+    dma_async_issue_pending(test_device->dma_chan);
+
+    /* 等待传输完成 */
+    enum dma_status dma_status = DMA_ERROR;
+    struct dma_tx_state tx_state = {0};
+    while(DMA_COMPLETE!= dma_status)
+    {
+        dma_status = test_device->dma_chan->device->device_tx_status(test_device->dma_chan, dma_cookie, &tx_state);
+        schedule();
+    }
+    printk(KERN_INFO"dma_status = %d\n", dma_status);
+
+    for(int i = 0; i < buf_size; i++)
+    {
+        printk(KERN_INFO"dma_src[%d] = %d, dma_dst[%d] = %d\n", i, ((char*)dma_src)[i], i, ((char*)dma_dst)[i]);
+    }
+    printk(KERN_INFO"dma finished\n");
+
+#if 1
+    /* 如果是流式映射，在使用完以后需要去映射 */
+    dma_unmap_single(&pdev->dev, dma_bus_src, buf_size, DMA_BIDIRECTIONAL);
+    dma_unmap_single(&pdev->dev, dma_bus_dst, buf_size, DMA_BIDIRECTIONAL);    
+#endif
+```
