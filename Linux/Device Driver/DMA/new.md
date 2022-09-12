@@ -96,7 +96,7 @@ DMA 结束：当完成既定操作之后，DMA 控制器释放总线控制权，
     void* dma_dst = NULL;    
     dma_addr_t dma_bus_src;
     dma_addr_t dma_bus_dst;    
-#if 0    
+#if 0
     /* 一致性映射 */
     dma_src = dma_alloc_coherent(&pdev->dev, buf_size, &dma_bus_src, GFP_KERNEL|GFP_DMA);
     if(NULL == dma_src)
@@ -132,7 +132,7 @@ DMA 结束：当完成既定操作之后，DMA 控制器释放总线控制权，
         printk(KERN_INFO"alloc src buffer error\n");
         goto DEVICE_FAILE;
     }    
-#if 0     
+#if 0
     /* 
         错误的流式映射 
         在进行映射后不能对缓冲区进行操作，不然DMA拿到的数据与真正的数据不一致
@@ -161,7 +161,7 @@ DMA 结束：当完成既定操作之后，DMA 控制器释放总线控制权，
     dma_bus_dst = dma_map_single(&pdev->dev, dma_dst, buf_size, DMA_BIDIRECTIONAL);
     printk(KERN_INFO"dma_src = %p, dma_bus_src = %#x\n", dma_src, dma_bus_src);
     printk(KERN_INFO"dma_dst = %p, dma_bus_dst = %#x\n", dma_dst, dma_bus_dst); 
-#endif      
+#endif
 #endif
 
     /* 获取传输描述符 */
