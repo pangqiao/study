@@ -75,7 +75,7 @@ void linked_list_exit(void)
 
 module_init(linked_list_init);
 module_exit(linked_list_exit);
-MODULE_AUTHOR("Gerry Lee");
+MODULE_AUTHOR("Haiwei Li");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Linked list test");
 ```
