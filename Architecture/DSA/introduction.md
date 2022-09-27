@@ -76,9 +76,62 @@ VDCM 用于组合虚拟设备，以便向来宾操作系统提供英特尔® DSA
 
 系统管理员可以通过多种方式配置设备。请参阅英特尔® DSA 规范用于将工作队列的所有编程和配置到不同的模式。
 
+# 加速器配置器（加速配置）
+
+accel-config 是一个实用程序，允许系统管理员配置组、工作队列和引擎。该实用程序解析通过 sysfs 公开的拓扑和功能，并提供命令行界面来配置资源。下面列出了 accel 配置的一些功能：
+
+显示设备层次结构。
+配置属性并为内核或应用程序提供访问权限。
+使用应用程序可以链接到的 API 库 （libaccel） 通过标准“C”库执行操作。
+控制设备停止、启动接口。
+创建 VFIO 中介设备，将虚拟英特尔® DSA 实例公开给客户机操作系统。
+
+有关详细信息，请参阅 [accel-config](https://github.com/intel/idxd).
+
+# 在原生内核中使用英特尔® DSA
+
+sysfs 属性允许系统管理员为每个 WQ 指定类型和名称。这允许为特定目的保留 WQ。驱动程序中支持三种类型：
+
+Kernel - 保留供本机内核使用。
+User - 为本机用户空间使用而保留，用于 DPDK 等工具。
+Mdev - 用于公开中介设备以支持向来宾操作系统提供英特尔® DSA 功能。
+对于User和 Mdev 类型，系统管理员可以指定一个字符串来标识系统管理员设置的工作队列。例如，字符串 mysql 或 DPDK 可用于唯一标识为特定用途保留的资源。
+
+Figure 3: Using Intel® DSA in the Kernel
+
+![2022-09-27-11-32-54.png](./images/2022-09-27-11-32-54.png)
+
+‎IDXD 驱动程序利用 Linux* 内核 DMA 引擎子系统来处理内核工作请求。‎
+
+‎一些示例包括 ClearPage 引擎、非透明网桥 （NTB） 和处理持久内存。‎
+
+‎# 在 LINUX 中对英特尔® DSA 的上游支持‎
+
+‎英特尔® DSA 使用多种新的 CPU 和平台功能，它们都通过交互来提供所需的功能。由于存在多个组件和复杂的交互，因此代码和博客部分被分成几个小部分，以方便在Linux中引入不同的技术及其支持。以下是当前计划阶段的细分：‎
+
+‎第 1 阶段：‎‎裸机驱动程序，用户空间工具。面向内核内和本机用户空间使用情况。‎
+‎第 2 阶段：‎‎支持对 ‎‎ENQCMD‎‎、中断消息存储 （IMS） 的本机支持。这将显示共享工作队列配置的本机使用情况。‎
+‎第 3 阶段： ‎‎在 QEMU 中构建英特尔® DSA 中介设备、guest 支持、虚拟 IOMMU （vIOMMU） 支持。‎
+‎第 4 阶段： ‎‎在guest OS 中处理 ENQCMD，并在 KVM、QEMU 中处理相关的启用。‎
+
+‎对全貌感兴趣的人可以看看这个‎‎树‎‎以跟上每个阶段在社区中发布和讨论的开发进度。我们将尽一切努力在开发过程中更新此博客的参考资料。‎
+
 
 
 # reference
 
 https://blog.csdn.net/u011458874/article/details/124898895
 
+Intel® DSA Specification
+
+Intel® Data Accelerator Driver GitHub* repository: https://github.com/intel/idxd-driver 
+
+Intel® Data Accelerator Driver Overview on GitHub.io: https://intel.github.io/idxd/
+
+Intel® Data Accelerator Control Utility and Library: https://github.com/intel/idxd-config
+
+Shared Virtual Memory: https://www.intel.com/content/www/us/en/developer/articles/technical/opencl-20-shared-virtual-memory-overview.html?wapkw=SVM
+
+Intel® Scalable I/O Virtualization: https://cdrdv2.intel.com/v1/dl/getContent/671403?explicitVersion=true&wapkw=scalable
+
+Intel® 64 and IA-32 Architectures Software Developer Manuals: 
