@@ -122,7 +122,7 @@ Figure 3: Using Intel® DSA in the Kernel
 
 https://blog.csdn.net/u011458874/article/details/124898895
 
-Intel® DSA Specification
+Intel® DSA Specification: https://cdrdv2.intel.com/v1/dl/getContent/671116?explicitVersion=true&wapkw=DSA
 
 Intel® Data Accelerator Driver GitHub* repository: https://github.com/intel/idxd-driver 
 
@@ -134,4 +134,4 @@ Shared Virtual Memory: https://www.intel.com/content/www/us/en/developer/article
 
 Intel® Scalable I/O Virtualization: https://cdrdv2.intel.com/v1/dl/getContent/671403?explicitVersion=true&wapkw=scalable
 
-Intel® 64 and IA-32 Architectures Software Developer Manuals: 
+Intel® 64 and IA-32 Architectures Software Developer Manuals: https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html
