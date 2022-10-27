@@ -13,10 +13,19 @@ IOVA(I/O Virtual Address) 用于 DMA
 
 I/O 页表用于 IOVA 到 PA 的转换
 
+DMA isolation:
+
+![2022-10-27-11-10-09.png](./images/2022-10-27-11-10-09.png)
+
+
 
 
 ## Userspace Driver Recap
 
+
+
+
+## Changes for software
 
 
 
