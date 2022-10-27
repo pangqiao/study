@@ -28,9 +28,17 @@ IOMMU Advancements:
 用户态驱动框架:
 
 * 设备管理
-  * 处理对设备 PCI configuration space 的 r/w, BAR 空间的 mmap
+
+  * 处理对设备 PCI configuration space 的 r/w, BAR 空间的 mmap, 中断等等
+
 * IOMMU 管理
+
+  * map/unmap 用户空间 memory
+
+  * 举例: vfio iommu type1 驱动
+
 * 当前用户态驱动框架
+
   * VFIO(Virtual Function I/O), vDPA(Virtual data path acceleration)
 
 ## Changes for software
