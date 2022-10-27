@@ -25,7 +25,13 @@ IOMMU Advancements:
 
 ![2022-10-27-15-28-35.png](./images/2022-10-27-15-28-35.png)
 
+用户态驱动框架:
 
+* 设备管理
+  * 处理对设备 PCI configuration space 的 r/w, BAR 空间的 mmap
+* IOMMU 管理
+* 当前用户态驱动框架
+  * VFIO(Virtual Function I/O), vDPA(Virtual data path acceleration)
 
 ## Changes for software
 
