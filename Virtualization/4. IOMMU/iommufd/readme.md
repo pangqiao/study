@@ -21,11 +21,9 @@ IOMMU Advancements:
 
 ![2022-10-27-13-13-19.png](./images/2022-10-27-13-13-19.png)
 
-
-
-
 ## Userspace Driver Recap
 
+![2022-10-27-15-28-35.png](./images/2022-10-27-15-28-35.png)
 
 
 
