@@ -63,13 +63,13 @@ git clone https://github.com/haiwei-li/vinux.git ~/.vim
 
 `let g:fuzzysearcher_plugin_name.cur_val='fzf'`, 启用悬浮窗口
 
-内嵌终端:
+**内嵌终端**:
 
-空格av, 悬浮
+- 空格av, 悬浮
 
-空格as, 下面
+- 空格as, 下面
 
-空格ns, 新buffer
+- 空格ns, 新buffer
 
 悬浮窗口有限制不能跳转, 非悬浮的可以用alt-k
 
