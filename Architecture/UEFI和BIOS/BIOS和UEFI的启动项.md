@@ -17,6 +17,7 @@
 - [4. Windows 的启动顺序](#4-windows-的启动顺序)
   - [4.1. BIOS](#41-bios)
   - [4.2. UEFI](#42-uefi)
+- [举例](#举例)
 - [5. Q&A](#5-qa)
   - [5.1. Ghost](#51-ghost)
   - [5.2. 无法定位分区](#52-无法定位分区)
@@ -203,6 +204,18 @@ UEFI查找**硬盘分区**中第一个**FAT分区**内的引导文件进行系�
 通常情况: 主板UEFI初始化然后找到了默认启动项"Windows Boot Manager". 里面写了 bootmgfw.efi 的位置. 固件加载bootmgfw.efi(**ESPEFI系统分区FAT32文件系统**). bootmgfw.efi 根据**BCD启动项存储找到装Windows的磁盘的具体分区**加载其中的 WinLoad.efi. 由 WinLoad.efi 完成剩下的启动工作.
 
 其中的虚线跟上面的一样意思是**Windows启动盘和EFI启动盘可以是一个硬盘也可以是不同的硬盘**. 所以**对于UEFI来说启动盘是bootmgfw.efi所在的那个盘**.
+
+# 举例
+
+
+
+![2022-11-24-20-26-46.png](./images/2022-11-24-20-26-46.png)
+
+
+
+![2022-11-24-20-31-42.png](./images/2022-11-24-20-31-42.png)
+
+
 
 # 5. Q&A
 
