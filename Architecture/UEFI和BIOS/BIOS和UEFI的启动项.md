@@ -211,7 +211,7 @@ UEFI查找**硬盘分区**中第一个**FAT分区**内的引导文件进行系�
 
 ![2022-11-24-20-26-46.png](./images/2022-11-24-20-26-46.png)
 
-进入 ``
+进入 `UEFI: Built-in EFI Shell`, 就会看到所有 mapping table, 当然通过 `map` 命令也能看到
 
 ![2022-11-24-20-31-42.png](./images/2022-11-24-20-31-42.png)
 
@@ -220,6 +220,17 @@ UEFI查找**硬盘分区**中第一个**FAT分区**内的引导文件进行系�
 ![2022-11-24-21-01-31.png](./images/2022-11-24-21-01-31.png)
 
 可以看到 ubuntu 的 UEFI 启动项是 `\EFI\UBUNTU\SHIMX64.EFI`
+
+所以可以通过下面命令进入 ubuntu 的这个启动项, 从而就能启动这个系统.
+
+```
+Shell> fs0:
+FS0:> cd EFI/ubuntu/
+FS0:/EFI/ubuntu/> shimx64.efi
+```
+
+> 疑问: 多个 boot kernel 怎么显示出来呢?
+
 
 # 5. Q&A
 
