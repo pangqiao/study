@@ -13,6 +13,7 @@
   - [2.4. 设备固件](#24-设备固件)
   - [2.5. UEFI相关启动过程](#25-uefi相关启动过程)
 - [3. EFI系统分区](#3-efi系统分区)
+  - [添加UEFI文件启动项](#添加uefi文件启动项)
 - [4. Windows 的启动顺序](#4-windows-的启动顺序)
   - [4.1. BIOS](#41-bios)
   - [4.2. UEFI](#42-uefi)
@@ -141,11 +142,13 @@ Macbook 上的 ESP 分区里的 "\EFI\Apple" 文件夹:
 
 ![config](images/12.jpg)
 
-**UEFI下启动盘是ESP分区跟Windows不是同一个分区. **
+**UEFI 下启动盘是 ESP 分区跟 Windows 不是同一个分区**.
+
+## 添加UEFI文件启动项
 
 根据 UEFI 标准, 你可以把 U 盘里的 "`\EFI\Clover`" 文件夹拷贝到**硬盘里的 ESP 对应的路径**下. 然后把 "`\EFI\Clover\CloverX64.efi`" 添加为 **UEFI 的文件启动项**就行了.
 
-Windows 的 BCD 命令其实也可以添加 UEFI 启动项. 也可以用 EasyUEFI 来搞这些操作. 但是免费版的EasyUEFI不支持企业版Windows哦～某些Win10用户要被拒之门外了.
+**Windows** 的 **BCD** 命令其实也可以**添加 UEFI 启动项**. 也可以用 EasyUEFI 来搞这些操作. 但是免费版的 EasyUEFI 不支持企业版Windows.
 
 这一节的最后再说说 "`\EFI\BOOT`" 这个文件夹. 这个文件夹放谁家的程序都行. 无论是 "`\EFI\Microsoft\Boot\Bootmgfw.efi`" 还是 "`\EFI\Clover\CloverX64.efi`" 只要**放到 "\EFI\Boot" 下并且改名 "BOOTX64.EFI"(设备启动项)**就能在**没添加文件启动项**的情况下**默认加载对应的系统**.
 
