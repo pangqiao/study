@@ -123,7 +123,7 @@ UEFI 作为一个模糊了**固件**和**操作系统界限**的东西, 作为�
 
 3. 然后 UEFI 就会用**内置的文件系统驱动**(这里是文件系统驱动), **解析**每个**分区**. 然后 UEFI 就会**认识分区里的文件**了. 比如 "`\EFI\Boot\bootX64.efi`"(一般是 **ESP** 分区).
 
-作为 UEFI 标准里**钦定的文件系统**, `FAT32.efi` 是**每个主板都会带的**. **所有 UEFI 的主板都认识FAT32分区**. 这就是 UEFI 的 Windows 安装盘为啥非得是 FAT32 的. 除此之外苹果的主板还会支持 hfs 分区.
+作为 UEFI 标准里**钦定的文件系统**, `FAT32.efi` 是**每个主板！！！都会带的**. **所有 UEFI 的主板都认识FAT32分区**. 这就是 UEFI 的 Windows 安装盘为啥非得是 FAT32 的. 除此之外苹果的主板还会支持 hfs 分区.
 
 如同 Windows 可以安装驱动一样, **UEFI 也能在后期加载驱动**. 比如 CloverX64.efi 启动之后会加载 `\EFI\Clover\drivers64UEFI` 下的所有驱动. 包括 VboxHFS.efi 等各种efi. 网上你也能搜到NTFS.efi. 再比如**UEFI Shell** 下你可以**手动执行命令加载驱动**.
 
@@ -154,10 +154,10 @@ Macbook 上的 ESP 分区里的 "\EFI\Apple" 文件夹:
 
 举个例子: 一个 U 盘, 想做成 **Windows 安装盘 + Hackintosh 安装盘**该怎么做?
 
-- 划分两个分区, 第一个分区格式化成 FAT32, 第二个分区 HFS+.
+- 划分**两个分区**, 第一个分区格式化成 `FAT32`, 第二个分区 `HFS+`.
 - 苹果系统下把第二个分区做成安装盘. 苹果启动盘做好了.
 - 把 Windows 的 ISO 镜像里的文件拷贝到第一个分区. Windows 安装盘做好了.
-- 然后 Clover 拷贝到第一个分区的 "\EFI\Clover" 文件夹下. Clover 的东西也做好了.
+- 然后 Clover 拷贝到第一个分区的 "`\EFI\Clover`" 文件夹下. Clover 的东西也做好了.
 - 最后怎么让这个 U 盘插到任何电脑上都默认启动 Clover 呢?答案是把 "\EFI\Boot" 下的 "bootX64.efi" 换成 Clover 的就可以了. 那个文件夹放谁家的 efi 文件都要改名 "bootX64.efi".
 
 # 4. Windows 的启动顺序
