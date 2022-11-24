@@ -151,6 +151,8 @@ Macbook 上的 ESP 分区里的 "\EFI\Apple" 文件夹:
 
 **Windows** 的 **BCD** 命令其实也可以**添加 UEFI 启动项**. 也可以用 EasyUEFI 来搞这些操作. 但是免费版的 EasyUEFI 不支持企业版Windows.
 
+Linux 通过 UEFI SHELL
+
 "`\EFI\BOOT`" 这个文件夹**放谁家的程序都行**. 无论是 "`\EFI\Microsoft\Boot\Bootmgfw.efi`", 还是 "`\EFI\Clover\CloverX64.efi`", 只要放到 "`\EFI\Boot`" 下并且**改名** "`BOOTX64.EFI`"(**设备启动项**), 就能在**没添加文件启动项**的情况下**默认加载对应的系统**.
 
 举个例子: 一个 U 盘, 想做成 **Windows 安装盘 + Hackintosh 安装盘**该怎么做?
@@ -229,13 +231,16 @@ FS0:> cd EFI/ubuntu/
 FS0:/EFI/ubuntu/> shimx64.efi
 ```
 
-Shell> bcfg boot add 4 FS0:/\vtdchain.efi "Haiwei vtdchain"
+> 疑问: 多个 boot kernel 怎么显示出来呢?
+
+添加一个启动项, 结合上面的 mapping table 和 相应文件
+
+```
+Shell> bcfg boot add 4 FS0:\vtdchain.efi "Haiwei vtdchain"
 Target = 0002.
 bcfg: Add Boot0002 as 4
 Shell>
-
-
-> 疑问: 多个 boot kernel 怎么显示出来呢?
+```
 
 
 # 5. Q&A
