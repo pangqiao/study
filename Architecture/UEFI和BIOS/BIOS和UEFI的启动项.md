@@ -35,7 +35,7 @@
 
 BIOS 启动的时候按照 **CMOS** 设置里的顺序**挨个存储设备检查**: (此处不讨论PXE和光盘)
 
-* 这个存储设备的前512字节是不是以0x55 0xAA结尾？
+* 这个存储设备的前512字节是不是以0x55 0xAA结尾?
 
 * 不是那就跳过. 找下一个设备.
 
@@ -120,7 +120,7 @@ UEFI 作为一个模糊了**固件**和**操作系统界限**的东西, 作为�
 
 2. 对于其中的**磁盘设备**, UEFI 会**加载对应的设备驱动**, 解析其中的**分区表**(**GPT** 和 **MBR**). 然后 UEFI 就会有**所有分区的列表**了. 
 
-3. 然后 UEFI 就会用**内置的文件系统驱动**(这里是文件系统驱动), 解析每个**分区**. 然后 UEFI 就会**认识分区里的文件**了. 比如 "`\EFI\Boot\bootX64.efi`".
+3. 然后 UEFI 就会用**内置的文件系统驱动**(这里是文件系统驱动), **解析**每个**分区**. 然后 UEFI 就会**认识分区里的文件**了. 比如 "`\EFI\Boot\bootX64.efi`"(一般是 **ESP** 分区).
 
 作为 UEFI 标准里**钦定的文件系统**, `FAT32.efi` 是**每个主板都会带的**. **所有 UEFI 的主板都认识FAT32分区**. 这就是 UEFI 的 Windows 安装盘为啥非得是 FAT32 的. 除此之外苹果的主板还会支持 hfs 分区.
 
@@ -143,19 +143,19 @@ Macbook 上的 ESP 分区里的 "\EFI\Apple" 文件夹:
 
 **UEFI下启动盘是ESP分区跟Windows不是同一个分区. **
 
-根据 UEFI 标准, 你可以把U盘里的 "`\EFI\Clover`" 文件夹拷贝到**硬盘里的 ESP 对应的路径**下. 然后把 "`\EFI\Clover\CloverX64.efi`" 添加为 **UEFI 的文件启动项**就行了.
+根据 UEFI 标准, 你可以把 U 盘里的 "`\EFI\Clover`" 文件夹拷贝到**硬盘里的 ESP 对应的路径**下. 然后把 "`\EFI\Clover\CloverX64.efi`" 添加为 **UEFI 的文件启动项**就行了.
 
-Windows 的 BCD 命令其实也可以添加 UEFI 启动项然而我没搞懂怎么弄. 我更喜欢用EasyUEFI来搞这些操作. 但是免费版的EasyUEFI不支持企业版Windows哦～某些Win10用户要被拒之门外了.
+Windows 的 BCD 命令其实也可以添加 UEFI 启动项. 也可以用 EasyUEFI 来搞这些操作. 但是免费版的EasyUEFI不支持企业版Windows哦～某些Win10用户要被拒之门外了.
 
 这一节的最后再说说 "`\EFI\BOOT`" 这个文件夹. 这个文件夹放谁家的程序都行. 无论是 "`\EFI\Microsoft\Boot\Bootmgfw.efi`" 还是 "`\EFI\Clover\CloverX64.efi`" 只要**放到 "\EFI\Boot" 下并且改名 "BOOTX64.EFI"(设备启动项)**就能在**没添加文件启动项**的情况下**默认加载对应的系统**.
 
-举个例子: **一个 U 盘, 想做成 Windows 安装盘 + Hackintosh 安装盘**该怎么做？
+举个例子: **一个 U 盘, 想做成 Windows 安装盘 + Hackintosh 安装盘**该怎么做?
 
 - 划分两个分区, 第一个分区格式化成 FAT32, 第二个分区 HFS+.
 - 苹果系统下把第二个分区做成安装盘. 苹果启动盘做好了.
 - 把 Windows 的 ISO 镜像里的文件拷贝到第一个分区. Windows 安装盘做好了.
 - 然后 Clover 拷贝到第一个分区的 "\EFI\Clover" 文件夹下. Clover 的东西也做好了.
-- 最后怎么让这个 U 盘插到任何电脑上都默认启动 Clover 呢？答案是把 "\EFI\Boot" 下的 "bootX64.efi" 换成 Clover 的就可以了. 那个文件夹放谁家的 efi 文件都要改名 "bootX64.efi".
+- 最后怎么让这个 U 盘插到任何电脑上都默认启动 Clover 呢?答案是把 "\EFI\Boot" 下的 "bootX64.efi" 换成 Clover 的就可以了. 那个文件夹放谁家的 efi 文件都要改名 "bootX64.efi".
 
 # 4. Windows 的启动顺序
 
@@ -175,7 +175,7 @@ Windows的PBR认识FAT32和NTFS两种分区找到分区根目录的bootmgr文件
 
 bootmgr没了MBR和PBR的大小限制可以做更多的事. 它会加载并分析BCD启动项存储. 而且bootmgr可以跨越磁盘读取文件了. 所以无论你有几个磁盘你在多少块磁盘上装了Windows一个电脑只需要一个bootmgr就行了. bootmgr会去加载某磁盘某NTFS分区的"\Windows\System32\WinLoad.exe"后面启动Windows的事就由WinLoad.exe来完成了.
 
-重点来了为什么图中有两组虚线？
+重点来了为什么图中有两组虚线?
 
 **因为"启动磁盘"和"装系统的磁盘"可以是同一个磁盘也可以不是同一个**. "启动分区"和"系统分区"可以是不同磁盘的不同分区也可以是相同磁盘的不同分区也可以是同一个分区.
 
@@ -203,7 +203,7 @@ UEFI查找**硬盘分区**中第一个**FAT分区**内的引导文件进行系�
 
 ## 5.1. Ghost
 
-> 以前我一直装Ghost版的WindowsUEFI之后真的没法Ghost了么？
+> 以前我一直装Ghost版的WindowsUEFI之后真的没法Ghost了么?
 
 先说一句真不推荐用网上的Ghost版Windows安装盘来装系统了. 微软公开放出了官方的原版Win10下载链接而且还有启动盘制作程序. 链接在这: [下载 Windows 10](https://link.zhihu.com/?target=https%3A//www.microsoft.com/zh-cn/software-download/windows10). 写这个的原因是因为有时候自己做的Ghost备份还是挺好用的.
 
@@ -225,7 +225,7 @@ UEFI查找**硬盘分区**中第一个**FAT分区**内的引导文件进行系�
 
 ## 5.3. 无工具制作安装盘
 
-> 不需要第三方工具就能做UEFI下的Windows安装盘？
+> 不需要第三方工具就能做UEFI下的Windows安装盘?
 
 确实啊根据上文说的**U盘格式化成FAT32**然后把Windows安装盘的ISO里面的东西拷贝到U盘就行了. (适用于Win8/8.1/10以及WinServer2012/2012R2/2016. WinVista x64/Win7x64以及WinServer2008x64/2008R2需要额外操作WinVista x86/Win7x86/WinServer2008x86不支持UEFI)
 
@@ -235,7 +235,7 @@ UEFI查找**硬盘分区**中第一个**FAT分区**内的引导文件进行系�
 
 ## 5.4. 无U盘安装
 
-> 我电脑是UEFI的想装Linux但我手头没优盘听说也能搞定？
+> 我电脑是UEFI的想装Linux但我手头没优盘听说也能搞定?
 
 对搞个FAT32的分区把Linux安装盘的iso镜像里面的文件拷贝进去然后在Windows下用工具给那个分区的BOOTx64.efi添加为UEFI文件启动项开机时候选那个启动项就能启动到Linux安装盘了. 下面示意图是Ubuntu的. 记得查看一下你的Linux支不支持SecureBoot哦！如果你要装的Linux不支持SecureBoot记得**关掉主板的SecureBoot设置**哦.
 
@@ -245,7 +245,7 @@ Ubuntu安装盘ISO镜像内的UEFI启动文件:
 
 ## 5.5. 默认grub
 
-> 装个Linux但我希望默认还是Windows; 重装Windows可是我开机不再默认Grub怎么回Linux？
+> 装个Linux但我希望默认还是Windows; 重装Windows可是我开机不再默认Grub怎么回Linux?
 
 如果是UEFI模式那就跟之前一样改启动项顺序就行了.
 
@@ -253,7 +253,7 @@ Ubuntu安装盘ISO镜像内的UEFI启动文件:
 
 ## 5.6. 安装在 MBR
 
-> 重装Windows提示我什么MBR、GPT不让装？
+> 重装Windows提示我什么MBR、GPT不让装?
 
 这个就是Windows安装程序的限制了. BIOS模式下的Windows只允许被装在MBR分区表下面. UEFI模式下的Windows只允许被装在GPT分区下.
 
