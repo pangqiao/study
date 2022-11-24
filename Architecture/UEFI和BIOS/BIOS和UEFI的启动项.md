@@ -229,6 +229,12 @@ FS0:> cd EFI/ubuntu/
 FS0:/EFI/ubuntu/> shimx64.efi
 ```
 
+Shell> bcfg boot add 4 FS0:/\vtdchain.efi "Haiwei vtdchain"
+Target = 0002.
+bcfg: Add Boot0002 as 4
+Shell>
+
+
 > 疑问: 多个 boot kernel 怎么显示出来呢?
 
 
