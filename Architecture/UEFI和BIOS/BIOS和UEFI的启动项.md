@@ -145,23 +145,21 @@ Macbook 上的 ESP 分区里的 "\EFI\Apple" 文件夹:
 
 根据 UEFI 标准, 你可以把U盘里的 "`\EFI\Clover`" 文件夹拷贝到**硬盘里的 ESP 对应的路径**下. 然后把 "`\EFI\Clover\CloverX64.efi`" 添加为 **UEFI 的文件启动项**就行了.
 
-Windows的BCD命令其实也可以添加UEFI启动项然而我没搞懂怎么弄. 我更喜欢用EasyUEFI来搞这些操作. 但是免费版的EasyUEFI不支持企业版Windows哦～某些Win10用户要被拒之门外了.
+Windows 的 BCD 命令其实也可以添加 UEFI 启动项然而我没搞懂怎么弄. 我更喜欢用EasyUEFI来搞这些操作. 但是免费版的EasyUEFI不支持企业版Windows哦～某些Win10用户要被拒之门外了.
 
-这一节的最后再说说"`\EFI\Boot`"这个文件夹. 这个文件夹放谁家的程序都行. 无论是"`\EFI\Microsoft\Boot\Bootmgfw.efi`"还是"`\EFI\Clover\CloverX64.efi`"只要**放到"\EFI\Boot"下并且改名"bootX64.efi"(设备启动项)**就能在**没添加文件启动项**的情况下**默认加载对应的系统**.
+这一节的最后再说说 "`\EFI\BOOT`" 这个文件夹. 这个文件夹放谁家的程序都行. 无论是 "`\EFI\Microsoft\Boot\Bootmgfw.efi`" 还是 "`\EFI\Clover\CloverX64.efi`" 只要**放到 "\EFI\Boot" 下并且改名 "BOOTX64.EFI"(设备启动项)**就能在**没添加文件启动项**的情况下**默认加载对应的系统**.
 
-举个例子: **一个U盘你想做成Windows安装盘+Hackintosh安装盘**该怎么做？
+举个例子: **一个 U 盘, 想做成 Windows 安装盘 + Hackintosh 安装盘**该怎么做？
 
-- 你划分俩分区第一个分区格式化成FAT32第二个分区HFS+.
+- 划分两个分区, 第一个分区格式化成 FAT32, 第二个分区 HFS+.
 - 苹果系统下把第二个分区做成安装盘. 苹果启动盘做好了.
-- 把Windows的ISO镜像里的文件拷贝到第一个分区. Windows安装盘做好了.
-- 然后Clover拷贝到第一个分区的"\EFI\Clover"文件夹下. Clover的东西也做好了.
-- 最后怎么让这个U盘插到任何电脑上都默认启动Clover呢？答案是把"\EFI\Boot"下的"bootX64.efi"换成Clover的就可以了. 那个文件夹放谁家的efi文件都要改名"bootX64.efi"哦.
-
-嗯这一节就写到这吧.
+- 把 Windows 的 ISO 镜像里的文件拷贝到第一个分区. Windows 安装盘做好了.
+- 然后 Clover 拷贝到第一个分区的 "\EFI\Clover" 文件夹下. Clover 的东西也做好了.
+- 最后怎么让这个 U 盘插到任何电脑上都默认启动 Clover 呢？答案是把 "\EFI\Boot" 下的 "bootX64.efi" 换成 Clover 的就可以了. 那个文件夹放谁家的 efi 文件都要改名 "bootX64.efi".
 
 # 4. Windows 的启动顺序
 
-Windows 8/8.1/10在UEFI和BIOS下各种启动文件的顺序
+Windows 8/8.1/10 在 UEFI 和 BIOS 下各种启动文件的顺序
 
 ## 4.1. BIOS
 
