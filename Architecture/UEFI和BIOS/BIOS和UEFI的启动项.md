@@ -18,6 +18,9 @@
   - [4.1. BIOS](#41-bios)
   - [4.2. UEFI](#42-uefi)
 - [举例](#举例)
+  - [查看所有的UEFI启动项](#查看所有的uefi启动项)
+  - [UEFI的映射表](#uefi的映射表)
+  - [添加一个启动项](#添加一个启动项)
 - [5. Q&A](#5-qa)
   - [5.1. Ghost](#51-ghost)
   - [5.2. 无法定位分区](#52-无法定位分区)
@@ -209,13 +212,11 @@ UEFI查找**硬盘分区**中第一个**FAT分区**内的引导文件进行系�
 
 # 举例
 
-所有的 UEFI 启动项
+## 查看所有的UEFI启动项
+
+启动时候按特定按钮, 可以看到所有的 UEFI 启动项
 
 ![2022-11-24-20-26-46.png](./images/2022-11-24-20-26-46.png)
-
-进入 `UEFI: Built-in EFI Shell`, 就会看到所有 mapping table, 当然通过 `map` 命令也能看到
-
-![2022-11-24-20-31-42.png](./images/2022-11-24-20-31-42.png)
 
 通过 `bcfg boot dump` 查看所有启动项
 
@@ -233,7 +234,17 @@ FS0:/EFI/ubuntu/> shimx64.efi
 
 > 疑问: 多个 boot kernel 怎么显示出来呢?
 
-添加一个启动项, 结合上面的 mapping table 和 相应文件
+## UEFI的映射表
+
+这其实是 UEFI 自己的
+
+进入 `UEFI: Built-in EFI Shell`, 就会看到所有 mapping table, 当然通过 `map` 命令也能看到
+
+![2022-11-24-20-31-42.png](./images/2022-11-24-20-31-42.png)
+
+## 添加一个启动项
+
+结合上面的 mapping table 和 相应文件
 
 ```
 Shell> bcfg boot add 4 FS0:\vtdchain.efi "Haiwei vtdchain"
@@ -241,6 +252,10 @@ Target = 0002.
 bcfg: Add Boot0002 as 4
 Shell>
 ```
+
+再次 `bcfg boot dump` 查看, 可以看到最后一项
+
+![2022-11-24-21-37-16.png](./images/2022-11-24-21-37-16.png)
 
 
 # 5. Q&A
