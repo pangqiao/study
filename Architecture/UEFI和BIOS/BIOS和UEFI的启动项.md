@@ -11,29 +11,31 @@
   - [2.2. 设备驱动](#22-设备驱动)
   - [2.3. DXE作用](#23-dxe作用)
   - [2.4. 设备固件](#24-设备固件)
-- [2.5. 加载驱动](#25-加载驱动)
+  - [2.5. 加载过程](#25-加载过程)
+  - [2.6. 手动加载](#26-手动加载)
 - [3. EFI系统分区](#3-efi系统分区)
-  - [配置UEFI启动项](#配置uefi启动项)
-  - [文件启动项](#文件启动项)
-  - [设备启动项](#设备启动项)
-- [4. Windows 的启动顺序](#4-windows-的启动顺序)
-  - [4.1. BIOS](#41-bios)
-  - [4.2. UEFI](#42-uefi)
-- [Linux启动过程](#linux启动过程)
-  - [UEFI启动](#uefi启动)
-- [UEFI shell操作](#uefi-shell操作)
-  - [查看所有的UEFI启动项](#查看所有的uefi启动项)
-  - [手动执行某个启动项](#手动执行某个启动项)
-  - [UEFI的映射表](#uefi的映射表)
-  - [添加一个启动项](#添加一个启动项)
-- [5. Q&A](#5-qa)
-  - [5.1. Ghost](#51-ghost)
-  - [5.2. 无法定位分区](#52-无法定位分区)
-  - [5.3. 无工具制作安装盘](#53-无工具制作安装盘)
-  - [5.4. 无U盘安装](#54-无u盘安装)
-  - [5.5. 默认grub](#55-默认grub)
-  - [5.6. 安装在 MBR](#56-安装在-mbr)
-- [6. 参考](#6-参考)
+- [4. 配置UEFI启动项](#4-配置uefi启动项)
+  - [4.1. 文件启动项](#41-文件启动项)
+  - [4.2. 设备启动项](#42-设备启动项)
+  - [4.3. 举例](#43-举例)
+- [5. Windows 的启动顺序](#5-windows-的启动顺序)
+  - [5.1. BIOS](#51-bios)
+  - [5.2. UEFI](#52-uefi)
+- [6. Linux启动过程](#6-linux启动过程)
+  - [6.1. UEFI启动](#61-uefi启动)
+- [7. UEFI shell操作](#7-uefi-shell操作)
+  - [7.1. 查看所有的UEFI启动项](#71-查看所有的uefi启动项)
+  - [7.2. 手动执行某个启动项](#72-手动执行某个启动项)
+  - [7.3. UEFI的映射表](#73-uefi的映射表)
+  - [7.4. 添加一个启动项](#74-添加一个启动项)
+- [8. Q&A](#8-qa)
+  - [8.1. Ghost](#81-ghost)
+  - [8.2. 无法定位分区](#82-无法定位分区)
+  - [8.3. 无工具制作安装盘](#83-无工具制作安装盘)
+  - [8.4. 无U盘安装](#84-无u盘安装)
+  - [8.5. 默认grub](#85-默认grub)
+  - [8.6. 安装在 MBR](#86-安装在-mbr)
+- [9. 参考](#9-参考)
 
 <!-- /code_chunk_output -->
 
@@ -90,7 +92,7 @@ UEFI 启动的时候, 经过一系列初始化(SEC、CAR、DXE什么的SEC、CAR
 
 * Win10 可以选 FAT32、NTFS、exFAT、ReFS 几种;
 
-* Linux 可以选 ext2、ext3、ext4、FAT32 等;
+* Linux 可以选 ext2、ext3、ext4、vfat 等;
 
 * macOS 可以选 FAT32、HFS+、APFS、exFAT 几种.
 
@@ -122,7 +124,7 @@ UEFI 作为一个模糊了**固件**和**操作系统界限**的东西, 作为�
 
 > 题外话：浦科特的 NVMe 固态硬盘，UEFI 版固件是没有那个 Logo 的。那个 Logo 是浦科特的BIOS版（Legacy版）固件。它被加载是因为主板默认为了兼容性，“StorageOptionROM” 选项默认是 Legacy 的。改成UEFI，就见不到那个浦科特 Logo 页了。
 
-# 2.5. 加载驱动
+## 2.5. 加载过程
 
 1. UEFI 启动后, **进入了 DXE 阶段**, 就开始**加载设备驱动**(这里是设备驱动), 然后 UEFI 就会有**设备列表**了.
 
@@ -130,7 +132,7 @@ UEFI 作为一个模糊了**固件**和**操作系统界限**的东西, 作为�
 
 3. 然后 UEFI 就会用**内置的文件系统驱动**(这里是文件系统驱动), **解析**每个**分区**. 然后 UEFI 就会**认识分区里的文件**了. 比如 "`\EFI\BOOT\BOOTX64.EFI`"(**ESP** 分区).
 
-
+## 2.6. 手动加载
 
 作为 UEFI 标准里**钦定的文件系统**, `FAT32.efi` 是**每个主板！！！都会带的**. **所有 UEFI 的主板都认识FAT32分区**. 这就是 UEFI 的 Windows 安装盘为啥非得是 FAT32 的. 除此之外苹果的主板还会支持 hfs 分区.
 
@@ -140,7 +142,7 @@ UEFI 作为一个模糊了**固件**和**操作系统界限**的东西, 作为�
 
 # 3. EFI系统分区
 
-UEFI 规范里, 在 **GPT 分区表**的基础上, 规定了一个 **EFI 系统分区**(`EFI System Partition`, ESP), ESP 要格式化成 **FAT32** 文件系统(这个分区是要格式化为某个文件系统的), **EFI 启动文件**要放在"`\EFI\<厂商>`" 文件夹下面.
+UEFI 规范里, 在 **GPT 分区表**的基础上, 规定了一个 **EFI 系统分区**(`EFI System Partition`, ESP), ESP 分区要格式化成 **FAT32** 文件系统(Linux 下面是 vfat 文件系统), **EFI 启动文件**要放在"`\EFI\<厂商>`" 文件夹下面.
 
 - 比如 Windows 的 UEFI 启动文件都在 "`\EFI\Microsoft`" 下面.
 - 比如 Clover 的东西全都放在 "`\EFI\Clover`"下面.
@@ -153,19 +155,21 @@ Macbook 上的 ESP 分区里的 "\EFI\Apple" 文件夹:
 
 **UEFI 下启动盘是 ESP 分区跟 Windows 不是同一个分区**.
 
-## 配置UEFI启动项
+# 4. 配置UEFI启动项
 
-## 文件启动项
+**Windows** 的 **BCD** 命令可以**添加 UEFI 启动项**. 也可以用 EasyUEFI 来搞这些操作. 但是免费版的 EasyUEFI 不支持企业版Windows.
 
-根据 UEFI 标准, 你可以把 U 盘里的 "`\EFI\Clover`" 文件夹拷贝到**硬盘里的 ESP 对应的路径**下. 然后把 "`\EFI\Clover\CloverX64.efi`" 添加为 **UEFI 的文件启动项**就行了.
+Linux 通过 **UEFI SHELL** 相关命令.
 
-**Windows** 的 **BCD** 命令其实也可以**添加 UEFI 启动项**. 也可以用 EasyUEFI 来搞这些操作. 但是免费版的 EasyUEFI 不支持企业版Windows.
+## 4.1. 文件启动项
 
-Linux 通过 UEFI SHELL 相关命令
+根据 UEFI 标准, 你可以把 U 盘里的 "`\EFI\Clover`" 文件夹拷贝到**硬盘里的 ESP 对应的路径**下. 然后把 "`\EFI\Clover\CloverX64.efi`" 添加为 **UEFI 的文件启动项**.
 
-## 设备启动项
+## 4.2. 设备启动项
 
 "`\EFI\BOOT`" 这个文件夹**放谁家的程序都行**. 无论是 "`\EFI\Microsoft\Boot\Bootmgfw.efi`", 还是 "`\EFI\Clover\CloverX64.efi`", 只要放到 "`\EFI\BOOT`" 下并且**改名** "`BOOTX64.EFI`"(**设备启动项**), 就能在**没添加文件启动项**的情况下**默认加载对应的系统**.
+
+## 4.3. 举例
 
 举个例子: 一个 U 盘, 想做成 **Windows 安装盘 + Hackintosh 安装盘**该怎么做?
 
@@ -175,11 +179,11 @@ Linux 通过 UEFI SHELL 相关命令
 - 然后 Clover 拷贝到第一个分区的 "`\EFI\Clover`" 文件夹下. Clover 的东西也做好了.
 - 最后怎么让这个 U 盘插到任何电脑上都默认启动 Clover 呢?答案是把 "\EFI\Boot" 下的 "bootX64.efi" 换成 Clover 的就可以了. 那个文件夹放谁家的 efi 文件都要改名 "bootX64.efi".
 
-# 4. Windows 的启动顺序
+# 5. Windows 的启动顺序
 
 Windows 8/8.1/10 在 UEFI 和 BIOS 下各种启动文件的顺序
 
-## 4.1. BIOS
+## 5.1. BIOS
 
 BIOS 启动:
 
@@ -199,7 +203,7 @@ bootmgr没了MBR和PBR的大小限制可以做更多的事. 它会加载并分�
 
 这就解释了为什么有的时候Windows装在磁盘2上却要在BIOS里选磁盘0启动了. 因为bootmgr可能在磁盘0上.
 
-## 4.2. UEFI
+## 5.2. UEFI
 
 UEFI 启动:
 
@@ -226,9 +230,9 @@ UEFI固件 -> bootmgfw.efi -> WinLoad.efi
 
 其中的虚线跟上面的一样意思是**Windows启动盘和EFI启动盘可以是一个硬盘也可以是不同的硬盘**. 所以**对于UEFI来说启动盘是 bootmgfw.efi 所在的那个盘**.
 
-# Linux启动过程
+# 6. Linux启动过程
 
-## UEFI启动
+## 6.1. UEFI启动
 
 UEFI固件 -> 文件启动项/BOOTX64.EFI -> grub
 
@@ -239,7 +243,7 @@ UEFI固件 -> 文件启动项/BOOTX64.EFI -> grub
 根据前文说的, **UEFI 启动项**分为**文件启动项**和**设备启动项**.
 
 * 给 UEFI 指定特定的文件启动项(**某个设备某个分区某个文件**, 必要时候需要手动**加载设备驱动**和**文件系统驱动**);
-* 直接**指定特定的设备**启动项(该设备必须**存在 FAT 分区**并且在里面必须是 `\EFI\BOOT\BOOTX64.EFI`), UEFI 查找**该设备分区**中第一个**FAT分区**内的**引导文件**进行系统引导.
+* 直接**指定特定的设备**启动项(该设备必须**存在 vfat 分区**并且在里面必须是 `\EFI\BOOT\BOOTX64.EFI`), UEFI 查找**该设备分区**中第一个 **vfat 分区**内的**引导文件**进行系统引导.
 
 比如:
 
@@ -257,9 +261,9 @@ UEFI固件 -> 文件启动项/BOOTX64.EFI -> grub
 
 ![2022-11-24-22-55-19.png](./images/2022-11-24-22-55-19.png)
 
-# UEFI shell操作
+# 7. UEFI shell操作
 
-## 查看所有的UEFI启动项
+## 7.1. 查看所有的UEFI启动项
 
 启动时候按特定按钮, 可以看到所有的 UEFI 启动项
 
@@ -269,7 +273,7 @@ UEFI固件 -> 文件启动项/BOOTX64.EFI -> grub
 
 ![2022-11-24-21-01-31.png](./images/2022-11-24-21-01-31.png)
 
-## 手动执行某个启动项
+## 7.2. 手动执行某个启动项
 
 可以看到 ubuntu 的 UEFI 启动项是 `\EFI\UBUNTU\SHIMX64.EFI`
 
@@ -285,7 +289,7 @@ FS0:/EFI/ubuntu/> shimx64.efi
 
 这个操作和在启动阶段选择相应的 UEFI 启动项并执行的效果是一样的
 
-## UEFI的映射表
+## 7.3. UEFI的映射表
 
 这其实是 UEFI 自己的映射表
 
@@ -295,7 +299,7 @@ FS0:/EFI/ubuntu/> shimx64.efi
 
 可以看到 `FS0:`, `HD1a0b:`, `BLK5:` 是一个意思
 
-## 添加一个启动项
+## 7.4. 添加一个启动项
 
 结合上面的 mapping table 和 相应文件
 
@@ -328,10 +332,9 @@ Shell> exit
 ![2022-11-24-21-52-27.png](./images/2022-11-24-21-52-27.png)
 
 
+# 8. Q&A
 
-# 5. Q&A
-
-## 5.1. Ghost
+## 8.1. Ghost
 
 > 以前我一直装Ghost版的WindowsUEFI之后真的没法Ghost了么?
 
@@ -345,7 +348,7 @@ Shell> exit
 
 总结一下Ghost还原Windows分区之后调用BCDBoot配置启动项即可.
 
-## 5.2. 无法定位分区
+## 8.2. 无法定位分区
 
 > Windows无法定位现有分区也无法
 
@@ -353,7 +356,7 @@ Shell> exit
 
 如果实在做不到考虑用DISM.exe安装Windows吧. Win7的DISM.exe真的太弱了. 尽量用Win10安装盘或者Win10PE里的DISM.exe.
 
-## 5.3. 无工具制作安装盘
+## 8.3. 无工具制作安装盘
 
 > 不需要第三方工具就能做UEFI下的Windows安装盘?
 
@@ -363,7 +366,7 @@ Shell> exit
 
 ![config](images/15.jpg)
 
-## 5.4. 无U盘安装
+## 8.4. 无U盘安装
 
 > 我电脑是UEFI的想装Linux但我手头没优盘听说也能搞定?
 
@@ -373,7 +376,7 @@ Ubuntu安装盘ISO镜像内的UEFI启动文件:
 
 ![config](images/16.jpg)
 
-## 5.5. 默认grub
+## 8.5. 默认grub
 
 > 装个Linux但我希望默认还是Windows; 重装Windows可是我开机不再默认Grub怎么回Linux?
 
@@ -381,7 +384,7 @@ Ubuntu安装盘ISO镜像内的UEFI启动文件:
 
 如果是传统BIOS的要么用bootsect.exe把MBR改成Windows的. 要么用工具把MBR刷成Grub的. 也可以考虑Linux下用dd命令备份MBR的前446字节到时候再还原回去.
 
-## 5.6. 安装在 MBR
+## 8.6. 安装在 MBR
 
 > 重装Windows提示我什么MBR、GPT不让装?
 
@@ -389,6 +392,6 @@ Ubuntu安装盘ISO镜像内的UEFI启动文件:
 
 但事实上MBR分区表也能启动UEFI模式下的Windows.
 
-# 6. 参考
+# 9. 参考
 
 本文来自: https://zhuanlan.zhihu.com/p/31365115
