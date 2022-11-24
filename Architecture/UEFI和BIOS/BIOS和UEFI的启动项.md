@@ -130,20 +130,20 @@ UEFI 作为一个模糊了**固件**和**操作系统界限**的东西, 作为�
 
 # 3. EFI系统分区
 
-UEFI 规范里, 在 **GPT 分区表**的基础上, 规定了一个 **EFI 系统分区(EFI System PartitionESP)ESP要格式化成FAT32(这个分区是要格式化为某个文件系统的)EFI启动文件要放在"\EFI\<厂商>"文件夹下面**.
+UEFI 规范里, 在 **GPT 分区表**的基础上, 规定了一个 **EFI 系统分区**(`EFI System Partition`, ESP), ESP 要格式化成 **FAT32** 文件系统(这个分区是要格式化为某个文件系统的), **EFI 启动文件**要放在"`\EFI\<厂商>`" 文件夹下面.
 
-- 比如Windows的UEFI启动文件都在"\EFI\Microsoft"下面.
-- 比如Clover的东西全都放在"\EFI\Clover"下面.
+- 比如 Windows 的 UEFI 启动文件都在 "`\EFI\Microsoft`" 下面.
+- 比如 Clover 的东西全都放在 "`\EFI\Clover`"下面.
 
-但是Apple比较特殊它的主板直接去HFS/APFS分区找启动文件. 然而即便如此Mac的ESP里还是会有一堆Apple的文件.
+但是 Apple 比较特殊它的主板直接去 HFS/APFS 分区找启动文件. 然而即便如此 Mac 的 ESP 里还是会有一堆 Apple 的文件.
 
-Macbook上的ESP分区里的"\EFI\Apple"文件夹:
+Macbook 上的 ESP 分区里的 "\EFI\Apple" 文件夹:
 
 ![config](images/12.jpg)
 
 **UEFI下启动盘是ESP分区跟Windows不是同一个分区. **
 
-根据UEFI标准里说的你可以把U盘里的"`\EFI\Clover`"文件夹拷贝到**硬盘里的ESP对应的路径**下. 然后把"`\EFI\Clover\CloverX64.efi`"添加为**UEFI的文件启动项**就行了.
+根据 UEFI 标准, 你可以把U盘里的 "`\EFI\Clover`" 文件夹拷贝到**硬盘里的 ESP 对应的路径**下. 然后把 "`\EFI\Clover\CloverX64.efi`" 添加为 **UEFI 的文件启动项**就行了.
 
 Windows的BCD命令其实也可以添加UEFI启动项然而我没搞懂怎么弄. 我更喜欢用EasyUEFI来搞这些操作. 但是免费版的EasyUEFI不支持企业版Windows哦～某些Win10用户要被拒之门外了.
 
