@@ -13,7 +13,8 @@
   - [2.4. 设备固件](#24-设备固件)
   - [2.5. UEFI相关启动过程](#25-uefi相关启动过程)
 - [3. EFI系统分区](#3-efi系统分区)
-  - [设置UEFI启动项](#设置uefi启动项)
+  - [配置UEFI启动项](#配置uefi启动项)
+  - [配置](#配置)
 - [4. Windows 的启动顺序](#4-windows-的启动顺序)
   - [4.1. BIOS](#41-bios)
   - [4.2. UEFI](#42-uefi)
@@ -148,13 +149,17 @@ Macbook 上的 ESP 分区里的 "\EFI\Apple" 文件夹:
 
 **UEFI 下启动盘是 ESP 分区跟 Windows 不是同一个分区**.
 
-## 设置UEFI启动项
+## 配置UEFI启动项
+
+## 配置
 
 根据 UEFI 标准, 你可以把 U 盘里的 "`\EFI\Clover`" 文件夹拷贝到**硬盘里的 ESP 对应的路径**下. 然后把 "`\EFI\Clover\CloverX64.efi`" 添加为 **UEFI 的文件启动项**就行了.
 
 **Windows** 的 **BCD** 命令其实也可以**添加 UEFI 启动项**. 也可以用 EasyUEFI 来搞这些操作. 但是免费版的 EasyUEFI 不支持企业版Windows.
 
-Linux 通过 UEFI SHELL
+Linux 通过 UEFI SHELL 相关命令
+
+
 
 "`\EFI\BOOT`" 这个文件夹**放谁家的程序都行**. 无论是 "`\EFI\Microsoft\Boot\Bootmgfw.efi`", 还是 "`\EFI\Clover\CloverX64.efi`", 只要放到 "`\EFI\Boot`" 下并且**改名** "`BOOTX64.EFI`"(**设备启动项**), 就能在**没添加文件启动项**的情况下**默认加载对应的系统**.
 
@@ -236,11 +241,13 @@ FS0:/EFI/ubuntu/> shimx64.efi
 
 ## UEFI的映射表
 
-这其实是 UEFI 自己的
+这其实是 UEFI 自己的映射表
 
 进入 `UEFI: Built-in EFI Shell`, 就会看到所有 mapping table, 当然通过 `map` 命令也能看到
 
 ![2022-11-24-20-31-42.png](./images/2022-11-24-20-31-42.png)
+
+可以看到 `FS0:`, `HD1a0b:`, `BLK5:` 是一个意思
 
 ## 添加一个启动项
 
@@ -250,12 +257,30 @@ FS0:/EFI/ubuntu/> shimx64.efi
 Shell> bcfg boot add 4 FS0:\vtdchain.efi "Haiwei vtdchain"
 Target = 0002.
 bcfg: Add Boot0002 as 4
-Shell>
 ```
+
+> 上面 `FS0:` 可以用 `HD1a0b:` 或者 `BLK5:` 替换
 
 再次 `bcfg boot dump` 查看, 可以看到最后一项
 
 ![2022-11-24-21-37-16.png](./images/2022-11-24-21-37-16.png)
+
+注意: 一定要通过 BIOS 保存(UEFI Shell 应该有自己的保存命令)
+
+先从 UEFI Shell 退出
+
+```
+Shell> exit
+```
+
+然后选择下面的 "`Enter Setup`"
+
+![2022-11-24-20-26-46.png](./images/2022-11-24-20-26-46.png)
+
+在 BIOS 的 "Save & Exit" 中保存并重启就能看到
+
+![2022-11-24-21-52-27.png](./images/2022-11-24-21-52-27.png)
+
 
 
 # 5. Q&A
