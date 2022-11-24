@@ -193,9 +193,11 @@ UEFI固件->bootmgfw.efi->WinLoad.efi
 
 给UEFI指定特定的文件启动项(**某个设备某个分区某个文件但是必须手动加载设备驱动和文件系统驱动**)或直接指定特定的设备启动项(该设备必须存在FAT分区并且在里面必须是\EFI\Boot\bootX64.efi).
 
+> ubuntu 的是 /boot/efi/EFI/ubuntu/grubx64.efi
+
 UEFI查找**硬盘分区**中第一个**FAT分区**内的引导文件进行系统引导.
 
-通常情况: 主板UEFI初始化然后找到了默认启动项"Windows Boot Manager". 里面写了bootmgfw.efi的位置. 固件加载bootmgfw.efi(**ESPEFI系统分区FAT32文件系统**). bootmgfw.efi根据**BCD启动项存储****找到装Windows的磁盘的具体分区**加载其中的WinLoad.efi. 由WinLoad.efi完成剩下的启动工作.
+通常情况: 主板UEFI初始化然后找到了默认启动项"Windows Boot Manager". 里面写了 bootmgfw.efi 的位置. 固件加载bootmgfw.efi(**ESPEFI系统分区FAT32文件系统**). bootmgfw.efi 根据**BCD启动项存储找到装Windows的磁盘的具体分区**加载其中的 WinLoad.efi. 由 WinLoad.efi 完成剩下的启动工作.
 
 其中的虚线跟上面的一样意思是**Windows启动盘和EFI启动盘可以是一个硬盘也可以是不同的硬盘**. 所以**对于UEFI来说启动盘是bootmgfw.efi所在的那个盘**.
 
