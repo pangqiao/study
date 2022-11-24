@@ -10,8 +10,8 @@
   - [2.1. 文件系统驱动](#21-文件系统驱动)
   - [2.2. 设备驱动](#22-设备驱动)
   - [2.3. DXE作用](#23-dxe作用)
-  - [设备固件](#设备固件)
-  - [UEFI启动过程](#uefi启动过程)
+  - [2.4. 设备固件](#24-设备固件)
+  - [2.5. UEFI相关启动过程](#25-uefi相关启动过程)
 - [3. EFI系统分区](#3-efi系统分区)
 - [4. Windows 的启动顺序](#4-windows-的启动顺序)
   - [4.1. BIOS](#41-bios)
@@ -106,27 +106,31 @@ UEFI 启动的时候, 经过一系列初始化(SEC、CAR、DXE什么的SEC、CAR
 
 UEFI 作为一个模糊了**固件**和**操作系统界限**的东西, 作为一个设计之初就考虑到了**扩展性的东西**, 它也是**有驱动程序**的. 启动过程中的 **DXE 阶段**全称叫 `Driver eXecution Environment` 就是**加载驱动**用的.
 
-## 设备固件
+## 2.4. 设备固件
 
 首先各种 **PCI-E 的设备**(比如显卡, 比如 PCI-E NVMe)都有**固件**. 其中**支持 UEFI** 的设备(比如 10 系列的 Nvidia 显卡)**固件**里就会有**对应的 UEFI 的驱动**.
 
 > 题外话：浦科特的 NVMe 固态硬盘，UEFI 版固件是没有那个 Logo 的。那个 Logo 是浦科特的BIOS版（Legacy版）固件。它被加载是因为主板默认为了兼容性，“StorageOptionROM” 选项默认是 Legacy 的。改成UEFI，就见不到那个浦科特 Logo 页了。
 
-## UEFI启动过程
+## 2.5. UEFI相关启动过程
 
-UEFI 启动后, **进入了 DXE 阶段**, 就开始**加载设备驱动**(这里是设备驱动), 然后 UEFI 就会有**设备列表**了.
+> 这里只说相关过程
 
-对于其中的**磁盘设备**, UEFI 会加载对应的设备驱动, 解析其中的分区表(GPT和MBR). 然后UEFI就会有**所有分区的列表**了. 
+1. UEFI 启动后, **进入了 DXE 阶段**, 就开始**加载设备驱动**(这里是设备驱动), 然后 UEFI 就会有**设备列表**了.
 
-然后UEFI就会用**内置的文件系统驱动(这里是文件系统驱动)**解析每个**分区**. 然后UEFI就会**认识分区里的文件**了. 比如"`\EFI\Boot\bootX64.efi`".
+2. 对于其中的**磁盘设备**, UEFI 会**加载对应的设备驱动**, 解析其中的**分区表**(**GPT** 和 **MBR**). 然后 UEFI 就会有**所有分区的列表**了. 
 
-作为UEFI标准里钦定的文件系统**FAT32.efi是每个主板都会带的**. **所有UEFI的主板都认识FAT32分区**. 这就是UEFI的Windows安装盘为啥非得是FAT32的. 除此之外苹果的主板还会支持hfs分区. 如果某天Linus Torvalds推出了主板我猜这主板一定会带EXT4.efi哈哈哈哈哈.
+3. 然后 UEFI 就会用**内置的文件系统驱动**(这里是文件系统驱动), 解析每个**分区**. 然后 UEFI 就会**认识分区里的文件**了. 比如 "`\EFI\Boot\bootX64.efi`".
 
-如同Windows可以安装驱动一样**UEFI也能在后期加载驱动**. 比如CloverX64.efi启动之后会加载\EFI\Clover\drivers64UEFI下的所有驱动. 包括VboxHFS.efi等各种efi. 网上你也能搜到NTFS.efi. 再比如**UEFIShell下你可以手动执行命令加载驱动**.
+作为 UEFI 标准里**钦定的文件系统**, `FAT32.efi` 是**每个主板都会带的**. **所有 UEFI 的主板都认识FAT32分区**. 这就是 UEFI 的 Windows 安装盘为啥非得是 FAT32 的. 除此之外苹果的主板还会支持 hfs 分区.
+
+如同 Windows 可以安装驱动一样, **UEFI 也能在后期加载驱动**. 比如 CloverX64.efi 启动之后会加载 `\EFI\Clover\drivers64UEFI` 下的所有驱动. 包括 VboxHFS.efi 等各种efi. 网上你也能搜到NTFS.efi. 再比如**UEFI Shell** 下你可以**手动执行命令加载驱动**.
+
+再说一句，Apple 随着 macOS10.13 推出了 APFS，很良心的放出了 apfs.efi，广大 Hackintosh 用户的福音啊，把这玩意放进 Clover 里就能识别 APFS 分区里的 HighSierra 了！
 
 # 3. EFI系统分区
 
-UEFI规范里在**GPT分区表**的基础上规定了一个**EFI系统分区(EFI System PartitionESP)ESP要格式化成FAT32(这个分区是要格式化为某个文件系统的)EFI启动文件要放在"\EFI\<厂商>"文件夹下面**.
+UEFI 规范里, 在 **GPT 分区表**的基础上, 规定了一个 **EFI 系统分区(EFI System PartitionESP)ESP要格式化成FAT32(这个分区是要格式化为某个文件系统的)EFI启动文件要放在"\EFI\<厂商>"文件夹下面**.
 
 - 比如Windows的UEFI启动文件都在"\EFI\Microsoft"下面.
 - 比如Clover的东西全都放在"\EFI\Clover"下面.
