@@ -5,8 +5,8 @@
 - [1. 固件接口标准](#1-固件接口标准)
   - [1.1 BIOS](#11-bios)
   - [1.2 EFI/UEFI](#12-efiuefi)
-  - [2. 启动方式](#2-启动方式)
-    - [2.1 Legacy mode](#21-legacy-mode)
+- [2. 启动方式](#2-启动方式)
+  - [2.1 Legacy mode](#21-legacy-mode)
     - [2.2 UEFI mode](#22-uefi-mode)
     - [2.3 CSM mode](#23-csm-mode)
   - [3. 分区表](#3-分区表)
@@ -49,16 +49,25 @@ PS: **CMOS** 是 PC 上的另一个重要的**存储器**, 用于保存 BIOS 的
 - EFI 高层应用
 - GUID 磁盘分区表(GPT)
 
-通常初始化模块和DXE被集成在一个ROM中; EFI驱动程序一般在设备的ROM中或者ESP中; EFI高层应用一般在ESP中. CSM用于给不具备UEFI引导能力的操作系统提供类似于传统BIOS的系统服务.
+通常
 
-## 2. 启动方式
+* **初始化模块**和 **DXE** 被集成在**一个 ROM** 中;
 
-### 2.1 Legacy mode
+* **EFI 驱动程序**一般在设备的 **ROM** 中或者 **ESP** 中;
 
-即通过MBR/BIOS进行引导的传统模式流程如下:
+* **EFI 高层应用**一般在 **ESP** 中;
 
-1. BIOS加电自检(Power On Self Test -- POST).
-2. 读取主引导记录(MBR). BIOS根据CMOS中的设置依次检查启动设备: 将相应启动设备的第一个扇区(也就是MBR扇区)读入内存.
+* **CSM** 用于给不具备 UEFI 引导能力的操作系统提供类似于**传统 BIOS** 的系统服务.
+
+# 2. 启动方式
+
+## 2.1 Legacy mode
+
+即通过 `MBR/BIOS` 进行引导的传统模式, 流程如下:
+
+1. BIOS 加电自检(Power On Self Test -- POST).
+
+2. 读取**主引导记录**(MBR). BIOS 根据 **CMOS** 中的设置**依次检查启动设备**: 将相应启动设备的第一个扇区(也就是MBR扇区)读入内存.
     - 检查MBR的结束标志位是否等于55AAH若不等于则转去尝试其他启动设备如果没有启动设备满足要求则显示"NO ROM BASIC"然后死机.
     - 当检测到有启动设备满足要求后BIOS将控制权交给相应启动设备的MBR.
 3. 根据MBR中的引导代码启动[引导程序](https://zh.wikipedia.org/wiki/%E5%95%9F%E5%8B%95%E7%A8%8B%E5%BC%8F).
