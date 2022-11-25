@@ -7,7 +7,7 @@
   - [1.2 EFI/UEFI](#12-efiuefi)
 - [2. 启动方式](#2-启动方式)
   - [2.1 Legacy mode](#21-legacy-mode)
-    - [2.2 UEFI mode](#22-uefi-mode)
+  - [2.2 UEFI mode](#22-uefi-mode)
     - [2.3 CSM mode](#23-csm-mode)
   - [3. 分区表](#3-分区表)
     - [3.1 MBR分区表](#31-mbr分区表)
@@ -67,14 +67,14 @@ PS: **CMOS** 是 PC 上的另一个重要的**存储器**, 用于保存 BIOS 的
 
 1. BIOS 加电自检(Power On Self Test -- POST).
 
-2. 读取**主引导记录**(MBR). BIOS 根据 **CMOS** 中的设置**依次检查启动设备**: 将相应启动设备的第一个扇区(也就是MBR扇区)读入内存.
-    - 检查MBR的结束标志位是否等于55AAH若不等于则转去尝试其他启动设备如果没有启动设备满足要求则显示"NO ROM BASIC"然后死机.
-    - 当检测到有启动设备满足要求后BIOS将控制权交给相应启动设备的MBR.
-3. 根据MBR中的引导代码启动[引导程序](https://zh.wikipedia.org/wiki/%E5%95%9F%E5%8B%95%E7%A8%8B%E5%BC%8F).
+2. 读取**主引导记录**(MBR). BIOS 根据 **CMOS** 中的设置**依次检查启动设备**: 将相应启动设备的**第一个扇区**(也就是 **MBR 扇区**)读入内存.
+    - 检查 MBR 的**结束标志位**是否等于 **55AAH**, 若不等于则转去尝试其他启动设备, 如果没有启动设备满足要求则显示"NO ROM BASIC"然后死机.
+    - 当检测到有启动设备满足要求后, **BIOS** 将**控制权**交给相应**启动设备**的 **MBR**.
+3. 根据 **MBR** 中的**引导代码**启动引导程序.
 
-### 2.2 UEFI mode
+## 2.2 UEFI mode
 
-UEFI启动不依赖于Boot Sector(比如MBR)大致流程如下:
+UEFI启动**不依赖**于 **Boot Sector**(比如 **MBR**), 大致流程如下:
 
 1. Pre-EFI初始化模块运行自检
 2. 加载DXE(EFI驱动程序执行环境)枚举并加载EFI驱动程序(设备ROM或ESP中)
