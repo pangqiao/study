@@ -2,43 +2,33 @@
 
 <!-- code_chunk_output -->
 
-- [1. 固件接口标准](#1-固件接口标准)
-  - [1.1 BIOS](#11-bios)
-  - [1.2 EFI/UEFI](#12-efiuefi)
-- [2. 启动方式](#2-启动方式)
-  - [2.1 Legacy mode](#21-legacy-mode)
-  - [2.2 UEFI mode](#22-uefi-mode)
-  - [2.3 CSM mode](#23-csm-mode)
-- [3. 分区表](#3-分区表)
-  - [3.1 MBR分区表](#31-mbr分区表)
-  - [3.2 EBR分区表](#32-ebr分区表)
-  - [3.3 GPT分区表](#33-gpt分区表)
-- [4. 分区](#4-分区)
-  - [4.1 ESP(EFI系统分区)](#41-espefi系统分区)
-  - [4.2 Windows恢复分区](#42-windows恢复分区)
-- [5. Bootloader](#5-bootloader)
-  - [5.1 Grub](#51-grub)
-  - [5.2 Windows Boot Manager](#52-windows-boot-manager)
-  - [5.3 NTLDR](#53-ntldr)
+  - [1. 固件接口标准](#1-固件接口标准)
+    - [1.1 BIOS](#11-bios)
+    - [1.2 EFI/UEFI](#12-efiuefi)
+  - [2. 启动方式](#2-启动方式)
+    - [2.1 Legacy mode](#21-legacy-mode)
+    - [2.2 UEFI mode](#22-uefi-mode)
+    - [2.3 CSM mode](#23-csm-mode)
+  - [3. 分区表](#3-分区表)
+    - [3.1 MBR分区表](#31-mbr分区表)
+    - [3.2 EBR分区表](#32-ebr分区表)
+    - [3.3 GPT分区表](#33-gpt分区表)
+  - [4. 分区](#4-分区)
+    - [4.1 ESP(EFI系统分区)](#41-espefi系统分区)
+    - [4.2 Windows恢复分区](#42-windows恢复分区)
+  - [5. Bootloader](#5-bootloader)
+    - [5.1 Grub](#51-grub)
+    - [5.2 Windows Boot Manager](#52-windows-boot-manager)
+    - [5.3 NTLDR](#53-ntldr)
+- [小结](#小结)
 
 <!-- /code_chunk_output -->
-
-
-信息的主要来源是维基百科. 
-
-**分区表**是在磁盘(存储介质)上的用于**描述该磁盘的分区情况**, 有**GPT 和 MBR** 两种格式. 
-
-**BIOS和UEFI**是**固件接口标准**功能包括开机自检、启动流程(如何找到引导程序)、给操作系统和引导程序提供系统服务等. 
-
-**MBR是引导扇区**包括最多446个字节的引导程序(通常是引导程序的前部)和MBR分区表其中可以包括4个主分区. 
-
-启动方式是指如何主板上的固件在开机自检后如何找到引导程序有Legacy模式(BIOS + MBR)和UEFI模式(UEFI + GPT)
 
 ## 1. 固件接口标准
 
 ### 1.1 BIOS
 
-IBM推出的业界标准的固件接口存储于主板的ROM/EEPROM/flash中提供的功能包括: 
+IBM推出的业界标准的固件接口, 存储于主板的ROM/EEPROM/flash中提供的功能包括: 
 
 - 开机自检
 - 加载引导程序(MBR中的通常是bootloader的第一级)
@@ -155,6 +145,17 @@ NTLDR主要由两个文件组成这两个文件必须放在系统分区(大多�
 
 1. NTLDR引导程序本身
 2. boot.ini引导程序的配置文件
+
+# 小结
+
+**分区表**是在磁盘(存储介质)上的, 用于**描述该磁盘的分区情况**, 有**GPT 和 MBR** 两种格式. 
+
+**BIOS和UEFI**是**固件接口标准**功能包括开机自检、启动流程(如何找到引导程序)、给操作系统和引导程序提供系统服务等. 
+
+**MBR是引导扇区**包括最多446个字节的引导程序(通常是引导程序的前部)和MBR分区表其中可以包括4个主分区. 
+
+启动方式是指如何主板上的固件在开机自检后如何找到引导程序有Legacy模式(BIOS + MBR)和UEFI模式(UEFI + GPT)
+
 
 https://zhuanlan.zhihu.com/p/36976698
 
