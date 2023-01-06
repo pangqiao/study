@@ -7,8 +7,8 @@ async(下面称为future)的原理就是, 当执行时候(即调用poll函数时
 所以如果 async fn 或 block 中是个不会 exit 的 loop, 那这个future永远不会结束(除非进程退出)
 
 而 future.await 的实现是, loop future.poll, 
-1. 如果没有执行完(即 feature.poll 函数返回了Pending), 则会调用 yield, 从而告诉更外层(也会是future)这里有阻塞, 可以让其他执行, 这也就是.await必须在aysnc fn/block 中使用
-2. 如果执行完(即feature.poll函数返回了Ready), 则会调用 break, 跳出loop, 从而表示这个这行代码结束(即future.await)
+1. 如果没有执行完(即 feature.poll 函数返回了 Pending), 则会调用 yield, 从而告诉更外层(也会是future)这里有阻塞, 可以让其他执行, 这也就是.await必须在aysnc fn/block 中使用
+2. 如果执行完(即 feature.poll 函数返回了 Ready), 则会调用 break, 跳出loop, 从而表示这个这行代码结束(即future.await)
 
 注, future.poll 函数的实现, 也是调用resume函数来执行真实代码, 根据真实代码是执行到了yield还是执行完全返回complete, future.poll函数从而返回pending或ready
 
