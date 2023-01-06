@@ -13,4 +13,7 @@ Linux Scheduler 为每个 CPU 都维护有一个 RunQueue, 可以认为是一个
 
 首个 idle 进程是 0 号进程转换的.
 
-kernel 中所有进程都来自一个静态结构体 `struct task_struct init_task`
+kernel 中所有进程都来自一个静态结构体 `struct task_struct init_task`, init_task 会转化成 idle 进程.
+
+
+
