@@ -7,4 +7,10 @@ Linux 内核中由 Scheduler 来判断 CPU 的工作量, 从而决定是否让 C
 
 # 调度器中idle触发条件
 
-Linux Scheduler 为每个 CPU 都维护有一个 RunQueue, 可以认为是一个任务列表, 当且仅当所有任务都不是 runnable 状态时, Scheduler 才会切换到 idle process. 同时可以
+Linux Scheduler 为每个 CPU 都维护有一个 RunQueue, 可以认为是一个任务列表, 当且仅当所有任务都不是 runnable 状态时, Scheduler 才会切换到 idle process. 同时可以通过 nohz/nohz_full 启动参数减少 tick 中断对 idle cpu 的干扰.
+
+## idle进程
+
+首个 idle 进程是 0 号进程转换的.
+
+kernel 中所有进程都是
