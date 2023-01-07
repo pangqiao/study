@@ -29,7 +29,7 @@ kernel 中所有进程都来自一个静态结构体 `struct task_struct init_ta
 
 ### PAUSE
 
-也是非常早期的指令(Pentium 4), 许可CPU 工人打个盹,大概从几个到几十个cycles吧(各代CPU有差异)。为什么要打盹呢?其实主要是要降低CPU工人在特定情况下(spin-lock)给内存控制器带来的压力,与其让CPU工人阻塞了内存控器, 不如让他打个盹吧。在最近的几代Xeon之上还附带了降低功耗的buff。
+也是非常早期的指令(Pentium 4), 让CPU 休息, 大概从几个到几十个 cycles(各代CPU有差异)。为什么要打盹呢? 其实主要是要降低 CPU 在特定情况下(spin-lock)给**内存控制器**带来的压力, 与其让 CPU 阻塞了内存控制器, 不如让它休息。在最近的几代Xeon之上还附带了降低功耗的buff。
 
 ### MWAIT/MONITOR
 
