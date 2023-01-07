@@ -43,52 +43,109 @@ kernel 中所有进程都来自一个静态结构体 `struct task_struct init_ta
     Cstate
     </th>
     <th>
-    配置
+    Name
     </th>
     <th>
-    Address
-    </th>
-    <th>
-    地址
+    Description
     </th>
   </tr>
   <tr>
     <td>
-    设备<b>类型</b>。<br>
-    <li><b>0b0000</b>对应<b>EP</b>;</li>
-    <li><b>0b0000</b>对应<b>EP</b>;</li>
-    该字段只读.
+    C0
     </td>
     <td>
-    Person
+    Operating State
     </td>
     <td>
-    Person
-    </td>
-    <td>
-    Person
-    </td>
-  </tr>
-  <tr>
-    <td rowspan="2">
-    获取
-    </td>
-    <td rowspan="2">
-    L1CD
-    </td>
-    <td>
-    stage1
-    </td>
-    <td>
-    OAS
+    CPU fully turned on
     </td>
   </tr>
   <tr>
     <td>
-    IPA
+    C1E
     </td>
     <td>
-    IAS
+    Enhanced Halt
+    </td>
+    <td>
+    Stops CPU main internal clocks via software and reduces CPU voltage; bus interface unit and APIC are kept running at full speed
+    </td>
+  </tr>
+  <tr>
+    <td>
+    C3
+    </td>
+    <td>
+    Deep Sleep
+    </td>
+    <td>
+    Stops all CPU internal and external clocks
+    </td>
+  </tr>
+  <tr>
+    <td>
+    C6
+    </td>
+    <td>
+    Deep Power Down
+    </td>
+    <td>
+    Reduces the CPU internal voltage to any value, including 0 Volts
     </td>
   </tr>
 </table>
+
+### UMWAIT/UMONITOR
+
+MWAIT虽好, 但是奈何必须在ring0特权级下执行, 如果是一些特定的用户级应用例如DPDK, Linux的 idle driver 是很难得到执行的机会，所以CPU架构师又生怜悯之心, 允许CPU在用户级也能进入躺平的模式, 不过作为妥协连C1 state都不行，只能进入 C0.1/C0.2 等神秘模式。效果还有待观察，不过话说回来SPR这代Xeon才开始支持....距离上市少说还得1年之久。
+
+### TPAUSE
+
+UMWAIT 指令的升级加强版, 附带了一个timer。TPAUSE 可以让CPU工人根据规定好的时间进行休息， 时间一到, 立刻继续搬砖。当然这也是一个簇新簇新的指令，大家还要等待SPR。
+
+## ARM
+
+ARM的Idle-state 级别情况比较复杂一些, 更多的是和具体的芯片实现相关. 但是总体上也是把握几个大的类别:
+
+* 只是停止CPU内部时钟
+* CPU降频
+* 停止给Cache供电
+* 停止给CPU供电
+
+和X86 相比 Arm的唤醒机制没有和MESI协议连接有些遗憾(也就是没有实现通过MEM 地址监控的方式达成唤醒).
+
+### YEILD
+
+这条颇为类似 PAUSE基本功能接近,使用场景也接近(spin lock).
+
+### WFE/WFI
+
+这两条指令顾名思义 wait for event/ wait for interrupt，中断这条大家都可以理解类似HLT,那么event这条就值得看看了。ARM架构可以从一个CPU向所有其它CPU 发送event(sev 指令)，我的理解类似IPI广播，收到了此event的CPU如果处于idle状态, 则需要立即唤醒。(注:和宋老师讨论以后发现 event 和IPI的一个区别是不需要ISR来响应，同时event并不能唤醒由于WFI指令进入的idle，这个有点囧，反过来中断可以唤醒由于WFE进入的idle。这两个躺平姿势水很深啊)
+
+# 软件实现
+
+除了硬件的各种花式躺平技术之外还有两类“伪躺平”技术。
+
+idle polling
+
+通过启动参数, 我们可以指定cpu的idle 进程并不调用硬件提供的idle功能而仅仅是polling, 这种情况主要用于需要极低的CPU从idle状态返回时延的场景。那么如果压根没有进入实际的idle状态，当然时延是极低的，同时也能融入到idle整体的框架，不至于破坏规矩开特例。
+
+halt-polling
+
+在打开虚拟化的场景下, 事情就变得更加有趣了。大多数情况下, qemu 会缺省的只对guest 提供HLT指令作为idle的唯一机制，但是 HLT 指令毫无悬念的会触发VMEXIT。虽然说大多数情况下kvm看到exit reason 是HLT 也只是执行poll而已, 但是VMEXIT/VM_RESUME 还是如此的痛，毕竟几千个cycles已经无谓流逝, 追求极致的我们怎么能放任资源浪费。于是Redhat在Guest端引入了halt poll 机制, 也就是说如果matrix中的CPU工人首先开始假摸鱼(poll), 如果假摸鱼时间超过了阈值才真的去触发HLT指令。如果很快就被从假模鱼状态拉回去搬砖, 则省去了出入matrix的费用(经理得意的笑了)。
+
+相关细节参考内核文档
+
+Documentation/admin-guide/pm/cpuidle.rst:
+
+以及：
+
+Documentation/virt/guest-halt-polling.rst:
+
+# CPU idle driver/governor
+
+最后软件硬件各路躺平姿势花样繁多, 内核无奈又祭出了抽象大法把idle的时长与返回时延的选择与具体执行idle的机制分离开来。
+
+* idle governor 就负责做时长与时延的选择，也可以称为 idle -select。
+* idle driver 则是负责通过我们上面描述的各种软硬件机制来实现governor指定的目标。同时向governor menu 经理提供各种不同机制的性能参数,以供menu经理选择， 就是所谓的idle-enter。
+
