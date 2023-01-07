@@ -25,7 +25,7 @@ kernel 中所有进程都来自一个静态结构体 `struct task_struct init_ta
 
 ### HLT
 
-这是初代的idle 指令, 于486DX时代引入. 首先只有在ring0的特权级别才能执行HLT指令, 同时执 行的效果是 CPU 进入了C1/C1E state(参考ACPI标准)。严格说起来只能算是摸鱼0.1v。APIC/BUS /CACHE 都是照常运转, 只要中断发生, CPU工人立即就要回到产线继续搬砖。C1E 稍微又优待了CPU点, 停止内部时钟又降了压, 比较体贴。
+这是初代的 idle 指令, 于 486DX 时代引入. 首先只有在 ring0 的特权级别才能执行HLT指令, 同时执行的效果是 CPU 进入了 C1/C1E state(参考ACPI标准)。严格说起来只能算是摸鱼0.1v。APIC/BUS /CACHE 都是照常运转, 只要中断发生, CPU工人立即就要回到产线继续搬砖。C1E 稍微又优待了CPU点, 停止内部时钟又降了压, 比较体贴。
 
 ### PAUSE
 
