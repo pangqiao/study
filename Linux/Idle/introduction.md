@@ -25,11 +25,11 @@ kernel 中所有进程都来自一个静态结构体 `struct task_struct init_ta
 
 ### HLT
 
-这是初代的 idle 指令, 于 486DX 时代引入. 首先只有在 ring0 的特权级别才能执行HLT指令, 同时执行的效果是 CPU 进入了 C1/C1E state(参考ACPI标准)。严格说起来只能算是摸鱼0.1v。APIC/BUS /CACHE 都是照常运转, 只要中断发生, CPU工人立即就要回到产线继续搬砖。C1E 稍微又优待了CPU点, 停止内部时钟又降了压, 比较体贴。
+这是初代的 idle 指令, 于 486DX 时代引入. 首先只有在 ring0 的特权级别才能执行HLT指令, 同时执行的效果是 CPU 进入了 C1/C1E state(参考ACPI标准)。APIC/BUS/CACHE 都是照常运转, 只要**中断发生**, CPU 立即就要回到产线继续工作。C1E 稍微又优待 CPU, 停止内部时钟又降了压.
 
 ### PAUSE
 
-这个也是非常早期的指令(Pentium 4)许可CPU 工人打个盹,大概从几个到几十个cycles吧(各代CPU有差异)。为什么要打盹呢?其实主要是要降低CPU工人在特定情况下(spin-lock)给内存控制器带来的压力,与其让CPU工人阻塞了内存控器, 不如让他打个盹吧。在最近的几代Xeon之上还附带了降低功耗的buff。
+也是非常早期的指令(Pentium 4), 许可CPU 工人打个盹,大概从几个到几十个cycles吧(各代CPU有差异)。为什么要打盹呢?其实主要是要降低CPU工人在特定情况下(spin-lock)给内存控制器带来的压力,与其让CPU工人阻塞了内存控器, 不如让他打个盹吧。在最近的几代Xeon之上还附带了降低功耗的buff。
 
 ### MWAIT/MONITOR
 
