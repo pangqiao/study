@@ -97,11 +97,11 @@ kernel 中所有进程都来自一个静态结构体 `struct task_struct init_ta
 
 ### UMWAIT/UMONITOR
 
-MWAIT虽好, 但是奈何必须在ring0特权级下执行, 如果是一些特定的用户级应用例如DPDK, Linux的 idle driver 是很难得到执行的机会，所以CPU架构师又生怜悯之心, 允许CPU在用户级也能进入躺平的模式, 不过作为妥协连C1 state都不行，只能进入 C0.1/C0.2 等神秘模式。效果还有待观察，不过话说回来SPR这代Xeon才开始支持....距离上市少说还得1年之久。
+MWAIT虽好, 但是奈何必须在ring0特权级下执行, 如果是一些特定的用户级应用例如DPDK, Linux的 idle driver 是很难得到执行的机会，所以CPU架构师又生怜悯之心, 允许CPU在用户级也能进入躺平的模式, 不过作为妥协连 C1 state 都不行，只能进入 C0.1/C0.2 等神秘模式。效果还有待观察，不过话说回来 SPR 这代Xeon才开始支持.
 
 ### TPAUSE
 
-UMWAIT 指令的升级加强版, 附带了一个timer。TPAUSE 可以让 CPU 根据规定好的时间进行休息， 时间一到, 立刻继续搬砖。当然这也是一个簇新簇新的指令，大家还要等待SPR。
+UMWAIT 指令的升级加强版, 附带了一个 timer。TPAUSE 可以让 CPU 根据规定好的时间进行休息， 时间一到, 立刻继续搬砖。当然这也是一个簇新簇新的指令，大家还要等待SPR。
 
 ## ARM
 
@@ -126,11 +126,11 @@ ARM的Idle-state 级别情况比较复杂一些, 更多的是和具体的芯片�
 
 除了硬件的各种花式躺平技术之外还有两类“伪躺平”技术。
 
-idle polling
+## idle polling
 
 通过启动参数, 我们可以指定cpu的idle 进程并不调用硬件提供的idle功能而仅仅是polling, 这种情况主要用于需要极低的CPU从idle状态返回时延的场景。那么如果压根没有进入实际的idle状态，当然时延是极低的，同时也能融入到idle整体的框架，不至于破坏规矩开特例。
 
-halt-polling
+## halt-polling
 
 在打开虚拟化的场景下, 事情就变得更加有趣了。大多数情况下, qemu 会缺省的只对guest 提供HLT指令作为idle的唯一机制，但是 HLT 指令毫无悬念的会触发VMEXIT。虽然说大多数情况下kvm看到exit reason 是HLT 也只是执行poll而已, 但是VMEXIT/VM_RESUME 还是如此的痛，毕竟几千个cycles已经无谓流逝, 追求极致的我们怎么能放任资源浪费。于是Redhat在Guest端引入了halt poll 机制, 也就是说如果matrix中的CPU工人首先开始假摸鱼(poll), 如果假摸鱼时间超过了阈值才真的去触发HLT指令。如果很快就被从假模鱼状态拉回去搬砖, 则省去了出入matrix的费用(经理得意的笑了)。
 
