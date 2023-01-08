@@ -132,7 +132,7 @@ ARM的Idle-state 级别情况比较复杂一些, 更多的是和具体的芯片�
 
 ## halt-polling
 
-在打开虚拟化的场景下, 事情就变得更加有趣了。大多数情况下, qemu 会缺省的只对guest 提供HLT指令作为idle的唯一机制，但是 HLT 指令毫无悬念的会触发VMEXIT。虽然说大多数情况下kvm看到exit reason 是HLT 也只是执行poll而已, 但是VMEXIT/VM_RESUME 还是如此的痛，毕竟几千个cycles已经无谓流逝, 追求极致的我们怎么能放任资源浪费。于是Redhat在Guest端引入了halt poll 机制, 也就是说如果matrix中的CPU工人首先开始假摸鱼(poll), 如果假摸鱼时间超过了阈值才真的去触发HLT指令。如果很快就被从假模鱼状态拉回去搬砖, 则省去了出入matrix的费用(经理得意的笑了)。
+在打开虚拟化的场景下, 事情就变得更加有趣了。大多数情况下, qemu 会缺省的只对guest 提供 HLT 指令作为 idle 的唯一机制，但是 HLT 指令毫无悬念的会触发 VMEXIT。虽然说大多数情况下 kvm 看到exit reason 是 HLT 也只是执行 poll 而已, 但是 VMEXIT/VM_RESUME 还是如此的痛，毕竟几千个 cycles 已经无谓流逝, 追求极致的我们怎么能放任资源浪费。于是 Redhat 在 Guest 端引入了halt poll 机制, 也就是说如果 matrix 中的 CPU 首先开始假摸鱼(poll), 如果假摸鱼时间超过了阈值才真的去触发HLT指令。如果很快就被从假模鱼状态拉回去搬砖, 则省去了出入matrix的费用(经理得意的笑了)。
 
 相关细节参考内核文档
 
