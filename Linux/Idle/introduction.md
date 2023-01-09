@@ -149,3 +149,7 @@ Documentation/virt/guest-halt-polling.rst:
 * idle governor 就负责做时长与时延的选择，也可以称为 idle -select。
 * idle driver 则是负责通过我们上面描述的各种软硬件机制来实现governor指定的目标。同时向governor menu 经理提供各种不同机制的性能参数,以供menu经理选择， 就是所谓的idle-enter。
 
+
+
+
+
