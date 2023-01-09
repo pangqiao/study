@@ -140,7 +140,9 @@ Documentation/admin-guide/pm/cpuidle.rst:
 
 相关细节参考内核文档:
 
-Documentation/virt/guest-halt-polling.rst:
+Documentation/virt/guest-halt-polling.rst
+
+Documentation/translations/zh_CN/virt/guest-halt-polling.rst
 
 # CPU idle driver/governor
 
