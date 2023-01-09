@@ -144,10 +144,11 @@ Documentation/virt/guest-halt-polling.rst:
 
 # CPU idle driver/governor
 
-最后软件硬件各路躺平姿势花样繁多, 内核无奈又祭出了抽象大法把idle的时长与返回时延的选择与具体执行idle的机制分离开来。
+最后软件硬件各路躺平姿势花样繁多, 内核无奈又祭出了抽象大法把 idle 的时长与返回时延的选择与具体执行 idle 的机制分离开来。
 
 * idle governor 就负责做时长与时延的选择，也可以称为 idle -select。
-* idle driver 则是负责通过我们上面描述的各种软硬件机制来实现governor指定的目标。同时向governor menu 经理提供各种不同机制的性能参数,以供menu经理选择， 就是所谓的 idle-enter。
+
+* idle driver 则是负责通过我们上面描述的各种软硬件机制来实现 governor 指定的目标。同时向 governor menu 经理提供各种不同机制的性能参数, 以供 menu 经理选择， 就是所谓的 idle-enter。
 
 
 
