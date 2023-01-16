@@ -106,9 +106,9 @@ void* thread2(void* arg)
     printf("thread:%lu is running\n", pthread_self());
     
     int key_va = 3 ;
- 
+    // 为一个键设置线程私有数据
     pthread_setspecific(key, (void*)key_va);
-    
+    // 从一个键读取线程私有数据
     printf("thread:%lu return %d\n", pthread_self(), (int)pthread_getspecific(key));
 }
  
@@ -118,11 +118,11 @@ void* thread1(void* arg)
     printf("thread:%lu is running\n", pthread_self());
     
     int key_va = 5;
-    
+    // 为一个键设置线程私有数据
     pthread_setspecific(key, (void*)key_va);
     // 创建线程 thid2
     pthread_create(&thid2, NULL, thread2, NULL);
- 
+    // 从一个键读取线程私有数据
     printf("thread:%lu return %d\n", pthread_self(), (int)pthread_getspecific(key));
 }
  
@@ -139,12 +139,14 @@ int main()
     pthread_join(thid2, NULL);
  
     int key_va = 1;
+    // 为一个键设置线程私有数据
     pthread_setspecific(key, (void*)key_va);
     
+    // 从一个键读取线程私有数据
     printf("thread:%lu return %d\n", pthread_self(), (int)pthread_getspecific(key));
- 
+    // 删除 键
     pthread_key_delete(key);
-        
+    
     printf("main thread exit\n");
     return 0;
 }
