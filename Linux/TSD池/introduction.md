@@ -27,6 +27,21 @@ key 被创建之后，因为是**全局变量**，所以**所有的线程**都�
 static struct pthread_key_struct pthread_keys[PTHREAD_KEYS_MAX] ={{0,NULL}};
 ```
 
+`pthread_key_struct` 的定义为：
+
+```cpp
+struct pthread_key_struct
+{
+  /* Sequence numbers.  Even numbers indicated vacant entries.  Note
+     that zero is even.  We use uintptr_t to not require padding on
+     32- and 64-bit machines.  On 64-bit machines it helps to avoid
+     wrapping, too.  */
+  uintptr_t seq;
+
+  /* Destructor for the data.  */
+  void (*destr) (void *);
+};
+```
 
 
 
