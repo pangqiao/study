@@ -53,9 +53,21 @@ struct pthread_key_struct
 };
 ```
 
-创建一个TSD，相当于将结构体数组的某一个元素的seq值设置为为“`in_use`”,并将其索引返回给 `*key`，然后设置 `destr_function()` 为 `destr()`。`pthread_key_create` 创建一个**新的线程**私有数据 key 时，系统会搜索其**所在进程**的 key 结构数组，找出一个未使用的元素，将其索引赋给 `*key`。
+创建一个 TSD，相当于将结构体数组的某一个元素的 seq 值设置为为“`in_use`”, 并将其索引返回给 `*key`，然后设置 `destr_function()` 为 `destr()`。`pthread_key_create` 创建一个**新的线程**私有数据 key 时，系统会搜索其**所在进程**的 key 结构数组，找出一个未使用的元素，将其索引赋给 `*key`。
 
+2. pthread_setspecific: 为指定键值设置线程私有数据
 
+int pthread_setspecific(pthread_key_t key, const void *pointer);
+
+该接口将指针pointer的值(指针值而非其指向的内容)与key相关联，用pthread_setspecific为一个键指定新的线程数据时，线程必须释放原有的数据用以回收空间。
+
+3、pthread_getspecific：从指定键读取线程的私有数据
+
+void * pthread_getspecific(pthread_key_t key);
+4、pthread_key_delete：删除一个键
+
+void * pthread_getspecific(pthread_key_t key);
+该接口用于删除一个键，功能仅仅是将该key在结构体数组pthread_keys对应的元素设置为“un_use”,与改key相关联的线程数据是不会被释放的，因此线程私有数据的释放必须在键删除之前。
 
 
 # reference
