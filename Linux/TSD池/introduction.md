@@ -75,7 +75,9 @@ void * pthread_getspecific(pthread_key_t key);
 void * pthread_getspecific(pthread_key_t key);
 ```
 
-该接口用于删除一个键，功能仅仅是将该 key在结构体数组pthread_keys对应的元素设置为“un_use”, 与该 key 相关联的线程数据是不会被释放的，因此线程私有数据的释放必须在键删除之前。
+该接口用于删除一个键，功能仅仅是将该 key 在结构体数组 pthread_keys 对应的元素设置为“un_use”, 与该 key 相关联的线程数据是不会被释放的，因此线程私有数据的释放必须在键删除之前。
+
+用来删除一个键，删除后，键所占用的内存将被释放。注销一个 TSD，这个函数并不检查当前是否有线程正使用该TSD，也不会调用清理函数 (destr_function)，而只是将TSD释放以供下一次调用 pthread_key_create() 使用。需要注意的是，键占用的内存被释放。与该键关联的线程数据所占用的内存并不被释放。因此，线程数据的释放，必须在释放键之前完成。
 
 # 一般流程
 
@@ -89,8 +91,132 @@ void * pthread_getspecific(pthread_key_t key);
 
 5、删除一个键
 
+# 简单示例
 
+```cpp
+#include <pthread.h>
+#include <stdio.h>
+ 
+pthread_key_t key;
+pthread_t thid1;
+pthread_t thid2;
+ 
+void* thread2(void* arg)
+{
+    printf("thread:%lu is running\n", pthread_self());
+    
+    int key_va = 3 ;
+ 
+    pthread_setspecific(key, (void*)key_va);
+    
+    printf("thread:%lu return %d\n", pthread_self(), (int)pthread_getspecific(key));
+}
+ 
+ 
+void* thread1(void* arg)
+{
+    printf("thread:%lu is running\n", pthread_self());
+    
+    int key_va = 5;
+    
+    pthread_setspecific(key, (void*)key_va);
+ 
+    pthread_create(&thid2, NULL, thread2, NULL);
+ 
+    printf("thread:%lu return %d\n", pthread_self(), (int)pthread_getspecific(key));
+}
+ 
+ 
+int main()
+{
+    printf("main thread:%lu is running\n", pthread_self());
+ 
+    pthread_key_create(&key, NULL);
+ 
+    pthread_create(&thid1, NULL, thread1, NULL);
+ 
+    pthread_join(thid1, NULL);
+    pthread_join(thid2, NULL);
+ 
+    int key_va = 1;
+    pthread_setspecific(key, (void*)key_va);
+    
+    printf("thread:%lu return %d\n", pthread_self(), (int)pthread_getspecific(key));
+ 
+    pthread_key_delete(key);
+        
+    printf("main thread exit\n");
+    return 0;
+}
+```
 
+释放空间、每次设置之前判断的代码：
+
+```cpp
+/*三个线程：主线程,th1,th2各自有自己的私有数据区域
+*/
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <pthread.h>
+
+static pthread_key_t str_key;
+//define a static variable that only be allocated once
+static pthread_once_t str_alloc_key_once=PTHREAD_ONCE_INIT;
+static void str_alloc_key();
+static void str_alloc_destroy_accu(void* accu);
+
+char* str_accumulate(const char* s)
+{    char* accu;
+    
+    pthread_once(&str_alloc_key_once,str_alloc_key);//str_alloc_key()这个函数只调用一次
+    accu=(char*)pthread_getspecific(str_key);//取得该线程对应的关键字所关联的私有数据空间首址
+    if(accu==NULL)//每个新刚创建的线程这个值一定是NULL（没有指向任何已分配的数据空间）
+    {    accu=malloc(1024);//用上面取得的值指向新分配的空间
+        if(accu==NULL)    return NULL;
+        accu[0]=0;//为后面strcat()作准备
+      
+        pthread_setspecific(str_key,(void*)accu);//设置该线程对应的关键字关联的私有数据空间
+        printf("Thread %lx: allocating buffer at %p\n",pthread_self(),accu);
+     }
+     strcat(accu,s);
+     return accu;
+}
+//设置私有数据空间的释放内存函数
+static void str_alloc_key()
+{    pthread_key_create(&str_key,str_alloc_destroy_accu);/*创建关键字及其对应的内存释放函数，当进程创建关键字后，这个关键字是NULL。之后每创建一个线程os都会分给一个对应的关键字，关键字关联线程私有数据空间首址，初始化时是NULL*/
+    printf("Thread %lx: allocated key %d\n",pthread_self(),str_key);
+}
+/*线程退出时释放私有数据空间,注意主线程必须调用pthread_exit()(调用exit()不行)才能执行该函数释放accu指向的空间*/
+static void str_alloc_destroy_accu(void* accu)
+{    printf("Thread %lx: freeing buffer at %p\n",pthread_self(),accu);
+    free(accu);
+}
+//线程入口函数
+void* process(void *arg)
+{    char* res;
+    res=str_accumulate("Resule of ");
+    if(strcmp((char*)arg,"first")==0)
+        sleep(3);
+    res=str_accumulate((char*)arg);
+    res=str_accumulate(" thread");
+    printf("Thread %lx: \"%s\"\n",pthread_self(),res);
+    return NULL;
+}
+//主线程函数
+int main(int argc,char* argv[])
+{    char* res;
+    pthread_t th1,th2;
+    res=str_accumulate("Result of ");
+    pthread_create(&th1,NULL,process,(void*)"first");
+    pthread_create(&th2,NULL,process,(void*)"second");
+    res=str_accumulate("initial thread");
+    printf("Thread %lx: \"%s\"\n",pthread_self(),res);
+    pthread_join(th1,NULL);
+    pthread_join(th2,NULL);
+    pthread_exit(0);
+}
+```
 
 # reference
 
