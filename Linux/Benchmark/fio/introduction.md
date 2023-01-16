@@ -129,7 +129,7 @@ static void *thread_main(void *data)
 static void do_io(struct thread_data *td, uint64_t *bytes_done)
 {
     ...... // 写模式字节数计算、10异常判断、验证end_io、记录IO动作
-    
+    else {
 ```
 
 
