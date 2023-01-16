@@ -181,6 +181,25 @@ enum fio_q_status td_io_queue(struct thread_data *td, struct io_u *io_u)
 接着看 `io_queue_event()` 函数：
 
 ```cpp
-
+int io_queue_event(struct thread_data *td, struct io_u *io_u, int *ret,
+        enum fio_ddir ddir, uint64_t *bytes_issued, int from_verify,
+        struct timespec *comp_time)
+{
+    // 根据状态来确定处理逻辑－FIO_Q_COMPLETED/FIO_Q_QUEUED/FIO_Q_BUSY
+}
 ```
+
+接下来看下 `wait_for_completions()` 函数：
+
+```cpp
+static int wait_for_completions(struct thread_data *td, struct timespec *time)
+{
+    do {
+            ret = io_u_queued_complete(td, min_evts);
+            if (ret < 0)
+                    break;
+    } while (full && (td->cur_depth > td->o.iodepth_low));
+}
+
+
 
