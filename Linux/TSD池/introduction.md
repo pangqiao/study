@@ -53,6 +53,9 @@ struct pthread_key_struct
 };
 ```
 
+创建一个TSD，相当于将结构体数组的某一个元素的seq值设置为为“`in_use`”,并将其索引返回给 `*key`，然后设置 `destr_function()` 为 `destr()`。`pthread_key_create` 创建一个**新的线程**私有数据 key 时，系统会搜索其**所在进程**的 key 结构数组，找出一个未使用的元素，将其索引赋给 `*key`。
+
+
 
 
 # reference
