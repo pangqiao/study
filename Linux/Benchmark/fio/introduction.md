@@ -11,7 +11,7 @@ Fio 的入口函数在 `fio.c` 的 main 函数，其结构如下所示:
 int main(int argc, char *argvO, char *envp0) {
     if(initialize_fio(envp)) // libfio.c 文件————进行 fio 初始化，有 64 位对齐、大端小端模式、hash、文件锁等
         return 1;
-    if(fio_server_create_sk_key()) // server.c 文件－为线程创建私有数据 TSD 池
+    if(fio_server_create_sk_key()) // server.c 文件－为线程创建私有数据 TSD
         goto done;
     if(parse_options(argc,argv)) // read-to-pipe-async 文件 - 解析 main 函数的参数
         goto done_key;
@@ -42,7 +42,16 @@ int fio_server_create_sk_key(void)
 }
 ```
 
-`fio_backend()` 函数—— `backend.c` 文件：
+接下来, `fio_backend()` 函数 —— `backend.c` 文件：
+
+```cpp
+int fio_backend(struct sk_out *sk_out)
+{
+    ...... // 加载文件、mmap 映射、锁初始化、获取时间、创建helper线程
+
+    ......
+}
+```
 
 
 
