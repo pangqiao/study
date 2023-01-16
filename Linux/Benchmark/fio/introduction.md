@@ -129,10 +129,29 @@ static void *thread_main(void *data)
 static void do_io(struct thread_data *td, uint64_t *bytes_done)
 {
     ...... // 写模式字节数计算、10异常判断、验证end_io、记录IO动作
-    else {
+    while ((td->o.read_iolog_file && !flist_empty(&td->io_log_list)) ||
+            (!flist_empty(&td->trim_list)) || !io_issue_bytes_exceeded(td) ||
+            td->o.time_based) {
+        ......
+        if (td->o.io_submit_mode == IO_MODE_OFFLOAD) {
+            ......
+        } else {
+            ret = io_u_submit(td, io_u); // 调用实际存储引擎注册的 io_submit 函数
+            if (should_check_rate(td))
+                td->rate_next_io_time[ddir] = usec_for_io(td, ddir);
+            if (io_queue_event(td, io_u, &ret, ddir, &bytes_issued, 0, &comp_time)) // 判断当前是否还有没有处理完的 io events
+                break; // 判断是否进一步处理
+reap:
+            full = queue_full(td) || (ret == FIO_Q_BUSY && td->cur_depth);
+            if (full || io_in_polling(td))
+                ret = wait_for_completions(td, &comp_time); // 会调用后端实际存储引擎注册的 getevents 函数
+        }
+    ......
+    }
+}
 ```
 
-
+do_io 函数主要进行io_u的处理和排队，在此过程中会检查速率和错误，其返回被处理完的字节数；该函数中有三处关键点，分别为io_u_submit()、io_queue_event() 和 wait_for_completions()
 
 
 
