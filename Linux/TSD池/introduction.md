@@ -130,7 +130,7 @@ void* thread1(void* arg)
 int main()
 {
     printf("main thread:%lu is running\n", pthread_self());
- 
+    // 创建一个 键
     pthread_key_create(&key, NULL);
  
     pthread_create(&thid1, NULL, thread1, NULL);
