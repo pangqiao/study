@@ -103,9 +103,34 @@ static void run_threads(struct sk_out *sk_out)
 // backend.c
 static void *thread_main(void *data)
 {
+    ...... // 获取任务 pid,初始化时钟、锁，设置 uid,设置优先级（会影响内存分配），参数转换／初始化，
+    while (keep_running(td)) {
+        ......
+        if (td->o.verify_only && td_write(td))
+            verify_bytes = do_dry_run(td);
+        else {
+            do_io(td, bytes_done); // 进行IO的提交和处理过程
+            if (!ddir_rw_sum(bytes_done)) {
+                fio_mark_td_terminate(td);
+                verify_bytes = 0;
+            } else {
+                verify_bytes = bytes_done[DDIR_WRITE] +
+                                bytes_done[DDIR_TRIM];
+            }
+        }
+    }
+    ...... //超时保护，线程竞争锁，err处理
+}
 ```
 
+在该函数中，最重要的是 do_io(td,bytes_done)这个函数，其进行10的提交和进一步的处理：
 
+```cpp
+static void do_io(struct thread_data *td, uint64_t *bytes_done)
+{
+    ...... // 写模式字节数计算、10异常判断、验证end_io、记录IO动作
+    
+```
 
 
 
