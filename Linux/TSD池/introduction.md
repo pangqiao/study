@@ -96,11 +96,11 @@ void * pthread_getspecific(pthread_key_t key);
 ```cpp
 #include <pthread.h>
 #include <stdio.h>
- 
+
 pthread_key_t key;
 pthread_t thid1;
 pthread_t thid2;
- 
+
 void* thread2(void* arg)
 {
     printf("thread:%lu is running\n", pthread_self());
