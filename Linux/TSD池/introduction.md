@@ -57,17 +57,39 @@ struct pthread_key_struct
 
 2. pthread_setspecific: 为指定键值设置线程私有数据
 
+```cpp
 int pthread_setspecific(pthread_key_t key, const void *pointer);
+```
 
-该接口将指针pointer的值(指针值而非其指向的内容)与key相关联，用pthread_setspecific为一个键指定新的线程数据时，线程必须释放原有的数据用以回收空间。
+该接口将指针 pointer 的值(指针值而非其指向的内容)与 key 相关联，用 pthread_setspecific 为一个键指定新的线程数据时，线程必须释放原有的数据用以回收空间。
 
-3、pthread_getspecific：从指定键读取线程的私有数据
+3. pthread_getspecific：从指定键读取线程的私有数据
 
+```cpp
 void * pthread_getspecific(pthread_key_t key);
-4、pthread_key_delete：删除一个键
+```
 
+4. pthread_key_delete：删除一个键
+
+```cpp
 void * pthread_getspecific(pthread_key_t key);
-该接口用于删除一个键，功能仅仅是将该key在结构体数组pthread_keys对应的元素设置为“un_use”,与改key相关联的线程数据是不会被释放的，因此线程私有数据的释放必须在键删除之前。
+```
+
+该接口用于删除一个键，功能仅仅是将该 key在结构体数组pthread_keys对应的元素设置为“un_use”, 与该 key 相关联的线程数据是不会被释放的，因此线程私有数据的释放必须在键删除之前。
+
+# 一般流程
+
+1、创建一个键
+
+2、为一个键设置线程私有数据
+
+3、从一个键读取线程私有数据 `void *pthread_getspecific(pthread_key_t key);`
+
+4、线程退出（退出时，会调用 destructor 释放分配的缓存，参数是 key 所关联的数据）
+
+5、删除一个键
+
+
 
 
 # reference
