@@ -181,6 +181,7 @@ enum fio_q_status td_io_queue(struct thread_data *td, struct io_u *io_u)
 接着看 `io_queue_event()` 函数：
 
 ```cpp
+// backend.c
 int io_queue_event(struct thread_data *td, struct io_u *io_u, int *ret,
         enum fio_ddir ddir, uint64_t *bytes_issued, int from_verify,
         struct timespec *comp_time)
@@ -192,14 +193,36 @@ int io_queue_event(struct thread_data *td, struct io_u *io_u, int *ret,
 接下来看下 `wait_for_completions()` 函数：
 
 ```cpp
+// backend.c
 static int wait_for_completions(struct thread_data *td, struct timespec *time)
 {
+    /*
+    * if the queue is full, we MUST reap at least 1 event
+    */
+    // 队列满，则处理一个事件
+    min_evts = min(td->o.iodepth_batch_complete_min, td->cur_depth);
+    if ((full && !min_evts) || !td->o.iodepth_batch_complete_min)
+            min_evts = 1;
+
+    if (time && should_check_rate(td))
+        fio_gettime(time, NULL);
     do {
-            ret = io_u_queued_complete(td, min_evts);
-            if (ret < 0)
-                    break;
+        ret = io_u_queued_complete(td, min_evts); // io_u.c文件
+        if (ret < 0)
+                break;
     } while (full && (td->cur_depth > td->o.iodepth_low));
 }
 
+// io_u.c
+// 调用异步10引擎来完成 min_events 事件
+int io_u_queued_complete(struct thread_data *td, int min_evts)
+{
+    ret = td_io_getevents(td, min_evts, td->o.iodepth_batch_complete_max, tvp); // ioengines.c 文件－修复min_evts的min和max
+}
+```
 
+上面就是fio的大概框架，更具体的需要研究每一个函数的细枝末节
 
+# reference
+
+https://blog.csdn.net/weixin_38428439/article/details/121642171
