@@ -120,7 +120,7 @@ void* thread1(void* arg)
     int key_va = 5;
     
     pthread_setspecific(key, (void*)key_va);
- 
+    // 创建线程 thid2
     pthread_create(&thid2, NULL, thread2, NULL);
  
     printf("thread:%lu return %d\n", pthread_self(), (int)pthread_getspecific(key));
@@ -132,7 +132,7 @@ int main()
     printf("main thread:%lu is running\n", pthread_self());
     // 创建一个 键
     pthread_key_create(&key, NULL);
- 
+    // 创建线程 thid1
     pthread_create(&thid1, NULL, thread1, NULL);
  
     pthread_join(thid1, NULL);
@@ -208,7 +208,9 @@ int main(int argc,char* argv[])
 {    char* res;
     pthread_t th1,th2;
     res=str_accumulate("Result of ");
+    // 创建线程
     pthread_create(&th1,NULL,process,(void*)"first");
+    // 创建线程
     pthread_create(&th2,NULL,process,(void*)"second");
     res=str_accumulate("initial thread");
     printf("Thread %lx: \"%s\"\n",pthread_self(),res);
