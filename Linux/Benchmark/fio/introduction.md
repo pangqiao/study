@@ -45,15 +45,58 @@ int fio_server_create_sk_key(void)
 接下来, `fio_backend()` 函数 —— `backend.c` 文件：
 
 ```cpp
+// backend.c
 int fio_backend(struct sk_out *sk_out)
 {
     ...... // 加载文件、mmap 映射、锁初始化、获取时间、创建helper线程
-
-    ......
+    run_threads(sk_out); // 会建立主要的I0线程
+    ...... // 用于一些变量的销毁、环境的收尾
 }
 ```
 
+该函数中最主要的是 `run_threads(sk_out)` 函数，该函数会根据需要要启动 jobs 和处理 jobs
 
+```cpp
+// backend.c
+static void run_threads(struct sk_out *sk_out)
+{
+    ...... // 在io线程之前设置其他线程、设置信号量、缓冲、检查挂载、设置文件处理顺序、修改线程状态
+    while (todo) {
+        for_each_td(td, i) {
+            ......
+                if (td->o.use_thread) {
+                    ......
+                } else {
+                        pid_t pid;
+                        void *eo;
+                        dprint(FD_PROCESS, "will fork\n");
+                        eo = td->eo;
+                        read_barrier();
+                        pid = fork();
+                        if (!pid) {
+                                int ret;
+
+                                ret = (int)(uintptr_t)thread_main(fd);
+                                _exit(ret);
+                        } else if (i == fio_debug_jobno)
+                                *fio_debug_jobp = pid;
+                        free(eo);
+                        free(fd);
+                        fd = NULL;
+                }
+                dprint(FD_MUTEX, "wait on startup_sem\n");
+                if (fio_sem_down_timeout(startup_sem, 10000)) {
+                        log_err("fio: job startup hung? exiting.\n");
+                        fio_terminate_threads(TERMINATE_ALL, TERMINATE_ALL);
+                        fio_abort = true;
+                        nr_started--;
+                        free(fd);
+                        break;
+                }
+            }
+    }
+}
+```
 
 
 
