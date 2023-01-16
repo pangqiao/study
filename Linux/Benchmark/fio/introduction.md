@@ -151,7 +151,36 @@ reap:
 }
 ```
 
-do_io 函数主要进行io_u的处理和排队，在此过程中会检查速率和错误，其返回被处理完的字节数；该函数中有三处关键点，分别为io_u_submit()、io_queue_event() 和 wait_for_completions()
+`do_io` 函数主要进行 `io_u` 的处理和排队，在此过程中会检查速率和错误，其返回被处理完的字节数；该函数中有三处关键点，分别为 `io_u_submit()`、`io_queue_event()` 和 `wait_for_completions()`
 
+首先看 `io_u_submit()` 函数：
 
+```cpp
+// backend.c
+static enum fio_q_status io_u_submit(struct thread_data *td, struct io_u *io_u)
+{
+    /*
+    * Check for overlap if the user asked us to, and we have
+    * at least one IO in flight besides this one.
+    */
+    // 确保有一个IO运行在队列中
+    if (td->o.serialize_overlap && td->cur_depth > 1 &&
+        in_flight_overlap(&td->io_u_all, io_u))
+        return FIO_Q_BUSY;
+
+    return td_io_queue(td, io_u);
+}
+
+// ioengines.c
+enum fio_q_status td_io_queue(struct thread_data *td, struct io_u *io_u)
+{
+    // 检查并释放锁、保存write io、错误处理、O_DIRECT添加警告声明等
+}
+```
+
+接着看 `io_queue_event()` 函数：
+
+```cpp
+
+```
 
