@@ -64,41 +64,46 @@ static void run_threads(struct sk_out *sk_out)
     while (todo) {
         for_each_td(td, i) {
             ......
-                if (td->o.use_thread) {
-                    ......
-                } else {
-                        pid_t pid;
-                        void *eo;
-                        dprint(FD_PROCESS, "will fork\n");
-                        eo = td->eo;
-                        read_barrier();
-                        pid = fork();
-                        if (!pid) {
-                                int ret;
+            if (td->o.use_thread) {
+                ......
+            } else {
+                pid_t pid;
+                void *eo;
+                dprint(FD_PROCESS, "will fork\n");
+                eo = td->eo;
+                read_barrier();
+                pid = fork();
+                if (!pid) {
+                    int ret;
 
-                                ret = (int)(uintptr_t)thread_main(fd);
-                                _exit(ret);
-                        } else if (i == fio_debug_jobno)
-                                *fio_debug_jobp = pid;
-                        free(eo);
-                        free(fd);
-                        fd = NULL;
-                }
-                dprint(FD_MUTEX, "wait on startup_sem\n");
-                if (fio_sem_down_timeout(startup_sem, 10000)) {
-                        log_err("fio: job startup hung? exiting.\n");
-                        fio_terminate_threads(TERMINATE_ALL, TERMINATE_ALL);
-                        fio_abort = true;
-                        nr_started--;
-                        free(fd);
-                        break;
-                }
+                    ret = (int)(uintptr_t)thread_main(fd); // 建立IO提交过程
+                    _exit(ret);
+                } else if (i == fio_debug_jobno)
+                        *fio_debug_jobp = pid;
+                free(eo);
+                free(fd);
+                fd = NULL;
             }
-    }
+            dprint(FD_MUTEX, "wait on startup_sem\n");
+            if (fio_sem_down_timeout(startup_sem, 10000)) {
+                log_err("fio: job startup hung? exiting.\n");
+                fio_terminate_threads(TERMINATE_ALL, TERMINATE_ALL);
+                fio_abort = true;
+                nr_started--;
+                free(fd);
+                break;
+            }
+        ...... // 线程状态收尾
 }
 ```
 
+最关键的是 `thread_main(fd)` 函数，其主要是建立了 10 提交过程;
 
+```cpp
+// backend.c
+static void *thread_main(void *data)
+{
+```
 
 
 
