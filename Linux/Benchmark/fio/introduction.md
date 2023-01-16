@@ -26,7 +26,7 @@ int main(int argc, char *argvO, char *envp0) {
 }
 ```
 
-`fio_server_create_sk_key()` 函数是为线程创建私有数据，关于线程私有数据的概念可以参考该链接 - https://www.cnblogs.com/smarty/p/4046215.html;
+`fio_server_create_sk_key()` 函数是为线程创建私有数据，关于线程私有数据的概念可以参考 TSD池
 
 ```cpp
 // server.c
