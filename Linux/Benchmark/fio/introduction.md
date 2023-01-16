@@ -1,5 +1,5 @@
 
-git clone https://github.com/axboe/fio.git
+https://github.com/axboe/fio.git
 
 
 
