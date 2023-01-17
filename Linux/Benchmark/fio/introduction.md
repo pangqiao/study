@@ -48,7 +48,7 @@ int fio_server_create_sk_key(void)
 // backend.c
 int fio_backend(struct sk_out *sk_out)
 {
-    ...... // 加载文件、mmap 映射、锁初始化、获取时间、创建helper线程
+    ...... // 加载文件、mmap映射、锁初始化、获取时间、创建helper线程
     run_threads(sk_out); // 会建立主要的I0线程
     ...... // 用于一些变量的销毁、环境的收尾
 }
