@@ -42,7 +42,7 @@ int fio_server_create_sk_key(void)
 }
 ```
 
-接下来, `fio_backend()` 函数 —— `backend.c` 文件：
+接下来, `fio_backend()` 函数：
 
 ```cpp
 // backend.c
@@ -54,7 +54,7 @@ int fio_backend(struct sk_out *sk_out)
 }
 ```
 
-该函数中最主要的是 `run_threads(sk_out)` 函数，该函数会根据需要要启动 jobs 和处理 jobs
+该函数中最主要的是 `run_threads(sk_out)` 函数，该函数会根据需要启动 jobs 和处理 jobs
 
 ```cpp
 // backend.c
@@ -97,7 +97,7 @@ static void run_threads(struct sk_out *sk_out)
 }
 ```
 
-最关键的是 `thread_main(fd)` 函数，其主要是建立了 10 提交过程;
+最关键的是 `thread_main(fd)` 函数，其主要是建立了 IO 提交过程;
 
 ```cpp
 // backend.c
@@ -123,7 +123,7 @@ static void *thread_main(void *data)
 }
 ```
 
-在该函数中，最重要的是 do_io(td,bytes_done)这个函数，其进行10的提交和进一步的处理：
+在该函数中，最重要的是 `do_io(td,bytes_done)` 这个函数，其进行 IO 的提交和进一步的处理：
 
 ```cpp
 static void do_io(struct thread_data *td, uint64_t *bytes_done)
