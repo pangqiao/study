@@ -192,6 +192,8 @@ int io_queue_event(struct thread_data *td, struct io_u *io_u, int *ret,
 
 接下来看下 `wait_for_completions()` 函数：
 
+特别要关注的是何时收割event的逻辑：当可用来提交 io 请求的空闲槽位都占满了，或者前端有正在执行的 polling 操作的时候，就调用注册的存储引擎的 `get_events` 函数。
+
 ```cpp
 // backend.c
 static int wait_for_completions(struct thread_data *td, struct timespec *time)
