@@ -5,6 +5,10 @@ git://git.kernel.dk/fio.git
 
 https://git.kernel.dk/fio.git
 
+命令示例:
+
+/root/workspace/fio-3.30/fio -filename=/dev/nvme0n1 -direct=1 -iodepth 32 -rw=read -ioengine=libaio -size=4K -numjobs=4 -cpus_allowed=0-3 -cpus_allowed_policy=split -runtime=300 -name=read
+
 Fio 的入口函数在 `fio.c` 的 main 函数，其结构如下所示:
 
 ```cpp
