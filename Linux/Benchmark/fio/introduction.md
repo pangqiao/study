@@ -46,7 +46,7 @@ int fio_server_create_sk_key(void)
 }
 ```
 
-接下来, `fio_backend()` 函数：
+接下来, `fio_backend()` 函数:
 
 ```cpp
 // backend.c
