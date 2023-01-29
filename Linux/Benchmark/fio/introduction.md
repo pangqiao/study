@@ -37,9 +37,10 @@ int initialize_fio(char *envp[])
     endian_check(); // 大小端模式检查
     arch_init(envp); // 架构相关初始化, 主要是检查tsc支持, invariant tsc, 以及rdrand的支持
     sinit(); // 构建了8个pool(最多16个), 每个pool都会mmap 16M大小
-    fio_filelock_init(); // 
-
-
+    fio_filelock_init(); // 文件锁初始化
+    file_hash_init(); // 文件hash初始化
+    fio_keywords_init(); // 
+}
 ```
 
 `fio_server_create_sk_key()` 函数是为线程创建私有数据，关于线程私有数据的概念可以参考 TSD池
