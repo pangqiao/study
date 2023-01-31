@@ -1,7 +1,7 @@
 
 FIO是测试IOPS的非常好的工具，用来对硬件进行压力测试和验证，支持13种不同的 I/O 引擎, 包括: sync, mmap, libaio, posixaio, SG v3, splice, null, network, syslet, guasi, solarisaio 等等。 
 
-安装
+# 编译安装
 
 ```
 $ ./configure
@@ -20,5 +20,18 @@ Configure 将打印已启用的选项。注意，在基于 Linux 的平台上，
 ```
 $ make clean
 $ make CROSS_COMPILE=/path/to/toolchain/prefix
+```
+
+配置将尝试自动确定目标平台。
+
+也可以为 ESX 构建 fio，使用 `--esx` 开关进行配置。
+
+# 文档
+
+Fio 使用 Sphinx_ 从 reStructuredText_ 文件生成文档。 要构建HTML格式的文档，请运行 “`make -C doc html`” 并将浏览器定向到：file：`./doc/output/html/index.html`。 要构建手册页，请运行 “`make -C doc man`”，然后运行 “`man doc/output/man/fio.1`”。 要查看支持哪些其他输出格式，请运行 “`make -C doc help`”。   
+
+```
+.._reStructuredText：https://www.sphinx-doc.org/rest.html
+.._Sphinx：https://www.sphinx-doc.org
 ```
 
