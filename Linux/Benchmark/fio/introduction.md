@@ -1,3 +1,24 @@
 
-FIO是测试IOPS的非常好的工具，用来对硬件进行压力测试和验证，支持13种不同的I/O引擎, 包括: sync, mmap, libaio, posixaio, SG v3, splice, null, network, syslet, guasi, solarisaio 等等。 
+FIO是测试IOPS的非常好的工具，用来对硬件进行压力测试和验证，支持13种不同的 I/O 引擎, 包括: sync, mmap, libaio, posixaio, SG v3, splice, null, network, syslet, guasi, solarisaio 等等。 
+
+安装
+
+```
+$ ./configure
+$ make
+$ make install
+```
+
+注意，GNU make 是必需的。在 BSD 上，它可以从 ports 目录中的 devel/gmake 获得; 在 Solaris 上，它位于 SUNWgmake 包中。在默认不是 GNU make 的平台上，键入 `gmake` 而不是 `make`。
+
+Configure 将打印已启用的选项。注意，在基于 Linux 的平台上，必须安装 libaio 开发包才能使用 libaio 引擎。根据发行版的不同，它通常被称为 libaio-devel 或 libaio-dev。
+
+对于 gfio，需要安装 gtk 2.18（或更高版本）、关联的 glib 线程和 cairo。GFIO 不是自动构建的，可以使用 “--enable-GFIO” 选项进行 configure。
+
+交叉编译:
+
+```
+$ make clean
+$ make CROSS_COMPILE=/path/to/toolchain/prefix
+```
 
