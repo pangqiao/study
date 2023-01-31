@@ -1,10 +1,4 @@
 
-源码: https://git.kernel.dk/cgit/fio/
-
-git://git.kernel.dk/fio.git
-
-https://git.kernel.dk/fio.git
-
 命令示例:
 
 /root/workspace/fio-3.30/fio -filename=/dev/nvme0n1 -direct=1 -iodepth 32 -rw=read -ioengine=libaio -size=4K -numjobs=4 -cpus_allowed=0-3 -cpus_allowed_policy=split -runtime=300 -name=read
