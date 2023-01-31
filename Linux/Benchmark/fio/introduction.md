@@ -39,5 +39,7 @@ Fio 使用 Sphinx_ 从 reStructuredText_ 文件生成文档。 要构建HTML格�
 
 Fio（至少）在 Linux，Solaris，AIX，HP-UX，OSX，NetBSD，OpenBSD，Windows，FreeBSD 和 DragonFly 上工作。某些功能和/或选项可能仅在某些平台上可用，通常是因为这些功能仅适用于该平台（如 solarisaio 引擎或 Linux 上的 splice 引擎）。
 
+有些功能在 FreeBSD/Solaris 上不可用，即使它们可以实现， 我很乐意为此打补丁。这方面的一个例子是磁盘实用进程统计信息和（我认为）巨大的页面支持，FreeBSD/Solaris 中确实存在对此的支持。
+
 
 
