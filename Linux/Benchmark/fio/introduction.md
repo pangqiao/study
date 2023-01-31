@@ -39,6 +39,12 @@ Fio 使用 Sphinx_ 从 reStructuredText_ 文件生成文档。 要构建HTML格�
 
 Fio（至少）在 Linux，Solaris，AIX，HP-UX，OSX，NetBSD，OpenBSD，Windows，FreeBSD 和 DragonFly 上工作。某些功能和/或选项可能仅在某些平台上可用，通常是因为这些功能仅适用于该平台（如 solarisaio 引擎或 Linux 上的 splice 引擎）。
 
-Fio 使用 pthread mutexes(互斥锁)进行 signaling 和 locking，某些平台不支持 process 进程共享 pthread mutexes。因此，在这种平台上仅支持 threads。这可以通过 sysv ipc 锁定或其他锁定替代方案来解决。
+Fio 使用 pthread mutexes(互斥锁)进行 signaling 和 locking，某些平台不支持 process 进程共享 pthread mutexes。因此，在这种平台上仅支持 threads。这可以通过 sysv ipc locking 或其他 locking 替代方案来解决。
+
+# fio命令
+
+```
+$ fio [options] [jobfile] ...
+```
 
 
