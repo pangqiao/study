@@ -35,3 +35,9 @@ Fio 使用 Sphinx_ 从 reStructuredText_ 文件生成文档。 要构建HTML格�
 .._Sphinx：https://www.sphinx-doc.org
 ```
 
+# 平台
+
+Fio（至少）在 Linux，Solaris，AIX，HP-UX，OSX，NetBSD，OpenBSD，Windows，FreeBSD 和 DragonFly 上工作。某些功能和/或选项可能仅在某些平台上可用，通常是因为这些功能仅适用于该平台（如 solarisaio 引擎或 Linux 上的 splice 引擎）。
+
+
+
