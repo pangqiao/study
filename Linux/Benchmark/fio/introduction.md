@@ -47,4 +47,4 @@ Fio 使用 pthread mutexes(互斥锁)进行 signaling 和 locking，某些平台
 $ fio [options] [jobfile] ...
 ```
 
-
+它会按照 jobfile 内容运行. 
