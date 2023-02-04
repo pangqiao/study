@@ -16,7 +16,7 @@
 ; input:
 ;       esi - IO port
 ; output:
-;       eax - IO VTE（value table entry）地址
+;       eax - IO VTE(value table entry)地址
 ; 描述: 
 ;       1) 返回 IO 端口对应的 VTE 表项地址
 ;       2) 不存在相应的 IO Vte 时, 返回 0 值　
@@ -106,7 +106,7 @@ AppendIoVte.WriteVte:
 ; input:
 ;       esi - Processor index
 ; output:
-;       eax - ExtInt RTE（route table entry）地址
+;       eax - ExtInt RTE(route table entry)地址
 ; 描述: 
 ;       1) 返回 processor index 对应的 EXTINT_RTE 表项地址
 ;       2) 不存在相应的 EXTINT_RTE 表项时, 返回 0 值　
@@ -147,7 +147,7 @@ GetExtIntRte.Done:
 ; input:
 ;       esi - vector
 ; output:
-;       eax - ExtInt RTE（route table entry）地址
+;       eax - ExtInt RTE(route table entry)地址
 ; 描述: 
 ;       1) 返回 vector 对应的 EXTINT_RTE 表项地址
 ;       2) 不存在相应的 EXTINT_RTE 表项时, 返回 0 值　

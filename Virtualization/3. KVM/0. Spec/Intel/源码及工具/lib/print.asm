@@ -97,7 +97,7 @@ __get_current_column:
 ; input:
 ;                esi: string
 ; output:
-;                eax: 1(需要), 0(不需要）
+;                eax: 1(需要), 0(不需要)
 ;--------------------------------------------
 __test_println:
         push ecx
@@ -474,7 +474,7 @@ __print_qword_value:
 ; input:
 ;                esi: char
 ; output:
-;                eax: 1(是字母), 0(不是字母）
+;                eax: 1(是字母), 0(不是字母)
 ;-------------------------------------------
 __letter:
         and esi, 0xff
@@ -670,7 +670,7 @@ do_uppers_to_lowers_done:
 ;--------------------------------------------------------------
 ; get_qword_hex_string(): 将 QWORD 转换为字符串
 ; input:
-;                esi: 指令 QWORD 值的指针, edi: buffer（最少需要17bytes)
+;                esi: 指令 QWORD 值的指针, edi: buffer(最少需要17bytes)
 ;--------------------------------------------------------------
 __get_qword_hex_string:
         push ecx
@@ -687,8 +687,8 @@ __get_qword_hex_string:
 ;-------------------------------------------------
 ; get_dword_hex_string(): 将数 (DWORD) 转换为字符串
 ; input:
-;                esi: 需转换的数（dword size)
-;                edi: 目标串 buffer（最短需要 9 bytes, 包括 0)
+;                esi: 需转换的数(dword size)
+;                edi: 目标串 buffer(最短需要 9 bytes, 包括 0)
 ;---------------------------------------------------
 __get_dword_hex_string:
         push ecx
@@ -709,7 +709,7 @@ do_get_dword_hex_string_loop:
 ;----------------------------------------------------
 ; get_byte_hex_string(): 将 BYTE 转换为字符串
 ; input:
-;                esi: BYTE 值, edi: buffer（最短需要3个)
+;                esi: BYTE 值, edi: buffer(最短需要3个)
 ;----------------------------------------------------
 __get_byte_hex_string:
         push ecx

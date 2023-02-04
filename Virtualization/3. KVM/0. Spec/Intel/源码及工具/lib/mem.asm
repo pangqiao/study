@@ -17,7 +17,7 @@
 ; input:
 ;       none
 ; output:
-;       eax - 4K stack base（虚拟地址）
+;       eax - 4K stack base(虚拟地址)
 ; 描述: 
 ;       1)分配一个4K页面大小的 user stack base的可用值         
 ;       2)并更新当前 user stack base 记录
@@ -35,7 +35,7 @@ alloc_user_stack_base:
 ; input:
 ;       none
 ; output:
-;       eax - 4K stack base（物理地址）
+;       eax - 4K stack base(物理地址)
 ; 描述: 
 ;       1)分配一个4K页面大小的 user stack base的可用值         
 ;       2)并更新当前 user stack base 记录
@@ -53,7 +53,7 @@ alloc_user_stack_physical_base:
 ; input:
 ;       none
 ; output:
-;       eax - 4K stack base（虚拟地址） 
+;       eax - 4K stack base(虚拟地址) 
 ; 描述: 
 ;       1)分配一个4K页面大小的 kernel stack base的可用值         
 ;       2)并更新当前 kernel stack base 记录
@@ -72,7 +72,7 @@ alloc_kernel_stack_base:
 ; input:
 ;       none
 ; output:
-;       eax - 4K stack base（物理地址）   
+;       eax - 4K stack base(物理地址)   
 ; 描述: 
 ;       1)分配一个4K页面大小的 kernel stack base的可用值         
 ;       2)并更新当前 kernel stack base 记录
@@ -91,7 +91,7 @@ alloc_kernel_stack_physical_base:
 ; input:
 ;       none
 ; output:
-;       eax - 4K pool base（虚拟地址）
+;       eax - 4K pool base(虚拟地址)
 ;-----------------------------------------------------------------------
 alloc_user_pool_4k_base:      
 alloc_user_pool_base:
@@ -105,7 +105,7 @@ alloc_user_pool_base:
 ; input:
 ;       none
 ; output:
-;       eax - 4K pool base（物理地址） 
+;       eax - 4K pool base(物理地址) 
 ;-----------------------------------------------------------------------
 alloc_user_pool_4k_physical_base:      
 alloc_user_pool_physical_base:
@@ -119,7 +119,7 @@ alloc_user_pool_physical_base:
 ; input:
 ;       none
 ; output:
-;       eax - 4K pool base（虚拟地址）
+;       eax - 4K pool base(虚拟地址)
 ;-----------------------------------------------------------------------
 alloc_kernel_pool_4k_base:      
 alloc_kernel_pool_base:
@@ -134,7 +134,7 @@ alloc_kernel_pool_base:
 ; input:
 ;       none
 ; output:
-;       eax - 4K pool base（物理地址） 
+;       eax - 4K pool base(物理地址) 
 ;-----------------------------------------------------------------------
 alloc_kernel_pool_4k_physical_base:      
 alloc_kernel_pool_physical_base:
@@ -164,7 +164,7 @@ alloc_kernel_pool_base_n:
 ; output:
 ;       eax - physical address of pool
 ; 描述: 
-;       1）在 pool 里分配 n 页物理空间
+;       1)在 pool 里分配 n 页物理空间
 ;-----------------------------------------------------------------------
 alloc_kernel_pool_physical_base_n:
         mov eax, esi
@@ -213,7 +213,7 @@ do_alloc_base:
 ;       eax - stack pointer
 ; 描述: 
 ;       1) 分配一个 4K 的 kernel stack 空间, 映射到物理地址
-;       2) eax 返回 stack 空间的顶部（16字节边界）
+;       2) eax 返回 stack 空间的顶部(16字节边界)
 ;-----------------------------------------------------------------------
 get_kernel_stack_4k_pointer:
 get_kernel_stack_pointer:
@@ -256,7 +256,7 @@ get_kernel_stack_pointer:
 ;       eax - stack pointer
 ; 描述: 
 ;       1) 分配一个 4K 的 user stack 空间, 映射到物理地址
-;       2) eax 返回 stack 空间的顶部（16字节边界）
+;       2) eax 返回 stack 空间的顶部(16字节边界)
 ;-----------------------------------------------------------------------
 get_user_stack_4k_pointer:
 get_user_stack_pointer:

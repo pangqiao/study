@@ -313,7 +313,7 @@ load_module:
         ;; size 向上调整到 512 倍数
         ;;
         add ecx, 512 - 1
-        shr ecx, 9							; 计算 block（sectors）
+        shr ecx, 9							; 计算 block(sectors)
         mov WORD [read_sectors], cx                                     ; 
         call read_sector
 do_load_module_done:  
@@ -402,8 +402,8 @@ hex_to_char16:
 ;------------------------------------------------------
 ; convert_word_into_buffer()
 ; input:
-;       si - 需转换的数（word size)
-;       di - 目标串 buffer（最短需要 5 bytes, 包括 0)
+;       si - 需转换的数(word size)
+;       di - 目标串 buffer(最短需要 5 bytes, 包括 0)
 ; 描述: 
 ;       将一个WORD转换为字符串, 放入提供的 buffer 内
 ;------------------------------------------------------
@@ -426,8 +426,8 @@ convert_word_into_buffer.loop:
 ;------------------------------------------------------
 ; convert_dword_into_buffer()
 ; input:
-;       esi - 需转换的数（dword size)
-;       di - 目标串 buffer（最短需要 9 bytes, 包括 0)
+;       esi - 需转换的数(dword size)
+;       di - 目标串 buffer(最短需要 9 bytes, 包括 0)
 ; 描述: 
 ;       将一个WORD转换为字符串, 放入提供的 buffer 内
 ;------------------------------------------------------
@@ -671,7 +671,7 @@ _TARGET  EQU     $
         mov cr0, eax
         
         ;;
-        ;; 转入保护模式（此处 operand size = 16)
+        ;; 转入保护模式(此处 operand size = 16)
         ;;
         push 10h
         push bx
@@ -707,7 +707,7 @@ _ENTER_TARGET   EQU     $
         mov cr0, eax
         
         ;;
-        ;; 返回到实模式（此处 operand size = 32)
+        ;; 返回到实模式(此处 operand size = 32)
         ;; 因此: 使用 66h 来调整到 16 位 operand
         ;;
         DB 66h
@@ -883,7 +883,7 @@ get_spink_lock16.acquire:
         je get_spink_lock16.done
 
         ;;
-        ;; 获取失败后, 检查 lock 是否开放（未上锁）
+        ;; 获取失败后, 检查 lock 是否开放(未上锁)
         ;; 1) 是, 则再次执行获取锁, 并上锁
         ;; 2) 否, 继续不断地检查 lock, 直到 lock 开放
         ;;

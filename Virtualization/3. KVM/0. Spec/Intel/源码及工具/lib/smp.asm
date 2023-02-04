@@ -46,7 +46,7 @@ force_dispatch_to_processor:
 ;       eax - status code 
 ; 描述: 
 ;       1) 转到目标处理器的入口点执行
-;       2) 输入参数 esi 提供目标处理器的 index 值（从0开始）
+;       2) 输入参数 esi 提供目标处理器的 index 值(从0开始)
 ;       3) 输入参数 edi 提供目标代码入口地址
 ;       4) 这个函数无须等待直接返回       
 ;       5) 可以给自己调度执行！
@@ -66,7 +66,7 @@ goto_processor:
 ;       eax - status code
 ; 描述: 
 ;       1) 将一段 routine 调度到某个处理器执行
-;       2) 输入参数 esi 提供目标处理器的 index 值（从0开始）
+;       2) 输入参数 esi 提供目标处理器的 index 值(从0开始)
 ;       3) 输入参数 edi 提供目标代码入口地址
 ;       4) 这个函数无须等待直接返回       
 ;       5) 不能自己给自己调度任务执行！
@@ -107,7 +107,7 @@ dispatch_to_processor.Entry:
         
 
         ;;
-        ;; 置处理器为 busy 状态（去掉 usable processor 列表）
+        ;; 置处理器为 busy 状态(去掉 usable processor 列表)
         ;;
         mov eax, SDA.UsableProcessorMask
         lock btr DWORD [fs: eax], ecx                                   ; 处理器为 unusable 状态
@@ -161,7 +161,7 @@ dispatch_to_processor.done:
 ;       eax - status code
 ; 描述: 
 ;       1) 将一段 routine 调度到某个处理器执行
-;       2) 输入参数 esi 提供目标处理器的 index 值（从0开始）
+;       2) 输入参数 esi 提供目标处理器的 index 值(从0开始)
 ;       3) 输入参数 edi 提供目标代码入口地址
 ;       4) 这个函数等 dispatch routine 完成后返回
 ;-----------------------------------------------------
@@ -267,7 +267,7 @@ wait_for_signal.acquire:
         je wait_for_signal.done
 
         ;;
-        ;; 获取失败后, 检查 lock 是否开放（未上锁）
+        ;; 获取失败后, 检查 lock 是否开放(未上锁)
         ;; 1) 是, 则再次执行获取锁, 并上锁
         ;; 2) 否, 继续不断地检查 lock, 直到 lock 开放
         ;;
@@ -289,7 +289,7 @@ wait_for_signal.done:
 ; output:
 ;       eax - 该处理器的 PCB 基址
 ; 描述: 
-;       1) 根据提供的处理器Index值（从0开始）, 得到该处理器对应的 PCB 块
+;       1) 根据提供的处理器Index值(从0开始), 得到该处理器对应的 PCB 块
 ;       2) 出错时返回 0 值
 ;-----------------------------------------------------
 get_processor_pcb:
@@ -330,7 +330,7 @@ get_processor_pcb.done:
 ; output:
 ;       eax - local APIC ID
 ; 描述: 
-;       1) 根据提供的处理器Index值（从0开始）, 得到该处理器 LAPIC ID
+;       1) 根据提供的处理器Index值(从0开始), 得到该处理器 LAPIC ID
 ;       2) 出错时返回 -1 值
 ;-----------------------------------------------------
 get_processor_id:

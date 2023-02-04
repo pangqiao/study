@@ -37,7 +37,7 @@ dispatch_to_processor_sets64.@0:
         jz dispatch_to_processor_sets64.@1
         
         ;;
-        ;; 置处理器为 busy 状态（去掉 usable processor 列表）
+        ;; 置处理器为 busy 状态(去掉 usable processor 列表)
         ;;
         lock btr DWORD [fs: SDA.UsableProcessorMask], esi               ; 处理器为 unusable 状态
         btr ecx, esi

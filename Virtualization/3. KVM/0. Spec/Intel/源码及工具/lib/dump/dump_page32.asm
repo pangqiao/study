@@ -11,7 +11,7 @@
 ; input:
 ;                esi: virtual address(linear address)
 ; 注意: 
-;                这个函数是在一对一映射的情况下（virtual address和physical address 一致）
+;                这个函数是在一对一映射的情况下(virtual address和physical address 一致)
 ;-------------------------------------------
 dump_pae_page:
         push ecx
@@ -180,7 +180,7 @@ dump_pae_page_done:
 ; input:
 ;                esi: virtual address(linear address)
 ; 注意: 
-;                这个函数是在一对一映射的情况下（virtual address和physical address 一致）
+;                这个函数是在一对一映射的情况下(virtual address和physical address 一致)
 ;-------------------------------------------        
 dump_page:
         push ecx

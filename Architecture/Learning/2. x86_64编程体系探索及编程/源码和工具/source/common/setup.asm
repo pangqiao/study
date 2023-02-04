@@ -17,8 +17,8 @@
         
         
 ;
-; 模块开始点是 SETUP_SEG - 2, 减 2 是因为要算上模块头的存放的“模块 size”
-; load_module 加载到 SETUP_SEG-2, 实际效果是 SETUP 模块会被加载到“入口点”即: setup_entry
+; 模块开始点是 SETUP_SEG - 2, 减 2 是因为要算上模块头的存放的"模块 size"
+; load_module 加载到 SETUP_SEG-2, 实际效果是 SETUP 模块会被加载到"入口点"即: setup_entry
 ;
         org SETUP_SEG - 2
         
@@ -151,7 +151,7 @@ __test_tss_end:
 
 
 
-;; 为 IO bit map 保留 10 bytes（IO space 从 0 - 80）
+;; 为 IO bit map 保留 10 bytes(IO space 从 0 - 80)
 __io_bitmap:
         times 10 db 0        
 __io_bitmap_end:

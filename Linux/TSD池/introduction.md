@@ -53,7 +53,7 @@ struct pthread_key_struct
 };
 ```
 
-创建一个 TSD, 相当于将结构体数组的某一个元素的 seq 值设置为为“`in_use`”, 并将其索引返回给 `*key`, 然后设置 `destr_function()` 为 `destr()`. `pthread_key_create` 创建一个**新的线程**私有数据 key 时, 系统会搜索其**所在进程**的 key 结构数组, 找出一个未使用的元素, 将其索引赋给 `*key`. 
+创建一个 TSD, 相当于将结构体数组的某一个元素的 seq 值设置为为"`in_use`", 并将其索引返回给 `*key`, 然后设置 `destr_function()` 为 `destr()`. `pthread_key_create` 创建一个**新的线程**私有数据 key 时, 系统会搜索其**所在进程**的 key 结构数组, 找出一个未使用的元素, 将其索引赋给 `*key`. 
 
 2. pthread_setspecific: 为指定键值设置线程私有数据
 
@@ -75,7 +75,7 @@ void * pthread_getspecific(pthread_key_t key);
 void * pthread_getspecific(pthread_key_t key);
 ```
 
-该接口用于删除一个键, 功能仅仅是将该 key 在结构体数组 pthread_keys 对应的元素设置为“un_use”, 与该 key 相关联的线程数据是不会被释放的, 因此线程私有数据的释放必须在键删除之前. 
+该接口用于删除一个键, 功能仅仅是将该 key 在结构体数组 pthread_keys 对应的元素设置为"un_use", 与该 key 相关联的线程数据是不会被释放的, 因此线程私有数据的释放必须在键删除之前. 
 
 用来删除一个键, 删除后, 键所占用的内存将被释放. 注销一个 TSD, 这个函数并不检查当前是否有线程正使用该TSD, 也不会调用清理函数 (destr_function), 而只是将TSD释放以供下一次调用 pthread_key_create() 使用. 需要注意的是, 键占用的内存被释放. 与该键关联的线程数据所占用的内存并不被释放. 因此, 线程数据的释放, 必须在释放键之前完成. 
 
@@ -87,7 +87,7 @@ void * pthread_getspecific(pthread_key_t key);
 
 3、从一个键读取线程私有数据 `void *pthread_getspecific(pthread_key_t key);`
 
-4、线程退出（退出时, 会调用 destructor 释放分配的缓存, 参数是 key 所关联的数据）
+4、线程退出(退出时, 会调用 destructor 释放分配的缓存, 参数是 key 所关联的数据)
 
 5、删除一个键
 
@@ -173,7 +173,7 @@ char* str_accumulate(const char* s)
     
     pthread_once(&str_alloc_key_once,str_alloc_key);//str_alloc_key()这个函数只调用一次
     accu=(char*)pthread_getspecific(str_key);//取得该线程对应的关键字所关联的私有数据空间首址
-    if(accu==NULL)//每个新刚创建的线程这个值一定是NULL（没有指向任何已分配的数据空间）
+    if(accu==NULL)//每个新刚创建的线程这个值一定是NULL(没有指向任何已分配的数据空间)
     {    accu=malloc(1024);//用上面取得的值指向新分配的空间
         if(accu==NULL)    return NULL;
         accu[0]=0;//为后面strcat()作准备

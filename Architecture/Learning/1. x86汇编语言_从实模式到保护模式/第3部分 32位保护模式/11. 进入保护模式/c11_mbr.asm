@@ -24,7 +24,7 @@
          mov dword [bx+0x08],0x7c0001ff     
          mov dword [bx+0x0c],0x00409800     
 
-         ;创建#2描述符, 保护模式下的数据段描述符（文本模式下的显示缓冲区） 
+         ;创建#2描述符, 保护模式下的数据段描述符(文本模式下的显示缓冲区) 
          mov dword [bx+0x10],0x8000ffff     
          mov dword [bx+0x14],0x0040920b     
 
@@ -33,7 +33,7 @@
          mov dword [bx+0x1c],0x00409600
 
          ;初始化描述符表寄存器GDTR
-         mov word [cs: gdt_size+0x7c00],31  ;描述符表的界限（总字节数减一）   
+         mov word [cs: gdt_size+0x7c00],31  ;描述符表的界限(总字节数减一)   
                                              
          lgdt [cs: gdt_size+0x7c00]
       
@@ -79,7 +79,7 @@
          mov esp,0x7c00
 
          mov ebp,esp                        ;保存堆栈指针 
-         push byte '.'                      ;压入立即数（字节）
+         push byte '.'                      ;压入立即数(字节)
          
          sub ebp,4
          cmp ebp,esp                        ;判断压入立即数时, ESP是否减4 
