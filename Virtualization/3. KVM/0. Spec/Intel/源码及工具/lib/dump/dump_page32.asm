@@ -10,7 +10,7 @@
 ; dump_pae_page(): 打印 PAE paging 模式页转换表信息
 ; input:
 ;                esi: virtual address(linear address)
-; 注意：
+; 注意: 
 ;                这个函数是在一对一映射的情况下（virtual address和physical address 一致）
 ;-------------------------------------------
 dump_pae_page:
@@ -179,7 +179,7 @@ dump_pae_page_done:
 ; dump_page(): 打印页转换表信息
 ; input:
 ;                esi: virtual address(linear address)
-; 注意：
+; 注意: 
 ;                这个函数是在一对一映射的情况下（virtual address和physical address 一致）
 ;-------------------------------------------        
 dump_page:
