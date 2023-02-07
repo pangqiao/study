@@ -512,7 +512,10 @@ int bus_add_driver(struct device_driver *drv)
 		goto out_unregister;
     // 将priv->knode_bus添加到总线的subsys_private->klist_drivers 链表中
 	klist_add_tail(&priv->knode_bus, &bus->p->klist_drivers);
+    // 判断总线是否存在drivers_autoprobe函数
 	if (drv->bus->p->drivers_autoprobe) {
+        // 会调用bus_for_each_dev在总线上遍历设备，
+        // 并将设备传递给函数会调用__driver_attach进行设备和驱动的匹配
 		error = driver_attach(drv);
 		if (error)
 			goto out_del_list;
@@ -570,7 +573,7 @@ static struct bus_type *bus_get(struct bus_type *bus)
 }
 ```
 
-
+会判断总线是否存在 `drivers_autoprobe` 函数
 
 
 # reference
