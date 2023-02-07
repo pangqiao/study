@@ -53,7 +53,7 @@ nvme-tcp-y				+= tcp.o
 nvme-apple-y				+= apple.o
 ```
 
-
+其中 `ccflags-y` 是编译标记，会被正常的cc调用，指定了$(CC)编译时候的选项，这里只是将内核源码的头文件包含进去。 其中$(src)是指向内核根目录中Makefile所在的目录，包含模块需要的一些头文件。当然，这里其实我们可以不用纠结或者理睬它。
 
 
 # reference
