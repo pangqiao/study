@@ -400,13 +400,14 @@ int driver_register(struct device_driver *drv)
 			   drv->name, drv->bus->name);
 		return -EINVAL;
 	}
-
+    // 判断 总线 和 驱动 是否 定义了probe,remove和shutdown函数
+    // 因为 总线 中已经有这三个函数的定义, 所以 驱动 中并不需要, 出现的话会打印警告
 	if ((drv->bus->probe && drv->probe) ||
 	    (drv->bus->remove && drv->remove) ||
 	    (drv->bus->shutdown && drv->shutdown))
 		pr_warn("Driver '%s' needs updating - please use "
 			"bus_type methods\n", drv->name);
-
+    // 在需要注册的总线(pci_bus_type)上查找是否已经存在相同名字的驱动
 	other = driver_find(drv->name, drv->bus);
 	if (other) {
 		pr_err("Error: Driver '%s' is already registered, "
@@ -428,6 +429,8 @@ int driver_register(struct device_driver *drv)
 	return ret;
 }
 ```
+
+
 
 
 # reference
