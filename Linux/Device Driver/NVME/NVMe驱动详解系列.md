@@ -328,6 +328,18 @@ static struct pci_driver nvme_driver = {
 
 这里要注意的是 `pci_driver` 中包含了 `device_driver`, 而我们的驱动 `nvme_driver` 就是 `pci_driver` 类型。
 
+```cpp
+struct pci_driver {
+	struct list_head	node;
+	const char		*name;
+    ......
+	struct device_driver	driver;
+	struct pci_dynids	dynids;
+	bool driver_managed_dma;
+};
+```
+
+而 `__pci_register_driver` 函数会将 `nvme_driver` 结构体值作为参数赋值给 nvme_driver 中 device_driver 这个通用结构体
 
 
 # reference
