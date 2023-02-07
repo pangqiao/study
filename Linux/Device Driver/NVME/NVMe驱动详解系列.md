@@ -120,7 +120,7 @@ obj-$(CONFIG_NVME_FABRICS)		+= nvme-fabrics.o
 nvme-fabrics-y                          += fabrics.o
 ```
 
-`CONFIG_NVME_RDMA`: 这个驱动使得 NVMe over Fabric 可以通过 RDMA 传输(该选项还依赖于 `CONFIG_INFINIBAND`, `INFINIBAND_ADDR_TRANS` 和 `BLOCK`)。该选项会自动使能 `NVME_FABRICS`(它又会自动使能`NVME_CORE`), `SG_POOL`
+`CONFIG_NVME_RDMA`: 这个驱动使得 `NVMe over Fabric` 可以**通过 RDMA 传输**(该选项还依赖于 `CONFIG_INFINIBAND`, `INFINIBAND_ADDR_TRANS` 和 `BLOCK`)。该选项会自动使能 `NVME_FABRICS`(它又会自动使能`NVME_CORE`), `SG_POOL`
 
 对应的文件是 `rdma.c`
 
@@ -139,7 +139,7 @@ obj-$(CONFIG_NVME_RDMA)                 += nvme-rdma.o
 nvme-rdma-y                             += rdma.o
 ```
 
-`CONFIG_NVME_FC`: 这个驱动使得 NVMe over Fabric 可以在 FC 传输。该选项会自动使能 `NVME_FABRICS`(它又会自动使能`NVME_CORE`), `SG_POOL`
+`CONFIG_NVME_FC`: 这个驱动使得 `NVMe over Fabric` 可以**在 FC 传输**。该选项会自动使能 `NVME_FABRICS`(它又会自动使能`NVME_CORE`), `SG_POOL`.
 
 ```
 config NVME_FC
@@ -219,9 +219,26 @@ nvme-fc-y                               += fc.o
 
 配置完毕后，可以在内核代码根目录中执行make命令产生驱动。
 
-```
-CONFIG_NVME_CORE=y
+```conf
+#
+# NVME Support
+#
+CONFIG_NVME_CORE=m
 CONFIG_BLK_DEV_NVME=m
+# CONFIG_NVME_MULTIPATH is not set
+# CONFIG_NVME_HWMON is not set
+CONFIG_NVME_FABRICS=m
+# CONFIG_NVME_RDMA is not set
+CONFIG_NVME_FC=m
+# CONFIG_NVME_TCP is not set
+CONFIG_NVME_TARGET=m
+# CONFIG_NVME_TARGET_PASSTHRU is not set
+CONFIG_NVME_TARGET_LOOP=m
+# CONFIG_NVME_TARGET_RDMA is not set
+CONFIG_NVME_TARGET_FC=m
+# CONFIG_NVME_TARGET_FCLOOP is not set
+# CONFIG_NVME_TARGET_TCP is not set
+# end of NVME Support
 ```
 
 ```
@@ -236,6 +253,16 @@ CONFIG_BLK_DEV_NVME=m
 编译后会产生所配置的驱动模块，我们本系列只覆盖 nvme.ko 这个驱动模板，当然另一个 `nvme-core.ko` 必须的。编译后可以通过 `make modules_install` 来安装。
 
 然后可以通过 `modprobe nvme` 来加载驱动。
+
+# PCI驱动注册
+
+现在使用的 **NVMe 设备**都是**基于 PCI的**，所以最后**设备**需要**连接**到内核中的 **pci 总线上**才能够使用。这也是为什么在上篇配置 nvme.ko 时会需要 pci.c 文件，在 Makefile 中有如下这一行的：
+
+```
+nvme-y    += pci.o
+```
+
+本篇主要针对 `pci.c` 文件的一部分内容进行分析（其实本系列涉及的代码内容就是在pci.c和nvme-core.c两个文件中）。
 
 # reference
 
