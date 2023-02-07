@@ -293,8 +293,33 @@ static int __init nvme_init(void)
 }
 ```
 
-注册了 `nvme_driver` 驱动，参数为结构体 `nvme_driver`，该结构体类型是pci_driver。
+注册了 `nvme_driver` 驱动，参数为结构体 `nvme_driver`，该结构体类型是 `pci_driver`。
 
+```cpp
+static struct pci_driver nvme_driver = {
+    // 驱动的名字
+	.name		= "nvme",
+    // 设备与驱动的关联表，通过这个表内核可以知道哪些设备是通过这个驱动来工作的
+	.id_table	= nvme_id_table,
+    // 初始化函数, 该函数负责在驱动加载时候探测总线上的硬件设备并初始化设备
+	.probe		= nvme_probe,
+    // 当前驱动从内核移除时候被调用
+	.remove		= nvme_remove,
+    // 用于关闭设备
+	.shutdown	= nvme_shutdown,
+#ifdef CONFIG_PM_SLEEP
+	.driver		= {
+		.pm	= &nvme_dev_pm_ops,
+	},
+#endif
+    // nvme的sriov操作函数
+	.sriov_configure = pci_sriov_configure_simple,
+    // 错误处理句柄
+	.err_handler	= &nvme_err_handler,
+};
+```
+
+而 `pci_register_driver` 是个宏，其实是 `__pci_register_driver` 函数，该函数会通过调用 `driver_register` 将要**注册的驱动结构体**放到**系统设备驱动链表**中，将其串成了一串。这里要注意的是pci_driver中包含了device_driver,而我们的驱动nvme_driver就是pci_driver类型。
 
 
 
