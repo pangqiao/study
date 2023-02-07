@@ -7,10 +7,52 @@
 
 * targets 文件夹用于将 nvme 设备作为磁盘导出, 供外部使用;
 
-* host 文件夹实现将 nvme 设备供本系统使用, 不会对外使用, 意味着外部系统不能通过网络或者光纤来访问我们的NVMe磁盘。
+* host 文件夹实现将 nvme 设备供本系统使用, 不会对外使用, 意味着外部系统不能通过网络或者光纤来访问我们的 NVMe 磁盘。
 
+若配置NVME target 还需要工具 nvmetcli 工具: http://git.infradead.org/users/hch/nvmetcli.git
 
-若配置NVME target 还需要工具nvmetcli工具。
+我们这个系列主要针对host,关于target将来有机会再做进一步分析。所以后续所有文件都是位于drviers/nvme/host中。
+
+## 模块诞生
+
+先来看下 `drviers/nvme/host` 目录中的Makefile，具体如下。根据内核中的参数配置，最多会有 7 个模块。
+
+```makefile
+# SPDX-License-Identifier: GPL-2.0
+
+ccflags-y				+= -I$(src)
+
+# 7个模块
+obj-$(CONFIG_NVME_CORE)			+= nvme-core.o
+obj-$(CONFIG_BLK_DEV_NVME)		+= nvme.o
+obj-$(CONFIG_NVME_FABRICS)		+= nvme-fabrics.o
+obj-$(CONFIG_NVME_RDMA)			+= nvme-rdma.o
+obj-$(CONFIG_NVME_FC)			+= nvme-fc.o
+obj-$(CONFIG_NVME_TCP)			+= nvme-tcp.o
+obj-$(CONFIG_NVME_APPLE)		+= nvme-apple.o
+
+nvme-core-y				+= core.o ioctl.o
+nvme-core-$(CONFIG_NVME_VERBOSE_ERRORS)	+= constants.o
+nvme-core-$(CONFIG_TRACING)		+= trace.o
+nvme-core-$(CONFIG_NVME_MULTIPATH)	+= multipath.o
+nvme-core-$(CONFIG_BLK_DEV_ZONED)	+= zns.o
+nvme-core-$(CONFIG_FAULT_INJECTION_DEBUG_FS)	+= fault_inject.o
+nvme-core-$(CONFIG_NVME_HWMON)		+= hwmon.o
+nvme-core-$(CONFIG_NVME_AUTH)		+= auth.o
+
+nvme-y					+= pci.o
+
+nvme-fabrics-y				+= fabrics.o
+
+nvme-rdma-y				+= rdma.o
+
+nvme-fc-y				+= fc.o
+
+nvme-tcp-y				+= tcp.o
+
+nvme-apple-y				+= apple.o
+```
+
 
 
 
