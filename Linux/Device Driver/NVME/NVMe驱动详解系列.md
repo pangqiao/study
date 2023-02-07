@@ -319,7 +319,14 @@ static struct pci_driver nvme_driver = {
 };
 ```
 
-而 `pci_register_driver` 是个宏，其实是 `__pci_register_driver` 函数，该函数会通过调用 `driver_register` 将要**注册的驱动结构体**放到**系统设备驱动链表**中，将其串成了一串。这里要注意的是pci_driver中包含了device_driver,而我们的驱动nvme_driver就是pci_driver类型。
+而 `pci_register_driver` 是个宏，其实是 `__pci_register_driver` 函数，该函数会通过调用 `driver_register` 将要**注册的驱动结构体**放到**系统设备驱动链表**中，将其串成了一串。
+
+```cpp
+#define pci_register_driver(driver)		\
+	__pci_register_driver(driver, THIS_MODULE, KBUILD_MODNAME)
+```
+
+这里要注意的是 `pci_driver` 中包含了 `device_driver`, 而我们的驱动 `nvme_driver` 就是 `pci_driver` 类型。
 
 
 
