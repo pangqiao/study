@@ -57,7 +57,11 @@ nvme-apple-y				+= apple.o
 
 我们看下决定模块是否编译的 7 个配置参数：
 
-`NVME_CORE`: 这是一个被动的选项。该选项在 `BLK_DEV_NVME`, `NVME_RDMA`, `NVME_FC` **使能**时候会**自动选上**，是 **nvme 核心基础**。对应的代码是 `core.c` 和 `ioctl.c`, 产生的**模块**是 `nvme-core.ko`。另外。这里需要注意的是, 如果**使能**了配置: `NVME_VERBOSE_ERRORS`, `TRACING`, `NVME_MULTIPATH`, `BLK_DEV_ZONED`, `FAULT_INJECTION_DEBUG_FS`, `NVME_HWMON`, `NVME_AUTH`, 那么**模块** `nvme-core.ko` 会被合入 `constants.c`, `trace.c`, `multipath.c`, `zns.c`, `fault_inject.c`, `hwmon.c` 和 `auth.c` 文件, 这些是 NVMe 驱动的特点**可选择是否开启**。
+`NVME_CORE`: 这是一个被动的选项。该选项在 `BLK_DEV_NVME`, `NVME_RDMA`, `NVME_FC` **使能**时候会**自动选上**，是 **nvme 核心基础**。
+
+对应的代码是 `core.c` 和 `ioctl.c`, 产生的**模块**是 `nvme-core.ko`。
+
+需要注意的是, 如果**使能**了配置: `NVME_VERBOSE_ERRORS`, `TRACING`, `NVME_MULTIPATH`, `BLK_DEV_ZONED`, `FAULT_INJECTION_DEBUG_FS`, `NVME_HWMON`, `NVME_AUTH`, 那么**模块** `nvme-core.ko` 会合入 `constants.c`, `trace.c`, `multipath.c`, `zns.c`, `fault_inject.c`, `hwmon.c` 和 `auth.c` **文件**, 这些是 NVMe 驱动的特点**可选择是否开启**。
 
 ```
 config NVME_CORE
@@ -80,7 +84,9 @@ nvme-core-$(CONFIG_NVME_HWMON)		+= hwmon.o
 nvme-core-$(CONFIG_NVME_AUTH)		+= auth.o
 ```
 
-`BLK_DEV_NVME`: 这个**选项开启**后会**自动选上** `NVME_CORE`，同时自身依赖 pci 和 block. 这个产生 `nvme.ko` 驱动**模块**, 用于直接**将 ssd 链接到 pci 或者 pcie**. 对应的代码是 `nvme.c` 和 `pci.c`，产生的**模块**是 `nvme.ko`.
+`BLK_DEV_NVME`: 这个**选项开启**后会**自动选上** `NVME_CORE`，同时自身依赖 pci 和 block. 这个产生 `nvme.ko` 驱动**模块**, 用于直接**将 ssd 链接到 pci 或者 pcie**.
+
+对应的代码是 `nvme.c` 和 `pci.c`，产生的**模块**是 `nvme.ko`.
 
 ```kconfig
 # drivers/nvme/host/Kconfig
@@ -112,7 +118,7 @@ obj-$(CONFIG_NVME_FABRICS)		+= nvme-fabrics.o
 nvme-fabrics-y                          += fabrics.o
 ```
 
-`CONFIG_NVME_RDMA`: 这个驱动使得 NVMe over Fabric 可以通过 RDMA 传输(该选项还依赖于 `CONFIG_INFINIBAND`)。该选项会自动使能 `NVME_CORE` 和 `NVME_FABRICS`, `SG_POOL`
+`CONFIG_NVME_RDMA`: 这个驱动使得 NVMe over Fabric 可以通过 RDMA 传输(该选项还依赖于 `CONFIG_INFINIBAND`, `INFINIBAND_ADDR_TRANS` 和 `BLOCK`)。该选项会自动使能 `NVME_FABRICS`(它又会自动使能`NVME_CORE`), `SG_POOL`
 
 ```
 config NVME_RDMA
@@ -145,26 +151,26 @@ CONFIG_NVME_FC: 这个驱动使得 NVMe over Fabric 可以在 FC 传输。该选
     -
     </td>
     <td>
-    nvme-core.c core.c ioctl.c constants.c trace.c multipath.c zns.c fault_inject.c
-    </td>
-  </tr>
-  <tr>
-    <td rowspan="2">
-    获取
-    </td>
-    <td rowspan="2">
-    L1CD
-    </td>
-    <td>
-    stage1
-    </td>
-    <td>
-    OAS
+    core.c ioctl.c constants.c trace.c multipath.c zns.c fault_inject.c hwmon.c auth.c
     </td>
   </tr>
   <tr>
     <td>
-    IPA
+    nvme.ko
+    </td>
+    <td>
+    PCI, BLOCK
+    </td>
+    <td>
+    pci.c
+    </td>
+  </tr>
+  <tr>
+    <td>
+    nvme-fabirc.ko
+    </td>
+    <td>
+    -
     </td>
     <td>
     IAS
