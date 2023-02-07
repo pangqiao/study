@@ -105,6 +105,8 @@ nvme-y					+= pci.o
 
 `CONFIG_NVME_FABRICS`: 是这个**被动选项**。被 `NVME_RDMA` 和 `NVME_FC` 选择（当然，还有一些其他条件需要满足）。主要用于**支持 FC 协议**。
 
+对应的文件是 `fabrics.c`
+
 ```
 config NVME_FABRICS
         select NVME_CORE # 自动选上NVME_CORE
@@ -114,11 +116,13 @@ config NVME_FABRICS
 ```makefile
 # 使能后对应的nvme-fabrics.ko模块, 同时产生 nvme-fabrics-y
 obj-$(CONFIG_NVME_FABRICS)		+= nvme-fabrics.o
-# nvme-y(nvme-fabrics.ko模块)依赖 fabrics.c
+# nvme-fabrics-y(nvme-fabrics.ko模块)依赖 fabrics.c
 nvme-fabrics-y                          += fabrics.o
 ```
 
 `CONFIG_NVME_RDMA`: 这个驱动使得 NVMe over Fabric 可以通过 RDMA 传输(该选项还依赖于 `CONFIG_INFINIBAND`, `INFINIBAND_ADDR_TRANS` 和 `BLOCK`)。该选项会自动使能 `NVME_FABRICS`(它又会自动使能`NVME_CORE`), `SG_POOL`
+
+对应的文件是 `rdma.c`
 
 ```
 config NVME_RDMA
@@ -128,7 +132,32 @@ config NVME_RDMA
         select SG_POOL
 ```
 
-CONFIG_NVME_FC: 这个驱动使得 NVMe over Fabric 可以在 FC 传输。该选项会自动使能 `NVME_CORE` 和 `NVME_FABRICS`, `SG_POOL`
+```makefile
+# 使能后对应的nvme-rdma.ko模块, 同时产生 nvme-rdma-y
+obj-$(CONFIG_NVME_RDMA)                 += nvme-rdma.o
+# nvme-rdma-y(nvme-rdma.ko模块)依赖 rdma.c
+nvme-rdma-y                             += rdma.o
+```
+
+`CONFIG_NVME_FC`: 这个驱动使得 NVMe over Fabric 可以在 FC 传输。该选项会自动使能 `NVME_FABRICS`(它又会自动使能`NVME_CORE`), `SG_POOL`
+
+```
+config NVME_FC
+        tristate "NVM Express over Fabrics FC host driver"
+        depends on BLOCK # 依赖
+        depends on HAS_DMA # 依赖
+        select NVME_FABRICS # 自动选上
+        select SG_POOL # 自动选上
+```
+
+```makefile
+# 使能后对应的nvme-fc.ko模块, 同时产生 nvme-fc-y
+obj-$(CONFIG_NVME_FC)                   += nvme-fc.o
+# nvme-fc-y(nvme-fc.ko模块)依赖 fc.c
+nvme-fc-y                               += fc.o
+```
+
+`CONFIG_NVME_TCP`: 
 
 <table style="width:100%">
 <caption>Description</caption>
@@ -159,7 +188,7 @@ CONFIG_NVME_FC: 这个驱动使得 NVMe over Fabric 可以在 FC 传输。该选
     nvme.ko
     </td>
     <td>
-    PCI, BLOCK
+    CONFIG_PCI, CONFIG_BLOCK
     </td>
     <td>
     pci.c
@@ -173,10 +202,29 @@ CONFIG_NVME_FC: 这个驱动使得 NVMe over Fabric 可以在 FC 传输。该选
     -
     </td>
     <td>
-    IAS
+    fabrics.c
+    </td>
+  </tr>
+  <td>
+    nvme-rdma.ko
+    </td>
+    <td>
+    CONFIG_INFINIBAND, CONFIG_INFINIBAND_ADDR_TRANS, CONFIG_BLOCK
+    </td>
+    <td>
+    rdma.c
     </td>
   </tr>
 </table>
+
+配置完毕后，可以在内核代码根目录中执行make命令产生驱动。
+
+```
+make M=drivers/nvme/host
+
+make -j8 CONFIG_KVM=m CONFIG_KVM_INTEL=m -C `pwd` M=`pwd`/arch/x86/kvm modules
+```
+
 
 # reference
 
