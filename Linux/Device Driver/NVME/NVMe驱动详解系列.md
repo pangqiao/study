@@ -277,7 +277,7 @@ nvme 驱动的注册和注销整体函数流程如下图所所示:
 
 ## 驱动注册
 
-模块注册函数是 `nvme_init`，非常简单，就是一个pci_register_driver函数
+模块注册函数是 `nvme_init`，非常简单，就是一个 `pci_register_driver` 函数
 
 ```cpp
 static int __init nvme_init(void)
@@ -292,6 +292,9 @@ static int __init nvme_init(void)
 	return pci_register_driver(&nvme_driver);
 }
 ```
+
+注册了 `nvme_driver` 驱动，参数为结构体 `nvme_driver`，该结构体类型是pci_driver。
+
 
 
 
