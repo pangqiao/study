@@ -339,7 +339,7 @@ struct pci_driver {
 };
 ```
 
-而 `__pci_register_driver` 函数会用 `nvme_driver` 结构体中的值赋值给 `nvme_driver` 中 `device_driver` 这个通用结构体
+而 `__pci_register_driver` 函数会用 `nvme_driver` 结构体中的值赋值给 `nvme_driver` 中 `device_driver` 这个**通用结构体**
 
 ```cpp
 // drivers/pci/pci-driver.c
@@ -365,6 +365,69 @@ EXPORT_SYMBOL(__pci_register_driver);
 
 `pci_bus_type` 是由充满玄机的，**结构体**中定义了很多**和总线相关的函数**, 这些函数其实是**由 pci 总线驱动提供**的，位于 `drivers/pci/pci-driver.c` 文件，这些内容我们在后续会有说明
 
+```cpp
+// drivers/pci/pci-driver.c
+struct bus_type pci_bus_type = {
+	.name		= "pci",
+	.match		= pci_bus_match,
+	.uevent		= pci_uevent,
+	.probe		= pci_device_probe,
+	.remove		= pci_device_remove,
+	.shutdown	= pci_device_shutdown,
+	.dev_groups	= pci_dev_groups,
+	.bus_groups	= pci_bus_groups,
+	.drv_groups	= pci_drv_groups,
+	.pm		= PCI_PM_OPS_PTR,
+	.num_vf		= pci_bus_num_vf,
+	.dma_configure	= pci_dma_configure,
+	.dma_cleanup	= pci_dma_cleanup,
+};
+EXPORT_SYMBOL(pci_bus_type);
+```
+
+这个 `pci_register_driver` 函数主要作用就是**传递 NVMe 驱动相关参数**，并调用 `driver_register`, 该函数实现**将 NVMe 驱动注册到总线**, 参数就是一个需要注册的 `struct device_driver`(是一个**通用结构体**, 所以在调用之前需要先给该结构体赋特定的值)
+
+```cpp
+// drivers/base/driver.c
+int driver_register(struct device_driver *drv)
+{
+	int ret;
+	struct device_driver *other;
+
+    // 检测device_driver->driver_private,开始应该是为NULL,不然就panic
+	if (!drv->bus->p) {
+		pr_err("Driver '%s' was unable to register with bus_type '%s' because the bus was not initialized.\n",
+			   drv->name, drv->bus->name);
+		return -EINVAL;
+	}
+
+	if ((drv->bus->probe && drv->probe) ||
+	    (drv->bus->remove && drv->remove) ||
+	    (drv->bus->shutdown && drv->shutdown))
+		pr_warn("Driver '%s' needs updating - please use "
+			"bus_type methods\n", drv->name);
+
+	other = driver_find(drv->name, drv->bus);
+	if (other) {
+		pr_err("Error: Driver '%s' is already registered, "
+			"aborting...\n", drv->name);
+		return -EBUSY;
+	}
+
+	ret = bus_add_driver(drv);
+	if (ret)
+		return ret;
+	ret = driver_add_groups(drv, drv->groups);
+	if (ret) {
+		bus_remove_driver(drv);
+		return ret;
+	}
+	kobject_uevent(&drv->p->kobj, KOBJ_ADD);
+	deferred_probe_extend_timeout();
+
+	return ret;
+}
+```
 
 
 # reference
