@@ -220,11 +220,22 @@ nvme-fc-y                               += fc.o
 配置完毕后，可以在内核代码根目录中执行make命令产生驱动。
 
 ```
-make M=drivers/nvme/host
-
-make -j8 CONFIG_KVM=m CONFIG_KVM_INTEL=m -C `pwd` M=`pwd`/arch/x86/kvm modules
+CONFIG_NVME_CORE=y
+CONFIG_BLK_DEV_NVME=m
 ```
 
+```
+# make M=drivers/nvme/host
+  CC [M]  drivers/nvme/host/pci.o
+  LD [M]  drivers/nvme/host/nvme.o
+  MODPOST drivers/nvme/host/Module.symvers
+  CC [M]  drivers/nvme/host/nvme.mod.o
+  LD [M]  drivers/nvme/host/nvme.ko
+```
+
+编译后会产生所配置的驱动模块，我们本系列只覆盖 nvme.ko 这个驱动模板，当然另一个 `nvme-core.ko` 必须的。编译后可以通过 `make modules_install` 来安装。
+
+然后可以通过 `modprobe nvme` 来加载驱动。
 
 # reference
 
