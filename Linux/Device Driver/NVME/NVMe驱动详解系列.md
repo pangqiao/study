@@ -53,7 +53,13 @@ nvme-tcp-y				+= tcp.o
 nvme-apple-y				+= apple.o
 ```
 
-其中 `ccflags-y` 是编译标记，会被正常的cc调用，指定了$(CC)编译时候的选项，这里只是将内核源码的头文件包含进去。 其中$(src)是指向内核根目录中Makefile所在的目录，包含模块需要的一些头文件。当然，这里其实我们可以不用纠结或者理睬它。
+其中 `ccflags-y` 是**编译标记**，会被正常的 cc 调用，指定了 `$(CC)` **编译时候的选项**，这里**只是**将内核源码的**头文件包含进去**。 其中 `$(src)` 是指向**内核根目录**中 Makefile 所在的目录，包含**模块**需要的一些**头文件**。
+
+我们看下决定模块是否编译的 7 个配置参数：
+
+`NVME_CORE`: 这是一个被动的选项。该选项在 `BLK_DEV_NVME`, `NVME_RDMA`, `NVME_FC` 使能时候会自动选上，是nvme核心基础。对应的代码是core.c,产生的模块是nvme-core.ko。另外。这里需要注意的是,如果使能了配置：TRACING,NVME_MULTIPATH,NVM,FAULT_INJECTION_DEBUG_FS,那么模块nvme-core.ko会合入trace.c,multipath.c,lightnvm.c和fault_inject.c文件,这些是NVMe驱动的特点可选择是否开启。
+
+
 
 
 # reference
