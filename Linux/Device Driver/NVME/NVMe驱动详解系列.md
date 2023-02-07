@@ -264,7 +264,6 @@ nvme-y    += pci.o
 
 本篇主要针对 `pci.c` 文件的一部分内容进行分析（其实本系列涉及的代码内容就是在 `pci.c` 和 `core.c` 两个文件中）。
 
-
 驱动的注册和注销，其实就是模块的初始化和退出函数
 
 ```cpp
@@ -276,6 +275,23 @@ nvme 驱动的注册和注销整体函数流程如下图所所示:
 
 ![2023-02-07-15-54-21.png](./images/2023-02-07-15-54-21.png)
 
+## 驱动注册
+
+模块注册函数是 `nvme_init`，非常简单，就是一个pci_register_driver函数
+
+```cpp
+static int __init nvme_init(void)
+{
+	BUILD_BUG_ON(sizeof(struct nvme_create_cq) != 64);
+	BUILD_BUG_ON(sizeof(struct nvme_create_sq) != 64);
+	BUILD_BUG_ON(sizeof(struct nvme_delete_queue) != 64);
+	BUILD_BUG_ON(IRQ_AFFINITY_MAX_SETS < 2);
+	BUILD_BUG_ON(DIV_ROUND_UP(nvme_pci_npages_prp(), NVME_CTRL_PAGE_SIZE) >
+		     S8_MAX);
+
+	return pci_register_driver(&nvme_driver);
+}
+```
 
 
 
