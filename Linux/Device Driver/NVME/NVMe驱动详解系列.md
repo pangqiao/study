@@ -544,6 +544,7 @@ out_unregister:
 	/* drv->p is freed in driver_release()  */
 	drv->p = NULL;
 out_put_bus:
+    // 减少引用
 	bus_put(bus);
 	return error;
 }
