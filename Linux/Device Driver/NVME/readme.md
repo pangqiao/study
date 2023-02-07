@@ -6,3 +6,6 @@ NVME源码流程解析（一）: https://blog.csdn.net/weixin_38428439/article/d
 
 linux内核源码分析 - nvme设备的初始化: https://zhuanlan.zhihu.com/p/548748445
 
+NVMe Spec: https://nvmexpress.org/developers/nvme-specification/
+
+NVMe1.3a_Spec解读（一）: https://blog.csdn.net/leishen1992/article/details/79974264
