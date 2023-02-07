@@ -326,7 +326,7 @@ static struct pci_driver nvme_driver = {
 	__pci_register_driver(driver, THIS_MODULE, KBUILD_MODNAME)
 ```
 
-这里要注意的是 `pci_driver` 中包含了 `device_driver`, 而我们的驱动 `nvme_driver` 就是 `pci_driver` 类型。
+这里要注意的是 `pci_driver` 中包含了 `device_driver`, 而我们的驱动 `nvme_driver` 是 `pci_driver` 类型。
 
 ```cpp
 struct pci_driver {
@@ -339,9 +339,10 @@ struct pci_driver {
 };
 ```
 
-而 `__pci_register_driver` 函数会将 `nvme_driver` 结构体值作为参数赋值给 nvme_driver 中 device_driver 这个通用结构体
+而 `__pci_register_driver` 函数会用 `nvme_driver` 结构体中的值赋值给 `nvme_driver` 中 `device_driver` 这个通用结构体
 
 ```cpp
+// drivers/pci/pci-driver.c
 int __pci_register_driver(struct pci_driver *drv, struct module *owner,
 			  const char *mod_name)
 {
@@ -361,6 +362,8 @@ int __pci_register_driver(struct pci_driver *drv, struct module *owner,
 }
 EXPORT_SYMBOL(__pci_register_driver);
 ```
+
+`pci_bus_type` 是由充满玄机的，**结构体**中定义了很多**和总线相关的函数**, 这些函数其实是**由 pci 总线驱动提供**的，位于 `drivers/pci/pci-driver.c` 文件，这些内容我们在后续会有说明
 
 
 
