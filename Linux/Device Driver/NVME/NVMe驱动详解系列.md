@@ -57,9 +57,9 @@ nvme-apple-y				+= apple.o
 
 我们看下决定模块是否编译的 7 个配置参数：
 
-`NVME_CORE`: 这是一个被动的选项。该选项在 `BLK_DEV_NVME`, `NVME_RDMA`, `NVME_FC` **使能**时候会**自动选上**，是 **nvme 核心基础**。对应的代码是 core.c, 产生的模块是 `nvme-core.ko`。另外。这里需要注意的是, 如果使能了配置：TRACING, NVME_MULTIPATH, NVM, FAULT_INJECTION_DEBUG_FS, 那么模块 `nvme-core.ko` 会合入 `trace.c`, multipath.c, lightnvm.c 和 fault_inject.c 文件,这些是NVMe驱动的特点可选择是否开启。
+`NVME_CORE`: 这是一个被动的选项。该选项在 `BLK_DEV_NVME`, `NVME_RDMA`, `NVME_FC` **使能**时候会**自动选上**，是 **nvme 核心基础**。对应的代码是 core.c, 产生的**模块**是 `nvme-core.ko`。另外。这里需要注意的是, 如果**使能**了配置: `NVME_VERBOSE_ERRORS`, `TRACING`, `NVME_MULTIPATH`, `BLK_DEV_ZONED`, `FAULT_INJECTION_DEBUG_FS`, `NVME_HWMON`, `NVME_AUTH`, 那么**模块** `nvme-core.ko` 会被合入 `constants.c`, `trace.c`, `multipath.c`, `zns.c`, `fault_inject.c`, `hwmon.c` 和 `auth.c` 文件, 这些是 NVMe 驱动的特点**可选择是否开启**。
 
-`BLK_DEV_NVME`: 这个选项开启后会自动选上NVME_CORE，同时自身依赖pci和block.这个产生nvme.ko驱动用于直接将ssd链接到pci或者pcie.对应的代码是nvme.c和pci.c，产生的模块是nvme.ko.
+`BLK_DEV_NVME`: 这个**选项开启**后会**自动选上** `NVME_CORE`，同时自身依赖pci和block.这个产生nvme.ko驱动用于直接将ssd链接到pci或者pcie.对应的代码是nvme.c和pci.c，产生的模块是nvme.ko.
 
 
 
