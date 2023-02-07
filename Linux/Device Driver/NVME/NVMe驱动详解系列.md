@@ -341,6 +341,28 @@ struct pci_driver {
 
 而 `__pci_register_driver` 函数会将 `nvme_driver` 结构体值作为参数赋值给 nvme_driver 中 device_driver 这个通用结构体
 
+```cpp
+int __pci_register_driver(struct pci_driver *drv, struct module *owner,
+			  const char *mod_name)
+{
+	/* initialize common driver fields */
+	drv->driver.name = drv->name; // 赋值为”nvme”
+	drv->driver.bus = &pci_bus_type; //设置为pci_bus_type,是个结构体
+	drv->driver.owner = owner; //驱动的拥有者
+	drv->driver.mod_name = mod_name; //device_driver中的名字，为系统中的KBUILD_NAME
+	drv->driver.groups = drv->groups; //驱动代码中并未赋值
+	drv->driver.dev_groups = drv->dev_groups;
+
+	spin_lock_init(&drv->dynids.lock); //初始化自旋锁
+	INIT_LIST_HEAD(&drv->dynids.list); //初始化设备驱动中的节点元素，用于在链表中串起来
+
+	/* register with core */
+	return driver_register(&drv->driver); //调用driver_register注册驱动
+}
+EXPORT_SYMBOL(__pci_register_driver);
+```
+
+
 
 # reference
 
