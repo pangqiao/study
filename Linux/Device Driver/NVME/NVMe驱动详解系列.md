@@ -119,30 +119,21 @@ CONFIG_NVME_FC: 这个驱动使得 NVMe over Fabric 可以在 FC 传输。该选
     模块
     </th>
     <th>
-    配置
+    依赖
     </th>
     <th>
-    Address
-    </th>
-    <th>
-    地址
+    源码文件
     </th>
   </tr>
   <tr>
     <td>
-    设备<b>类型</b>。<br>
-    <li><b>0b0000</b>对应<b>EP</b>;</li>
-    <li><b>0b0000</b>对应<b>EP</b>;</li>
-    该字段只读.
+    nvme-core.ko
     </td>
     <td>
-    Person
+    -
     </td>
     <td>
-    Person
-    </td>
-    <td>
-    Person
+    nvme-core.c core.c ioctl.c constants.c trace.c multipath.c zns.c fault_inject.c
     </td>
   </tr>
   <tr>
