@@ -451,7 +451,7 @@ struct device_driver *driver_find(const char *name, struct bus_type *bus)
 
 其中 `bus->p` 的结构体是 `struct subsys_private`, 其中变量 `drivers_kset` 是表示**和总线相关的驱动**，其类型是 `struct kset`,　kset 通过其中的 list 成员**组成链表**。
 
-`kset_find_obj` 的函数如下, 先获取一个自旋锁，然后在列表中遍历查找，这里用了列表遍历函数 `list_for_each_entry`, 每次获取总线中的一个代表驱动的 kobject, 然后通过 kobject_name 获得节点中项的名字（驱动名字），然后与要注册的驱动名字对比，如果相等则返回该 kobject，否则返回NULL, 最后释放自旋锁。其中 `kset_find_obj` 函数如下。
+`kset_find_obj` 的函数如下:
 
 ```cpp
 // lib/kobject.c
@@ -474,6 +474,8 @@ struct kobject *kset_find_obj(struct kset *kset, const char *name)
 	return ret;
 }
 ```
+
+到此, 如果可以继续注册, 才会真正开始将该驱动添加到总线中. gai
 
 # reference
 
