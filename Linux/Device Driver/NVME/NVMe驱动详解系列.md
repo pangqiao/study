@@ -112,7 +112,62 @@ nvme-y					+= pci.o
 
 CONFIG_NVME_FC: 这个驱动使得 NVMe over Fabric 可以在 FC 传输。该选项会自动使能 `NVME_CORE` 和 `NVME_FABRICS`, `SG_POOL`
 
-
+<table style="width:100%">
+<caption>Description</caption>
+  <tr>
+    <th>
+    模块
+    </th>
+    <th>
+    配置
+    </th>
+    <th>
+    Address
+    </th>
+    <th>
+    地址
+    </th>
+  </tr>
+  <tr>
+    <td>
+    设备<b>类型</b>。<br>
+    <li><b>0b0000</b>对应<b>EP</b>;</li>
+    <li><b>0b0000</b>对应<b>EP</b>;</li>
+    该字段只读.
+    </td>
+    <td>
+    Person
+    </td>
+    <td>
+    Person
+    </td>
+    <td>
+    Person
+    </td>
+  </tr>
+  <tr>
+    <td rowspan="2">
+    获取
+    </td>
+    <td rowspan="2">
+    L1CD
+    </td>
+    <td>
+    stage1
+    </td>
+    <td>
+    OAS
+    </td>
+  </tr>
+  <tr>
+    <td>
+    IPA
+    </td>
+    <td>
+    IAS
+    </td>
+  </tr>
+</table>
 
 # reference
 
