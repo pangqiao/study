@@ -254,7 +254,7 @@ CONFIG_NVME_TARGET_FC=m
 
 然后可以通过 `modprobe nvme` 来加载驱动。
 
-# PCI驱动注册
+# PCI驱动注册和注销
 
 现在使用的 **NVMe 设备**都是**基于 PCI的**，所以最后**设备**需要**连接**到内核中的 **pci 总线上**才能够使用。这也是为什么在上篇配置 nvme.ko 时会需要 pci.c 文件，在 Makefile 中有如下这一行的：
 
@@ -262,7 +262,14 @@ CONFIG_NVME_TARGET_FC=m
 nvme-y    += pci.o
 ```
 
-本篇主要针对 `pci.c` 文件的一部分内容进行分析（其实本系列涉及的代码内容就是在pci.c和nvme-core.c两个文件中）。
+本篇主要针对 `pci.c` 文件的一部分内容进行分析（其实本系列涉及的代码内容就是在 `pci.c` 和 `core.c` 两个文件中）。
+
+nvme 驱动的注册和注销整体函数流程如下图所所示:
+
+![2023-02-07-15-54-21.png](./images/2023-02-07-15-54-21.png)
+
+
+
 
 # reference
 
