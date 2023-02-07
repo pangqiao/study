@@ -573,7 +573,20 @@ static struct bus_type *bus_get(struct bus_type *bus)
 }
 ```
 
-会判断总线是否存在 `drivers_autoprobe` 函数
+会判断总线是否存在 `drivers_autoprobe` 函数, 函数 `driver_attach` 会调用 `bus_for_each_dev` 负责在总线上遍历设备，并将设备传递给函数会调用 `__driver_attach` 进行设备和驱动的匹配。
+
+我们来看下__driver_attach函数，文件只列出该函数其他函数不再文中列出，大家可以查看源码。该函数其先调用driver_match_device,而driver_match_device则调用总线的match函数，pci总线的就是函数pci_bus_match。pci_bus_match先判断设备中的match_driver变量是否已经设备，如果设备说明已经和驱动匹配则无需匹配；否则调用pci_match_device (这个函数中会先通过override判断是否只绑定到指定驱动),先使用宏list_for_each_entry遍历驱动中动态id，显然后遍历静态id(驱动中的id_table表),如果匹配返回pci_device_id(如果设备设置了dev->override，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个pci_device_id_any)，这里注意的是pci_device_id 中class和classmask合计32位，实际有效的是class的16位，另外16位是为了掩盖pci_device中32位class中无效的16位。
+
+如果执行driver_match_device出错，并且返回错误是-EPROBE_DEFER,则需要调用driver_deferred_probe_add，来将设备通过dev->p->deferred_probe添加到deferred_probe_pending_list链表中。
+
+当返回pci_device_id后，如果设备没有绑定驱动， __driver_attach函数会调用driver_probe_device（调用该函数需要先获取设备锁），该函数负责将设备和驱动绑定。函数先判断设备dev->kobj.state_in_sysfs是否注册，然后调用really_probe(这里其实还会涉及linux电源管理的动作，此处为了简化问题暂时不展开)。
+
+really_probe函数中,会设置dev->driver = drv将驱动赋值为设备，同时会调用driver_bound函数，将设备也绑定到驱动相关链表中,此外会调用总线的probe函数，如果总线没有probe函数则调用设备驱动的probe函数，当然really_probe函数中的学问还有很多，可以单独列一篇章来讲解。
+
+```cpp
+// 
+
+```
 
 
 # reference
