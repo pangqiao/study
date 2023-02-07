@@ -485,7 +485,7 @@ int bus_add_driver(struct device_driver *drv)
 	struct bus_type *bus;
 	struct driver_private *priv;
 	int error = 0;
-    // 获取总线, pci_bus_type
+    // 获取总线, pci_bus_type, 最后会将对应的object引用加1
 	bus = bus_get(drv->bus);
 	if (!bus)
 		return -EINVAL;
@@ -557,7 +557,7 @@ out_put_bus:
 static struct bus_type *bus_get(struct bus_type *bus)
 {
 	if (bus) {
-        // 参数为bus_type->private_subsys->kset，是 struct kset类型
+        // 参数为bus_type->private_subsys->kset，是 struct kset类型, 最后会将对应的object引用加1
 		kset_get(&bus->p->subsys);
 		return bus;
 	}
