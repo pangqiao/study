@@ -59,6 +59,12 @@ nvme-apple-y				+= apple.o
 
 `NVME_CORE`: 这是一个被动的选项。该选项在 `BLK_DEV_NVME`, `NVME_RDMA`, `NVME_FC` **使能**时候会**自动选上**，是 **nvme 核心基础**。对应的代码是 core.c, 产生的**模块**是 `nvme-core.ko`。另外。这里需要注意的是, 如果**使能**了配置: `NVME_VERBOSE_ERRORS`, `TRACING`, `NVME_MULTIPATH`, `BLK_DEV_ZONED`, `FAULT_INJECTION_DEBUG_FS`, `NVME_HWMON`, `NVME_AUTH`, 那么**模块** `nvme-core.ko` 会被合入 `constants.c`, `trace.c`, `multipath.c`, `zns.c`, `fault_inject.c`, `hwmon.c` 和 `auth.c` 文件, 这些是 NVMe 驱动的特点**可选择是否开启**。
 
+```
+config NVME_CORE
+	tristate
+	select BLK_DEV_INTEGRITY_T10 if BLK_DEV_INTEGRITY
+```
+
 ```makefile
 # 使能后依赖 nvme-core.c, 产生 nvme-core-y
 obj-$(CONFIG_NVME_CORE)||       |       += nvme-core.o
@@ -76,6 +82,14 @@ nvme-core-$(CONFIG_NVME_AUTH)		+= auth.o
 
 `BLK_DEV_NVME`: 这个**选项开启**后会**自动选上** `NVME_CORE`，同时自身依赖 pci 和 block. 这个产生 `nvme.ko` 驱动**模块**, 用于直接**将 ssd 链接到 pci 或者 pcie**. 对应的代码是 `nvme.c` 和 `pci.c`，产生的**模块**是 `nvme.ko`.
 
+```kconfig
+# drivers/nvme/host/Kconfig
+config BLK_DEV_NVME
+	tristate "NVM Express block device"
+	depends on PCI && BLOCK # 依赖
+	select NVME_CORE # 自动选上 NVME_CORE
+```
+
 ```makefile
 # 使能后依赖 nvme.c, 产生 nvme-y
 obj-$(CONFIG_BLK_DEV_NVME)|     |       += nvme.o
@@ -83,15 +97,20 @@ obj-$(CONFIG_BLK_DEV_NVME)|     |       += nvme.o
 nvme-y					+= pci.o
 ```
 
-`CONFIG_NVME_FABRICS`: 是这个被动选项。被 NVME_RDMA 和 NVME_FC 选择（当然，还有一些其他条件需要满足）。主要用于支持 FC 协议。
+`CONFIG_NVME_FABRICS`: 是这个**被动选项**。被 `NVME_RDMA` 和 `NVME_FC` 选择（当然，还有一些其他条件需要满足）。主要用于**支持 FC 协议**。
 
 ```makefile
-
+# 使能后依赖 fabrics.c, 产生 nvme-fabrics-y
+obj-$(CONFIG_NVME_FABRICS)		+= nvme-fabrics.o
+# nvme-y 又依赖 pci.c
+nvme-y					+= pci.o
 ```
 
-`CONFIG_NVME_RDMA`: 这个驱动使得 NVMe over Fabric 可以通过 RDMA 传输(该选项还依赖于 `CONFIG_INFINIBAND`)。该选项会自动使能 `NVME_CORE` 和 NVME_FABRICS, SG_POOL
+`CONFIG_NVME_RDMA`: 这个驱动使得 NVMe over Fabric 可以通过 RDMA 传输(该选项还依赖于 `CONFIG_INFINIBAND`)。该选项会自动使能 `NVME_CORE` 和 `NVME_FABRICS`, `SG_POOL`
 
-CONFIG_NVME_FC: 这个驱动使得NVMe over Fabric可以在FC传输。该选项会自动使能NVME_CORE和NVME_FABRICS,SG_POOL
+
+
+CONFIG_NVME_FC: 这个驱动使得 NVMe over Fabric 可以在 FC 传输。该选项会自动使能 `NVME_CORE` 和 `NVME_FABRICS`, `SG_POOL`
 
 
 
