@@ -430,8 +430,50 @@ int driver_register(struct device_driver *drv)
 }
 ```
 
+`driver_find` 函数用于在特定总线上, 根据名字查找驱动
 
+```cpp
+// drivers/base/driver.c
+struct device_driver *driver_find(const char *name, struct bus_type *bus)
+{
+	struct kobject *k = kset_find_obj(bus->p->drivers_kset, name);
+	struct driver_private *priv;
 
+	if (k) {
+		/* Drop reference added by kset_find_obj() */
+		kobject_put(k);
+		priv = to_driver(k);
+		return priv->driver;
+	}
+	return NULL;
+}
+```
+
+其中 `bus->p` 的结构体是 `struct subsys_private`, 其中变量 `drivers_kset` 是表示**和总线相关的驱动**，其类型是 `struct kset`,　kset 通过其中的 list 成员**组成链表**。
+
+`kset_find_obj` 的函数如下, 先获取一个自旋锁，然后在列表中遍历查找，这里用了列表遍历函数 `list_for_each_entry`, 每次获取总线中的一个代表驱动的 kobject, 然后通过 kobject_name 获得节点中项的名字（驱动名字），然后与要注册的驱动名字对比，如果相等则返回该 kobject，否则返回NULL, 最后释放自旋锁。其中 `kset_find_obj` 函数如下。
+
+```cpp
+// lib/kobject.c
+struct kobject *kset_find_obj(struct kset *kset, const char *name)
+{
+	struct kobject *k;
+	struct kobject *ret = NULL;
+    // 获取一个自旋锁
+	spin_lock(&kset->list_lock);
+    // 在列表中遍历查找, 每次获取总线中的一个代表驱动的 kobject
+	list_for_each_entry(k, &kset->list, entry) {
+        // 获得节点中项的名字（驱动名字）,然后与要注册的驱动名字对比
+		if (kobject_name(k) && !strcmp(kobject_name(k), name)) {
+			ret = kobject_get_unless_zero(k);
+			break;
+		}
+	}
+
+	spin_unlock(&kset->list_lock);
+	return ret;
+}
+```
 
 # reference
 
