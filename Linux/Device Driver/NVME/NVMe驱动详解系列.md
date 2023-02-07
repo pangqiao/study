@@ -491,21 +491,26 @@ int bus_add_driver(struct device_driver *drv)
 		return -EINVAL;
     // debug 打印
 	pr_debug("bus: '%s': add driver %s\n", bus->name, drv->name);
-
+    // 分配结构体driver_private类型变量priv(分配的空间都置０)
 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
 	if (!priv) {
 		error = -ENOMEM;
 		goto out_put_bus;
 	}
+    // 初始化设备列表, 对应的将来驱动所能驱动的设备
 	klist_init(&priv->klist_devices, NULL, NULL);
+    // 填充priv和驱动结构体drv，从而相互指向
 	priv->driver = drv;
 	drv->p = priv;
+    // 驱动的 设置为 总线的 
 	priv->kobj.kset = bus->p->drivers_kset;
+    // 初始化一个kojbect结构体，并加入到kobject架构中
+    // 其中kobject的对象就是priv->kobj,类型为driver_ktype
 	error = kobject_init_and_add(&priv->kobj, &driver_ktype, NULL,
 				     "%s", drv->name);
 	if (error)
 		goto out_unregister;
-
+    // 将priv->knode_bus添加到总线的subsys_private->klist_drivers 链表中
 	klist_add_tail(&priv->knode_bus, &bus->p->klist_drivers);
 	if (drv->bus->p->drivers_autoprobe) {
 		error = driver_attach(drv);
