@@ -21,3 +21,6 @@ PCIe学习笔记之MSI/MSI-x中断及代码分析: https://www.codenong.com/cs10
 
 一文搞定 Linux 设备树 - 祁娥安的文章 - 知乎
 https://zhuanlan.zhihu.com/p/425420889
+
+bus 和 pci bus 的一些函数操作可以看 `NVMe` 目录下的代码分析
+

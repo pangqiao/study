@@ -11,11 +11,11 @@
 
 若配置NVME target 还需要工具 nvmetcli 工具: http://git.infradead.org/users/hch/nvmetcli.git
 
-我们这个系列主要针对host,关于target将来有机会再做进一步分析。所以后续所有文件都是位于drviers/nvme/host中。
+我们这个系列主要针对 host, 关于 target 将来有机会再做进一步分析。所以后续所有文件都是位于 drviers/nvme/host 中。
 
 ## 模块诞生
 
-先来看下 `drviers/nvme/host` 目录中的Makefile，具体如下。根据内核中的参数配置，最多会有 7 个模块。
+先来看下 `drviers/nvme/host` 目录中的 Makefile，具体如下。根据内核中的参数配置，最多会有 7 个模块。
 
 ```makefile
 # SPDX-License-Identifier: GPL-2.0
@@ -489,7 +489,7 @@ int bus_add_driver(struct device_driver *drv)
 	bus = bus_get(drv->bus);
 	if (!bus)
 		return -EINVAL;
-
+    // debug 打印
 	pr_debug("bus: '%s': add driver %s\n", bus->name, drv->name);
 
 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
@@ -549,7 +549,20 @@ out_put_bus:
 }
 ```
 
+先通过 `bus_get` 获取总线, 如下:
 
+```cpp
+// drivers/base/bus.c
+static struct bus_type *bus_get(struct bus_type *bus)
+{
+	if (bus) {
+        // 参数为bus_type->private_subsys->kset，是 struct kset类型
+		kset_get(&bus->p->subsys);
+		return bus;
+	}
+	return NULL;
+}
+```
 
 
 # reference
