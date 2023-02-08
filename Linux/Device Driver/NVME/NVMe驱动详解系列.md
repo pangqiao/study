@@ -382,7 +382,6 @@ struct bus_type pci_bus_type = {
 	.dma_configure	= pci_dma_configure,
 	.dma_cleanup	= pci_dma_cleanup,
 };
-EXPORT_SYMBOL(pci_bus_type);
 ```
 
 这个 `pci_register_driver` 函数主要作用就是**传递 NVMe 驱动相关参数**，并调用 `driver_register`, 该函数实现**将 NVMe 驱动注册到总线**, 参数就是一个需要注册的 `struct device_driver`(是一个**通用结构体**, 所以在调用之前需要先给该结构体赋特定驱动的值)
@@ -644,12 +643,30 @@ static int __driver_attach(struct device *dev, void *data)
 }
 ```
 
-该函数其先调用 `driver_match_device`, 其调用**总线**的 **match** 函数，**pci 总线**的就是函数 `pci_bus_match`。
+该函数其先调用 `driver_match_device`, 其调用**总线**(`struct bus_type pci_bus_type`)的 **match** 函数，**pci 总线**的就是函数 `pci_bus_match`。
 
 ```cpp
 // drivers/pci/pci-driver.c
+static int pci_bus_match(struct device *dev, struct device_driver *drv)
+{
+    // struct device 转换成 struct pci_dev
+	struct pci_dev *pci_dev = to_pci_dev(dev);
+	struct pci_driver *pci_drv;
+	const struct pci_device_id *found_id;
+    // 该设备已经和驱动匹配
+	if (!pci_dev->match_driver)
+		return 0;
 
+	pci_drv = to_pci_driver(drv);
+	found_id = pci_match_device(pci_drv, pci_dev);
+	if (found_id)
+		return 1;
+
+	return 0;
+}
 ```
+
+如果设备没有和驱动匹配, 则
 
 `pci_bus_match` 先判断设备中的 `match_driver` 变量是否已经设备，如果设备说明已经和驱动匹配则无需匹配；否则调用 `pci_match_device`(这个函数中会先通过 override 判断是否只绑定到指定驱动), 先使用宏 `list_for_each_entry` 遍历驱动中动态 id，显然后遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`)，这里注意的是 `pci_device_id` 中 class 和 classmask 合计 32 位，实际有效的是 class 的 16 位，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
 
