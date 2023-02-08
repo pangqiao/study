@@ -512,7 +512,7 @@ int bus_add_driver(struct device_driver *drv)
 		goto out_unregister;
     // 将priv->knode_bus添加到总线的subsys_private->klist_drivers 链表中
 	klist_add_tail(&priv->knode_bus, &bus->p->klist_drivers);
-    // 判断总线是否存在drivers_autoprobe函数
+    // 判断总线是否可以drivers_autoprobe, init:1
 	if (drv->bus->p->drivers_autoprobe) {
         // 遍历总线drv->bus(pci_bus_type)上设备，
         // 调用__driver_attach将设备绑定到该驱动上
@@ -576,7 +576,7 @@ static struct bus_type *bus_get(struct bus_type *bus)
 }
 ```
 
-会判断总线是否存在 `drivers_autoprobe` 函数, 函数 `driver_attach` 会调用 `bus_for_each_dev` **遍历总线** `drv->bus(pci_bus_type)` 上**设备**，调用 `__driver_attach` 将设备绑定到该驱动上
+会判断**总线**是否存在 `drivers_autoprobe` 函数, 函数 `driver_attach` 会调用 `bus_for_each_dev` **遍历总线** `drv->bus(pci_bus_type)` 上**设备**，调用 `__driver_attach` 将设备绑定到该驱动上
 
 ```cpp
 // drivers/base/dd.c
