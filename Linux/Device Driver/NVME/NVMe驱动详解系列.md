@@ -836,7 +836,60 @@ module_exit(nvme_core_exit);
 
 ## 模块初始化
 
+```cpp
+static int __init nvme_core_init(void)
+{
+	int result = -ENOMEM;
 
+	_nvme_check_size();
+
+	nvme_wq = alloc_workqueue("nvme-wq",
+			WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_SYSFS, 0);
+	if (!nvme_wq)
+		goto out;
+
+	nvme_reset_wq = alloc_workqueue("nvme-reset-wq",
+			WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_SYSFS, 0);
+	if (!nvme_reset_wq)
+		goto destroy_wq;
+
+	nvme_delete_wq = alloc_workqueue("nvme-delete-wq",
+			WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_SYSFS, 0);
+	if (!nvme_delete_wq)
+		goto destroy_reset_wq;
+
+	result = alloc_chrdev_region(&nvme_ctrl_base_chr_devt, 0,
+			NVME_MINORS, "nvme");
+	if (result < 0)
+		goto destroy_delete_wq;
+
+	nvme_class = class_create(THIS_MODULE, "nvme");
+	if (IS_ERR(nvme_class)) {
+		result = PTR_ERR(nvme_class);
+		goto unregister_chrdev;
+	}
+	nvme_class->dev_uevent = nvme_class_uevent;
+
+	nvme_subsys_class = class_create(THIS_MODULE, "nvme-subsystem");
+	if (IS_ERR(nvme_subsys_class)) {
+		result = PTR_ERR(nvme_subsys_class);
+		goto destroy_class;
+	}
+
+	result = alloc_chrdev_region(&nvme_ns_chr_devt, 0, NVME_MINORS,
+				     "nvme-generic");
+	if (result < 0)
+		goto destroy_subsys_class;
+
+	nvme_ns_chr_class = class_create(THIS_MODULE, "nvme-generic");
+	if (IS_ERR(nvme_ns_chr_class)) {
+		result = PTR_ERR(nvme_ns_chr_class);
+		goto unregister_generic_ns;
+	}
+
+	return 0;
+}
+```
 
 ## 模块注销
 
