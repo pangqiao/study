@@ -649,15 +649,19 @@ static int __driver_attach(struct device *dev, void *data)
 // drivers/pci/pci-driver.c
 static int pci_bus_match(struct device *dev, struct device_driver *drv)
 {
+    // 属于 pci 设备
     // struct device 转换成 struct pci_dev
 	struct pci_dev *pci_dev = to_pci_dev(dev);
+    // pci 设备自然使用 pci 驱动
 	struct pci_driver *pci_drv;
 	const struct pci_device_id *found_id;
-    // 该设备已经和驱动匹配
+    // 该设备已经和驱动匹配, 直接返回
 	if (!pci_dev->match_driver)
 		return 0;
-
+    // 通用结构体 device_driver 转换成 pci_driver
 	pci_drv = to_pci_driver(drv);
+    // pci driver检查一个pci设备是否在它支持的列表中 或 在动态id列表
+    // 返回 id
 	found_id = pci_match_device(pci_drv, pci_dev);
 	if (found_id)
 		return 1;
@@ -666,9 +670,9 @@ static int pci_bus_match(struct device *dev, struct device_driver *drv)
 }
 ```
 
-如果设备没有和驱动匹配, 则
+如果设备**没有和驱动匹配**, 则调用 `pci_match_device`
 
-`pci_bus_match` 先判断设备中的 `match_driver` 变量是否已经设备，如果设备说明已经和驱动匹配则无需匹配；否则调用 `pci_match_device`(这个函数中会先通过 override 判断是否只绑定到指定驱动), 先使用宏 `list_for_each_entry` 遍历驱动中动态 id，显然后遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`)，这里注意的是 `pci_device_id` 中 class 和 classmask 合计 32 位，实际有效的是 class 的 16 位，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
+这个函数中会先通过 `dev->driver_override` 判断**是否只需要绑定到指定驱动**; 遍历驱动中**动态 id**(`dynids`)，显然后遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`)，这里注意的是 `pci_device_id` 中 class 和 classmask 合计 32 位，实际有效的是 class 的 16 位，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
 
 如果执行 `driver_match_device` 出错，并且返回错误是 `-EPROBE_DEFER`, 则需要调用 `driver_deferred_probe_add`，来将设备通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` 链表中。
 
