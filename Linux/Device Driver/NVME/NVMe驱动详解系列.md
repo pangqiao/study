@@ -520,6 +520,8 @@ int bus_add_driver(struct device_driver *drv)
 		if (error)
 			goto out_del_list;
 	}
+    // 在sysfs文件系统中创建相关文件
+    // 在/sys/bus/pci/drivers/nvme中创建module指向/sys/module/nvme
 	module_add_driver(drv->owner, drv);
 
 	error = driver_create_file(drv, &driver_attr_uevent);
@@ -635,13 +637,13 @@ out_unlock:
 }
 ```
 
-该函数其先调用 `driver_match_device`, 而 `driver_match_device` 则调用**总线**的 match 函数，pci 总线的就是函数 `pci_bus_match`。`pci_bus_match` 先判断设备中的 `match_driver` 变量是否已经设备，如果设备说明已经和驱动匹配则无需匹配；否则调用 `pci_match_device`(这个函数中会先通过 override 判断是否只绑定到指定驱动), 先使用宏 `list_for_each_entry` 遍历驱动中动态 id，显然后遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`)，这里注意的是 `pci_device_id` 中 class 和 classmask 合计 32 位，实际有效的是 class 的 16 位，另外 16 位是为了掩盖 pci_device 中 32 位 class 中无效的 16 位。
+该函数其先调用 `driver_match_device`, 而 `driver_match_device` 则调用**总线**的 match 函数，pci 总线的就是函数 `pci_bus_match`。`pci_bus_match` 先判断设备中的 `match_driver` 变量是否已经设备，如果设备说明已经和驱动匹配则无需匹配；否则调用 `pci_match_device`(这个函数中会先通过 override 判断是否只绑定到指定驱动), 先使用宏 `list_for_each_entry` 遍历驱动中动态 id，显然后遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`)，这里注意的是 `pci_device_id` 中 class 和 classmask 合计 32 位，实际有效的是 class 的 16 位，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
 
-如果执行 driver_match_device 出错，并且返回错误是 -EPROBE_DEFER,则需要调用 driver_deferred_probe_add，来将设备通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` 链表中。
+如果执行 `driver_match_device` 出错，并且返回错误是 `-EPROBE_DEFER`, 则需要调用 `driver_deferred_probe_add`，来将设备通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` 链表中。
 
-当返回 pci_device_id 后，如果设备没有绑定驱动， __driver_attach函数会调用 driver_probe_device（调用该函数需要先获取设备锁），该函数负责将设备和驱动绑定。函数先判断设备dev->kobj.state_in_sysfs是否注册，然后调用really_probe(这里其实还会涉及linux电源管理的动作，此处为了简化问题暂时不展开)。
+当返回 `pci_device_id` 后，如果设备没有绑定驱动，`__driver_attach` 函数会调用 `driver_probe_device`（调用该函数需要先获取设备锁），该函数负责将设备和驱动绑定。函数先判断设备 `dev->kobj.state_in_sysfs` 是否注册，然后调用 `really_probe`(这里其实还会涉及 linux 电源管理的动作，此处为了简化问题暂时不展开)。
 
-really_probe函数中,会设置dev->driver = drv将驱动赋值为设备，同时会调用driver_bound函数，将设备也绑定到驱动相关链表中,此外会调用总线的probe函数，如果总线没有probe函数则调用设备驱动的probe函数，当然really_probe函数中的学问还有很多，可以单独列一篇章来讲解。
+`really_probe` 函数中, 会设置 `dev->driver = drv` 将驱动赋值为设备，同时会调用 `driver_bound` 函数，将设备也绑定到驱动相关链表中,此外会调用总线的 `probe` 函数，如果总线没有 `probe` 函数则调用设备驱动的 `probe` 函数，当然 `really_probe` 函数中的学问还有很多，可以单独列一篇章来讲解。
 
 ```cpp
 // 
