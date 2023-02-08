@@ -577,7 +577,7 @@ static struct bus_type *bus_get(struct bus_type *bus)
 }
 ```
 
-会判断**总线**是否存在 `drivers_autoprobe` 函数, 函数 `driver_attach` 会调用 `bus_for_each_dev` **遍历总线** `drv->bus(pci_bus_type)` 上**设备**，调用 `__driver_attach` 将设备绑定到该驱动上
+会判断**总线** `drivers_autoprobe` 是否为 1, 函数 `driver_attach` 会调用 `bus_for_each_dev` **遍历总线** `drv->bus(pci_bus_type)` 上**所有设备**，调用 `__driver_attach` 将设备绑定到该驱动上
 
 ```cpp
 // drivers/base/dd.c
