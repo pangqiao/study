@@ -695,13 +695,22 @@ static int pci_bus_match(struct device *dev, struct device_driver *drv)
 
 回到 `__driver_attach`, 如果执行 `driver_match_device` 出错，并且返回错误是 `-EPROBE_DEFER`, 则需要调用 `driver_deferred_probe_add`，来**将设备**通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` **推迟 probe 的 pending 链表**中, 并正常返回, 表明**驱动不匹配这个设备**, 但是驱动**可能匹配总线上的其他设备**.
 
-继续, 当设备和驱动是匹配的，调用 `driver_probe_device`（调用该函数需要先获取设备锁），该函数负责**将设备和驱动绑定**。函数先**判断设备** `dev->kobj.state_in_sysfs` 是否已经有 sysfs 节点，然后调用 `really_probe`(这里其实还会涉及 linux 电源管理的动作，此处为了简化问题暂时不展开)。
+继续, 当设备和驱动是匹配的，调用 `driver_probe_device`（调用该函数需要先获取设备锁），该函数负责**将设备和驱动绑定**。函数先**判断设备** `dev->kobj.state_in_sysfs` **是否已经有 sysfs 节点**(没有直接返回)，然后调用 `really_probe`(这里其实还会涉及 linux 电源管理的动作，此处为了简化问题暂时不展开)。
 
 `really_probe` 函数中:
 
 1. 设置 `dev->driver = drv`, **设置设备的驱动**;
 
-2. 在 driver 的 sysfs 节点添加一个 device_name 链接; 在 device 的 sysfs 节点添加名为 "driver" 链接; 如果 `CONFIG_DEV_COREDUMP` **使能**并且驱动有 coredump 功能, 则在 device 的 sysfs 目录下创建一个 coredump 文件
+2. 在 **driver** 的 sysfs 节点目录下添加一个 **device_name 链接**; 在 **device** 的 sysfs 节点目录下添加名为 "driver" 链接; 如果 `CONFIG_DEV_COREDUMP` **使能**并且驱动有 coredump 功能, 则在 device 的 sysfs 目录下创建一个 coredump 文件
+
+```
+# ll /sys/bus/pci/drivers/nvme/
+total 0
+lrwxrwxrwx 1 root root    0 Feb  8 01:56 0000:04:00.0 -> ../../../../devices/pci0000:00/0000:00:11.0/0000:04:00.0
+
+# ll /sys/bus/pci/drivers/nvme/0000\:04\:00.0/
+
+```
 
 3. **调用总线**的 `probe` 函数，如果总线没有 `probe` 函数则调用**设备驱动**的 `probe` 函数
 
