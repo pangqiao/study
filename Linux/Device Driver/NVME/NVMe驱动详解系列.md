@@ -275,6 +275,8 @@ nvme 驱动的注册和注销整体函数流程如下图所所示:
 
 ![2023-02-07-15-54-21.png](./images/2023-02-07-15-54-21.png)
 
+![nvme-init-exit-0.1](./images/nvme-init-exit-0.1.png)
+
 ## 驱动注册
 
 模块注册函数是 `nvme_init`，非常简单，就是一个 `pci_register_driver` 函数
@@ -288,7 +290,7 @@ static int __init nvme_init(void)
 	BUILD_BUG_ON(IRQ_AFFINITY_MAX_SETS < 2);
 	BUILD_BUG_ON(DIV_ROUND_UP(nvme_pci_npages_prp(), NVME_CTRL_PAGE_SIZE) >
 		     S8_MAX);
-
+    // 注册pci总线的驱动
 	return pci_register_driver(&nvme_driver);
 }
 ```
@@ -735,6 +737,8 @@ lrwxrwxrwx 1 root root    0 Feb  8 01:56 module -> ../../../../module/nvme
 5. 当然 `really_probe` 函数中的学问还有很多，可以单独列一篇章来讲解。
 
 驱动注册完毕. 与其说是 NVMe 驱动注册，不如说是 PCI 设备驱动的注册。
+
+## 驱动注销
 
 # reference
 
