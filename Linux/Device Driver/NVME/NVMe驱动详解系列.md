@@ -643,7 +643,9 @@ static int __driver_attach(struct device *dev, void *data)
 }
 ```
 
-该函数其先调用 `driver_match_device`, 其调用**总线**的 **match** 函数，**pci 总线**的就是函数 `pci_bus_match`。`pci_bus_match` 先判断设备中的 `match_driver` 变量是否已经设备，如果设备说明已经和驱动匹配则无需匹配；否则调用 `pci_match_device`(这个函数中会先通过 override 判断是否只绑定到指定驱动), 先使用宏 `list_for_each_entry` 遍历驱动中动态 id，显然后遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`)，这里注意的是 `pci_device_id` 中 class 和 classmask 合计 32 位，实际有效的是 class 的 16 位，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
+该函数其先调用 `driver_match_device`, 其调用**总线**的 **match** 函数，**pci 总线**的就是函数 `pci_bus_match`。
+
+`pci_bus_match` 先判断设备中的 `match_driver` 变量是否已经设备，如果设备说明已经和驱动匹配则无需匹配；否则调用 `pci_match_device`(这个函数中会先通过 override 判断是否只绑定到指定驱动), 先使用宏 `list_for_each_entry` 遍历驱动中动态 id，显然后遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`)，这里注意的是 `pci_device_id` 中 class 和 classmask 合计 32 位，实际有效的是 class 的 16 位，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
 
 如果执行 `driver_match_device` 出错，并且返回错误是 `-EPROBE_DEFER`, 则需要调用 `driver_deferred_probe_add`，来将设备通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` 链表中。
 
