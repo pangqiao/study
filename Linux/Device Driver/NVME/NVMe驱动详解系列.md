@@ -686,9 +686,15 @@ static int pci_bus_match(struct device *dev, struct device_driver *drv)
 
 回到 `__driver_attach`, 如果执行 `driver_match_device` 出错，并且返回错误是 `-EPROBE_DEFER`, 则需要调用 `driver_deferred_probe_add`，来**将设备**通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` **推迟 probe 的 pending 链表**中, 并正常返回, 表明**驱动不匹配这个设备**, 但是驱动**可能匹配总线上的其他设备**.
 
-继续, 当设备和驱动是匹配的，调用 `driver_probe_device`（调用该函数需要先获取设备锁），该函数负责**将设备和驱动绑定**。函数先判断设备 `dev->kobj.state_in_sysfs` 是否注册，然后调用 `really_probe`(这里其实还会涉及 linux 电源管理的动作，此处为了简化问题暂时不展开)。
+继续, 当设备和驱动是匹配的，调用 `driver_probe_device`（调用该函数需要先获取设备锁），该函数负责**将设备和驱动绑定**。函数先**判断设备** `dev->kobj.state_in_sysfs` 是否已经有 sysfs 节点，然后调用 `really_probe`(这里其实还会涉及 linux 电源管理的动作，此处为了简化问题暂时不展开)。
 
-`really_probe` 函数中, 会设置 `dev->driver = drv` 将驱动赋值为设备，同时会调用 `driver_bound` 函数，将设备也绑定到驱动相关链表中,此外会调用总线的 `probe` 函数，如果总线没有 `probe` 函数则调用设备驱动的 `probe` 函数，当然 `really_probe` 函数中的学问还有很多，可以单独列一篇章来讲解。
+`really_probe` 函数中:
+
+1. 设置 `dev->driver = drv`, **设置设备的驱动**;
+
+2. 在 driver 的 sysfs 节点添加一个 device_name 链接; 在 device 的 sysfs 节点添加名为 "driver" 链接
+
+3. 同时会调用 `driver_bound` 函数，将**设备**也绑定到**驱动相关链表**中, 此外会**调用总线**的 `probe` 函数，如果总线没有 `probe` 函数则调用**设备驱动**的 `probe` 函数，当然 `really_probe` 函数中的学问还有很多，可以单独列一篇章来讲解。
 
 ```cpp
 //
