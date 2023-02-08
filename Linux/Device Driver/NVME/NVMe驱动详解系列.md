@@ -521,7 +521,8 @@ int bus_add_driver(struct device_driver *drv)
 			goto out_del_list;
 	}
     // 在sysfs文件系统中创建相关文件
-    // 在/sys/bus/pci/drivers/nvme中创建module指向/sys/module/nvme
+    // 在/sys/bus/pci/drivers/nvme中创建module链接,指向/sys/module/nvme
+    // 在目录/sys/module/nvme/drivers中创建pci:nvme链接,指向/sys/bus/pci/drivers/nvme驱动
 	module_add_driver(drv->owner, drv);
 
 	error = driver_create_file(drv, &driver_attr_uevent);
