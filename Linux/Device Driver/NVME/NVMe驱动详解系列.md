@@ -351,7 +351,7 @@ int __pci_register_driver(struct pci_driver *drv, struct module *owner,
 	drv->driver.bus = &pci_bus_type; //设置为pci_bus_type,是个结构体
 	drv->driver.owner = owner; //驱动的拥有者
 	drv->driver.mod_name = mod_name; //device_driver中的名字，为系统中的KBUILD_NAME
-	drv->driver.groups = drv->groups; //驱动代码中并未赋值
+	drv->driver.groups = drv->groups; //驱动的属性组, 代码中并未赋值
 	drv->driver.dev_groups = drv->dev_groups;
 
 	spin_lock_init(&drv->dynids.lock); //初始化自旋锁
@@ -417,11 +417,14 @@ int driver_register(struct device_driver *drv)
 	ret = bus_add_driver(drv);
 	if (ret)
 		return ret;
+    // 在 驱动 创建 驱动 自己的属性组
+    // struct pci_driver nvme_driver并没有赋值
 	ret = driver_add_groups(drv, drv->groups);
 	if (ret) {
 		bus_remove_driver(drv);
 		return ret;
 	}
+    // 通知用户驱动加载成功
 	kobject_uevent(&drv->p->kobj, KOBJ_ADD);
 	deferred_probe_extend_timeout();
 
@@ -533,7 +536,7 @@ int bus_add_driver(struct device_driver *drv)
 		printk(KERN_ERR "%s: uevent attr (%s) failed\n",
 			__func__, drv->name);
 	}
-    // 给驱动sysfs目录创建总线(pci_bus_type)中的一组属性(pci_drv_attrs), 目前就两个 new_id 和 remove_id
+    // 给驱动sysfs目录创建总线(pci_bus_type)的一组属性(pci_drv_attrs), 目前就两个 new_id 和 remove_id
     // /sys/bus/pci/drivers/nvme/new_id
     // /sys/bus/pci/drivers/nvme/remove_id
 	error = driver_add_groups(drv, bus->drv_groups);
