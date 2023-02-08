@@ -734,8 +734,7 @@ lrwxrwxrwx 1 root root    0 Feb  8 01:56 module -> ../../../../module/nvme
 
 5. 当然 `really_probe` 函数中的学问还有很多，可以单独列一篇章来讲解。
 
-
-
+驱动注册完毕. 与其说是 NVMe 驱动注册，不如说是 PCI 设备驱动的注册。
 
 # reference
 
