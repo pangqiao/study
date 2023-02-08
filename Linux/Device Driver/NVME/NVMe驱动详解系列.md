@@ -705,14 +705,27 @@ static int pci_bus_match(struct device *dev, struct device_driver *drv)
 
 ```
 # ll /sys/bus/pci/drivers/nvme/
-total 0
 lrwxrwxrwx 1 root root    0 Feb  8 01:56 0000:04:00.0 -> ../../../../devices/pci0000:00/0000:00:11.0/0000:04:00.0
 
 # ll /sys/bus/pci/drivers/nvme/0000\:04\:00.0/
-
+lrwxrwxrwx 1 root root     0 Feb  7 15:17 driver -> ../../../../bus/pci/drivers/nvme
 ```
 
-3. **调用总线**的 `probe` 函数，如果总线没有 `probe` 函数则调用**设备驱动**的 `probe` 函数
+到这里, nvme driver 的 sysfs 目录下所有内容已经全部涉及了
+
+```
+# ll /sys/bus/pci/drivers/nvme/
+total 0
+lrwxrwxrwx 1 root root    0 Feb  8 01:56 0000:04:00.0 -> ../../../../devices/pci0000:00/0000:00:11.0/0000:04:00.0
+--w------- 1 root root 4096 Feb  8 01:56 bind
+lrwxrwxrwx 1 root root    0 Feb  8 01:56 module -> ../../../../module/nvme
+--w------- 1 root root 4096 Feb  8 01:56 new_id
+--w------- 1 root root 4096 Feb  8 01:56 remove_id
+--w------- 1 root root 4096 Feb  7 15:17 uevent
+--w------- 1 root root 4096 Feb  8 01:56 unbind
+```
+
+3. **调用总线**的 `probe` 函数，如果总线没有 `probe` 函数, 则调用**设备驱动**的 `probe` 函数
 
 4. 同时会调用 `driver_bound` 函数，将**设备**也绑定到**驱动相关链表**中
 
