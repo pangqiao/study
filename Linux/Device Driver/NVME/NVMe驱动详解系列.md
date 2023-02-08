@@ -388,6 +388,8 @@ struct bus_type pci_bus_type = {
 
 这个 `pci_register_driver` 函数主要作用就是**传递 NVMe 驱动相关参数**，并调用 `driver_register`, 该函数实现**将 NVMe 驱动注册到总线**, 参数就是一个需要注册的 `struct device_driver`(是一个**通用结构体**, 所以在调用之前需要先给该结构体赋特定驱动的值)
 
+### 核心driver_register
+
 ```cpp
 // drivers/base/driver.c
 int driver_register(struct device_driver *drv)
