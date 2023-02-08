@@ -474,7 +474,7 @@ struct kobject *kset_find_obj(struct kset *kset, const char *name)
 }
 ```
 
-到此, 如果可以继续注册, 才会真正开始将该驱动添加到总线中. 即 `bus_add_driver` 部分
+到此, 如果可以继续注册, 才会真正开始**将该驱动添加到总线中**. 即 `bus_add_driver` 部分
 
 ```cpp
 // drivers/base/bus.c
@@ -522,7 +522,9 @@ int bus_add_driver(struct device_driver *drv)
 	}
     // 在sysfs文件系统中创建相关文件
     // 在/sys/bus/pci/drivers/nvme中创建module链接,指向/sys/module/nvme
+    // /sys/bus/pci/drivers/nvme/module
     // 在目录/sys/module/nvme/drivers中创建pci:nvme链接,指向/sys/bus/pci/drivers/nvme驱动
+    // /sys/module/nvme/drivers/pci:nvme
 	module_add_driver(drv->owner, drv);
     // 在driver的sysfs目录下创建uevent文件
     // /sys/bus/pci/drivers/nvme/uevent
@@ -531,8 +533,9 @@ int bus_add_driver(struct device_driver *drv)
 		printk(KERN_ERR "%s: uevent attr (%s) failed\n",
 			__func__, drv->name);
 	}
-    // 创建总线(pci_bus_type)中的一组属性(pci_drv_attrs)
-    // 
+    // 给驱动 sysfs 目录创建总线(pci_bus_type)中的一组属性(pci_drv_attrs), 目前就两个 new_id 和 remove_id
+    // /sys/bus/pci/drivers/nvme/new_id
+    // /sys/bus/pci/drivers/nvme/remove_id
 	error = driver_add_groups(drv, bus->drv_groups);
 	if (error) {
 		/* How the hell do we get out of this pickle? Give up */
