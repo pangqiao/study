@@ -531,7 +531,7 @@ int bus_add_driver(struct device_driver *drv)
 		printk(KERN_ERR "%s: uevent attr (%s) failed\n",
 			__func__, drv->name);
 	}
-    // 创建总线中驱动的属性组
+    // 创建总线(pci_bus_type)中的一组属性(pci_drv_attrs)
     // 
 	error = driver_add_groups(drv, bus->drv_groups);
 	if (error) {
