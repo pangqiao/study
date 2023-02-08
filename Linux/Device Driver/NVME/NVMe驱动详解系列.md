@@ -103,6 +103,76 @@ obj-$(CONFIG_BLK_DEV_NVME)|     |       += nvme.o
 nvme-y					+= pci.o
 ```
 
+通过 modinfo 可以查看该模块信息
+
+```
+# 这是 built-in 的
+# modinfo nvme
+name:           nvme
+filename:       (builtin)
+version:        1.0
+license:        GPL
+file:           drivers/nvme/host/nvme
+author:         Matthew Wilcox <willy@linux.intel.com>
+parm:           use_threaded_interrupts:int
+parm:           use_cmb_sqes:use controller's memory buffer for I/O SQes (bool)
+parm:           max_host_mem_size_mb:Maximum Host Memory Buffer (HMB) size per controller (in MiB) (uint)
+parm:           sgl_threshold:Use SGLs when average request segment size is larger or equal to this size. Use 0 to disable SGLs. (uint)
+parm:           io_queue_depth:set io queue depth, should >= 2 and < 4096
+parm:           write_queues:Number of queues to use for writes. If not set, reads and writes will share a queue set.
+parm:           poll_queues:Number of queues to use for polled IO.
+parm:           noacpi:disable acpi bios quirks (bool)
+
+# 这是作为模块存在的信息
+# modinfo nvme
+filename:       /lib/modules/4.18.0-240.el8.x86_64/kernel/drivers/nvme/host/nvme.ko.xz
+version:        1.0
+license:        GPL
+author:         Matthew Wilcox <willy@linux.intel.com>
+rhelversion:    8.3
+srcversion:     5ECFF116C5E071E6E5AAF94
+alias:          pci:v0000106Bd00002005sv*sd*bc*sc*i*
+alias:          pci:v0000106Bd00002003sv*sd*bc*sc*i*
+alias:          pci:v0000106Bd00002001sv*sd*bc*sc*i*
+alias:          pci:v*d*sv*sd*bc01sc08i02*
+alias:          pci:v00001CC1d00008201sv*sd*bc*sc*i*
+alias:          pci:v000010ECd00005762sv*sd*bc*sc*i*
+alias:          pci:v00001D1Dd00002601sv*sd*bc*sc*i*
+alias:          pci:v00001D1Dd00002807sv*sd*bc*sc*i*
+alias:          pci:v00001D1Dd00001F1Fsv*sd*bc*sc*i*
+alias:          pci:v0000144Dd0000A822sv*sd*bc*sc*i*
+alias:          pci:v0000144Dd0000A821sv*sd*bc*sc*i*
+alias:          pci:v00001C5Fd00000540sv*sd*bc*sc*i*
+alias:          pci:v00001C58d00000023sv*sd*bc*sc*i*
+alias:          pci:v00001C58d00000003sv*sd*bc*sc*i*
+alias:          pci:v00001BB1d00000100sv*sd*bc*sc*i*
+alias:          pci:v0000126Fd00002263sv*sd*bc*sc*i*
+alias:          pci:v00008086d00005845sv*sd*bc*sc*i*
+alias:          pci:v00008086d0000F1A6sv*sd*bc*sc*i*
+alias:          pci:v00008086d0000F1A5sv*sd*bc*sc*i*
+alias:          pci:v00008086d00000A55sv*sd*bc*sc*i*
+alias:          pci:v00008086d00000A54sv*sd*bc*sc*i*
+alias:          pci:v00008086d00000A53sv*sd*bc*sc*i*
+alias:          pci:v00008086d00000953sv*sd*bc*sc*i*
+depends:        nvme-core
+intree:         Y
+name:           nvme
+vermagic:       4.18.0-240.el8.x86_64 SMP mod_unload modversions
+sig_id:         PKCS#7
+signer:         Red Hat Enterprise Linux kernel signing key
+sig_key:        4B:AE:FF:9B:DB:30:E5:74:78:69:52:49:68:78:36:A6:27:61:CA:3C
+sig_hashalgo:   sha256
+signature:      05:E2:DE:D6:99:15:48:10:F3:A6:69:...
+                ......
+parm:           use_threaded_interrupts:int
+parm:           use_cmb_sqes:use controller's memory buffer for I/O SQes (bool)
+parm:           max_host_mem_size_mb:Maximum Host Memory Buffer (HMB) size per controller (in MiB) (uint)
+parm:           sgl_threshold:Use SGLs when average request segment size is larger or equal to this size. Use 0 to disable SGLs. (uint)
+parm:           io_queue_depth:set io queue depth, should >= 2
+parm:           write_queues:Number of queues to use for writes. If not set, reads and writes will share a queue set. (uint)
+parm:           poll_queues:Number of queues to use for polled IO. (uint)
+```
+
 `CONFIG_NVME_FABRICS`: 是这个**被动选项**。被 `NVME_RDMA` 和 `NVME_FC` 选择（当然，还有一些其他条件需要满足）。主要用于**支持 FC 协议**。
 
 对应的文件是 `fabrics.c`
@@ -754,10 +824,15 @@ module_exit(nvme_exit);
 
 nvme-core 模块是 nvme 模块所依赖的，我们可以在前面内核配置中知道，也可以在使用 modinfo 命令查看。
 
-```
+这意味着在加载 nvme 模块之前会提前加载 nvme-core 模块.
 
-```
+看下nvme-core驱动的注册和注销：
 
+```cpp
+module_init(nvme_core_init);
+
+module_exit(nvme_core_exit);
+```
 
 # reference
 
