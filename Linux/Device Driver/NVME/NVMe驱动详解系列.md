@@ -680,7 +680,7 @@ static int pci_bus_match(struct device *dev, struct device_driver *drv)
 
 这里注意的是 `pci_device_id` 中 **class** 和 **classmask** 合计 **32 位**，实际有效的是 **class** 的 **16 位**，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
 
-回到 `__driver_attach`, 如果执行 `driver_match_device` 出错，并且返回错误是 `-EPROBE_DEFER`, 表明则需要调用 `driver_deferred_probe_add`，来**将设备**通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` **推迟 probe 的 pending 链表**中。
+回到 `__driver_attach`, 如果执行 `driver_match_device` 出错，并且返回错误是 `-EPROBE_DEFER`, 则需要调用 `driver_deferred_probe_add`，来**将设备**通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` **推迟 probe 的 pending 链表**中, 并正常返回, 表明**驱动不匹配这个设备**, 但是驱动**可能匹配总线上的其他设备**.
 
 当返回 `pci_device_id` 后，如果设备没有绑定驱动，`__driver_attach` 函数会调用 `driver_probe_device`（调用该函数需要先获取设备锁），该函数负责将设备和驱动绑定。函数先判断设备 `dev->kobj.state_in_sysfs` 是否注册，然后调用 `really_probe`(这里其实还会涉及 linux 电源管理的动作，此处为了简化问题暂时不展开)。
 
