@@ -692,14 +692,11 @@ static int pci_bus_match(struct device *dev, struct device_driver *drv)
 
 1. 设置 `dev->driver = drv`, **设置设备的驱动**;
 
-2. 在 driver 的 sysfs 节点添加一个 device_name 链接; 在 device 的 sysfs 节点添加名为 "driver" 链接
+2. 在 driver 的 sysfs 节点添加一个 device_name 链接; 在 device 的 sysfs 节点添加名为 "driver" 链接; 
 
 3. 同时会调用 `driver_bound` 函数，将**设备**也绑定到**驱动相关链表**中, 此外会**调用总线**的 `probe` 函数，如果总线没有 `probe` 函数则调用**设备驱动**的 `probe` 函数，当然 `really_probe` 函数中的学问还有很多，可以单独列一篇章来讲解。
 
-```cpp
-//
 
-```
 
 
 # reference
