@@ -580,65 +580,70 @@ static struct bus_type *bus_get(struct bus_type *bus)
 
 ```cpp
 // drivers/base/dd.c
-static int __device_attach(struct device *dev, bool allow_async)
+static int __driver_attach(struct device *dev, void *data)
 {
-	int ret = 0;
+	struct device_driver *drv = data;
 	bool async = false;
+	int ret;
 
-	device_lock(dev);
-	if (dev->p->dead) {
-		goto out_unlock;
-	} else if (dev->driver) {
-		if (device_is_bound(dev)) {
-			ret = 1;
-			goto out_unlock;
-		}
-		ret = device_bind_driver(dev);
-		if (ret == 0)
-			ret = 1;
-		else {
-			dev->driver = NULL;
-			ret = 0;
-		}
-	} else {
-		struct device_attach_data data = {
-			.dev = dev,
-			.check_async = allow_async,
-			.want_async = false,
-		};
+	/*
+	 * Lock device and try to bind to it. We drop the error
+	 * here and always return 0, because we need to keep trying
+	 * to bind to devices and some drivers will return an error
+	 * simply if it didn't support the device.
+	 *
+	 * driver_probe_device() will spit a warning if there
+	 * is an error.
+	 */
 
-		if (dev->parent)
-			pm_runtime_get_sync(dev->parent);
+	ret = driver_match_device(drv, dev);
+	if (ret == 0) {
+		/* no match */
+		return 0;
+	} else if (ret == -EPROBE_DEFER) {
+		dev_dbg(dev, "Device match requests probe deferral\n");
+		dev->can_match = true;
+		driver_deferred_probe_add(dev);
+		/*
+		 * Driver could not match with device, but may match with
+		 * another device on the bus.
+		 */
+		return 0;
+	} else if (ret < 0) {
+		dev_dbg(dev, "Bus failed to match device: %d\n", ret);
+		return ret;
+	} /* ret > 0 means positive match */
 
-		ret = bus_for_each_drv(dev->bus, NULL, &data,
-					__device_attach_driver);
-		if (!ret && allow_async && data.have_async) {
-			/*
-			 * If we could not find appropriate driver
-			 * synchronously and we are allowed to do
-			 * async probes and there are drivers that
-			 * want to probe asynchronously, we'll
-			 * try them.
-			 */
-			dev_dbg(dev, "scheduling asynchronous probe\n");
+	if (driver_allows_async_probing(drv)) {
+		/*
+		 * Instead of probing the device synchronously we will
+		 * probe it asynchronously to allow for more parallelism.
+		 *
+		 * We only take the device lock here in order to guarantee
+		 * that the dev->driver and async_driver fields are protected
+		 */
+		dev_dbg(dev, "probing driver %s asynchronously\n", drv->name);
+		device_lock(dev);
+		if (!dev->driver && !dev->p->async_driver) {
 			get_device(dev);
+			dev->p->async_driver = drv;
 			async = true;
-		} else {
-			pm_request_idle(dev);
 		}
-
-		if (dev->parent)
-			pm_runtime_put(dev->parent);
+		device_unlock(dev);
+		if (async)
+			async_schedule_dev(__driver_attach_async_helper, dev);
+		return 0;
 	}
-out_unlock:
-	device_unlock(dev);
-	if (async)
-		async_schedule_dev(__device_attach_async_helper, dev);
-	return ret;
+
+	__device_driver_lock(dev, dev->parent);
+	driver_probe_device(drv, dev);
+	__device_driver_unlock(dev, dev->parent);
+
+	return 0;
 }
 ```
 
-该函数其先调用 `driver_match_device`, 而 `driver_match_device` 则调用**总线**的 match 函数，pci 总线的就是函数 `pci_bus_match`。`pci_bus_match` 先判断设备中的 `match_driver` 变量是否已经设备，如果设备说明已经和驱动匹配则无需匹配；否则调用 `pci_match_device`(这个函数中会先通过 override 判断是否只绑定到指定驱动), 先使用宏 `list_for_each_entry` 遍历驱动中动态 id，显然后遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`)，这里注意的是 `pci_device_id` 中 class 和 classmask 合计 32 位，实际有效的是 class 的 16 位，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
+该函数其先调用 `driver_match_device`, 其调用**总线**的 **match** 函数，**pci 总线**的就是函数 `pci_bus_match`。`pci_bus_match` 先判断设备中的 `match_driver` 变量是否已经设备，如果设备说明已经和驱动匹配则无需匹配；否则调用 `pci_match_device`(这个函数中会先通过 override 判断是否只绑定到指定驱动), 先使用宏 `list_for_each_entry` 遍历驱动中动态 id，显然后遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`)，这里注意的是 `pci_device_id` 中 class 和 classmask 合计 32 位，实际有效的是 class 的 16 位，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
 
 如果执行 `driver_match_device` 出错，并且返回错误是 `-EPROBE_DEFER`, 则需要调用 `driver_deferred_probe_add`，来将设备通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` 链表中。
 
