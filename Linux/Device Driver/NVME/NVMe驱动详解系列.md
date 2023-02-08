@@ -520,7 +520,7 @@ int bus_add_driver(struct device_driver *drv)
 		if (error)
 			goto out_del_list;
 	}
-    // 在sysfs文件系统中创建相关文件
+    // 在驱动sysfs目录下创建相关文件
     // 在/sys/bus/pci/drivers/nvme中创建module链接,指向/sys/module/nvme
     // /sys/bus/pci/drivers/nvme/module
     // 在目录/sys/module/nvme/drivers中创建pci:nvme链接,指向/sys/bus/pci/drivers/nvme驱动
@@ -533,7 +533,7 @@ int bus_add_driver(struct device_driver *drv)
 		printk(KERN_ERR "%s: uevent attr (%s) failed\n",
 			__func__, drv->name);
 	}
-    // 给驱动 sysfs 目录创建总线(pci_bus_type)中的一组属性(pci_drv_attrs), 目前就两个 new_id 和 remove_id
+    // 给驱动sysfs目录创建总线(pci_bus_type)中的一组属性(pci_drv_attrs), 目前就两个 new_id 和 remove_id
     // /sys/bus/pci/drivers/nvme/new_id
     // /sys/bus/pci/drivers/nvme/remove_id
 	error = driver_add_groups(drv, bus->drv_groups);
@@ -544,6 +544,9 @@ int bus_add_driver(struct device_driver *drv)
 	}
     // 如果没有设置则调用add_bind_files创建绑定的属性文件
 	if (!drv->suppress_bind_attrs) {
+        // 在驱动sysfs目录下创建两个文件
+        // /sys/bus/pci/drivers/nvme/unbind
+        // /sys/bus/pci/drivers/nvme/bind
 		error = add_bind_files(drv);
 		if (error) {
 			/* Ditto */
