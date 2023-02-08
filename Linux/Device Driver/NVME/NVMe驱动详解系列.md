@@ -525,6 +525,7 @@ int bus_add_driver(struct device_driver *drv)
     // 在目录/sys/module/nvme/drivers中创建pci:nvme链接,指向/sys/bus/pci/drivers/nvme驱动
 	module_add_driver(drv->owner, drv);
     // 在driver的sysfs目录下创建uevent文件
+    // /sys/bus/pci/drivers/nvme/uevent
 	error = driver_create_file(drv, &driver_attr_uevent);
 	if (error) {
 		printk(KERN_ERR "%s: uevent attr (%s) failed\n",
