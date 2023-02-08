@@ -511,7 +511,7 @@ int bus_add_driver(struct device_driver *drv)
 		goto out_unregister;
     // 将priv->knode_bus添加到总线的subsys_private->klist_drivers 链表中
 	klist_add_tail(&priv->knode_bus, &bus->p->klist_drivers);
-    // 判断总线是否可以drivers_autoprobe, init:1
+    // 判断总线支持自动probe设备, init:1
     // /sys/bus/pci/drivers_autoprobe 为 1
 	if (drv->bus->p->drivers_autoprobe) {
         // 遍历总线drv->bus(pci_bus_type)上设备，
