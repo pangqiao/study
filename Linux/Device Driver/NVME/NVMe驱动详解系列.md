@@ -279,6 +279,8 @@ nvme 驱动的注册和注销整体函数流程如下图所所示:
 
 ## 驱动注册
 
+### 入口nvme_init以及主要数据结构
+
 模块注册函数是 `nvme_init`，非常简单，就是一个 `pci_register_driver` 函数
 
 ```cpp
@@ -741,6 +743,21 @@ lrwxrwxrwx 1 root root    0 Feb  8 01:56 module -> ../../../../module/nvme
 驱动注册完毕. 与其说是 NVMe 驱动注册，不如说是 PCI 设备驱动的注册。
 
 ## 驱动注销
+
+驱动的注销，其实就是模块的退出函数.
+
+```
+module_exit(nvme_exit);
+```
+
+# nvme-core模块初始化
+
+nvme-core 模块是 nvme 模块所依赖的，我们可以在前面内核配置中知道，也可以在使用 modinfo 命令查看。
+
+```
+
+```
+
 
 # reference
 
