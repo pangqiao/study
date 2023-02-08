@@ -595,7 +595,7 @@ static int __driver_attach(struct device *dev, void *data)
 	 * driver_probe_device() will spit a warning if there
 	 * is an error.
 	 */
-
+    // 检查这个 device 是否匹配这个驱动
 	ret = driver_match_device(drv, dev);
 	if (ret == 0) {
 		/* no match */
@@ -643,7 +643,7 @@ static int __driver_attach(struct device *dev, void *data)
 }
 ```
 
-该函数其先调用 `driver_match_device`, 其调用**总线**(`struct bus_type pci_bus_type`)的 **match** 函数，**pci 总线**的就是函数 `pci_bus_match`。
+该函数其先调用 `driver_match_device`, 其调用**总线**(`struct bus_type pci_bus_type`)的 **match** 函数，**pci 总线**的就是函数 `pci_bus_match`。用来检查一个 pci device 在 pci driver 中是否有一个匹配的 `struct pci_device_id`. 
 
 ```cpp
 // drivers/pci/pci-driver.c
@@ -670,11 +670,17 @@ static int pci_bus_match(struct device *dev, struct device_driver *drv)
 }
 ```
 
-如果设备**没有和驱动匹配**, 则调用 `pci_match_device`
+如果设备**没有和驱动匹配**, 则调用 `pci_match_device`:
 
-这个函数中会先通过 `dev->driver_override` 判断**是否只需要绑定到指定驱动**; 遍历驱动中**动态 id**(`dynids`)，显然后遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`)，这里注意的是 `pci_device_id` 中 class 和 classmask 合计 32 位，实际有效的是 class 的 16 位，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
+1. 先通过 `dev->driver_override` 判断**是否只需要绑定到指定驱动**, 是则返回; 
 
-如果执行 `driver_match_device` 出错，并且返回错误是 `-EPROBE_DEFER`, 则需要调用 `driver_deferred_probe_add`，来将设备通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` 链表中。
+2. 遍历驱动中**动态 id**(`dynids`), 找到则返回 id; 动态id就是 sysfs 中的 `new_id` 文件内容.
+
+3. 遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`).
+
+这里注意的是 `pci_device_id` 中 **class** 和 **classmask** 合计 **32 位**，实际有效的是 **class** 的 **16 位**，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
+
+回到 `__driver_attach`, 如果执行 `driver_match_device` 出错，并且返回错误是 `-EPROBE_DEFER`, 表明则需要调用 `driver_deferred_probe_add`，来**将设备**通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` **推迟 probe 的 pending 链表**中。
 
 当返回 `pci_device_id` 后，如果设备没有绑定驱动，`__driver_attach` 函数会调用 `driver_probe_device`（调用该函数需要先获取设备锁），该函数负责将设备和驱动绑定。函数先判断设备 `dev->kobj.state_in_sysfs` 是否注册，然后调用 `really_probe`(这里其实还会涉及 linux 电源管理的动作，此处为了简化问题暂时不展开)。
 
