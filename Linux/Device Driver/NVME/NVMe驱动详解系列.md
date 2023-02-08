@@ -157,7 +157,7 @@ obj-$(CONFIG_NVME_FC)                   += nvme-fc.o
 nvme-fc-y                               += fc.o
 ```
 
-`CONFIG_NVME_TCP`: 
+`CONFIG_NVME_TCP`:
 
 <table style="width:100%">
 <caption>Description</caption>
@@ -501,7 +501,7 @@ int bus_add_driver(struct device_driver *drv)
     // 填充priv和驱动结构体drv，从而相互指向
 	priv->driver = drv;
 	drv->p = priv;
-    // 驱动的 设置为 总线的 
+    // 驱动的 设置为 总线的
 	priv->kobj.kset = bus->p->drivers_kset;
     // 初始化一个kojbect结构体，并加入到kobject架构中
     // 其中kobject的对象就是priv->kobj,类型为driver_ktype
@@ -614,6 +614,8 @@ static int __driver_attach(struct device *dev, void *data)
 		return ret;
 	} /* ret > 0 means positive match */
 
+    // 驱动支持异步probe
+    // driver的probe_type属性或者内核启动参数driver_async_probe=drv_name1,drv_name2,...
 	if (driver_allows_async_probing(drv)) {
 		/*
 		 * Instead of probing the device synchronously we will
@@ -636,6 +638,8 @@ static int __driver_attach(struct device *dev, void *data)
 	}
 
 	__device_driver_lock(dev, dev->parent);
+    // 走到这里, 表明设备和驱动是匹配的
+    // 将设备和驱动绑定
 	driver_probe_device(drv, dev);
 	__device_driver_unlock(dev, dev->parent);
 
@@ -643,7 +647,7 @@ static int __driver_attach(struct device *dev, void *data)
 }
 ```
 
-该函数其先调用 `driver_match_device`, 其调用**总线**(`struct bus_type pci_bus_type`)的 **match** 函数，**pci 总线**的就是函数 `pci_bus_match`。用来检查一个 pci device 在 pci driver 中是否有一个匹配的 `struct pci_device_id`. 
+该函数其先调用 `driver_match_device`, 其调用**总线**(`struct bus_type pci_bus_type`)的 **match** 函数，**pci 总线**的就是函数 `pci_bus_match`。用来检查一个 pci device 在 pci driver 中是否有一个匹配的 `struct pci_device_id`.
 
 ```cpp
 // drivers/pci/pci-driver.c
@@ -672,7 +676,7 @@ static int pci_bus_match(struct device *dev, struct device_driver *drv)
 
 如果设备**没有和驱动匹配**, 则调用 `pci_match_device`:
 
-1. 先通过 `dev->driver_override` 判断**是否只需要绑定到指定驱动**, 是则返回; 
+1. 先通过 `dev->driver_override` 判断**是否只需要绑定到指定驱动**, 是则返回;
 
 2. 遍历驱动中**动态 id**(`dynids`), 找到则返回 id; 动态id就是 sysfs 中的 `new_id` 文件内容.
 
@@ -682,12 +686,12 @@ static int pci_bus_match(struct device *dev, struct device_driver *drv)
 
 回到 `__driver_attach`, 如果执行 `driver_match_device` 出错，并且返回错误是 `-EPROBE_DEFER`, 则需要调用 `driver_deferred_probe_add`，来**将设备**通过 `dev->p->deferred_probe` 添加到 `deferred_probe_pending_list` **推迟 probe 的 pending 链表**中, 并正常返回, 表明**驱动不匹配这个设备**, 但是驱动**可能匹配总线上的其他设备**.
 
-当返回 `pci_device_id` 后，如果设备没有绑定驱动，`__driver_attach` 函数会调用 `driver_probe_device`（调用该函数需要先获取设备锁），该函数负责将设备和驱动绑定。函数先判断设备 `dev->kobj.state_in_sysfs` 是否注册，然后调用 `really_probe`(这里其实还会涉及 linux 电源管理的动作，此处为了简化问题暂时不展开)。
+继续, 当设备和驱动是匹配的，调用 `driver_probe_device`（调用该函数需要先获取设备锁），该函数负责**将设备和驱动绑定**。函数先判断设备 `dev->kobj.state_in_sysfs` 是否注册，然后调用 `really_probe`(这里其实还会涉及 linux 电源管理的动作，此处为了简化问题暂时不展开)。
 
 `really_probe` 函数中, 会设置 `dev->driver = drv` 将驱动赋值为设备，同时会调用 `driver_bound` 函数，将设备也绑定到驱动相关链表中,此外会调用总线的 `probe` 函数，如果总线没有 `probe` 函数则调用设备驱动的 `probe` 函数，当然 `really_probe` 函数中的学问还有很多，可以单独列一篇章来讲解。
 
 ```cpp
-// 
+//
 
 ```
 
