@@ -514,7 +514,7 @@ int bus_add_driver(struct device_driver *drv)
 	klist_add_tail(&priv->knode_bus, &bus->p->klist_drivers);
     // 判断总线是否存在drivers_autoprobe函数
 	if (drv->bus->p->drivers_autoprobe) {
-        // 会调用bus_for_each_dev在总线上遍历设备，
+        // 在总线 drv上遍历设备，
         // 并将设备传递给函数会调用__driver_attach进行设备和驱动的匹配
 		error = driver_attach(drv);
 		if (error)
@@ -575,7 +575,7 @@ static struct bus_type *bus_get(struct bus_type *bus)
 
 会判断总线是否存在 `drivers_autoprobe` 函数, 函数 `driver_attach` 会调用 `bus_for_each_dev` 负责在总线上遍历设备，并将设备传递给函数会调用 `__driver_attach` 进行设备和驱动的匹配。
 
-我们来看下 `__driver_attach` 函数，文件只列出该函数其他函数不再文中列出，大家可以查看源码。该函数其先调用 `driver_match_device`, 而 `driver_match_device` 则调用总线的 match 函数，pci总线的就是函数pci_bus_match。pci_bus_match先判断设备中的match_driver变量是否已经设备，如果设备说明已经和驱动匹配则无需匹配；否则调用pci_match_device (这个函数中会先通过override判断是否只绑定到指定驱动),先使用宏list_for_each_entry遍历驱动中动态id，显然后遍历静态id(驱动中的id_table表),如果匹配返回pci_device_id(如果设备设置了dev->override，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个pci_device_id_any)，这里注意的是pci_device_id 中class和classmask合计32位，实际有效的是class的16位，另外16位是为了掩盖pci_device中32位class中无效的16位。
+我们来看下 `__driver_attach` 函数，文件只列出该函数其他函数不再文中列出，大家可以查看源码。该函数其先调用 `driver_match_device`, 而 `driver_match_device` 则调用**总线**的 match 函数，pci总线的就是函数pci_bus_match。pci_bus_match先判断设备中的match_driver变量是否已经设备，如果设备说明已经和驱动匹配则无需匹配；否则调用pci_match_device (这个函数中会先通过override判断是否只绑定到指定驱动),先使用宏list_for_each_entry遍历驱动中动态id，显然后遍历静态id(驱动中的id_table表),如果匹配返回pci_device_id(如果设备设置了dev->override，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个pci_device_id_any)，这里注意的是pci_device_id 中class和classmask合计32位，实际有效的是class的16位，另外16位是为了掩盖pci_device中32位class中无效的16位。
 
 如果执行driver_match_device出错，并且返回错误是-EPROBE_DEFER,则需要调用driver_deferred_probe_add，来将设备通过dev->p->deferred_probe添加到deferred_probe_pending_list链表中。
 
