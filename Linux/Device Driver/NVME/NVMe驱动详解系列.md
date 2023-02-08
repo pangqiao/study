@@ -160,7 +160,7 @@ name:           nvme
 vermagic:       4.18.0-240.el8.x86_64 SMP mod_unload modversions
 sig_id:         PKCS#7
 signer:         Red Hat Enterprise Linux kernel signing key
-sig_key:        4B:AE:FF:9B:DB:30:E5:74:78:69:52:49:68:78:36:A6:27:61:CA:3C
+sig_key:        4B:AE:FF:9B:DB:30:E5:74:78:69:...
 sig_hashalgo:   sha256
 signature:      05:E2:DE:D6:99:15:48:10:F3:A6:69:...
                 ......
@@ -820,7 +820,7 @@ lrwxrwxrwx 1 root root    0 Feb  8 01:56 module -> ../../../../module/nvme
 module_exit(nvme_exit);
 ```
 
-# nvme-core模块初始化
+# nvme-core模块
 
 nvme-core 模块是 nvme 模块所依赖的，我们可以在前面内核配置中知道，也可以在使用 modinfo 命令查看。
 
@@ -829,10 +829,16 @@ nvme-core 模块是 nvme 模块所依赖的，我们可以在前面内核配置�
 看下nvme-core驱动的注册和注销：
 
 ```cpp
+// drivers/nvme/host/core.c
 module_init(nvme_core_init);
-
 module_exit(nvme_core_exit);
 ```
+
+## 模块初始化
+
+
+
+## 模块注销
 
 # reference
 
