@@ -895,6 +895,14 @@ static int __init nvme_core_init(void)
 
 `alloc_workqueue`，其实是个宏，该宏会调用 `__alloc_workqueue_key` 创建工作队列返回 `workqueue_struct` 结构体, 而如果 flags 有 `WQ_SYSFS` 则内部还会调用 `workqueue_sysfs_register`, 将队列暴露在 sysfs 中
 
+1. 初始化 `struct wq_device` wq 设备的相关属性
+
+其中 `wq_dev->dev.bus = &wq_subsys;` 设置了该设备的总线类型为 `wq_subsys`, **wq 总线**会有一个属性组 `per_cpu` 和 `max_active`
+
+2. 调用 `device_register` 注册 workqueue 设备
+
+3. 
+
 在 `/sys/bus/workqueue/devices`.
 
 当 flags 有 `WQ_UNBOUND` 时, 会给每个 wq_dev sysfs 目录下创建多个文件:
@@ -917,6 +925,7 @@ drwxr-xr-x 2 root root    0 Feb  8 19:02 power
 lrwxrwxrwx 1 root root    0 Feb  7 15:17 subsystem -> ../../../../bus/workqueue
 -rw-r--r-- 1 root root 4096 Feb  7 15:17 uevent
 ```
+
 
 
 ## 模块注销
