@@ -842,17 +842,18 @@ static int __init nvme_core_init(void)
 	int result = -ENOMEM;
 
 	_nvme_check_size();
-
+    // 创建了三个工作队列
+    // 工作队列nvme-wq
 	nvme_wq = alloc_workqueue("nvme-wq",
 			WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_SYSFS, 0);
 	if (!nvme_wq)
 		goto out;
-
+    // 工作队列nvme-reset-wq
 	nvme_reset_wq = alloc_workqueue("nvme-reset-wq",
 			WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_SYSFS, 0);
 	if (!nvme_reset_wq)
 		goto destroy_wq;
-
+    // 工作队列nvme-delete-wq
 	nvme_delete_wq = alloc_workqueue("nvme-delete-wq",
 			WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_SYSFS, 0);
 	if (!nvme_delete_wq)
@@ -890,6 +891,8 @@ static int __init nvme_core_init(void)
 	return 0;
 }
 ```
+
+`alloc_workqueue`，其实是个宏，该宏会调用 `__alloc_workqueue_key` 返回 `workqueue_struct` 结构体
 
 ## 模块注销
 
