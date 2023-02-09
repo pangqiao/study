@@ -422,7 +422,7 @@ int __pci_register_driver(struct pci_driver *drv, struct module *owner,
 {
 	/* initialize common driver fields */
 	drv->driver.name = drv->name; // 赋值为”nvme”
-	drv->driver.bus = &pci_bus_type; //设置为pci_bus_type,是个结构体
+	drv->driver.bus = &pci_bus_type; //设置为pci_bus_type,是个结构体 struct bus_type pci_bus_type
 	drv->driver.owner = owner; //驱动的拥有者
 	drv->driver.mod_name = mod_name; //device_driver中的名字，为系统中的KBUILD_NAME
 	drv->driver.groups = drv->groups; //驱动的属性组, 代码中并未赋值
@@ -437,7 +437,7 @@ int __pci_register_driver(struct pci_driver *drv, struct module *owner,
 EXPORT_SYMBOL(__pci_register_driver);
 ```
 
-`pci_bus_type` 是由充满玄机的，**结构体**中定义了很多**和总线相关的函数**, 这些函数其实是**由 pci 总线驱动提供**的，位于 `drivers/pci/pci-driver.c` 文件，这些内容我们在后续会有说明
+`pci_bus_type` 是由充满玄机的，**结构体**中定义了很多**和总线相关的函数**, 这些函数其实是**由 pci 总线驱动提供**的，位于 `drivers/pci/pci-driver.c` 文件
 
 ```cpp
 // drivers/pci/pci-driver.c
@@ -584,6 +584,7 @@ int bus_add_driver(struct device_driver *drv)
 	priv->kobj.kset = bus->p->drivers_kset;
     // 初始化一个kojbect结构体，并加入到kobject架构中
     // 其中kobject的对象就是priv->kobj,类型为driver_ktype
+    // /sys/bus/pci/drivers/nvme
 	error = kobject_init_and_add(&priv->kobj, &driver_ktype, NULL,
 				     "%s", drv->name);
 	if (error)
