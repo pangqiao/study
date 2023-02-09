@@ -902,10 +902,18 @@ static int __init nvme_core_init(void)
 2. 调用 `device_register` 注册该 workqueue 设备
 
     * `kobject_add`, 在父节点的 sys 目录下创建了**该设备的目录**, `/sys/devices/virtual/workqueue/nvme-wq/`
-    * 在该设备目录下创建 uevent 属性文件, `/sys/devices/virtual/workqueue/nvme-wq/uevent`
-    * 创建了 class 相关的链接
-      * 
-      * 创建 subsystem 链接
+
+    * `device_create_file(dev, &dev_attr_uevent)`, 在该设备目录下创建 uevent 属性文件, `/sys/devices/virtual/workqueue/nvme-wq/uevent`
+
+    * `device_add_class_symlinks`, 创建了 class 相关的链接
+
+      * 创建 subsystem 链接, `/sys/devices/virtual/workqueue/nvme-wq/subsystem`
+
+      * 在 class 目录下创建了指向 该设备 的链接, 
+
+    * `device_add_attrs`, 创建sys目录下设备其他属性文件(添加设备属性文件)
+
+    * `bus_add_device`, 
 
 3. 
 
