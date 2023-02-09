@@ -24,3 +24,4 @@ https://zhuanlan.zhihu.com/p/425420889
 
 bus 和 pci bus 的一些函数操作可以看 `NVMe` 目录下的代码分析
 
+linux设备驱动 device add详解: https://blog.csdn.net/u012787604/article/details/122310671

@@ -905,13 +905,9 @@ static int __init nvme_core_init(void)
 
     * `device_create_file(dev, &dev_attr_uevent)`, 在该设备目录下创建 uevent 属性文件, `/sys/devices/virtual/workqueue/nvme-wq/uevent`
 
-    * `device_add_class_symlinks`, 创建了**class相关的链接**
+    * `device_add_class_symlinks`, 创建了**class相关的链接**, workqueue 设备并没有
 
-      * 创建 subsystem 链接, `/sys/devices/virtual/workqueue/nvme-wq/subsystem`
-
-      * 在 class 目录下
-
-    * `device_add_attrs`, 创建 sys 目录下设备其他属性文件(添加设备属性文件), workqueue设备没有, 所以 sys 下没有相关文件或者链接
+    * `device_add_attrs`, 创建 sys 目录下设备其他属性文件(添加设备属性文件), workqueue 设备没有, 所以 sys 下没有相关文件或者链接
 
       * 给设备添加**class属性**, 
       * 给设备添加**设备类型type属性**,
@@ -927,6 +923,11 @@ static int __init nvme_core_init(void)
 
       * 将该设备添加到了 bus 的设备链表中
 
+    * `dpm_sysfs_add`, 电管管理相关, 会添加 `/sys/devices/virtual/workqueue/nvme-wq/power` 目录及其文件
+
+    * `device_pm_add`, 设备添加到电源管理相关的设备列表中
+
+    * 主设备号如果存在, 则产生dev属性,并在/dev目录下产生设备节点文件, workqueue设备没有
 3. 
 
 在 `/sys/bus/workqueue/devices`.
