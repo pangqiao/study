@@ -324,7 +324,7 @@ CONFIG_NVME_TARGET_FC=m
 
 然后可以通过 `modprobe nvme` 来加载驱动。
 
-# PCI驱动注册和注销
+# 驱动注册和注销
 
 现在使用的 **NVMe 设备**都是**基于 PCI的**，所以最后**设备**需要**连接**到内核中的 **pci 总线上**才能够使用。这也是为什么在上篇配置 nvme.ko 时会需要 pci.c 文件，在 Makefile 中有如下这一行的：
 
@@ -820,6 +820,21 @@ lrwxrwxrwx 1 root root    0 Feb  8 01:56 module -> ../../../../module/nvme
 module_exit(nvme_exit);
 ```
 
+```cpp
+// drivers/nvme/host/pci.c
+static void __exit nvme_exit(void)
+{
+	pci_unregister_driver(&nvme_driver);
+	flush_workqueue(nvme_wq);
+}
+```
+
+注销的动作基本是注册动作的取反，把之前创建的文件分配的资源都进行回收.
+
+
+
+
+
 # nvme-core模块
 
 nvme-core 模块是 nvme 模块所依赖的，我们可以在前面内核配置中知道，也可以在使用 modinfo 命令查看。
@@ -973,6 +988,29 @@ lrwxrwxrwx 1 root root    0 Feb  7 15:17 subsystem -> ../../../../bus/workqueue
 主设备号用来区分不同种类的设备，而次设备号用来区分同一类型的多个设备。对于**常用设备**，Linux有**约定俗成的编号**。
 
 ## 模块注销
+
+初始化的完全逆操作
+
+```cpp
+// drivers/nvme/host/core.c
+static void __exit nvme_core_exit(void)
+{
+	class_destroy(nvme_ns_chr_class);
+	class_destroy(nvme_subsys_class);
+	class_destroy(nvme_class);
+	unregister_chrdev_region(nvme_ns_chr_devt, NVME_MINORS);
+	unregister_chrdev_region(nvme_ctrl_base_chr_devt, NVME_MINORS);
+	destroy_workqueue(nvme_delete_wq);
+	destroy_workqueue(nvme_reset_wq);
+	destroy_workqueue(nvme_wq);
+	ida_destroy(&nvme_ns_chr_minor_ida);
+	ida_destroy(&nvme_instance_ida);
+}
+```
+
+# 加载分析
+
+配置参数 `CONFIG_DYNAMIC_DEBUG` 后才能使能 dev_dbg 输出函数
 
 
 
