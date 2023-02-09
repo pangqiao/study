@@ -893,7 +893,19 @@ static int __init nvme_core_init(void)
 }
 ```
 
-`alloc_workqueue`，其实是个宏，该宏会调用 `__alloc_workqueue_key` 创建工作队列返回 `workqueue_struct` 结构体, 而如果 flags 有 `WQ_SYSFS` 则内部还会调用 `workqueue_sysfs_register`, 将队列暴露在 `/sys/bus/workqueue/devices`.
+`alloc_workqueue`，其实是个宏，该宏会调用 `__alloc_workqueue_key` 创建工作队列返回 `workqueue_struct` 结构体, 而如果 flags 有 `WQ_SYSFS` 则内部还会调用 `workqueue_sysfs_register`, 将队列暴露在 sysfs 中
+
+在 `/sys/bus/workqueue/devices`.
+
+当 flags 有 `WQ_UNBOUND` 时, 会给每个 wq_dev sysfs 目录下创建多个文件:
+
+* pool_ids
+* nice
+* cpumask
+* numa
+
+
+
 
 ## 模块注销
 
