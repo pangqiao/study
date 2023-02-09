@@ -837,7 +837,7 @@ module_exit(nvme_core_exit);
 ## 模块初始化
 
 ```cpp
-//
+// drivers/nvme/host/core.c
 static int __init nvme_core_init(void)
 {
 	int result = -ENOMEM;
@@ -859,7 +859,7 @@ static int __init nvme_core_init(void)
 			WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_SYSFS, 0);
 	if (!nvme_delete_wq)
 		goto destroy_reset_wq;
-
+    // 分配一个字符设备的范围, 
 	result = alloc_chrdev_region(&nvme_ctrl_base_chr_devt, 0,
 			NVME_MINORS, "nvme");
 	if (result < 0)
@@ -893,7 +893,7 @@ static int __init nvme_core_init(void)
 }
 ```
 
-`alloc_workqueue`，其实是个宏，该宏会调用 `__alloc_workqueue_key` 创建工作队列返回 `workqueue_struct` 结构体, 而如果 flags 有 `WQ_SYSFS` 则内部还会调用 `workqueue_sysfs_register`, 将队列暴露在 sysfs 中
+`alloc_workqueue`，其实是个宏，该宏会调用 `__alloc_workqueue_key` 创建工作队列返回 `workqueue_struct` 结构体, 而如果 flags 有 `WQ_SYSFS` 则内部还会调用 `workqueue_sysfs_register`, 将队列暴露在 sysfs 中, 过程如下:
 
 1. 初始化 `struct wq_device` wq 设备的相关属性
 
@@ -928,12 +928,8 @@ static int __init nvme_core_init(void)
     * `device_pm_add`, 设备添加到电源管理相关的设备列表中
 
     * 主设备号如果存在, 则产生dev属性,并在/dev目录下产生设备节点文件, workqueue设备没有
-3. 
 
-在 `/sys/bus/workqueue/devices`.
-
-当 flags 有 `WQ_UNBOUND` 时, 会给每个 wq_dev sysfs 目录下创建多个文件:
-
+3. 当 flags 有 `WQ_UNBOUND` 时, 会给每个 `wq_dev` sysfs 目录下创建多个文件:
 * pool_ids
 * nice
 * cpumask
@@ -953,9 +949,15 @@ lrwxrwxrwx 1 root root    0 Feb  7 15:17 subsystem -> ../../../../bus/workqueue
 -rw-r--r-- 1 root root 4096 Feb  7 15:17 uevent
 ```
 
-实际创建的 **kobject** 都是在 **devices** 下面, 其他 **class**, **bus** 之类的里面的**具体设备**都是 **devices 目录**下**设备**的**符号链接**
+> 实际创建的 **kobject** 都是在 **devices** 下面, 其他 **class**, **bus** 之类的里面的**具体设备**都是 **devices 目录**下**设备**的**符号链接**
 
+工作队列是延迟执行中使用最多到机制，分为 **unbound workqueue** 和**bound workqueue**。
 
+* `bound workqueue` 就是**绑定到 cpu** 上的，挂入到此队列中的 work 只会在相对应的 cpu 上运行;
+
+* `unbound workqueue` **不绑定到特定的cpu**，而且后台**线程池的数量**也是**动态**的。
+
+此处**三个工作队列**都是 **unbound** 模式的。对于后续驱动使用来说，只要定义一个 work，然后把 work 加入到workqueue就可以了。相比于 **tasklet** 机制，工作队列可以**在不同 CPU 上同时运行**。
 
 
 
