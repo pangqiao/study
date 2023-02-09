@@ -904,7 +904,19 @@ static int __init nvme_core_init(void)
 * cpumask
 * numa
 
-
+```
+# ll /sys/devices/virtual/workqueue/nvme-wq/
+total 0
+-rw-r--r-- 1 root root 4096 Feb  8 19:02 cpumask
+-rw-r--r-- 1 root root 4096 Feb  8 19:02 max_active
+-rw-r--r-- 1 root root 4096 Feb  8 19:02 nice
+-rw-r--r-- 1 root root 4096 Feb  8 19:02 numa
+-r--r--r-- 1 root root 4096 Feb  8 19:02 per_cpu
+-r--r--r-- 1 root root 4096 Feb  8 19:02 pool_ids
+drwxr-xr-x 2 root root    0 Feb  8 19:02 power
+lrwxrwxrwx 1 root root    0 Feb  7 15:17 subsystem -> ../../../../bus/workqueue
+-rw-r--r-- 1 root root 4096 Feb  7 15:17 uevent
+```
 
 
 ## 模块注销
