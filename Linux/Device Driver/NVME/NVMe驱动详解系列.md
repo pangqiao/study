@@ -859,12 +859,13 @@ static int __init nvme_core_init(void)
 			WQ_UNBOUND | WQ_MEM_RECLAIM | WQ_SYSFS, 0);
 	if (!nvme_delete_wq)
 		goto destroy_reset_wq;
-    // 分配一个字符设备的范围, 
+    // 分配一个字符串设备的范围, 主设备号值随机，次设备号从０开始，范围为NVME_MINORS，并将第一个值(设备号)赋值给nvme_ctrl_base_chr_devt
 	result = alloc_chrdev_region(&nvme_ctrl_base_chr_devt, 0,
 			NVME_MINORS, "nvme");
 	if (result < 0)
 		goto destroy_delete_wq;
-
+    // 创建一个class结构体
+    // 
 	nvme_class = class_create(THIS_MODULE, "nvme");
 	if (IS_ERR(nvme_class)) {
 		result = PTR_ERR(nvme_class);
@@ -901,33 +902,33 @@ static int __init nvme_core_init(void)
 
 2. 调用 `device_register` 注册该 workqueue 设备
 
-    * `kobject_add`, 在父节点的 sys 目录下创建了**该设备的目录**, `/sys/devices/virtual/workqueue/nvme-wq/`
+ * `kobject_add`, 在父节点的 sys 目录下创建了**该设备的目录**, `/sys/devices/virtual/workqueue/nvme-wq/`
 
-    * `device_create_file(dev, &dev_attr_uevent)`, 在该设备目录下创建 uevent 属性文件, `/sys/devices/virtual/workqueue/nvme-wq/uevent`
+ * `device_create_file(dev, &dev_attr_uevent)`, 在该设备目录下创建 uevent 属性文件, `/sys/devices/virtual/workqueue/nvme-wq/uevent`
 
-    * `device_add_class_symlinks`, 创建了**class相关的链接**, workqueue 设备并没有
+ * `device_add_class_symlinks`, 创建了**class相关的链接**, workqueue 设备并没有
 
-    * `device_add_attrs`, 创建 sys 目录下设备其他属性文件(添加设备属性文件), workqueue 设备没有, 所以 sys 下没有相关文件或者链接
+ * `device_add_attrs`, 创建 sys 目录下设备其他属性文件(添加设备属性文件), workqueue 设备没有, 所以 sys 下没有相关文件或者链接
 
-      * 给设备添加**class属性**, 
-      * 给设备添加**设备类型type属性**,
-      * ......
+   * 给设备添加**class属性**, 
+   * 给设备添加**设备类型type属性**,
+   * ......
 
-    * `bus_add_device`, 给设备添加**总线(wq_subsys)属性**
+ * `bus_add_device`, 给设备添加**总线(wq_subsys)属性**
 
-      * `device_add_groups(dev, bus->dev_groups)`, 在设备节点下创建了两个总线(`wq_subsys`)相关文件, 即上面说的 `per_cpu` 和 `max_active`
+   * `device_add_groups(dev, bus->dev_groups)`, 在设备节点下创建了两个总线(`wq_subsys`)相关文件, 即上面说的 `per_cpu` 和 `max_active`
 
-      * 给 bus 总线 sys 节点下创建了指向 该设备 的链接, `/sys/bus/workqueue/devices/nvme-wq`, 指向了 `/sys/devices/virtual/workqueue/nvme-wq/`
+   * 给 bus 总线 sys 节点下创建了指向 该设备 的链接, `/sys/bus/workqueue/devices/nvme-wq`, 指向了 `/sys/devices/virtual/workqueue/nvme-wq/`
 
-      * 创建 subsystem 链接, `/sys/devices/virtual/workqueue/nvme-wq/subsystem`, 指向了 `/sys/bus/workqueue`
+   * 创建 subsystem 链接, `/sys/devices/virtual/workqueue/nvme-wq/subsystem`, 指向了 `/sys/bus/workqueue`
 
-      * 将该设备添加到了 bus 的设备链表中
+   * 将该设备添加到了 bus 的设备链表中
 
-    * `dpm_sysfs_add`, 电管管理相关, 会添加 `/sys/devices/virtual/workqueue/nvme-wq/power` 目录及其文件
+ * `dpm_sysfs_add`, 电管管理相关, 会添加 `/sys/devices/virtual/workqueue/nvme-wq/power` 目录及其文件
 
-    * `device_pm_add`, 设备添加到电源管理相关的设备列表中
+ * `device_pm_add`, 设备添加到电源管理相关的设备列表中
 
-    * 主设备号如果存在, 则产生dev属性,并在/dev目录下产生设备节点文件, workqueue设备没有
+ * 主设备号如果存在, 则产生dev属性,并在/dev目录下产生设备节点文件, workqueue设备没有
 
 3. 当 flags 有 `WQ_UNBOUND` 时, 会给每个 `wq_dev` sysfs 目录下创建多个文件:
 * pool_ids
@@ -967,10 +968,11 @@ lrwxrwxrwx 1 root root    0 Feb  7 15:17 subsystem -> ../../../../bus/workqueue
 
 **主设备号**用来表示一个**特定的驱动程序**。**次设备号**用来表示使用**该驱动**程序的**其他设备**。（**主设备号**和控制这类设备的**驱动**是**一一对应**的）
 
-通俗的说就是**主设备号**标识设备对应的**驱动程序**，告诉 Linux **内核**使用**哪一个驱动程序**为该设备(也就是 /dev 下的设备文件)**服务**；而**次设备号**则用来标识具体且唯一的某个设备.
-在同一个系统中，一类设备的主设备号是唯一的。比如：磁盘这类，次设备号只是在驱动程序内部使用，系统内核直接把次设备号传递给应用程序，由驱动程序管理。为了保证驱动程序的通用性，避免驱动程序移植过程中出现主设备号冲突,系统为设备编了号，每个设备号又分为主设备号和次设备号。
+通俗的说就是**主设备号**标识设备对应的**驱动程序**，告诉 Linux **内核**使用**哪一个驱动程序**为该设备(也就是 /dev 下的设备文件)**服务**；而**次设备号**则用来标识**具体且唯一**的**某个设备**.
 
-主设备号用来区分不同种类的设备，而次设备号用来区分同一类型的多个设备。对于常用设备，Linux有约定俗成的编号。
+在**同一个系统**中，**同一类设备**的**主设备号**是**唯一**的。比如：**磁盘这类**，**次设备号**只是在**驱动程序内部使用**，系统内核直接把次设备号传递给应用程序，由驱动程序管理。为了保证驱动程序的通用性，避免驱动程序移植过程中出现主设备号冲突, 系统为设备编了号，每个设备号又分为主设备号和次设备号。
+
+主设备号用来区分不同种类的设备，而次设备号用来区分同一类型的多个设备。对于**常用设备**，Linux有**约定俗成的编号**。
 
 
 ## 模块注销
