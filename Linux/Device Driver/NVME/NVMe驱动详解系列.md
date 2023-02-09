@@ -899,7 +899,10 @@ static int __init nvme_core_init(void)
 
 其中 `wq_dev->dev.bus = &wq_subsys;` 设置了该设备的总线类型为 `wq_subsys`, **wq 总线**会有一个属性组 `per_cpu` 和 `max_active`
 
-2. 调用 `device_register` 注册 workqueue 设备
+2. 调用 `device_register` 注册该 workqueue 设备
+
+    * `kobject_add`, 在父节点的 sys 目录下创建了该设备的目录, `/sys/devices/virtual/workqueue/nvme-wq/`
+    * 
 
 3. 
 
