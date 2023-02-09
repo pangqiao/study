@@ -837,6 +837,7 @@ module_exit(nvme_core_exit);
 ## 模块初始化
 
 ```cpp
+//
 static int __init nvme_core_init(void)
 {
 	int result = -ENOMEM;
@@ -892,7 +893,7 @@ static int __init nvme_core_init(void)
 }
 ```
 
-`alloc_workqueue`，其实是个宏，该宏会调用 `__alloc_workqueue_key` 返回 `workqueue_struct` 结构体
+`alloc_workqueue`，其实是个宏，该宏会调用 `__alloc_workqueue_key` 创建工作队列返回 `workqueue_struct` 结构体, 而如果 flags 有 `WQ_SYSFS` 则内部还会调用 `workqueue_sysfs_register`, 将队列暴露在 `/sys/bus/workqueue/devices`.
 
 ## 模块注销
 
