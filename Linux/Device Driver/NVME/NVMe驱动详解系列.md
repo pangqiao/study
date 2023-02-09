@@ -768,7 +768,7 @@ static int pci_bus_match(struct device *dev, struct device_driver *drv)
 
 2. 遍历驱动中**动态 id**(`dynids`), 找到则返回 id; 动态id就是 sysfs 中的 `new_id` 文件内容.
 
-3. 遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`，且注册的驱动名字和设备需要的名字匹配，就算没找到也会也返回一个 `pci_device_id_any`).
+3. 遍历**静态 id**(驱动中的 `id_table` 表), 如果匹配返回 `pci_device_id`(如果设备设置了 `dev->override`, 且注册的驱动名字和设备需要的名字匹配, 就算没找到也会也返回一个 `pci_device_id_any`).
 
 这里注意的是 `pci_device_id` 中 **class** 和 **classmask** 合计 **32 位**，实际有效的是 **class** 的 **16 位**，另外 16 位是为了掩盖 `pci_device` 中 32 位 class 中无效的 16 位。
 
@@ -790,7 +790,7 @@ lrwxrwxrwx 1 root root    0 Feb  8 01:56 0000:04:00.0 -> ../../../../devices/pci
 lrwxrwxrwx 1 root root     0 Feb  7 15:17 driver -> ../../../../bus/pci/drivers/nvme
 ```
 
-到这里, nvme driver 的 sysfs 目录下所有内容已经全部涉及了
+kobject 对应于 sysfs 中的一个目录, 到这里, nvme driver 的 sysfs 目录下所有内容已经全部涉及了
 
 ```
 # ll /sys/bus/pci/drivers/nvme/
@@ -834,6 +834,8 @@ module_init(nvme_core_init);
 module_exit(nvme_core_exit);
 ```
 
+![nvme-init-exit-0.1](./images/nvme-init-exit-0.1.png)
+
 ## 模块初始化
 
 ```cpp
@@ -864,26 +866,26 @@ static int __init nvme_core_init(void)
 			NVME_MINORS, "nvme");
 	if (result < 0)
 		goto destroy_delete_wq;
-    // 创建一个class结构体
-    // 
+    // 创建一个 struct class结构体, 为后续设备注册准备
+    // 会添加 sys 目录, /sys/class/nvme
 	nvme_class = class_create(THIS_MODULE, "nvme");
 	if (IS_ERR(nvme_class)) {
 		result = PTR_ERR(nvme_class);
 		goto unregister_chrdev;
 	}
 	nvme_class->dev_uevent = nvme_class_uevent;
-
+    // 会添加 sys 目录, /sys/class/nvme-subsystem
 	nvme_subsys_class = class_create(THIS_MODULE, "nvme-subsystem");
 	if (IS_ERR(nvme_subsys_class)) {
 		result = PTR_ERR(nvme_subsys_class);
 		goto destroy_class;
 	}
-
+    // 分配一个字符串设备范围, 主设备号值随机，次设备号从０开始，范围为NVME_MINORS，并将第一个值(设备号)赋值给nvme_ns_chr_devt
 	result = alloc_chrdev_region(&nvme_ns_chr_devt, 0, NVME_MINORS,
 				     "nvme-generic");
 	if (result < 0)
 		goto destroy_subsys_class;
-
+    // 会添加 sys 目录, /sys/class/nvme-generic
 	nvme_ns_chr_class = class_create(THIS_MODULE, "nvme-generic");
 	if (IS_ERR(nvme_ns_chr_class)) {
 		result = PTR_ERR(nvme_ns_chr_class);
@@ -960,10 +962,6 @@ lrwxrwxrwx 1 root root    0 Feb  7 15:17 subsystem -> ../../../../bus/workqueue
 
 此处**三个工作队列**都是 **unbound** 模式的。对于后续驱动使用来说，只要定义一个 work，然后把 work 加入到workqueue就可以了。相比于 **tasklet** 机制，工作队列可以**在不同 CPU 上同时运行**。
 
-
-
-
-
 一个字符设备或者块设备都有一个主设备号和次设备号。**主设备号**和**次设备号**统称为**设备号**。
 
 **主设备号**用来表示一个**特定的驱动程序**。**次设备号**用来表示使用**该驱动**程序的**其他设备**。（**主设备号**和控制这类设备的**驱动**是**一一对应**的）
@@ -974,8 +972,9 @@ lrwxrwxrwx 1 root root    0 Feb  7 15:17 subsystem -> ../../../../bus/workqueue
 
 主设备号用来区分不同种类的设备，而次设备号用来区分同一类型的多个设备。对于**常用设备**，Linux有**约定俗成的编号**。
 
-
 ## 模块注销
+
+
 
 # reference
 
