@@ -1010,7 +1010,108 @@ static void __exit nvme_core_exit(void)
 
 # 加载分析
 
-配置参数 `CONFIG_DYNAMIC_DEBUG` 后才能使能 dev_dbg 输出函数
+针对模块调试的内核选项必须使能，否则系统不会有详细的输出. 比如, 配置参数 `CONFIG_DYNAMIC_DEBUG` 后才能使能 `dev_dbg` 输出函数
+
+对于调试环境，内核配置的参数参考和说明如下：
+
+```
+CONFIG_DYNAMIC_DEBUG：Enable dynamic printk() support
+CONFIG_DEBUG_KERNEL: Kernel debugging
+CONFIG_DEBUG_SLAB：Debug slab memory allocations
+CONFIG_DEBUG_PAGEALLOC：Debug page memory allocations
+CONFIG_DEBUG_SPINLOCK: Spinlock and rw-lock debugging: basic checks
+CONFIG_DEBUG_INFO:Compile the kernel with debug info
+CONFIG_MAGIC_SYSRQ: Magic SysRq key
+CONFIG_DEBUG_STACKOVERFLOW: Check for stack overflows
+CONFIG_DEBUG_STACK_USAGE: Stack utilization instrumentation 
+CONFIG_KALLSYMS: Load all symbols for debugging/ksymoops
+CONFIG_IKCONFIG: Kernel .config support 
+CONFIG_IKCONFIG_PROC: Enable access to .config through /proc/config.gz
+CONFIG_ACPI_DEBUG: Debug Statements
+CONFIG_DEBUG_DRIVER: Driver Core verbose debug messages 
+CONFIG_SCSI_CONSTANTS: Verbose SCSI error reporting (kernel size += 36K)
+CONFIG_INPUT_EVBUG: Event debugging
+CONFIG_PROFILING: Profiling support
+CONFIG_DEBUG_KOBJECT_RELEASE(这个选项可以不开，容易死机)
+```
+
+配置完毕并重新编译内核并重启。
+
+使用 modprobe nvme 加载 NVMe 驱动(编译方式见前面), 会出现如下输出.
+
+```
+<7>[30385.621786] device: 'nvme-wq': device_add
+<7>[30385.621795] bus: 'workqueue': add device nvme-wq
+<7>[30385.621804] PM: Adding info for workqueue:nvme-wq
+<7>[30385.624172] device: 'nvme-reset-wq': device_add
+<7>[30385.624184] bus: 'workqueue': add device nvme-reset-wq
+<7>[30385.624196] PM: Adding info for workqueue:nvme-reset-wq
+<7>[30385.624772] device: 'nvme-delete-wq': device_add
+<7>[30385.624780] bus: 'workqueue': add device nvme-delete-wq
+<7>[30385.624790] PM: Adding info for workqueue:nvme-delete-wq
+<7>[30385.624839] device class 'nvme': registering
+<7>[30385.624864] device class 'nvme-subsystem': registering
+<7>[30385.625689] bus: 'pci': add driver nvme
+<7>[30385.625702] bus: 'pci': driver_probe_device: matched device 0000:00:0e.0 with driver nvme
+<7>[30385.625705] bus: 'pci': really_probe: probing driver nvme with device 0000:00:0e.0
+<7>[30385.625712] devices_kset: Moving 0000:00:0e.0 to end of list
+<7>[30385.625862] device: 'nvme0': device_add
+<7>[30385.625886] PM: Adding info for No Bus:nvme0
+<6>[30385.625949] nvme nvme0: pci function 0000:00:0e.0
+<7>[30385.629882] driver: 'nvme': driver_bound: bound to device '0000:00:0e.0'
+<7>[30385.629913] bus: 'pci': really_probe: bound device 0000:00:0e.0 to driver nvme
+<7>[30385.628129] device: 'nvme-subsys0': device_add
+<7>[30385.628150] PM: Adding info for No Bus:nvme-subsys0
+<7>[30385.629458] device: '259:0': device_add
+<7>[30385.629479] PM: Adding info for No Bus:259:0
+<7>[30385.629537] device: 'nvme0n1': device_add
+<7>[30385.629556] PM: Adding info for No Bus:nvme0n1
+```
+
+使用 `modprobe –r nvme` 卸载 NVMe 驱动，出现输出如下:
+
+```
+<7>[78541.046026] bus: 'pci': remove driver nvme
+<7>[78541.048245] device: '259:0': device_unregister
+<7>[78541.048262] PM: Removing info for No Bus:259:0
+<7>[78541.049034] device: '259:0': device_create_release
+<7>[78541.049572] PM: Removing info for No Bus:nvme0n1
+<7>[78541.091916] PM: Removing info for No Bus:nvme0
+<7>[78541.092007] PM: Removing info for No Bus:nvme-subsys0
+<7>[78541.092067] driver: 'nvme': driver_release
+<7>[78541.098693] device class 'nvme-subsystem': unregistering
+<7>[78541.098773] class 'nvme-subsystem': release.
+<7>[78541.098775] class_create_release called for nvme-subsystem
+<7>[78541.098778] device class 'nvme': unregistering
+<7>[78541.098792] class 'nvme': release.
+<7>[78541.098794] class_create_release called for nvme
+<7>[78541.098799] device: 'nvme-delete-wq': device_unregister
+<7>[78541.098811] bus: 'workqueue': remove device nvme-delete-wq
+<7>[78541.098831] PM: Removing info for workqueue:nvme-delete-wq
+<7>[78541.099292] device: 'nvme-reset-wq': device_unregister
+<7>[78541.099309] bus: 'workqueue': remove device nvme-reset-wq
+<7>[78541.099312] PM: Removing info for workqueue:nvme-reset-wq
+<7>[78541.099531] device: 'nvme-wq': device_unregister
+<7>[78541.099547] bus: 'workqueue': remove device nvme-wq
+<7>[78541.099549] PM: Removing info for workqueue:nvme-wq
+```
+
+这里需要注意的是并不是所有的注册注销活动都会有debug信息，所以这些并不代表驱动注册和注销的全部。很多sysfs的操作是没有这些输出的，因为可以直接在系统 /sys 目录下观察的。
+
+## debug注册
+
+
+
+## debug注销
+
+
+
+## 简化版
+
+### 注册
+
+### 注销
+
 
 
 
