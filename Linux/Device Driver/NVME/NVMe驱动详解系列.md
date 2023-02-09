@@ -911,13 +911,21 @@ static int __init nvme_core_init(void)
 
       * 在 class 目录下
 
-    * `device_add_attrs`, 创建 sys 目录下设备其他属性文件(添加设备属性文件)
+    * `device_add_attrs`, 创建 sys 目录下设备其他属性文件(添加设备属性文件), workqueue设备没有, 所以 sys 下没有相关文件或者链接
 
-    * `bus_add_device`, 添加设备的**总线属性**
-      * 给 bus 总线 sys 节点下创建了指向 该设备 的链接, `/sys/bus/workqueue/devices/nvme-wq`, 指向了 ``
+      * 给设备添加**class属性**, 
+      * 给设备添加**设备类型type属性**,
+      * ......
 
-    
+    * `bus_add_device`, 给设备添加**总线(wq_subsys)属性**
+
+      * `device_add_groups(dev, bus->dev_groups)`, 在设备节点下创建了两个总线(`wq_subsys`)相关文件, 即上面说的 `per_cpu` 和 `max_active`
+
+      * 给 bus 总线 sys 节点下创建了指向 该设备 的链接, `/sys/bus/workqueue/devices/nvme-wq`, 指向了 `/sys/devices/virtual/workqueue/nvme-wq/`
+
       * 创建 subsystem 链接, `/sys/devices/virtual/workqueue/nvme-wq/subsystem`, 指向了 `/sys/bus/workqueue`
+
+      * 将该设备添加到了 bus 的设备链表中
 
 3. 
 
@@ -944,7 +952,7 @@ lrwxrwxrwx 1 root root    0 Feb  7 15:17 subsystem -> ../../../../bus/workqueue
 -rw-r--r-- 1 root root 4096 Feb  7 15:17 uevent
 ```
 
-实际创建的 kobject 都是在 device 下面, 其他 class, bus 之类的里面的具体设备都是 device 目录下设备的符号链接
+实际创建的 **kobject** 都是在 **devices** 下面, 其他 **class**, **bus** 之类的里面的**具体设备**都是 **devices 目录**下**设备**的**符号链接**
 
 
 
