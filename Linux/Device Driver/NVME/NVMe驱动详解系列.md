@@ -905,15 +905,19 @@ static int __init nvme_core_init(void)
 
     * `device_create_file(dev, &dev_attr_uevent)`, 在该设备目录下创建 uevent 属性文件, `/sys/devices/virtual/workqueue/nvme-wq/uevent`
 
-    * `device_add_class_symlinks`, 创建了 class 相关的链接
+    * `device_add_class_symlinks`, 创建了**class相关的链接**
 
       * 创建 subsystem 链接, `/sys/devices/virtual/workqueue/nvme-wq/subsystem`
 
-      * 在 class 目录下创建了指向 该设备 的链接, 
+      * 在 class 目录下
 
-    * `device_add_attrs`, 创建sys目录下设备其他属性文件(添加设备属性文件)
+    * `device_add_attrs`, 创建 sys 目录下设备其他属性文件(添加设备属性文件)
 
-    * `bus_add_device`, 
+    * `bus_add_device`, 添加设备的**总线属性**
+      * 给 bus 总线 sys 节点下创建了指向 该设备 的链接, `/sys/bus/workqueue/devices/nvme-wq`, 指向了 ``
+
+    
+      * 创建 subsystem 链接, `/sys/devices/virtual/workqueue/nvme-wq/subsystem`, 指向了 `/sys/bus/workqueue`
 
 3. 
 
@@ -941,6 +945,8 @@ lrwxrwxrwx 1 root root    0 Feb  7 15:17 subsystem -> ../../../../bus/workqueue
 ```
 
 实际创建的 kobject 都是在 device 下面, 其他 class, bus 之类的里面的具体设备都是 device 目录下设备的符号链接
+
+
 
 
 
