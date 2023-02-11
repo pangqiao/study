@@ -9,3 +9,6 @@ linux内核源码分析 - nvme设备的初始化: https://zhuanlan.zhihu.com/p/5
 NVMe Spec: https://nvmexpress.org/developers/nvme-specification/
 
 NVMe1.3a_Spec解读(一): https://blog.csdn.net/leishen1992/article/details/79974264
+
+后端 nvme驱动分析: https://www.dazhuanlan.com/karenchan/topics/1006006
+
