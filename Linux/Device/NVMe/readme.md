@@ -10,5 +10,7 @@ NVMe Spec: https://nvmexpress.org/developers/nvme-specification/
 
 NVMe1.3a_Spec解读(一): https://blog.csdn.net/leishen1992/article/details/79974264
 
-后端 nvme驱动分析: https://www.dazhuanlan.com/karenchan/topics/1006006
+nvme协议详解: https://zhuanlan.zhihu.com/p/347599423
+
+nvme kernel driver 阅读笔记: https://www.dazhuanlan.com/karenchan/topics/1006006
 
