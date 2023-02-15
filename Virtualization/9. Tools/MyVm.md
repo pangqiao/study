@@ -505,7 +505,7 @@ Would you like to enter a view-only password (y/n)? n
 A view-only password is not used
 ```
 
-tigervncserver -geometry 1280x1024 -localhost no
+tigervncserver -geometry 1280x1024 -localhost no (可用)
 
 vncserver -localhost no -geometry 1280x720 :1
 
