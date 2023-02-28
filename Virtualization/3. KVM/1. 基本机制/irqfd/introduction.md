@@ -28,7 +28,7 @@ irqfd 机制将一个 eventfd 与一个全局中断号联系起来, 当向这个
 
 # 3. 向kvm发送注册中断irqfd请求
 
-获得一个 eventfd 之后, QEMU 通过 `kvm_irqchip_add_irqfd_notifier_gsi=>kvm_irqchip_assign_irqfd` 构造 `kvm_irqchip` 结构, 并向 kvm 发送 `ioctl(KVM_IRQFD)`.
+获得一个 eventfd 之后, QEMU 通过 `kvm_irqchip_add_irqfd_notifier_gsi => kvm_irqchip_assign_irqfd` 构造 `kvm_irqchip` 结构, 并向 kvm 发送 `ioctl(KVM_IRQFD)`.
 
 ```cpp
 static int kvm_irqchip_assign_irqfd(KVMState *s, int fd, int rfd, int virq,
