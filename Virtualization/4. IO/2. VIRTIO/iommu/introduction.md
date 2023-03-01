@@ -840,8 +840,8 @@ index 000000000000..1cf4f57b7817
 
 ```cpp
 bus_set_iommu()
- ├─ bus->iommu_ops = ops;, 设置 bus 的 iommu ops
- └─ iommu_bus_init(bus, ops);, iommu 的总线相关初始化.
+ ├─ bus->iommu_ops = ops; 设置 bus 的 iommu ops
+ └─ iommu_bus_init(bus, ops); iommu 的总线相关初始化.
    ├─ nb->notifier_call = iommu_bus_notifier;
    ├─ bus_register_notifier(bus, nb); 注册 bus notifier, 回调是 `iommu_bus_notifier()`
    └─ bus_for_each_dev(bus, NULL, &group_list, add_iommu_group); 遍历总线下所有设备, 给每个设备调用 `add_iommu_group()`, 将设备添加到 iommu group 中
