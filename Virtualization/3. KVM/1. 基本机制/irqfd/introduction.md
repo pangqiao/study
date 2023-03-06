@@ -115,18 +115,18 @@ seqcount_init(&irqfd->irq_entry_sc);
 
 `kvm_kernel_irqfd` 结构中有 2 个 `work_struct`, inject 和 shutdown, 分别负责触发中断和关闭中断, 这两个 `work_struct` 各自对应的操作函数分别为 `irqfd_inject` 和 `irqfd_shutdown`.
 
-`kvm_irq_assign` 调用 `init_waitqueue_func_entry` 将 `irqfd_wakeup` 函数注册为 irqfd 中等待队列 entry 激活时的处理函数. 这样任何写入该 irqfd 对应的 eventfd 的行为都将导致触发这个函数.
-
-然后 `kvm_irq_assign` 利用 `init_poll_funcptr` 将 `irqfd_ptable_queue_proc` 函数注册为 irqfd 中的 poll table 的处理函数. `irqfd_ptable_queue_proc` 会将 poll table 中对应的 wait queue entry 加入到 waitqueue 中去.
-
 ```cpp
 /*
-	 * Install our own custom wake-up handling so we are notified via
-	 * a callback whenever someone signals the underlying eventfd
-	 */
+* Install our own custom wake-up handling so we are notified via
+* a callback whenever someone signals the underlying eventfd
+*/
 init_waitqueue_func_entry(&irqfd->wait, irqfd_wakeup);
 init_poll_funcptr(&irqfd->pt, irqfd_ptable_queue_proc);
 ```
+
+`kvm_irq_assign` 调用 `init_waitqueue_func_entry` 将 `irqfd_wakeup` 函数注册为 irqfd 中等待队列 entry 激活时的处理函数. 这样任何写入该 irqfd 对应的 eventfd 的行为都将导致触发这个函数.
+
+然后 `kvm_irq_assign` 利用 `init_poll_funcptr` 将 `irqfd_ptable_queue_proc` 函数注册为 irqfd 中的 poll table 的处理函数. `irqfd_ptable_queue_proc` 会将 poll table 中对应的 wait queue entry 加入到 waitqueue 中去.
 
 `kvm_irq_assign` 接着判断该 eventfd 是否已经被其它中断使用.
 
