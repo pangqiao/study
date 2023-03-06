@@ -100,13 +100,13 @@ name: 一个代表一个task
 
 > fio -filename=/dev/nvme0n1 -direct=1 -iodepth=32 -rw=read -ioengine=libaio -size=2G -bs=4k -numjobs=4 -cpus_allowed=0-3 -cpus_allowed_policy=split -runtime=300 -name=read
 
+4 个 job, 只取了其中一个的 output 以及整体的 summary
+
 ![2023-03-06-21-18-39.png](./images/2023-03-06-21-18-39.png)
 
-4个job, 只取了其中一个的output以及summary
+1. 显示了所属group，pid，运行时间等
 
-显示了所属group，pid，运行时间等
-
-IOPS: 每秒的输入输出量(或读写次数)，是衡量磁盘性能的主要指标之一；
+2. IOPS: 每秒的输入输出量(或读写次数)，是衡量磁盘性能的主要指标之一；
 
 Bw: 平均带宽. KiB/s是按1K=1024计算的，kB/s是按1K=1000计算的
 
