@@ -128,38 +128,24 @@ int main(int argc, char *argv[])
     epevent.data.ptr = NULL;
 
     if (epoll_ctl(epfd, EPOLL_CTL_ADD, efd, &epevent)) {
-
-    perror("epoll_ctl");
-
-    return 8;
-
+        perror("epoll_ctl");
+        return 8;
     }
 
-i = 0;
+    i = 0;
+    while (i < NUM_EVENTS) {
+    uint64_t finished_aio;
+    //监听通知描述符
+    if (epoll_wait(epfd, &epevent, 1, -1) != 1) {
+        perror("epoll_wait");
+        return 9;
+    }
 
-while (i < NUM_EVENTS) {
-
-uint64_t finished_aio;
-
-//监听通知描述符
-
-if (epoll_wait(epfd, &epevent, 1, -1) != 1) {
-
-perror("epoll_wait");
-
-return 9;
-
-}
-
-//读取完成的异步IO事件个数
-
-if (read(efd, &finished_aio, sizeof(finished_aio)) != sizeof(finished_aio)) {
-
-perror("read");
-
-return 10;
-
-}
+    //读取完成的异步IO事件个数
+    if (read(efd, &finished_aio, sizeof(finished_aio)) != sizeof(finished_aio)) {
+        perror("read");
+        return 10;
+    }
 
 printf("finished io number: %"PRIu64"\n", finished_aio);
 

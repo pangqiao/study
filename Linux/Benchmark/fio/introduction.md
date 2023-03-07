@@ -78,7 +78,115 @@ fio
 
 filename: 这里可以是一个文件名，也可以是分区或者块设备, 这里是ssd 块设备
 
+## direct
+
 direct: 跳过缓存，直接读写SSD, 测试结果会更真实. Linux读写的时候，内核维护了缓存，数据先写到缓存，然后再后台写到SSD。读的时候也优先读缓存里的数据。这样速度可以加快。所以有一种模式叫作DirectIO，跳过缓存，直接读写SSD, 测试结果会更真实
+
+打开文件时带不带 `O_DIRECT` 标记
+
+```
+# strace -f ./fio --name=seqwrite     \
+                  --rw=write          \
+                  --bs=4k             \
+                  --size=2048G        \
+                  --runtime=30        \
+                  --ioengine=libaio   \
+                  --direct=1          \
+                  --iodepth=1         \
+                  --numjobs=1         \
+                  --filename=/dev/sdd \
+                  --group_reporting > strace.log  2>&1
+
+# cat strace.log
+...
+[pid 31496] open("/dev/sdd", O_RDWR|O_DIRECT|O_NOATIME) = 3
+[pid 31496] ioctl(3, BLKFLSBUF, 0x750080) = 0
+[pid 31496] fadvise64(3, 0, 2199023255552, POSIX_FADV_SEQUENTIAL) = 0
+[pid 31496] io_submit(140395703390208, 1, {{pwrite, filedes:3, str:"5\340(\3148\240\231\26\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., nbytes:4096, offset:0}}) = 1
+[pid 31496] io_getevents(140395703390208, 1, 1, {{(nil), 0x7d37e8, 4096, 0}}, NULL) = 1
+[pid 31496] io_submit(140395703390208, 1, {{pwrite, filedes:3, str:"\0\20\0\0\0\0\0\0\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., nbytes:4096, offset:4096}}) = 1
+[pid 31496] io_getevents(140395703390208, 1, 1, {{(nil), 0x7d37e8, 4096, 0}}, NULL) = 1
+```
+
+值得注意的是，ioengine=libaio 时，一定要 direct=1 。因为目前，libaio 只支持 direct I/O：libaio 只在 O_DIRECT 的情况下是异步的，在没有 O_DIRECT 的情况下可能会 blocking；
+
+## sync
+
+和 direct 选项类似，它决定的是：打开文件时带不带 `O_SYNC` 标记；
+
+```
+# strace -f ./fio --name=seqwrite      \
+                  --rw=write           \
+                  --bs=4k              \
+                  --size=2048G         \
+                  --runtime=30         \
+                  --ioengine=sync      \
+                  --sync=1             \
+                  --iodepth=1          \
+                  --numjobs=1          \
+                  --filename=/dev/sdd  \
+                  --group_reporting > strace.log 2>&1
+
+# cat strace.log
+...
+[pid 31618] open("/dev/sdd", O_RDWR|O_SYNC|O_NOATIME) = 3
+[pid 31618] ioctl(3, BLKFLSBUF, 0x747020) = 0
+[pid 31618] fadvise64(3, 0, 2199023255552, POSIX_FADV_SEQUENTIAL) = 0
+[pid 31618] write(3, "5\340(\3148\240\231\26\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., 4096 <unfinished ...>
+[pid 31582] <... nanosleep resumed> NULL) = 0
+[pid 31582] wait4(31618, 0x7ffcf5649400, WNOHANG, NULL) = 0
+[pid 31582] stat("/tmp/fio-dump-status", 0x7ffcf56483c0) = -1 ENOENT (No such file or directory)
+[pid 31582] nanosleep({0, 10000000},  <unfinished ...>
+[pid 31618] <... write resumed> )       = 4096
+[pid 31618] write(3, "5\340(\3148\240\231\26\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., 4096) = 4096
+[pid 31618] write(3, "5\340(\3148\240\231\26\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., 4096) = 4096
+[pid 31618] write(3, "5\340(\3148\240\231\26\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., 4096) = 4096
+```
+
+## fsync和fdatasync选项
+
+如上所说, ioengine=sync 或 psync，有点误导，因为它不会调用fsync或fdatasync操作。要想在write后调用fsync或者fdatasync，需要加水–fsync=N或者–fdatasync=N。这里的N表示每N个write之后调用fsync或者fdatasync一次。
+
+```
+# strace -f ./fio --name=seqwrite     \
+                  --rw=write          \
+                  --bs=4k             \
+                  --size=2048G        \
+                  --runtime=30        \
+                  --ioengine=psync    \
+                  --fdatasync=3       \
+                  --iodepth=1         \
+                  --numjobs=1         \
+                  --filename=/dev/sdd \
+                  --group_reporting > strace.log  2>&1
+
+# cat strace.log
+...
+[pid 31670] open("/dev/sdd", O_RDWR|O_NOATIME) = 3
+[pid 31670] ioctl(3, BLKFLSBUF, 0x746f40) = 0
+[pid 31670] fadvise64(3, 0, 2199023255552, POSIX_FADV_SEQUENTIAL) = 0
+[pid 31670] pwrite(3, "5\340(\3148\240\231\26\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., 4096, 0) = 4096
+[pid 31670] pwrite(3, "5\340(\3148\240\231\26\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., 4096, 4096) = 4096
+[pid 31670] pwrite(3, "5\340(\3148\240\231\26\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., 4096, 8192) = 4096
+[pid 31670] fdatasync(3 <unfinished ...>
+[pid 31636] <... nanosleep resumed> NULL) = 0
+[pid 31636] wait4(31670, 0x7ffe86a9c280, WNOHANG, NULL) = 0
+[pid 31636] stat("/tmp/fio-dump-status", 0x7ffe86a9b240) = -1 ENOENT (No such file or directory)
+[pid 31636] nanosleep({0, 10000000},  <unfinished ...>
+[pid 31670] <... fdatasync resumed> )   = 0
+[pid 31670] pwrite(3, "5\340(\3148\240\231\26\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., 4096, 12288) = 4096
+[pid 31670] pwrite(3, "5\340(\3148\240\231\26\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., 4096, 16384) = 4096
+[pid 31670] pwrite(3, "5\340(\3148\240\231\26\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., 4096, 20480) = 4096
+[pid 31670] fdatasync(3 <unfinished ...>
+[pid 31636] <... nanosleep resumed> NULL) = 0
+[pid 31636] wait4(31670, 0x7ffe86a9c280, WNOHANG, NULL) = 0
+[pid 31636] stat("/tmp/fio-dump-status", 0x7ffe86a9b240) = -1 ENOENT (No such file or directory)
+[pid 31636] nanosleep({0, 10000000},  <unfinished ...>
+[pid 31670] <... fdatasync resumed> )   = 0
+```
+
+关于fsync/fdatasync需要注意：fsync/fdatasync的耗时不包含在write latency之内。新版本的fio(例如fio-3.13和fio-3.14)单独显示fsync/fdatasync的耗时，而老版本不显示fsync/fdatasync的耗时(这有点使人迷惑：write latency很小——因为不包含fsync/fdatasync耗时——但IOPS又不高，你会疑惑时间花在哪里了)。
+
 
 ## iodepth
 
@@ -86,7 +194,7 @@ direct: 跳过缓存，直接读写SSD, 测试结果会更真实. Linux读写的
 
 考虑:
 
-* `–ioengine=libaio`：把 I/O 请求通过 `io_submit` 发出去然后通过 `io_getevents` 获取结果，这样**一个 job 实例**就可以保持有**多个 inflight I/O**。一次性丢给系统处理的io请求数量. libaio 引擎会用这个 iodepth 值来调用 `io_setup` 准备个可以**一次提交** iodepth 个 **IO 的上下文**，同时申请一个 io 请求队列用于保持 IO.
+* `–ioengine=libaio`：一次性丢给系统处理的io请求数量. libaio 引擎会用这个 iodepth 值来调用 `io_setup` 准备个可以**一次提交** iodepth 个 **IO 的上下文**，同时申请一个 io 请求队列用于保持 IO; 再把 I/O 请求通过 `io_submit` 发出去; 然后通过 `io_getevents` 获取结果. 这样**一个 job 实例**就可以保持有**多个 inflight I/O**。
 
 * `–ioengine=sync` 或者 `psync`: 一个 job 实例只能顺序地调用 `read/write(pread/pwrite)`，也就是**只能**保持**一个 I/O inflight**，所以对于 `–ioengine=sync` 或者 `–ioengine=psync` 设置 iodepth 为大于 1 的值**不起作用**。
 
@@ -158,13 +266,74 @@ Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu
 sdd               0.00     0.00    0.00 8434.00     0.00    32.95     8.00     5.90    0.70    0.00    0.70   0.12 100.00
 ```
 
+`IO depths: 1=0.1%, 2=100.0%` 表明 iodepth 为 2。iostat 显示 avgqu-sz 接近 6。我们有 3 个 job 实例，故每个 job 实例的 iodepth 接近 2；
+
+### sync
+
+```
+终端A:
+# ./fio --name=seqwrite     \
+        --rw=write          \
+        --bs=4k             \
+        --size=2048G        \
+        --runtime=30        \
+        --ioengine=sync     \
+        --direct=1          \
+        --iodepth=2         \
+        --numjobs=3         \
+        --filename=/dev/sdd \
+        --group_reporting
+
+seqwrite: (g=0): rw=write, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=sync, iodepth=2
+...
+fio-3.14
+Starting 3 processes
+Jobs: 3 (f=3): [W(3)][100.0%][w=33.0MiB/s][w=8457 IOPS][eta 00m:00s]
+seqwrite: (groupid=0, jobs=3): err= 0: pid=31445: Thu Jun 20 20:14:31 2019
+  write: IOPS=5405, BW=21.1MiB/s (22.1MB/s)(634MiB/30001msec)
+    clat (usec): min=107, max=97490, avg=553.96, stdev=1255.04
+     lat (usec): min=107, max=97490, avg=554.08, stdev=1255.04
+    clat percentiles (usec):
+     |  1.00th=[  269],  5.00th=[  310], 10.00th=[  314], 20.00th=[  314],
+     | 30.00th=[  318], 40.00th=[  469], 50.00th=[  490], 60.00th=[  578],
+     | 70.00th=[  668], 80.00th=[  693], 90.00th=[  734], 95.00th=[  750],
+     | 99.00th=[  766], 99.50th=[  783], 99.90th=[14615], 99.95th=[26870],
+     | 99.99th=[62653]
+   bw (  KiB/s): min=12400, max=34776, per=99.06%, avg=21419.20, stdev=2159.32, samples=177
+   iops        : min= 3100, max= 8694, avg=5354.80, stdev=539.83, samples=177
+  lat (usec)   : 250=0.64%, 500=53.22%, 750=41.44%, 1000=4.47%
+  lat (msec)   : 2=0.02%, 4=0.01%, 10=0.02%, 20=0.12%, 50=0.04%
+  lat (msec)   : 100=0.02%
+  cpu          : usr=0.42%, sys=1.85%, ctx=162178, majf=0, minf=102
+  IO depths    : 1=100.0%, 2=0.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=0,162177,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=2
+
+Run status group 0 (all jobs):
+  WRITE: bw=21.1MiB/s (22.1MB/s), 21.1MiB/s-21.1MiB/s (22.1MB/s-22.1MB/s), io=634MiB (664MB), run=30001-30001msec
+
+Disk stats (read/write):
+  sdd: ios=120/161214, merge=0/0, ticks=28/87940, in_queue=87943, util=99.78%
 
 
+终端B:
+# iostat -mxd 1 /dev/sdd
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           0.03    0.00    0.16    8.20    0.00   91.61
 
+Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+sdd               0.00     0.00    0.00 4209.00     0.00    16.44     8.00     2.94    0.70    0.00    0.70   0.24 100.00
 
-iodepth=64：, 在libaio模式 对于sync, 该值大于1无效
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           0.03    0.00    0.09    9.08    0.00   90.80
 
+Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+sdd               0.00     0.00    0.00 4155.00     0.00    16.23     8.00     2.96    0.71    0.00    0.71   0.24 100.10
+```
 
+`IO depths: 1=100.0%, 2=0.0%` 表明 iodepth 为1；iostat 显示 avgqu-sz 接近3。我们有 3 个 job 实例，故每个 job 实例的 iodepth 接近 1；
 
 ## rw
 
@@ -247,6 +416,35 @@ thread: 使用pthread_create创建线程，另一种是fork创建进程
 cpu_allowed: 允许执行的 cpu
 
 name: 一个代表一个task
+
+## 有关sync的选项
+
+从前几节可以看到，和sync相关的选项有：
+
+* –direct,
+* –sync,
+* –fsync(fdatasync)；
+
+而常用的ioengine有两种：
+
+* libaio
+* sync(psync)。
+
+如何组合使用呢？
+
+* ioengine=libaio: –direct=1是必须的(见3.6节)，所以，–fsync(fdatasync)就不需要了；而–sync可以和–direct组合使用，但一般测试裸盘性能直接用–direct就可以了。
+
+* ioengine=sync(psync): 可以选择–direct或者–fsync(fdatasync)，选择–direct时可以和–sync组合使用。
+
+所以共有下面几种组合：
+
+* –ioengine=libaio –direct=1
+
+* –ioengine=sync(psync) –direct=1
+
+* –ioengine=sync(psync) –direct=1 –sync=1
+
+* –ioengine=sync(psync) –fsync=1
 
 # 输出
 
