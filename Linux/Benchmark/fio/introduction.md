@@ -80,15 +80,145 @@ filename: 这里可以是一个文件名，也可以是分区或者块设备, �
 
 direct: 跳过缓存，直接读写SSD, 测试结果会更真实. Linux读写的时候，内核维护了缓存，数据先写到缓存，然后再后台写到SSD。读的时候也优先读缓存里的数据。这样速度可以加快。所以有一种模式叫作DirectIO，跳过缓存，直接读写SSD, 测试结果会更真实
 
+## iodepth
+
+简单来说，就是一个 job 实例在一个文件上的 inflight 的 I/O 的数。
+
+考虑:
+
+* `–ioengine=libaio`：把 I/O 请求通过 `io_submit` 发出去然后通过 `io_getevents` 获取结果，这样**一个 job 实例**就可以保持有**多个 inflight I/O**。
+
+* `–ioengine=sync` 或者 `psync`: 一个 job 实例只能顺序地调用 `read/write(pread/pwrite)`，也就是**只能**保持**一个 I/O inflight**，所以对于 `–ioengine=sync` 或者 `–ioengine=psync` 设置iodepth为大于1的值不起作用。
+
+对比一下：
+
+### libaio
+
+```
+终端A:
+ ./fio --name=seqwrite     \
+        --rw=write          \
+        --bs=4k             \
+        --size=2048G        \
+        --runtime=30        \
+        --ioengine=libaio   \
+        --direct=1          \
+        --iodepth=2         \
+        --numjobs=3         \
+        --filename=/dev/sdd \
+        --group_reporting
+
+seqwrite: (g=0): rw=write, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=2
+...
+fio-3.14
+Starting 3 processes
+Jobs: 3 (f=3): [W(3)][100.0%][w=26.5MiB/s][w=6784 IOPS][eta 00m:00s]
+seqwrite: (groupid=0, jobs=3): err= 0: pid=31333: Thu Jun 20 20:10:28 2019
+  write: IOPS=7158, BW=27.0MiB/s (29.3MB/s)(839MiB/30001msec)
+    slat (nsec): min=2934, max=37646, avg=6739.80, stdev=2421.02
+    clat (usec): min=125, max=148817, avg=830.45, stdev=1904.14
+     lat (usec): min=130, max=148823, avg=837.30, stdev=1904.16
+    clat percentiles (usec):
+     |  1.00th=[  141],  5.00th=[  347], 10.00th=[  627], 20.00th=[  635],
+     | 30.00th=[  635], 40.00th=[  644], 50.00th=[  660], 60.00th=[  791],
+     | 70.00th=[  799], 80.00th=[  865], 90.00th=[  996], 95.00th=[ 1369],
+     | 99.00th=[ 1516], 99.50th=[ 2573], 99.90th=[12256], 99.95th=[34341],
+     | 99.99th=[96994]
+   bw (  KiB/s): min=14528, max=49712, per=100.00%, avg=28649.71, stdev=2786.85, samples=179
+   iops        : min= 3632, max=12428, avg=7162.42, stdev=696.71, samples=179
+  lat (usec)   : 250=4.55%, 500=0.51%, 750=51.07%, 1000=34.20%
+  lat (msec)   : 2=8.99%, 4=0.21%, 10=0.05%, 20=0.34%, 50=0.03%
+  lat (msec)   : 100=0.03%, 250=0.01%
+  cpu          : usr=0.70%, sys=2.53%, ctx=185415, majf=0, minf=98
+  IO depths    : 1=0.1%, 2=100.0%, 4=0.0%, 8=0.0%, 16=0.0%, 32=0.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     issued rwts: total=0,214751,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=2
+
+Run status group 0 (all jobs):
+  WRITE: bw=27.0MiB/s (29.3MB/s), 27.0MiB/s-27.0MiB/s (29.3MB/s-29.3MB/s), io=839MiB (880MB), run=30001-30001msec
+
+Disk stats (read/write):
+  sdd: ios=122/213903, merge=0/0, ticks=24/176947, in_queue=176925, util=99.77%
+
+
+终端B:
+# iostat -mxd 1 /dev/sdd
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           0.09    0.00    0.22    0.00    0.00   99.69
+
+Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+sdd               0.00     0.00    0.00 8540.00     0.00    33.36     8.00     5.91    0.69    0.00    0.69   0.12 100.00
+
+avg-cpu:  %user   %nice %system %iowait  %steal   %idle
+           0.06    0.00    0.22    0.03    0.00   99.69
+
+Device:         rrqm/s   wrqm/s     r/s     w/s    rMB/s    wMB/s avgrq-sz avgqu-sz   await r_await w_await  svctm  %util
+sdd               0.00     0.00    0.00 8434.00     0.00    32.95     8.00     5.90    0.70    0.00    0.70   0.12 100.00
+```
+
+
+
 iodepth=64：队列深度64. 应用层面的, 在libaio模式一次性丢给系统处理的io请求数量. libaio引擎会用这个iodepth值来调用 io_setup 准备个可以一次提交iodepth个IO的上下文，同时申请一个io请求队列用于保持IO. 对于sync, 该值大于1无效
 
 > io队列请求丢过来后，攒积到这些请求后，立即提交，默认是iodepth的值
 
-rw: 读写模式，randwrite是随机写测试，还有顺序读read，顺序写write，随机读randread，混合读写rw, 随机混合读写randrw等。
+## rw
 
-ioengine:libaio指的是异步模式，如果是同步就要用sync. libaio也就是使用io_submit提交I/O请求，然后再异步地使用io_getevents获取结果
+设置读写模式
+
+* write: 顺序写;
+* read: 顺序读；
+* randwrite: 随机写；
+* randread: 随机读；
+* rw: 顺序混合读写；
+* randrw: 随机混合读写；
+
+## ioengine
+
+### libaio
+
+异步模式, 即linux native asynchronous I/O，也就是使用 `io_submit` 提交 I/O 请求，然后再异步地使用 `io_getevents` 获取结果。可以通过 strace 来看**实际的系统调用**。
+
+```
+终端A:
+# ./fio --name=seqwrite       \
+        --rw=write            \
+        --bs=4k               \
+        --size=2048G          \
+        --runtime=30          \
+        --ioengine=libaio     \
+        --direct=1            \
+        --iodepth=1           \
+        --numjobs=1           \
+        --filename=/dev/sdd
+
+终端B:
+# ps -ef|grep fio
+root      31136 141809 26 20:00 pts/1    00:00:00 ./fio --name=seqwrite --rw=write --bs=4k --size=2048G --runtime=30 --ioengine=libaio --direct=1 --iodepth=1 --numjobs=1 --filename=/dev/sdd
+root      31170  31136 19 20:00 ?        00:00:00 ./fio --name=seqwrite --rw=write --bs=4k --size=2048G --runtime=30 --ioengine=libaio --direct=1 --iodepth=1 --numjobs=1 --filename=/dev/sdd
+
+# strace -p 31170
+Process 31170 attached
+......
+io_submit(140009640251392, 1, {{pwrite, filedes:3, str:"\0\200|:\0\0\0\0\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., nbytes:4096, offset:981250048}}) = 1
+io_getevents(140009640251392, 1, 1, {{(nil), 0x1cb57e8, 4096, 0}}, NULL) = 1
+io_submit(140009640251392, 1, {{pwrite, filedes:3, str:"\0\200|:\0\0\0\0\6\234j\251\362\315\351\n\200S*\7\t\345\r\25pJ%\367\v9\235\30"..., nbytes:4096, offset:981254144}}) = 1
+io_getevents(140009640251392, 1, 1, {{(nil), 0x1cb57e8, 4096, 0}}, NULL) = 1
+......
+```
 
 > 为了提高并行性，大部分情况下SSD读写采用的是异步模式。就是用几微秒发送命令，发完后继续发后面的命令。如果前面的命令执行完了，SSD通知会通过中断或者轮询等方式告诉CPU，由CPU来调用该命令的回调函数来处理结果。SSD里面几十上百个并行单元都能分到活干，效率暴增。libaio指的是异步模式，如果是同步就要用sync。
+
+### sync
+
+它虽然叫做 sync，但并不意味着**文件**以 `O_SYNC` 的方式打开，也不意味着每个 write 之后会调用 `fsync/fdatasync` 操作。实际上，这个 sync 和 libaio 是相对的概念，不是先提交 I/O 请求(`io_submit`)再异步获取结果(`io_getevents`)，而是使用 read/write 这样的系统调用来完成 I/O。到底 write 之后会不会调用 fsync，要看 `–fsync` 或者 `–fdatasync` 的设置；
+
+### psync
+
+和sync类似，不同之处在于使用pread和pwrite来进行I/O。
+
 
 ## size
 
@@ -100,9 +230,11 @@ ioengine:libaio指的是异步模式，如果是同步就要用sync. libaio也�
 
 * 百分比，例如20%；需要文件事先存在；
 
-无论哪种形式都是指定一个 job 实例读写的空间(多个 job 实例的情况下每个 job 实例都读写这么大的空间)；fio运行时间取决于–runtime指定的时间和读写这么多空间所需时间二者中的最小者。
+无论哪种形式都是指定一个 job 实例读写的空间(多个 job 实例的情况下每个 job 实例都读写这么大的空间)；fio运行时间取决于 `–runtime` 指定的时间和读写这么多空间所需时间二者中的**最小者**。
 
-bs: 每一个BIO命令包含的数据大小是4KB
+## bs
+
+每一个BIO命令包含的数据大小是4KB
 
 numjobs: 每个job是1个进程/线程，后面每个用-name指定的任务就开几个线程测试。所以最终线程数=任务数×numjobs。
 
