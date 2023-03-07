@@ -12,7 +12,7 @@ io_submit、io_setup和io_getevents是LINUX上的AIO系统调用。这有一个�
 int io_setup(unsigned nr_events, aio_context_t *ctxp);
 ```
 
-`io_submit` 提交初始化好的异步 IO 事件. 其中 ctx 是上文的描述句柄，nr 表示提交的异步事件个数。iocbs 是异步事件的结构体。
+`io_submit` 提交初始化好的异步 IO 事件. 其中 ctx 是上文的描述句柄，nr 表示提交的异步事件个数, iocbs 是异步事件的结构体。
 
 ```cpp
 int io_submit(io_context_t ctx, long nr, struct iocb *iocbs[]);

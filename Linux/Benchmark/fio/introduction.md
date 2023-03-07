@@ -450,70 +450,295 @@ name: 一个代表一个task
 
 > fio -filename=/dev/nvme0n1 -direct=1 -iodepth=32 -rw=read -ioengine=libaio -size=2G -bs=4k -numjobs=4 -cpus_allowed=0-3 -cpus_allowed_policy=split -runtime=300 -name=read
 
-值得一提的是，上面一共有 5 个fio进程；因为其中一个是主控进程，其他 4 个才是 job 实例进程
+```
+read: (g=0): rw=read, bs=(R) 4096B-4096B, (W) 4096B-4096B, (T) 4096B-4096B, ioengine=libaio, iodepth=32
+...
+fio-3.33
+Starting 4 processes
+Jobs: 4 (f=4): [R(4)][100.0%][r=1735MiB/s][r=444k IOPS][eta 00m:00s]
+read: (groupid=0, jobs=1): err= 0: pid=621076: Tue Mar  7 23:17:45 2023
+  read: IOPS=105k, BW=411MiB/s (431MB/s)(2048MiB/4982msec)
+    slat (nsec): min=724, max=53917, avg=1249.32, stdev=614.43
+    clat (usec): min=110, max=8555, avg=302.48, stdev=123.77
+     lat (usec): min=114, max=8565, avg=303.73, stdev=123.83
+    clat percentiles (usec):
+     |  1.00th=[  262],  5.00th=[  269], 10.00th=[  273], 20.00th=[  277],
+     | 30.00th=[  281], 40.00th=[  285], 50.00th=[  285], 60.00th=[  289],
+     | 70.00th=[  297], 80.00th=[  306], 90.00th=[  314], 95.00th=[  326],
+     | 99.00th=[  717], 99.50th=[  783], 99.90th=[ 1713], 99.95th=[ 1713],
+     | 99.99th=[ 2008]
+   bw (  KiB/s): min=253840, max=455968, per=24.93%, avg=419759.11, stdev=63047.49, samples=9
+   iops        : min=63460, max=113992, avg=104939.78, stdev=15761.87, samples=9
+  lat (usec)   : 250=0.11%, 500=98.06%, 750=1.30%, 1000=0.04%
+  lat (msec)   : 2=0.48%, 4=0.01%, 10=0.01%
+  cpu          : usr=7.67%, sys=18.29%, ctx=247079, majf=0, minf=41
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=100.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.1%, 64=0.0%, >=64=0.0%
+     issued rwts: total=524288,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=32
+read: (groupid=0, jobs=1): err= 0: pid=621077: Tue Mar  7 23:17:45 2023
+  read: IOPS=105k, BW=411MiB/s (431MB/s)(2048MiB/4982msec)
+    slat (nsec): min=723, max=42775, avg=1247.82, stdev=623.20
+    clat (usec): min=163, max=8520, avg=302.47, stdev=126.90
+     lat (usec): min=164, max=8530, avg=303.72, stdev=126.95
+    clat percentiles (usec):
+     |  1.00th=[  260],  5.00th=[  269], 10.00th=[  273], 20.00th=[  277],
+     | 30.00th=[  281], 40.00th=[  285], 50.00th=[  289], 60.00th=[  289],
+     | 70.00th=[  297], 80.00th=[  302], 90.00th=[  314], 95.00th=[  326],
+     | 99.00th=[  709], 99.50th=[  783], 99.90th=[ 1795], 99.95th=[ 1795],
+     | 99.99th=[ 2040]
+   bw (  KiB/s): min=253824, max=455968, per=24.93%, avg=419780.44, stdev=63063.67, samples=9
+   iops        : min=63456, max=113992, avg=104945.11, stdev=15765.92, samples=9
+  lat (usec)   : 250=0.24%, 500=97.93%, 750=1.30%, 1000=0.05%
+  lat (msec)   : 2=0.47%, 4=0.01%, 10=0.01%
+  cpu          : usr=7.79%, sys=17.45%, ctx=222940, majf=0, minf=43
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=100.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.1%, 64=0.0%, >=64=0.0%
+     issued rwts: total=524288,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=32
+read: (groupid=0, jobs=1): err= 0: pid=621078: Tue Mar  7 23:17:45 2023
+  read: IOPS=105k, BW=411MiB/s (431MB/s)(2048MiB/4982msec)
+    slat (nsec): min=719, max=45590, avg=1198.27, stdev=620.81
+    clat (usec): min=147, max=8610, avg=302.56, stdev=123.84
+     lat (usec): min=148, max=8620, avg=303.76, stdev=123.90
+    clat percentiles (usec):
+     |  1.00th=[  260],  5.00th=[  269], 10.00th=[  273], 20.00th=[  277],
+     | 30.00th=[  281], 40.00th=[  285], 50.00th=[  285], 60.00th=[  289],
+     | 70.00th=[  297], 80.00th=[  306], 90.00th=[  314], 95.00th=[  326],
+     | 99.00th=[  717], 99.50th=[  783], 99.90th=[ 1713], 99.95th=[ 1713],
+     | 99.99th=[ 1991]
+   bw (  KiB/s): min=253816, max=455968, per=24.93%, avg=419767.11, stdev=63060.10, samples=9
+   iops        : min=63454, max=113992, avg=104941.78, stdev=15765.03, samples=9
+  lat (usec)   : 250=0.28%, 500=97.89%, 750=1.33%, 1000=0.02%
+  lat (msec)   : 2=0.48%, 4=0.01%, 10=0.01%
+  cpu          : usr=6.46%, sys=16.78%, ctx=184260, majf=0, minf=43
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=100.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.1%, 64=0.0%, >=64=0.0%
+     issued rwts: total=524288,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=32
+read: (groupid=0, jobs=1): err= 0: pid=621079: Tue Mar  7 23:17:45 2023
+  read: IOPS=105k, BW=411MiB/s (431MB/s)(2048MiB/4982msec)
+    slat (nsec): min=718, max=43424, avg=1243.55, stdev=584.41
+    clat (usec): min=127, max=8825, avg=302.46, stdev=127.73
+     lat (usec): min=129, max=8835, avg=303.71, stdev=127.77
+    clat percentiles (usec):
+     |  1.00th=[  260],  5.00th=[  265], 10.00th=[  269], 20.00th=[  277],
+     | 30.00th=[  281], 40.00th=[  285], 50.00th=[  289], 60.00th=[  293],
+     | 70.00th=[  297], 80.00th=[  306], 90.00th=[  318], 95.00th=[  326],
+     | 99.00th=[  693], 99.50th=[  750], 99.90th=[ 1795], 99.95th=[ 1795],
+     | 99.99th=[ 2089]
+   bw (  KiB/s): min=253792, max=455968, per=24.93%, avg=419787.56, stdev=63080.74, samples=9
+   iops        : min=63448, max=113992, avg=104946.89, stdev=15770.18, samples=9
+  lat (usec)   : 250=0.21%, 500=97.96%, 750=1.33%, 1000=0.02%
+  lat (msec)   : 2=0.47%, 4=0.01%, 10=0.01%
+  cpu          : usr=7.75%, sys=20.86%, ctx=358079, majf=0, minf=42
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=100.0%, >=64=0.0%
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.1%, 64=0.0%, >=64=0.0%
+     issued rwts: total=524288,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     latency   : target=0, window=0, percentile=100.00%, depth=32
 
-4 个 job, 只取了其中一个的 output 以及整体的 summary
+Run status group 0 (all jobs):
+   READ: bw=1644MiB/s (1724MB/s), 411MiB/s-411MiB/s (431MB/s-431MB/s), io=8192MiB (8590MB), run=4982-4982msec
 
-![2023-03-06-21-18-39.png](./images/2023-03-06-21-18-39.png)
+Disk stats (read/write):
+  nvme0n1: ios=2060661/0, merge=0/0, ticks=620092/0, in_queue=620091, util=98.12%
+```
 
-1. 显示了所属group，pid，运行时间等
+值得一提的是，上面一共有 5 个fio进程；因为其中一个是主进程，其他 4 个才是 job 实例进程
 
-2. IOPS: 每秒的输入输出量(或读写次数)，是衡量磁盘性能的主要指标之一；
+第一个方括号：
 
-Bw: 平均带宽. KiB/s是按1K=1024计算的，kB/s是按1K=1000计算的
+```
+Jobs: 4 (f=4): [R(4)][100.0%][r=1735MiB/s][r=444k IOPS][eta 00m:00s]
+```
 
-I/O延迟包括三种：slat，clat，lat：
-* slat 表示fio submit某个I/O的延迟；slat只在–ioengine=libaio的时候才会出现，因为对于–ioengine=sync/psync没有所谓的提交延迟
-* clat 表示fio complete某个I/O的延迟；
-* lat 表示从fio将请求提交给kernel，再到kernel完成这个I/O为止所需要的时间；
+* w: running, doing random writes
+* W: running, doing sequential writes
+* r: running, doing random reads
+* R: running, doing sequential reads
+* m: running, doing mixed random reads/writes
+* M: running, doing mixed sequential reads/writes
+* C: thread created
+* f: thread finishing
 
-关系是 lat = slat + clat；stdev表示标准差(standard deviation)，越大代表波动越大
+```
+read: (groupid=0, jobs=1): err= 0: pid=621076: Tue Mar  7 23:17:45 2023
+```
 
-对于–ioengine=sync/psync，不显示slat，clat接近总延迟
+job头, 显示了所属group，pid，运行时间等
+
+```
+  read: IOPS=105k, BW=411MiB/s (431MB/s)(2048MiB/4982msec)
+```
+
+IOPS: 每秒的输入输出量(或读写次数)，是衡量磁盘性能的主要指标之一；
+
+Bw: 平均带宽. (2048MiB/4982msec) 是该 job 的总和数据量以及花费时间
+
+> KiB/s是按1K=1024计算的，kB/s是按1K=1000计算的
+
+```
+    slat (nsec): min=724, max=53917, avg=1249.32, stdev=614.43
+    clat (usec): min=110, max=8555, avg=302.48, stdev=123.77
+     lat (usec): min=114, max=8565, avg=303.73, stdev=123.83
+```
 
 >usec：微秒；msec：毫秒；1ms=1000us；
 
-clat的百分位数. 1%在265us内; 5%在277us内, 以此类推
+* min, max, avg分别代表最小、最大和平均值;
 
-bw. 基于采样得到的带宽统计, 与上面类似, per表示当前job的带宽在group内的百分比, samples是采样数
+* stdev表示标准差(standard deviation)，越大代表波动越大
 
-iops. 基于采样得到的iops统计
+I/O延迟包括三种：slat，clat，lat:
 
-lat. 这组数据表明lat(latency：延迟 )的分布；有0.23%的request延迟<250us，有99.70%的 250us =< request lat < 500us, 以此类推;
+* slat 表示 fio submit 某个 I/O 的延迟. slat 只在 `–ioengine=libaio` 的时候才会出现，因为对于 –ioengine=sync/psync 没有所谓的提交延迟
 
-cpu: cpu使用情况. usr是用户态占比, sys是内核态占比. ctx表示该job经历的context switch数目
+* clat 表示 fio complete 某个 I/O 的延迟. 对于 `–ioengine=libaio`，clat 表示从提交到完成的延迟。对于 `–ioengine=sync/psync`，fio 文档中说 clat等于或非常接近于0(因为提交就相当于完成)。但从实验上看，不是这样的：对于 `–ioengine=sync/psync`，不显示slat，clat 接近总延迟。
+
+* lat 即从 I/O 被创建到完成的延迟
+
+大致是这样(对吗?)：
+
+* 对于 `–ioengine=libaio`: lat = latency(创建到提交) + slat + clat
+* 对于 `–ioengine=sync/psync`: lat = latency(创建到开始) + clat
+
+```
+    clat percentiles (usec):
+     |  1.00th=[  262],  5.00th=[  269], 10.00th=[  273], 20.00th=[  277],
+     | 30.00th=[  281], 40.00th=[  285], 50.00th=[  285], 60.00th=[  289],
+     | 70.00th=[  297], 80.00th=[  306], 90.00th=[  314], 95.00th=[  326],
+     | 99.00th=[  717], 99.50th=[  783], 99.90th=[ 1713], 99.95th=[ 1713],
+     | 99.99th=[ 2008]
+```
+
+clat 的百分位数. 1% 在 262us 内; 5% 在 269us 内; 10% 在 273us 内, 以此类推
+
+```
+   bw (  KiB/s): min=253840, max=455968, per=24.93%, avg=419759.11, stdev=63047.49, samples=9
+```
+
+基于采样得到的带宽统计(可以看见，与前面的 BW=411MiB/s 接近).
+
+* min, max, avg 分别表示最小、最大和平均值
+
+* per 表示当前job实例(`g0-j0`)的带宽在组里所占的百分比，即 g0-j0 在 groupid=0 的组里(4 个 pid, 即 4 个 jobs), 读带宽占总读带宽的 24.93%(差不多刚好 1/4)
+
+* stdev 表示标准差
+
+* samples 表示采样数
+
+```
+   iops        : min=63460, max=113992, avg=104939.78, stdev=15761.87, samples=9
+```
+
+基于采样得到的iops统计(与前面的 IOPS=105k 接近)
+
+```
+  lat (usec)   : 250=0.11%, 500=98.06%, 750=1.30%, 1000=0.04%
+  lat (msec)   : 2=0.48%, 4=0.01%, 10=0.01%
+```
+
+所有 I/O 的总体延迟分布.
+
+* 有 0.11% 的request延迟 <250us;
+
+* 有 98.06% 的 250us =< request lat < 500us;
+
+* 有 1.30% 的 500us =< request lat < 750us, 以此类推;
+
+```
+  cpu          : usr=7.67%, sys=18.29%, ctx=247079, majf=0, minf=41
+```
+
+cpu 使用情况.
+
+* usr 是用户态占比;
+
+* sys是内核态占比;
+
+* ctx表示该 job 经历的 context switch 数目
+
+* majf和minf分别表示major and minor page faults
 
 > 因为上下文切换导致的主要和次要页面失败的用户/系统 CPU使用百分比。因为测试被配置的使用直接IO，因此有很少的页面失败：；
 
-IO depth. 1表示1-2占比, 16表示16-32占比, 32表示32-64占比.                        表示在任何时间有多少IO分发给系统。这完全是应用方面的，意味着它和设备的IO队列做不同的事情，iodepth设置为32, 因此IO深度在100%的时间里一直是一个32；
+```
+  IO depths    : 1=0.1%, 2=0.1%, 4=0.1%, 8=0.1%, 16=0.1%, 32=100.0%, >=64=0.0%
+```
 
-IO submit. 在一个submit调用里，提交了多少 I/O. 4=表示0-4区间内的占比, 8=表示4-8区间内的占比；以此类推.
+IO depth 的分布.
 
-IO complete. 一次complete查询中(io_getevents调用), 完成了多少 I/O.
+* 1 表示 1-2 的占比;
+* 2 表示 2-4 的占比;
+* 4 表示 4-8 的占比;
+* 以此类推.
 
-IO issued rwts. 总共发出了多少read/write/trim/x请求，有多少short(read, write, send, recv等返回大小小于请求大小)，有多少被dropped
+表示在任何时间有多少IO分发给系统。这完全是应用方面的，意味着它和设备的IO队列做不同的事情，iodepth 设置为 32, 因此 IO 深度在 100% 的时间里一直是 32；
+
+```
+     submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
+```
+IO submit 的分布, 即在一个submit调用里，提交了多少 I/O.
+
+* 4 表示 0-4 区间内的占比;
+* 8 表示 4-8 区间内的占比；
+* 以此类推.
+
+```
+     complete  : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.1%, 64=0.0%, >=64=0.0%
+```
+
+IO complete. 一次 complete 查询中(`io_getevents` 调用), 完成了多少 I/O.
+
+```
+     issued rwts: total=524288,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     issued rwts: total=524288,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     issued rwts: total=524288,0,0,0 short=0,0,0,0 dropped=0,0,0,0
+     issued rwts: total=524288,0,0,0 short=0,0,0,0 dropped=0,0,0,0     latency   : target=0, window=0, percentile=100.00%, depth=32
+```
+
+IO issued rwts.
+
+* total. 总共发出了多少 (read, write, trim, x) 请求
+* short. (read, write, send, recv) 由多少返回大小 小于 请求大小
+* 有多少被 dropped.
+
+这一行需要和后面的 `Disk stats (read/write)` 里的 `nvme0n1: ios=2060661/0` 对照来看: 在本例中，4 个 job 的读都是 524288; 4 个 job 都没有其他操作，所以加在一起是 `2097152`，接近 `nvme0n1: ios=2060661/0` 里面的 `2060661`.
+
+注意：1. 写操作加起来(g0-j0,g0-j1,g1-j0,g1-j1,g1-j2)并不相等，因为g1写的是1m大小，可能分成多个I/O进行的；2. 另外，在文件系统中测试时，这个关系也不一样，可能有元数据操作
+
+```
+     latency   : target=0, window=0, percentile=100.00%, depth=32
+```
 
 IO latency. 和 latency_target 相关, 忽略
 
-group统计
+```
+Run status group 0 (all jobs):
+   READ: bw=1644MiB/s (1724MB/s), 411MiB/s-411MiB/s (431MB/s-431MB/s), io=8192MiB (8590MB), run=4982-4982msec
+```
 
-bw=这组进程的总带宽，最小带宽和最大带宽；
+group统计. group 0 read 操作:
 
-io=这组总io大小；
+* `bw=1644MiB/s (1724MB/s)`: 这组 job 的总带宽
+* `411MiB/s-411MiB/s (431MB/s-431MB/s)`: 所有 job 实例中的最小带宽和最大带宽(分别以1K=1024和1K=1000计算); 从前面输出可以看到, 每个 job 的带宽都是 411MiB/s
+* io. 这组 job 的总 io 数据量大小；结合上面每个 job 的 (2048MiB/4982msec), 可以看到 8192 = 2048 x 4.
+* run. 线程的最小和最大运行时间；结合上面每个 job 的 (2048MiB/4982msec).
 
-run. 线程的最小和最大运行时间；
+```
+Disk stats (read/write):
+  nvme0n1: ios=2060661/0, merge=0/0, ticks=620092/0, in_queue=620091, util=98.12%
+```
 
 磁盘统计
 
-> 以下内容跳过
-
-ios=所有group总共执行的IO数
-
-merge=总共发生的IO合并数.
-
-ticks=Number of ticks we kept the disk busy.
-
-io_queue=花费在队列上的总共时间
-
-Util: The disk utilizatio，磁盘利用率.
+* ios. iostat的 `r/s` 和 `w/s` 在运行时间上的累积, 即所有 group 总共执行的 read/write 的 IO 请求次数, 和前面的 `IO issued rwts` 一致
+* merge. iostat 的 `rrqm/s` 和 `wrqm/s` 在运行时间上的累积, 即总共发生的 IO 合并数.
+* ticks. disk busy 的 ticks 数
+* in_queue. 所有 I/O 在 disk queue 中花费的 ticks 总数, 即花费在队列上的总共时间
+* Util: iostat 的 util，即磁盘利用率.
 
