@@ -82,13 +82,13 @@ direct: 跳过缓存，直接读写SSD, 测试结果会更真实. Linux读写的
 
 ## iodepth
 
-简单来说，就是一个 job 实例在一个文件上的 inflight 的 I/O 的数。
+队列深度, 应用层面的. 简单来说，就是一个 job 实例在一个文件上的 inflight 的 I/O 的数。
 
 考虑:
 
-* `–ioengine=libaio`：把 I/O 请求通过 `io_submit` 发出去然后通过 `io_getevents` 获取结果，这样**一个 job 实例**就可以保持有**多个 inflight I/O**。
+* `–ioengine=libaio`：把 I/O 请求通过 `io_submit` 发出去然后通过 `io_getevents` 获取结果，这样**一个 job 实例**就可以保持有**多个 inflight I/O**。一次性丢给系统处理的io请求数量. libaio 引擎会用这个 iodepth 值来调用 `io_setup` 准备个可以**一次提交** iodepth 个 **IO 的上下文**，同时申请一个 io 请求队列用于保持 IO.
 
-* `–ioengine=sync` 或者 `psync`: 一个 job 实例只能顺序地调用 `read/write(pread/pwrite)`，也就是**只能**保持**一个 I/O inflight**，所以对于 `–ioengine=sync` 或者 `–ioengine=psync` 设置iodepth为大于1的值不起作用。
+* `–ioengine=sync` 或者 `psync`: 一个 job 实例只能顺序地调用 `read/write(pread/pwrite)`，也就是**只能**保持**一个 I/O inflight**，所以对于 `–ioengine=sync` 或者 `–ioengine=psync` 设置 iodepth 为大于 1 的值**不起作用**。
 
 对比一下：
 
@@ -96,7 +96,7 @@ direct: 跳过缓存，直接读写SSD, 测试结果会更真实. Linux读写的
 
 ```
 终端A:
- ./fio --name=seqwrite     \
+# ./fio --name=seqwrite     \
         --rw=write          \
         --bs=4k             \
         --size=2048G        \
@@ -160,9 +160,11 @@ sdd               0.00     0.00    0.00 8434.00     0.00    32.95     8.00     5
 
 
 
-iodepth=64：队列深度64. 应用层面的, 在libaio模式一次性丢给系统处理的io请求数量. libaio引擎会用这个iodepth值来调用 io_setup 准备个可以一次提交iodepth个IO的上下文，同时申请一个io请求队列用于保持IO. 对于sync, 该值大于1无效
 
-> io队列请求丢过来后，攒积到这些请求后，立即提交，默认是iodepth的值
+
+iodepth=64：, 在libaio模式 对于sync, 该值大于1无效
+
+
 
 ## rw
 
