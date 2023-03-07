@@ -6,22 +6,22 @@ io_submit、io_setup和io_getevents是LINUX上的AIO系统调用。这有一个�
 
 系统调用功能原型
 
-`io_setup` 为当前进程初始化一个异步 IO 上下文
+`io_setup` 为当前进程初始化一个异步 IO 上下文. 参数 ctxp 用来描述异步 IO 上下文，参数 nr_events 表示小可处理的异步 IO 事件的个数
 
 ```cpp
-int io_setup(unsigned nr_events,aio_context_t *ctxp);
+int io_setup(unsigned nr_events, aio_context_t *ctxp);
 ```
 
-`io_submit` 提交一个或者多个异步 IO 操作
+`io_submit` 提交一个或者多个异步 IO 事件. 其中 ctx 是上文的描述句柄，nr 表示提交的异步事件个数。iocbs 是异步事件的结构体。
 
 ```cpp
-int io_submit(aio_context_t ctx_id,long nr, struct iocb **iocbpp);
+int io_submit(io_context_t ctx, long nr, struct iocb *iocbs[]);
 ```
 
-`io_getevents` 获得未完成的异步 IO 操作的状态
+`io_getevents` 获得已完成的异步 IO 事件. 
 
 ```cpp
-int io_getevents(aio_context_t ctx_id, long min_nr, long nr, struct io_event *events, struct timespec *timeout);
+int io_getevents(io_context_t ctx, long nr, struct io_event *events[], struct timespec *timeout);
 ```
 
 `io_cancel` 取消一个未完成的异步 IO 操作
