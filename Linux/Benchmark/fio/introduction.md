@@ -1,6 +1,14 @@
 
 FIO是测试IOPS的非常好的工具, 用来对硬件进行压力测试和验证, 支持13种不同的 I/O 引擎, 包括: sync, mmap, libaio, posixaio, SG v3, splice, null, network, syslet, guasi, solarisaio 等等.
 
+# 源码
+
+URL: https://git.kernel.dk/cgit/fio/
+
+git://git.kernel.dk/fio.git
+
+https://git.kernel.dk/fio.git
+
 # 编译安装
 
 ```
@@ -96,7 +104,7 @@ cpu_allowed: 允许执行的 cpu
 
 name: 一个代表一个task
 
-# fio输出
+# 输出
 
 > fio -filename=/dev/nvme0n1 -direct=1 -iodepth=32 -rw=read -ioengine=libaio -size=2G -bs=4k -numjobs=4 -cpus_allowed=0-3 -cpus_allowed_policy=split -runtime=300 -name=read
 
