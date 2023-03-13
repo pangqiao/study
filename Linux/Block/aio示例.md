@@ -1,24 +1,24 @@
 
-io_submit、io_setup和io_getevents是LINUX上的AIO系统调用。这有一个非常特别注意的地方——传递给 io_setup 的 aio_context 参数必须初始化为 0，在它的man手册里其实有说明，但容易被忽视，我就犯了这个错误，man说明如下：
+io_submit、io_setup和io_getevents是LINUX上的AIO系统调用. 这有一个非常特别注意的地方——传递给 io_setup 的 aio_context 参数必须初始化为 0, 在它的man手册里其实有说明, 但容易被忽视, 我就犯了这个错误, man说明如下:
 
 > ctxp must not point to an  AIO context that already exists, and must be initialized to 0 prior to the call
 
 
 系统调用功能原型
 
-`io_setup` 初始化一个异步 IO 上下文. 参数 ctxp 用来描述异步 IO 上下文，参数 nr_events 表示小可处理的异步 IO 事件的个数
+`io_setup` 初始化一个异步 IO 上下文. 参数 ctxp 用来描述异步 IO 上下文, 参数 nr_events 表示小可处理的异步 IO 事件的个数
 
 ```cpp
 int io_setup(unsigned nr_events, aio_context_t *ctxp);
 ```
 
-`io_submit` 提交初始化好的异步 IO 事件. 其中 ctx 是上文的描述句柄，nr 表示提交的异步事件个数, iocbs 是异步事件的结构体。
+`io_submit` 提交初始化好的异步 IO 事件. 其中 ctx 是上文的描述句柄, nr 表示提交的异步事件个数, iocbs 是异步事件的结构体.
 
 ```cpp
 int io_submit(io_context_t ctx, long nr, struct iocb *iocbs[]);
 ```
 
-`io_getevents` 获得已完成的异步 IO 事件. 其中参数 ctx 是上下文的句柄，nr 表示期望获得异步 IO 事件个数，events 用来存放已经完成的异步事件的数据，timeout 为超时事件。 
+`io_getevents` 获得已完成的异步 IO 事件. 其中参数 ctx 是上下文的句柄, nr 表示期望获得异步 IO 事件个数, events 用来存放已经完成的异步事件的数据, timeout 为超时事件.
 
 ```cpp
 int io_getevents(io_context_t ctx, long nr, struct io_event *events[], struct timespec *timeout);
@@ -30,13 +30,13 @@ int io_getevents(io_context_t ctx, long nr, struct io_event *events[], struct ti
 int io_cancel(aio_context_t ctx_id, struct iocb *iocb, struct io_event *result);
 ```
 
-`io_destroy` 用于销毁异步IO事件句柄. 
+`io_destroy` 用于销毁异步IO事件句柄.
 
 ```cpp
 int io_destroy(aio_context_t ctx);
 ```
 
-内核的异步 IO 通常和 epoll 等IO多路复用配合使用来完成一些异步事件，那么就需要使用 epoll 来监听一个可以通知异步 IO 完成的描述符，那么就需要使用 eventfd 函数来获得一个这样的描述符。
+内核的异步 IO 通常和 epoll 等IO多路复用配合使用来完成一些异步事件, 那么就需要使用 epoll 来监听一个可以通知异步 IO 完成的描述符, 那么就需要使用 eventfd 函数来获得一个这样的描述符.
 
 ```cpp
 #define TEST_FILE "aio_test_file"
@@ -165,7 +165,7 @@ for (j = 0; j < r; ++j) {
 
 //调用回调函数
 
-//events[j].data的数据和设置的iocb结构体中的data数据是一致。
+//events[j].data的数据和设置的iocb结构体中的data数据是一致.
 
 ((io_callback_t)(events[j].data))(ctx, events[j].obj, events[j].res, events[j].res2);
 
@@ -206,21 +206,21 @@ return 0;
 
 
 
-完整示例如下：
+完整示例如下:
 
 ```cpp
 int main()
 {
         io_context_t ctx;
         unsigned nr_events = 10;
-        memset(&ctx, 0, sizeof(ctx));  // It's necessary，这里一定要的
+        memset(&ctx, 0, sizeof(ctx));  // It's necessary, 这里一定要的
         int errcode = io_setup(nr_events, &ctx);
         if (errcode == 0)
                 printf("io_setup successn");
         else
                 printf("io_setup error: :%d:%sn", errcode, strerror(-errcode));
 
-        // 如果不指定O_DIRECT，则io_submit操作和普通的read/write操作没有什么区别了，将来的LINUX可能
+        // 如果不指定O_DIRECT, 则io_submit操作和普通的read/write操作没有什么区别了, 将来的LINUX可能
         // 可以支持不指定O_DIRECT标志
         int fd = open("./direct.txt", O_CREAT|O_DIRECT|O_WRONLY, S_IRWXU|S_IRWXG|S_IROTH);
         printf("open: %sn", strerror(errno));
@@ -243,13 +243,13 @@ int main()
         iocbpp[0].u.c.nbytes = page_size;//strlen(buf); // 这个值必须按512字节对齐
         iocbpp[0].u.c.offset = 0; // 这个值必须按512字节对齐
 
-        // 提交异步操作，异步写磁盘
+        // 提交异步操作, 异步写磁盘
         int n = io_submit(ctx, 1, &iocbpp);
         printf("==io_submit==: %d:%sn", n, strerror(-n));
 
         struct io_event events[10];
         struct timespec timeout = {1, 100};
-        // 检查写磁盘情况，类似于epoll_wait或select
+        // 检查写磁盘情况, 类似于epoll_wait或select
         n = io_getevents(ctx, 1, 10, events, &timeout);
         printf("io_getevents: %d:%sn", n, strerror(-n));
 
@@ -262,7 +262,7 @@ int main()
 ```cpp
 struct iocb {
        /* these are internal to the kernel/libc. */
-       __u64   aio_data;       /* data to be returned in event's data */用来返回异步IO事件信息的空间，类似于epoll中的ptr。
+       __u64   aio_data;       /* data to be returned in event's data */用来返回异步IO事件信息的空间, 类似于epoll中的ptr.
        __u32   PADDED(aio_key, aio_reserved1); /* the kernel sets aio_key to the req # */
        /* common fields */
        __u16   aio_lio_opcode; /* see IOCB_CMD_ above */
@@ -280,7 +280,7 @@ struct iocb {
 struct io_event {
        __u64           data;          /* the data field from the iocb */ // 类似于epoll_event中的ptr
        __u64           obj;            /* what iocb this event came from */ // 对应的用户态iocb结构体指针
-       __s64           res;            /* result code for this event */ // 操作的结果，类似于read/write的返回值
+       __s64           res;            /* result code for this event */ // 操作的结果, 类似于read/write的返回值
        __s64           res2;          /* secondary result */
 };
 ```
