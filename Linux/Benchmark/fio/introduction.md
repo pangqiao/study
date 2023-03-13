@@ -74,13 +74,18 @@ fio
 -cpus_allowed=0-3
 -cpus_allowed_policy=split
 -name=read
+
+
+fio -filename=/dev/nvme0n1 -direct=1 -iodepth  32 -iodepth_batch 1 -iodepth_batch_complete 16 -rw=randread -ioengine=libaio -bs=16k -size=400G -numjobs=1 -runtime=600 -group_reporting -time_based -ramp_time=60 -name=nvme0
 ```
 
-filename: 这里可以是一个文件名，也可以是分区或者块设备, 这里是ssd 块设备
+## filename
+
+filename: 这里可以是一个文件名，也可以是分区或者块设备, 这里是 ssd 块设备
 
 ## direct
 
-direct: 跳过缓存，直接读写SSD, 测试结果会更真实. Linux读写的时候，内核维护了缓存，数据先写到缓存，然后再后台写到SSD。读的时候也优先读缓存里的数据。这样速度可以加快。所以有一种模式叫作DirectIO，跳过缓存，直接读写SSD, 测试结果会更真实
+Linux读写的时候，内核维护了缓存，数据先写到缓存，然后再后台写到SSD。读的时候也优先读缓存里的数据。这样速度可以加快。所以有一种模式叫作 DirectIO，跳过缓存，直接读写 SSD, 测试结果会更真实
 
 打开文件时带不带 `O_DIRECT` 标记
 
@@ -187,8 +192,9 @@ direct: 跳过缓存，直接读写SSD, 测试结果会更真实. Linux读写的
 
 关于fsync/fdatasync需要注意：fsync/fdatasync的耗时不包含在write latency之内。新版本的fio(例如fio-3.13和fio-3.14)单独显示fsync/fdatasync的耗时，而老版本不显示fsync/fdatasync的耗时(这有点使人迷惑：write latency很小——因为不包含fsync/fdatasync耗时——但IOPS又不高，你会疑惑时间花在哪里了)。
 
-
 ## iodepth
+
+> 在异步io模式模拟一次丢给系统处理的io请求数量；同步系统由于串行，一般小于1
 
 队列深度, 应用层面的. 简单来说，就是一个 job 实例在一个文件上的 inflight 的 I/O 的数。
 
@@ -335,6 +341,26 @@ sdd               0.00     0.00    0.00 4155.00     0.00    16.23     8.00     2
 
 `IO depths: 1=100.0%, 2=0.0%` 表明 iodepth 为1；iostat 显示 avgqu-sz 接近3。我们有 3 个 job 实例，故每个 job 实例的 iodepth 接近 1；
 
+## iodepth_batch
+
+io 队列请求丢过来后，攒积到这些请求后，立即提交，默认是 iodepth 的值；
+
+## iodepth_batch_complete
+
+io 请求过来后，能 retrieve 获得的最多请求数；
+
+## ipdepth_low
+
+io 请求达到这个水平线后，开始尝试去补充和获取请求，默认是 iodepth 的值；
+
+```
+-iodepth 32 -iodepth_batch 1 -iodepth_batch_complete 16
+```
+
+一次模拟生成32个io请求，一次处理能接受16个请求，异步模式下，1个请求来了直接提交;
+
+libaio引擎会用 iodepth 值来调用 `io_setup` 准备个可以一次提交 iodepth 个 IO 的上下文，同时申请个 io 请求队列用于保持 IO。 在压测进行的时候，系统会生成特定的 IO 请求，往 io 请求队列里面扔，当队列里面的 IO 个数达到 `iodepth_batch` 值的时候，就调用 `io_submit` 批次提交请求，然后开始调用 `io_getevents` 开始收割已经完成的IO。每次收割多少呢？由于收割的时候，超时时间设置为0，所以有多少已完成就算多少，最多可以收割 `iodepth_batch_complete` 值个。随着收割，IO 队列里面的 IO 数就少了，那么需要补充新的IO。 什么时候补充呢？当 IO 数目降到 `iodepth_low` 值的时候，就重新填充，保证 OS 可以看到至少 `iodepth_low` 数目的io在电梯口排队着。
+
 ## rw
 
 设置读写模式
@@ -345,6 +371,8 @@ sdd               0.00     0.00    0.00 4155.00     0.00    16.23     8.00     2
 * randread: 随机读；
 * rw: 顺序混合读写；
 * randrw: 随机混合读写；
+
+混合读写可以指定 rwmixread 或者 rwmixwrite 来指定比例，默认 50
 
 ## ioengine
 
@@ -390,7 +418,6 @@ io_getevents(140009640251392, 1, 1, {{(nil), 0x1cb57e8, 4096, 0}}, NULL) = 1
 
 和sync类似，不同之处在于使用pread和pwrite来进行I/O。
 
-
 ## size
 
 每个线程/进程操作的数据量.
@@ -407,15 +434,41 @@ io_getevents(140009640251392, 1, 1, {{(nil), 0x1cb57e8, 4096, 0}}, NULL) = 1
 
 每一个BIO命令包含的数据大小是4KB
 
-numjobs: 每个job是1个进程/线程，后面每个用-name指定的任务就开几个线程测试。所以最终线程数=任务数×numjobs。
+## numjobs
 
-thread: 使用pthread_create创建线程，另一种是fork创建进程
+同时并行运行的工作jobs数，相当于一个job克隆，具有相同workload（负载）
+
+每个 job 是 1 个进程/线程，后面每个用 `-name` 指定的任务就开几个线程测试。所以最终 `真正job数 = 任务数 × numjobs`.
+
+## runtime
+
+如果**不设置** `time_based`，runtime 设置的就算很大，那么 io 大小到 size 后就会立即停止，而不是到 runtime 设置的时间；
+
+## time_based
+
+如果设置这个值，即使 io 大小到达 size 后还未结束的情况，仍然会继续模拟相同的负载，直至这个时间 runtime 结束;
+
+## ramp_time
+
+ramp本意是坡度，相当于预热，意思是跑每个job之前会跑多久的预热，预热时间不算进runtime;
+
+## group_reporting
+
+当设置这个值的时候，会把所有的 jobs 一起统计汇总平均值等信息，否则会按照每个 jobs 分别统计;
+
+## thread
+
+fio 默认会使用 fork() 创建job，如果这个选项设置的话，fio 将使用 pthread_create 来创建线程;
 
 > 进程的开销比线程要大，一般都采用thread测试
 
+## cpu_allowed
+
 cpu_allowed: 允许执行的 cpu
 
-name: 一个代表一个task
+## name
+
+一个 name 代表一个 task
 
 ## 有关sync的选项
 
@@ -599,7 +652,7 @@ I/O延迟包括三种：slat，clat，lat:
 
 * clat 表示 fio complete 某个 I/O 的延迟. 对于 `–ioengine=libaio`，clat 表示从提交到完成的延迟。对于 `–ioengine=sync/psync`，fio 文档中说 clat等于或非常接近于0(因为提交就相当于完成)。但从实验上看，不是这样的：对于 `–ioengine=sync/psync`，不显示slat，clat 接近总延迟。
 
-* lat 即从 I/O 被创建到完成的延迟
+* lat 即从 I/O 被创建到完成的延迟(从fio将请求提交给内核，再到内核完成这个I/O为止所需要的时间)
 
 大致是这样(对吗?)：
 
@@ -677,7 +730,7 @@ IO depth 的分布.
 * 4 表示 4-8 的占比;
 * 以此类推.
 
-表示在任何时间有多少IO分发给系统。这完全是应用方面的，意味着它和设备的IO队列做不同的事情，iodepth 设置为 32, 因此 IO 深度在 100% 的时间里一直是 32；
+表示在任何时间有多少 IO 分发给系统。这完全是**应用方面**的，意味着它和**设备的 IO 队列**做不同的事情，iodepth 设置为 32, 因此 IO 深度在 100% 的时间里一直是 32；
 
 ```
      submit    : 0=0.0%, 4=100.0%, 8=0.0%, 16=0.0%, 32=0.0%, 64=0.0%, >=64=0.0%
@@ -724,8 +777,8 @@ Run status group 0 (all jobs):
 
 group统计. group 0 read 操作:
 
-* `bw=1644MiB/s (1724MB/s)`: 这组 job 的总带宽
-* `411MiB/s-411MiB/s (431MB/s-431MB/s)`: 所有 job 实例中的最小带宽和最大带宽(分别以1K=1024和1K=1000计算); 从前面输出可以看到, 每个 job 的带宽都是 411MiB/s
+* `bw=1644MiB/s (1724MB/s)`: 这组 job 的总带宽.
+* `411MiB/s-411MiB/s (431MB/s-431MB/s)`: 所有 job 实例中的最小带宽和最大带宽(分别以1K=1024和1K=1000计算); 从前面输出可以看到, 每个 job 的带宽都是 411MiB/s.
 * io. 这组 job 的总 io 数据量大小；结合上面每个 job 的 (2048MiB/4982msec), 可以看到 8192 = 2048 x 4.
 * run. 线程的最小和最大运行时间；结合上面每个 job 的 (2048MiB/4982msec).
 
@@ -736,9 +789,9 @@ Disk stats (read/write):
 
 磁盘统计
 
-* ios. iostat的 `r/s` 和 `w/s` 在运行时间上的累积, 即所有 group 总共执行的 read/write 的 IO 请求次数, 和前面的 `IO issued rwts` 一致
+* ios. iostat的 `r/s` 和 `w/s` 在运行时间上的累积, 即所有 group 总共执行的 read/write 的 IO 请求次数, 和前面的 `IO issued rwts` 一致.
 * merge. iostat 的 `rrqm/s` 和 `wrqm/s` 在运行时间上的累积, 即总共发生的 IO 合并数.
-* ticks. disk busy 的 ticks 数
+* ticks. disk busy 的 ticks 数.
 * in_queue. 所有 I/O 在 disk queue 中花费的 ticks 总数, 即花费在队列上的总共时间
 * Util: iostat 的 util，即磁盘利用率.
 
