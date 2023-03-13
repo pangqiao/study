@@ -55,27 +55,36 @@ Fio 使用 pthread mutexes(互斥锁)进行 signaling 和 locking, 某些平台�
 $ fio [options] [jobfile] ...
 ```
 
-它会按照 jobfile 内容运行. 可以有多个 jobfile, fio 将串行化运行. 在内部, 这与使用参数部分中描述的 `:option:'stonewall'` 参数相同.
+有2种执行方式：命令行执行和配置文件执行.
 
-如果作业文档只包含一个作业, 则不妨在命令行上给出参数. 命令行参数与作业参数相同, 只是有一些额外的参数用于控制全局参数.  例如, 对于作业文档参数 : option: 'iodepth=2 <iodepth>', 镜像命令行选项为 : option: '--iodepth 2 <iodepth>' 或 : option: '--iodepth=2 <iodepth>'. 您还可以使用命令行提供多个作业条目. 对于 fio 看到的每个 : option: '--name <name>' 选项, 它将使用该名称启动一个新作业.  : option: "--name <name>"条目后面的命令行条目将应用于该作业, 直到没有更多条目或看到新的 : option: "--name <name>"条目. 这类似于作业文档选项, 其中每个选项都适用于当前作业, 直到看到新的 [] 作业条目.
+```
+# cat write.fio 
+[global]
+direct=1
+iodepth=16
+numjobs=4
+rw=write
+ioengine=libaio
+bs=4K
+size=20G
+runtime=600
+group_reporting
+name=file
+
+[job1]
+filename=/perf/test1
+```
+
+它会按照 jobfile 内容运行. 可以有多个 jobfile, fio 将**串行化运行**.
+
+命令行参数与作业参数相同, 只是有一些额外的参数用于控制全局参数. 例如, 对于作业文档参数: `iodepth=2`, 镜像命令行选项为: `--iodepth 2` 或 `--iodepth=2`.
+
+可以使用**命令行**提供**多个作业条目**. fio 看到的每个 `--name <name>` 选项, 它将使用该名称启动一个新作业.  : option: "--name <name>"条目后面的命令行条目将应用于该作业, 直到没有更多条目或看到新的 : option: "--name <name>"条目. 这类似于作业文档选项, 其中每个选项都适用于当前作业, 直到看到新的 [] 作业条目.
+
+
 
 
 ```
-fio
--filename=/dev/nvme0n1
--direct=1
--iodepth=32
--rw=read
--ioengine=libaio
--size=2G
--bs=4k
--numjobs=4
--thread
--cpus_allowed=0-3
--cpus_allowed_policy=split
--name=read
-
-
 fio -filename=/dev/nvme0n1 -direct=1 -iodepth  32 -iodepth_batch 1 -iodepth_batch_complete 16 -rw=randread -ioengine=libaio -bs=16k -size=400G -numjobs=1 -runtime=600 -group_reporting -time_based -ramp_time=60 -name=nvme0
 ```
 
