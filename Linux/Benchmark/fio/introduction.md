@@ -79,9 +79,7 @@ filename=/perf/test1
 
 命令行参数与作业参数相同, 只是有一些额外的参数用于控制全局参数. 例如, 对于作业文档参数: `iodepth=2`, 镜像命令行选项为: `--iodepth 2` 或 `--iodepth=2`.
 
-可以使用**命令行**提供**多个作业条目**. fio 看到的每个 `--name <name>` 选项, 它将使用该名称启动一个新作业.  : option: "--name <name>"条目后面的命令行条目将应用于该作业, 直到没有更多条目或看到新的 : option: "--name <name>"条目. 这类似于作业文档选项, 其中每个选项都适用于当前作业, 直到看到新的 [] 作业条目.
-
-
+可以使用**命令行**提供**多个作业条目**. 对于每个 `--name <name>` 选项, fio 将使用该名称启动一个新作业. `--name <name>` **后面的命令行**条目将**应用于该作业**, 直到**没有更多命令行条目**或看到**新的** `--name <name>` 条目. 这类似于文件选项, 其中每个选项都适用于当前作业, 直到看到新的 `[]` job 条目.
 
 
 ```
@@ -612,11 +610,15 @@ Disk stats (read/write):
 
 值得一提的是，上面一共有 5 个fio进程；因为其中一个是主进程，其他 4 个才是 job 实例进程
 
-第一个方括号：
-
 ```
 Jobs: 4 (f=4): [R(4)][100.0%][r=1735MiB/s][r=444k IOPS][eta 00m:00s]
 ```
+
+显示已创建作业的状态.
+
+当前运行和执行 I/O 的线程数为 4，当前打开的文件数（f=）为 4
+
+第一组括号中的字符表示每个线程的当前状态:
 
 * w: running, doing random writes
 * W: running, doing sequential writes
@@ -626,6 +628,12 @@ Jobs: 4 (f=4): [R(4)][100.0%][r=1735MiB/s][r=444k IOPS][eta 00m:00s]
 * M: running, doing mixed sequential reads/writes
 * C: thread created
 * f: thread finishing
+
+第二组括号显示当前估计完成百分比，因为已经命令已经执行完，所以是100%。
+
+第三组括号分别显示读取和写入I/O速率.
+
+第四组括号以带宽和IOPS表示第三组括号的内容
 
 ```
 read: (groupid=0, jobs=1): err= 0: pid=621076: Tue Mar  7 23:17:45 2023
