@@ -46,7 +46,100 @@ long nvme_dev_ioctl(struct file *file, unsigned int cmd,
 }
 ```
 
-对于ssd的读写命令，显然是要走 NVME_IOCTL_IO_CMD 这一分支，该分支的函数主要做的事情是填充了 `nvme_command` c 命令：
+对于ssd的读写命令，显然是要走 `NVME_IOCTL_IO_CMD` 这一分支，该分支的函数主要做的事情是填充了 `nvme_command c` 命令：
 
+```cpp
+nvme_dev_user_cmd() -> nvme_user_cmd()
 
+static int nvme_user_cmd(struct nvme_ctrl *ctrl, struct nvme_ns *ns,
+		struct nvme_passthru_cmd __user *ucmd, unsigned int flags,
+		fmode_t mode)
+{
+	struct nvme_passthru_cmd cmd;
+	struct nvme_command c;
+	unsigned timeout = 0;
+	u64 result;
+	int status;
 
+	if (copy_from_user(&cmd, ucmd, sizeof(cmd)))
+		return -EFAULT;
+	if (cmd.flags)
+		return -EINVAL;
+	if (!nvme_validate_passthru_nsid(ctrl, ns, cmd.nsid))
+		return -EINVAL;
+
+	memset(&c, 0, sizeof(c));
+	c.common.opcode = cmd.opcode;
+	c.common.flags = cmd.flags;
+	c.common.nsid = cpu_to_le32(cmd.nsid);
+	c.common.cdw2[0] = cpu_to_le32(cmd.cdw2);
+	c.common.cdw2[1] = cpu_to_le32(cmd.cdw3);
+	c.common.cdw10 = cpu_to_le32(cmd.cdw10);
+	c.common.cdw11 = cpu_to_le32(cmd.cdw11);
+	c.common.cdw12 = cpu_to_le32(cmd.cdw12);
+	c.common.cdw13 = cpu_to_le32(cmd.cdw13);
+	c.common.cdw14 = cpu_to_le32(cmd.cdw14);
+	c.common.cdw15 = cpu_to_le32(cmd.cdw15);
+
+	if (!nvme_cmd_allowed(ns, &c, 0, mode))
+		return -EACCES;
+
+	if (cmd.timeout_ms)
+		timeout = msecs_to_jiffies(cmd.timeout_ms);
+
+	status = nvme_submit_user_cmd(ns ? ns->queue : ctrl->admin_q, &c,
+			cmd.addr, cmd.data_len, nvme_to_user_ptr(cmd.metadata),
+			cmd.metadata_len, 0, &result, timeout, 0);
+
+	if (status >= 0) {
+		if (put_user(result, &ucmd->result))
+			return -EFAULT;
+	}
+
+	return status;
+}
+
+static int nvme_submit_user_cmd(struct request_queue *q,
+		struct nvme_command *cmd, u64 ubuffer, unsigned bufflen,
+		void __user *meta_buffer, unsigned meta_len, u32 meta_seed,
+		u64 *result, unsigned timeout, unsigned int flags)
+{
+	struct nvme_ctrl *ctrl;
+	struct request *req;
+	void *meta = NULL;
+	struct bio *bio;
+	u32 effects;
+	int ret;
+    // 分配一个request
+	req = nvme_alloc_user_request(q, cmd, 0, 0);
+	if (IS_ERR(req))
+		return PTR_ERR(req);
+
+	req->timeout = timeout;
+	if (ubuffer && bufflen) {
+		ret = nvme_map_user_request(req, ubuffer, bufflen, meta_buffer,
+				meta_len, meta_seed, &meta, NULL, flags);
+		if (ret)
+			return ret;
+	}
+
+	bio = req->bio;
+	ctrl = nvme_req(req)->ctrl;
+
+	ret = nvme_execute_passthru_rq(req, &effects);
+
+	if (result)
+		*result = le64_to_cpu(nvme_req(req)->result.u64);
+	if (meta)
+		ret = nvme_finish_user_metadata(req, meta_buffer, meta,
+						meta_len, ret);
+	if (bio)
+		blk_rq_unmap_user(bio);
+	blk_mq_free_request(req);
+
+	if (effects)
+		nvme_passthru_end(ctrl, effects, cmd, ret);
+
+	return ret;
+}
+```
