@@ -46,7 +46,7 @@ long nvme_dev_ioctl(struct file *file, unsigned int cmd,
 }
 ```
 
-对于ssd的读写命令，显然是要走 NVME_IOCTL_IO_CMD 这一分支，该分支的函数主要做的事情是填充了 `nvme_command` c命令：
+对于ssd的读写命令，显然是要走 NVME_IOCTL_IO_CMD 这一分支，该分支的函数主要做的事情是填充了 `nvme_command` c 命令：
 
 
 
