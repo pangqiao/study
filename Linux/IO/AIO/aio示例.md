@@ -14,10 +14,45 @@ ssize_t pwrite(int fd, const void *buf, size_t count, off_t offset);
 int close(int fd);
 ```
 
-因为整个过程会等待 read/write 的返回，所以不需要任何额外的数据结构。但异步 IO 的思想是：应用程序不能阻塞在昂贵的系统调用上让 CPU 睡大觉，而是将 IO 操作抽象成一个个的任务单元提交给内核，内核完成 IO 任务后将结果放在应用程序可以取到的地方。这样在底层做 I/O 的这段时间内，CPU 可以去干其他的计算任务。但异步的 IO 任务批量的提交和完成，必须有自身可描述的结构，最重要的两个就是 iocb 和 io_event。
+因为整个过程会等待 read/write 的返回，所以不需要任何额外的数据结构。
 
+但异步 IO 的思想是：应用程序不能阻塞在昂贵的系统调用上让 CPU 睡大觉，而是将 IO 操作抽象成一个个的任务单元提交给内核，内核完成 IO 任务后将结果放在应用程序可以取到的地方。这样在底层做 I/O 的这段时间内，CPU 可以去干其他的计算任务。但异步的 IO 任务批量的提交和完成，必须有自身可描述的结构，最重要的两个就是 iocb 和 `io_event`
 
+libaio 中的 structs
 
+```cpp
+struct iocb {
+    void     *data;  /* Return in the io completion event */
+    unsigned key;   /*r use in identifying io requests */
+    short           aio_lio_opcode;
+    short           aio_reqprio;
+    int             aio_fildes;
+    union {
+            struct io_iocb_common           c;
+            struct io_iocb_vector           v;
+            struct io_iocb_poll             poll;
+            struct io_iocb_sockaddr saddr;
+    } u;
+};
+
+struct io_iocb_common {
+    void            *buf;
+    unsigned long   nbytes;
+    long long       offset;
+    unsigned        flags;
+    unsigned        resfd;
+};
+```
+
+iocb 是提交 IO 任务时用到的，可以完整地描述一个IO请求：
+
+* data 是留给用来自定义的指针：可以设置为 IO 完成后的 callback 函数；
+
+* `aio_lio_opcode` 表示操作的类型: `IO_CMD_PWRITE | IO_CMD_PREAD`；
+
+* `aio_fildes` 是要操作的文件: fd；
+
+`io_iocb_common` 中的 buf, nbytes, offset 分别记录的 IO 请求的 mem buffer，大小和偏移。
 
 
 
