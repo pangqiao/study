@@ -18,7 +18,7 @@ int close(int fd);
 
 但异步 IO 的思想是：应用程序不能阻塞在昂贵的系统调用上让 CPU 睡大觉，而是将 IO 操作抽象成一个个的任务单元提交给内核，内核完成 IO 任务后将结果放在应用程序可以取到的地方。这样在底层做 I/O 的这段时间内，CPU 可以去干其他的计算任务。但异步的 IO 任务批量的提交和完成，必须有自身可描述的结构，最重要的两个就是 iocb 和 `io_event`
 
-libaio 中的 structs
+# libaio中的结构体
 
 ```cpp
 struct iocb {
@@ -69,57 +69,89 @@ obj 就是之前提交 IO 任务时的 iocb；
 
 res 和 res2 来表示 IO 任务完成的状态。
 
-libaio提供的API和完成IO的过程
+# libaio提供的API
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-io_submit、io_setup 和 io_getevents 是LINUX上的AIO系统调用. 这有一个非常特别注意的地方——传递给 `io_setup` 的 `aio_context` 参数必须初始化为 0, 在它的man手册里其实有说明, 但容易被忽视, 我就犯了这个错误, man说明如下:
-
-> ctxp must not point to an  AIO context that already exists, and must be initialized to 0 prior to the call
-
-
-系统调用功能原型
-
-`io_setup` 初始化一个异步 IO 上下文. 参数 ctxp 用来描述异步 IO 上下文, 参数 nr_events 表示小可处理的异步 IO 事件的个数
+## 建立IO任务
 
 ```cpp
 int io_setup(unsigned nr_events, aio_context_t *ctxp);
-```
+``` 
 
-`io_submit` 提交初始化好的异步 IO 事件. 其中 ctx 是上文的描述句柄, nr 表示提交的异步事件个数, iocbs 是异步事件的结构体.
+`io_setup` 初始化一个异步 IO 上下文. 参数 ctxp 用来描述异步 IO 请求上下文, 参数 nr_events 表示小可处理的异步 IO 事件的个数
+
+注意: 传递给 `io_setup` 的 `aio_context` 参数必须初始化为 0, 在它的man手册里其实有说明, 但容易被忽视, man说明如下:
+
+> ctxp must not point to an  AIO context that already exists, and must be initialized to 0 prior to the call
+
+## 提交IO任务
 
 ```cpp
 int io_submit(io_context_t ctx, long nr, struct iocb *iocbs[]);
 ```
 
-`io_getevents` 获得已完成的异步 IO 事件. 其中参数 ctx 是上下文的句柄, nr 表示期望获得异步 IO 事件个数, events 用来存放已经完成的异步事件的数据, timeout 为超时事件.
+`io_submit` 提交初始化好的异步 IO 事件. 其中 ctx 是上文的描述句柄, nr 表示提交的异步事件个数, iocb 是异步事件的结构体.
+
+提交任务之前必须先填充 iocb 结构体, libaio 提供的包装函数说明了需要完成的工作:
+
+```cpp
+void io_prep_pread(struct iocb *iocb, int fd, void *buf, size_t count, long long offset)
+{
+    memset(iocb, 0, sizeof(*iocb));
+    iocb->aio_fildes = fd;
+    iocb->aio_lio_opcode = IO_CMD_PREAD;
+    iocb->aio_reqprio = 0;
+    iocb->u.c.buf = buf;
+    iocb->u.c.nbytes = count;
+    iocb->u.c.offset = offset;
+}
+
+void io_prep_pwrite(struct iocb *iocb, int fd, void *buf, size_t count, long long offset)
+{
+    memset(iocb, 0, sizeof(*iocb));
+    iocb->aio_fildes = fd;
+    iocb->aio_lio_opcode = IO_CMD_PWRITE;
+    iocb->aio_reqprio = 0;
+    iocb->u.c.buf = buf;
+    iocb->u.c.nbytes = count;
+    iocb->u.c.offset = offset;
+}
+```
+
+这里注意读写的 buf 都必须是按扇区对齐的，可以用 `posix_memalign` 来分配。
+
+## 获取完成的IO
 
 ```cpp
 int io_getevents(io_context_t ctx, long nr, struct io_event *events[], struct timespec *timeout);
 ```
 
-`io_cancel` 取消一个未完成的异步 IO 操作
+`io_getevents` 获得已完成的异步 IO 事件. 其中参数 ctx 是上下文的句柄, nr 表示期望获得异步 IO 事件个数, events 用来存放已经完成的异步事件的数据, timeout 为超时事件.
+
+这里最重要的就是提供一个 `io_event` 数组给内核来 copy 完成的 IO 请求到这里，数组的大小是 `io_setup` 时指定的 `maxevents`。
+
+timeout 是指等待 IO 完成的超时时间，设置为 NULL 表示一直等待所有到 IO 的完成。
+
+## 取消未完成的IO
 
 ```cpp
 int io_cancel(aio_context_t ctx_id, struct iocb *iocb, struct io_event *result);
 ```
 
-`io_destroy` 用于销毁异步IO事件句柄.
+`io_cancel` 取消一个未完成的异步 IO 操作
+
+## 销毁IO任务
 
 ```cpp
 int io_destroy(aio_context_t ctx);
 ```
+
+`io_destroy` 用于销毁异步IO事件句柄.
+
+# libaio和epoll的结合
+
+在异步编程中，任何一个环节的阻塞都会导致整个程序的阻塞，所以一定要避免在 io_getevents 调用时阻塞式的等待。还记得 io_iocb_common 中的 flags 和 resfd 吗？看看 libaio 是如何提供 io_getevents 和事件循环的结合
+
+
 
 内核的异步 IO 通常和 epoll 等IO多路复用配合使用来完成一些异步事件, 那么就需要使用 epoll 来监听一个可以通知异步 IO 完成的描述符, 那么就需要使用 eventfd 函数来获得一个这样的描述符.
 
