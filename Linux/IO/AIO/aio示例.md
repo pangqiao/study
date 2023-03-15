@@ -1,4 +1,18 @@
 
+
+
+在 Direct IO 模式下，异步是非常有必要的（因为绕过了 pagecache，直接和磁盘交互）。linux Native AIO 正是基于这种场景设计的，具体的介绍见：KernelAsynchronousI/O (AIO)SupportforLinux。
+
+下面我们就来分析一下 AIO 编程的相关知识.
+
+阻塞模式下的IO过程如下:
+
+```cpp
+int fd = open(const char *pathname, int flags, mode_t mode);
+
+```
+
+
 io_submit、io_setup和io_getevents是LINUX上的AIO系统调用. 这有一个非常特别注意的地方——传递给 io_setup 的 aio_context 参数必须初始化为 0, 在它的man手册里其实有说明, 但容易被忽视, 我就犯了这个错误, man说明如下:
 
 > ctxp must not point to an  AIO context that already exists, and must be initialized to 0 prior to the call
