@@ -9,8 +9,33 @@
 
 ```cpp
 int fd = open(const char *pathname, int flags, mode_t mode);
-
+ssize_t pread(int fd, void *buf, size_t count, off_t offset);
+ssize_t pwrite(int fd, const void *buf, size_t count, off_t offset);
+int close(int fd);
 ```
+
+因为整个过程会等待 read/write 的返回，所以不需要任何额外的数据结构。但异步 IO 的思想是：应用程序不能阻塞在昂贵的系统调用上让 CPU 睡大觉，而是将 IO 操作抽象成一个个的任务单元提交给内核，内核完成 IO 任务后将结果放在应用程序可以取到的地方。这样在底层做 I/O 的这段时间内，CPU 可以去干其他的计算任务。但异步的 IO 任务批量的提交和完成，必须有自身可描述的结构，最重要的两个就是 iocb 和 io_event。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 io_submit、io_setup和io_getevents是LINUX上的AIO系统调用. 这有一个非常特别注意的地方——传递给 io_setup 的 aio_context 参数必须初始化为 0, 在它的man手册里其实有说明, 但容易被忽视, 我就犯了这个错误, man说明如下:
