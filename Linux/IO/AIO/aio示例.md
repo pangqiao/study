@@ -18,7 +18,7 @@
 
 # 1. 异步IO
 
-在 Direct IO 模式下，异步是非常有必要的（因为绕过了 pagecache，直接和磁盘交互）。linux Native AIO 正是基于这种场景设计的，具体的介绍见：[KernelAsynchronousI/O (AIO)SupportforLinux](https://lse.sourceforge.net/io/aio.html)。
+在 Direct IO 模式下，异步是非常有必要的（因为绕过了 pagecache，直接和磁盘交互）。linux Native AIO 正是基于这种场景设计的，具体的介绍见: [KernelAsynchronousI/O (AIO)SupportforLinux](https://lse.sourceforge.net/io/aio.html)。
 
 下面我们就来分析一下 AIO 编程的相关知识.
 
@@ -33,7 +33,7 @@ int close(int fd);
 
 因为整个过程会等待 read/write 的返回，所以不需要任何额外的数据结构。
 
-但异步 IO 的思想是：应用程序不能阻塞在昂贵的系统调用上让 CPU 睡大觉，而是将 IO 操作抽象成一个个的任务单元提交给内核，内核完成 IO 任务后将结果放在应用程序可以取到的地方。这样在底层做 I/O 的这段时间内，CPU 可以去干其他的计算任务。但异步的 IO 任务批量的提交和完成，必须有自身可描述的结构，最重要的两个就是 iocb 和 `io_event`
+但异步 IO 的思想是: 应用程序不能阻塞在昂贵的系统调用上让 CPU 睡大觉，而是将 IO 操作抽象成一个个的任务单元提交给内核，内核完成 IO 任务后将结果放在应用程序可以取到的地方。这样在底层做 I/O 的这段时间内，CPU 可以去干其他的计算任务。但异步的 IO 任务批量的提交和完成，必须有自身可描述的结构，最重要的两个就是 iocb 和 `io_event`
 
 # 2. libaio中的结构体
 
@@ -79,9 +79,9 @@ struct io_iocb_common {
 };
 ```
 
-iocb 是提交 IO 任务时用到的，可以完整地描述一个IO请求：
+iocb 是提交 IO 任务时用到的，可以完整地描述一个IO请求: 
 
-* data 是留给用来自定义的指针：可以设置为 IO 完成后的 callback 函数；
+* data 是留给用来自定义的指针: 可以设置为 IO 完成后的 callback 函数；
 
 * `aio_lio_opcode` 表示操作的类型: `IO_CMD_PWRITE | IO_CMD_PREAD`；
 
@@ -98,7 +98,7 @@ struct io_event {
 };
 ```
 
-io_event 是用来描述返回结果的：
+io_event 是用来描述返回结果的: 
 
 obj 就是之前提交 IO 任务时的 iocb；
 
@@ -204,7 +204,7 @@ int eventfd(unsigned int initval, int flags);
 
 eventfd 是 linux 2.6.22 内核之后加进来的 syscall，作用是**内核**用来**通知应用程序**发生的事件的数量，从而使应用程序不用频繁地去轮询内核是否有时间发生，而是由**内核**将发生事件的**数量写入到该 fd**，应用程序发现 fd 可读后，从 fd 读取该数值，并马上去内核读取。
 
-有了 eventfd，就可以很好地将 libaio 和 epoll 事件循环结合起来：
+有了 eventfd，就可以很好地将 libaio 和 epoll 事件循环结合起来: 
 
 1. 创建一个 eventfd
 
