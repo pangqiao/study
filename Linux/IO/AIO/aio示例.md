@@ -54,6 +54,22 @@ iocb 是提交 IO 任务时用到的，可以完整地描述一个IO请求：
 
 `io_iocb_common` 中的 buf, nbytes, offset 分别记录的 IO 请求的 mem buffer，大小和偏移。
 
+```cpp
+struct io_event {
+    void *data;
+    struct iocb *obj;
+    unsigned long res;
+    unsigned long res2;
+};
+```
+
+io_event 是用来描述返回结果的：
+
+obj 就是之前提交 IO 任务时的 iocb；
+
+res 和 res2 来表示 IO 任务完成的状态。
+
+libaio提供的API和完成IO的过程
 
 
 
@@ -68,12 +84,7 @@ iocb 是提交 IO 任务时用到的，可以完整地描述一个IO请求：
 
 
 
-
-
-
-
-
-io_submit、io_setup和io_getevents是LINUX上的AIO系统调用. 这有一个非常特别注意的地方——传递给 io_setup 的 aio_context 参数必须初始化为 0, 在它的man手册里其实有说明, 但容易被忽视, 我就犯了这个错误, man说明如下:
+io_submit、io_setup 和 io_getevents 是LINUX上的AIO系统调用. 这有一个非常特别注意的地方——传递给 `io_setup` 的 `aio_context` 参数必须初始化为 0, 在它的man手册里其实有说明, 但容易被忽视, 我就犯了这个错误, man说明如下:
 
 > ctxp must not point to an  AIO context that already exists, and must be initialized to 0 prior to the call
 
