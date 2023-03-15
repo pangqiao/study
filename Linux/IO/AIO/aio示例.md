@@ -186,7 +186,7 @@ int io_destroy(aio_context_t ctx);
 
 在异步编程中，任何一个环节的阻塞都会导致整个程序的阻塞，所以一定要**避免**在 `io_getevents` 调用时**阻塞式的等待**。
 
-还记得 `io_iocb_common` 中的 `flags` 和 `resfd` 吗？看看 libaio 是如何提供 `io_getevents` 和事件循环的结合
+还记得 `io_iocb_common` 中的 `flags` 和 `resfd` 吗? 看看 libaio 是如何提供 `io_getevents` 和事件循环的结合
 
 ```cpp
 void io_set_eventfd(struct iocb *iocb, int eventfd)
