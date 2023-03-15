@@ -149,7 +149,30 @@ int io_destroy(aio_context_t ctx);
 
 # libaio和epoll的结合
 
-在异步编程中，任何一个环节的阻塞都会导致整个程序的阻塞，所以一定要避免在 io_getevents 调用时阻塞式的等待。还记得 io_iocb_common 中的 flags 和 resfd 吗？看看 libaio 是如何提供 io_getevents 和事件循环的结合
+在异步编程中，任何一个环节的阻塞都会导致整个程序的阻塞，所以一定要**避免**在 `io_getevents` 调用时**阻塞式的等待**。
+
+还记得 `io_iocb_common` 中的 `flags` 和 `resfd` 吗？看看 libaio 是如何提供 `io_getevents` 和事件循环的结合
+
+```cpp
+void io_set_eventfd(struct iocb *iocb, int eventfd)
+{
+    iocb->u.c.flags |= (1 << 0) /* IOCB_FLAG_RESFD */;
+    iocb->u.c.resfd = eventfd;
+}
+```
+
+这里的 resfd 是通过系统调用 eventfd 生成的。
+
+```cpp
+int eventfd(unsigned int initval, int flags);
+```
+
+eventfd 是 linux 2.6.22 内核之后加进来的 syscall，作用是内核用来通知应用程序发生的事件的数量，从而使应用程序不用频繁地去轮询内核是否有时间发生，而是由内核将发生事件的数量写入到该 fd，应用程序发现 fd 可读后，从 fd 读取该数值，并马上去内核读取。
+
+有了eventfd，就可以很好地将libaio和epoll事件循环结合起来：
+
+
+
 
 
 
