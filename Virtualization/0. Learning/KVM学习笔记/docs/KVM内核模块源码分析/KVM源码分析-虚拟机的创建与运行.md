@@ -671,7 +671,7 @@ memory_region_transaction_commit中引入了新的结构address_spaces(AS), 注�
         qemu_kvm_wait_io_event(cpu);
     }
 ```
-判断条件就是cpu_can_run函数, 即cpu->stop && cpu->stopped && current_run_state ！= running 都是false, 而这几个参数都是由vm_start函数决定的
+判断条件就是 `cpu_can_run` 函数, 即 `cpu->stop && cpu->stopped && current_run_state ！= running` 都是false, 而这几个参数都是由vm_start函数决定的
 ```
 void vm_start(void)
 {
