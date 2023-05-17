@@ -96,7 +96,7 @@ XSDT(RSDT) 指向的**第一张表**都是 **FADT**, Fixed ACPI Description Tabl
 
 而 FACS 在可读、可写内存中的一个数据结构. BIOS 使用此结构来实现固件和 OS 之间的握手.
 
-FACS 通过 FADT 传递给ACPI兼容OS;
+FACS 通过 FADT 传递给 ACPI 兼容 OS;
 
 最后是 RSDP, Root System Description Pointer. 它是一个结构体, 其结构如下:
 
