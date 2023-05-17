@@ -56,7 +56,7 @@ ACPI包含三个运行组件.
 
 在最新的 ACPI 规范中, 一共可以看到这么多表, 学习了一下常见的表: RSDP、RSDT、XSDT、FACS、FADT(FACP)、DSDT、SSDT
 
-首先是 RSDT 和 XSDT, 
+首先是 RSDT 和 XSDT,
 
 RSDT 表全称 Root System Description Table, 它存放了许多的指针, **指向其它的描述系统信息的表**. RSDT 的结构如下:
 
@@ -67,7 +67,7 @@ typedef struct {
 } RSDT_TABLE;
 ```
 
-它实际上是一个可变数组, 后面可以接很多的表项. 而该结构的前面部分又被定义为 `EFI_ACPI_DESCRIPTION_HEADER`:
+它实际上是一个**可变数组**, 后面可以接很多的表项. 而该结构的前面部分又被定义为 `EFI_ACPI_DESCRIPTION_HEADER`:
 
 ```cpp
 typedef struct {
@@ -83,7 +83,7 @@ typedef struct {
 } EFI_ACPI_DESCRIPTION_HEADER;
 ```
 
-XSDT 表全称 Extended Root System Description Table, 它的作用于 RSDT 一样, 区别在于两者包含的指针地址一个是 32 位的, 一个是 64 位的. XSDT 中包含的描述表头部物理地址可以大于 32 位, XSDT 表结构如下:
+XSDT 表全称 Extended Root System Description Table, 它的作用于 RSDT 一样, 区别在于两者包含的**指针地址**一个是 **32** 位的, 一个是 **64** 位的. XSDT 中包含的描述表头部物理地址可以大于 32 位, XSDT 表结构如下:
 
 ```cpp
 typedef struct {
@@ -92,13 +92,13 @@ typedef struct {
 } XSDT_TABLE;
 ```
 
-XSDT(RSDT)指向的第一张表都是FADT, Fixed ACPI Description Table. 这个表里面包含了OS需要知道的所有ACPI硬件相关寄存器(ACPI Hardware Register Blocks也就是GPx_BLK等), 还包含DSDT, Differentiated System Description Table, 该表包含大量的硬件信息. SSDT是DSDT的附加部分. SSDT是DSDT的附加部分, 二级表可以不断增加. 
+XSDT(RSDT) 指向的**第一张表**都是 **FADT**, Fixed ACPI Description Table. 这个表里面包含了 OS 需要知道的所有 ACPI 硬件相关**寄存器**(`ACPI Hardware Register Blocks`, 也就是 GPx_BLK 等), 还包含 **DSDT**, `Differentiated System Description Table`, 该表包含大量的**硬件信息**. SSDT 是 DSDT 的附加部分. SSDT 是 DSDT 的附加部分, 二级表可以不断增加.
 
-而FACS在可读、可写内存中的一个数据结构. BIOS使用此结构来实现固件和OS之间的握手. 
+而 FACS 在可读、可写内存中的一个数据结构. BIOS 使用此结构来实现固件和 OS 之间的握手.
 
-FACS通过FADT传递给ACPI兼容OS;
+FACS 通过 FADT 传递给ACPI兼容OS;
 
-最后是RSDP, Root System Description Pointer. 它是一个结构体, 其结构如下:
+最后是 RSDP, Root System Description Pointer. 它是一个结构体, 其结构如下:
 
 ```cpp
 typedef struct {
@@ -114,7 +114,7 @@ typedef struct {
 } EFI_ACPI_6_1_ROOT_SYSTEM_DESCRIPTION_POINTER;
 ```
 
-其中提供了两个主要的物理地址, 一个是 RSDT 表的, 另一个是 XSDT 表的. os 系统怎么找到 acpi 表呢, 就是取决于 rsdp 这个指针, 而刚好这个指针可以通过 efi system table 进行调用. 
+其中提供了两个主要的物理地址, 一个是 RSDT 表的, 另一个是 XSDT 表的. os 系统怎么找到 acpi 表呢, 就是取决于 rsdp 这个指针, 而刚好这个指针可以通过 efi system table 进行调用.
 
 最后, 一个较为完整的 OS 访问 acpi 的图如下:
 
