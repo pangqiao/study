@@ -50,4 +50,4 @@ Linux 内核学习总结
 
 7.Linux 内核如何装载和启动一个可执行程序: http://www.jianshu.com/p/eca35a20dbda
 
-8.理解进程调度时机跟踪分析进程调度与进程切换的过程: http://www.jianshu.com/p/ccdbed5c72
+8.理解进程调度时机跟踪分析进程调度与进程切换的过程: http://www.jianshu.com/p/ccdbed5c7243
