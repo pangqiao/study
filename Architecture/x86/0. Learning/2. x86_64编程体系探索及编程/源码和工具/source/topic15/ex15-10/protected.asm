@@ -6,64 +6,64 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÎªÁËÍê³ÉÊµÑé£¬¹Ø±ÕÊ±¼äÖĞ¶ÏºÍ¼üÅÌÖĞ¶Ï
+;; ä¸ºäº†å®Œæˆå®éªŒ,å…³é—­æ—¶é—´ä¸­æ–­å’Œé”®ç›˜ä¸­æ–­
         call disable_timer
         
-;; ÉèÖÃ #PF handler
+;; è®¾ç½® #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ÉèÖÃ #DB handler
+; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
 
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; è®¾ç½® sysenter/sysexit ä½¿ç”¨ç¯å¢ƒ
         call set_sysenter
 
-;; ÉèÖÃ system_service handler
+;; è®¾ç½® system_service handler
         mov esi, SYSTEM_SERVICE_VECTOR
         mov edi, system_service
         call set_user_interrupt_handler 
 
-; ÔÊĞíÖ´ĞĞ SSE Ö¸Áî        
+; å…è®¸æ‰§è¡Œ SSE æŒ‡ä»¤        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         
         
-;ÉèÖÃ CR4.PAE
+;è®¾ç½® CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; å¼€å¯ XD åŠŸèƒ½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; åˆå§‹åŒ– paging ç¯å¢ƒ
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
+;è®¾ç½® PDPT è¡¨åœ°å€        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; ´ò¿ª¡¡paging
+; æ‰“å¼€ã€€paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax                                 
@@ -82,69 +82,69 @@ entry:
         call disable_timer
         sti
         
-;========= ³õÊ¼»¯ÉèÖÃÍê±Ï =================
+;========= åˆå§‹åŒ–è®¾ç½®å®Œæ¯• =================
 
-; 1) ¿ªÆôAPIC
+; 1) å¼€å¯ APIC
         call enable_xapic        
         
-; 2) ÉèÖÃ APIC performance monitor counter handler
+; 2) è®¾ç½® APIC performance monitor counter handler
         mov esi, APIC_PERFMON_VECTOR
         mov edi, apic_perfmon_handler
         call set_interrupt_handler
         
         
-; ÉèÖÃ LVT performance monitor counter
+; è®¾ç½® LVT performance monitor counter
         mov DWORD [APIC_BASE + LVT_PERFMON], FIXED_DELIVERY | APIC_PERFMON_VECTOR
         
 
 ;*
-;* ÊµÑé ex15-10£º²âÊÔ load latency »úÖÆ
+;* å®éªŒ ex15-10ï¼šæµ‹è¯• load latency æœºåˆ¶
 ;*       
-        call available_pebs                             ; ²âÊÔ pebs ÊÇ·ñ¿ÉÓÃ
+        call available_pebs                             ; æµ‹è¯• pebs æ˜¯å¦å¯ç”¨
         test eax, eax
-        jz next                                         ; ²»¿ÉÓÃ
+        jz next                                         ; ä¸å¯ç”¨
 
 
         ;*
-        ;* perfmon ³õÊ¼ÉèÖÃ
-        ;* ¹Ø±ÕËùÓĞ counter ºÍ PEBS 
-        ;* Çå overflow ±êÖ¾Î»
+        ;* perfmon åˆå§‹è®¾ç½®
+        ;* å…³é—­æ‰€æœ‰ counter å’Œ PEBS 
+        ;* æ¸… overflow æ ‡å¿—ä½
         ;*
         DISABLE_GLOBAL_COUNTER
         DISABLE_PEBS
         RESET_COUNTER_OVERFLOW
 
 
-; ÉèÖÃÍêÕûµÄ DS ÇøÓò
+; è®¾ç½®å®Œæ•´çš„ DS åŒºåŸŸ
         SET_DS_AREA
         ENABLE_BTS                                     ; TR=1, BTS=1
 
-; ÉèÖÃ counter ¼ÆÊıÖµ        
+; è®¾ç½® counter è®¡æ•°å€¼        
         mov esi, IA32_PMC0
         call write_counter_maximum
 
-; Ğ´Èë load latency ¼à¿ØÖµ
+; å†™å…¥ load latency ç›‘æ§å€¼
         mov ecx, MSR_PEBS_LD_LAT
-        mov eax, 03h                                    ; ¼à¿ØÖµÎª 3
+        mov eax, 03h                                    ; ç›‘æ§å€¼ä¸º 3
         mov edx, 0
         wrmsr
 
-; ÉèÖÃ¼à¿ØÊÂ¼ş, ¿ªÆô¼ÆÊıÆ÷
+; è®¾ç½®ç›‘æ§äº‹ä»¶, å¼€å¯è®¡æ•°å™¨
         mov ecx, IA32_PERFEVTSEL0
-        mov eax, PEBS_MEM_INST_COUNT_EVENT              ; Ê¹ÓÃ MEM load ÊÂ¼ş
+        mov eax, PEBS_MEM_INST_COUNT_EVENT              ; ä½¿ç”¨ MEM load äº‹ä»¶
         mov edx, 0
         wrmsr     
 
-; ¿ªÆô IA32_PMC0 ¼ÆÊıÆ÷µÄ PEBS »úÖÆ£¬²¢Ê¹ÓÃ load latency ¹¦ÄÜ
+; å¼€å¯ IA32_PMC0 è®¡æ•°å™¨çš„ PEBS æœºåˆ¶,å¹¶ä½¿ç”¨ load latency åŠŸèƒ½
         ENABLE_PEBS_WITH_LL_PMC0
         ENABLE_IA32_PMC0
         
 
-; ²âÊÔº¯Êı 
+; æµ‹è¯•å‡½æ•° 
         call test_func
 
 
-; ¹Ø±Õ IA32_PMC0 ¼ÆÊıÆ÷
+; å…³é—­ IA32_PMC0 è®¡æ•°å™¨
         DISABLE_IA32_PMC0
         DISABLE_PEBS_PMC0
         DISABLE_BTS
@@ -153,11 +153,11 @@ next:
         jmp $
 
         
-; ×ªµ½ long Ä£¿é
+; è½¬åˆ° long æ¨¡å—
         ;jmp LONG_SEG
                                 
                                 
-; ½øÈë ring 3 ´úÂë
+; è¿›å…¥ ring 3 ä»£ç 
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -165,7 +165,7 @@ next:
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ç”¨æˆ·ä»£ç 
 
 user_entry:
         mov ax, user_data32_sel
@@ -202,23 +202,23 @@ ph_msg5 db '****** DS interrupt occur with PEBS buffer full! *******', 10, 0
 ph_msg6 db '****** PEBS interrupt occur *******', 10, 0
 
 do_apic_perfmon_handler:
-        ;; ±£´æ´¦ÀíÆ÷ÉÏÏÂÎÄ
+        ;; ä¿å­˜å¤„ç†å™¨ä¸Šä¸‹æ–‡
         STORE_CONTEXT
 
 ;*
-;* ÏÂÃæÔÚ handler Àï¹Ø±Õ¹¦ÄÜ
+;* ä¸‹é¢åœ¨ handler é‡Œå…³é—­åŠŸèƒ½
 ;*
 
-        ;; µ± TR ¿ªÆôÊ±£¬¾Í¹Ø±Õ TR
+        ;; å½“ TR å¼€å¯æ—¶,å°±å…³é—­ TR
         mov ecx, IA32_DEBUGCTL
         rdmsr
-        mov [debugctl_value], eax        ; ±£´æÔ­ IA32_DEBUGCTL ¼Ä´æÆ÷Öµ£¬ÒÔ±ã»Ö¸´
+        mov [debugctl_value], eax        ; ä¿å­˜åŸ IA32_DEBUGCTL å¯„å­˜å™¨å€¼,ä»¥ä¾¿æ¢å¤
         mov [debugctl_value + 4], edx
         mov eax, 0
         mov edx, 0
         wrmsr
 
-        ;; ¹Ø±Õ pebs enable
+        ;; å…³é—­ pebs enable
         mov ecx, IA32_PEBS_ENABLE
         rdmsr
         mov [pebs_enable_value], eax
@@ -228,7 +228,7 @@ do_apic_perfmon_handler:
         wrmsr
 
 
-        ; ¹Ø±Õ performance counter
+        ; å…³é—­ performance counter
         mov ecx, IA32_PERF_GLOBAL_CTRL
         rdmsr
         mov [perf_global_ctrl_value], eax
@@ -245,92 +245,92 @@ do_apic_perfmon_handler:
 
         call dump_pmc
 ;*
-;* ½ÓÏÂÀ´ÅĞ¶Ï PMI ÖĞ¶ÏÒı·¢Ô­Òò
+;* æ¥ä¸‹æ¥åˆ¤æ–­ PMI ä¸­æ–­å¼•å‘åŸå› 
 ;*
 
 checK_pebs_interrupt:
-        ; ÊÇ·ñ PEBS ÖĞ¶Ï
+        ; æ˜¯å¦ PEBS ä¸­æ–­
         call test_pebs_interrupt
         test eax, eax
         jz check_counter_overflow
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg6
         call puts
         call dump_pebs_record
-        call update_pebs_index_track            ; ¸üĞÂ PEBS index µÄ¹ì¼££¬±£³Ö¶Ô PEBS ÖĞ¶ÏµÄ¼ì²â
+        call update_pebs_index_track            ; æ›´æ–° PEBS index çš„è½¨è¿¹,ä¿æŒå¯¹ PEBS ä¸­æ–­çš„æ£€æµ‹
 
 check_counter_overflow:
-        ; ¼ì²âÊÇ·ñ·¢Éú PMI ÖĞ¶Ï
+        ; æ£€æµ‹æ˜¯å¦å‘ç”Ÿ PMI ä¸­æ–­
         call test_counter_overflow
         test eax, eax
         jz check_pebs_buffer_overflow
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg4
         call puts
         call dump_perf_global_status
-        RESET_COUNTER_OVERFLOW                  ; ÇåÒç³ö±êÖ¾
+        RESET_COUNTER_OVERFLOW                  ; æ¸…æº¢å‡ºæ ‡å¿—
 
 check_pebs_buffer_overflow:
-        ; ¼ì²âÊÇ·ñ·¢Éú PEBS buffer Òç³öÖĞ¶Ï
+        ; æ£€æµ‹æ˜¯å¦å‘ç”Ÿ PEBS buffer æº¢å‡ºä¸­æ–­
         call test_pebs_buffer_overflow
         test eax, eax
         jz check_bts_buffer_overflow
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg5
         call puts
         call dump_perf_global_status
-        RESET_PEBS_BUFFER_OVERFLOW              ; Çå OvfBuffer Òç³ö±êÖ¾
-        call reset_pebs_index                   ; ÖØÖÃ PEBS Öµ
+        RESET_PEBS_BUFFER_OVERFLOW              ; æ¸… OvfBuffer æº¢å‡ºæ ‡å¿—
+        call reset_pebs_index                   ; é‡ç½® PEBS å€¼
 
 check_bts_buffer_overflow:
-        ; ¼ìÔòÊÇ·ñ·¢Éú BTS buffer Òç³öÖĞ¶Ï
+        ; æ£€åˆ™æ˜¯å¦å‘ç”Ÿ BTS buffer æº¢å‡ºä¸­æ–­
         call test_bts_buffer_overflow
         test eax, eax
         jz apic_perfmon_handler_done
-        ; ´òÓ¡ĞÅÏ¢
+        ; æ‰“å°ä¿¡æ¯
         mov esi, ph_msg3
         call puts
-        call reset_bts_index                    ; ÖØÖÃ BTS index Öµ
+        call reset_bts_index                    ; é‡ç½® BTS index å€¼
 
 apic_perfmon_handler_done:
         mov esi, ph_msg2
         call puts
 
 ;*
-;* ÏÂÃæ»Ö¸´¹¦ÄÜÔ­ÉèÖÃ!
+;* ä¸‹é¢æ¢å¤åŠŸèƒ½åŸè®¾ç½®!
 ;* 
-        ; »Ö¸´Ô­ IA32_PERF_GLOBAL_CTRL ¼Ä´æÆ÷Öµ
+        ; æ¢å¤åŸ IA32_PERF_GLOBAL_CTRL å¯„å­˜å™¨å€¼
         mov ecx, IA32_PERF_GLOBAL_CTRL
         mov eax, [perf_global_ctrl_value]
         mov edx, [perf_global_ctrl_value + 4]
         wrmsr
 
-        ; »Ö¸´Ô­ IA32_DEBUGCTL ÉèÖÃ¡¡
+        ; æ¢å¤åŸ IA32_DEBUGCTL è®¾ç½®ã€€
         mov ecx, IA32_DEBUGCTL
         mov eax, [debugctl_value]
         mov edx, [debugctl_value + 4]
         wrmsr
 
-        ;; »Ö¸´ IA32_PEBS_ENABLE ¼Ä´æÆ÷
+        ;; æ¢å¤ IA32_PEBS_ENABLE å¯„å­˜å™¨
         mov ecx, IA32_PEBS_ENABLE
         mov eax, [pebs_enable_value]
         mov edx, [pebs_enable_value + 4]
         wrmsr
 
-        RESTORE_CONTEXT                                 ; »Ö¸´ context
-        btr DWORD [APIC_BASE + LVT_PERFMON], 16         ; Çå LVT_PERFMON ¼Ä´æÆ÷ mask Î»
-        mov DWORD [APIC_BASE + EOI], 0                  ; Ğ´ EOI ÃüÁî
+        RESTORE_CONTEXT                                 ; æ¢å¤ context
+        btr DWORD [APIC_BASE + LVT_PERFMON], 16         ; æ¸… LVT_PERFMON å¯„å­˜å™¨ mask ä½
+        mov DWORD [APIC_BASE + EOI], 0                  ; å†™ EOI å‘½ä»¤
         iret
 
 
 
 
         
-;******** include ÖĞ¶Ï handler ´úÂë ********
+;******** include ä¸­æ–­ handler ä»£ç  ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include æ¨¡å— ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -342,10 +342,10 @@ apic_perfmon_handler_done:
 %include "..\lib\pic8259A.asm"
 
 
-;;************* º¯Êıµ¼Èë±í  *****************
+;;************* å‡½æ•°å¯¼å…¥è¡¨  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓĞÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; è¿™ä¸ª lib32 åº“å¯¼å…¥è¡¨æ”¾åœ¨ common\ ç›®å½•ä¸‹,
+; ä¾›æ‰€æœ‰å®éªŒçš„ protected.asm æ¨¡å—ä½¿ç”¨
 
 %include "..\common\lib32_import_table.imt"
 

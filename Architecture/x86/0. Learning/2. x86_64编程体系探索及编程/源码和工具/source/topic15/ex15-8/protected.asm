@@ -6,64 +6,64 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÎªÁËÍê³ÉÊµÑé£¬¹Ø±ÕÊ±¼äÖĞ¶ÏºÍ¼üÅÌÖĞ¶Ï
+;; ä¸ºäº†å®Œæˆå®éªŒ,å…³é—­æ—¶é—´ä¸­æ–­å’Œé”®ç›˜ä¸­æ–­
         call disable_timer
         
-;; ÉèÖÃ #PF handler
+;; è®¾ç½® #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ÉèÖÃ #DB handler
+; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
 
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; è®¾ç½® sysenter/sysexit ä½¿ç”¨ç¯å¢ƒ
         call set_sysenter
 
-;; ÉèÖÃ system_service handler
+;; è®¾ç½® system_service handler
         mov esi, SYSTEM_SERVICE_VECTOR
         mov edi, system_service
         call set_user_interrupt_handler 
 
-; ÔÊĞíÖ´ĞĞ SSE Ö¸Áî        
+; å…è®¸æ‰§è¡Œ SSE æŒ‡ä»¤        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         
         
-;ÉèÖÃ CR4.PAE
+;è®¾ç½® CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; å¼€å¯ XD åŠŸèƒ½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; åˆå§‹åŒ– paging ç¯å¢ƒ
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
+;è®¾ç½® PDPT è¡¨åœ°å€        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; ´ò¿ª¡¡paging
+; æ‰“å¼€ã€€paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax                                 
@@ -82,57 +82,57 @@ entry:
         call disable_timer
         sti
         
-;========= ³õÊ¼»¯ÉèÖÃÍê±Ï =================
+;========= åˆå§‹åŒ–è®¾ç½®å®Œæ¯• =================
 
 
 
-; 1) ¿ªÆôAPIC
+; 1) å¼€å¯ APIC
         call enable_xapic        
         
-; 2) ÉèÖÃ APIC performance monitor counter handler
+; 2) è®¾ç½® APIC performance monitor counter handler
         mov esi, APIC_PERFMON_VECTOR
         mov edi, apic_perfmon_handler
         call set_interrupt_handler
         
         
-; ÉèÖÃ LVT performance monitor counter
+; è®¾ç½® LVT performance monitor counter
         mov DWORD [APIC_BASE + LVT_PERFMON], FIXED_DELIVERY | APIC_PERFMON_VECTOR
         
 
 ;*
-;* ÊµÑé ex15-8£º²âÊÔPMIÖĞ¶ÏÓëPEBSÖĞ¶ÏÍ¬Ê±´¥·¢
+;* å®éªŒ ex15-8ï¼šæµ‹è¯• PMI ä¸­æ–­ä¸ PEBS ä¸­æ–­åŒæ—¶è§¦å‘
 ;*
         
-        call available_pebs                             ; ²âÊÔ pebs ÊÇ·ñ¿ÉÓÃ
+        call available_pebs                             ; æµ‹è¯• pebs æ˜¯å¦å¯ç”¨
         test eax, eax
-        jz next                                         ; ²»¿ÉÓÃ
+        jz next                                         ; ä¸å¯ç”¨
 
         ;*
-        ;* perfmon ³õÊ¼ÉèÖÃ
-        ;* ¹Ø±ÕËùÓĞ counter ºÍ PEBS 
-        ;* Çå overflow ±êÖ¾Î»
+        ;* perfmon åˆå§‹è®¾ç½®
+        ;* å…³é—­æ‰€æœ‰ counter å’Œ PEBS 
+        ;* æ¸… overflow æ ‡å¿—ä½
         ;*
         DISABLE_GLOBAL_COUNTER
         DISABLE_PEBS
         RESET_COUNTER_OVERFLOW
 
 
-; ÉèÖÃÍêÕûµÄ DS ÇøÓò£¬BTS bufferÂúÊ±ÖĞ¶Ï
+; è®¾ç½®å®Œæ•´çš„ DS åŒºåŸŸ,BTS buffer æ»¡æ—¶ä¸­æ–­
         SET_DS_AREA
 
 
-; ¿ªÆô BTS ²¢Ê¹ÓÃ PMI ¶³½á¹¦ÄÜ
+; å¼€å¯ BTS å¹¶ä½¿ç”¨ PMI å†»ç»“åŠŸèƒ½
         ENABLE_BTS_FREEZE_PERFMON_ON_PMI                ; TR=1, BTS=1, BTINT=1
 
 
-; ÉèÖÃÁ½¸ö counter ¼ÆÊıÖµ        
-        mov esi, IA32_PMC0                              ; ÉèÖÃ IA32_PMC0
+; è®¾ç½®ä¸¤ä¸ª counter è®¡æ•°å€¼        
+        mov esi, IA32_PMC0                              ; è®¾ç½® IA32_PMC0
         call write_counter_maximum
-        mov esi, IA32_PMC1                              ; ÉèÖÃ IA32_PMC1
+        mov esi, IA32_PMC1                              ; è®¾ç½® IA32_PMC1
         call write_counter_maximum
         
 
-; ÉèÖÃÁ½¸ö IA32_PERFEVTSEL0 ¼Ä´æÆ÷, ¿ªÆô¼ÆÊı
+; è®¾ç½®ä¸¤ä¸ª IA32_PERFEVTSEL0 å¯„å­˜å™¨, å¼€å¯è®¡æ•°
         mov ecx, IA32_PERFEVTSEL0                       ; counter 0                       
         mov eax, INST_COUNT_EVENT
         mov edx, 0
@@ -142,18 +142,18 @@ entry:
         mov edx, 0
         wrmsr
  
-; ¿ªÆô PEBS
+; å¼€å¯ PEBS
         ;*
-        ;* ²âÊÔÒ»: IA32_PMC0 Ê¹ÓÃ PMI ¼ÆÊı£¬IA32_PMC1 Ê¹ÓÃ PEBS ¼ÆÊı
+        ;* æµ‹è¯•ä¸€: IA32_PMC0 ä½¿ç”¨ PMI è®¡æ•°,IA32_PMC1 ä½¿ç”¨ PEBS è®¡æ•°
         ;*
 ;        ENABLE_PEBS_PMC1
 
         ;*
-        ;* ²âÊÔ¶ş: IA32_PMC0 Ê¹ÓÃ PEBS ¼ÆÊı£¬IA32_PMC1 Ê¹ÓÃ PMI ¼ÆÊı
+        ;* æµ‹è¯•äºŒ: IA32_PMC0 ä½¿ç”¨ PEBS è®¡æ•°,IA32_PMC1 ä½¿ç”¨ PMI è®¡æ•°
         ;*
         ENABLE_PEBS_PMC0
 
-; Í¬Ê±¿ªÆôÁ½¸ö¼ÆÊıÆ÷£¬¿ªÊ¼¼ÆÊı
+; åŒæ—¶å¼€å¯ä¸¤ä¸ªè®¡æ•°å™¨,å¼€å§‹è®¡æ•°
         ENABLE_COUNTER (IA32_PMC0_EN | IA32_PMC1_EN), 0
 
         jmp l1
@@ -170,24 +170,24 @@ l10:    jmp l11
 l11:
 
 
-; ¹Ø±ÕÁ½¸ö¼ÆÊıÆ÷
+; å…³é—­ä¸¤ä¸ªè®¡æ•°å™¨
         DISABLE_COUNTER (IA32_PMC0_EN | IA32_PMC1_EN), 0
 
-; ¹Ø±Õ PEBS »úÖÆ
+; å…³é—­ PEBS æœºåˆ¶
         DISABLE_PEBS_PMC1
 
-; ¹Ø±Õ BTS
+; å…³é—­ BTS
         DISABLE_BTS_FREEZE_PERFMON_ON_PMI                ; TR=0, BTS=0
 
 next:        
         jmp $
 
         
-; ×ªµ½ long Ä£¿é
+; è½¬åˆ° long æ¨¡å—
         ;jmp LONG_SEG
                                 
                                 
-; ½øÈë ring 3 ´úÂë
+; è¿›å…¥ ring 3 ä»£ç 
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -195,7 +195,7 @@ next:
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ç”¨æˆ·ä»£ç 
 
 user_entry:
         mov ax, user_data32_sel
@@ -208,16 +208,16 @@ user_start:
 
 
 
-;* Ê¹ÓÃ ..\common\handler32.asm ÀïÃæµÄ apic_perfmon_handler Àı³Ì *
+;* ä½¿ç”¨ ..\common\handler32.asm é‡Œé¢çš„ apic_perfmon_handler ä¾‹ç¨‹ *
 %define APIC_PERFMON_HANDLER
 
 
         
-;******** include ÖĞ¶Ï handler ´úÂë ********
+;******** include ä¸­æ–­ handler ä»£ç  ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include æ¨¡å— ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -229,10 +229,10 @@ user_start:
 %include "..\lib\pic8259A.asm"
 
 
-;;************* º¯Êıµ¼Èë±í  *****************
+;;************* å‡½æ•°å¯¼å…¥è¡¨  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓĞÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; è¿™ä¸ª lib32 åº“å¯¼å…¥è¡¨æ”¾åœ¨ common\ ç›®å½•ä¸‹,
+; ä¾›æ‰€æœ‰å®éªŒçš„ protected.asm æ¨¡å—ä½¿ç”¨
 
 %include "..\common\lib32_import_table.imt"
 

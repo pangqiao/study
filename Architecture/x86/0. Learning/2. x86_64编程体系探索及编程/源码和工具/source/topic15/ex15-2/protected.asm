@@ -6,64 +6,64 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; ï¿½ï¿½ï¿½ï¿½ protected Ä£ï¿½ï¿½
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£ï¿½é³¤ï¿½ï¿½
 
 entry:
         
-;; ÎªÁËÍê³ÉÊµÑé£¬¹Ø±ÕÊ±¼äÖÐ¶ÏºÍ¼üÅÌÖÐ¶Ï
+;; Îªï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½é£¬ï¿½Ø±ï¿½Ê±ï¿½ï¿½ï¿½Ð¶ÏºÍ¼ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
         call disable_timer
         
-;; ÉèÖÃ #PF handler
+;; ï¿½ï¿½ï¿½ï¿½ #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
+;; ï¿½ï¿½ï¿½ï¿½ #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ÉèÖÃ #DB handler
+; ï¿½ï¿½ï¿½ï¿½ #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
 
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; ï¿½ï¿½ï¿½ï¿½ sysenter/sysexit Ê¹ï¿½Ã»ï¿½ï¿½ï¿½
         call set_sysenter
 
-;; ÉèÖÃ system_service handler
+;; ï¿½ï¿½ï¿½ï¿½ system_service handler
         mov esi, SYSTEM_SERVICE_VECTOR
         mov edi, system_service
         call set_user_interrupt_handler 
 
-; ÔÊÐíÖ´ÐÐ SSE Ö¸Áî        
+; ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ SSE Ö¸ï¿½ï¿½        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         
         
-;ÉèÖÃ CR4.PAE
+;ï¿½ï¿½ï¿½ï¿½ CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; ï¿½ï¿½ï¿½ï¿½ XD ï¿½ï¿½ï¿½ï¿½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; ï¿½ï¿½Ê¼ï¿½ï¿½ paging ï¿½ï¿½ï¿½ï¿½
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
+;ï¿½ï¿½ï¿½ï¿½ PDPT ï¿½ï¿½ï¿½ï¿½Ö·        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; ´ò¿ª¡¡paging
+; ï¿½ò¿ª¡ï¿½paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax                                 
@@ -82,53 +82,53 @@ entry:
         call disable_timer
         sti
         
-;========= ³õÊ¼»¯ÉèÖÃÍê±Ï =================
+;========= ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =================
 
 
 
-; 1) ¿ªÆôAPIC
+; 1) ï¿½ï¿½ï¿½ï¿½APIC
         call enable_xapic        
         
-; 2£©ÉèÖÃ PMI handler
+; 2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ PMI handler
         mov esi, APIC_PERFMON_VECTOR
         mov edi, perfmon_handler
         call set_interrupt_handler
         
         
-; 3) ÉèÖÃ LVT perfmon ¼Ä´æÆ÷
+; 3) ï¿½ï¿½ï¿½ï¿½ LVT perfmon ï¿½Ä´ï¿½ï¿½ï¿½
         mov DWORD [APIC_BASE + LVT_PERFMON], FIXED | APIC_PERFMON_VECTOR
 
 
-;;; ÊµÑé ex15-2£º²âÊÔ IA32_PMC counter
+;;; Êµï¿½ï¿½ ex15-2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ IA32_PMC counter
 
-; ÉèÖÃ IA32_PERF_GLOBAL_CTRL
+; ï¿½ï¿½ï¿½ï¿½ IA32_PERF_GLOBAL_CTRL
         mov ecx, IA32_PERF_GLOBAL_CTRL
         rdmsr
         bts eax, 0                              ; PMC0 enable
         wrmsr
 
-        ; µÚÒ»´Î´òÓ¡ PMC ¼ÆÊýÆ÷Öµ
-        call dump_pmc                           ; ´òÓ¡ PMC ¼ÆÊýÆ÷
+        ; ï¿½ï¿½Ò»ï¿½Î´ï¿½Ó¡ PMC ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+        call dump_pmc                           ; ï¿½ï¿½Ó¡ PMC ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                 
-; ÉèÖÃ IA32_PERFEVTSEL0 ¼Ä´æÆ÷
+; ï¿½ï¿½ï¿½ï¿½ IA32_PERFEVTSEL0 ï¿½Ä´ï¿½ï¿½ï¿½
         mov ecx, IA32_PERFEVTSEL0
         mov eax, INST_COUNT_EVENT               ; EN=1, INT=1, USR=OS=1, umask=0, event select = c0
         mov edx, 0
         wrmsr
 
-        call foo                                 ; µ÷ÓÃ²âÊÔº¯Êý
+        call foo                                 ; ï¿½ï¿½ï¿½Ã²ï¿½ï¿½Ôºï¿½ï¿½ï¿½
         
         mov ecx, IA32_PERFEVTSEL0
         rdmsr
-        btr eax, 22                              ; ¹Ø±Õ counter
+        btr eax, 22                              ; ï¿½Ø±ï¿½ counter
         wrmsr
         
-        ; µÚ¶þ´Î´òÓ¡¼ÆÊýÆ÷Öµ
-        call dump_pmc                            ; ´òÓ¡ PMC ¼ÆÊýÆ÷
+        ; ï¿½Ú¶ï¿½ï¿½Î´ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµ
+        call dump_pmc                            ; ï¿½ï¿½Ó¡ PMC ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
         jmp $
         
-; ½øÈë ring 3 ´úÂë
+; ï¿½ï¿½ï¿½ï¿½ ring 3 ï¿½ï¿½ï¿½ï¿½
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -137,7 +137,7 @@ entry:
 
 
 ;; **********************************        
-;; ÏÂÃæÊÇÓÃ»§´úÂë£¨CPL = 3)
+;; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ë£¨CPL = 3)
 ;; **********************************
 
 user_entry:
@@ -152,10 +152,10 @@ next:
 
 
 
-;;; ²âÊÔº¯Êý
+;;; ï¿½ï¿½ï¿½Ôºï¿½ï¿½ï¿½
 foo:
         mov esi, msg
-        call puts                        ; ´òÓ¡Ò»ÌõÐÅÏ¢
+        call puts                        ; ï¿½ï¿½Ó¡Ò»ï¿½ï¿½ï¿½ï¿½Ï¢
         ret
 
 msg     db 10, 'hi, this is test function !!!', 10, 10,0
@@ -180,18 +180,18 @@ do_perfmon_handler:
         mov esi, pfh_msg2
         call puts
 do_perfmon_handler_done:
-        btr DWORD [APIC_BASE + LVT_PERFMON], 16         ; Çå mask Î»
-        mov DWORD [APIC_BASE + EOI], 0                  ; ·¢ËÍ EOI ÃüÁî
+        btr DWORD [APIC_BASE + LVT_PERFMON], 16         ; ï¿½ï¿½ mask Î»
+        mov DWORD [APIC_BASE + EOI], 0                  ; ï¿½ï¿½ï¿½ï¿½ EOI ï¿½ï¿½ï¿½ï¿½
         iret
 
 
 
         
-;******** include ÖÐ¶Ï handler ´úÂë ********
+;******** include ï¿½Ð¶ï¿½ handler ï¿½ï¿½ï¿½ï¿½ ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include Ä£ï¿½ï¿½ ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -203,10 +203,10 @@ do_perfmon_handler_done:
 %include "..\lib\pic8259A.asm"
 
 
-;;************* º¯Êýµ¼Èë±í  *****************
+;;************* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓÐÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; ï¿½ï¿½ï¿½ lib32 ï¿½âµ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ common\ Ä¿Â¼ï¿½Â£ï¿½
+; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ protected.asm Ä£ï¿½ï¿½Ê¹ï¿½ï¿½
 
 %include "..\common\lib32_import_table.imt"
 

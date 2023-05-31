@@ -6,86 +6,86 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; ï¿½ï¿½ï¿½ï¿½ protected Ä£ï¿½ï¿½
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£ï¿½é³¤ï¿½ï¿½
 
 entry:
         
-;; ¹Ø±Õ8259
+;; ï¿½Ø±ï¿½8259
         call disable_8259
 
-;; ÉèÖÃ #PF handler
+;; ï¿½ï¿½ï¿½ï¿½ #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
+;; ï¿½ï¿½ï¿½ï¿½ #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ÉèÖÃ #DB handler
+; ï¿½ï¿½ï¿½ï¿½ #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, debug_handler
         call set_interrupt_handler
 
 
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; ï¿½ï¿½ï¿½ï¿½ sysenter/sysexit Ê¹ï¿½Ã»ï¿½ï¿½ï¿½
         call set_sysenter
 
-; ÔÊÐíÖ´ÐÐ SSE Ö¸Áî        
+; ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ SSE Ö¸ï¿½ï¿½        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         
         
-;ÉèÖÃ CR4.PAE
+;ï¿½ï¿½ï¿½ï¿½ CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; ï¿½ï¿½ï¿½ï¿½ XD ï¿½ï¿½ï¿½ï¿½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; ï¿½ï¿½Ê¼ï¿½ï¿½ paging ï¿½ï¿½ï¿½ï¿½
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
+;ï¿½ï¿½ï¿½ï¿½ PDPT ï¿½ï¿½ï¿½ï¿½Ö·        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; ´ò¿ª¡¡paging
+; ï¿½ò¿ª¡ï¿½paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax               
                   
                 
         
-;; ÊµÑé 13-9£º²âÊÔÊý¾Ý¶Ïµã
+;; Êµï¿½ï¿½ 13-9ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¶Ïµï¿½
 
-; 1) ¿ªÆô CR4.DE
+; 1) ï¿½ï¿½ï¿½ï¿½ CR4.DE
 	mov eax, cr4
 	bts eax, DE_BIT
 	mov cr4, eax
 	
-;2) ÉèÖÃI/O¶Ïµã enable Î»
+;2) ï¿½ï¿½ï¿½ï¿½I/Oï¿½Ïµï¿½ enable Î»
 	mov eax, dr7
 	or eax, 0xE0001					; L0=1, R/W0=10B, LEN0=11B
 	mov dr7, eax
 
-;3) ÉèÖÃ I/O¶Ïµã
+;3) ï¿½ï¿½ï¿½ï¿½ I/Oï¿½Ïµï¿½
 	mov eax, 0x93
 	mov dr0, eax
 
 	
-; 4) ²âÊÔ I/O ¶Ïµã
+; 4) ï¿½ï¿½ï¿½ï¿½ I/O ï¿½Ïµï¿½
 	in al, 0x92
 
-; 5) ²âÊÔ ins Ö¸Áî
+; 5) ï¿½ï¿½ï¿½ï¿½ ins Ö¸ï¿½ï¿½
 ;	mov dx, 0x90
 ;	mov ecx, 4
 ;	rep insb
@@ -94,11 +94,11 @@ entry:
 
 
         
-; ×ªµ½ long Ä£¿é
+; ×ªï¿½ï¿½ long Ä£ï¿½ï¿½
         ;jmp LONG_SEG
                                 
                                 
-; ½øÈë ring 3 ´úÂë
+; ï¿½ï¿½ï¿½ï¿½ ring 3 ï¿½ï¿½ï¿½ï¿½
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -106,7 +106,7 @@ entry:
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
 
 user_entry:
         mov ax, user_data32_sel
@@ -131,9 +131,9 @@ do_debug_handler:
 	movzx ecx, al
 	mov esi, dh_msg1
 	call puts
-	call dump_drs				; ´òÓ¡ DR0-DR3
-	call dump_dr6				; ´òÓ¡ DR6
-	call dump_dr7				; ´òÓ¡ DR7
+	call dump_drs				; ï¿½ï¿½Ó¡ DR0-DR3
+	call dump_dr6				; ï¿½ï¿½Ó¡ DR6
+	call dump_dr7				; ï¿½ï¿½Ó¡ DR7
 	mov esi, dh_msg3
 	call puts
 	mov esi, ecx
@@ -149,11 +149,11 @@ do_debug_handler:
 
 
         
-;******** include ÖÐ¶Ï handler ´úÂë ********
+;******** include ï¿½Ð¶ï¿½ handler ï¿½ï¿½ï¿½ï¿½ ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include Ä£ï¿½ï¿½ ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -164,10 +164,10 @@ do_debug_handler:
 %include "..\lib\pic8259A.asm"
 
 
-;;************* º¯Êýµ¼Èë±í  *****************
+;;************* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓÐÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; ï¿½ï¿½ï¿½ lib32 ï¿½âµ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ common\ Ä¿Â¼ï¿½Â£ï¿½
+; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ protected.asm Ä£ï¿½ï¿½Ê¹ï¿½ï¿½
 
 %include "..\common\lib32_import_table.imt"
 

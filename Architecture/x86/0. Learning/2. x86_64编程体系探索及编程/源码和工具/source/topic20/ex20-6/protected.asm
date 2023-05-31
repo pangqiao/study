@@ -6,64 +6,64 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; ï¿½ï¿½ï¿½ï¿½ protected Ä£ï¿½ï¿½
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£ï¿½é³¤ï¿½ï¿½
 
 entry:
         
-;; ÎªÁËÍê³ÉÊµÑé£¬¹Ø±ÕÊ±¼äÖÐ¶ÏºÍ¼üÅÌÖÐ¶Ï
+;; Îªï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½é£¬ï¿½Ø±ï¿½Ê±ï¿½ï¿½ï¿½Ð¶ÏºÍ¼ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
         call disable_timer
         
-;; ÉèÖÃ #PF handler
+;; ï¿½ï¿½ï¿½ï¿½ #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
+;; ï¿½ï¿½ï¿½ï¿½ #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ÉèÖÃ #DB handler
+; ï¿½ï¿½ï¿½ï¿½ #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
 
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; ï¿½ï¿½ï¿½ï¿½ sysenter/sysexit Ê¹ï¿½Ã»ï¿½ï¿½ï¿½
         call set_sysenter
 
-;; ÉèÖÃ system_service handler
+;; ï¿½ï¿½ï¿½ï¿½ system_service handler
         mov esi, SYSTEM_SERVICE_VECTOR
         mov edi, system_service
         call set_user_interrupt_handler 
 
-; ÔÊÐíÖ´ÐÐ SSE Ö¸Áî        
+; ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ SSE Ö¸ï¿½ï¿½        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         
         
-;ÉèÖÃ CR4.PAE
+;ï¿½ï¿½ï¿½ï¿½ CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; ï¿½ï¿½ï¿½ï¿½ XD ï¿½ï¿½ï¿½ï¿½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; ï¿½ï¿½Ê¼ï¿½ï¿½ paging ï¿½ï¿½ï¿½ï¿½
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
+;ï¿½ï¿½ï¿½ï¿½ PDPT ï¿½ï¿½ï¿½ï¿½Ö·        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; ´ò¿ª¡¡paging
+; ï¿½ò¿ª¡ï¿½paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax                                 
@@ -81,17 +81,17 @@ entry:
         call disable_8259
         sti
         
-;========= ³õÊ¼»¯ÉèÖÃÍê±Ï =================
+;========= ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =================
 
 
-;; ÊµÑéex20-6£º²âÊÔ½ø³ÌÇÐ»»ÖÐµÄx87 FPUÑÓÊ±ÇÐ»»
+;; Êµï¿½ï¿½ex20-6ï¿½ï¿½ï¿½ï¿½ï¿½Ô½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½Ðµï¿½x87 FPUï¿½ï¿½Ê±ï¿½Ð»ï¿½
 
-;; ÉèÖÃ #NM handler
+;; ï¿½ï¿½ï¿½ï¿½ #NM handler
         mov esi, NM_HANDLER_VECTOR
         mov edi, nm_handler
         call set_interrupt_handler
         
-;; ÉèÖÃ x87 FPU ºÍ MMX »·¾³
+;; ï¿½ï¿½ï¿½ï¿½ x87 FPU ï¿½ï¿½ MMX ï¿½ï¿½ï¿½ï¿½
         mov eax, cr0
         bts eax, 1              ; MP = 1
         btr eax, 2              ; EM = 0
@@ -101,12 +101,12 @@ entry:
         fsave [task_image]
         fsave [task_image + 108]
         
-; ÉèÖÃ switch_to() º¯Êý»·¾³
+; ï¿½ï¿½ï¿½ï¿½ switch_to() ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         mov esi, 0x41
         mov edi, switch_to
         call set_user_interrupt_handler       
         
-; ÈÎÎñ»·¾³
+; ï¿½ï¿½ï¿½ñ»·¾ï¿½
         mov DWORD [task_context + 40 + CONTEXT_ESP], USER_ESP
         mov DWORD [task_context + 40 + CONTEXT_EIP], task_a
         mov DWORD [task_context + 40 + CONTEXT_VIDEO], 0xb8000
@@ -115,8 +115,8 @@ entry:
         mov DWORD [task_context + 40 * 2 + CONTEXT_VIDEO], 0xb8000
        
 
-; ²úÉú½ø³Ì»»
-        mov esi, TASK_ID_A      ; ÇÐ»»µ½ task a
+; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì»ï¿½
+        mov esi, TASK_ID_A      ; ï¿½Ð»ï¿½ï¿½ï¿½ task a
         int 0x41
         
         
@@ -126,10 +126,10 @@ entry:
 task_link       dd 0, task_a, task_b, 0
 task_id         dd 0
 
-;; Á½¸ö x87 FPU ×´Ì¬ image
+;; ï¿½ï¿½ï¿½ï¿½ x87 FPU ×´Ì¬ image
 task_image: times (2 * 108) db 0
 
-; integer µ¥Ôª context
+; integer ï¿½ï¿½Ôª context
 task_context: times (3 * 10) dd 0
 
 TASK_ID_A       equ 1
@@ -137,7 +137,7 @@ TASK_ID_B       equ 2
 
 
 ;------------------------------------
-; switch_to(): ½ø³ÌÇÐ»»º¯Êý
+; switch_to(): ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½ï¿½
 ; input:
 ;       esi: task ID
 ;------------------------------------
@@ -147,29 +147,29 @@ smsg    db '---> now: switch to task ID: ', 0
 temp_id dd 0
 do_switch:        
         mov [temp_id], esi
-        mov esi, [task_id]                              ; Ô­½ø³Ì ID
+        mov esi, [task_id]                              ; Ô­ï¿½ï¿½ï¿½ï¿½ ID
         lea esi, [esi * 4 + esi]
         lea esi, [esi * 8]                              ; esi * 40
 
-; *** ±£´æ¾É½ø³Ì integer µ¥Ôª context
-        mov [task_context + esi + CONTEXT_EAX], eax     ; ±£´æ eax ¼Ä´æÆ÷
+; *** ï¿½ï¿½ï¿½ï¿½É½ï¿½ï¿½ï¿½ integer ï¿½ï¿½Ôª context
+        mov [task_context + esi + CONTEXT_EAX], eax     ; ï¿½ï¿½ï¿½ï¿½ eax ï¿½Ä´ï¿½ï¿½ï¿½
         mov eax, [temp_id]
-        mov [task_context + esi + CONTEXT_ESI], eax     ; ±£´æ esi ¼Ä´æÆ÷
+        mov [task_context + esi + CONTEXT_ESI], eax     ; ï¿½ï¿½ï¿½ï¿½ esi ï¿½Ä´ï¿½ï¿½ï¿½
         
-;  ÅÐ¶ÏÈ¨ÏÞ
-        mov eax, [esp + 4]                              ; ¶ÁÈ¡ CS selector
+;  ï¿½Ð¶ï¿½È¨ï¿½ï¿½
+        mov eax, [esp + 4]                              ; ï¿½ï¿½È¡ CS selector
         and eax, 3                                      ; CS.RPL
         jz save_cpl0
-        ; ·¢ÉúÈ¨ÏÞ¸Ä±ä
+        ; ï¿½ï¿½ï¿½ï¿½È¨ï¿½Þ¸Ä±ï¿½
         mov eax, [esp + 12]                             ; esp
-        mov [task_context + esi + CONTEXT_ESP], eax     ; ±£´æ esp
+        mov [task_context + esi + CONTEXT_ESP], eax     ; ï¿½ï¿½ï¿½ï¿½ esp
         jmp save_next
 save_cpl0:        
         lea eax, [esp + 12]
-        mov [task_context + esi + CONTEXT_ESP], eax     ; ±£´æ esp
+        mov [task_context + esi + CONTEXT_ESP], eax     ; ï¿½ï¿½ï¿½ï¿½ esp
 save_next:        
         mov eax, [esp]                                  ; eip
-        mov [task_context + esi + CONTEXT_EIP], eax     ; ±£´æ eip
+        mov [task_context + esi + CONTEXT_EIP], eax     ; ï¿½ï¿½ï¿½ï¿½ eip
         mov [task_context + esi + CONTEXT_ECX], ecx
         mov [task_context + esi + CONTEXT_EDX], edx
         mov [task_context + esi + CONTEXT_EBX], ebx
@@ -178,11 +178,11 @@ save_next:
         call get_video_current
         mov [task_context + esi + CONTEXT_VIDEO], eax
         
-; ÖÃ½ø³Ì ID
+; ï¿½Ã½ï¿½ï¿½ï¿½ ID
         mov eax, [temp_id]
-        mov DWORD [task_id], eax                        ; µ±Ç°½ø³Ì£¨ÇÐ»»µÄÄ¿±ê½ø³Ì£©        
+        mov DWORD [task_id], eax                        ; ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ì£ï¿½ï¿½Ð»ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½Ì£ï¿½        
         
-; ´òÓ¡ÐÅÏ¢        
+; ï¿½ï¿½Ó¡ï¿½ï¿½Ï¢        
         mov esi, smsg
         call puts
         mov ebx, [task_id]
@@ -191,25 +191,25 @@ save_next:
         call println
 
         
-; ÖÃ TS Î»
+; ï¿½ï¿½ TS Î»
         mov eax, cr0
         bts eax, 3                                      ; TS = 1
         mov cr0, eax
       
       
      
-; *** ¼ÓÔØÄ¿±ê½ø³Ì integer µ¥Ôª context
+; *** ï¿½ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ integer ï¿½ï¿½Ôª context
 
-;  ÅÐ¶ÏÈ¨ÏÞ
-        mov eax, [esp + 4]                              ; ¶ÁÈ¡ CS selector
+;  ï¿½Ð¶ï¿½È¨ï¿½ï¿½
+        mov eax, [esp + 4]                              ; ï¿½ï¿½È¡ CS selector
         and eax, 3                                      ; CS.RPL
         mov eax, 20
         mov esi, 12
         cmovz eax, esi
-        add esp, eax                                    ; ¸ÄÐ´·µ»ØµØÖ·
+        add esp, eax                                    ; ï¿½ï¿½Ð´ï¿½ï¿½ï¿½Øµï¿½Ö·
         
-; ÇÐ»»µ½Ä¿±ê½ø³Ì
-        mov esi, ebx                                    ; Ä¿±ê½ø³Ì ID                        
+; ï¿½Ð»ï¿½ï¿½ï¿½Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½
+        mov esi, ebx                                    ; Ä¿ï¿½ï¿½ï¿½ï¿½ï¿½ ID                        
         lea esi, [esi * 4 + esi]
         lea esi, [esi * 8]                              ; esi * 40
         
@@ -242,7 +242,7 @@ load_next:
         iret
 
 ;-----------------------------------
-; ½ø³Ì A
+; ï¿½ï¿½ï¿½ï¿½ A
 ;----------------------------------
 task_a:
         jmp do_task_a
@@ -275,7 +275,7 @@ do_task_a:
         fadd DWORD [b]   
          
         mov esi, TASK_ID_B
-        int 0x41                                ; ·¢Éú½ø³ÌÇÐ»»£¬ÇÐ»»µ½ task b 
+        int 0x41                                ; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½ï¿½Ð»ï¿½ï¿½ï¿½ task b 
         
         fstp DWORD [result]
         mov esi, result
@@ -283,7 +283,7 @@ do_task_a:
         jmp $
 
 ;------------------------------------
-; ½ø³Ì B
+; ï¿½ï¿½ï¿½ï¿½ B
 ;-----------------------------------
 task_b:
         jmp do_task_b
@@ -320,7 +320,7 @@ do_task_b:
         call print_dword_decimal
         call println
 
-; ÇÐ»»»Ø task a        
+; ï¿½Ð»ï¿½ï¿½ï¿½ task a        
         mov esi, TASK_ID_A 
         int 0x41
         
@@ -340,21 +340,21 @@ do_nm_handler:
         mov esi, nmsg
         call puts
 
-; Çå TS ±êÖ¾Î»        
+; ï¿½ï¿½ TS ï¿½ï¿½Ö¾Î»        
         clts
         
-        ; ÅÐ¶Ï½ø³Ì ID
+        ; ï¿½Ð¶Ï½ï¿½ï¿½ï¿½ ID
         mov eax, [task_id]
         cmp eax, TASK_ID_A
-        je switch_task_a                ; ÇÐ»»µ½ task A
-        ;; ÇÐ»»µ½ task B
-        fsave [task_image]              ; ±£´æ task A µÄ image
-        frstor [task_image + 108]       ; ¼ÓÔØ task B µÄ image
+        je switch_task_a                ; ï¿½Ð»ï¿½ï¿½ï¿½ task A
+        ;; ï¿½Ð»ï¿½ï¿½ï¿½ task B
+        fsave [task_image]              ; ï¿½ï¿½ï¿½ï¿½ task A ï¿½ï¿½ image
+        frstor [task_image + 108]       ; ï¿½ï¿½ï¿½ï¿½ task B ï¿½ï¿½ image
         jmp do_nm_handler_done
         
 switch_task_a:
-        fsave [task_image + 108]        ; ±£´æ task B µÄ image
-        frstor [task_image]             ; ¼ÓÔØ task A µÄ image
+        fsave [task_image + 108]        ; ï¿½ï¿½ï¿½ï¿½ task B ï¿½ï¿½ image
+        frstor [task_image]             ; ï¿½ï¿½ï¿½ï¿½ task A ï¿½ï¿½ image
 
 do_nm_handler_done:        
         mov esi, nmsg1
@@ -366,11 +366,11 @@ do_nm_handler_done:
 
 
 
-; ×ªµ½ long Ä£¿é
+; ×ªï¿½ï¿½ long Ä£ï¿½ï¿½
         ;jmp LONG_SEG
                                 
                                 
-; ½øÈë ring 3 ´úÂë
+; ï¿½ï¿½ï¿½ï¿½ ring 3 ï¿½ï¿½ï¿½ï¿½
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -378,7 +378,7 @@ do_nm_handler_done:
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
 
 user_entry:
         mov ax, user_data32_sel
@@ -396,11 +396,11 @@ user_start:
 
 %define APIC_PERFMON_HANDLER
 
-;******** include ÖÐ¶Ï handler ´úÂë ********
+;******** include ï¿½Ð¶ï¿½ handler ï¿½ï¿½ï¿½ï¿½ ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include Ä£ï¿½ï¿½ ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -412,10 +412,10 @@ user_start:
 %include "..\lib\pic8259A.asm"
 %include "..\lib\x87.asm"
 
-;;************* º¯Êýµ¼Èë±í  *****************
+;;************* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓÐÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; ï¿½ï¿½ï¿½ lib32 ï¿½âµ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ common\ Ä¿Â¼ï¿½Â£ï¿½
+; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ protected.asm Ä£ï¿½ï¿½Ê¹ï¿½ï¿½
 
 %include "..\common\lib32_import_table.imt"
 

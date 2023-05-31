@@ -1,81 +1,81 @@
 ; protected.asm
-; Copyright (c) 2009-2012 µËÖ¾
+; Copyright (c) 2009-2012 ï¿½ï¿½Ö¾
 ; All rights reserved.
 
 
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; ï¿½ï¿½ï¿½ï¿½ protected Ä£ï¿½ï¿½
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£ï¿½é³¤ï¿½ï¿½
 
 entry:
         
-;; ÎªÁËÍê³ÉÊµÑé£¬¹Ø±ÕÊ±¼äÖÐ¶ÏºÍ¼üÅÌÖÐ¶Ï
+;; Îªï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½é£¬ï¿½Ø±ï¿½Ê±ï¿½ï¿½ï¿½Ð¶ÏºÍ¼ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
         ;call disable_timer
         ;sti
-;; ÉèÖÃ #PF handler
-        mov esi, PF_HANDLER_VECTOR
-        mov edi, PF_handler
+;; ï¿½ï¿½ï¿½ï¿½ #PF handler
+        mov esiï¼Œ PF_HANDLER_VECTOR
+        mov ediï¼Œ PF_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
-        mov esi, GP_HANDLER_VECTOR
-        mov edi, GP_handler
+;; ï¿½ï¿½ï¿½ï¿½ #GP handler
+        mov esiï¼Œ GP_HANDLER_VECTOR
+        mov ediï¼Œ GP_handler
         call set_interrupt_handler        
         
-;; ÉèÖÃ #DB handler
-        mov esi, DB_HANDLER_VECTOR
-        mov edi, DB_handler
+;; ï¿½ï¿½ï¿½ï¿½ #DB handler
+        mov esiï¼Œ DB_HANDLER_VECTOR
+        mov ediï¼Œ DB_handler
         call set_interrupt_handler        
 
         
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; ï¿½ï¿½ï¿½ï¿½ sysenter/sysexit Ê¹ï¿½Ã»ï¿½ï¿½ï¿½
         call set_sysenter
 
-;; ÉèÖÃ system_service handler
-        mov esi, SYSTEM_SERVICE_VECTOR
-        mov edi, system_service
+;; ï¿½ï¿½ï¿½ï¿½ system_service handler
+        mov esiï¼Œ SYSTEM_SERVICE_VECTOR
+        mov ediï¼Œ system_service
         call set_user_interrupt_handler                
 
-; ÔÊÐíÖ´ÐÐ SSE Ö¸Áî        
-        mov eax, cr4
-        bts eax, 9                                              ; CR4.OSFXSR = 1
-        mov cr4, eax
+; ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ SSE Ö¸ï¿½ï¿½        
+        mov eaxï¼Œ cr4
+        bts eaxï¼Œ 9                                              ; CR4.OSFXSR = 1
+        mov cr4ï¼Œ eax
                 
         
-;ÉèÖÃ CR4.PAE
+;ï¿½ï¿½ï¿½ï¿½ CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; ï¿½ï¿½ï¿½ï¿½ XD ï¿½ï¿½ï¿½ï¿½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; ï¿½ï¿½Ê¼ï¿½ï¿½ paging ï¿½ï¿½ï¿½ï¿½
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
-        mov eax, PDPT_BASE
-        mov cr3, eax
+;ï¿½ï¿½ï¿½ï¿½ PDPT ï¿½ï¿½ï¿½ï¿½Ö·        
+        mov eaxï¼Œ PDPT_BASE
+        mov cr3ï¼Œ eax
                                 
-; ´ò¿ª¡¡paging
-        mov eax, cr0
-        bts eax, 31
-        mov cr0, eax                
+; ï¿½ò¿ª¡ï¿½paging
+        mov eaxï¼Œ cr0
+        bts eaxï¼Œ 31
+        mov cr0ï¼Œ eax                
 
-        mov esp, PROCESSOR0_KERNEL_ESP
+        mov espï¼Œ PROCESSOR0_KERNEL_ESP
 
-        mov esi, PIC8259A_TIMER_VECTOR
-        mov edi, timer_handler
+        mov esiï¼Œ PIC8259A_TIMER_VECTOR
+        mov ediï¼Œ timer_handler
         call set_interrupt_handler        
 
-        mov esi, KEYBOARD_VECTOR
-        mov edi, keyboard_handler
+        mov esiï¼Œ KEYBOARD_VECTOR
+        mov ediï¼Œ keyboard_handler
         call set_interrupt_handler                
         
         call init_8259A
@@ -89,7 +89,7 @@ entry:
         jmp LONG_SEG
 
         
-; ½øÈë ring 3 ´úÂë
+; ï¿½ï¿½ï¿½ï¿½ ring 3 ï¿½ï¿½ï¿½ï¿½
         push DWORD user_data32_sel | 0x3
         push DWORD PROCESSOR0_USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -98,13 +98,13 @@ entry:
 
 
 ;; **********************************        
-;; ÏÂÃæÊÇÓÃ»§´úÂë£¨CPL = 3)
+;; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ë£¨CPL = 3)
 ;; **********************************
 
 user_entry:
-        mov ax, user_data32_sel
-        mov ds, ax
-        mov es, ax
+        mov axï¼Œ user_data32_sel
+        mov dsï¼Œ ax
+        mov esï¼Œ ax
 
 user_start:
 
@@ -119,11 +119,11 @@ next:
 
 
 
-;******** include ÖÐ¶Ï handler ´úÂë ********
+;******** include ï¿½Ð¶ï¿½ handler ï¿½ï¿½ï¿½ï¿½ ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include Ä£ï¿½ï¿½ ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -135,10 +135,10 @@ next:
 %include "..\lib\pic8259A.asm"
 
 
-;;************* º¯Êýµ¼Èë±í  *****************
+;;************* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓÐÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; ï¿½ï¿½ï¿½ lib32 ï¿½âµ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ common\ Ä¿Â¼ï¿½Â£ï¿½
+; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ protected.asm Ä£ï¿½ï¿½Ê¹ï¿½ï¿½
 
 %include "..\common\lib32_import_table.imt"
 

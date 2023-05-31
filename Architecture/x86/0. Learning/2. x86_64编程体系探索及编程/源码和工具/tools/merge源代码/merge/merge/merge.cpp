@@ -13,13 +13,13 @@
 
 typedef struct
 {
-	TCHAR inFileName[MAX_PATH];			/* йДхКнд╪ЧцШ */
-	DWORD inOffset;						/* йДхКнд╪Чф╚рфё╛рт 512 вж╫зн╙╣╔н╩ */
-	TCHAR outFileName[MAX_PATH];		/* йДЁЖнд╪ЧцШ */
-	DWORD outOffset;					/* йДЁЖнд╪Чф╚рф, рт 512 вж╫зн╙╣╔н╩ */
-	DWORD nCount;						/* ©ИйЩ */
-	//HANDLE hInFile;						/* йДхКнд╪Ч HANDLE */
-	//HANDLE hOutFile;					/* йДЁЖнд╪Ч HANDLE */
+	TCHAR inFileName[MAX_PATH];			/* О©╫О©╫О©╫О©╫О©╫д╪О©╫О©╫О©╫ */
+	DWORD inOffset;						/* О©╫О©╫О©╫О©╫О©╫д╪О©╫ф╚О©╫фёО©╫О©╫О©╫ 512 О©╫ж╫О©╫н╙О©╫О©╫н╩ */
+	TCHAR outFileName[MAX_PATH];		/* О©╫О©╫О©╫О©╫д╪О©╫О©╫О©╫ */
+	DWORD outOffset;					/* О©╫О©╫О©╫О©╫,О©╫ф╚О©╫О©╫, О©╫О©╫ 512 О©╫ж╫О©╫н╙О©╫О©╫н╩ */
+	DWORD nCount;						/* О©╫О©╫О©╫О©╫ */
+	//HANDLE hInFile;						/* О©╫О©╫О©╫О©╫О©╫д╪О©╫ HANDLE */
+	//HANDLE hOutFile;					/* О©╫О©╫О©╫О©╫д╪О©╫ HANDLE */
 } MERGE_CONFIG, *LPMERGE_CONFIG;
 
 
@@ -42,7 +42,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	BOOL bSuccess = TRUE;
 	TCHAR msgError[100];
 
-	/* ╢Рс║вВуъпео╒ */
+	/* О©╫О©╫с║О©╫О©╫О©╫О©╫О©╫О©╫о╒ */
 	_tprintf(_T("<All rights reserved! DengZhi, Bug: mik@mouseos.com>\n"));
 
 	if (argc > 1)

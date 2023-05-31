@@ -6,84 +6,84 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; ï¿½ï¿½ï¿½ï¿½ protected Ä£ï¿½ï¿½
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£ï¿½é³¤ï¿½ï¿½
 
 entry:
         
-;; ¹Ø±Õ8259
+;; ï¿½Ø±ï¿½8259
         call disable_8259
 
-;; ÉèÖÃ #PF handler
+;; ï¿½ï¿½ï¿½ï¿½ #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
+;; ï¿½ï¿½ï¿½ï¿½ #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ÉèÖÃ #DB handler
+; ï¿½ï¿½ï¿½ï¿½ #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
 
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; ï¿½ï¿½ï¿½ï¿½ sysenter/sysexit Ê¹ï¿½Ã»ï¿½ï¿½ï¿½
         call set_sysenter
 
-;; ÉèÖÃ system_service handler
+;; ï¿½ï¿½ï¿½ï¿½ system_service handler
         mov esi, SYSTEM_SERVICE_VECTOR
         mov edi, system_service
         call set_user_interrupt_handler 
 
-; ÔÊÐíÖ´ÐÐ SSE Ö¸Áî        
+; ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ SSE Ö¸ï¿½ï¿½        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         
         
-;ÉèÖÃ CR4.PAE
+;ï¿½ï¿½ï¿½ï¿½ CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; ï¿½ï¿½ï¿½ï¿½ XD ï¿½ï¿½ï¿½ï¿½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; ï¿½ï¿½Ê¼ï¿½ï¿½ paging ï¿½ï¿½ï¿½ï¿½
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
+;ï¿½ï¿½ï¿½ï¿½ PDPT ï¿½ï¿½ï¿½ï¿½Ö·        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; ´ò¿ª¡¡paging
+; ï¿½ò¿ª¡ï¿½paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax               
                   
-;========= ³õÊ¼»¯ÉèÖÃÍê±Ï =================
+;========= ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =================
 
 
 
-; ÊµÑé 14-2£º¹Û²ì LBR stack
+; Êµï¿½ï¿½ 14-2ï¿½ï¿½ï¿½Û²ï¿½ LBR stack
 
         mov esi, msg2
         call puts
 
-; 2) ¿ªÆô LBR
+; 2) ï¿½ï¿½ï¿½ï¿½ LBR
         mov ecx, IA32_DEBUGCTL
         rdmsr
-        bts eax, LBR_BIT                        ; ÖÃ LBR Î»
+        bts eax, LBR_BIT                        ; ï¿½ï¿½ LBR Î»
         wrmsr
 
-; 3) ²âÊÔ·ÖÖ§
+; 3) ï¿½ï¿½ï¿½Ô·ï¿½Ö§
         jmp l1
 l1:     jmp l2
 l2:     jmp l3
@@ -97,13 +97,13 @@ l9:     jmp l10
 l10:
 
 
-; 4) Çå LBR 
+; 4) ï¿½ï¿½ LBR 
         mov ecx, IA32_DEBUGCTL
         rdmsr
-        btr eax, LBR_BIT                        ; Çå LBR Î»
+        btr eax, LBR_BIT                        ; ï¿½ï¿½ LBR Î»
         wrmsr
 
-; 5) Êä³ö LBR stack ÐÅÏ¢
+; 5) ï¿½ï¿½ï¿½ LBR stack ï¿½ï¿½Ï¢
         call dump_lbr_stack
         call println
         
@@ -111,11 +111,11 @@ l10:
 
 
         
-; ×ªµ½ long Ä£¿é
+; ×ªï¿½ï¿½ long Ä£ï¿½ï¿½
         ;jmp LONG_SEG
                                 
                                 
-; ½øÈë ring 3 ´úÂë
+; ï¿½ï¿½ï¿½ï¿½ ring 3 ï¿½ï¿½ï¿½ï¿½
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -123,7 +123,7 @@ l10:
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
 
 user_entry:
         mov ax, user_data32_sel
@@ -137,9 +137,9 @@ user_start:
 
 
 
-;; ²âÊÔº¯Êý
+;; ï¿½ï¿½ï¿½Ôºï¿½ï¿½ï¿½
 func:
-        ;;; ¿Õº¯Êý
+        ;;; ï¿½Õºï¿½ï¿½ï¿½
         ret
 func_end:        
 
@@ -152,11 +152,11 @@ msg2        db 'now: test 10 branch record', 10, 0
 
 
         
-;******** include ÖÐ¶Ï handler ´úÂë ********
+;******** include ï¿½Ð¶ï¿½ handler ï¿½ï¿½ï¿½ï¿½ ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include Ä£ï¿½ï¿½ ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -169,10 +169,10 @@ msg2        db 'now: test 10 branch record', 10, 0
 
 
 
-;;************* º¯Êýµ¼Èë±í  *****************
+;;************* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓÐÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; ï¿½ï¿½ï¿½ lib32 ï¿½âµ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ common\ Ä¿Â¼ï¿½Â£ï¿½
+; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ protected.asm Ä£ï¿½ï¿½Ê¹ï¿½ï¿½
 
 %include "..\common\lib32_import_table.imt"
 

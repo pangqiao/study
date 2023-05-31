@@ -6,64 +6,64 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; ï¿½ï¿½ï¿½ï¿½ protected Ä£ï¿½ï¿½
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£ï¿½é³¤ï¿½ï¿½
 
 entry:
         
-;; ÎªÁËÍê³ÉÊµÑé£¬¹Ø±ÕÊ±¼äÖÐ¶ÏºÍ¼üÅÌÖÐ¶Ï
+;; Îªï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½é£¬ï¿½Ø±ï¿½Ê±ï¿½ï¿½ï¿½Ð¶ÏºÍ¼ï¿½ï¿½ï¿½ï¿½Ð¶ï¿½
         call disable_timer
         
-;; ÉèÖÃ #PF handler
+;; ï¿½ï¿½ï¿½ï¿½ #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #GP handler
+;; ï¿½ï¿½ï¿½ï¿½ #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ÉèÖÃ #DB handler
+; ï¿½ï¿½ï¿½ï¿½ #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
 
-;; ÉèÖÃ sysenter/sysexit Ê¹ÓÃ»·¾³
+;; ï¿½ï¿½ï¿½ï¿½ sysenter/sysexit Ê¹ï¿½Ã»ï¿½ï¿½ï¿½
         call set_sysenter
 
-;; ÉèÖÃ system_service handler
+;; ï¿½ï¿½ï¿½ï¿½ system_service handler
         mov esi, SYSTEM_SERVICE_VECTOR
         mov edi, system_service
         call set_user_interrupt_handler 
 
-; ÔÊÐíÖ´ÐÐ SSE Ö¸Áî        
+; ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ SSE Ö¸ï¿½ï¿½        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         
         
-;ÉèÖÃ CR4.PAE
+;ï¿½ï¿½ï¿½ï¿½ CR4.PAE
         call pae_enable
         
-; ¿ªÆô XD ¹¦ÄÜ
+; ï¿½ï¿½ï¿½ï¿½ XD ï¿½ï¿½ï¿½ï¿½
         call execution_disable_enable
                 
-; ³õÊ¼»¯ paging »·¾³
+; ï¿½ï¿½Ê¼ï¿½ï¿½ paging ï¿½ï¿½ï¿½ï¿½
         call init_pae_paging
         
-;ÉèÖÃ PDPT ±íµØÖ·        
+;ï¿½ï¿½ï¿½ï¿½ PDPT ï¿½ï¿½ï¿½ï¿½Ö·        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; ´ò¿ª¡¡paging
+; ï¿½ò¿ª¡ï¿½paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax                                 
@@ -82,41 +82,41 @@ entry:
 
         sti
         
-;========= ³õÊ¼»¯ÉèÖÃÍê±Ï =================
+;========= ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ =================
 
 
 ;
-;** ÊµÑé 20-2£º´òÓ¡ statusÐÅÏ¢¼° stack
+;** Êµï¿½ï¿½ 20-2ï¿½ï¿½ï¿½ï¿½Ó¡ statusï¿½ï¿½Ï¢ï¿½ï¿½ stack
 ;
 
-        finit                           ; ³õÊ¼»¯ x87 FPU
-        fldz                            ; ¼ÓÔØ 0.0
-        fld1                            ; ¼ÓÔØ 1.0
-        fld DWORD [memfp32]             ; ¼ÓÔØÒ»¸ö NaN Êý
-        fld DWORD [memfp32 + 4]         ; ¼ÓÔØÒ»¸ö + infinity£¨ÕýÎÞ¾¿´ó£©Êý
-        fld TWORD [memfp80]             ; ¼ÓÔØÒ»¸ö denormal Êý
-        fxam                            ; ¼ì²éµ±Ç°µÄ ST(0)×´Ï¢
-        call dump_x87_status            ; ´òÓ¡ status
+        finit                           ; ï¿½ï¿½Ê¼ï¿½ï¿½ x87 FPU
+        fldz                            ; ï¿½ï¿½ï¿½ï¿½ 0.0
+        fld1                            ; ï¿½ï¿½ï¿½ï¿½ 1.0
+        fld DWORD [memfp32]             ; ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ NaN ï¿½ï¿½
+        fld DWORD [memfp32 + 4]         ; ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ + infinityï¿½ï¿½ï¿½ï¿½ï¿½Þ¾ï¿½ï¿½ï¿½ï¿½ï¿½
+        fld TWORD [memfp80]             ; ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ denormal ï¿½ï¿½
+        fxam                            ; ï¿½ï¿½éµ±Ç°ï¿½ï¿½ ST(0)×´Ï¢
+        call dump_x87_status            ; ï¿½ï¿½Ó¡ status
         call println
-        call dump_data_register         ; ´òÓ¡ stack
+        call dump_data_register         ; ï¿½ï¿½Ó¡ stack
 
 
         jmp $
         
-memfp32  dd 0x7fbfffff                  ; NaN Êý±àÂë
-         dd 0x7f800000                  ; infinity Êý±àÂë
-memfp80  dd 0xFFFFFFFF                  ; denormal Êý±àÂë
+memfp32  dd 0x7fbfffff                  ; NaN ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+         dd 0x7f800000                  ; infinity ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+memfp80  dd 0xFFFFFFFF                  ; denormal ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
          dd 0x7FFFFFFF
          dw 0
 
         
 
 
-; ×ªµ½ long Ä£¿é
+; ×ªï¿½ï¿½ long Ä£ï¿½ï¿½
         ;jmp LONG_SEG
                                 
                                 
-; ½øÈë ring 3 ´úÂë
+; ï¿½ï¿½ï¿½ï¿½ ring 3 ï¿½ï¿½ï¿½ï¿½
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -124,7 +124,7 @@ memfp80  dd 0xFFFFFFFF                  ; denormal Êý±àÂë
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
 
 user_entry:
         mov ax, user_data32_sel
@@ -142,11 +142,11 @@ user_start:
 
 %define APIC_PERFMON_HANDLER
 
-;******** include ÖÐ¶Ï handler ´úÂë ********
+;******** include ï¿½Ð¶ï¿½ handler ï¿½ï¿½ï¿½ï¿½ ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include Ä£ï¿½ï¿½ ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -158,10 +158,10 @@ user_start:
 %include "..\lib\pic8259A.asm"
 %include "..\lib\x87.asm"
 
-;;************* º¯Êýµ¼Èë±í  *****************
+;;************* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓÐÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; ï¿½ï¿½ï¿½ lib32 ï¿½âµ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ common\ Ä¿Â¼ï¿½Â£ï¿½
+; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ protected.asm Ä£ï¿½ï¿½Ê¹ï¿½ï¿½
 
 %include "..\common\lib32_import_table.imt"
 
