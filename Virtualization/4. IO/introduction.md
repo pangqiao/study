@@ -7,7 +7,7 @@ IO 设备虚拟化经历了从**全虚拟化**(`full-virtualization`)到**半虚
 
 Intel® Virtualization Technology for Directed I/O(Intel VT-d)是英特尔发布的IO虚拟化技术. 通过 Intel VT-d, 可以把物理设备直通(pass-through)给虚拟机, 使虚拟机直接访问物理设备, 其性能近似无虚拟机环境下的IO性能. 
 
-**SR-IOV**(`Single Root I/O Virtualization and Sharing`)是 **PCI 标准组织**制定的在 PCI 设备级对虚拟化进行的支持. 基于 PCI SR-IOV 技术, 同一个 PCIe 设备可以实现逻辑上隔离的多个轻量级 “PF(physical function)” —— VF(`virtual function`) . 同一个 PF 创建的多个 VF 可以独立隔离地分配给不同的虚拟机或者容器, 极大地提高了性能和资源使用效率. 高性能 IO 设备如网卡、存储、GPU等都支持 SR-IOV. 
+**SR-IOV**(`Single Root I/O Virtualization and Sharing`)是 **PCI 标准组织**制定的在 PCI 设备级对虚拟化进行的支持. 基于 PCI SR-IOV 技术, 同一个 PCIe 设备可以实现逻辑上隔离的多个轻量级 "PF(physical function)" —— VF(`virtual function`) . 同一个 PF 创建的多个 VF 可以独立隔离地分配给不同的虚拟机或者容器, 极大地提高了性能和资源使用效率. 高性能 IO 设备如网卡、存储、GPU等都支持 SR-IOV. 
 
 随着**容器**的广泛使用, 实例的密度增加, 使用VF存在以下限制: 
 
