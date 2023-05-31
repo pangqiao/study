@@ -13,13 +13,13 @@
 
 typedef struct
 {
-	TCHAR inFileName[MAX_PATH];			/* я┐╜я┐╜я┐╜я┐╜я┐╜─╝я┐╜я┐╜я┐╜ */
-	DWORD inOffset;						/* я┐╜я┐╜я┐╜я┐╜я┐╜─╝я┐╜╞ля┐╜╞гя┐╜я┐╜я┐╜ 512 я┐╜╓╜я┐╜╬кя┐╜я┐╜╬╗ */
-	TCHAR outFileName[MAX_PATH];		/* я┐╜я┐╜я┐╜я┐╜─╝я┐╜я┐╜я┐╜ */
-	DWORD outOffset;					/* я┐╜я┐╜я┐╜я┐╜,я┐╜╞ля┐╜я┐╜, я┐╜я┐╜ 512 я┐╜╓╜я┐╜╬кя┐╜я┐╜╬╗ */
-	DWORD nCount;						/* я┐╜я┐╜я┐╜я┐╜ */
-	//HANDLE hInFile;						/* я┐╜я┐╜я┐╜я┐╜я┐╜─╝я┐╜ HANDLE */
-	//HANDLE hOutFile;					/* я┐╜я┐╜я┐╜я┐╜─╝я┐╜ HANDLE */
+	TCHAR inFileName[MAX_PATH];			/* Д1д7Д1д7Д1д7Д1д7Д1д7Б0С4Д1д7Д1д7Д1д7 */
+	DWORD inOffset;						/* Д1д7Д1д7Д1д7Д1д7Д1д7Б0С4Д1д7Б0Ь1Д1д7Б0Ы3Д1д7Д1д7Д1д7 512 Д1д7Б0ў3Д1д7Б0╦2Д1д7Д1д7ж╦ */
+	TCHAR outFileName[MAX_PATH];		/* Д1д7Д1д7Д1д7Д1д7Б0С4Д1д7Д1д7Д1д7 */
+	DWORD outOffset;					/* Д1д7Д1д7Д1д7Д1д7Б0С4Д1д7Б0Ь1Д1д7Д1д7, Д1д7Д1д7 512 Д1д7Б0ў3Д1д7Б0╦2Д1д7Д1д7ж╦ */
+	DWORD nCount;						/* Д1д7Д1д7Д1д7Д1д7 */
+	//HANDLE hInFile;						/* Д1д7Д1д7Д1д7Д1д7Д1д7Б0С4Д1д7 HANDLE */
+	//HANDLE hOutFile;					/* Д1д7Д1д7Д1д7Д1д7Б0С4Д1д7 HANDLE */
 } MERGE_CONFIG, *LPMERGE_CONFIG;
 
 
@@ -42,7 +42,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	BOOL bSuccess = TRUE;
 	TCHAR msgError[100];
 
-	/* я┐╜я┐╜╙бя┐╜я┐╜я┐╜я┐╜я┐╜я┐╜╧в */
+	/* Д1д7Д1д7Б0с3Д1д7Д1д7Д1д7Д1д7Д1д7Д1д7Б0╬4 */
 	_tprintf(_T("<All rights reserved! DengZhi, Bug: mik@mouseos.com>\n"));
 
 	if (argc > 1)
