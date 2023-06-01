@@ -1,3 +1,3 @@
 Linux 内核使用的算法和数据结构
 
-通用的查看Algorithm内容
+通用的查看 Algorithm 内容
