@@ -1,5 +1,5 @@
 
-对于Nvme SSD, 我们有的时候会用到ioctl系统调用, 该调用的流程是怎样的呢?
+对于 Nvme SSD, 我们有的时候会用到 ioctl 系统调用, 该调用的流程是怎样的呢?
 
 首先, 在注册 nvme 设备的时候(`nvme_probe`), 会注册 file operations
 
@@ -110,7 +110,7 @@ static int nvme_submit_user_cmd(struct request_queue *q,
 	struct bio *bio;
 	u32 effects;
 	int ret;
-    // 分配一个request
+    // 分配一个 request
 	req = nvme_alloc_user_request(q, cmd, 0, 0);
 	if (IS_ERR(req))
 		return PTR_ERR(req);
@@ -148,4 +148,4 @@ static int nvme_submit_user_cmd(struct request_queue *q,
 
 
 
-nvme ioctl解密: https://www.cnblogs.com/mmmmmmmelody/p/10500263.html
+nvme ioctl 解密: https://www.cnblogs.com/mmmmmmmelody/p/10500263.html

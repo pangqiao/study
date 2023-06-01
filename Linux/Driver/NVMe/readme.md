@@ -7,18 +7,18 @@
 
 NVMe 的 Linux 内核驱动分析: https://blog.csdn.net/u010547141/article/details/103412682
 
-NVMe驱动详解系列_第一部:NVMe驱动初始化与注销: https://blog.csdn.net/weixin_33728708/article/details/89700499
+NVMe 驱动详解系列_第一部: NVMe 驱动初始化与注销: https://blog.csdn.net/weixin_33728708/article/details/89700499
 
-NVME源码流程解析(一): https://blog.csdn.net/weixin_38428439/article/details/121715457
+NVME 源码流程解析(一): https://blog.csdn.net/weixin_38428439/article/details/121715457
 
-linux内核源码分析 - nvme设备的初始化: https://zhuanlan.zhihu.com/p/548748445
+linux 内核源码分析 - nvme 设备的初始化: https://zhuanlan.zhihu.com/p/548748445
 
 
-NVMe1.3a_Spec解读(一): https://blog.csdn.net/leishen1992/article/details/79974264
+NVMe1.3a_Spec 解读(一): https://blog.csdn.net/leishen1992/article/details/79974264
 
-nvme协议详解: https://zhuanlan.zhihu.com/p/347599423
+nvme 协议详解: https://zhuanlan.zhihu.com/p/347599423
 
 nvme kernel driver 阅读笔记: https://www.dazhuanlan.com/karenchan/topics/1006006
 
-nvme命令中prp_Linux 4.4.220 NVMe驱动及其BIOLayer数据流分析: https://blog.csdn.net/weixin_33398033/article/details/112538368
+nvme 命令中 prp_Linux 4.4.220 NVMe 驱动及其 BIOLayer 数据流分析: https://blog.csdn.net/weixin_33398033/article/details/112538368
 
