@@ -21,11 +21,11 @@
 
 ## 1.1. printk 的由来
 
-在内核调试技术之中, 最简单的就是 `printk` 的使用了, 它的用法和C语言应用程序中的 `printf` 使用类似, 在应用程序中依靠的是 `stdio.h` 中的库, 而在 `linux` 内核中没有这个库, 所以在 `linux` 内核中, 实现了自己的一套库函数, `printk` 就是标准的输出函数
+在内核调试技术之中, 最简单的就是 `printk` 的使用了, 它的用法和 C 语言应用程序中的 `printf` 使用类似, 在应用程序中依靠的是 `stdio.h` 中的库, 而在 `linux` 内核中没有这个库, 所以在 `linux` 内核中, 实现了自己的一套库函数, `printk` 就是标准的输出函数
 
 ## 1.2. printk 与 printf 的差异
 
-是什么导致一个运行在内核态而另一个运行用户态? 其实这两个函数几乎是相同的, 出现这种差异是因为 `tty_write` 函数需要使用 `fs` 指向的被显示的字符串, 而 `fs` 是专门用于存放用户态段选择符的, 因此, 在内核态时, 为了配合 `tty_write`函数, `printk` 会把 `fs` 修改为内核态数据段选择符 `ds` 中的值, 这样才能正确指向内核的数据缓冲区, 当然这个操作会先对 `fs` 进行压栈保存, 调用 `tty_write` 完毕后再出栈恢复. 总结说来, `printk` 与 `printf` 的差异是由 `fs` 造成的, 所以差异也是围绕对 `fs` 的处理. 
+是什么导致一个运行在内核态而另一个运行用户态? 其实这两个函数几乎是相同的, 出现这种差异是因为 `tty_write` 函数需要使用 `fs` 指向的被显示的字符串, 而 `fs` 是专门用于存放用户态段选择符的, 因此, 在内核态时, 为了配合 `tty_write`函数, `printk` 会把 `fs` 修改为内核态数据段选择符 `ds` 中的值, 这样才能正确指向内核的数据缓冲区, 当然这个操作会先对 `fs` 进行压栈保存, 调用 `tty_write` 完毕后再出栈恢复. 总结说来, `printk` 与 `printf` 的差异是由 `fs` 造成的, 所以差异也是围绕对 `fs` 的处理.
 
 ## 1.3. printk 的原理
 
@@ -83,14 +83,14 @@ EXPORT_SYMBOL(printk);
 
 这里的日志级别通俗的说指的是对文本信息的一种输出范围上的指定.
 
-日志级别一共有8个级别
+日志级别一共有 8 个级别
 
 | 日志级别 | 编号 | 描述 |
 |:-------:|:---:|:---:|
 | KERN_EMERG | 0 | 紧急事件消息, 系统崩溃之前提示, 表示系统不可用 |
 | KERN_ALERT | 1 | 报告消息, 表示必须立即采取措施 |
 | KERN_CRIT | 2 | 临界条件, 通常涉及严重的硬件或软件操作失败 |
-| KERN_ERR | 3 | 错误条件, 驱动程序常用KERN_ERR来报告硬件的错误 |
+| KERN_ERR | 3 | 错误条件, 驱动程序常用 KERN_ERR 来报告硬件的错误 |
 | KERN_WARNING | 4 | 警告条件, 对可能出现问题的情况进行警告 |
 | KERN_NOTICE | 5 | 正常但又重要的条件, 用于提醒. 常用于与安全相关的消息 |
 | KERN_INFO | 6 | 提示信息, 如驱动程序启动时, 打印硬件信息 |
@@ -132,9 +132,9 @@ EXPORT_SYMBOL(printk);
 
 内核可把消息打印到当前控制台上, 可以指定控制台为字符模式的终端或打印机等. 默认情况下, "控制台" 就是当前的虚拟终端.
 
-为了更好地控制不同级别的信息显示在控制台上, 内核设置了控制台的日志级别 `console_loglevel`. `printk` 日志级别的作用是打印一定级别的消息, 与之类似, 控制台只显示一定级别的消息. 
+为了更好地控制不同级别的信息显示在控制台上, 内核设置了控制台的日志级别 `console_loglevel`. `printk` 日志级别的作用是打印一定级别的消息, 与之类似, 控制台只显示一定级别的消息.
 
-当日志级别小于console_loglevel时, 消息才能显示出来. 控制台相应的日志级别定义如下, 参见[`kernel/printk/printk.c?v=4.10, line 59`](http://lxr.free-electrons.com/source/kernel/printk/printk.c?v=4.10#L59)
+当日志级别小于 console_loglevel 时, 消息才能显示出来. 控制台相应的日志级别定义如下, 参见[`kernel/printk/printk.c?v=4.10, line 59`](http://lxr.free-electrons.com/source/kernel/printk/printk.c?v=4.10#L59)
 
 ```cpp
 //  http://lxr.free-electrons.com/source/kernel/printk/printk.c?v=4.10#L59
@@ -153,12 +153,12 @@ int console_printk[4] = {
 #define CONSOLE_EXT_LOG_MAX     8192
 
 /* printk's without a loglevel use this.. */
-//  默认日志级别, 可由CONFIG_配置
+//  默认日志级别, 可由 CONFIG_配置
 #define MESSAGE_LOGLEVEL_DEFAULT CONFIG_MESSAGE_LOGLEVEL_DEFAULT
 
 /* We show everything that is MORE important than this.. */
 #define CONSOLE_LOGLEVEL_SILENT  0 /* Mum's the word */
-//  最低的控制台日志级别, 默认为1
+//  最低的控制台日志级别, 默认为 1
 #define CONSOLE_LOGLEVEL_MIN     1 /* Minimum loglevel we let people use */
 #define CONSOLE_LOGLEVEL_QUIET   4 /* Shhh ..., when booted with "quiet" */
 #define CONSOLE_LOGLEVEL_DEBUG  10 /* issue debug messages */
@@ -168,7 +168,7 @@ int console_printk[4] = {
  * Default used to be hard-coded at 7, we're now allowing it to be set from
  * kernel config.
   */
-//  默认控制台日志级别, 可由CONFIG_配置
+//  默认控制台日志级别, 可由 CONFIG_配置
 #define CONSOLE_LOGLEVEL_DEFAULT CONFIG_CONSOLE_LOGLEVEL_DEFAULT
 
 extern int console_printk[];
@@ -184,7 +184,7 @@ extern int console_printk[];
 #define default_console_loglevel (console_printk[3])
 ```
 
-没有指定日志级别的 `printk` 语句默认采用的级别是 `DEFAULT_ MESSAGE_LOGLEVEL`(这个默认级别一般为 `4`, 即与`KERN_WARNING` 在一个级别上), 其定义在linux26/kernel/printk.c中可以找到, 可以通过编译时配置 `CONFIG_MESSAGE_LOGLEVEL_DEFAULT` 变量来修改
+没有指定日志级别的 `printk` 语句默认采用的级别是 `DEFAULT_ MESSAGE_LOGLEVEL`(这个默认级别一般为 `4`, 即与`KERN_WARNING` 在一个级别上), 其定义在 linux26/kernel/printk.c 中可以找到, 可以通过编译时配置 `CONFIG_MESSAGE_LOGLEVEL_DEFAULT` 变量来修改
 
 # 3. 用户空间
 
@@ -217,7 +217,7 @@ extern int console_printk[];
 
 一般情况下, 优先级高于控制台日志级别的消息将被打印到控制台. 优先级低于控制台日志级别的消息将被打印到`messages` 日志文件中, 而在伪终端下不打印任何的信息.
 
-> 关于系统中日志文件的用途, 请参见[ubuntu /var/log/下各个日志文件描述及修复无message文件和debug文件](http://blog.csdn.net/gatieme/article/details/68951962), 如果系统中没有message, debug 日志文件也请参见[ubuntu /var/log/下各个日志文件描述及修复无message文件和debug文件](http://blog.csdn.net/gatieme/article/details/68951962)
+> 关于系统中日志文件的用途, 请参见[ubuntu /var/log/下各个日志文件描述及修复无 message 文件和 debug 文件](http://blog.csdn.net/gatieme/article/details/68951962), 如果系统中没有 message, debug 日志文件也请参见[ubuntu /var/log/下各个日志文件描述及修复无 message 文件和 debug 文件](http://blog.csdn.net/gatieme/article/details/68951962)
 
 我们在进行有关编程的时候, 若使用到 `printk` 这个函数, 一般查看信息是在 `messages` 和虚拟终端下进行查看, 而对于 `syslog` 和 `kern.log` 下是用来检验所有信息的输出情况.
 
@@ -231,7 +231,7 @@ extern int console_printk[];
 
 内容依次分别为, 控制台日志级别 `console_loglevel`, 默认消息级别 `default_message_loglevel`, 控制台最小的日志级别 `minimum_console_loglevel`, 默认的控制台日志级别 `default_console_loglevel`
 
-可以看到控制台日志级别为4, 对应的是 `KERN_WARNING`, 也就是说优先级别比`KERN_WARNING`的内容都会显示`messaging`, 而`KERN_DEBUG`的内容会显示在`debug`中
+可以看到控制台日志级别为 4, 对应的是 `KERN_WARNING`, 也就是说优先级别比`KERN_WARNING`的内容都会显示`messaging`, 而`KERN_DEBUG`的内容会显示在`debug`中
 
 我们通过一个例子来展示
 
@@ -286,23 +286,23 @@ module_exit(book_exit);
 
 # 4. 参考
 
-[linux内核printk调试](http://blog.csdn.net/catamout/article/details/5380562)
+[linux 内核 printk 调试](http://blog.csdn.net/catamout/article/details/5380562)
 
-[linux内核调试技术之printk](http://www.cnblogs.com/veryStrong/p/6218383.html)
+[linux 内核调试技术之 printk](http://www.cnblogs.com/veryStrong/p/6218383.html)
 
-[调整内核printk的打印级别](http://blog.csdn.net/tonywgx/article/details/17504001)
+[调整内核 printk 的打印级别](http://blog.csdn.net/tonywgx/article/details/17504001)
 
-[linux设备驱动学习笔记--内核调试方法之printk](http://blog.csdn.net/itsenlin/article/details/43205983)
+[linux 设备驱动学习笔记--内核调试方法之 printk](http://blog.csdn.net/itsenlin/article/details/43205983)
 
-[内核日志及printk结构浅析](http://blog.chinaunix.net/uid-26993600-id-3252420.html)
+[内核日志及 printk 结构浅析](http://blog.chinaunix.net/uid-26993600-id-3252420.html)
 
-[驱动程序调试方法之printk——printk的原理与直接使用](http://www.cnblogs.com/lidabo/p/5414007.html)
+[驱动程序调试方法之 printk——printk 的原理与直接使用](http://www.cnblogs.com/lidabo/p/5414007.html)
 
-[Linux内核调试方法总结](https://my.oschina.net/fgq611/blog/113249)
+[Linux 内核调试方法总结](https://my.oschina.net/fgq611/blog/113249)
 
 [掌握 Linux 调试技术](https://www.ibm.com/developerworks/cn/linux/sdk/l-debug/index.html#resources)
 
-[Linux内核调试技术之printk](http://sanwen.net/a/yqiuxqo.html)
+[Linux 内核调试技术之 printk](http://sanwen.net/a/yqiuxqo.html)
 
-[Linux内核调拭之printk用法](https://www.zhukun.net/archives/6667)
+[Linux 内核调拭之 printk 用法](https://www.zhukun.net/archives/6667)
 
