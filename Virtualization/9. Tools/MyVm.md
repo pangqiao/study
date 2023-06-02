@@ -422,6 +422,11 @@ tmpfs          tmpfs  299M  4.0K  299M   1% /run/user/0
 
 qemu-img create -f qcow2 data.qcow2 50G
 
+```
+#/etc/fstab
+
+/dev/vdb1              /data                    ext4    defaults        0 0
+```
 
 # 9. 修改镜像内容
 
