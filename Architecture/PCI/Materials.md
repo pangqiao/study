@@ -18,11 +18,11 @@ summay:
 
 不要直接看 spec, spec 没有任何计算机体系结构相关内容(看《PCI Experss 体系结构导读》前言)
 
-先看 《深入浅出 SSD》, 这个更通俗简单(在 SSD 目录下)
+先看《深入浅出 SSD》, 这个更通俗简单(在 SSD 目录下)
 
-再看 《PCI Experss 体系结构导读》
+再看《PCI Experss 体系结构导读》
 
-再 《PCI Express Technology》
+再《PCI Express Technology》
 
 # Blog
 
