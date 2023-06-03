@@ -26,6 +26,8 @@ summay:
 
 # Blog
 
+PCIe扫盲系列博文连载目录篇(第一阶段): http://blog.chinaaet.com/justlxy/p/5100053251
+
 PCIe 资料汇总: http://blog.csdn.net/abcamus/article/details/72812507
 
 https://blog.csdn.net/mao0514/article/category/1518607
