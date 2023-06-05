@@ -2,6 +2,7 @@
 
 Linux 电源管理子系统: https://www.cnblogs.com/LoyenWang/category/1528950.html
 
+Linux内核Power_Management之suspend详解（一）: https://blog.csdn.net/weixin_42749767/article/details/83374105
 
 CPU 电源管理 pstate cstate: https://www.cnblogs.com/hugetong/p/12176618.html
 
