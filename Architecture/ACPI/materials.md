@@ -10,5 +10,5 @@ ACPI 6.4 规范:
 * https://uefi.org/htmlspecs/ACPI_Spec_6_4_html/index.html
 * https://blog.csdn.net/anqi8955/category_11341015.html
 
-
+acpi table解析过程分析: https://blog.csdn.net/woai110120130/article/details/93318611
 
