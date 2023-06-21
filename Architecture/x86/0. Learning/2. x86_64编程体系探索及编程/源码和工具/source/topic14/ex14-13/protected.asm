@@ -21,18 +21,18 @@ entry:
         ;call disable_timer
         ;sti
 ;; ���� #PF handler
-        mov esi， PF_HANDLER_VECTOR
-        mov edi， PF_handler
+        mov esi,  PF_HANDLER_VECTOR
+        mov edi,  PF_handler
         call set_interrupt_handler        
 
 ;; ���� #GP handler
-        mov esi， GP_HANDLER_VECTOR
-        mov edi， GP_handler
+        mov esi,  GP_HANDLER_VECTOR
+        mov edi,  GP_handler
         call set_interrupt_handler        
         
 ;; ���� #DB handler
-        mov esi， DB_HANDLER_VECTOR
-        mov edi， DB_handler
+        mov esi,  DB_HANDLER_VECTOR
+        mov edi,  DB_handler
         call set_interrupt_handler        
 
         
@@ -40,14 +40,14 @@ entry:
         call set_sysenter
 
 ;; ���� system_service handler
-        mov esi， SYSTEM_SERVICE_VECTOR
-        mov edi， system_service
+        mov esi,  SYSTEM_SERVICE_VECTOR
+        mov edi,  system_service
         call set_user_interrupt_handler                
 
 ; ����ִ�� SSE ָ��        
-        mov eax， cr4
-        bts eax， 9                                              ; CR4.OSFXSR = 1
-        mov cr4， eax
+        mov eax,  cr4
+        bts eax,  9                                              ; CR4.OSFXSR = 1
+        mov cr4,  eax
                 
         
 ;���� CR4.PAE
@@ -60,22 +60,22 @@ entry:
         call init_pae_paging
         
 ;���� PDPT ����ַ        
-        mov eax， PDPT_BASE
-        mov cr3， eax
+        mov eax,  PDPT_BASE
+        mov cr3,  eax
                                 
 ; �򿪡�paging
-        mov eax， cr0
-        bts eax， 31
-        mov cr0， eax                
+        mov eax,  cr0
+        bts eax,  31
+        mov cr0,  eax                
 
-        mov esp， PROCESSOR0_KERNEL_ESP
+        mov esp,  PROCESSOR0_KERNEL_ESP
 
-        mov esi， PIC8259A_TIMER_VECTOR
-        mov edi， timer_handler
+        mov esi,  PIC8259A_TIMER_VECTOR
+        mov edi,  timer_handler
         call set_interrupt_handler        
 
-        mov esi， KEYBOARD_VECTOR
-        mov edi， keyboard_handler
+        mov esi,  KEYBOARD_VECTOR
+        mov edi,  keyboard_handler
         call set_interrupt_handler                
         
         call init_8259A
@@ -102,9 +102,9 @@ entry:
 ;; **********************************
 
 user_entry:
-        mov ax， user_data32_sel
-        mov ds， ax
-        mov es， ax
+        mov ax,  user_data32_sel
+        mov ds,  ax
+        mov es,  ax
 
 user_start:
 

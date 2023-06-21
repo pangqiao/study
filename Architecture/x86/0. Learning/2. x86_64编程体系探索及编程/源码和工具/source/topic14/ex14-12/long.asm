@@ -296,33 +296,33 @@ user_entry:
         LIB32_PRINTLN_CALL
 
 ; 2)下面打印 virtual address 0x200000 各级 table entry 信息        
-        mov esi， address_msg2
+        mov esi,  address_msg2
         LIB32_PUTS_CALL                        
-        mov rsi， 0x200000
-        mov rax， SYSTEM_SERVICE_USER0
+        mov rsi,  0x200000
+        mov rax,  SYSTEM_SERVICE_USER0
         int 40h
         LIB32_PRINTLN_CALL
                 
 ; 3)下面打印 virtual address 0x800000 各级 table entry 信息        
-        mov esi， address_msg3
+        mov esi,  address_msg3
         LIB32_PUTS_CALL                        
-        mov rsi， 0x800000
-        mov rax， SYSTEM_SERVICE_USER0
+        mov rsi,  0x800000
+        mov rax,  SYSTEM_SERVICE_USER0
         int 40h
         LIB32_PRINTLN_CALL
 
 ; 3)下面打印 virtual address 0 各级 table entry 信息        
-        mov esi， address_msg4
+        mov esi,  address_msg4
         LIB32_PUTS_CALL                        
-        mov rsi， 0
-        mov rax， SYSTEM_SERVICE_USER0
+        mov rsi,  0
+        mov rax,  SYSTEM_SERVICE_USER0
         int 40h
         
                         
         
          jmp $
          
-;        mov rsi， msg1
+;        mov rsi,  msg1
 ;        call strlen
 
         call QWORD far [conforming_callgate_pointer]        ; 测试 call-gate for conforming 段                
@@ -336,10 +336,10 @@ conforming_callgate_pointer:
 
        
 
-address_msg1 db '---> dump virtual address 0xfffffff8_00000000 <---'， 10， 0
-address_msg2 db '---> dump virtual address 0x200000 <---'， 10， 0
-address_msg3 db '---> dump virtual address 0x800000 <---'， 10， 0
-address_msg4 db '---> dump virtual address 0 <---'， 10， 0
+address_msg1 db '---> dump virtual address 0xfffffff8_00000000 <---',  10,  0
+address_msg2 db '---> dump virtual address 0x200000 <---',  10,  0
+address_msg3 db '---> dump virtual address 0x800000 <---',  10,  0
+address_msg4 db '---> dump virtual address 0 <---',  10,  0
 
 
 ;;; ###### 下面是 32-bit compatibility 模块 ########                
@@ -348,32 +348,32 @@ address_msg4 db '---> dump virtual address 0 <---'， 10， 0
 
 ;; 0 级的 compatibility 代码入口        
 compatibility_kernel_entry:
-        mov ax， data32_sel
-        mov ds， ax
-        mov es， ax
-        mov ss， ax        
-        mov esp， COMPATIBILITY_USER_ESP
+        mov ax,  data32_sel
+        mov ds,  ax
+        mov es,  ax
+        mov ss,  ax        
+        mov esp,  COMPATIBILITY_USER_ESP
         jmp compatibility_entry
 
 ;; 3 级的 compatibility 代码入口        
 compatibility_user_entry:
-        mov ax， user_data32_sel | 3
-        mov ds， ax
-        mov es， ax
-        mov ss， ax        
-        mov esp， COMPATIBILITY_USER_ESP
+        mov ax,  user_data32_sel | 3
+        mov ds,  ax
+        mov es,  ax
+        mov ss,  ax        
+        mov esp,  COMPATIBILITY_USER_ESP
         
 compatibility_entry:
 ;; 通过 stub 函数从compaitibility模式调用call gate 进入64位模式
-        mov esi， cmsg1
-        mov eax， LIB32_PUTS
+        mov esi,  cmsg1
+        mov eax,  LIB32_PUTS
         call compatibility_lib32_service                 ;; stub 函数形式
 
 
-        mov eax， [fs:100]
+        mov eax,  [fs:100]
         
-        mov esi， cmsg1
-        mov eax， LIB32_PUTS
+        mov esi,  cmsg1
+        mov eax,  LIB32_PUTS
         call compatibility_sys_service_enter            ; compatibility 模式下的 sys_service() stub 函数
 
 ;; 现在切换到 3级 64-bit 模式代码
@@ -393,7 +393,7 @@ compatibility_entry:
         
         jmp $
         
-cmsg1        db '---> Now: call sys_service() from compatibility mode with sysenter instruction'， 10， 0
+cmsg1        db '---> Now: call sys_service() from compatibility mode with sysenter instruction',  10,  0
                 
 compatibility_entry_end:
  
