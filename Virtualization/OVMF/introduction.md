@@ -306,5 +306,14 @@ OvmfPkg/haiwei/test.inf {
 INF  OvmfPkg/haiwei/test.inf
 ```
 
+和上面一样的编译和运行的步骤：
+
+```
+OvmfPkg/build.sh -a X64 -D DEBUG_ON_SERIAL_PORT
+
+qemu-system-x86_64 -drive file=./Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd,format=raw,if=pflash -serial file:debug.log
+```
+
+运行无误，打开 debug.log
 
 https://zhuanlan.zhihu.com/p/107360611
