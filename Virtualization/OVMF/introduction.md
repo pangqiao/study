@@ -281,6 +281,20 @@ HaiweiTestEntry (
 
 我们需要把它放进 OVMF 里面去编译，还记不记得我们在第二部分的时候，在 target.txt 里面指定了：
 
+```
+ACTIVE_PLATFORM       = OvmfPkg/OvmfPkgX64.dsc
+```
+
+我们需要把 test.inf 加进 OvmfPkgX64.dsc，才能保证在编译的时候，我们自己的程序可以被编译。
+
+打开 OvmfPkgX64.dsc，在文件的最后加上下面的内容：
+
+```
+OvmfPkg/haiwei/test.inf {
+     <LibraryClasses>
+        DebugLib|MdePkg/Library/BaseDebugLibSerialPort/BaseDebugLibSerialPort.inf
+  }
+```
 
 
 https://zhuanlan.zhihu.com/p/107360611
