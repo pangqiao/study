@@ -75,13 +75,18 @@ TOOL_CHAIN_TAG        = GCC5
 
 第二步，**运行编译脚本**
 
-下面是我编译 OVMF 所用的命令， `build.sh` 是 OVMF 自带的编译脚本，`-a X64` 制定了架构类型，`-D DEBUG_ON_SERIAL_PORT` 是**打开串口 log**，配合之后 qemu 的 `-serial` 参数，可以获得 log 信息，进行代码级调试. 关于 debug log 的详细信息，也可以参见 README.
+下面是我编译 OVMF 所用的命令， `build.sh` 是 OVMF 自带的编译脚本，`-a X64` 制定了架构类型，`-D DEBUG_ON_SERIAL_PORT` 是**打开串口 log**，配合之后 **qemu** 的 `-serial` 参数，可以获得 log 信息，进行代码级调试. 关于 debug log 的详细信息，也可以参见 README.
 
 ```
 OvmfPkg/build.sh -a X64 -D DEBUG_ON_SERIAL_PORT
 ```
 
 如果编译不出错误的话，你就会在 `Build/OvmfX64/DEBUG_GCC5/FV` 下面看到一个叫做 `OVMF.fd` 的文件，这就是我们的 OVMF BIOS image.
+
+```
+$ ll Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd
+-rw-rw-r-- 1 ubuntu ubuntu 2097152  6 月 26 15:11 Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd
+```
 
 ---
 
@@ -171,7 +176,7 @@ OvmfPkg/build.sh -a X64 qemu
 ```
 
 >
-> qemu-system-x86_64 -name ubuntu -accel kvm -bios /home/ubuntu/haiwei/OVMF.fd -cpu host -m 2G -smp 2 -hda /home/ubuntu/haiwei/ubuntu22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic
+> qemu-system-x86_64 -name ubuntu -accel kvm -bios Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd -cpu host -m 2G -smp 2 -hda /home/ubuntu/haiwei/ubuntu22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic
 
 # 调试
 
