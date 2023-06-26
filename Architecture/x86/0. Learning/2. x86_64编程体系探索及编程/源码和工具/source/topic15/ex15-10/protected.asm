@@ -98,7 +98,7 @@ entry:
         
 
 ;*
-;* 实验 ex15-10：测试 load latency 机制
+;* 实验 ex15-10: 测试 load latency 机制
 ;*       
         call available_pebs                             ; 测试 pebs 是否可用
         test eax, eax

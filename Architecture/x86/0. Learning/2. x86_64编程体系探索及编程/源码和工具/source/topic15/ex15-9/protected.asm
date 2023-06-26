@@ -100,7 +100,7 @@ entry:
         
 
 ;*
-;* 实验 ex15-9：多个 PMI 中断触发的处理
+;* 实验 ex15-9: 多个 PMI 中断触发的处理
 ;*
         
         call available_pebs                             ; 测试 pebs 是否可用

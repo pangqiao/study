@@ -100,7 +100,7 @@ entry:
         
 
 ;*
-;* 实验 ex15-8：测试 PMI 中断与 PEBS 中断同时触发
+;* 实验 ex15-8: 测试 PMI 中断与 PEBS 中断同时触发
 ;*
         
         call available_pebs                             ; 测试 pebs 是否可用

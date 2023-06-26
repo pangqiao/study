@@ -89,7 +89,7 @@ entry:
 ; 1) 开启 APIC
         call enable_xapic        
         
-; 2）设置 PMI handler
+; 2)设置 PMI handler
         mov esi, APIC_PERFMON_VECTOR
         mov edi, perfmon_handler
         call set_interrupt_handler
@@ -100,7 +100,7 @@ entry:
 
 
 
-;;; 实验 ex15-4：测试在 PMI 中冻结 counter 机制
+;;; 实验 ex15-4: 测试在 PMI 中冻结 counter 机制
 
 
 ; 设置 IA32_PERF_GLOBAL_CTRL
@@ -156,7 +156,7 @@ entry:
 
 
 ;; **********************************        
-;; 下面是用户代码（CPL = 3)
+;; 下面是用户代码(CPL = 3)
 ;; **********************************
 
 user_entry:

@@ -144,7 +144,7 @@ entry:
         call println
         call println
 
-; 4）得到 nomial CPI 值
+; 4)得到 nomial CPI 值
         mov esi, test_print_float
         call get_nominal_cpi
         mov ebx, eax

@@ -100,7 +100,7 @@ entry:
         
 
 ;*
-;* 实验 ex15-11：使用 fixed 计数器
+;* 实验 ex15-11: 使用 fixed 计数器
 ;*
         
         call available_pebs                             ; 测试 pebs 是否可用

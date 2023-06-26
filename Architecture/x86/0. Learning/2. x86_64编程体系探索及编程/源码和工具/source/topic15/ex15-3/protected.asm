@@ -89,7 +89,7 @@ entry:
 ; 1) 开启 APIC
         call enable_xapic        
         
-; 2）设置 PMI handler
+; 2)设置 PMI handler
         mov esi, APIC_PERFMON_VECTOR
         mov edi, perfmon_handler
         call set_interrupt_handler
@@ -100,7 +100,7 @@ entry:
 
 
 
-;;; 实验 ex15-3：测试 counter 溢出时的 PMI 中断
+;;; 实验 ex15-3: 测试 counter 溢出时的 PMI 中断
 
 ; 设置 IA32_PERF_GLOBAL_CTRL
         mov ecx, IA32_PERF_GLOBAL_CTRL
@@ -143,7 +143,7 @@ entry:
 
 
 ;; **********************************        
-;; 下面是用户代码（CPL = 3)
+;; 下面是用户代码(CPL = 3)
 ;; **********************************
 
 user_entry:

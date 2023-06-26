@@ -100,7 +100,7 @@ entry:
         
 
 ;*
-;* 实验 ex15-7：测试 PEBS buffer 满时产生中断
+;* 实验 ex15-7: 测试 PEBS buffer 满时产生中断
 ;*
         
         call available_pebs                             ; 测试 pebs 是否可用

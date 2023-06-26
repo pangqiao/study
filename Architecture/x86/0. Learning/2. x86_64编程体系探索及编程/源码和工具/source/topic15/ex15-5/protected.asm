@@ -100,7 +100,7 @@ entry:
         
 
 ;*
-;* 实验 ex15-5：测试 PEBS 中断
+;* 实验 ex15-5: 测试 PEBS 中断
 ;*
         
         call available_pebs                             ; 测试 pebs 是否可用
