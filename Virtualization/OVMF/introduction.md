@@ -87,17 +87,17 @@ OvmfPkg/build.sh -a X64 -D DEBUG_ON_SERIAL_PORT
 
 用的是 `qemu-system-x86_64` 这个程序，因为我们编译的 x64 版本.
 
-现在为了运行第一个 BIOS 而需要用到的 qemu 的参数，实际上只有一类，那就是告诉 qemu 去哪里 load BIOS image。通常有两种方法：
+现在为了运行第一个 BIOS 而需要用到的 qemu 的参数，实际上只有一类，那就是告诉 qemu 去哪里 load BIOS image. 通常有两种方法：
 
 ## -pflash
 
-这条参数告诉 qemu 用指定的文件作为 spi flash 上的 firmware，类似我们在一个真实的机器上烧写它的 spi flash。用这个参数执行的好处是 UEFI variable 都可以保存在“flash”上面，基本 reboot 也不会丢
+这条参数告诉 qemu 用指定的文件作为 spi flash 上的 firmware，类似我们在一个真实的机器上烧写它的 spi flash. 用这个参数执行的好处是 UEFI variable 都可以保存在“flash”上面，基本 reboot 也不会丢
 
 ## -bios
 
-这条参数只是简单的指定 BIOS 文件，并不模拟 spi flash，所以尽管在执行的时候，大致效果与上面那条没什么不同，但是 non-volatile 的 variable 会在 reboot 的时候丢失。
+这条参数只是简单的指定 BIOS 文件，并不模拟 spi flash，所以尽管在执行的时候，大致效果与上面那条没什么不同，但是 non-volatile 的 variable 会在 reboot 的时候丢失.
 
-用下面最简单的命令跑一下，看看会有什么效果。
+用下面最简单的命令跑一下，看看会有什么效果.
 
 ```
 cd Build/OvmfX64/DEBUG_GCC5/FV
@@ -113,3 +113,44 @@ cd Build/OvmfX64/DEBUG_GCC5/FV
 qemu-system-x86_64 -pflash OVMF.fd
 ```
 
+运行命令之后，命令行里的信息：
+
+图
+
+然后 qemu 就开始执行，我们马上就看到了 tianocore 的 logo，这宣布我们已经大功告成！
+
+图
+
+大概十秒之后，系统就跑进了 EFI shell，至此我们用虚拟机运行 UEFI 固件已经全部完成.
+
+图
+
+另外大家可能注意到我们执行 qemu-system-x86_64 -pflash OVMF.fd 这条命令的时候，会有 warning 信息打印，其实我们还有另一种做法可以避免这个 warning 消息：
+
+```
+qemu-system-x86_64 -drive file=OVMF.fd,format=raw,if=pflash
+```
+
+实际上如果不是一定要 debug log 的话，可以简单的运行下面这样命令来一次性完成编译和运行，但这种方式我并不是很建议.
+
+```
+OvmfPkg/build.sh -a X64 qemu
+```
+
+# 调试
+
+关于调试有太多要说的，我这里就不展开，我只告诉你，如果在 qemu 运行的时候，拿到 BIOS 的 debug log. source code level 的 debug log 是最好的调试信息，几乎 90%以上的问题都可以基于 debug log 来调试.
+
+有很多种方式拿到 debug log，我这里只告诉你其中一种：
+
+如前面所说，编译代码的时候，带上 `-D DEBUG_ON_SERIAL_PORT` 这个参数：
+
+```
+OvmfPkg/build.sh -a X64 -D DEBUG_ON_SERIAL_PORT
+```
+
+
+
+
+
+https://zhuanlan.zhihu.com/p/107360611
