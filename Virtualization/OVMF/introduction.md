@@ -83,6 +83,39 @@ OvmfPkg/build.sh -a X64 -D DEBUG_ON_SERIAL_PORT
 
 如果编译不出错误的话，你就会在 `Build/OvmfX64/DEBUG_GCC5/FV` 下面看到一个叫做 `OVMF.fd` 的文件，这就是我们的 OVMF BIOS image.
 
+---
+
+```
+sudo update-alternatives --config gcc
+// 选 gcc-10
+
+make -C BaseTools
+export EDK_TOOLS_PATH=/home/ubuntu/haiwei/acrn-work/acrn-edk2/BaseTools
+. edksetup.sh BaseTools
+```
+
+修改 Conf/target.txt
+
+```
+ACTIVE_PLATFORM = OvmfPkg/OvmfPkgX64.dsc
+TARGET_ARCH = X64
+TOOL_CHAIN_TAG=GCC5
+```
+
+```
+build -p OvmfPkg/OvmfPkgX64.dsc -a X64 -DFD_SIZE_2MB -DDEBUG_ON_SERIAL_PORT=true
+
+build -p OvmfPkg/OvmfPkgX64.dsc -a X64 -D DEBUG_ON_SERIAL_PORT=true -D FD_SIZE_2MB
+```
+
+清理
+
+```
+make -C BaseTools clean
+build clean
+build cleanall
+```
+
 # 运行
 
 用的是 `qemu-system-x86_64` 这个程序，因为我们编译的 x64 版本.
@@ -136,6 +169,9 @@ qemu-system-x86_64 -drive file=OVMF.fd,format=raw,if=pflash
 ```
 OvmfPkg/build.sh -a X64 qemu
 ```
+
+>
+> qemu-system-x86_64 -name ubuntu -accel kvm -bios /home/ubuntu/haiwei/OVMF.fd -cpu host -m 2G -smp 2 -hda /home/ubuntu/haiwei/ubuntu22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic
 
 # 调试
 
