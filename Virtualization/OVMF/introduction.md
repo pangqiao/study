@@ -190,6 +190,14 @@ OvmfPkg/build.sh -a X64 qemu
 OvmfPkg/build.sh -a X64 -D DEBUG_ON_SERIAL_PORT
 ```
 
+运行 qemu 的时候，带上 `-serial file:debug.log` 这个参数：
+
+```
+qemu-system-x86_64 -drive file=OVMF.fd,format=raw,if=pflash -serial file:debug.log
+```
+
+用上面这条命令执行后，在当前目录就会出现一个叫做 debug.log 的文件，这就是 BIOS 的打印的 log，打开之后是这样的：
+
 
 
 
