@@ -296,5 +296,15 @@ OvmfPkg/haiwei/test.inf {
   }
 ```
 
+这样在编译 OVMF 的时候，我们的程序也可以被编译到，其中的 LibraryClasses 是指定了 debug log 通过那个库来打印，有时候这个是默认不打印的，所以我为了保险起见一般会加上这个。
+
+这段代码放在最后，严格地讲，实际上是放在 `[Components]` 这个块之下的
+
+程序就可以编译了，但是只编译还不够，还需要**放进**最后的 BIOS **image**，并且在运行的时候要被执行，那么就需要把 `test.inf` 同时包含进 `.fdf` 文件，也就是对应的 `OvmfPkg/OvmfPkgX64.fdf`，找到 `[FV.DXEFV]`，加上以下内容：
+
+```
+INF  OvmfPkg/haiwei/test.inf
+```
+
 
 https://zhuanlan.zhihu.com/p/107360611
