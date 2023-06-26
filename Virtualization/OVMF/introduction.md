@@ -196,9 +196,90 @@ OvmfPkg/build.sh -a X64 -D DEBUG_ON_SERIAL_PORT
 qemu-system-x86_64 -drive file=OVMF.fd,format=raw,if=pflash -serial file:debug.log
 ```
 
-用上面这条命令执行后，在当前目录就会出现一个叫做 debug.log 的文件，这就是 BIOS 的打印的 log，打开之后是这样的：
+>qemu-system-x86_64 -name ubuntu -accel kvm -drive file=Build/OvmfX64/DEBUG_GCC5/FV/OVMF.fd,format=raw,if=pflash -serial file:debug.log -cpu host -m 2G -smp 2 -hda /home/ubuntu/haiwei/ubuntu22.04.qcow2 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic
 
+用上面这条命令执行后，在当前目录就会出现一个叫做 debug.log 的文件，这就是 BIOS 的打印的 log.
 
+# 写一个自己的 Application
+
+写一个自己的 UEFI 程序，打印一个 hello world.
+
+通常新加一个 UEFI 程序需要三部分：
+
+1. 源文件
+
+新建一个 c 源文件，比如我就在 OvmfPkg 目录下新建了一个文件夹，在里面添加一个叫做 test.c 的文件
+
+```
+$ cd OvmfPkg
+$ mkdir haiwei
+$ cd haiwei/
+$ vim test.c
+```
+
+编辑 test.c 加入以下内容:
+
+```cpp
+#include <Uefi.h>
+#include <Library/BaseLib.h>
+#include <Library/BaseMemoryLib.h>
+#include <Library/UefiDriverEntryPoint.h>
+#include <Library/UefiBootServicesTableLib.h>
+#include <Library/UefiLib.h>
+#include <Library/DebugLib.h>
+#include <Library/ReportStatusCodeLib.h>
+
+EFI_STATUS
+EFIAPI
+HaiweiTestEntry (
+  IN EFI_HANDLE           ImageHandle,
+  IN EFI_SYSTEM_TABLE     *SystemTable
+  )
+{
+ DEBUG ((EFI_D_ERROR, "Haiwei: Hello world\n"));
+ return EFI_SUCCESS;
+}
+```
+
+上面就是 UEFI 的主体内容, `HaiweiTestEntry` 是入口程序, 需要在下来的 inf 文件中指定.
+
+在同样的路径下添加一个叫做 `test.inf` 的文件，这个文件是**每一个 UEFI 程序**必需的，用来配置**程序属性**，指定它**如何被编译**，它可以提供什么，它依赖什么，它可以运行在什么架构之上，有什么样的功能，等等。我们这个例子的内容如下：
+
+```conf
+[Defines]
+ INF_VERSION                    = 0x00010005
+ BASE_NAME                      = HaiweiTest
+ FILE_GUID                      = D0B2C191-6255-4AC2-AE8E-73821B3E1F0F
+ MODULE_TYPE                    = UEFI_DRIVER
+ VERSION_STRING                 = 1.0
+
+ ENTRY_POINT                    = HaiweiTestEntry
+
+[Sources]
+ test.c
+
+[Packages]
+ MdePkg/MdePkg.dec
+ MdeModulePkg/MdeModulePkg.dec
+
+[LibraryClasses]
+  BaseLib
+  UefiLib
+  UefiRuntimeServicesTableLib
+  UefiBootServicesTableLib
+  UefiDriverEntryPoint
+  DebugLib
+
+[Guids]
+
+[Protocols]
+
+[Pcd]
+```
+
+一个简单的程序就这样写好了，那么如何编译它呢？
+
+我们需要把它放进 OVMF 里面去编译，还记不记得我们在第二部分的时候，在 target.txt 里面指定了：
 
 
 
