@@ -26,7 +26,7 @@ summay:
 
 # Blog
 
-PCIe扫盲系列博文连载目录篇(第一阶段): http://blog.chinaaet.com/justlxy/p/5100053251
+PCIe 扫盲系列博文连载目录篇(第一阶段): http://blog.chinaaet.com/justlxy/p/5100053251
 
 PCIe 资料汇总: http://blog.csdn.net/abcamus/article/details/72812507
 
@@ -68,4 +68,4 @@ PCIe 工具:
 
 Mindshare Arbor, 主要用于 PCI/PCI-X/PCIe/Hyper Transport 系统的分析与调试. 支持主流的 Windows 和 Linux 系统(最新的已经不支持 Linux 了). https://www.mindshare.com/software/?section=132B0BA21710
 
-
+硬件信息查看工具: RW-everything, http://rweverything.com/
