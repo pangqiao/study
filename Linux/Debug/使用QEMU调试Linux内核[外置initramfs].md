@@ -11,7 +11,7 @@
 
 <!-- /code_chunk_output -->
 
-用 qemu+GDB 来调试内核和 ko, 当然我们需要准备如下:
+用 `qemu+GDB` 来调试内核和 ko, 当然我们需要准备如下:
 
 - 带调试信息的内核 vmlinux
 - 一个压缩的内核 vmlinuz 或者 bzImage
@@ -42,11 +42,11 @@ Kernel hacking  --->
 
 # 2. 构建 initramfs 根文件系统
 
-Linux 系统启动阶段, boot loader 加载完**内核文件 vmlinuz 后**, 内核**紧接着**需要挂载磁盘根文件系统, 但如果此时内核没有相应驱动, 无法识别磁盘, 就需要先加载驱动, 而驱动又位于/lib/modules, 得挂载根文件系统才能读取, 这就陷入了一个两难境地, 系统无法顺利启动. 于是有了**initramfs 根文件系统**, 其中包含必要的设备驱动和工具, boot loader 加载 initramfs 到内存中, 内核会将其挂载到根目录/,然后**运行/init 脚本**, 挂载真正的磁盘根文件系统.
+Linux 系统启动阶段, boot loader 加载完**内核文件 vmlinuz 后**, 内核**紧接着**需要挂载磁盘根文件系统, 但如果此时内核没有相应驱动, 无法识别磁盘, 就需要先加载驱动, 而驱动又位于 `/lib/modules`, 得挂载根文件系统才能读取, 这就陷入了一个两难境地, 系统无法顺利启动. 于是有了**initramfs 根文件系统**, 其中包含必要的设备驱动和工具, boot loader 加载 initramfs 到内存中, 内核会将其挂载到根目录 / ,然后**运行 /init 脚本**, 挂载真正的磁盘根文件系统.
 
 这里借助 BusyBox 构建极简 initramfs, 提供基本的用户态可执行程序.
 
-编译 BusyBox, 配置**CONFIG\_STATIC 参数**, 编译**静态版 BusyBox**, 编译好的可执行文件 busybox**不依赖动态链接库**, 可以独立运行, 方便构建 initramfs.
+编译 BusyBox, 配置 **CONFIG_STATIC 参数**, 编译**静态版 BusyBox**, 编译好的可执行文件 busybox**不依赖动态链接库**, 可以独立运行, 方便构建 initramfs.
 
 ```
 make menuconfig
@@ -59,7 +59,7 @@ General Configuration  --->
     [*] Don't use /usr
 ```
 
-Don't use \/usr 也一定要选,否则 make install 后 busybox 将安装在原系统的/usr 下,这将覆盖掉系统原有的命令. 选择这个选项后,make install 后会在 busybox 目录下生成一个叫\_install 的目录,里面有 busybox 和指向它的链接.
+`Don't use /usr` 也一定要选,否则 make install 后 busybox 将安装在原系统的/usr 下,这将覆盖掉系统原有的命令. 选择这个选项后,make install 后会在 busybox 目录下生成一个叫\_install 的目录,里面有 busybox 和指向它的链接.
 
 ```
 make -j 20
