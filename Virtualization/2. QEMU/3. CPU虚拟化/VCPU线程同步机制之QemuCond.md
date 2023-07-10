@@ -38,7 +38,7 @@ void qemu_cond_destroy(QemuCond *cond)
 
 
 /*
- * 通过 QemuMutex 保护 QemuCond, 使用 pthread_cond_wait 等待 QemuCond 条件被通知后才返回,
+ * 通过 QemuMutex 保护 QemuCond, 使用 `pthread_cond_wait` 等待 QemuCond 条件被通知后才返回,
  * 注意 QemuCond 只是通知机制, 真正的条件需要在外部的循环里面进行判断, 见后面的例子
  * 注意这里没有超时时间限定
  */
