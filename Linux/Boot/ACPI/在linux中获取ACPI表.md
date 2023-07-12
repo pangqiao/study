@@ -18,3 +18,5 @@ ACPI, 全称又叫 Advanced Configuration and Power Management Interface,  高�
 这样你就可以在当前目录下发现你所要的 ACPI 表文件
 
 `DSDT.dsl`
+
+
