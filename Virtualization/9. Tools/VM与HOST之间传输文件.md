@@ -138,3 +138,4 @@ virt-copy-in/out(libguestfs-tools 包)
 
 https://sjt157.github.io/2018/12/12/VM%E4%B8%8EHOST%E4%B9%8B%E9%97%B4%E4%BC%A0%E8%BE%93%E6%96%87%E4%BB%B6/
 
+在 qemu 环境下，实现宿主机和虚拟机之间的数据传输: https://blog.csdn.net/lepton126/article/details/109216956
