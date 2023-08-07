@@ -5,3 +5,4 @@ http://www.wowotech.net/linux_kenrel/pm_interface.html
 
 http://www.wowotech.net/sort/pm_subsystem
 
+Linux 电源管理-休眠与唤醒(有示例代码): https://www.cnblogs.com/lifexy/p/9629699.html
