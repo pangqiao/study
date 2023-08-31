@@ -18,3 +18,6 @@ IOMMU 历史知识及与 VFIO 的联系: https://www.cnblogs.com/haiyonghao/p/14
 
 Documentation/driver-api/vfio.rst
 
+
+Linux x86-64 IOMMU 详解（二）—— SWIOTLB（软件 IOMMU）: https://blog.csdn.net/qq_34719392/article/details/114873284
+
