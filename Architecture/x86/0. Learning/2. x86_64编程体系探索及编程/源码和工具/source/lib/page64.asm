@@ -9,7 +9,7 @@
 
         bits 32
 ;-----------------------------------------
-; void clear_4K_page()：清 4K 页面
+; void clear_4K_page(): 清 4K 页面
 ; input:  
 ;                esi: address
 ;------------------------------------------        
@@ -31,7 +31,7 @@ clear_4K_page_loop:
         ret
 
 ;----------------------------------
-; clear_4K_pages()：清数个 4K 页
+; clear_4K_pages(): 清数个 4K 页
 ; input:
 ;                esi: address,        edi: number
 ;----------------------------------
@@ -50,7 +50,7 @@ clear_4K_pages_done:
 
 ;---------------------------------------------------------------
 ; init_page(): 初始化 long mode 的页结构
-; 描述：
+; 描述: 
 ;        在进入 long-mode 模式之前进行页表初始化
 ;----------------------------------------------------------------        
 
@@ -288,7 +288,7 @@ clear_4K_page64_loop:
         jnz clear_4K_page64_loop
         ret
 ;----------------------------------
-; clear_4K_pages64()：清数个 4K 页
+; clear_4K_pages64(): 清数个 4K 页
 ; input:
 ;                rsi: address,        rdi: number
 ;----------------------------------
@@ -397,12 +397,12 @@ get_pte:
 ; get_maxphyaddr_select_mask(): 计数出 MAXPHYADDR 值的 SELECT MASK
 ; output:
 ;       rax-maxphyaddr select mask
-; 描述：
+; 描述: 
 ;       select mask 值用于取得 MAXPHYADDR 对应的物理地址值
-; 例如：
+; 例如: 
 ;       MAXPHYADDR = 36 时: select mask = 0000000F_FFFFFFFFh
 ;       MAXPHYADDR = 40 时: select mask = 000000FF_FFFFFFFFh
-;       MAXPHYADDR = 52 时：select mask = 000FFFFF_FFFFFFFFh
+;       MAXPHYADDR = 52 时: select mask = 000FFFFF_FFFFFFFFh
 ;-----------------------------------------------------------------
 get_maxphyaddr_select_mask:
         push rcx
