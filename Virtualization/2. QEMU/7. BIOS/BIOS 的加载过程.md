@@ -3,8 +3,8 @@
 
 <!-- code_chunk_output -->
 
-- [1. QEMU 中使用 BIOS 简介](#1-qemu-中使用-bios-简介)
-  - [1.1. 清单 1 QEMU 源码树中的 BIOS 文件](#11-清单-1-qemu-源码树中的-bios-文件)
+- [1. 简介](#1-简介)
+  - [1.1. 源码树中的 BIOS 文件](#11-源码树中的-bios-文件)
   - [1.2. 清单 2 QEMU 源码树以子模块方式保存的 BIOS 代码](#12-清单-2-qemu-源码树以子模块方式保存的-bios-代码)
   - [1.3. 清单 3 QEMU 的 Makefile 中关于 BIOS 的拷贝操作](#13-清单-3-qemu-的-makefile-中关于-bios-的拷贝操作)
 - [2. QEMU 加载 BIOS 过程分析](#2-qemu-加载-bios-过程分析)
@@ -19,7 +19,7 @@ https://www.linuxidc.com/Linux/2014-12/110472.htm
 
 QEMU 是一个广泛使用的开源计算机仿真器和虚拟机, 它提供了虚拟机硬件的虚拟化功能, 其使用的某些特定硬件的固件则由一些开源项目提供. 本文将介绍 QEMU 代码中使用到的 BIOS, 通过分析 QEMU 代码, 讲解 BIOS 是如何加载到虚拟机的物理内存.
 
-# 1. QEMU 中使用 BIOS 简介
+# 1. 简介
 
 BIOS 提供主板或者显卡的固件信息以及基本输入输出功能, QEMU 使用的是一些开源的项目, 如 Bochs、openBIOS 等.
 
@@ -29,9 +29,32 @@ QEMU 中使用到的 BIOS 以及固件一部分以二进制文件的形式保存
 
 QEMU 支持多种启动方式, 比如说 efi、pxe 等, 都包含在该目录下, 这些都需要特定 BIOS 的支持.
 
-## 1.1. 清单 1 QEMU 源码树中的 BIOS 文件
+## 1.1. 源码树中的 BIOS 文件
 
-![config](images/1.png)
+```
+# ls pc-bios/
+bamboo.dtb                      efi-e1000.rom                           optionrom                 README
+bamboo.dts                      efi-eepro100.rom                        palcode-clipper           s390-ccw
+bios-256k.bin                   efi-ne2k_pci.rom                        petalogix-ml605.dtb       s390-ccw.img
+bios.bin                        efi-pcnet.rom                           petalogix-ml605.dts       s390-netboot.img
+bios-microvm.bin                efi-rtl8139.rom                         petalogix-s3adsp1800.dtb  skiboot.lid
+canyonlands.dtb                 efi-virtio.rom                          petalogix-s3adsp1800.dts  slof.bin
+canyonlands.dts                 efi-vmxnet3.rom                         pvh.bin                   u-boot.e500
+descriptors                     hppa-firmware.img                       pxe-e1000.rom             u-boot-sam460-20100605.bin
+edk2-aarch64-code.fd.bz2        keymaps                                 pxe-eepro100.rom          vgabios-ati.bin
+edk2-arm-code.fd.bz2            kvmvapic.bin                            pxe-ne2k_pci.rom          vgabios.bin
+edk2-arm-vars.fd.bz2            linuxboot.bin                           pxe-pcnet.rom             vgabios-bochs-display.bin
+edk2-i386-code.fd.bz2           linuxboot_dma.bin                       pxe-rtl8139.rom           vgabios-cirrus.bin
+edk2-i386-secure-code.fd.bz2    meson.build                             pxe-virtio.rom            vgabios-qxl.bin
+edk2-i386-vars.fd.bz2           multiboot.bin                           qboot.rom                 vgabios-ramfb.bin
+edk2-licenses.txt               multiboot_dma.bin                       QEMU,cgthree.bin          vgabios-stdvga.bin
+edk2-riscv-code.fd.bz2          npcm7xx_bootrom.bin                     qemu_logo.svg             vgabios-virtio.bin
+edk2-riscv-vars.fd.bz2          openbios-ppc                            qemu-nsis.bmp             vgabios-vmware.bin
+edk2-x86_64-code.fd.bz2         openbios-sparc32                        qemu-nsis.ico             vof
+edk2-x86_64-microvm.fd.bz2      openbios-sparc64                        qemu.rsrc                 vof.bin
+edk2-x86_64-secure-code.fd.bz2  opensbi-riscv32-generic-fw_dynamic.bin  QEMU,tcx.bin              vof-nvram.bin
+efi-e1000e.rom                  opensbi-riscv64-generic-fw_dynamic.bin  qemu_vga.ndrv
+```
 
 ## 1.2. 清单 2 QEMU 源码树以子模块方式保存的 BIOS 代码
 
