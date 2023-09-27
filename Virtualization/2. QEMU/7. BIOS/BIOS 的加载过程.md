@@ -123,7 +123,7 @@ endif
 
 当 QEMU 用户空间进程开始启动时, QEMU 进程会根据所**传递的参数**以及当前**宿主机平台类型(host 类型)**, 自动加载适当的 BIOS 固件.
 
-QEMU 进程启动初始阶段, 会通过 `module_call_init` 函数调用 `qemu_register_machine` 注册**该平台支持的全部机器类型**, 接着调用 find\_default\_machine**选择一个默认的机型**进行初始化.  以 QEMU 代码(1.7.0)的 x86_64 平台为例, 支持的机器类型有:
+QEMU 进程启动初始阶段, 会通过 `module_call_init` 函数调用 `qemu_register_machine` 注册**该平台支持的全部机器类型**, 接着调用 `find_default_machine` **选择一个默认的机型**进行初始化.  以 QEMU 代码(1.7.0)的 x86_64 平台为例, 支持的机器类型有:
 
 ## 2.1. x86_64 QEMU 中支持的类型
 
