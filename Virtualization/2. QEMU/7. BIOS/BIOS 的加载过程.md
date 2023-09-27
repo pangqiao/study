@@ -8,7 +8,7 @@
   - [1.2. BIOS 子模块源码](#12-bios-子模块源码)
   - [1.3. Makefile 中关于 BIOS 的拷贝操作](#13-makefile-中关于-bios-的拷贝操作)
 - [2. QEMU 加载 BIOS 过程分析](#2-qemu-加载-bios-过程分析)
-  - [2.1. 清单 4 1.7.0 版本 x86_64 QEMU 中支持的类型](#21-清单-4-170-版本-x86_64-qemu-中支持的类型)
+  - [2.1. x86_64 QEMU 中支持的类型](#21-x86_64-qemu-中支持的类型)
   - [2.2. 清单 5 QEMU 中 MemoryRegion 结构体](#22-清单-5-qemu-中-memoryregion-结构体)
   - [2.3. 清单 6 old_pc_system_rom_init 函数中将 BIOS 映射到物理内存空间的代码:](#23-清单-6-old_pc_system_rom_init-函数中将-bios-映射到物理内存空间的代码)
 - [3. 小结](#3-小结)
@@ -121,9 +121,11 @@ endif
 
 # 2. QEMU 加载 BIOS 过程分析
 
-当 QEMU 用户空间进程开始启动时, QEMU 进程会根据所**传递的参数**以及当前**宿主机平台类型(host 类型)**, 自动加载适当的 BIOS 固件. QEMU 进程启动初始阶段, 会通过 module\_call\_init 函数调用 qemu\_register\_machine 注册**该平台支持的全部机器类型**, 接着调用 find\_default\_machine**选择一个默认的机型**进行初始化.  以 QEMU 代码(1.7.0)的 x86_64 平台为例, 支持的机器类型有:
+当 QEMU 用户空间进程开始启动时, QEMU 进程会根据所**传递的参数**以及当前**宿主机平台类型(host 类型)**, 自动加载适当的 BIOS 固件.
 
-## 2.1. 清单 4 1.7.0 版本 x86_64 QEMU 中支持的类型
+QEMU 进程启动初始阶段, 会通过 `module_call_init` 函数调用 `qemu_register_machine` 注册**该平台支持的全部机器类型**, 接着调用 find\_default\_machine**选择一个默认的机型**进行初始化.  以 QEMU 代码(1.7.0)的 x86_64 平台为例, 支持的机器类型有:
+
+## 2.1. x86_64 QEMU 中支持的类型
 
 ```
 pc-q35-1.7 pc-q35-1.6 pc-q35-1.5 pc-q35-1.4 pc-i440fx-1.7 pc-i440fx-1.6 pc-i440fx-1.5
