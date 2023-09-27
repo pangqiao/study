@@ -4,9 +4,9 @@
 <!-- code_chunk_output -->
 
 - [1. 简介](#1-简介)
-  - [1.1. 源码树中的 BIOS 文件](#11-源码树中的-bios-文件)
-  - [1.2. 清单 2 QEMU 源码树以子模块方式保存的 BIOS 代码](#12-清单-2-qemu-源码树以子模块方式保存的-bios-代码)
-  - [1.3. 清单 3 QEMU 的 Makefile 中关于 BIOS 的拷贝操作](#13-清单-3-qemu-的-makefile-中关于-bios-的拷贝操作)
+  - [1.1. BIOS 二进制文件](#11-bios-二进制文件)
+  - [1.2. BIOS 子模块源码](#12-bios-子模块源码)
+  - [1.3. Makefile 中关于 BIOS 的拷贝操作](#13-makefile-中关于-bios-的拷贝操作)
 - [2. QEMU 加载 BIOS 过程分析](#2-qemu-加载-bios-过程分析)
   - [2.1. 清单 4 1.7.0 版本 x86_64 QEMU 中支持的类型](#21-清单-4-170-版本-x86_64-qemu-中支持的类型)
   - [2.2. 清单 5 QEMU 中 MemoryRegion 结构体](#22-清单-5-qemu-中-memoryregion-结构体)
@@ -25,11 +25,11 @@ BIOS 提供**主板或者显卡**的**固件信息**以及**基本输入输出�
 
 QEMU 中使用到的 BIOS 以及固件一部分以**二进制文件的形式**保存在**源码树的 pc-bios 目录下**, pc-bios 目录里包含了 QEMU 使用到的**固件**.
 
-还有一些**BIOS 以 git 源代码子模块**的形式**保存在 QEMU 的源码仓库**中, 当编译 QEMU 程序的时候, 也同时编译出这些 BIOS 或者固件的二进制文件.
+还有一些 BIOS 以 **git 源代码子模块**的形式**保存在 QEMU 的源码仓库**中, 当编译 QEMU 程序的时候, 也同时编译出这些 BIOS 或者固件的二进制文件.
 
 QEMU 支持多种启动方式, 比如说 efi、pxe 等, 都包含在该目录下, 这些都需要特定 BIOS 的支持.
 
-## 1.1. 源码树中的 BIOS 文件
+## 1.1. BIOS 二进制文件
 
 ```
 # ls pc-bios/
@@ -56,57 +56,60 @@ edk2-x86_64-secure-code.fd.bz2  opensbi-riscv32-generic-fw_dynamic.bin  QEMU,tcx
 efi-e1000e.rom                  opensbi-riscv64-generic-fw_dynamic.bin  qemu_vga.ndrv
 ```
 
-## 1.2. 清单 2 QEMU 源码树以子模块方式保存的 BIOS 代码
+## 1.2. BIOS 子模块源码
 
 ```
 $ cat .gitmodules
-[submodule "roms/vgabios"]
-        path = roms/vgabios
-        url = git://git.qemu-project.org/vgabios.git/
 [submodule "roms/seabios"]
         path = roms/seabios
-        url = git://git.qemu-project.org/seabios.git/
+        url = https://gitlab.com/qemu-project/seabios.git/
 [submodule "roms/SLOF"]
         path = roms/SLOF
-        url = git://git.qemu-project.org/SLOF.git
+        url = https://gitlab.com/qemu-project/SLOF.git
 [submodule "roms/ipxe"]
         path = roms/ipxe
-        url = git://git.qemu-project.org/ipxe.git
+        url = https://gitlab.com/qemu-project/ipxe.git
 [submodule "roms/openbios"]
         path = roms/openbios
-        url = git://git.qemu-project.org/openbios.git
-[submodule "roms/openhackware"]
-        path = roms/openhackware
-        url = git://git.qemu-project.org/openhackware.git
+        url = https://gitlab.com/qemu-project/openbios.git
 [submodule "roms/qemu-palcode"]
         path = roms/qemu-palcode
-        url = git://github.com/rth7680/qemu-palcode.git
-[submodule "roms/sgabios"]
-        path = roms/sgabios
-        url = git://git.qemu-project.org/sgabios.git
-[submodule "dtc"]
-        path = dtc
-        url = git://git.qemu-project.org/dtc.git
+        url = https://gitlab.com/qemu-project/qemu-palcode.git
 [submodule "roms/u-boot"]
         path = roms/u-boot
-        url = git://git.qemu-project.org/u-boot.git
+        url = https://gitlab.com/qemu-project/u-boot.git
 [submodule "roms/skiboot"]
         path = roms/skiboot
-        url = git://git.qemu.org/skiboot.git
+        url = https://gitlab.com/qemu-project/skiboot.git
 [submodule "roms/QemuMacDrivers"]
         path = roms/QemuMacDrivers
-        url = git://git.qemu.org/QemuMacDrivers.git
-[submodule "ui/keycodemapdb"]
-        path = ui/keycodemapdb
-        url = git://git.qemu.org/keycodemapdb.git
-[submodule "capstone"]
-        path = capstone
-        url = git://git.qemu.org/capstone.git
+        url = https://gitlab.com/qemu-project/QemuMacDrivers.git
+[submodule "roms/seabios-hppa"]
+        path = roms/seabios-hppa
+        url = https://gitlab.com/qemu-project/seabios-hppa.git
+[submodule "roms/u-boot-sam460ex"]
+        path = roms/u-boot-sam460ex
+        url = https://gitlab.com/qemu-project/u-boot-sam460ex.git
+[submodule "roms/edk2"]
+        path = roms/edk2
+        url = https://gitlab.com/qemu-project/edk2.git
+[submodule "roms/opensbi"]
+        path = roms/opensbi
+        url =   https://gitlab.com/qemu-project/opensbi.git
+[submodule "roms/qboot"]
+        path = roms/qboot
+        url = https://gitlab.com/qemu-project/qboot.git
+[submodule "roms/vbootrom"]
+        path = roms/vbootrom
+        url = https://gitlab.com/qemu-project/vbootrom.git
+[submodule "tests/lcitool/libvirt-ci"]
+        path = tests/lcitool/libvirt-ci
+        url = https://gitlab.com/libvirt/libvirt-ci.git
 ```
 
-当我们从源代码编译 QEMU 时候, QEMU 的 Makefile 会将这些二进制文件拷贝到 QEMU 的数据文件目录中.
+当源代码编译 QEMU 时候, QEMU 的 Makefile 会将这些二进制文件拷贝到 QEMU 的数据文件目录中.
 
-## 1.3. 清单 3 QEMU 的 Makefile 中关于 BIOS 的拷贝操作
+## 1.3. Makefile 中关于 BIOS 的拷贝操作
 
 ```
 ifneq ($(BLOBS),)
