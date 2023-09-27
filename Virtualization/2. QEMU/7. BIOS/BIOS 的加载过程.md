@@ -21,9 +21,9 @@ https://www.linuxidc.com/Linux/2014-12/110472.htm
 
 # 1. 简介
 
-BIOS 提供主板或者显卡的固件信息以及基本输入输出功能, QEMU 使用的是一些开源的项目, 如 Bochs、openBIOS 等.
+BIOS 提供**主板或者显卡**的**固件信息**以及**基本输入输出功能**, QEMU 使用的是一些开源的项目, 如 Bochs、openBIOS 等.
 
-QEMU 中使用到的 BIOS 以及固件一部分以二进制文件的形式保存在**源码树的 pc-bios 目录下**, pc-bios 目录里包含了 QEMU 使用到的**固件**.
+QEMU 中使用到的 BIOS 以及固件一部分以**二进制文件的形式**保存在**源码树的 pc-bios 目录下**, pc-bios 目录里包含了 QEMU 使用到的**固件**.
 
 还有一些**BIOS 以 git 源代码子模块**的形式**保存在 QEMU 的源码仓库**中, 当编译 QEMU 程序的时候, 也同时编译出这些 BIOS 或者固件的二进制文件.
 
