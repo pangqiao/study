@@ -2,6 +2,8 @@ apt install libepoxy-dev libglib2.0-dev libpixman-1-dev ninja-build libaio-dev
 
 ./configure --enable-kvm --disable-xen --disable-strip --disable-sdl --enable-vhost-net --disable-debug-tcg --target-list=x86_64-softmmu
 
+
+
 # 简单直接启动
 
 > sudo /home/sdp/workspace/codes/qemu/build/x86_64-softmmu/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host,host-cache-info=true -m 16G -smp 8 -hda /home/sdp/workspace/images/ubuntu-22.04.raw -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
