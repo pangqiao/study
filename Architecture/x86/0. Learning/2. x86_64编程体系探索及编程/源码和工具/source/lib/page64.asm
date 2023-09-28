@@ -84,7 +84,7 @@ init_page:
         call clear_4K_pages
 
 
-; 设置 PML4T 表，PML4T 的地址在 200000H
+; 设置 PML4T 表, PML4T 的地址在 200000H
         mov DWORD [200000h], 201000h | RW | US | P                  ; PML4T[0]
         mov DWORD [200004h], 0
 
@@ -95,7 +95,7 @@ init_page:
         mov DWORD [200000h + 0FFh * 8], 300000h | RW | US | P
         mov DWORD [200000h + 0FFh * 8 + 4], 0
 
-; 设置 PDPT 表， 第 0 个 PDPT 表在 201000H，第 511 个 PDPT 表在 202000H
+; 设置 PDPT 表,  第 0 个 PDPT 表在 201000H, 第 511 个 PDPT 表在 202000H
         mov DWORD [201000h], 203000h | RW | US | P                 ; PDPT[0] for PML4T[0]
         mov DWORD [201004h], 0
 
@@ -119,7 +119,7 @@ init_page:
         mov DWORD [203004h], 0
 
         ; virtual address 200000h - 3FFFFFh 映射到 200000h - 3FFFFFh 上
-        ; 不可执行，用户不可访问
+        ; 不可执行, 用户不可访问
         ; 系统数据区
         mov DWORD [203000h + 1 * 8], 200000h | PS | RW | P
         mov DWORD [203000h + 1 * 8 + 4], XD
@@ -127,8 +127,8 @@ init_page:
         mov DWORD [203000h + 2 * 8], 207000h | RW | P
         mov DWORD [203000h + 2 * 8 + 4], XD
 
-        ; virutal address 800000h - 9FFFFFh 映射到 0FEE00000h - 0FEFFFFFFh（2M 页面）
-        ; 不可执行，用户不可访问，PCD = PWT = 1
+        ; virutal address 800000h - 9FFFFFh 映射到 0FEE00000h - 0FEFFFFFFh(2M 页面)
+        ; 不可执行, 用户不可访问, PCD = PWT = 1
         ; 用于 local APIC 区域
         mov DWORD [203000h + 4 * 8], 0FEE00000h | PCD | PWT | PS | RW | P
         mov DWORD [203000h + 4 * 8 + 4], XD
@@ -148,9 +148,9 @@ init_page:
         mov DWORD [209000h + 1FFh * 8], 0A00000h | PS | RW | P
         mov DWORD [209000h + 1FFh * 8 + 4], XD
 
-        ; virutal address 00007FFF_00000000h - 00007FFF_001FFFFFh（2M 页）
+        ; virutal address 00007FFF_00000000h - 00007FFF_001FFFFFh(2M 页)
         ; 映射到物理地址 800000h
-        ; 可执行，64 位用户代码执行区域
+        ; 可执行, 64 位用户代码执行区域
         mov DWORD [301000h], 800000h | PS | RW | US | P
         mov DWORD [301004h], 0
         mov DWORD [302000h + 1FFh * 8], 303000h | RW | US | P
@@ -165,12 +165,12 @@ init_page:
         mov DWORD [210000h + 1FFh * 8 + 4], XD
 
 ; set PT
-        ; virutal address 0 - 0FFFh 映射到物理地址 0 - 0FFFh 上（4K 页）
-        ; no present!（保留未映射）
+        ; virutal address 0 - 0FFFh 映射到物理地址 0 - 0FFFh 上(4K 页)
+        ; no present!(保留未映射)
         mov DWORD [205000h + 0 * 8], 0000h | RW | US
         mov DWORD [205000h + 0 * 8 + 4], 0
 
-        ; virtual address 0B000 - 0BFFFh 映射到物理地址 0B000 - 0BFFFFh 上(4K 页）
+        ; virtual address 0B000 - 0BFFFh 映射到物理地址 0B000 - 0BFFFFh 上(4K 页)
         ; r/w = u/s = p = 1
         mov DWORD [205000h + 0Bh * 8], 0B000h | RW | US | P
         mov DWORD [205000h + 0Bh * 8 + 4], 0
@@ -191,8 +191,8 @@ init_page:
         mov DWORD [205000h + 0Fh * 8], 0F000h | RW | US | P
         mov DWORD [205000h + 0Fh * 8 + 4], 0
 
-        ; virtual address 10000h - 13FFFh 映射到物理地址 10000h - 18FFFh 上（8 共个 4K 页）
-        ; 可执行，r/w = u/s = p = 1
+        ; virtual address 10000h - 13FFFh 映射到物理地址 10000h - 18FFFh 上(8 共个 4K 页)
+        ; 可执行, r/w = u/s = p = 1
         ; 用于 long.asm 模块执行空间
         mov DWORD [205000h + 10h * 8], 10000h | RW | US | P
         mov DWORD [205000h + 10h * 8 + 4], 0
@@ -216,17 +216,17 @@ init_page:
         mov DWORD [205000h + 20h * 8 + 4], 0
 
 
-        ; virtual address 0B8000h - 0B9FFFh 映射到物理地址 0B8000h - 0B9FFFh 上（2 个 4K 页）
-        ; 不可执行，r/w = u/s = p = 1
+        ; virtual address 0B8000h - 0B9FFFh 映射到物理地址 0B8000h - 0B9FFFh 上(2 个 4K 页)
+        ; 不可执行, r/w = u/s = p = 1
         ; 用于 video 区域
         mov DWORD [205000h + 0B8h * 8], 0B8000h | RW | US | P
         mov DWORD [205000h + 0B8h * 8 + 4], XD
         mov DWORD [205000h + 0B9h * 8], 0B9000h | RW | US | P
         mov DWORD [205000h + 0B9h * 8], XD
 
-        ; virutal address 0xfffffff800000000 - 0xfffffff800001fff (2 个 4K 页）
+        ; virutal address 0xfffffff800000000 - 0xfffffff800001fff (2 个 4K 页)
         ; 映射到物理地址 410000 - 411FFFh 上
-        ; 不可执行，用户不可访问
+        ; 不可执行, 用户不可访问
         ; kernel 数据区
         mov DWORD [206000h], 410000h | RW | P
         mov DWORD [206004h], XD
@@ -234,18 +234,18 @@ init_page:
         mov DWORD [206000h + 8 + 4], XD
 
 
-        ; virtual address 0FFFFFFF8_10000000h - 0FFFFFFF8_10001FFFh（2 个 4K 页）
+        ; virtual address 0FFFFFFF8_10000000h - 0FFFFFFF8_10001FFFh(2 个 4K 页)
         ; 映射到物理地址 412000h - 412FFFh 上
         ; 用户不可访问
         ; kernel 执行区域
         mov DWORD [208000h], 412000h | RW | P
         mov DWORD [208004h], 0
 
-        ; insterrupt IST1，不可执行
+        ; insterrupt IST1, 不可执行
         mov DWORD [208000h + 1 * 8], 413000h | RW | P
         mov DWORD [208000h + 1 * 8 + 4], XD
         
-        ; virutal address 00007FFF_FFE00000h - 00007FFF_FFE03FFFh(4 个 4K 页）
+        ; virutal address 00007FFF_FFE00000h - 00007FFF_FFE03FFFh(4 个 4K 页)
         ; 映射到物理地址 607000h - 60AFFFh 上
         ; 用于 user stack 区
         mov DWORD [303000h], 414000h | RW | US | P                        ; 处理器 0
@@ -257,8 +257,8 @@ init_page:
         mov DWORD [303000h + 3 * 8], 417000h | RW | US | P                ; 处理器 3
         mov DWORD [303000h + 3 * 8 + 4], 0
 
-            ; virutal address 400000h 映射到物理地址 400000h 上（使用 4K 页）
-        ; 不可执行，用户不可访问，用于 DS save 区域
+            ; virutal address 400000h 映射到物理地址 400000h 上(使用 4K 页)
+        ; 不可执行, 用户不可访问, 用于 DS save 区域
         mov DWORD [207000h], 400000h | RW | P
         mov DWORD [207004h], XD
 init_page_done:
@@ -429,7 +429,7 @@ dump_long_page:
         push r12
         push rbx
         push rdx
-; 使用 r10 来保存 virtual address，以防在调用 32 位 lib32 库里冲掉寄存器值        
+; 使用 r10 来保存 virtual address, 以防在调用 32 位 lib32 库里冲掉寄存器值        
         mov r10, rsi                                
         
         call get_maxphyaddr_select_mask
@@ -443,7 +443,7 @@ dump_long_page:
         shr rax, 39                                
         and rax, 1FFh                       ; PML4E index
         
-; 使用 r12 来保存 table entry，以防在调用 32 位 lib32 库里冲掉 64 位的寄存器
+; 使用 r12 来保存 table entry, 以防在调用 32 位 lib32 库里冲掉 64 位的寄存器
         mov r12, [rbx + rax * 8]            ; 读 pml4e
         
 ; 判断 P 标志        
