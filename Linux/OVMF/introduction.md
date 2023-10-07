@@ -139,7 +139,7 @@ build cleanall
 
 ## -pflash
 
-这条参数告诉 qemu 用指定的文件作为 spi flash 上的 firmware, 类似我们在一个真实的机器上烧写它的 spi flash. 用这个参数执行的好处是 **UEFI variable** 都可以保存在 “**flash**” 上面, 基本 **reboot** 也**不会丢**
+这条参数告诉 qemu 用指定的文件作为 spi flash 上的 firmware, 类似我们在一个真实的机器上烧写它的 spi flash. 用这个参数执行的好处是 **UEFI variable** 都可以保存在 "**flash**" 上面, 基本 **reboot** 也**不会丢**
 
 ## -bios
 
