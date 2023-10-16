@@ -9,7 +9,7 @@
   - [1.3. Makefile 中关于 BIOS 的拷贝操作](#13-makefile-中关于-bios-的拷贝操作)
 - [2. QEMU 加载 BIOS 过程分析](#2-qemu-加载-bios-过程分析)
   - [2.1. x86_64 QEMU 中支持的类型](#21-x86_64-qemu-中支持的类型)
-  - [2.2. 清单 5 QEMU 中 MemoryRegion 结构体](#22-清单-5-qemu-中-memoryregion-结构体)
+  - [2.2. QEMU 中 MemoryRegion 结构体](#22-qemu-中-memoryregion-结构体)
   - [2.3. 清单 6 old_pc_system_rom_init 函数中将 BIOS 映射到物理内存空间的代码:](#23-清单-6-old_pc_system_rom_init-函数中将-bios-映射到物理内存空间的代码)
 - [3. 小结](#3-小结)
 
@@ -149,7 +149,7 @@ pc-i440fx-1.7 解释为 QEMU 模拟的是 INTEL 的 i440fx 硬件芯片组, 1.7 
 
 在 QEMU 中, 整个物理内存以一个结构体 struct MemoryRegion 表示, 具体定义见清单 5.
 
-## 2.2. 清单 5 QEMU 中 MemoryRegion 结构体
+## 2.2. QEMU 中 MemoryRegion 结构体
 
 ```
 struct MemoryRegion {
