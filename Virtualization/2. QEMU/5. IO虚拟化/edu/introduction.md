@@ -1,5 +1,4 @@
 
-
 edu 本身是一个 PCI 模拟设备, 其定义了 PCI ID: `1234:11e8`, 有一个1MB BAR, BAR里面定义了中断, 状态, DMA寄存器等. 该设备主要作用为取反、计算阶乘, 主要通过 MMIO 与 CPU 进行交互, 也支持 DMA.
 
 通过此样例学习能够达到在 qemu 中模拟一个PCIe EP设备目的.
@@ -12,19 +11,19 @@ edu 本身是一个 PCI 模拟设备, 其定义了 PCI ID: `1234:11e8`, 有一�
 
 这些设备的行为与在 Liberouter wings 下开发的 COMBO6 卡中存在的 PCI bridge 非常相似. PCI 设备 ID 和 PCI 空间都继承自该设备.
 
-# 命令行
+## 命令行
 
 `-device edu[, dma_mask=mask]`
 
 dma_mask 使虚拟设备使用具有**给定掩码**的 **DMA 地址**. 出于教育目的, 设备默认仅支持 28 位 （256 MiB）. 需要在内核驱动中正确设置设备的 `dma_mask`.
 
-# PCI specs
+## PCI specs
 
 PCI ID: `1234:11e8`
 
 PCI Region 0: I/O memory, 1MB 大小. 用户应该通过此内存与设备进行通信.
 
-# MMIO area spec
+## MMIO area spec
 
 对地址 `< 0x80` 的访问仅仅允许 `size == 4`. reset 的时候, `size == 4` 或者 `size == 8`
 
@@ -59,13 +58,13 @@ PCI Region 0: I/O memory, 1MB 大小. 用户应该通过此内存与设备进行
   * 0x02. 传输方向(0: 从 RAM 到 EDU 设备; 1: 从 EDU 设备到 RAM)
   * 0x04. 在完成 DMA 以后发起 0x100 中断.
 
-# IRQ 控制器
+## IRQ 控制器
 
 写中断发起寄存器(`interrupt raise register`)时会生成 IRQ. 当中断被发起时, 该值出现在中断状态寄存器(`interrupt status register`)中, 并且必须写入中断确认寄存器(`interrupt acknowledge register`)才能降低它.
 
 该设备支持 INTx 和 MSI 中断. 默认情况下, 使用 INTx. 即使驱动禁用了 INTx 并且**仅使用** MSI, 它仍然需要在 IRQ 处理例程末尾更新中断确认寄存器(`interrupt acknowledge register`).
 
-# DMA 控制器
+## DMA 控制器
 
 必须指定来源(`source`)、目的地(`destination`)、大小(`size`)并开始传输(`start transfer`). EDU 设备中在偏移 `0x40000` 处有一个 4096 字节长的缓冲区. 也就是说, 如果编程正确, 可以执行 from/to 该空间的 DMA.
 
