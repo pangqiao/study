@@ -8,11 +8,11 @@
 
 * 仅仅 **command 寄存器**(`0x4 ~ 0x5`) 和 **status 寄存器**(`0x6 ~ 0x7`) 这两个, guest 可以直接读**物理寄存器**, 其他的只能访问虚拟寄存器; 并且对于一个 VF 设备, 读 command 寄存器无论如何会置位 MSE(Memory Space Enable)
 
-* 仅仅 **command 寄存器**(`0x4 ~ 0x5`), **status 寄存器**(`0x6 ~ 0x7`) 和 **Base Address 寄存器**(`0x10 - 0x27`) 这些, guest 是可写的(写到物理寄存器或者虚拟寄存器), 其他的寄存器 guest **不可写**. 其中
+* 仅仅 **command 寄存器**(`0x4 ~ 0x5`), **status 寄存器**(`0x6 ~ 0x7`), **interrupt Line 寄存器**(`0x3c`) 和 **Base Address 寄存器**(`0x10 - 0x27`) 这些, guest 是可写的(写到物理寄存器或者虚拟寄存器), 其他的寄存器 guest **不可写**. 其中
 
   * 只有 **command 寄存器** 和 **status 寄存器** 是可以直接写到**物理寄存器**;
 
-  * **Base Address 寄存器** 只能写到**虚拟寄存器**.
+  * **Base Address 寄存器** 和 **interrupt Line 寄存器** 只能写到**虚拟寄存器**.
 
 * 在 reset 之前(比如 S3 suspend 时候) 需要 hypervisor store 保存 **Base Address 寄存器**(`0x10 ~ 0x27`), 然后 reset 以后(比如 S3 resume 时候), guest 会写 command 寄存器, 如果其中 (PCIM_CMD_PORTEN | PCIM_CMD_MEMEN), 就需要 hypervisor restore 恢复 Base Address 寄存器
 
@@ -22,16 +22,17 @@
 
 * **command 寄存器**(`0x4 ~ 0x5`), **status 寄存器**(`0x6 ~ 0x7`), **从 Primary Bus Number 寄存器 到 I/O Base Limit 16 Bits 寄存器**(`0x18 ~ 0x33`) 这些, guest 可以直接读 物理寄存器, 其他的只能访问虚拟寄存器; 并且对于一个 VF 设备, 读 command 寄存器无论如何会置位 MSE(Memory Space Enable)
 
-* **command 寄存器**(`0x4 ~ 0x5`), **status 寄存器**(`0x6 ~ 0x7`), **Base Address 寄存器**(`0x10 ~ 0x17`) 和 **Secondary Status 寄存器**(`0x1e ~ 0x1f`) 这些, guest 是可写的(写到物理寄存器或者虚拟寄存器), 其他的寄存器 guest **不可写**. 其中:
+* **command 寄存器**(`0x4 ~ 0x5`), **status 寄存器**(`0x6 ~ 0x7`), **interrupt Line 寄存器**(`0x3c`), **Base Address 寄存器**(`0x10 ~ 0x17`) 和 **Secondary Status 寄存器**(`0x1e ~ 0x1f`) 这些, guest 是可写的(写到物理寄存器或者虚拟寄存器), 其他的寄存器 guest **不可写**. 其中:
 
   * 只有 **command 寄存器**, **status 寄存器** 和 **Secondary Status 寄存器** 是可以直接写到**物理寄存器**;
 
-  * **Base Address 寄存器** 只能写到**虚拟寄存器**.
+  * **Base Address 寄存器** 和 **interrupt Line 寄存器** 只能写到**虚拟寄存器**.
 
 * 在 reset 之前(比如 S3 suspend 时候) hypervisor 需要 store 保存 **Base Address 寄存器**(`0x10 ~ 0x17`) 以及**从 Primary Bus Number 寄存器 到 I/O Base Limit 16 Bits 寄存器**(`0x18 ~ 0x33`, 除了 Secondary Latency Timer 是 read-only 并且为 0, 除了 Secondary Status 是可读可写的), 然后 reset 以后(比如 S3 resume 时候), guest 会写 command 寄存器, 如果其中:
 
   * (PCIM_CMD_PORTEN | PCIM_CMD_MEMEN), 就需要 hypervisor restore 恢复 Base Address 寄存器, I/O Base (0x1c) 寄存器, I/O Limit (0x1d) 寄存器 和 从 Memory Base 寄存器到 I/O Base Limit 16 Bits 寄存器
   * (PCIM_CMD_BUSEN), 就需要 hypervisor restore 恢复 Primary Bus Number 寄存器, Secondary Bus Number 寄存器以及 Subordinate Bus Number 寄存器.
+
 
 
 
