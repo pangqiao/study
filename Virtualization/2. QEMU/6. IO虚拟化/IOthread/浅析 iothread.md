@@ -1,6 +1,4 @@
 
-浅析 qemu iothread: https://blog.csdn.net/huang987246510/article/details/93912197
-
 
 `iothread_complete`(iothread.c) -> `iothread_run`
 
