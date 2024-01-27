@@ -498,7 +498,6 @@ vnc 锁屏设置: https://blog.csdn.net/qq_35229961/article/details/107029202
 
 apt install tigervnc-standalone-server
 
-https://blog.csdn.net/chen462488588/article/details/112237950
 
 窗口太小: https://blog.csdn.net/teng_wu/article/details/103260703
 
