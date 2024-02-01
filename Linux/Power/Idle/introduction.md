@@ -25,15 +25,15 @@ kernel 中所有进程都来自一个静态结构体 `struct task_struct init_ta
 
 ### 2.1.1. HLT
 
-这是初代的 idle 指令, 于 486DX 时代引入. 首先只有在 ring0 的特权级别才能执行 HLT 指令, 同时执行的效果是 CPU 进入了 C1/C1E state(参考 ACPI 标准), 属于CPU睡眠状态中的最低级别，即最浅的睡眠. `APIC/BUS/CACHE` 都是照常运转, 只要**中断发生**, CPU 立即就要回到产线继续工作. C1E 稍微又优待 CPU, 停止内部时钟又降了压.
+这是初代的 idle 指令, 于 486DX 时代引入. 首先只有在 ring0 的特权级别才能执行 HLT 指令, 同时执行的效果是 CPU 进入了 C1/C1E state(参考 ACPI 标准), 属于CPU睡眠状态中的最低级别, 即最浅的睡眠. `APIC/BUS/CACHE` 都是照常运转, 只要**中断发生**, CPU 立即就要回到产线继续工作. C1E 稍微又优待 CPU, 停止内部时钟又降了压.
 
-对于有超线程的CPU环境来说，HLT指令只会使逻辑CPU进入HALT状态，而且对应的物理CPU保持Active，除非对该物理CPU对应的所有的逻辑CPU都执行HLT指令。
+对于有超线程的CPU环境来说, HLT指令只会使逻辑CPU进入HALT状态, 而且对应的物理CPU保持Active, 除非对该物理CPU对应的所有的逻辑CPU都执行HLT指令. 
 
-那CPU进入HALT状态后，如何Resume呢？谁来将其唤醒？
+那CPU进入HALT状态后, 如何Resume呢？谁来将其唤醒？
 
-答案是：**中断**(包括NMI和SMI)，`debug exception`，`BINIT# signal`，`INIT# signal`，或者 `RESET# signal`。
+答案是: **中断**(包括NMI和SMI), `debug exception`, `BINIT# signal`, `INIT# signal`, 或者 `RESET# signal`. 
 
-Linux中，通常在执行HLT指令进入HALT状态之前，都会执行STI指令开中断，所以，对于Linux来说，进入HALT状态后，通常是通过中断唤醒的，最可能的就是时钟中断了.
+Linux中, 通常在执行HLT指令进入HALT状态之前, 都会执行STI指令开中断, 所以, 对于Linux来说, 进入HALT状态后, 通常是通过中断唤醒的, 最可能的就是时钟中断了.
 
 Linux idle相关流程
 
@@ -55,13 +55,13 @@ start_kernel
 
 也是非常早期的指令(Pentium 4), 让 CPU 休息, 大概从几个到几十个 cycles(各代 CPU 有差异). 为什么要打盹呢? 其实主要是要降低 CPU 在特定情况下(spin-lock)给**内存控制器**带来的压力, 与其让 CPU 阻塞了内存控制器, 不如让它休息. 在最近的几代 Xeon 之上还附带了降低功耗的 buff.
 
-PAUSE指令提升了自旋等待循环（spin-wait loop）的性能。当执行一个循环等待时，Intel P4或Intel Xeon处理器会因为检测到一个可能的内存顺序违规（memory order violation）而在退出循环时使性能大幅下降。PAUSE指令给处理器提了个醒：这段代码序列是个循环等待。处理器利用这个提示可以避免在大多数情况下的内存顺序违规，这将大幅提升性能。因为这个原因，所以推荐在循环等待中使用PAUSE指令。
+PAUSE指令提升了自旋等待循环（spin-wait loop）的性能. 当执行一个循环等待时, Intel P4或Intel Xeon处理器会因为检测到一个可能的内存顺序违规（memory order violation）而在退出循环时使性能大幅下降. PAUSE指令给处理器提了个醒: 这段代码序列是个循环等待. 处理器利用这个提示可以避免在大多数情况下的内存顺序违规, 这将大幅提升性能. 因为这个原因, 所以推荐在循环等待中使用PAUSE指令. 
 
-PAUSE的另一个功能就是降低Intel P4在执行循环等待时的耗电量。Intel P4处理器在循环等待时会执行得非常快，这将导致处理器消耗大量的电力，而在循环中插入一个PAUSE指令会大幅降低处理器的电力消耗。
+PAUSE的另一个功能就是降低Intel P4在执行循环等待时的耗电量. Intel P4处理器在循环等待时会执行得非常快, 这将导致处理器消耗大量的电力, 而在循环中插入一个PAUSE指令会大幅降低处理器的电力消耗. 
 
-PAUSE指令虽然是在Intel P4处理器开始出现的，但是它可以向后与所有的IA32处理器兼容。在早期的IA32 CPU中，PAUSE就像NOP指令。Intel P4和Intel Xeon处理器将PAUSE实现成一个预定义的延迟(pre-defined delay)。这种延迟是有限的，而且一些处理器可以为0。PAUSE指令不改变处理器的架构状态（也就是说，它实际上只是执行了一个延迟——并不做任何其他事情——的操作）。
+PAUSE指令虽然是在Intel P4处理器开始出现的, 但是它可以向后与所有的IA32处理器兼容. 在早期的IA32 CPU中, PAUSE就像NOP指令. Intel P4和Intel Xeon处理器将PAUSE实现成一个预定义的延迟(pre-defined delay). 这种延迟是有限的, 而且一些处理器可以为0. PAUSE指令不改变处理器的架构状态（也就是说, 它实际上只是执行了一个延迟——并不做任何其他事情——的操作）. 
 
-这个指令的操作在64位和非64位模式下是一致的。
+这个指令的操作在64位和非64位模式下是一致的. 
 
 ### 2.1.3. MWAIT/MONITOR
 
