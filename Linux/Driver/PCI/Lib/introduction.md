@@ -59,7 +59,7 @@ yum install libpciaccess.x86_64 libpciaccess-devel.x86_64 pciutils-devel-static.
 
 打开 `/usr/include/pci/pci.h`，可以找到我们需要的函数：
 
-```
+```cpp
 u8 pci_read_byte(struct pci_dev , int pos) PCI_ABI; / Access to configuration space */
 u16 pci_read_word(struct pci_dev *, int pos) PCI_ABI;
 u32 pci_read_long(struct pci_dev *, int pos) PCI_ABI;
