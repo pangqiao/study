@@ -1,6 +1,6 @@
 
 
-linux下提供了多个pci库以供应用程序访问。下面就以最常见的为例，从安装、使用和编译的角度分别进行说明。
+linux下提供了多个pci库以供应用程序访问. 下面就以最常见的为例, 从安装、使用和编译的角度分别进行说明. 
 
 centos 中, pci 访问相关的库有:
 
@@ -18,13 +18,13 @@ pciutils-libs.i686 : Linux PCI library
 pciutils-libs.x86_64 : Linux PCI library
 ```
 
-由于实际系统是 64bit 的，并且以**静态库**的形式进行使用，可以用下面的命令安装 pci lib 库：
+由于实际系统是 64bit 的, 并且以**静态库**的形式进行使用, 可以用下面的命令安装 pci lib 库: 
 
 ```
 yum install libpciaccess.x86_64 libpciaccess-devel.x86_64 pciutils-devel-static.x86_64
 ```
 
-安装完后，可以看到相应的头文件已经最 `/usr/include` 下面了：
+安装完后, 可以看到相应的头文件已经最 `/usr/include` 下面了: 
 
 ```
 [root@localhost include]# find ./ -name “pci”
@@ -37,7 +37,7 @@ yum install libpciaccess.x86_64 libpciaccess-devel.x86_64 pciutils-devel-static.
 ./pciaccess.h
 ```
 
-并且静态库也已经存在了：
+并且静态库也已经存在了: 
 
 ```
 [root@localhost lib64]# find ./ -name “pci”
@@ -53,11 +53,11 @@ yum install libpciaccess.x86_64 libpciaccess-devel.x86_64 pciutils-devel-static.
 ./libpciaccess.so
 ```
 
-通过上面的输出可以看到，libpciaccess 只有动态库的形式，而 libpci 既有动态库也有静态库，这个和我们输入的 `yum install libpciaccess.x86_64 libpciaccess-devel.x86_64 pciutils-devel-static.x86_64` 命令是吻合的。
+通过上面的输出可以看到, libpciaccess 只有动态库的形式, 而 libpci 既有动态库也有静态库, 这个和我们输入的 `yum install libpciaccess.x86_64 libpciaccess-devel.x86_64 pciutils-devel-static.x86_64` 命令是吻合的. 
 
 使用
 
-打开 `/usr/include/pci/pci.h`，可以找到我们需要的函数：
+打开 `/usr/include/pci/pci.h`, 可以找到我们需要的函数: 
 
 ```cpp
 u8 pci_read_byte(struct pci_dev , int pos) PCI_ABI; / Access to configuration space */
@@ -71,7 +71,7 @@ int pci_write_long(struct pci_dev *, int pos, u32 data) PCI_ABI;
 int pci_write_block(struct pci_dev *, int pos, u8 *buf, int len) PCI_ABI;
 ```
 
-打开 `/usr/include/pciaccess.h`, 也有可以访问配置空间的函数：
+打开 `/usr/include/pciaccess.h`, 也有可以访问配置空间的函数: 
 
 ```cpp
 struct pci_io_handle *pci_device_open_io(struct pci_device *dev, pciaddr_t base,
@@ -87,7 +87,7 @@ void pci_io_write16(struct pci_io_handle *handle, uint32_t reg, uint16_t data);
 void pci_io_write8(struct pci_io_handle *handle, uint32_t reg, uint8_t data);
 ```
 
-从上面的两组函数接口来看，可以看到 pciutils 需要初始化 `struct pci_dev`，而 pciasscess 库需要初始化 `struct pci_io_handle *handle`。那么该如何使用 pciutils 静态库呢，通过继续阅读 `/usr/include/pci/pci.h`，可以看到下面的函数声明和注释：
+从上面的两组函数接口来看, 可以看到 pciutils 需要初始化 `struct pci_dev`, 而 pciasscess 库需要初始化 `struct pci_io_handle *handle`. 那么该如何使用 pciutils 静态库呢, 通过继续阅读 `/usr/include/pci/pci.h`, 可以看到下面的函数声明和注释: 
 
 ```cpp
 /* Initialize PCI access */
@@ -101,7 +101,7 @@ struct pci_dev pci_get_dev(struct pci_access *acc, int domain, int bus, int dev,
 void pci_free_dev(struct pci_dev *) PCI_ABI;
 ```
 
-据此我们不难猜测出使用 pciutils 的代码流程，并且根据头文件说明实现一个测试代码 `test_pcilib.c`:
+据此我们不难猜测出使用 pciutils 的代码流程, 并且根据头文件说明实现一个测试代码 `test_pcilib.c`:
 
 ```cpp
 int main(void)
@@ -131,7 +131,7 @@ int main(void)
 
 编译
 
-因为已经知道上面的代码依赖于libpci.a静态库，为此可用用下面的gcc命令进行简单编译：
+因为已经知道上面的代码依赖于libpci.a静态库, 为此可用用下面的gcc命令进行简单编译: 
 
 ```
 [root@localhost testcases]# gcc -c -o test_pci.o test_pcilib.c

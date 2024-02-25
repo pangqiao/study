@@ -7,9 +7,9 @@
 
 内容的编排不会那么规范, 想到哪里就写到哪里, 大致的计划如下: 
 
-1) UEFI配置表中的ACPI；
-2) ACPI规范简介；
-3) 使用UEFI Protocol分析AML Code；
+1) UEFI配置表中的ACPI; 
+2) ACPI规范简介; 
+3) 使用UEFI Protocol分析AML Code; 
 4) ShellPkg中的acpiview
 5) EDK2中对ACPI的实现
 6) 独立于操作系统的ACPICA
