@@ -27,7 +27,7 @@ yum install libpciaccess.x86_64 libpciaccess-devel.x86_64 pciutils-devel-static.
 安装完后, 可以看到相应的头文件已经最 `/usr/include` 下面了: 
 
 ```
-[root@localhost include]# find ./ -name “pci”
+[root@localhost include]# find ./ -name "pci"
 ./linux/pci.h
 ./linux/pci_regs.h
 ./linux/virtio_pci.h
@@ -40,7 +40,7 @@ yum install libpciaccess.x86_64 libpciaccess-devel.x86_64 pciutils-devel-static.
 并且静态库也已经存在了: 
 
 ```
-[root@localhost lib64]# find ./ -name “pci”
+[root@localhost lib64]# find ./ -name "pci"
 ./kde4/kcm_pci.so
 ./pkgconfig/libpci.pc
 ./pkgconfig/pciaccess.pc
