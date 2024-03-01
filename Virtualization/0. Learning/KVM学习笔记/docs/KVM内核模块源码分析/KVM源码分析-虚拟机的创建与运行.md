@@ -552,7 +552,7 @@ while (!cpu->created) {
 }
 ```
 
-线程创建完成, 具体任务支线提, 回到主流程上, qemu_init_vcpu 执行完成后, 下面就是 cpu_reset, 此处的作用是什么呢？答案是无用, 本质是一个空函数, 它的主要功能就是 CPUClass 的 reset 函数, reset 在 cpu_class_init 里面注册的, 注册的是 cpu_common_reset, 这是一个空函数, 没有任何作用. cpu_class_init 则是被 cpu_type_info 即 TYPE_CPU 使用, 而 cpu_type_info 则由 type_init (cpu_register_types) 完成, type_init 则是前面提到的和 machine_init 对应的注册关系. 根据下句完成工作
+线程创建完成, 具体任务支线提, 回到主流程上, qemu_init_vcpu 执行完成后, 下面就是 cpu_reset, 此处的作用是什么呢? 答案是无用, 本质是一个空函数, 它的主要功能就是 CPUClass 的 reset 函数, reset 在 cpu_class_init 里面注册的, 注册的是 cpu_common_reset, 这是一个空函数, 没有任何作用. cpu_class_init 则是被 cpu_type_info 即 TYPE_CPU 使用, 而 cpu_type_info 则由 type_init (cpu_register_types) 完成, type_init 则是前面提到的和 machine_init 对应的注册关系. 根据下句完成工作
 
 ```
   #DEFINE TYPE_INIT(FUNCTION) MODULE_INIT(FUNCTION, MODULE_INIT_QOM)
@@ -661,7 +661,7 @@ memory_region_transaction_commit 中引入了新的结构 address_spaces (AS), �
 ```
 
 重点在 MEMORY_LISTENER_UPDATE_REGION 函数上, 将变化的 FlatRange 构造一个 MemoryRegionSection, 然后遍历所有的 memory_listeners, 如果 memory_listeners 监控的内存区域和 MemoryRegionSection 一样, 则执行第四个入参函数, 如 region_del 函数, 即 kvm_region_del 函数, 这个是在 kvm_init 中初始化的. kvm_region_del 主要是 kvm_set_phys_mem 函数, 主要是将 MemoryRegionSection 有效值转换成 KVMSlot 形式, 在 kvm_set_user_memory_region 中使用 kvm_vm_ioctl (s, KVM_SET_USER_MEMORY_REGION, &mem) 传递给 kernel.
-我们看内存初始化真正需要做的是什么？就是 qemu 申请内存, 把申请物理地址传递给 kernel 进行映射, 那我们直接就可以 KVMSlot 申请内存, 然后传递给 kvm_vm_ioctl, 这样也是 OK 的, 之所以有这么多代码, 因为 qemu 本身是一个软件虚拟机, mr 涉及的地址已经是 vm 的地址, 对于 KVM 是多余的, 只是方便函数复用而已.
+我们看内存初始化真正需要做的是什么? 就是 qemu 申请内存, 把申请物理地址传递给 kernel 进行映射, 那我们直接就可以 KVMSlot 申请内存, 然后传递给 kvm_vm_ioctl, 这样也是 OK 的, 之所以有这么多代码, 因为 qemu 本身是一个软件虚拟机, mr 涉及的地址已经是 vm 的地址, 对于 KVM 是多余的, 只是方便函数复用而已.
 内存初始化之后还是 pci 等处理先跳过, 如此 pc_init 就完成了, 但是前面 VM 线程已经初始化成功, 在 qemu_kvm_cpu_thread_fn 函数中等待运行:
 ```
     while (1) {

@@ -29,7 +29,7 @@ kernel 中所有进程都来自一个静态结构体 `struct task_struct init_ta
 
 对于有超线程的CPU环境来说, HLT指令只会使逻辑CPU进入HALT状态, 而且对应的物理CPU保持Active, 除非对该物理CPU对应的所有的逻辑CPU都执行HLT指令. 
 
-那CPU进入HALT状态后, 如何Resume呢？谁来将其唤醒？
+那CPU进入HALT状态后, 如何Resume呢? 谁来将其唤醒? 
 
 答案是: **中断**(包括NMI和SMI), `debug exception`, `BINIT# signal`, `INIT# signal`, 或者 `RESET# signal`. 
 
