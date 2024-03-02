@@ -510,10 +510,22 @@ Would you like to enter a view-only password (y/n)? n
 A view-only password is not used
 ```
 
+`vim ~/.vnc/xstartup`
+
+```
+#!/bin/sh
+export XKL_XMODMAP_DISABLE=1
+export XDG_CURRENT_DESKTOP="GNOME-Flashback:GNOME"
+export XDG_MENU_PREFIX="gnome-flashback-"
+gnome-session --session=gnome-flashback-metacity --disable-acceleration-check
+```
+
+chmod a+x ~/.vnc/xstartup
+
 tigervncserver -geometry 1280x1024 -localhost no (可用)
 
 
-
+vncserver -geometry 1920x1080 :1 -localhost no
 
 
 
