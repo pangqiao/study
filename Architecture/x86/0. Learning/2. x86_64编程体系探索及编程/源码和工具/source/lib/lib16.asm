@@ -6,20 +6,20 @@
 %include "..\inc\lib.inc"
 %include "..\inc\support.inc"
 
-; ÕâÊÇ 16Î»ÊµÄ£Ê½ÏÂÊ¹ÓÃµÄ¿â¡£
-; Ê¹ÓÃÁË bios µÄÖĞ¶Ï£¬So Õâ¸ö¿âÊÇÒÀÀµÓÚ bios µÄ¡£
-; Õâ¸ö¿â»á±»¼ÓÔØµ½ÄÚ´æ 0x8c00 µÄÎ»ÖÃÉÏ
+; è¿™æ˜¯ 16ä½å®æ¨¡å¼ä¸‹ä½¿ç”¨çš„åº“ã€‚
+; ä½¿ç”¨äº† bios çš„ä¸­æ–­ï¼ŒSo è¿™ä¸ªåº“æ˜¯ä¾èµ–äº bios çš„ã€‚
+; è¿™ä¸ªåº“ä¼šè¢«åŠ è½½åˆ°å†…å­˜ 0x8c00 çš„ä½ç½®ä¸Š
 
 	bits 16
 
 
-	org LIB16_SEG - 2					; ¼ÓÔØµ½ LIB16_SEG ¶Î£¬È¥³ıµôÄ£¿é size
+	org LIB16_SEG - 2					; åŠ è½½åˆ° LIB16_SEG æ®µï¼Œå»é™¤æ‰æ¨¡å— size
 	
-begin	dw (end - begin)				; Ä£¿é size
+begin	dw (end - begin)				; æ¨¡å— size
 
 
-; ÒÔÏÂÊÇº¯ÊıµÄÌø×ª±í
-; µ±ÆäËüÄ£¿éµ÷ÓÃ lib16 ÀïµÄº¯ÊıÊ±£¬ÏÈ»ñÈ¡Õâ¸öµÄÌø×ª±íµØÖ·
+; ä»¥ä¸‹æ˜¯å‡½æ•°çš„è·³è½¬è¡¨
+; å½“å…¶å®ƒæ¨¡å—è°ƒç”¨ lib16 é‡Œçš„å‡½æ•°æ—¶ï¼Œå…ˆè·å–è¿™ä¸ªçš„è·³è½¬è¡¨åœ°å€
 	
 LIB16_FUNCTION_TABLE:
 
@@ -60,7 +60,7 @@ set_cursor_position:
 	
 
 ;--------------------------------
-; putc(): ´òÓ¡Ò»¸ö×Ö·û
+; putc(): æ‰“å°ä¸€ä¸ªå­—ç¬¦
 ; input: 
 ;		si: char
 ;--------------------------------
@@ -74,7 +74,7 @@ __putc:
 	ret
 
 ;--------------------------------
-; println(): ´òÓ¡»»ĞĞ
+; println(): æ‰“å°æ¢è¡Œ
 ;--------------------------------
 __println:
 	mov si, 13
@@ -84,7 +84,7 @@ __println:
 	ret
 
 ;--------------------------------
-; puts(): ´òÓ¡×Ö·û´®ĞÅÏ¢
+; puts(): æ‰“å°å­—ç¬¦ä¸²ä¿¡æ¯
 ; input: 
 ;		si: message
 ;--------------------------------
@@ -106,7 +106,7 @@ do_puts_done:
 	
 
 ;-----------------------------------------
-; hex_to_char(): ½« Hex Êı×Ö×ª»»Îª Char ×Ö·û
+; hex_to_char(): å°† Hex æ•°å­—è½¬æ¢ä¸º Char å­—ç¬¦
 ; input:
 ;		si: Hex number
 ; ouput:
@@ -124,17 +124,17 @@ do_hex_to_char:
 	ret
 	
 ;---------------------------------------------------
-; get_hex_string(): ½«Êı(WORD)×ª»»Îª×Ö·û´®
+; get_hex_string(): å°†æ•°(WORD)è½¬æ¢ä¸ºå­—ç¬¦ä¸²
 ; input:
-;		si: Ğè×ª»»µÄÊı£¨word size)
-;		di: Ä¿±ê´® buffer£¨×î¶ÌĞèÒª 5 bytes£¬°üÀ¨ 0)
+;		si: éœ€è½¬æ¢çš„æ•°ï¼ˆword size)
+;		di: ç›®æ ‡ä¸² bufferï¼ˆæœ€çŸ­éœ€è¦ 5 bytesï¼ŒåŒ…æ‹¬ 0)
 ;---------------------------------------------------
 __get_hex_string:
 	push cx
 	push si
-	mov cx, 4					; 4 ¸ö half-byte
+	mov cx, 4					; 4 ä¸ª half-byte
 do_get_hex_string_loop:
-	rol si, 4					; ¸ß4Î» --> µÍ 4Î»
+	rol si, 4					; é«˜4ä½ --> ä½ 4ä½
 	call __hex_to_char
 	mov byte [di], al
 	inc di
@@ -146,17 +146,17 @@ do_get_hex_string_loop:
 	ret
 
 ;---------------------------------------------------
-; get_dword_hex_string(): ½«Êı (DWORD) ×ª»»Îª×Ö·û´®
+; get_dword_hex_string(): å°†æ•° (DWORD) è½¬æ¢ä¸ºå­—ç¬¦ä¸²
 ; input:
-;		esi: Ğè×ª»»µÄÊı£¨dword size)
-;		di: Ä¿±ê´® buffer£¨×î¶ÌĞèÒª 9 bytes£¬°üÀ¨ 0)
+;		esi: éœ€è½¬æ¢çš„æ•°ï¼ˆdword size)
+;		di: ç›®æ ‡ä¸² bufferï¼ˆæœ€çŸ­éœ€è¦ 9 bytesï¼ŒåŒ…æ‹¬ 0)
 ;---------------------------------------------------
 __get_dword_hex_string:
 	push cx
 	push esi
-	mov cx, 8					; 8 ¸ö half-byte
+	mov cx, 8					; 8 ä¸ª half-byte
 do_get_dword_hex_string_loop:
-	rol esi, 4					; ¸ß4Î» --> µÍ 4Î»
+	rol esi, 4					; é«˜4ä½ --> ä½ 4ä½
 	call __hex_to_char
 	mov byte [di], al
 	inc di
@@ -168,7 +168,7 @@ do_get_dword_hex_string_loop:
 	ret
 
 ;---------------------------------------------------
-; test_CPUID(): ²âÊÔÊÇ·ñÖ§³Ö CPUID Ö¸Áî
+; test_CPUID(): æµ‹è¯•æ˜¯å¦æ”¯æŒ CPUID æŒ‡ä»¤
 ; output:
 ;		1 - support,  0 - no support
 ;---------------------------------------------------
@@ -185,7 +185,7 @@ __test_CPUID:
 	ret
 
 ;---------------------------------------------------------------------
-; get_DisplayFamily_DisplayModel():	»ñµÃ DisplayFamily Óë DisplayModel	
+; get_DisplayFamily_DisplayModel():	è·å¾— DisplayFamily ä¸ DisplayModel	
 ; output:
 ;		ah: DisplayFamily,  al: DisplayModel
 ;--------------------------------------------------------------------
@@ -199,14 +199,14 @@ __get_DisplayFamily_DisplayModel:
 	mov edx, eax
 	mov ecx, eax
 	shr eax, 4
-	and eax, 0x0f			; µÃµ½ model Öµ
+	and eax, 0x0f			; å¾—åˆ° model å€¼
 	shr edx, 8
-	and edx, 0x0f			; µÃµ½ family Öµ
+	and edx, 0x0f			; å¾—åˆ° family å€¼
 	
 	cmp edx, 0FH
 	jnz test_family_06
 	shr ebx, 20
-	add edx, ebx			; µÃµ½ DisplayFamily
+	add edx, ebx			; å¾—åˆ° DisplayFamily
 	jmp get_displaymodel
 test_family_06:	
 	cmp edx, 06H
@@ -214,7 +214,7 @@ test_family_06:
 get_displaymodel:	
 	shr ecx, 12
 	and ecx, 0xf0
-	add eax, ecx			; µÃµ½ DisplayModel
+	add eax, ecx			; å¾—åˆ° DisplayModel
 get_DisplayFamily_DisplayModel_done:	
 	mov ah, dl
 	pop ecx
