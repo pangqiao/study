@@ -11,3 +11,8 @@ Linux 的电源管理－休眠与唤醒: https://blog.csdn.net/TommyMusk/article
 
 如何自动唤醒和关闭 Linux: https://linux.cn/article-9115-1.html
 
+
+https://zhuanlan.zhihu.com/p/543220509
+
+https://zhuanlan.zhihu.com/p/580754972
+

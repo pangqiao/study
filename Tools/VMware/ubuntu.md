@@ -86,8 +86,7 @@ ubuntu 中启用 page up/down 进行补全功能: https://blog.csdn.net/jingtaoh
 ```
 # vim /etc/default/grub
 // 选择的内核
-GRUB_DEFAULT="Advanced options for Ubuntu>Ubuntu, with Linux 5.4.129-02962-ge8dff
-9ce0bd6d"
+GRUB_DEFAULT="Advanced options for Ubuntu>Ubuntu, with Linux 6.3.0-dirty"
 // 打开菜单
 GRUB_TIMEOUT_STYLE=menu
 // 超时 10s
