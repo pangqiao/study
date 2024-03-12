@@ -3830,7 +3830,7 @@ Linux 系统内存管理中存在着一个称之为 OOM killer(Out-Of-Memory kil
 
 #### 13.1.1.1. select_bad_process()选择进程
 
-通过 for_each_process_thread()宏**遍历所有进程**, 进而借用**oom_scan_process_thread**()获得**进程扫描类型**然后通过**switch-case 作特殊化**处理, 例如存在**某进程退出中则中断扫描**、**某进程占用内存过多且被标识为优先 kill 掉则优选**等特殊处理. 而**正常情况**则会通过**oom_badness**()计算出**进程的分值**, 然后根据**最高分值将进程控制块返回**回去.
+通过 `for_each_process_thread()` 宏**遍历所有进程**, 进而借用**oom_scan_process_thread**()获得**进程扫描类型**然后通过**switch-case 作特殊化**处理, 例如存在**某进程退出中则中断扫描**、**某进程占用内存过多且被标识为优先 kill 掉则优选**等特殊处理. 而**正常情况**则会通过**oom_badness**()计算出**进程的分值**, 然后根据**最高分值将进程控制块返回**回去.
 
 **oom_badness**()计算出**进程的分值**:
 
