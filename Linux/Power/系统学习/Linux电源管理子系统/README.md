@@ -11,7 +11,7 @@ Linux 的电源管理－休眠与唤醒: https://blog.csdn.net/TommyMusk/article
 
 如何自动唤醒和关闭 Linux: https://linux.cn/article-9115-1.html
 
-Suspend to RAM和Suspend to Idle分析，以及在HiKey上性能对比: https://www.cnblogs.com/arnoldlu/p/6253665.html (重要)
+Suspend to RAM和Suspend to Idle分析, 以及在HiKey上性能对比: https://www.cnblogs.com/arnoldlu/p/6253665.html (重要)
 
 https://zhuanlan.zhihu.com/p/543220509
 
