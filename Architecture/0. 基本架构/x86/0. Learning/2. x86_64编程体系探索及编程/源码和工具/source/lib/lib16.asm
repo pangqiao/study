@@ -126,8 +126,8 @@ do_hex_to_char:
 ;---------------------------------------------------
 ; get_hex_string(): 将数(WORD)转换为字符串
 ; input:
-;		si: 需转换的数（word size)
-;		di: 目标串 buffer（最短需要 5 bytes, 包括 0)
+;		si: 需转换的数(word size)
+;		di: 目标串 buffer(最短需要 5 bytes, 包括 0)
 ;---------------------------------------------------
 __get_hex_string:
 	push cx
@@ -148,8 +148,8 @@ do_get_hex_string_loop:
 ;---------------------------------------------------
 ; get_dword_hex_string(): 将数 (DWORD) 转换为字符串
 ; input:
-;		esi: 需转换的数（dword size)
-;		di: 目标串 buffer（最短需要 9 bytes, 包括 0)
+;		esi: 需转换的数(dword size)
+;		di: 目标串 buffer(最短需要 9 bytes, 包括 0)
 ;---------------------------------------------------
 __get_dword_hex_string:
 	push cx
