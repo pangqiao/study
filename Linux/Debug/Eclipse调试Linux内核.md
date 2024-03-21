@@ -89,7 +89,7 @@ Eclipse 的 C/C++插件 CDT 已经很好的支持 gdb 在远程调试了. 调试
 
 3. Remote Attach Launcher : **远程依附运行**. 类似于上一种, 但它不是重新运行程序开启一个 debug 会话, 而是**直接 Attach 到一个已经运行的程序**, 然后调试
 
-在 Debug Configurations 对话框中, 创建一个远程调试配置, 这个配置在创建时会根据项目情况提供一个默认的配置, **默认**将使用第一种 Automatic Remote Launcher 方式, 这在 Main 标签中下方"GDB (DSF) Automatic Remote Debugging Launcher"可以看出, 点击右边的"**Select other**…"可以切换其它方式.
+在 Debug Configurations 对话框中, 创建一个远程调试配置, 这个配置在创建时会根据项目情况提供一个默认的配置, **默认**将使用第一种 Automatic Remote Launcher 方式, 这在 Main 标签中下方"GDB (DSF) Automatic Remote Debugging Launcher"可以看出, 点击右边的"**Select other**..."可以切换其它方式.
 
 #### 1.3.2.1 远程手动运行方式
 
@@ -97,7 +97,7 @@ Eclipse 的 C/C++插件 CDT 已经很好的支持 gdb 在远程调试了. 调试
 
 接下来配置 CDT 的 Debug 选项, 步骤如下:
 
-1. 选中项目→菜单栏 "Run"→Debug Configurations…
+1. 选中项目→菜单栏 "Run"→Debug Configurations...
 
 2. 双击 C/C++ Remote Application 新建一个配置, Eclipse 会根据当前选择的项目初始化大部分配置, Project 选择我们的 linux\-debug 项目, application 填上面的带有调试信息的 vmlinux, 选中 Disable auto build
 

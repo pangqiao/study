@@ -638,7 +638,7 @@ usbcore.autosuspend=2
 
 #define debug(format, ...) fprintf (stderr, format, __VA_ARGS__)
 
-里面的"…"就表示可变参数, 调用时, 它们就会替代宏体里的__VA_ARGS__. GCC 总是会显得特立独行一些, 它支持更复杂的形式, 可以给可变参数取个名字, 比如
+里面的"..."就表示可变参数, 调用时, 它们就会替代宏体里的__VA_ARGS__. GCC 总是会显得特立独行一些, 它支持更复杂的形式, 可以给可变参数取个名字, 比如
 
 #define debug(format, args...) fprintf (stderr, format, args)
 

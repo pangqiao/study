@@ -278,7 +278,7 @@ file=, line=,
 function=) at assert.c: 78
 #3 0x00000000004008ba in main () at read_input.c: 55
 (gdb) quit
-……
+......
 (gdb) #0 0x0000003fa4e30265 in raise (sig=)
 at ../nptl/sysdeps/unix/sysv/linux/raise.c: 64
 #1 0x0000003fa4e31d10 in abort () at abort.c: 88

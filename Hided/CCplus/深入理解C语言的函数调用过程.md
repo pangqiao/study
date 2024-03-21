@@ -90,7 +90,7 @@ main:
 [root@maple 1]# objdump -D test > testbin
 
 [root@maple 1]# vi testbin
- //… 省略部分不相关代码
+ //... 省略部分不相关代码
  80483c0:       ff d0                           call   *%eax
  80483c2:       c9                              leave
  80483c3:       c3                              ret
@@ -137,7 +137,7 @@ main:
  804843a:       c3                              ret
  804843b:       90                              nop
  804843c:       90                              nop
- //… 省略部分不相关代码
+ //... 省略部分不相关代码
 ```
 
 用GDB调试可执行程序test: 

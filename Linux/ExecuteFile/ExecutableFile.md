@@ -41,7 +41,7 @@
 void __attribute((constructor))
 init_function(void)
 {
-    ……
+    ......
 }
 ```
 
@@ -102,7 +102,7 @@ File Header(文件头部) |
 ---|---
 Optional Header(可选文件头部) |
 Section 1 Header(节头部) |
-……… |
+......... |
 Section n Header(节头部) |
 Raw Data for Section 1(节数据) |
 Raw Data for Section n(节数据) |
@@ -190,7 +190,7 @@ ELF header(ELF 头部) |
 Program header table(程序头表) |
 Segment1(段 1) |
 Segment2(段 2) |
-……… |
+......... |
 Sengmentn(段 n) |
 Setion header table(节头表, 可选)  |
 

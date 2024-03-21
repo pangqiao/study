@@ -938,7 +938,7 @@ func (c *PodAffinityChecker) satisfiesPodsAffinityAntiAffinity(pod *v1.Pod,
  }
 ```
 
-以下说明继续if{…}内所用的各个**子逻辑函数分析**(按代码位置的先后顺序): 
+以下说明继续if{...}内所用的各个**子逻辑函数分析**(按代码位置的先后顺序): 
 
 *GetPodAffinityTerms()* 
 *如果存在podAffinity硬件配置, 获取所有"匹配必要条件"Terms*
@@ -1171,7 +1171,7 @@ else {
 
 ```
 
-以下说明继续else{…}内所用的**子逻辑函数分析**: 
+以下说明继续else{...}内所用的**子逻辑函数分析**: 
 
 *podMatchesPodAffinityTerms()* 
 *通过获取亲和配置定义的所有namespaces和标签条件表达式进行匹配目标pod,完全符合则获取此目标pod的运行node的topologykey(此为affinity指定的topologykey)的`值`和潜在Node的topologykey的`值`比对是否一致.*
@@ -1301,8 +1301,8 @@ func NewInterPodAffinityPriority(
 > 基于pod亲和性配置匹配"必要条件项"Terms,并发处理所有目标nodes,为其目标node统计亲和weight得分.
 > 我们先来看一下它的代码结构: 
 >
-> - processPod := func(existingPod *v1.Pod) error {… `pm.processTerms()`}
-> - processNode := func(i int) {…}
+> - processPod := func(existingPod *v1.Pod) error {... `pm.processTerms()`}
+> - processNode := func(i int) {...}
 > - workqueue.ParallelizeUntil(context.TODO(), 16, len(allNodeNames), `processNode`)
 > - fScore = float64(schedulerapi.MaxPriority) * ((pm.counts[node.Name] - minCount) / (maxCount - minCount))
 >

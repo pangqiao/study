@@ -5040,7 +5040,7 @@ if(s->refcount)为 false 的分支中,
 
 缓存名称是`kmalloc-*size*`是 kmalloc 函数的基础, 是**内核为不同内存长度提供的 slab 缓存**. `/proc/slabinfo`
 
-类似伙伴系统机制, 按照**内存块的 2^order**来创建多个 slab 描述符, 例如`16B`、32B 、64B 、128B 、…、`32MB`等大小, 系统会分别创建名为 kmalloc-16、kmalloc-32、kmalloc-64...的 slab 描述符, 这在**系统启动**时在**create_kmalloc_caches()函数**中完成.
+类似伙伴系统机制, 按照**内存块的 2^order**来创建多个 slab 描述符, 例如`16B`、32B 、64B 、128B 、...、`32MB`等大小, 系统会分别创建名为 kmalloc-16、kmalloc-32、kmalloc-64...的 slab 描述符, 这在**系统启动**时在**create_kmalloc_caches()函数**中完成.
 
 ```cpp
 // mm/slab_common.c

@@ -22,7 +22,7 @@ BPF, 即**伯克利包过滤器**(Berkeley Packet Filter), 最初构想提出于
 
 并且 eBPF 通过使用为 `IO Visor` 项目开发的技术, 使它的性能进一步得到提升: 也为 XDP("eXpress Data Path")添加了新的钩子, XDP 是不久前添加到内核中的一种新式快速路径. XDP 与 Linux 栈组合, 然后使用 BPF , 使包处理的速度更快.
 
-甚至一些项目, 如 P4、Open vSwitch, [考虑](http://openvswitch.org/pipermail/dev/2014-October/047421.html) 或者开始去接洽**使用 BPF**. 其它的一些, 如 CETH、Cilium, 则是完全基于它的. BPF 是如此流行, 因此, 我们可以预计, 不久之后, 将围绕它有更多工具和项目出现 …
+甚至一些项目, 如 P4、Open vSwitch, [考虑](http://openvswitch.org/pipermail/dev/2014-October/047421.html) 或者开始去接洽**使用 BPF**. 其它的一些, 如 CETH、Cilium, 则是完全基于它的. BPF 是如此流行, 因此, 我们可以预计, 不久之后, 将围绕它有更多工具和项目出现 ...
 
 # 深入理解字节码
 

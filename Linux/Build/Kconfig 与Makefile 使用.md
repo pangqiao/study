@@ -11,7 +11,7 @@ menuconfig NETDEVICES
         bool "Network device support"
         ---help---
           You can say N here if you don't intend to connect your Linux box to any other computer at all.
-……
+......
 config DM9000
         tristate "DM9000 support"
         depends on ARM || BLACKFIN || MIPS
@@ -21,7 +21,7 @@ config DM9000
           Support for DM9000 chipset.
 
           To compile this driver as a module, choose M here.  The module will be called dm9000.
-……
+......
 source "drivers/net/arcnet/Kconfig"
 source "drivers/net/phy/Kconfig"
 ```
@@ -271,7 +271,7 @@ menuconfig MODULES ---> menuconfig 表示 MODULE 是一个可选菜单, 其选�
     endif # MODULES
 ```
 
-说到底, menconfig 就是一个带选项的菜单, 在下面需要用 bool 判断一下, 选择成立后, 进入 `if …endif` 中间得空间.
+说到底, menconfig 就是一个带选项的菜单, 在下面需要用 bool 判断一下, 选择成立后, 进入 `if ...endif` 中间得空间.
 
 ## 概述
 

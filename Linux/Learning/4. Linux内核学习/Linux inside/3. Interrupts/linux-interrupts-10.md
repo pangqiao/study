@@ -394,7 +394,7 @@ static inline void generic_handle_irq_desc(unsigned int irq, struct irq_desc *de
 }
 ```
 
-但是, 停一停……`handle_irq` 是何方神圣, 为什么在知道 `irqaction` 指向真正的中断处理程序的情况下, 偏偏通过中断描述符调用我们的中断处理程序?实际上, `irq_desc->handle_irq` 是一个用来调用中断处理程序的上层 API. 它在[设备树](https://en.wikipedia.org/wiki/Device_tree) 和 [APIC](https://en.wikipedia.org/wiki/Advanced_Programmable_Interrupt_Controller) 的初始化过程中就设定好了. 内核通过它选择正确的函数以及 `irq->actions(s)` 的调用链. 就这样, 当一个中断发生时, `serial21285_tx_chars` 或者 `serial21285_rx_chars` 函数会被调用. 
+但是, 停一停......`handle_irq` 是何方神圣, 为什么在知道 `irqaction` 指向真正的中断处理程序的情况下, 偏偏通过中断描述符调用我们的中断处理程序?实际上, `irq_desc->handle_irq` 是一个用来调用中断处理程序的上层 API. 它在[设备树](https://en.wikipedia.org/wiki/Device_tree) 和 [APIC](https://en.wikipedia.org/wiki/Advanced_Programmable_Interrupt_Controller) 的初始化过程中就设定好了. 内核通过它选择正确的函数以及 `irq->actions(s)` 的调用链. 就这样, 当一个中断发生时, `serial21285_tx_chars` 或者 `serial21285_rx_chars` 函数会被调用. 
 
 在 `do_IRQ` 函数末尾, 我们调用 `irq_exit` 函数来退出中断上下文, 调用 `set_irq_regs` 函数并传入先前的用户空间寄存器, 最后返回: 
 

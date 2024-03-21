@@ -10,7 +10,7 @@
 
 ## 什么是 page frame?
 
-操作系统最重要的作用之一就是管理计算机系统中的各种资源, 做为最重要的资源: 内存, 我们必须管理起来. 在 linux 操作系统中, 物理内存是按照 page size 来管理的, 具体 page size 是多少是和硬件以及 linux 系统配置相关的, 4k 是最经典的设定. 因此, 对于物理内存, 我们将其分成一个个按 page size 排列的 page, 每一个**物理内存中**的**page size 的内存区域**我们称之**page frame**. 我们针对每一个物理的 page frame 建立一个**struct page**的数据结构来跟踪**每一个物理页面的使用情况**: 是用于内核的正文段?还是用于进程的页表?是用于各种 file cache 还是处于 free 状态……
+操作系统最重要的作用之一就是管理计算机系统中的各种资源, 做为最重要的资源: 内存, 我们必须管理起来. 在 linux 操作系统中, 物理内存是按照 page size 来管理的, 具体 page size 是多少是和硬件以及 linux 系统配置相关的, 4k 是最经典的设定. 因此, 对于物理内存, 我们将其分成一个个按 page size 排列的 page, 每一个**物理内存中**的**page size 的内存区域**我们称之**page frame**. 我们针对每一个物理的 page frame 建立一个**struct page**的数据结构来跟踪**每一个物理页面的使用情况**: 是用于内核的正文段?还是用于进程的页表?是用于各种 file cache 还是处于 free 状态......
 
 **每一个 page frame**有一个**一一对应的 page 数据结构**, 系统中定义了**page_to_pfn**和**pfn_to_page**的宏用来在**page frame number**和**page 数据结构**之间进行**转换**, 具体**如何转换**是和**memory modle 相关**, 我们会在第三章详细描述 linux kernel 中的 3 种内存模型.
 

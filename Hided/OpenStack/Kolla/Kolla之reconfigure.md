@@ -3,13 +3,13 @@
 
 <!-- code_chunk_output -->
 
-* [1 概述](#1-概述)
-* [2 reconfigure使用](#2-reconfigure使用)
-* [3 reconfigure 代码流程](#3-reconfigure-代码流程)
-	* [3.1 ansible role是什么?](#31-ansible-role是什么)
-	* [3.2 reconfigure具体代码](#32-reconfigure具体代码)
-		* [3.2.1 config.yml](#321-configyml)
-* [参考](#参考)
+- [1 概述](#1-概述)
+- [2 reconfigure使用](#2-reconfigure使用)
+- [3 reconfigure 代码流程](#3-reconfigure-代码流程)
+  - [3.1 ansible role是什么?](#31-ansible-role是什么)
+  - [3.2 reconfigure具体代码](#32-reconfigure具体代码)
+    - [3.2.1 config.yml](#321-configyml)
+- [参考](#参考)
 
 <!-- /code_chunk_output -->
 
@@ -69,17 +69,17 @@ kolla-ansible 的核心代码在ansible实现的
 
 ## 3.1 ansible role是什么?
 
-Ansible Role 是一种分类 & 重用的概念, 透过将 vars, tasks, files, templates, handler … 等等根据不同的目的(例如: nova、glance、cinder), 规划后至于独立目录中, 后续便可以利用 include 的概念來使用. 
+Ansible Role 是一种分类 & 重用的概念, 透过将 vars, tasks, files, templates, handler ... 等等根据不同的目的(例如: nova、glance、cinder), 规划后至于独立目录中, 后续便可以利用 include 的概念來使用. 
 
 若同样是 include 的概念, 那 role 跟 include 之间不一样的地方又是在哪里呢?
 
 答案是: role 的 include 机制是自动的!
 
-我们只要提前将 role 的 vars / tasks / files / handler …. 等等事先定义好按照特定的结构(下面會提到)放好, Ansible 就会自动 include 完成, 不需要再自己一个一个指定 include. 
+我们只要提前将 role 的 vars / tasks / files / handler .... 等等事先定义好按照特定的结构(下面會提到)放好, Ansible 就会自动 include 完成, 不需要再自己一个一个指定 include. 
 
 透过这样的方式, 管理者可以透过設定 role 的方式將所需要安裝設定的功能分门别类, 拆成细项來管理并编写相对应的 script, 让原本可能很庞大的设定工作可以细分成多个不同的部分來分別设定, 不仅仅可以让自己重复利用特定的设定, 也可以共享給其他人一同使用. 
 
-要设计一個 role, 必須先知道怎麼將 files / templates / tasks / handlers / vars …. 等等拆开设定
+要设计一個 role, 必須先知道怎麼將 files / templates / tasks / handlers / vars .... 等等拆开设定
 
 看看下面kolla-ansible下nova role的代码目录
 

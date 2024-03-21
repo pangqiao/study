@@ -52,7 +52,7 @@ awk 应用示例
 
 > ls -lh | awk '{print $5"\t"$9}'
 
-$0 变量是指当前一行记录, $1 是指第一个域数据, $2 指第二个域数据……以此类推.
+$0 变量是指当前一行记录, $1 是指第一个域数据, $2 指第二个域数据......以此类推.
 
 **print 与 printf**
 
@@ -68,7 +68,7 @@ printf 与 C 语言中的 printf 函数类似, 可以用来格式化字符串.
 
 > ll | awk -F '\t' 'print $9'
 
-**BEGIN…END**
+**BEGIN...END**
 
 > ls -lh | awk 'BEGIN {print "size\tfilename"}  {print $5"\t"$9} END {print "---end---"}'
 

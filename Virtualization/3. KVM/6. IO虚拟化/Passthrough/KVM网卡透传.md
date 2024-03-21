@@ -137,9 +137,9 @@ b, 修改内核启动参数, 使 IOMMU 生效, CentOS7 上修改稍微不同:
 
 ```
 # cat /etc/default/grub
-…
+...
 GRUB_CMDLINE_LINUX="crashkernel=auto rd.lvm.lv=centos/root rd.lvm.lv=centos/swap rhgb quiet intel_iommu=on"
-…
+...
 ```
 
 在 GRUB_CMDLINE_LINUX 后加上 intel_iommu=on, 其他的不动. 先备份, 再重新生成 grub.cfg:
@@ -349,10 +349,10 @@ d, 接下来就可以把 VF 当做普通网卡给虚拟机独占使用了
 # lshw -c network -businfo
 Bus info Device Class Description
 ========================================================
-…
+...
 pci@0000:08:10.0 enp8s16 network 82576 Virtual Function
 pci@0000:08:10.2 enp8s16f2 network 82576 Virtual Function
-…
+...
 # ethtool -i enp8s16 | grep bus
 bus-info: 0000:08:10.0
 # lspci -s 0000:08:10.0 -n
@@ -380,7 +380,7 @@ Kernel modules: igbvf
 # ethtool -i eth0
 driver: igbvf
 version: 2.4.0-k
-…
+...
 ```
 
 5, pass through 的麻烦之处在于**需要指定具体的 pci 地址**, 比较麻烦, 比如在虚拟机要做迁移的场景.
@@ -435,7 +435,7 @@ kvm -name centos7 -smp 4 -m 8192 \
 # ethtool -i eth0
 driver: virtio_net
 version: 1.0.0
-…
+...
 ```
 
 根据注 1, 如果采用如下命令, 性能会非常差:

@@ -102,7 +102,7 @@ func (o *Options) ApplyTo(c *schedulerappconfig.Config) error {
          return err
       }
    }
-   // ……
+   // ......
     
    return nil
 }
@@ -145,7 +145,7 @@ type Config struct {
 
 ```go
 func (o *Options) Config() (*schedulerappconfig.Config, error) {
-   // ……
+   // ......
 
    c := &schedulerappconfig.Config{}
     // 前面我们看到的 ApplyTo() 函数
@@ -154,14 +154,14 @@ func (o *Options) Config() (*schedulerappconfig.Config, error) {
    }
 
    // Prepare kube clients.
-   // ……
+   // ......
 
    // Prepare event clients.
    eventBroadcaster := record.NewBroadcaster()
    recorder := eventBroadcaster.NewRecorder(legacyscheme.Scheme, corev1.EventSource{Component: c.ComponentConfig.SchedulerName})
 
    // Set up leader election if enabled.
-   // ……
+   // ......
 
    c.Client = client
    c.InformerFactory = informers.NewSharedInformerFactory(client, 0)
@@ -185,7 +185,7 @@ func (o *Options) Config() (*schedulerappconfig.Config, error) {
 
 ```go
 func runCommand(cmd *cobra.Command, args []string, opts *options.Options) error {
-   // ……
+   // ......
     
    // 这个地方完成了前面说到的配置文件和命令行参数等读取和应用工作
    c, err := opts.Config()
@@ -207,7 +207,7 @@ func runCommand(cmd *cobra.Command, args []string, opts *options.Options) error 
 
    // Configz registration.
   
-   // ……
+   // ......
 
    return Run(cc, stopCh)
 }
@@ -264,9 +264,9 @@ func ApplyFeatureGates() {
 
 ```go
 func init() {
-   // ……
+   // ......
    registerAlgorithmProvider(defaultPredicates(), defaultPriorities())
-   // ……
+   // ......
 }
 ```
 
@@ -338,11 +338,11 @@ func defaultPredicates() sets.String {
          },
       ),
        
-      // ……
+      // ......
 
       factory.RegisterFitPredicate(predicates.NoDiskConflictPred, predicates.NoDiskConflict),
 
-      // ……
+      // ......
    )
 }
 ```
@@ -362,7 +362,7 @@ func NewString(items ...string) String {
    ss.Insert(items...)
    return ss
 }
-// ……
+// ......
 
 // Insert adds items to the set.
 func (s String) Insert(items ...string) {
@@ -442,7 +442,7 @@ func ApplyFeatureGates() {
 const (
    AppArmor utilfeature.Feature = "AppArmor"
    DynamicKubeletConfig utilfeature.Feature = "DynamicKubeletConfig"
-   // ……
+   // ......
 )
 ```
 
@@ -459,7 +459,7 @@ var defaultKubernetesFeatureGates = map[utilfeature.Feature]utilfeature.FeatureS
    DevicePlugins:                               {Default: true, PreRelease: utilfeature.Beta},
    TaintBasedEvictions:                         {Default: true, PreRelease: utilfeature.Beta},
    RotateKubeletServerCertificate:              {Default: true, PreRelease: utilfeature.Beta},
-    // ……
+    // ......
 }
 ```
 
@@ -535,7 +535,7 @@ type schedulerOptions struct {
 	bindTimeoutSeconds             int64
 }
 
-// ……
+// ......
 
 // LINE 121
 var defaultSchedulerOptions = schedulerOptions{
@@ -611,13 +611,13 @@ type SchedulerPolicySource struct {
    ConfigMap *SchedulerPolicyConfigMapSource
 }
 // 下面分别是2个属性的结构定义: 
-// ……
+// ......
 type SchedulerPolicyFileSource struct {
 	// Path is the location of a serialized policy.
 	Path string
 }
 
-// ……
+// ......
 type SchedulerPolicyConfigMapSource struct {
 	// Namespace is the namespace of the policy config map.
 	Namespace string
@@ -768,14 +768,14 @@ type AlgorithmProviderConfig struct {
 ```go
 func (c *configFactory) CreateFromKeys(predicateKeys, priorityKeys sets.String, extenders []algorithm.SchedulerExtender) (*Config, error) {
    
-    // ……
+    // ......
     
     // 根据 predicateKeys 得到 predicateFuncs
     predicateFuncs, err := c.GetPredicates(predicateKeys)
     // 根据 priorityKeys 得到 priorityConfigs
 	priorityConfigs, err := c.GetPriorityFunctionConfigs(priorityKeys)
     
-    // ……
+    // ......
     
     // 创建一个 genericScheduler, 这个对象我们很熟悉. algo 也就是 Algorithm 的简写; 
    algo := core.NewGenericScheduler(
@@ -786,14 +786,14 @@ func (c *configFactory) CreateFromKeys(predicateKeys, priorityKeys sets.String, 
       predicateMetaProducer,
       priorityConfigs, // 和 priorityKeys 对应
       priorityMetaProducer,
-      // ……
+      // ......
    )
 
    podBackoff := util.CreateDefaultPodBackoff()
    return &Config{
-      // ……
+      // ......
       Algorithm:           algo, // 很清晰了
-      // ……
+      // ......
    }, nil
 }
 ```

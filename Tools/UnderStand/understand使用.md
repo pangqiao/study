@@ -309,7 +309,7 @@ User Tools 用户工具(参见)
 
 Explore 浏览(参见层级查看)
 
-Find In… 查找(参见多文件查找)
+Find In... 查找(参见多文件查找)
 
 Add Favorite 添加到收藏夹(参见收藏夹)
 

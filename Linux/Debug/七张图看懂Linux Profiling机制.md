@@ -67,7 +67,7 @@ Linux kprobe / uprobe 就是这样的例子, 图 5 和 图 6 简示了 uprobe �
 
 例如: `perf stat -e cache-misses -p PID`, 参见 brendangregg.com/perf.html , Counting Events 一节
 
-函数接口: 参见 libperf 的封装, `fd = perf_event_open(...); read(fd, …)`
+函数接口: 参见 libperf 的封装, `fd = perf_event_open(...); read(fd, ...)`
 
 ### 1.2.2. 采样
 
@@ -75,7 +75,7 @@ Linux kprobe / uprobe 就是这样的例子, 图 5 和 图 6 简示了 uprobe �
 
 例如: `perf record -F 99 -p PID sleep 10`, 以及对应图形化展示 FlameGraph
 
-函数接口: 参见 `perf_event_open, fd = perf_event_open(…); void *addr = mmap(…, fd, …);`
+函数接口: 参见 `perf_event_open, fd = perf_event_open(...); void *addr = mmap(..., fd, ...);`
 
 图 7 简示了其实现原理
 

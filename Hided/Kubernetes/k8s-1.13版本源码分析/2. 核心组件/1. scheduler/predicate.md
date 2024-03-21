@@ -12,7 +12,7 @@ predicate过程从`pkg/scheduler/core/generic_scheduler.go:389 findNodesThatFit(
 func (g *genericScheduler) findNodesThatFit(pod *v1.Pod, nodes []*v1.Node) ([]*v1.Node, FailedPredicateMap, error) {
 	checkNode := func(i int) {
 		fits, failedPredicates, err := podFitsOnNode(
-			//……
+			//......
 		)
 		if fits {
 			length := atomic.AddInt32(&filteredLen, 1)
@@ -98,7 +98,7 @@ func ParallelizeUntil(ctx context.Context, workers, pieces int, doWorkPiece DoWo
 }
 ```
 
-回想一下前面的`checkNode := func(i int){……}`, 上面的`doWorkPiece(piece)`也就是调用到了这里的这个匿名函数`func(i int){……}`; 到这里就清楚如何实现并发执行多个node的predicate过程了. 
+回想一下前面的`checkNode := func(i int){......}`, 上面的`doWorkPiece(piece)`也就是调用到了这里的这个匿名函数`func(i int){......}`; 到这里就清楚如何实现并发执行多个node的predicate过程了. 
 
 ## 一个node的predicate
 
@@ -224,7 +224,7 @@ for predicateID, predicateKey := range predicates.Ordering() {
 			return false, []algorithm.PredicateFailureReason{}, err
 		}
 		if !fit {
-			// ……
+			// ......
 		}
 	}
 }
