@@ -1,3 +1,4 @@
+https://richardweiyang-2.gitbook.io/understanding_qemu
 
 * 设备模型
   * 设备类型注册
