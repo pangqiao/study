@@ -30,7 +30,7 @@
 # 1. 安装软件
 
 ```
-sudo apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev vim-athena npm pip curl git zsh pycodestyle
+sudo apt-get install exuberant-ctags cscope git wmctrl fonts-powerline ccls build-essential cmake python3-dev vim-athena npm pip curl git zsh pycodestyle bear
 ```
 
 # 2. 下载字体
