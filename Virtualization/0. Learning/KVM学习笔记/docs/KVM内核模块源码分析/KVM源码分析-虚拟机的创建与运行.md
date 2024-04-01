@@ -590,7 +590,7 @@ qemu_kvm_init_cpu_signals 则是将中断组合掩码传递给 kvm_set_signal_ma
 
 kvm_cpu_exec 此时还在阻塞过程中, 先挂起来, 看内存的初始化.
 
-内存初始化函数是 pc_memory_init,memory_region_init_ram 传入了高端内存和低端内存的值, memory_region_init 负责填充 mr, 重点在 qemu_ram_alloc, 即 qemu_ram_alloc_from_ptr, 首先有 RAMBlock, ram_list, 那就直接借助 find_ram_offset 函数一起看一下 qemu 的内存分布模型.
+内存初始化函数是 pc_memory_init, memory_region_init_ram 传入了高端内存和低端内存的值, memory_region_init 负责填充 mr, 重点在 qemu_ram_alloc, 即 qemu_ram_alloc_from_ptr, 首先有 RAMBlock, ram_list, 那就直接借助 find_ram_offset 函数一起看一下 qemu 的内存分布模型.
 
 ![1534143171644.png](image/1534143171644.png)
 
