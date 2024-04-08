@@ -226,15 +226,15 @@
 - [29 周期性调度器的激活](#29-周期性调度器的激活)
   - [29.1 定时器周期性的激活调度器](#291-定时器周期性的激活调度器)
   - [29.2 定时器中断实现](#292-定时器中断实现)
-- [30 主调度器 schedule()](#30-主调度器-schedule)
-  - [30.1 调度函数的\_\_sched 前缀](#301-调度函数的__sched-前缀)
-  - [30.2 schedule()函数](#302-schedule函数)
-    - [30.2.1 schedule 主框架](#3021-schedule-主框架)
-    - [30.2.2 sched\_submit\_work()避免死锁](#3022-sched_submit_work避免死锁)
-    - [30.2.3 preempt\_disable 和 sched\_preempt\_enable\_no\_resched 开关内核抢占](#3023-preempt_disable-和-sched_preempt_enable_no_resched-开关内核抢占)
-  - [30.3 \_\_schedule()开始进程调度](#303-__schedule开始进程调度)
-    - [30.3.1 \_\_schedule()函数主框架](#3031-__schedule函数主框架)
-    - [30.3.2 pick\_next\_task 选择抢占的进程](#3032-pick_next_task-选择抢占的进程)
+- [主调度器 schedule()](#主调度器-schedule)
+  - [调度函数的 __sched 前缀](#调度函数的-__sched-前缀)
+  - [schedule()函数](#schedule函数)
+    - [schedule 主框架](#schedule-主框架)
+    - [sched_submit_work() 避免死锁](#sched_submit_work-避免死锁)
+    - [preempt_disable 和 sched_preempt_enable_no_resched 开关内核抢占](#preempt_disable-和-sched_preempt_enable_no_resched-开关内核抢占)
+  - [__schedule() 开始进程调度](#__schedule-开始进程调度)
+    - [__schedule() 函数主框架](#__schedule-函数主框架)
+    - [pick_next_task 选择抢占的进程](#pick_next_task-选择抢占的进程)
 
 <!-- /code_chunk_output -->
 
@@ -4862,7 +4862,7 @@ void do_timer(struct pt_regs *regs)
 }
 ```
 
-# 30 主调度器 schedule()
+# 主调度器 schedule()
 
 在内核中的许多地方, 如果要**将 CPU 分配**给与**当前活动进程不同的另一个进程**,都会**直接调用主调度器函数 schedule**();
 
@@ -4870,21 +4870,21 @@ void do_timer(struct pt_regs *regs)
 
 例如, 前述的**周期性调度器的 scheduler\_tick()就会设置该标志**,如果是这样则**内核会调用 schedule**(), 该函数假定当前活动进程一定会被另一个进程取代.
 
-## 30.1 调度函数的\_\_sched 前缀
+## 调度函数的 __sched 前缀
 
-该前缀用于**可能调用 schedule()的函数**,包括**schedule()本身**.
+该前缀用于**可能调用 schedule()的函数**, 包括 **schedule() 本身**.
 
-\_\_sched 前缀的声明, 在[include/linux/sched.h]
+`__sched` 前缀的声明, 在 `[include/linux/sched.h]`
 
-``` c
+``` cpp
 #define __sched __attribute__((__section__(".sched.text")))
 ```
 
-\_\_attribute\_\_((\_\_section\_("...")))是一个**gcc 的编译属性**,其目的在于将**相关的函数的代码编译之后**, 放到**目标文件的特定的段内**,**即.sched.text**中.该信息使得内核在**显示栈转储活类似信息**时, 忽略所有与调度相关的调用. 由于调度函数调用不是普通代码流程的一部分, 因此在这种情况下是没有意义的.
+`__attribute__((__section_("...")))` 是一个 **gcc 的编译属性**, 其目的在于将**相关的函数的代码编译之后**, 放到**目标文件的特定的段内**, **即 .sched.text** 中. 该信息使得内核在**显示栈转储活类似信息**时, 忽略所有与调度相关的调用. 由于调度函数调用不是普通代码流程的一部分, 因此在这种情况下是没有意义的.
 
 用它修饰函数的方式如下
 
-```c
+```cpp
 void __sched some_function(args, ...)
 {
 	......
@@ -4893,21 +4893,21 @@ void __sched some_function(args, ...)
 }
 ```
 
-## 30.2 schedule()函数
+## schedule()函数
 
-### 30.2.1 schedule 主框架
+### schedule 主框架
 
 schedule()就是**主调度器的函数**, 在内核中的许多地方,如果要将 CPU 分配给与当前活动进程不同的另一个进程, 都会直接调用主调度器函数 schedule().
 
 该函数完成**如下工作**
 
-1. 确定**当前就绪队列**, 并在保存一个指向**当前(仍然)活动进程的 task\_struct 指针**
+1. 确定**当前就绪队列**, 并在保存一个指向**当前(仍然)活动进程的 task_struct 指针**
 
-2. **检查死锁**, **关闭内核抢占**后**调用\_\_schedule 完成内核调度**
+2. **检查死锁**, **关闭内核抢占**后**调用 __schedule 完成内核调度**
 
-3. **恢复内核抢占**, 然后检查**当前进程是否设置了重调度标志 TLF\_NEDD\_RESCHED**, 如果该进程被其他进程设置了**TIF\_NEED\_RESCHED 标志**, 则**函数重新执行进行调度**
+3. **恢复内核抢占**, 然后检查**当前进程是否设置了重调度标志 TLF_NEDD_RESCHED**, 如果该进程被其他进程设置了**TIF_NEED_RESCHED 标志**, 则**函数重新执行进行调度**
 
-该函数定义在[kernel/sched/core.c], 如下所示
+该函数定义在 `[kernel/sched/core.c]`, 如下所示
 
 ```c
 asmlinkage __visible void __sched schedule(void)
@@ -4931,11 +4931,11 @@ asmlinkage __visible void __sched schedule(void)
 EXPORT_SYMBOL(schedule);
 ```
 
-### 30.2.2 sched\_submit\_work()避免死锁
+### sched_submit_work() 避免死锁
 
-该函数定义在[kernel/sched/core.c]
+该函数定义在 `[kernel/sched/core.c]`
 
-### 30.2.3 preempt\_disable 和 sched\_preempt\_enable\_no\_resched 开关内核抢占
+### preempt_disable 和 sched_preempt_enable_no_resched 开关内核抢占
 
 如果**进程正执行内核函数**时, 即它**在内核态运行**时, 允许发生**内核切换(被替换的进程是正执行内核函数的进程**), 这个内核就是**抢占**的.
 
@@ -4959,11 +4959,11 @@ do { \
 } while (0)
 ```
 
-## 30.3 \_\_schedule()开始进程调度
+## __schedule() 开始进程调度
 
-\_\_schedule()完成了真正的调度工作, 其定义在[kernel/sched/core.c]
+`__schedule()` 完成了真正的调度工作, 其定义在 `[kernel/sched/core.c]`
 
-### 30.3.1 \_\_schedule()函数主框架
+### __schedule() 函数主框架
 
 ```c
 static void __sched notrace __schedule(bool preempt)
@@ -5094,7 +5094,7 @@ static void __sched notrace __schedule(bool preempt)
 STACK_FRAME_NON_STANDARD(__schedule); /* switch_to() */
 ```
 
-### 30.3.2 pick\_next\_task 选择抢占的进程
+### pick_next_task 选择抢占的进程
 
 内核从**cpu 的就绪队列**中选择一个**最合适的进程来抢占 CPU**
 
@@ -5190,9 +5190,9 @@ extern const struct sched_class idle_sched_class;
 
 对于 FIFO 和 RR 的区别, 在 scheduler\_tick 中通过 curr->sched\_class->task\_tick 进入到 task\_tick\_rt 的处理, 如果是**非 RR 的进程则直接返回**, 否则**递减时间片, 如果时间片耗完, 则需要将当前进程放到运行队列的末尾**, 这个时候才**操作运行队列**(**FIFO 和 RR 进程, 是否位于同一个 plist 队列**?), 时间片到点, 会**重新移动当前进程 requeue\_task\_rt**, 进程会被**加到队列尾**, 接下来**set\_tsk\_need\_resched 触发调度**, 进程被抢占进入 schedule()
 
-### 30.3.3 context\_switch 进程上下文切换
+### context_switch 进程上下文切换
 
-#### 30.3.3.1 进程上下文切换
+#### 进程上下文切换
 
 **上下文切换**(有时也称做**进程切换**或**任务切换**)是指 CPU 从一个进程或线程切换到另一个进程或线程
 
@@ -5208,7 +5208,7 @@ extern const struct sched_class idle_sched_class;
 
 **上下文切换只能发生在内核态(！！！**)中, 上下文切换通常是**计算密集型**的. 也就是说, 它需要相当可观的处理器时间, 在每秒几十上百次的切换中, 每次切换都需要纳秒量级的时间. 所以, **上下文切换**对系统来说意味着**消耗大量的 CPU 时间**, 事实上, 可能是操作系统中**时间消耗最大的操作**.
 
-#### 30.3.3.2 context\_switch()流程
+#### context_switch()流程
 
 context\_switch()函数完成了进程上下文的切换, 其定义在[kernel/sched/core.c]
 
