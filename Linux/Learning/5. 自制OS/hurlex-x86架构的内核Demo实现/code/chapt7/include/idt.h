@@ -27,11 +27,11 @@ void init_idt();
 // 中断描述符
 typedef
 struct idt_entry_t {
-	uint16_t base_lo;        // 中断处理函数地址 15～0 位
+	uint16_t base_lo;        // 中断处理函数地址 15~0 位
 	uint16_t sel;            // 目标代码段描述符选择子
 	uint8_t  always0;        // 置 0 段
 	uint8_t  flags;          // 一些标志, 文档有解释
-	uint16_t base_hi;        // 中断处理函数地址 31～16 位
+	uint16_t base_hi;        // 中断处理函数地址 31~16 位
 }__attribute__((packed)) idt_entry_t;
 
 // IDTR
@@ -108,7 +108,7 @@ void isr29();
 void isr30();
 void isr31();
 
-// 32～255 用户自定义异常
+// 32~255 用户自定义异常
 void isr255();
 
 #endif 	// INCLUDE_IDT_H_

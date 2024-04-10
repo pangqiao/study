@@ -16,7 +16,7 @@
 
 ![config](./images/2.png)
 
-x86 架构为了保护指令的运行, 提供了指令的**4 个不同 Privilege 特权级别**, 术语称为 Ring, 从 Ring 0～Ring 3. Ring 0 的优先级最高, Ring 3 最低. 各个级别对可以运行的指令有所限制, 例如, **GDT, IDT, LDT, TSS 等这些指令**就只能运行于**Privilege 0**, 也就是 Ring 0. 要注意 Ring/Privilege 级别和我们通常认知的进程在操作系统中的优先级并不同.
+x86 架构为了保护指令的运行, 提供了指令的**4 个不同 Privilege 特权级别**, 术语称为 Ring, 从 Ring 0~Ring 3. Ring 0 的优先级最高, Ring 3 最低. 各个级别对可以运行的指令有所限制, 例如, **GDT, IDT, LDT, TSS 等这些指令**就只能运行于**Privilege 0**, 也就是 Ring 0. 要注意 Ring/Privilege 级别和我们通常认知的进程在操作系统中的优先级并不同.
 
 操作系统必须要运行一些 Privilege 0 的特权指令, 因此 Ring 0 是被用于运行操作系统内核, Ring 1 和 Ring 2 是用于操作系统服务, Ring 3 则是用于应用程序. 然而实际上并没有必要用完 4 个不同的等级, **一般的操作系统**实现都**仅仅使用了两个等级**, 即 Ring 0 和 Ring 3, 如图所示:
 

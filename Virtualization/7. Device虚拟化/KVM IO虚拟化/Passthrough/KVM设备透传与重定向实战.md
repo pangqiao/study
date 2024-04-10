@@ -296,4 +296,4 @@ Kernel driver in use: vfio-pci
 然后我们即可在虚拟机中使用这些虚拟网卡, 需要在 QEMU 命令行中添加设备选项, 形似"-device vfio-pci,host=04:10.0,id=hostdev0,bus=pci.0,multifunction=on,addr=0x9"
 
 
-大功告成～现在你就可以执行最开始的那段代码运行带有直通设备的虚拟机了～
+大功告成~现在你就可以执行最开始的那段代码运行带有直通设备的虚拟机了~

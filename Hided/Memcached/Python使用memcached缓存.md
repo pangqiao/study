@@ -3,19 +3,19 @@
 
 <!-- code_chunk_output -->
 
-* [1 memcached](#1-memcached)
-* [2 路由算法](#2-路由算法)
-	* [2.1 简单路由算法](#21-简单路由算法)
-	* [2.2 一致性哈希](#22-一致性哈希)
-	* [2.3 虚拟层](#23-虚拟层)
-* [3 内存管理](#3-内存管理)
-	* [3.1 存储方式](#31-存储方式)
-	* [3.2 内存结构](#32-内存结构)
-* [3.3 注意事项](#33-注意事项)
-* [4 使用场景](#4-使用场景)
-* [5 安装启动](#5-安装启动)
-* [6 python操作memcached](#6-python操作memcached)
-	* [6.1 python访问memcached](#61-python访问memcached)
+- [1 memcached](#1-memcached)
+- [2 路由算法](#2-路由算法)
+  - [2.1 简单路由算法](#21-简单路由算法)
+  - [2.2 一致性哈希](#22-一致性哈希)
+  - [2.3 虚拟层](#23-虚拟层)
+- [3 内存管理](#3-内存管理)
+  - [3.1 存储方式](#31-存储方式)
+  - [3.2 内存结构](#32-内存结构)
+- [3.3 注意事项](#33-注意事项)
+- [4 使用场景](#4-使用场景)
+- [5 安装启动](#5-安装启动)
+- [6 python操作memcached](#6-python操作memcached)
+  - [6.1 python访问memcached](#61-python访问memcached)
 
 <!-- /code_chunk_output -->
 
@@ -70,11 +70,11 @@ memcached客户端可采用一致性hash算法作为路由策略, 如图, 相对
 memcached仅支持基础的key-value键值对类型数据存储. 在memcached内存结构中有两个非常重要的概念: slab和chunk.  
 slab是一个内存块, 它是memcached一次申请内存的最小单位. 在启动memcached的时候一般会使用参数-m指定其可用内存, 但是并不是在启动的那一刻所有的内存就全部分配出去了, 只有在需要的时候才会去申请, 而且每次申请一定是一个slab. Slab的大小固定为1M(1048576 Byte), 一个slab由若干个大小相等的chunk组成. 每个chunk中都保存了一个item结构体、一对key和value. 
 
-虽然在同一个slab中chunk的大小相等的, 但是在不同的slab中chunk的大小并不一定相等, 在memcached中按照chunk的大小不同, 可以把slab分为很多种类(class), 默认情况下memcached把slab分为40类(class1～class40), 在class 1中, chunk的大小为80字节, 由于一个slab的大小是固定的1048576字节(1M), 因此在class1中最多可以有13107个chunk(也就是这个slab能存最多13107个小于80字节的key-value数据).  
+虽然在同一个slab中chunk的大小相等的, 但是在不同的slab中chunk的大小并不一定相等, 在memcached中按照chunk的大小不同, 可以把slab分为很多种类(class), 默认情况下memcached把slab分为40类(class1~class40), 在class 1中, chunk的大小为80字节, 由于一个slab的大小是固定的1048576字节(1M), 因此在class1中最多可以有13107个chunk(也就是这个slab能存最多13107个小于80字节的key-value数据).  
 
 ![config](./images/3.png)
 
-memcached内存管理采取预分配、分组管理的方式, 分组管理就是我们上面提到的slab class, 按照chunk的大小slab被分为很多种类. 内存预分配过程是怎样的呢?向memcached添加一个item时候, memcached首先会根据item的大小, 来选择最合适的slab class: 例如item的大小为190字节, 默认情况下class 4的chunk大小为160字节显然不合适, class 5的chunk大小为200字节, 大于190字节, 因此该item将放在class 5中(显然这里会有10字节的浪费是不可避免的), 计算好所要放入的chunk之后, memcached会去检查该类大小的chunk还有没有空闲的, 如果没有, 将会申请1M(1个slab)的空间并划分为该种类chunk. 例如我们第一次向memcached中放入一个190字节的item时, memcached会产生一个slab class 2(也叫一个page), 并会用去一个chunk, 剩余5241个chunk供下次有适合大小item时使用, 当我们用完这所有的5242个chunk之后, 下次再有一个在160～200字节之间的item添加进来时, memcached会再次产生一个class 5的slab(这样就存在了2个pages). 
+memcached内存管理采取预分配、分组管理的方式, 分组管理就是我们上面提到的slab class, 按照chunk的大小slab被分为很多种类. 内存预分配过程是怎样的呢?向memcached添加一个item时候, memcached首先会根据item的大小, 来选择最合适的slab class: 例如item的大小为190字节, 默认情况下class 4的chunk大小为160字节显然不合适, class 5的chunk大小为200字节, 大于190字节, 因此该item将放在class 5中(显然这里会有10字节的浪费是不可避免的), 计算好所要放入的chunk之后, memcached会去检查该类大小的chunk还有没有空闲的, 如果没有, 将会申请1M(1个slab)的空间并划分为该种类chunk. 例如我们第一次向memcached中放入一个190字节的item时, memcached会产生一个slab class 2(也叫一个page), 并会用去一个chunk, 剩余5241个chunk供下次有适合大小item时使用, 当我们用完这所有的5242个chunk之后, 下次再有一个在160~200字节之间的item添加进来时, memcached会再次产生一个class 5的slab(这样就存在了2个pages). 
 
 # 3.3 注意事项
 

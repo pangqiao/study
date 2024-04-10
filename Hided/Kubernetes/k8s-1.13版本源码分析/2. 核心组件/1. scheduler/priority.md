@@ -142,7 +142,7 @@ type PriorityConfig struct {
 type PriorityFunction func(pod *v1.Pod, nodeNameToInfo map[string]*schedulercache.NodeInfo, nodes []*v1.Node) (schedulerapi.HostPriorityList, error)
 ```
 
-很明显这个类型代表了一个priority函数, 入参是pod、nodeNameToInfo和nodes, 返回值是HostPriorityList, 也就是我们前面提到的1个priority函数作用于每个node后得到了Score信息, 存结果的结构就是这个HostPriorityList; 看起来很和谐～
+很明显这个类型代表了一个priority函数, 入参是pod、nodeNameToInfo和nodes, 返回值是HostPriorityList, 也就是我们前面提到的1个priority函数作用于每个node后得到了Score信息, 存结果的结构就是这个HostPriorityList; 看起来很和谐~
 
 然后讲回**PrioritizeNodes**过程: 
 

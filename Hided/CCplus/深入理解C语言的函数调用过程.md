@@ -258,7 +258,7 @@ popl %ebp
 
 ![config](images/16.png)
 
-第39条指令就相当于给main里的result变量赋值66, 如上红线标注的地方. 接下来main函数里要执行printf("result=%d\n",result)语句了, 而printf又是C库的一个常用的输出函数, 这里就又会像前面调用foo1那样, 初始化栈, 然后用"call printf的地址"来调用C函数. 当40～43这4条指令执行完后, 栈里的数据如下: 
+第39条指令就相当于给main里的result变量赋值66, 如上红线标注的地方. 接下来main函数里要执行printf("result=%d\n",result)语句了, 而printf又是C库的一个常用的输出函数, 这里就又会像前面调用foo1那样, 初始化栈, 然后用"call printf的地址"来调用C函数. 当40~43这4条指令执行完后, 栈里的数据如下: 
 
 ```
 40 movl $.LC0, %eax

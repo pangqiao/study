@@ -235,7 +235,7 @@ for predicateID, predicateKey := range predicates.Ordering() {
 1. predicates.Ordering()
 2. fit, reasons, err = predicate(pod, metaToUse, nodeInfoToUse)
 
-分两个小节吧～
+分两个小节吧~
 
 ### predicates的顺序
 
@@ -316,7 +316,7 @@ var (
 }
 ```
 
-整体过完源码后我们再实际尝试一下这些特性, 这一边先知道有这回事吧, ok, 继续～
+整体过完源码后我们再实际尝试一下这些特性, 这一边先知道有这回事吧, ok, 继续~
 
 ### 单个predicate执行过程
 

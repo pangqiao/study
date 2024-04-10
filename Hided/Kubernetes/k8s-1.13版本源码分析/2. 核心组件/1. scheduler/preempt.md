@@ -515,7 +515,7 @@ func (g *genericScheduler) Preempt(pod *v1.Pod, nodeLister algorithm.NodeLister,
 }
 ```
 
-上面涉及到一些子过程调用, 我们逐个来看～
+上面涉及到一些子过程调用, 我们逐个来看~
 
 1. `podEligibleToPreemptOthers()` // 如何判断是否适合抢占?
 2. `nodesWherePreemptionMightHelp()` // 怎么寻找能够用于 preempt 的 nodes?
@@ -869,4 +869,4 @@ func pickOneNodeForPreemption(nodesToVictims map[*v1.Node]*schedulerapi.Victims)
 
 ## 小结
 
-咋个说呢, 此处应该有总结的, 抢占过程的逻辑比我想象中的复杂, 设计很巧妙, 行云流水, 大快人心！preemption 可以简单说成再预选->再优选吧; 还是不多说了, 一天写这么多有点坐不住了, 下回再继续聊调度器～
+咋个说呢, 此处应该有总结的, 抢占过程的逻辑比我想象中的复杂, 设计很巧妙, 行云流水, 大快人心！preemption 可以简单说成再预选->再优选吧; 还是不多说了, 一天写这么多有点坐不住了, 下回再继续聊调度器~

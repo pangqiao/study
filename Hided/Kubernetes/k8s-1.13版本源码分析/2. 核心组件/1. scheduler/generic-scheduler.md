@@ -4,7 +4,7 @@
 
 ## 进入Scheduler的第三层逻辑
 
-今天分析的代码, 就已经算kube-scheduler的第三层逻辑了, 我们要找到预选和优选的入口, 讲完太长, 干脆后面单独分2节讲预选和优选过程. 所以本小节会比较简短哦～
+今天分析的代码, 就已经算kube-scheduler的第三层逻辑了, 我们要找到预选和优选的入口, 讲完太长, 干脆后面单独分2节讲预选和优选过程. 所以本小节会比较简短哦~
 
 今天我们从`pkg/scheduler/core/generic_scheduler.go:139`开始, 也就是从这个**generic scheduler的Schedule()方法**下手！
 
@@ -30,7 +30,7 @@ func (g *genericScheduler) Schedule(pod *v1.Pod, nodeLister algorithm.NodeLister
 2. "Prioritizing": 调用PrioritizeNodes()方法; 
 3. "Selecting host": 调用selectHost()方法. 
 
-接着当然是先浏览一下这3步分别完成了哪些工作咯～
+接着当然是先浏览一下这3步分别完成了哪些工作咯~
 
 ### Computing predicates
 
@@ -88,7 +88,7 @@ type HostPriority struct {
 type HostPriorityList []HostPriority
 ```
 
-看到这里就清晰了, 原来有个`HostPriority`类型记录一个Host的名字和分值, `HostPriorityList`类型也就是`HostPriority`类型的集合, 意味着记录了多个Host的名字和分值, 于是我们可以判断`PrioritizeNodes()`方法的作用是计算前面的predicates过程筛选出来的nodes各自的Score.所以肯定还有一个根据Score决定哪个node胜出的逻辑咯～, 继续往下看吧～
+看到这里就清晰了, 原来有个`HostPriority`类型记录一个Host的名字和分值, `HostPriorityList`类型也就是`HostPriority`类型的集合, 意味着记录了多个Host的名字和分值, 于是我们可以判断`PrioritizeNodes()`方法的作用是计算前面的predicates过程筛选出来的nodes各自的Score.所以肯定还有一个根据Score决定哪个node胜出的逻辑咯~, 继续往下看吧~
 
 ### Selecting host
 

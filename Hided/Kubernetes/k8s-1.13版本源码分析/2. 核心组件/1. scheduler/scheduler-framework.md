@@ -4,7 +4,7 @@
 
 ## 写在前面
 
-今天我们从`pkg/scheduler/scheduler.go`出发, 分析Scheduler的整体框架. 前面讲Scheduler设计的时候有提到过源码的3层结构, `pkg/scheduler/scheduler.go`也就是中间这一层, 负责Scheduler除了具体node过滤算法外的工作逻辑～
+今天我们从`pkg/scheduler/scheduler.go`出发, 分析Scheduler的整体框架. 前面讲Scheduler设计的时候有提到过源码的3层结构, `pkg/scheduler/scheduler.go`也就是中间这一层, 负责Scheduler除了具体node过滤算法外的工作逻辑~
 
 这一层我们先尽可能找主线, 顺着主线走通一遍, 就像走一个迷宫, 一条通路走出去后心里就有地了, 但是迷宫中的很多角落是未曾涉足的. 我们尽快走通主流程后, 再就一些主要知识点专题攻破, 比如k8s里面的List-Watch, Informer等好玩的东西. 
 
@@ -157,4 +157,4 @@ type ScheduleAlgorithm interface {
 func (g *genericScheduler) Schedule(pod *v1.Pod, nodeLister algorithm.NodeLister) (string, error)
 ```
 
-从如参和返回值其实可以猜到很多东西, 行, 今天就到这里, 具体的逻辑下回我们再分析～
+从如参和返回值其实可以猜到很多东西, 行, 今天就到这里, 具体的逻辑下回我们再分析~

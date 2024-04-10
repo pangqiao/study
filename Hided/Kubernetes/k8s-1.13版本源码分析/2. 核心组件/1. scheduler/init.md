@@ -4,7 +4,7 @@
 
 ## 概述
 
-今天我们要做一些琐碎的知识点分析, 比如调度器启动的时候默认配置是怎么来的?默认生效了哪些调度算法?自定义的算法是如何注入的?诸如这些问题, 我们顺带会看一下调度器相关的一些数据结构的含义. 看完前面这些节的分析后再看完本篇文章你可能会有一种醍醐灌顶的感觉哦～
+今天我们要做一些琐碎的知识点分析, 比如调度器启动的时候默认配置是怎么来的?默认生效了哪些调度算法?自定义的算法是如何注入的?诸如这些问题, 我们顺带会看一下调度器相关的一些数据结构的含义. 看完前面这些节的分析后再看完本篇文章你可能会有一种醍醐灌顶的感觉哦~
 
 ## 从 --config 开始
 
@@ -175,7 +175,7 @@ func (o *Options) Config() (*schedulerappconfig.Config, error) {
 }
 ```
 
-那调用这个`Config()`函数的地方又在哪里呢?继续跟就到 **runCommand** 里面了～
+那调用这个`Config()`函数的地方又在哪里呢?继续跟就到 **runCommand** 里面了~
 
 ### runCommand
 
@@ -231,7 +231,7 @@ Run: func(cmd *cobra.Command, args []string) {
 - ApplyFeatureGates
 - Run 中的逻辑
 
-我们下面分别来看看～
+我们下面分别来看看~
 
 ## ApplyFeatureGates
 
@@ -645,7 +645,7 @@ type SchedulerPolicyConfigMapSource struct {
 }
 ```
 
-所以啊, 这个 Policy原来是通过代码里的 **SchedulerPolicySource** 去配置的～
+所以啊, 这个 Policy原来是通过代码里的 **SchedulerPolicySource** 去配置的~
 
 ### policy / provider 如何生效
 
@@ -710,7 +710,7 @@ type Policy struct {
 }
 ```
 
-这个结构内部封装的一层层结构我就不继续贴了, 大家感兴趣可以点开看一下, 跟到底的落点都是基础类型的, string啊, int啊, bool啊这些～
+这个结构内部封装的一层层结构我就不继续贴了, 大家感兴趣可以点开看一下, 跟到底的落点都是基础类型的, string啊, int啊, bool啊这些~
 
 关于 `factory.Config` 可能大家有印象, 这个结构就是 **Scheduler** 对象的唯一属性: 
 
@@ -807,4 +807,4 @@ func (c *configFactory) CreateFromKeys(predicateKeys, priorityKeys sets.String, 
 
 是不是很熟悉呢?
 
-行, 今天就讲到这里～
+行, 今天就讲到这里~
