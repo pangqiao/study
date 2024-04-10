@@ -10,7 +10,7 @@
 - [2. QEMU 加载 BIOS 过程分析](#2-qemu-加载-bios-过程分析)
   - [2.1. x86_64 QEMU 中支持的类型](#21-x86_64-qemu-中支持的类型)
   - [2.2. QEMU 中 MemoryRegion 结构体](#22-qemu-中-memoryregion-结构体)
-  - [2.3. 清单 6 old_pc_system_rom_init 函数中将 BIOS 映射到物理内存空间的代码:](#23-清单-6-old_pc_system_rom_init-函数中将-bios-映射到物理内存空间的代码)
+  - [2.3. old_pc_system_rom_init 函数中将 BIOS 映射到物理内存空间的代码:](#23-old_pc_system_rom_init-函数中将-bios-映射到物理内存空间的代码)
 - [3. 小结](#3-小结)
 
 <!-- /code_chunk_output -->
@@ -123,7 +123,7 @@ endif
 
 当 QEMU 用户空间进程开始启动时, QEMU 进程会根据所**传递的参数**以及当前**宿主机平台类型(host 类型)**, 自动加载适当的 BIOS 固件.
 
-QEMU 进程启动初始阶段, 会通过 `module_call_init` 函数调用 `qemu_register_machine` 注册**该平台支持的全部机器类型**, 接着调用 `find_default_machine` **选择一个默认的机型**进行初始化.  以 QEMU 代码(1.7.0)的 x86_64 平台为例, 支持的机器类型有:
+QEMU 进程启动初始阶段, 会通过 `module_call_init` 函数调用 `qemu_register_machine` 注册**该平台支持的全部机器类型**, 接着调用 `find_default_machine` **选择一个默认的机型**进行初始化.  以 QEMU 代码(1.7.0)的 `x86_64` 平台为例, 支持的机器类型有:
 
 ## 2.1. x86_64 QEMU 中支持的类型
 
@@ -189,9 +189,9 @@ struct MemoryRegion {
 
 **每一个 MemoryRegion 代表一块内存区域**. 仔细观察 MemoryRegion 的成员函数, 它包含一个 Object 的成员函数用于指向它的所有者, 以及一个 MemoryRegion 成员用于指向他的父节点(有点类似链表). 另外还有三个尾队列(QTAILQ) subregions,  subregions\_link, subregions\_link.  也就是说, 一个 MemoryRegion 可以包含多个内存区, 根据不同的参数区分该内存域的功能.  在使用 MemoryRegion 之前要先为其分配内存空间并调用 memory\_region\_init 做必要的初始化. BIOS 也是通过一个 MemoryRegion 结构指示的. 它的 MemoryRegion.name 被设置为"pc.bios",  size 设置为 BIOS 文件的大小(65536 的整数倍). 接着调用 rom\_add\_file\_fixed 将其 BIOS 文件加载到一个全局的 rom 队列中.
 
-最后, 回到 old\_pc\_system\_rom\_init 函数中, 将 BIOS 映射到内存的最上方的地址空间.
+最后, 回到 `old_pc_system_rom_init` 函数中, 将 BIOS 映射到内存的最上方的地址空间.
 
-## 2.3. 清单 6 old_pc_system_rom_init 函数中将 BIOS 映射到物理内存空间的代码:
+## 2.3. old_pc_system_rom_init 函数中将 BIOS 映射到物理内存空间的代码:
 
 ```
 hw/i386/pc_sysfw.c
