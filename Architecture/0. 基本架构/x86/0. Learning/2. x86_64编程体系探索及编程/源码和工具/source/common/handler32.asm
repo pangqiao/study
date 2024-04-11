@@ -1,5 +1,5 @@
 ; handler32.asm
-; Copyright (c) 2009-2012 mik 
+; Copyright (c) 2009-2012 mik
 ; All rights reserved.
 
 
@@ -15,33 +15,33 @@
 
 ;----------------------------------------
 ; DB_handler():  #DB handler
-; 描述: 
-;       
+; 描述:
+;
 ;----------------------------------------
 DB_handler:
         jmp do_DB_handler
-db_msg1         db '-----< Single-Debug information >-----', 10, 0        
+db_msg1         db '-----< Single-Debug information >-----', 10, 0
 db_msg2         db '>>>>> END <<<<<', 10, 0
 
 ;* 这些字符串地址定义在 debug.asm 文件
-register_message_table: 
+register_message_table:
         dd eax_msg, ecx_msg, edx_msg, ebx_msg, esp_msg, ebp_msg, esi_msg, edi_msg, 0
 
-do_DB_handler:        
+do_DB_handler:
         ;; 得到寄存器值
         STORE_CONTEXT
-        
+
         mov esi, db_msg1
         call puts
-        
-        ;; 停止条件        
+
+        ;; 停止条件
         mov eax, [db_stop_address]              ; 读 #DB 停止地址
         cmp eax, [esp]                          ; 是否遇到停止条件
         je stop_debug
 
         mov ebx, CONTEXT_POINTER
-do_DB_handler_loop:        
-     
+do_DB_handler_loop:
+
         mov esi, [register_message_table + ecx * 4]
         call puts                               ; 打印字符串
         mov esi, [ebx + ecx * 4]
@@ -55,11 +55,11 @@ do_DB_handler_loop:
         cmove esi, edi                          ; 打印 4 个后, 换行
         call esi
 
-        inc ecx        
+        inc ecx
         cmp ecx, 7
         jbe do_DB_handler_loop
 
-do_DB_handler_next:        
+do_DB_handler_next:
         mov esi, eip_msg
         call puts
         mov esi, [esp]
@@ -71,7 +71,7 @@ stop_debug:
         btr DWORD [esp + 8], 8                  ; 清 TF 标志
         mov esi, db_msg2
         call puts
-do_DB_handler_done:        
+do_DB_handler_done:
         bts DWORD [esp + 8], 16                 ; 设置 eflags.RF 为 1, 以便中断返回时, 继续执行
 
         RESTORE_CONTEXT
@@ -81,7 +81,7 @@ do_DB_handler_done:
 %ifdef DEBUG
 ;--------------------------------------------
 ; #DB handler
-; 描述: 
+; 描述:
 ;       这个版本的 #DB handler 用于
 ;-------------------------------------------
 debug_handler:
@@ -98,7 +98,7 @@ do_debug_handler:
         cmp WORD [eax], 0xfeeb              ; 测试 jmp $ 指令
         jne do_debug_handler_done
         btr DWORD [esp+8], 8                ; 清 TF
-do_debug_handler_done:        
+do_debug_handler_done:
         bts DWORD [esp+8], 16               ; RF=1
         mov esi, dh_msg2
         call puts
@@ -116,7 +116,7 @@ gmsg1   db '---> Now, enter #GP handler, occur at: 0x', 0
 gmsg2   db ', error code = 0x', 0
 gmsg3   db '<ID:', 0
 gmsg4   db '--------------- register context ------------', 10, 0
-do_GP_handler:        
+do_GP_handler:
         mov esi, gmsg1
         call puts
         mov esi, [esp + 4]
@@ -134,8 +134,8 @@ do_GP_handler:
         call print_dword_value
         call println
 
-        jmp $       
-do_GP_handler_done:                
+        jmp $
+do_GP_handler_done:
         iret
 
 ;------------------------------------------------
@@ -145,20 +145,20 @@ PF_handler:
         jmp do_pf_handler
 pf_msg  db 10, '---> now, enter #PF handler', 10
         db 'occur at: 0x', 0
-pf_msg2 db 10, 'fixed the error', 10, 0                
-do_pf_handler:        
+pf_msg2 db 10, 'fixed the error', 10, 0
+do_pf_handler:
         add esp, 4                              ; 忽略 Error code
         push ecx
         push edx
         mov esi, pf_msg
         call puts
-        
+
         mov ecx, cr2                            ; 发生#PF异常的virtual address
         mov esi, ecx
         call print_dword_value
 
         jmp $
-        
+
         mov esi, pf_msg2
         call puts
 
@@ -180,7 +180,7 @@ do_pf_handler:
         and esi, 0x1ff                        ; PTE index
         and eax, 0xfffff000
         btr DWORD [eax + esi * 8 + 4], 31                ; 清 PTE.XD
-do_pf_handler_done:        
+do_pf_handler_done:
         pop edx
         pop ecx
         iret
@@ -191,7 +191,7 @@ do_pf_handler_done:
 ;----------------------------------------------
 UD_handler:
         jmp do_UD_handler
-ud_msg1         db '>>> Now, enter the #UD handler, occur at: 0x', 0        
+ud_msg1         db '>>> Now, enter the #UD handler, occur at: 0x', 0
 do_UD_handler:
         mov esi, ud_msg1
         call puts
@@ -200,21 +200,21 @@ do_UD_handler:
         mov [esp], eax                  ; 跳过产生#UD的指令
         add DWORD [esp+12], 4           ; pop 用户 stack
         iret
-        
+
 ;----------------------------------------------
 ; NM_handler(): #NM handler
 ;----------------------------------------------
 NM_handler:
         jmp do_NM_handler
-nm_msg1         db '---> Now, enter the #NM handler', 10, 0        
-do_NM_handler:        
+nm_msg1         db '---> Now, enter the #NM handler', 10, 0
+do_NM_handler:
         mov esi, nm_msg1
         call puts
         mov eax, [esp+12]               ; 得到 user esp
         mov eax, [eax]
         mov [esp], eax                  ; 跳过产生#NM的指令
         add DWORD [esp+12], 4           ; pop 用户 stack
-        iret        
+        iret
 
 ;-----------------------------------------------
 ; AC_handler(): #AC handler
@@ -224,18 +224,18 @@ AC_handler:
 ac_msg1         db '---> Now, enter the #AC exception handler <---', 10
 ac_msg2         db 'exception location at 0x'
 ac_location     dq 0, 0
-do_AC_handler:        
+do_AC_handler:
         pusha
-        mov esi, [esp+4+4*8]                        
+        mov esi, [esp+4+4*8]
         mov edi, ac_location
         call get_dword_hex_string
         mov esi, ac_msg1
         call puts
         call println
 ;; 现在 disable AC 功能
-        btr DWORD [esp+12+4*8], 18      ; 清elfags image中的AC标志        
+        btr DWORD [esp+12+4*8], 18      ; 清elfags image中的AC标志
         popa
-        add esp, 4                      ; 忽略 error code        
+        add esp, 4                      ; 忽略 error code
         iret
 
 
@@ -244,7 +244,7 @@ do_AC_handler:
 ;----------------------------------------
 TS_handler:
         jmp do_ts_handler
-ts_msg1        db '--> now, enter the #TS handler', 10, 0        
+ts_msg1        db '--> now, enter the #TS handler', 10, 0
 ts_msg2        db 'return addres: 0x', 0
 ts_msg3        db 'error code: 0x', 0
 do_ts_handler:
@@ -271,13 +271,13 @@ do_ts_handler:
 ;-------------------------------------
 BR_handler:
         jmp do_BR_handler
-brmsg1        db 10, 10, '---> Now, enter #BR handler', 10, 0        
-do_BR_handler:        
+brmsg1        db 10, 10, '---> Now, enter #BR handler', 10, 0
+do_BR_handler:
         mov esi, brmsg1
         call puts
 ;        mov eax, [bound_rang]                ; 修复错误
         iret
-        
+
 ;--------------------------------------
 ; BP_handler(): #BP handler
 ;--------------------------------------
@@ -302,7 +302,7 @@ do_BP_handler:
 ;---------------------------------------
 OF_handler:
         jmp do_OF_handler
-omsg1   db '---> Now, enter #OF handler',10, 10,0        
+omsg1   db '---> Now, enter #OF handler',10, 10,0
 
 do_OF_handler:
         push ebx
@@ -321,10 +321,10 @@ do_OF_handler:
 
 ;-------------------------------
 ; system timer handler
-; 描述: 
+; 描述:
 ;       使用于 8259 IRQ0 handler
 ;-------------------------------
-timer_handler:                
+timer_handler:
         jmp do_timer_handler
 t_msg           db 10, '>>> now: enter 8253-timer handler', 10, 0
 t_msg1          db 'exit the 8253-timer handler <<<', 10, 0
@@ -334,11 +334,11 @@ keyboard_done   dd 0
 do_timer_handler:
         mov esi, t_msg
         call puts
-        call dump_8259_imr        
+        call dump_8259_imr
         call dump_8259_irr
         call dump_8259_isr
 
-test_lock:        
+test_lock:
         bt DWORD [spin_lock], 0                        ; 测试锁
         jnc get_lock
         pause
@@ -346,35 +346,35 @@ test_lock:
 get_lock:
         lock bts DWORD [spin_lock], 0
         jc test_lock
-        
+
 ;发送 special mask mode 命令
         call enable_keyboard
         call send_smm_command
         call disable_timer
-        sti        
+        sti
         mov esi, t_msg2
-        call puts        
-wait_for_keyboard:        
+        call puts
+wait_for_keyboard:
         mov ecx, 0xffff
-delay:        
+delay:
         nop
         loop delay
         bt DWORD [keyboard_done], 0
-        jnc wait_for_keyboard        
-        btr DWORD [spin_lock], 0                ; 释放锁              
+        jnc wait_for_keyboard
+        btr DWORD [spin_lock], 0                ; 释放锁
         mov esi, t_msg1
         call puts
         call write_master_EOI
         call disable_timer
         iret
-        
 
-        
+
+
 ;----------------------------
 ; keyboard_handler:
-; 描述: 
+; 描述:
 ;       使用于 8259 IRQ1 handler
-;----------------------------        
+;----------------------------
 keyboard_handler:
         jmp do_keyboard_handler
 k_msg   db 10, '>>> now: entry keyboard handler', 10, 0
@@ -387,20 +387,20 @@ do_keyboard_handler:
         call dump_8259_isr
         bts DWORD [keyboard_done], 0                ; 完成
         mov esi, k_msg1
-        call puts        
+        call puts
         call write_master_EOI
-        iret        
-        
+        iret
 
-%ifdef APIC_TIMER_HANDLER        
+
+%ifdef APIC_TIMER_HANDLER
 ;---------------------------------------------
 ; apic_timer_handler(): 这是 APIC TIMER 的 ISR
 ;---------------------------------------------
 apic_timer_handler:
         jmp do_apic_timer_handler
 at_msg  db '>>> now: enter the APIC timer handler', 10, 0
-at_msg1 db 10, 'exit ther APIC timer handler <<<', 10, 0        
-do_apic_timer_handler:        
+at_msg1 db 10, 'exit ther APIC timer handler <<<', 10, 0
+do_apic_timer_handler:
         mov esi, at_msg
         call puts
         call dump_apic                        ; 打印 apic 寄存器信息
@@ -428,7 +428,7 @@ do_apic_timer_handler:
 apic_perfmon_handler:
         jmp do_apic_perfmon_handler
 ph_msg1 db '>>> now: enter PMI handler, occur at 0x', 0
-ph_msg2 db 'exit the PMI handler <<<', 10, 0        
+ph_msg2 db 'exit the PMI handler <<<', 10, 0
 ph_msg3 db '****** DS interrupt occur with BTS buffer full! *******', 10, 0
 ph_msg4 db '****** PMI interrupt occur *******', 10, 0
 ph_msg5 db '****** DS interrupt occur with PEBS buffer full! *******', 10, 0
@@ -527,7 +527,7 @@ apic_perfmon_handler_done:
         call puts
 ;*
 ;* 下面恢复功能原设置!
-;* 
+;*
         ; 恢复原 IA32_PERF_GLOBAL_CTRL 寄存器值
         mov ecx, IA32_PERF_GLOBAL_CTRL
         mov eax, [perf_global_ctrl_value]
@@ -547,7 +547,7 @@ apic_perfmon_handler_done:
         btr DWORD [APIC_BASE + LVT_PERFMON], 16         ; 清 LVT_PERFMON 寄存器 mask 位
         mov DWORD [APIC_BASE + EOI], 0                  ; 写 EOI 命令
         iret
-        
+
 %endif
 ;*
 ;* 结束
@@ -563,8 +563,8 @@ ap_ipi_handler:
 	jmp do_ap_ipi_handler
 at_msg2 db 10, 10, '>>>>>>> This is processor ID: ', 0
 at_msg3 db '---------- extract APIC ID -----------', 10, 0
-do_ap_ipi_handler:	
-        
+do_ap_ipi_handler:
+
         ; 测试 lock
 test_handler_lock:
         lock bts DWORD [vacant], 0
@@ -584,12 +584,12 @@ test_handler_lock:
         call puts
         mov esi, [x2apic_package_id + edx * 4]
         call print_dword_value
-        call printblank        
+        call printblank
         mov esi, msg3                        ; 打印 core ID
         call puts
         mov esi, [x2apic_core_id + edx * 4]
         call print_dword_value
-        call printblank        
+        call printblank
         mov esi, msg4                        ; 打印 smt ID
         call puts
         mov esi, [x2apic_smt_id + edx * 4]
@@ -599,7 +599,7 @@ test_handler_lock:
         mov DWORD [APIC_BASE + EOI], 0
 
         ; 释放lock
-        lock btr DWORD [vacant], 0        
+        lock btr DWORD [vacant], 0
         iret
 
 get_handler_lock:
