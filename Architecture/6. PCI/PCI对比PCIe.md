@@ -1,7 +1,7 @@
 
 # PCI(Peripheral Component Interconnect)
 
-PCI(Peripheral Component Interconnect)顾名思义就是外部设备的互联总线. PCI连接基于总线控制,  所有设备共享双向并行总线,  总线仲裁规则用于决定PCI挂载的外设什么时间可以访问总线. PCI总线最多支持32个外设,  可以通过PCI-to-PCI bridge(PPB)扩展PCI外设支持, 如图1,  Bus1/Bus2都是由Bus0通过PPB扩展的PCI总线.
+PCI(Peripheral Component Interconnect)顾名思义就是外部设备的互联总线. PCI连接基于总线控制,  所有设备共享双向并行总线,  总线仲裁规则用于决定PCI挂载的外设什么时间可以访问总线. PCI总线最多支持32个外设,  可以通过PCI-to-PCI bridge(PPB)扩展PCI外设支持, 如图1,  Bus1/Bus2 都是由Bus0通过PPB扩展的PCI总线.
 
 ![2024-04-15-12-04-52.png](./images/2024-04-15-12-04-52.png)
 

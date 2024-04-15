@@ -7,3 +7,6 @@ DPDK vhost-user 之前后端通知机制场景分析(十): https://blog.csdn.net
 vhost vsock: https://blog.csdn.net/zgy666/article/details/78830609
 
 https://wiki.qemu.org/Features/VirtioVsock
+
+vhost前后端(vhost_net/virtio_net)转发流程详解: http://blog.chinaunix.net/uid-28541347-id-5864269.html
+
