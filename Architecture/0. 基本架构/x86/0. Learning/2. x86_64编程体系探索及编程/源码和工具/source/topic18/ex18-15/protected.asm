@@ -6,33 +6,33 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ï¿½ï¿½ï¿½ï¿½ protected Ä£ï¿½ï¿½
+;  protected ?
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£ï¿½é³¤ï¿½ï¿½
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected ??
 
 entry:
         cli
         NMI_DISABLE
 
-; ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ SSE Ö¸ï¿½ï¿½        
+; ? SSE ?        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         call pae_enable
         call execution_disable_enable
 
-;; ï¿½ï¿½ï¿½ï¿½ sysenter/sysexit Ê¹ï¿½Ã»ï¿½ï¿½ï¿½
+;;  sysenter/sysexit ?û
         call set_sysenter
  
         ;*
-        ;* perfmon ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
-        ;* ï¿½Ø±ï¿½ï¿½ï¿½ï¿½ï¿½ counter ï¿½ï¿½ PEBS 
-        ;* ï¿½ï¿½ overflow ï¿½ï¿½Ö¾Î»
+        ;* perfmon ?
+        ;* ? counter  PEBS 
+        ;*  overflow ??
         ;*
         DISABLE_GLOBAL_COUNTER
         DISABLE_PEBS
@@ -40,7 +40,7 @@ entry:
         RESET_PMC
         
        
-;;; ï¿½ï¿½ï¿½ï¿½ bootstrap processor ï¿½ï¿½ï¿½ï¿½ application processor ?
+;;;  bootstrap processor  application processor ?
         mov ecx, IA32_APIC_BASE
         rdmsr
         bt eax, 8
@@ -48,7 +48,7 @@ entry:
 
 
 ;------------------------------------------------
-; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ bootstrap processor Ö´ï¿½Ð´ï¿½ï¿½ï¿½
+;  bootstrap processor ??
 ;-----------------------------------------------
 bsp_processor_enter:
         call init_pae_paging
@@ -59,8 +59,8 @@ bsp_processor_enter:
         mov cr0, eax  
 
         ;*
-        ;* ï¿½ï¿½ï¿½ï¿½ startup routine ï¿½ï¿½ï¿½ëµ½ 20000h                
-        ;* ï¿½Ô±ï¿½ï¿½ï¿½ AP processor ï¿½ï¿½ï¿½ï¿½
+        ;*  startup routine ? 20000h                
+        ;* ? AP processor 
         ;*
         mov esi, startup_routine
         mov edi, 20000h
@@ -68,7 +68,7 @@ bsp_processor_enter:
         rep movsb
 
 
-; ï¿½ï¿½ï¿½ï¿½ IRQ0 ï¿½ï¿½ IRQ1 ï¿½Ð¶ï¿½
+;  IRQ0  IRQ1 ?
         mov esi, PIC8259A_TIMER_VECTOR
         mov edi, timer_handler
         call set_interrupt_handler        
@@ -82,92 +82,92 @@ bsp_processor_enter:
         call disable_keyboard
         call disable_timer
 
-;; ï¿½ï¿½ï¿½ï¿½ #PF handler
+;;  #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ï¿½ï¿½ï¿½ï¿½ #GP handler
+;;  #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ï¿½ï¿½ï¿½ï¿½ #DB handler
+;  #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
-;; ï¿½ï¿½ï¿½ï¿½ system_service handler
+;;  system_service handler
         mov esi, SYSTEM_SERVICE_VECTOR
         mov edi, system_service
         call set_user_interrupt_handler 
 
-;ï¿½ï¿½ï¿½ï¿½ APIC performance monitor counter handler
+; APIC performance monitor counter handler
         mov esi, APIC_PERFMON_VECTOR
         mov edi, apic_perfmon_handler
         call set_interrupt_handler
 
-; ï¿½ï¿½ï¿½ï¿½ APIC timer handler
+;  APIC timer handler
         mov esi, APIC_TIMER_VECTOR
         mov edi, apic_timer_handler
         call set_interrupt_handler      
 
-;ï¿½ï¿½ï¿½ï¿½APIC
+;APIC
         call enable_apic        
 
-; ï¿½ï¿½ï¿½ï¿½ LVT ï¿½Ä´ï¿½ï¿½ï¿½
+;  LVT ?
         mov DWORD [APIC_BASE + LVT_PERFMON], FIXED_DELIVERY | APIC_PERFMON_VECTOR
         mov DWORD [APIC_BASE + LVT_TIMER], TIMER_ONE_SHOT | APIC_TIMER_VECTOR
         mov DWORD [APIC_BASE + LVT_ERROR], APIC_ERROR_VECTOR
 
-; ï¿½ï¿½ï¿½ï¿½ BSP IPI handler
+;  BSP IPI handler
         mov esi, BP_IPI_VECTOR
         mov edi, bp_ipi_handler
         call set_interrupt_handler             
         
 ;===============================================
 
-        inc DWORD [processor_index]                             ; ï¿½ï¿½ï¿½ï¿½ index Öµ
-        inc DWORD [processor_count]                             ; ï¿½ï¿½ï¿½ï¿½ logical processor ï¿½ï¿½ï¿½ï¿½
-        mov ecx, [processor_index]                              ; È¡ index Öµ
-        mov edx, [APIC_BASE + APIC_ID]                          ; ï¿½ï¿½ APIC ID
-        mov [apic_id + ecx * 4], edx                            ; ï¿½ï¿½ï¿½ï¿½ APIC ID 
+        inc DWORD [processor_index]                             ;  index ?
+        inc DWORD [processor_count]                             ;  logical processor 
+        mov ecx, [processor_index]                              ; ? index ?
+        mov edx, [APIC_BASE + APIC_ID]                          ;  APIC ID
+        mov [apic_id + ecx * 4], edx                            ;  APIC ID 
 ;*
-;* ï¿½ï¿½ï¿½ï¿½ stack ï¿½Õ¼ï¿½
+;*  stack ?
 ;*
-        mov eax, PROCESSOR_STACK_SIZE                           ; Ã¿ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ stack ï¿½Õ¼ï¿½ï¿½Ð¡
+        mov eax, PROCESSOR_STACK_SIZE                           ; ÿ stack ??
         mul ecx                                                 ; stack_offset = STACK_SIZE * index
-        mov esp, PROCESSOR_KERNEL_ESP                           ; stack ï¿½ï¿½Öµ
+        mov esp, PROCESSOR_KERNEL_ESP                           ; stack ?
         add esp, eax  
 
-; ï¿½ï¿½ï¿½ï¿½ logical ID
+;  logical ID
         mov eax, 01000000h
         shl eax, cl
         mov [APIC_BASE + LDR], eax
  
         call extrac_x2apic_id 
         
-; ï¿½ï¿½ï¿½ï¿½ lock 
+;  lock 
         mov DWORD [20100h], 0
 
         ;*
-        ;* ï¿½ï¿½ï¿½æ·¢ï¿½ï¿½ IPIsï¿½ï¿½Ê¹ï¿½ï¿½ INIT-SIPI-SIPI ï¿½ï¿½ï¿½ï¿½
-        ;* ï¿½ï¿½ï¿½ï¿½ SIPI Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ startup routine ï¿½ï¿½Ö·Î»ï¿½ï¿½ 200000h
+        ;* ? IPIs? INIT-SIPI-SIPI 
+        ;*  SIPI ? startup routine ?? 200000h
         ;*
-        mov DWORD [APIC_BASE + ICR0], 000c4500h                ; ï¿½ï¿½ï¿½ï¿½ ,NIT IPI, Ê¹ï¿½ï¿½ï¿½ï¿½ processor Ö´ï¿½ï¿½ INIT
+        mov DWORD [APIC_BASE + ICR0], 000c4500h                ;  ,NIT IPI, ? processor ? INIT
         DELAY
         DELAY
-        mov DWORD [APIC_BASE + ICR0], 000C4620H               ; ï¿½ï¿½ï¿½ï¿½ Start-up IPI
+        mov DWORD [APIC_BASE + ICR0], 000C4620H               ;  Start-up IPI
         DELAY
-        mov DWORD [APIC_BASE + ICR0], 000C4620H                ; ï¿½Ù´Î·ï¿½ï¿½ï¿½ Start-up IPI
+        mov DWORD [APIC_BASE + ICR0], 000C4620H                ; ?? Start-up IPI
      
-        ; ï¿½ï¿½ï¿½Ð¶ï¿½
+        ; ?
         sti
         NMI_ENABLE
 
 
         ;*
-        ;* ï¿½È´ï¿½ AP ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É³ï¿½Ê¼ï¿½ï¿½
+        ;* ? AP ??
         ;*
 wait_for_done:
         cmp DWORD [ap_init_done], 1
@@ -178,21 +178,21 @@ wait_for_done:
 
 next:  
 
-;============== ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ======================
+;============== ? ======================
 
 
-;; Êµï¿½ï¿½ 18-15ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ logcal processor 1 ï¿½ï¿½ PMI ï¿½Ð¶ï¿½
+;; ? 18-15 logcal processor 1  PMI ?
 
-;  ï¿½ï¿½ï¿½ï¿½ logical processor 1 ï¿½ï¿½ IPI handler
-	mov esi, PROCESSOR1_IPI_VECTOR                                          ; ï¿½ï¿½ï¿½Í¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 1 ï¿½ï¿½ IPI ï¿½Ð¶ï¿½ vector
-	mov edi, processor1_ipi_handler                                         ; IPI ï¿½Ð¶ï¿½ handler
+;   logical processor 1  IPI handler
+	mov esi, PROCESSOR1_IPI_VECTOR                                          ; ? 1  IPI ? vector
+	mov edi, processor1_ipi_handler                                         ; IPI ? handler
 	call set_interrupt_handler
 
-	mov esi, msg0                                                           ; ï¿½ï¿½Ó¡ï¿½ï¿½Ï¢
+	mov esi, msg0                                                           ; ??
 	call puts
 
-; ï¿½ï¿½ï¿½ï¿½ IPI ï¿½ï¿½Ï¢ï¿½ï¿½ processor 1
-	mov DWORD [APIC_BASE + ICR1], 02000000h                                 ; ï¿½ï¿½ processor 1 ï¿½ï¿½ï¿½ï¿½ IPI
+;  IPI ? processor 1
+	mov DWORD [APIC_BASE + ICR1], 02000000h                                 ;  processor 1  IPI
 	mov DWORD [APIC_BASE + ICR0], LOGICAL_ID | PROCESSOR1_IPI_VECTOR        ; no shorthand, logical mode, fixed
 
         jmp $
@@ -202,29 +202,29 @@ msg0	db 'now: test preformance monitoring for logical processor 1 ...', 10, 10, 
 
 
 ;---------------------------------------
-; logical processor 1 ï¿½ï¿½ IPI handler
-; ï¿½ï¿½ï¿½ï¿½:
-;       Ê¹ï¿½ï¿½ Fixed delivery Ä£Ê½
+; logical processor 1  IPI handler
+; :
+;       ? Fixed delivery ??
 ;---------------------------------------
 processor1_ipi_handler:
-; ï¿½ï¿½ï¿½ï¿½ LVT preformance monitor ï¿½Ä´ï¿½ï¿½ï¿½
+;  LVT preformance monitor ?
         mov DWORD [APIC_BASE + LVT_PERFMON], FIXED_DELIVERY | APIC_PERFMON_VECTOR
 
-; ï¿½ï¿½ï¿½ï¿½ IA32_PERFEVTSEL0 ï¿½Ä´ï¿½ï¿½ï¿½
+;  IA32_PERFEVTSEL0 ?
         mov ecx, IA32_PERFEVTSEL0
         mov eax, INST_COUNT_EVENT
         mov edx, 0
         wrmsr
 
-; ï¿½ï¿½ï¿½ï¿½ counter ï¿½ï¿½ï¿½ï¿½Öµ        
+;  counter ?        
         mov esi, IA32_PMC0
         call write_counter_maximum
 
-; ï¿½ï¿½ï¿½ï¿½ counter
+;  counter
         ENABLE_IA32_PMC0
 
         nop
-        mov DWORD [APIC_BASE + EOI], 0                ; ï¿½ï¿½ï¿½ï¿½ EOI ï¿½ï¿½ï¿½ï¿½
+        mov DWORD [APIC_BASE + EOI], 0                ;  EOI 
         iret
 
 
@@ -236,28 +236,28 @@ apic_perfmon_handler:
 ph_msg1	db '>>> now: enter PMI handler', 10, 0
 ph_msg2 db 'exit the PMI handler <<<', 10, 0	
 do_apic_perfmon_handler:	
-        mov esi, ph_msg1                	; ï¿½ï¿½Ó¡ï¿½ï¿½Ï¢
+        mov esi, ph_msg1                	; ??
         call puts
-        call dump_apic                        ; ï¿½ï¿½Ó¡ local APICï¿½Ä´ï¿½ï¿½ï¿½ï¿½ï¿½Ï¢
+        call dump_apic                        ; ? local APIC??
 	
-; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö¾Î»
+; ??
         RESET_COUNTER_OVERFLOW
 	
         mov esi, ph_msg2
         call puts
 	
-; Ð´ EOI ï¿½ï¿½ï¿½ï¿½	
-        mov DWORD [APIC_BASE + EOI], 0	; ï¿½ï¿½ï¿½ï¿½ EOI ï¿½ï¿½ï¿½ï¿½
+; ? EOI 	
+        mov DWORD [APIC_BASE + EOI], 0	;  EOI 
         iret
 
 
 
 
-; ×ªï¿½ï¿½ long Ä£ï¿½ï¿½
+; ? long ?
         ;jmp LONG_SEG
                                 
                                 
-; ï¿½ï¿½ï¿½ï¿½ ring 3 ï¿½ï¿½ï¿½ï¿½
+;  ring 3 
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -265,7 +265,7 @@ do_apic_perfmon_handler:
         retf
 
         
-;; ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½
+;; û
 user_entry:
         mov ax, user_data32_sel
         mov ds, ax
@@ -279,14 +279,14 @@ user_start:
 %define APIC_ERROR_HANDLER
 %define AP_PROTECTED_ENTER
 
-;******** include ï¿½ï¿½ï¿½ÃµÄ´ï¿½ï¿½ï¿½ ***********
+;******** include õ? ***********
 %include "..\common\application_processor.asm"
 
         bits 32
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£ï¿½ï¿½ ********************
+;********* include ? ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -298,10 +298,10 @@ user_start:
 %include "..\lib\pic8259A.asm"
 
 
-;;************* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  *****************
+;;*************   *****************
 
-; ï¿½ï¿½ï¿½ lib32 ï¿½âµ¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ common\ Ä¿Â¼ï¿½Â£ï¿½
-; ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½ï¿½ protected.asm Ä£ï¿½ï¿½Ê¹ï¿½ï¿½
+;  lib32 ? common\ ?¼£
+; ? protected.asm ??
 
 %include "..\common\lib32_import_table.imt"
 
