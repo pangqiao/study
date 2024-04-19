@@ -134,7 +134,7 @@ exit qualification 字段的 `bits 2:0`记录 I/O 指令访问的数据大小:
 
 fast 是指硬件解码, 不用软件, 所以叫 fast
 
-Guest 在使用 in、out 指令的时候, Host 会感知. Host 中会在 arch/x86/kvm/emulate.c 中处理:
+Guest 在使用 in、out 指令的时候, Host 会感知. Host 中会在 `arch/x86/kvm/emulate.c` 中处理:
 
 ```cpp
 static int em_in(struct x86_emulate_ctxt *ctxt)
@@ -156,7 +156,7 @@ static int em_out(struct x86_emulate_ctxt *ctxt)
 }
 ```
 
-以 em\_in 为例, 它调用 pio\_in\_emulated(), 该函数定义如下(X86):
+以 `em_in` 为例, 它调用 `pio_in_emulated()`, 该函数定义如下(X86):
 
 ```cpp
 static const struct x86_emulate_ops emulate_ops = {
@@ -167,7 +167,7 @@ static const struct x86_emulate_ops emulate_ops = {
 };
 ```
 
-通过追踪 emulate\_ops 调用关系, 会发现是通过 struct kvm\_x86\_ops vmx\_x86\_ops 的 vcpu\_create 操作添加的映射
+通过追踪 `emulate_ops` 调用关系, 会发现是通过 `struct kvm_x86_ops vmx_x86_ops` 的 `vcpu_create` 操作添加的映射
 
 ```cpp
 static struct kvm_x86_ops vmx_x86_ops = {
@@ -177,7 +177,7 @@ static struct kvm_x86_ops vmx_x86_ops = {
 }
 ```
 
-通过查找 vcpu\_create 的调用关系, 发现是函数 kvm\_vm\_ioctl 的 case KVM\_CREATE\_VCPU 调用
+通过查找 `vcpu_create` 的调用关系, 发现是函数 `kvm_vm_ioctl` 的 `case KVM_CREATE_VCPU` 调用
 
 ```cpp
 static long kvm_vm_ioctl(struct file *filp,
