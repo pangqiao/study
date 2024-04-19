@@ -203,6 +203,7 @@ static long kvm_vm_ioctl(struct file *filp,
 ## 3. PIO 运行在 QEMU
 
 
+
 # 参考
 
 http://liujunming.top/2017/06/26/QEMU-KVM-I-O-%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B/ (未)
