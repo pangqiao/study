@@ -5,7 +5,7 @@
 
 这部分说明了怎么统计和追踪 KVM 模块性能事件.
 
-两种工具, `kvm_stat`和`kvm_trace`.
+两种工具, `kvm_stat` 和 `kvm_trace`.
 
 ## 跟踪 KVM 事件
 
