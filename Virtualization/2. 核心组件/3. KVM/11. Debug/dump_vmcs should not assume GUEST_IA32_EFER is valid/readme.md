@@ -7,7 +7,7 @@ David Edmondson: dump VMCS 时, 如果未设置`VM_EXIT_SAVE_IA32_EFER` 或`VM_E
 
 paolo: 打印`kvm_vcpu`中的值不可取, 可否打印整个 MSR load/store area
 
-David: 可以打印, 但是解决不了最初的问题: 如果虚拟机设置了`EFER_LMA`, 但是 host 没有使用 entry/exit control
+David: 可以打印, 但是解决不了最初的问题: 如果虚拟机设置了 `EFER_LMA`, 但是 host 没有使用 entry/exit control
 
 If the guest has EFER_LMA set but we aren't using the entry/exit
 controls, vm_read64(GUEST_IA32_EFER) returns 0, causing dump_vmcs() to
