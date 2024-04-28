@@ -13,7 +13,7 @@ PCI主桥(host bridge) 还可提供CPU和外围I/O设备之间的数据地址映
 
 ![2024-04-15-12-08-26.png](./images/2024-04-15-12-08-26.png)
 
-X86架构采用了独立的地址空间, x86使用16位地址总线(也就是64K i/o地址空间)对io设备进行寻址, 这个地址也称为i/o端口. 在Linux操作系统中, 可以通过 `/proc/ioports` 查看 系统的io端口. PCI包含三种不同的地址空间：配置、内存以及 I/O 空间. 通过 `/proc/ioports` 可以看到0cf8-0cff : PCI conf1为PCI设备的 io端口. 这8个字节实际上构成两个32位的寄存器, 第一个是"地址寄存器"0cf8, 第二个是"数据寄存器"0cff, CPU与PCI之间交互就是地址寄存器用于 配置和控制外设, 数据寄存器用于数据传输.
+X86架构采用了独立的地址空间, x86使用16位地址总线(也就是64K i/o地址空间)对io设备进行寻址, 这个地址也称为i/o端口. 在Linux操作系统中, 可以通过 `/proc/ioports` 查看 系统的io端口. PCI包含三种不同的地址空间: 配置、内存以及 I/O 空间. 通过 `/proc/ioports` 可以看到0cf8-0cff : PCI conf1为PCI设备的 io端口. 这8个字节实际上构成两个32位的寄存器, 第一个是"地址寄存器"0cf8, 第二个是"数据寄存器"0cff, CPU与PCI之间交互就是地址寄存器用于 配置和控制外设, 数据寄存器用于数据传输.
 
 ![2024-04-15-12-08-54.png](./images/2024-04-15-12-08-54.png)
 
@@ -37,7 +37,7 @@ PCI头64B是固定的PCI configuration header由两种类型header Type 0代表�
 
 **基址寄存器(BAR)**PCI设备的io地址空间和内存空间的基址, 是可选的, 当pci device需要配置时进行配置. 基址寄存器的位 0 包含的值用于标识类型. 位 0 中的值为 0 表示内存空间, 值为 1 表示 I/O 空间.
 
-下图显示了两种基址寄存器： 一种表示内存类型, 另一种表示 I/O 类型. PCI 设备最多有6个基址寄存器,
+下图显示了两种基址寄存器:  一种表示内存类型, 另一种表示 I/O 类型. PCI 设备最多有6个基址寄存器,
 
 而 PCI 桥最多有2个基址寄存器.
 
@@ -97,7 +97,7 @@ Root Complex链接CPU memory 和PCIe设备. 最多支持256 bus, 每个bus最多
 PCIe链路采用端到端的通信方式, 每一个链路只能挂接一个设备, 因此在多数情况下, 使用3位描述Device Number是多余的, 因此PCIe V2.1总线规范提出了ARI (Alternative Routing-ID Interpretation)格式, ARI格式将ID号分为两个字段, 分别为Bus号和Function号, 而不使用Device号, ARI格式如图所示.
 
 |---|---|
-|7：0|7：0|
+|7: 0|7: 0|
 |---|---|
 |Bus No. | Function No. |
 |---|---|
@@ -112,8 +112,8 @@ SR-IOV(single root I/O virtualization)
 
 PCI-SIG定义的PCIe设备的I/O虚拟化标准, 主要目标就是将单个的PCIe设备可以虚拟化为多个, 包含两个概念PF & VF
 
-- PF (Physical Function)： 包含完整的PCIe功能, 包括SR-IOV的扩张能力, 该功能用于SR-IOV的配置和管理.
-- VF (Virtual Function)： 包含轻量级的PCIe功能. 每一个VF有它自己独享的PCI配置区域, 并且可能与其他VF共享着同一个物理资源
+- PF (Physical Function):  包含完整的PCIe功能, 包括SR-IOV的扩张能力, 该功能用于SR-IOV的配置和管理.
+- VF (Virtual Function):  包含轻量级的PCIe功能. 每一个VF有它自己独享的PCI配置区域, 并且可能与其他VF共享着同一个物理资源
 
 * **其他的capabilities**
 
@@ -150,4 +150,4 @@ PCI/PCIE 总线概述(5) — PCIE 总线事务层: https://example61560.wordpres
 
 MSI 和 MSI-X 中断机制: https://example61560.wordpress.com/2016/06/30/pcipcie-%E6%80%BB%E7%BA%BF%E6%A6%82%E8%BF%B06/
 
-Linux 中断机制：硬件处理, 初始化和中断处理: http://www.10tiao.com/html/606/201808/2664605565/1.html
+Linux 中断机制: 硬件处理, 初始化和中断处理: http://www.10tiao.com/html/606/201808/2664605565/1.html
