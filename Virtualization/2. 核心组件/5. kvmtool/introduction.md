@@ -12,3 +12,5 @@ lkvm run --name BiscuitOS-kvm --cpus 2 --mem 128 --disk BiscuitOS.img --kernel b
 
 lkvm run --kernel ./vmlinuz-5.10.75-sunxi64 --disk ./ramdisk --name rzl-vm --cpus 1 --mem 512
 
+
+
