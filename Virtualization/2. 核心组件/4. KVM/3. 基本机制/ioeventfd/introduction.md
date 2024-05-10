@@ -164,9 +164,11 @@ kvm_vm_ioctl() -> (case KVM_IOEVENTFD) -> kvm_ioeventfd() -> kvm_assign_ioeventf
 
 整个 KVM 注册 ioeventfd 流程:
 
-1. 将一个 **ioeventfd** 与一个**虚拟设备** dev 联系起来
-2. 该虚拟设备 dev 拥有写函数
-3. 当 Guest 访问 ioeventfd 对应的 io 地址时, 则调用虚拟设备的 write 方法
+1) 将一个 **ioeventfd** 与一个**虚拟设备** dev 联系起来
+
+2) 该虚拟设备 dev 拥有写函数
+
+3) 当 Guest 访问 ioeventfd 对应的 io 地址时, 则调用虚拟设备的 write 方法
 
 `KVM_IOEVENTFD` ioctl **命令字**的主要功能是在 kvm 上注册这个 ioevent, **最终目的**是将 **ioevenfd 信息**添加到 **kvm 结构**的 **buses** 和 **ioeventfds** 两个成员中.
 
@@ -199,7 +201,7 @@ int kvm_ioeventfd(struct kvm *kvm, struct kvm_ioeventfd *args)
 
 ```
 
-判断 `flags` 中是否含有 KVM_IOEVENTFD_FLAG_DEASSIGN, 如果有则调用解除 io 地址和 ioeventfd 关联的函数 kvm_deassign_ioeventfd; 如果没有, 则调用将 io 地址和 ioeventfd 关联起来的函数: `kvm_assign_ioeventfd`
+判断 `flags` 中是否含有 `KVM_IOEVENTFD_FLAG_DEASSIGN`, 如果有则调用解除 io 地址和 ioeventfd 关联的函数 kvm_deassign_ioeventfd; 如果没有, 则调用将 io 地址和 ioeventfd 关联起来的函数: `kvm_assign_ioeventfd`
 
 ```cpp
 // "virt/kvm/eventfd.c"
