@@ -13,7 +13,7 @@
 # 1. 查看 NBD(Network Block Device)信息
 
 ```
-[root@localhost ~]# modinfo nbd
+# modinfo nbd
 filename:       /lib/modules/3.11.10-301.fc20.x86_64/kernel/drivers/block/nbd.ko
 license:        GPL
 description:    Network Block Device
@@ -27,23 +27,23 @@ parm:           nbds_max:number of network block devices to initialize (default:
 parm:           max_part:number of partitions per device (default: 0) (int)
 parm:           debugflags:flags for controlling debug output (int)
 
-[root@localhost ~]# modprobe nbd max_part=16
+# modprobe nbd max_part=16
 
-[root@localhost ~]# lsmod | grep nbd
+# lsmod | grep nbd
 nbd                    17554  0
 ```
 
 # 2. 将镜像映射为网络设备(NBD)
 
 ```
-[root@localhost ~]# qemu-nbd -c /dev/n
+# qemu-nbd -c /dev/n
 nbd0                nbd11               nbd14               nbd3                nbd6                nbd9                network_throughput
 nbd1                nbd12               nbd15               nbd4                nbd7                net/                null
 nbd10               nbd13               nbd2                nbd5                nbd8                network_latency     nvram
 
-[root@localhost ~]# qemu-nbd -c /dev/nbd0 /var/lib/libvirt/images/ubuntu.img
+# qemu-nbd -c /dev/nbd0 /var/lib/libvirt/images/ubuntu.img
 
-[root@localhost ~]# ll /dev/nbd0*
+# ll /dev/nbd0*
 brw-rw----. 1 root disk 43, 0 Jun 23 15:16 /dev/nbd0
 brw-rw----. 1 root disk 43, 1 Jun 23 15:16 /dev/nbd0p1
 brw-rw----. 1 root disk 43, 2 Jun 23 15:16 /dev/nbd0p2
@@ -53,8 +53,8 @@ brw-rw----. 1 root disk 43, 5 Jun 23 15:16 /dev/nbd0p5
 # 3. 挂载镜像中的分区
 
 ```
-[root@localhost ~]# mount /dev/nbd0p1 /imgage/
-[root@localhost ~]# ll /imgage/
+# mount /dev/nbd0p1 /imgage/
+# ll /imgage/
 total 92
 drwxr-xr-x.  2 root root  4096 May 27 08:53 bin
 drwxr-xr-x.  3 root root  4096 May 27 08:59 boot
@@ -83,8 +83,8 @@ lrwxrwxrwx.  1 root root    30 May 26 18:25 vmlinuz -> boot/vmlinuz-3.13.0-24-ge
 # 4. umount 分区, 解除镜像与 nbd 设备的关联
 
 ```
-[root@localhost ~]# umount /imgage
-[root@localhost ~]# qemu-nbd -d /dev/nbd0
+# umount /imgage
+# qemu-nbd -d /dev/nbd0
 /dev/nbd0 disconnected
 ```
 
