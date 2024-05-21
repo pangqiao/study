@@ -54,7 +54,7 @@ PCI头64B是固定的PCI configuration header由两种类型header Type 0代表�
 
 开启Capbility支持需要在status register中, 对应的bit设置为1. PCI设备capabilities是链表模式的.
 
-那么何谓Capabilities呢？它是PCI 2.2新加入的一个特性, 之所以加入是因为当初规定所有PCI SPEC相关的配置寄存器都要放在PCI header内, 到PCI2.2以后发现新加入的register在Configuration Header Space中放不下了, 所以引入了Capabilities List.
+那么何谓Capabilities呢? 它是PCI 2.2新加入的一个特性, 之所以加入是因为当初规定所有PCI SPEC相关的配置寄存器都要放在PCI header内, 到PCI2.2以后发现新加入的register在Configuration Header Space中放不下了, 所以引入了Capabilities List.
 
 * PCI 内存地址空间(MMIO space)
 
