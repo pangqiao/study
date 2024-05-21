@@ -228,6 +228,16 @@ alias l='ls $LS_OPTIONS -lA'
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
+
+function run() {
+    number=$1
+    shift
+    for n in $(seq $number); do
+      echo ""
+      $@
+    echo "------------ $n end ----------------"
+    done
+}
 ```
 
 # 7. 扩大根分区
