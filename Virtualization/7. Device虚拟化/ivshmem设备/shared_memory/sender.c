@@ -27,7 +27,7 @@ int main() {
         perror ("shm_open()");
         return EXIT_FAILURE;
     }
-
+    // resize
     ftruncate(fd, SIZE);
     data = (int *) mmap(0, SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
     printf("sender mapped address: %p\n", data);
