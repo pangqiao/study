@@ -34,3 +34,6 @@ linux 设备驱动 device add 详解: https://blog.csdn.net/u012787604/article/d
 内核驱动开发记录: https://blog.csdn.net/freedom1523646952/category_11767829.html
 
 在分析一个 driver 时, 最好先看这个 driver 相关的 Kconfig 及 Makefile 文件, 了解其文件架构, 再阅读相关的 source code
+
+一个简单的设备驱动的例子: `Virtualization\7. Device虚拟化\ivshmem设备\4. doorbell中断机制.md`
+
