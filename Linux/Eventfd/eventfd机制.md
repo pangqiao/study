@@ -216,7 +216,7 @@ int main(int argc, char* argv[]){
     if(pid < 0){
         printf("fork error\n");
     // 子进程
-    }else if(pid == 0){
+    } else if(pid == 0){
         while(1) {
             read_ret = eventfd_read(fd, &value);
             if(read_ret == -1){
@@ -226,7 +226,7 @@ int main(int argc, char* argv[]){
             printf("value %ld\n", value);
         }
     // 父进程本身
-    }else {
+    } else {
         while(1) {
             write_ret = eventfd_write(fd, 20);
             if(write_ret == -1){
