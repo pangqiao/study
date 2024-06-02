@@ -18,6 +18,8 @@
 - [3. QEMU](#3-qemu)
   - [3.1. 数据结构](#31-数据结构)
   - [3.2. 注册流程](#32-注册流程)
+- [QEMU 侧](#qemu-侧)
+- [KVM 侧](#kvm-侧)
 - [4. 总结](#4-总结)
 
 <!-- /code_chunk_output -->
@@ -112,7 +114,7 @@ struct kvm_ioeventfd {
 
 > evenfd(0, 0); flags 是 0, 表示 阻塞非信号量
 >
-> **阻塞非信号量**：以非信号量方式创建的 eventfd，在读 eventfd 之后，内核的计数器**归零**，下一次再读就会阻塞，除非有进程再次写 eventfd。
+> **阻塞非信号量**: 以非信号量方式创建的 eventfd, 在读 eventfd 之后, 内核的计数器**归零**, 下一次再读就会阻塞, 除非有进程再次写 eventfd.
 
 
 2) 然后将 fd 和感兴趣的**地址区间**封装成 `kvm_ioeventfd` **结构体**作为**参数**;
@@ -545,7 +547,7 @@ struct MemoryRegionIoeventfd {
 
 > evenfd(0, 0); flags 是 0, 表示 阻塞非信号量
 >
-> **阻塞非信号量**：以非信号量方式创建的 eventfd，在读 eventfd 之后，内核的计数器**归零**，下一次再读就会阻塞，除非有进程再次写 eventfd。
+> **阻塞非信号量**: 以非信号量方式创建的 eventfd, 在读 eventfd 之后, 内核的计数器**归零**, 下一次再读就会阻塞, 除非有进程再次写 eventfd.
 
 
 2) 然后将 fd 和感兴趣的**地址区间**封装成 `kvm_ioeventfd` **结构体**作为**参数**;
@@ -741,6 +743,58 @@ kvm_mem_ioeventfd_add
 ```
 
 可以看到, `kvm_mem_ioeventfd_add` 与 `kvm_io_ioeventfd_add` 的处理步骤几乎完全一样, 只是在 `kvm_ioeventfd` 结构中将 flags 置为 0, 标志这是一个 MMIO ioeventfd 注册.
+
+
+
+
+
+
+
+# QEMU 侧
+
+以 PCI 设备为例:
+
+![2024-06-02-21-36-07.png](./images/2024-06-02-21-36-07.png)
+
+* Qemu 中模拟PCI设备时, 在初始化过程中会调用memory_region_init_io来进行IO内存空间初始化, 这个过程中会绑定内存区域的回调函数集, 当Guest OS访问这个IO区域时, 可能触发这些回调函数的调用;
+
+* Guest OS中的Virtio驱动配置完成后会将状态位置上VIRTIO_CONFIG_S_DRIVER_OK, 此时Qemu中的操作函数调用virtio_pci_common_write, 并按图中的调用流逐级往下;
+
+* event_notifier_init: 完成eventfd的创建工作, 它实际上就是调用系统调用eventfd()的接口, 得到对应的文件描述符;
+
+* memory_region_add_eventfd: 为内存区域添加eventfd, 将eventfd和对应的内存区域关联起来;
+
+看一下memory_region_add_eventfd的流程:
+
+![2024-06-02-21-37-18.png](./images/2024-06-02-21-37-18.png)
+
+* 内存区域MemoryRegion中的ioeventfds成员按照地址从小到大排序, memory_region_add_eventfd函数会选择合适的位置将ioeventfds插入, 并提交更新;
+
+* 提交更新过程中最终触发回调函数kvm_mem_ioeventfd_add的执行, 这个函数指针的初始化是在Qemu进行kvm_init时, 针对不同类型的内存区域注册了对应的memory_listener用于监听变化;
+
+* kvm_vm_ioctl: 向KVM注册ioeventfd;
+
+Qemu中完成了初始化后, 任务就转移到了KVM中.
+
+# KVM 侧
+
+KVM 中的 ioeventfd注册如下:
+
+![2024-06-02-21-47-00.png](./images/2024-06-02-21-47-00.png)
+
+KVM中注册ioeventfd的核心函数为kvm_assign_ioeventfd_idx, 该函数中主要工作包括:
+
+1) 根据用户空间传递过来的fd获取到内核中对应的struct eventfd_ctx结构体上下文;
+
+2) 使用ioeventfd_ops操作函数集来初始化IO设备操作;
+
+3) 向KVM注册IO总线, 比如KVM_MMIO_BUS, 注册了一段IO地址区域, 当操作这段区域的时候出发对应的操作函数回调;
+
+当Guest OS中进行IO操作时, 触发VM异常退出, KVM进行捕获处理, 最终调用注册的ioevnetfd_write, 在该函数中调用eventfd_signal唤醒阻塞在eventfd上的任务, Qemu和KVM完成了闭环;
+
+总体效果如下图:
+
+![2024-06-02-21-47-44.png](./images/2024-06-02-21-47-44.png)
 
 # 4. 总结
 

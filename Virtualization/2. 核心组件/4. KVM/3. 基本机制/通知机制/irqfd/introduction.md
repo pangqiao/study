@@ -1,9 +1,9 @@
-
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
 - [1. 介绍](#1-介绍)
+- [综述](#综述)
 - [2. QEMU 获取 eventfd](#2-qemu-获取-eventfd)
 - [3. 向 kvm 发送注册中断 irqfd 请求](#3-向-kvm-发送注册中断-irqfd-请求)
 - [4. kvm 注册 irqfd](#4-kvm-注册-irqfd)
@@ -16,13 +16,41 @@
 
 irqfd 机制与 ioeventfd 机制类似, 其基本原理都是基于 eventfd.
 
-> Linux\Eventfd\Linux 的 eventfd 机制.md
+> Linux\Eventfd\
 
 ioeventfd 机制为 Guest 提供了向 qemu-kvm 发送通知的快捷通道, 对应地, irqfd 机制提供了 qemu-kvm 向 Guest 发送通知的快捷通道.
 
 irqfd 机制将一个 **eventfd** 与**一个全局中断号**联系起来, 当**向这个 eventfd 发送信号**时, 就会导致对应的**中断注入到虚拟机**中.
 
+# 综述
+
+Qemu 和 KVM 中的流程如下图:
+
+![2024-06-02-22-30-24.png](./images/2024-06-02-22-30-24.png)
+
+1) Qemu 中通过 `kvm_irqchip_assign_irqfd` 向 KVM 申请注册 irqfd;
+
+2) 在 KVM 中, 内核通过维护 `struct kvm_kernel_irqfd` 结构体来管理整个 irqfd 的流程;
+
+3) `kvm_irqfd_assign`:
+
+* 分配 struct kvm_kernel_irqfd 结构体, 并进行各个字段的初始化;
+
+* 初始化工作队列任务, 设置成irqfd_inject, 用于向Guest OS注入虚拟中断;
+
+* 初始化等待队列的唤醒函数, 设置成irqfd_wakeup, 当任务被唤醒时执行, 在该函数中会去调度工作任务irqfd_inject;
+
+* 初始化 pll_table pt 字段的处理函数, 设置成 irqfd_ptable_queue_proc, 该函数实际是调用 add_wait_queue 将任务添加至 eventfd 的等待队列中, 这个过程是在 vfs_poll 中完成的;
+
+4) 当 Qemu 通过 irqfd 机制发送信号时, 将唤醒睡眠在 eventfd 上的任务, 唤醒后执行 irqfd_wakeup 函数, 在该函数中调度任务, 调用 irqfd_inject 来注入中断;
+
+总体效果如下:
+
+![2024-06-02-22-34-41.png](./images/2024-06-02-22-34-41.png)
+
 # 2. QEMU 获取 eventfd
+
+> eventfd(0, 0)
 
 与 ioeventfd 类似, irqfd 在使用前必须先初始化一个 EventNotifier 对象(利用 `event_notifier_init` 函数初始化), 初始化 EventNotifier 对象完成之后获得了一个 **eventfd**.
 
@@ -45,40 +73,41 @@ static int kvm_irqchip_assign_irqfd(KVMState *s, int fd, int rfd, int virq,
         irqfd.resamplefd = rfd;
     }
 
-    if (!kvm_irqfds_enabled()) {
-        return -ENOSYS;
-    }
-
+    // 请求注册
     return kvm_vm_ioctl(s, KVM_IRQFD, &irqfd);
 }
 ```
 
-在 `kvm_irqchip_assign_irqfd` 中, 首先构造了一个 `kvm_irqfd` 结构的变量 irqfd, 其中 fd 为之前初始化的 eventfd, gsi 是**全局系统中断**, flags 中定义了是向 kvm 注册 irqfd(`flags==0`) 还是解除注册 irqfd(`KVM_IRQFD_FLAG_DEASSIGN`, 也就是 `flags==1`). flags 的 bit 1(`KVM_IRQFD_FLAG_RESAMPLE`) 表明该中断是否为**电平触发**.
+首先构造了一个 `kvm_irqfd` 结构的变量 irqfd, 其中:
+
+* fd 为之前初始化的 eventfd;
+
+* gsi 是**全局系统中断**;
+
+* flags:
+
+  * bit 0 定义了是向 kvm 注册 irqfd(0) 还是解除注册 irqfd(1); 
+  * bit 1(`KVM_IRQFD_FLAG_RESAMPLE`) 表明该中断是否为**电平触发**.
 
 `KVM_IRQFD_FLAG_RESAMPLE` 相关信息
 
 ![2022-05-24-23-00-58.png](./images/2022-05-24-23-00-58.png)
 
-当中断处于沿触发模式时, `irqfd->fd` 连接 kvm 中中断芯片(`irqchip`)的 gsi 管脚, 也由 `irqfd->fd` 负责中断的 toggle, 以及对用户空间的 handler 的触发.
+当中断处于**边沿触发**模式时, `irqfd->fd` 连接 kvm 中中断芯片(`irqchip`)的 gsi 管脚, 也由 `irqfd->fd` 负责中断的 toggle, 以及对用户空间的 handler 的触发.
 
-当中断处于电平触发模式时, 同样 `irqfd->fd` 连接 kvm 中中断芯片的 gsi 管脚, 当中断芯片收到一个 EOI(end of interrupt) 重采样信号时, gsi 进行电平翻转, 对用户空间的通知由 `irqfd->resample_fd` 完成(`resample_fd` 也是一个 eventfd).
-
-`kvm_irqchip_assign_irqfd` 最后调用 `kvm_vm_ioctl(s, KVM_IRQFD, &irqfd)`, 向 kvm 请求注册包含上面构造的 `kvm_irqfd` 信息的 irqfd.
+当中断处于**电平触发**模式时, 同样 `irqfd->fd` 连接 kvm 中中断芯片的 gsi 管脚, 当中断芯片收到一个 EOI(end of interrupt) 重采样信号时, gsi 进行电平翻转, 对用户空间的通知由 `irqfd->resample_fd` 完成(`resample_fd` 也是一个 eventfd).
 
 # 4. kvm 注册 irqfd
 
-收到 `ioctl(KVM_IRQFD)` 之后, kvm 首先获取传入的数据结构 `kvm_irqfd` 的信息, 然后调用 `kvm_irqfd` 函数.
+收到 `ioctl(KVM_IRQFD)` 之后, kvm 调用 `kvm_irqfd` 函数.
 
 ```cpp
-	case KVM_IRQFD: {
-		struct kvm_irqfd data;
-
-		r = -EFAULT;
-		if (copy_from_user(&data, argp, sizeof(data)))
-			goto out;
-		r = kvm_irqfd(kvm, &data);
-		break;
-	}
+    case KVM_IRQFD: {
+        struct kvm_irqfd data;
+        ...
+        r = kvm_irqfd(kvm, &data);
+        break;
+    }
 ```
 
 在 `kvm_irqfd` 中, 首先分辨传入的 `kvm_irqfd` 结构中的 flags 的 `bit 0` 要求的是进行 irqfd 注册还是解除 irqfd 的注册. 如果是前者, 则调用 `kvm_irqfd_assign`.
@@ -86,13 +115,14 @@ static int kvm_irqchip_assign_irqfd(KVMState *s, int fd, int rfd, int virq,
 ```cpp
 kvm_irqfd(struct kvm *kvm, struct kvm_irqfd *args)
 {
-	if (args->flags & ~(KVM_IRQFD_FLAG_DEASSIGN | KVM_IRQFD_FLAG_RESAMPLE))
-		return -EINVAL;
-
-	if (args->flags & KVM_IRQFD_FLAG_DEASSIGN)
-		return kvm_irqfd_deassign(kvm, args);
-
-	return kvm_irqfd_assign(kvm, args);
+    // 
+    if (args->flags & ~(KVM_IRQFD_FLAG_DEASSIGN | KVM_IRQFD_FLAG_RESAMPLE))
+        return -EINVAL;
+    // 解除注册
+    if (args->flags & KVM_IRQFD_FLAG_DEASSIGN)
+        return kvm_irqfd_deassign(kvm, args);
+    // 注册
+    return kvm_irqfd_assign(kvm, args);
 }
 ```
 
