@@ -10,10 +10,11 @@
   - [eventfd 的创建](#eventfd-的创建)
   - [eventfd 的写](#eventfd-的写)
   - [eventfd 的读](#eventfd-的读)
-  - [简单例子1](#简单例子1)
-  - [例子2](#例子2)
-- [3.1. 创建 eventfd](#31-创建-eventfd)
-    - [3.1.1. 系统调用的定义](#311-系统调用的定义)
+  - [示例一](#示例一)
+  - [例子二](#例子二)
+  - [例子三](#例子三)
+- [3.1. 内核实现](#31-内核实现)
+  - [3.1.1. 系统调用的定义](#311-系统调用的定义)
   - [3.2. eventfd_ctx](#32-eventfd_ctx)
     - [3.2.1. count 和 wqh](#321-count-和-wqh)
     - [3.2.2. kref](#322-kref)
@@ -52,13 +53,13 @@ eventfd 可用来实现**线程**或者**父子进程间**通信, **内核**通�
 
 * 内核通过写该 fd 通知用户程序.
 
-其核心实现是在**内核空间**维护一个**计数器**, 向**用户空间**暴露一个与之关联的**匿名 fd**. 进程可以通过对这个文件描述符进行 `read/write` 来读取/改变计数器的值, 从而实现进程间通信.
+其核心实现是在**内核空间**维护一个**计数器**, 向**用户空间**暴露一个与之关联的**匿名 fd**. 进程可以通过对这个文件描述符进行 `read/write` 来**读取/改变计数器的值**, 从而实现进程间通信.
 
 # 2. 用法
 
 eventfd 机制接口简单, 核心只有 4 个, 分别是创建 eventfd(eventfd), 写 eventfd(write), 读 eventfd(read), 监听 eventfd(poll/select).
 
-linux-gnu 提供的方法:
+`linux-gnu` 提供的方法:
 
 ## eventfd 的创建
 
@@ -76,7 +77,7 @@ linux-gnu 提供的方法:
 extern int eventfd (unsigned int __count, int __flags) __THROW;
 ```
 
-参数 `__count`: 创建 eventfd 时初始值;
+参数 `__count`: 创建 eventfd 时**初始值**;
 
 参数 `__flags`: eventfd 文件描述符的标志, 有下面三个:
 
@@ -99,15 +100,21 @@ enum
 
 * `EFD_SEMAPHORE`: 表示 eventfd 作为**一个信号量**来使用
 
-* `EFD_CLOEXEC`: 表示 eventfd 在 exec 其他程序时会自动关闭这个文件描述符
+* `EFD_CLOEXEC`: 与 open 接口的 O_CLOEXEC 选项一样, 表示 eventfd 在 exec 其他程序时会自动关闭这个文件描述符
 
-* `EFD_NONBLOCK`: 表示 eventfd **非阻塞**
+* `EFD_NONBLOCK`: 表示 eventfd **非阻塞**, 将影响read/write的调用结果
 
-返回值: 成功时, 返回一个非负整数的文件描述符, 失败时, 返回-1
+也就是说 0 是 **阻塞非信号量**
+
+返回值: 成功时, 返回一个非负整数的文件描述符, 失败时, 返回 -1
 
 ## eventfd 的写
 
-通过 `eventfd_write` 来进行写入操作, 函数定义如下
+通过 `write` 添加 8 字节的数值到计数器中，最大为 `MAX_U64 - 1`.
+
+如果超出上限，**阻塞选项**下将**一直阻塞**直到计数器的值被 read 走为止，**非阻塞**选项下将会返回失败并抛 `errno = EAGAIN`。
+
+也可通过 `eventfd_write` 来进行写入操作, 函数定义如下
 
 ```cpp
 // 使用时引用
@@ -122,15 +129,23 @@ typedef uint64_t eventfd_t;
 extern int eventfd_read (int __fd, eventfd_t *__value);
 ```
 
-参数 `__fd`：是 eventfd 函数创建返回的文件描述符
+参数 `__fd`: 是 eventfd 函数创建返回的文件描述符
 
-参数 `__value`：要写入的值
+参数 `__value`: 要写入的值
 
-返回值：0表示成功, -1表示失败
+返回值: 0 表示成功, -1 表示失败
 
 ## eventfd 的读
 
-通过 eventfd_read 来进行读操作, 函数定义如下
+`read` 接口使用要求按 8 字节进行输入（u64的大小），否则抛 EINVAL 错误.
+
+* 如果**没有**设置 `EFD_SEMAPHORE`，read 接口表示从 eventfd 计数器读取 8 字节数据，**数据值**为**计数器现有的值**，读取完成后**计数器将被重置成 0**.
+
+* 如果设置 `EFD_SEMAPHORE`，read 接口 表示从 eventfd 计数器读取8字节数据，**数据值**为 **1**，读取完成后**计数器减一**操作.
+
+当**计数器**为 **0** 的时候，如果设置了**阻塞选项**，read 调用将一直**阻塞**直到计数器变为**非 0** 状态，如果是**非阻塞**选项下，将会返回失败并抛errno=EAGAIN。
+
+也可通过 `eventfd_read` 来进行读操作, 函数定义如下
 
 ```cpp
 // 使用时引用
@@ -147,7 +162,173 @@ extern int eventfd_write (int __fd, eventfd_t __value);
 
 和写入操作差不多, 不过 `__value` 是我们提前分配好, 把内存地址传过去.
 
-## 简单例子1
+
+## 示例一
+
+```cpp
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/eventfd.h>
+#include <pthread.h>
+#include <unistd.h>
+
+int efd;
+
+void *threadFunc()
+{
+    uint64_t buffer;
+    int rc;
+    int i = 0;
+    while(i++ < 2) {
+        /* 如果计数器非 0, read 成功, buffer 返回计数器值. 成功后有两种行为: 信号量方式计数器每次减, 其它每次清 0.
+         * 如果计数器 0, read 失败, 由两种返回方式: EFD_NONBLOCK 方式会阻塞, 反之返回 EAGAIN
+         */
+        rc = read(efd, &buffer, sizeof(buffer));
+
+        if (rc == 8) {
+            printf("notify success, eventfd counter = %lu\n", buffer);
+        } else {
+            perror("read");
+        }
+    }
+}
+
+static void
+open_eventfd(unsigned int initval, int flags)
+{
+    efd = eventfd(initval, flags);
+    if (efd == -1) {
+        perror("eventfd");
+    }
+}
+
+static void
+close_eventfd(int fd)
+{
+    close(fd);
+}
+
+/* counter 表示写 eventfd 的次数, 每次写入值为 2 */
+static void test(int counter)
+{
+    int rc;
+    pthread_t tid;
+    void *status;
+    int i = 0;
+    uint64_t buf = 2;
+
+    /* create thread */
+    if(pthread_create(&tid, NULL, threadFunc, NULL) < 0){
+        perror("pthread_create");
+    }
+
+    while(i++ < counter){
+        rc = write(efd, &buf, sizeof(buf));
+        printf("signal to subscriber success, value = %lu\n", buf);
+
+        if(rc != 8){
+            perror("write");
+        }
+        sleep(2);
+    }
+    // 等待 tid 结束
+    pthread_join(tid, &status);
+}
+
+int main()
+{
+    unsigned int initval;
+
+    printf("NON-SEMAPHORE BLOCK way\n");
+    /* 初始值为 4,  flags 为 0, 默认 blocking 方式读取 eventfd */
+    initval = 4;
+    open_eventfd(initval, 0);
+    printf("init counter = %lu\n", initval);
+
+    test(2);
+
+    close_eventfd(efd);
+
+    printf("change to SEMAPHORE way\n");
+
+    /* 初始值为 4,  信号量方式维护 counter */
+    initval = 4;
+    open_eventfd(initval, EFD_SEMAPHORE);
+    printf("init counter = %lu\n", initval);
+
+    test(2);
+
+    close_eventfd(efd);
+
+    printf("change to NONBLOCK way\n");
+
+    /* 初始值为 4,  NONBLOCK 方式读 eventfd */
+    initval = 4;
+    open_eventfd(initval, EFD_NONBLOCK);
+    printf("init counter = %lu\n", initval);
+
+    test(2);
+
+    close_eventfd(efd);
+
+    return 0;
+}
+```
+
+demo 中创建 eventfd 使用了三种方式, 分别如下:
+
+1) **阻塞非信号量**：以非信号量方式创建的 eventfd，在读 eventfd 之后，内核的计数器**归零**，下一次再读就会阻塞，除非有进程再次写 eventfd。
+
+```
+NON-SEMAPHORE BLOCK way
+init counter = 4
+signal to subscriber success, value = 2
+notify success, eventfd counter = 6
+signal to subscriber success, value = 2
+notify success, eventfd counter = 2
+```
+
+* 内核计数器初始值为4，主线程第 1 次写入 2，计数器增至 6
+
+* 读线程返回 6，之后计数器清 0，读线程阻塞
+
+* 下一次主线程写入 2，计数器增至 2，读线程返回 2
+
+2) **阻塞信号量**：以信号量方式创建的 eventfd，在读 eventfd 之后，内核的计数器**减 1**
+
+```
+change to SEMAPHORE way
+init counter = 4
+signal to subscriber success, value = 2
+notify success, eventfd counter = 1
+notify success, eventfd counter = 1
+signal to subscriber success, value = 2
+```
+
+* 内核计数器初始值为 4，主线程第一次写入 2，**计数器**增至 **6**
+
+* **读**线程**返回 1**，计数器减 1 变成 5，读线程循环读返回 1，计数器再减 1 变成 4
+
+* 主线程写入 2 计数器增至 6
+
+3) **非阻塞非信号量**：读 eventfd 之后，计数器清 0，再次读 eventfd 返回 EAGAIN
+
+```
+change to NONBLOCK way
+init counter = 4
+signal to subscriber success, value = 2
+notify success, eventfd counter = 6
+read: Resource temporarily unavailable
+signal to subscriber success, value = 2
+```
+
+* 内核计数器初始值为 4，主线程第一次写入 2，计数器增至 6
+
+* 读线程返回 6，**计数器清 0**，读线程循环非阻塞读返回错误码 EAGAIN
+
+* 主线程写入 2 计数器增至 2
+
+## 例子二
 
 实现写入和读取的基本操作
 
@@ -190,7 +371,7 @@ int main(int argc, char* argv[]) {
 
 使用 `eventfd_read` 进行读取, **读完后**在进行**读操作**会**阻塞**直到**新的数据写入**. 当设置 flags 为 `EFD_NONBLOCK`, 在进行读取才操作会直接返回失败, 不会阻塞.
 
-## 例子2
+## 例子三
 
 **父进程**每隔 1 秒**写**入一次数据, **子进程**读取数据
 
@@ -263,134 +444,9 @@ root       25561  0.0  0.0   2776   960 pts/1    S+   01:04   0:00  |           
 eventfd_test(25560)───eventfd_test(25561)
 ```
 
+# 3.1. 内核实现
 
-
-
-
-
-
-
-
-```cpp
-#include <stdio.h>
-#include <stdlib.h>
-#include <sys/eventfd.h>
-#include <pthread.h>
-#include <unistd.h>
-
-int efd;
-
-void *threadFunc()
-{
-    uint64_t buffer;
-    int rc;
-    int i = 0;
-    while(i++ < 2) {
-        /* 如果计数器非 0, read 成功, buffer 返回计数器值. 成功后有两种行为: 信号量方式计数器每次减, 其它每次清 0.
-         * 如果计数器 0, read 失败, 由两种返回方式: EFD_NONBLOCK 方式会阻塞, 反之返回 EAGAIN
-         */
-        rc = read(efd, &buffer, sizeof(buffer));
-
-        if (rc == 8) {
-            printf("notify success, eventfd counter = %lu\n", buffer);
-        } else {
-            perror("read");
-        }
-    }
-}
-
-static void
-open_eventfd(unsigned int initval, int flags)
-{
-    efd = eventfd(initval, flags);
-    if (efd == -1) {
-        perror("eventfd");
-    }
-}
-
-static void
-close_eventfd(int fd)
-{
-    close(fd);
-}
-/* counter 表示写 eventfd 的次数, 每次写入值为 2 */
-static void test(int counter)
-{
-    int rc;
-    pthread_t tid;
-    void *status;
-    int i = 0;
-    uint64_t buf = 2;
-
-    /* create thread */
-    if(pthread_create(&tid, NULL, threadFunc, NULL) < 0){
-        perror("pthread_create");
-    }
-
-    while(i++ < counter){
-        rc = write(efd, &buf, sizeof(buf));
-        printf("signal to subscriber success, value = %lu\n", buf);
-
-        if(rc != 8){
-            perror("write");
-        }
-        sleep(2);
-    }
-
-    pthread_join(tid, &status);
-}
-
-int main()
-{
-    unsigned int initval;
-
-    printf("NON-SEMAPHORE BLOCK way\n");
-    /* 初始值为 4,  flags 为 0, 默认 blocking 方式读取 eventfd */
-    initval = 4;
-    open_eventfd(initval, 0);
-    printf("init counter = %lu\n", initval);
-
-    test(2);
-
-    close_eventfd(efd);
-
-    printf("change to SEMAPHORE way\n");
-
-    /* 初始值为 4,  信号量方式维护 counter */
-    initval = 4;
-    open_eventfd(initval, EFD_SEMAPHORE);
-    printf("init counter = %lu\n", initval);
-
-    test(2);
-
-    close_eventfd(efd);
-
-    printf("change to NONBLOCK way\n");
-
-    /* 初始值为 4,  NONBLOCK 方式读 eventfd */
-    initval = 4;
-    open_eventfd(initval, EFD_NONBLOCK);
-    printf("init counter = %lu\n", initval);
-
-    test(2);
-
-    close_eventfd(efd);
-
-    return 0;
-}
-```
-
-demo 中创建 eventfd 使用了三种方式, 分别如下:
-
-```
-
-```
-
-# 3.1. 创建 eventfd
-
-`int eventfd(unsigned int initval, int flags)`: 创建一个 eventfd, 它的返回值是一个文件 fd, 可以读写. 该接口传入一个初始值 initval 用于内核初始化计数器, flags 用于控制返回的 eventfd 的 read 行为. flags 如果包含 EFD_NONBLOCK, read eventfd 将不会阻塞, 如果包含 EFD_SEMAPHORE, read eventfd 每次读之后内核计数器都减 1.
-
-### 3.1.1. 系统调用的定义
+## 3.1.1. 系统调用的定义
 
 内核定义了 2 种 eventfd **相关的系统调用**, 分别为 `eventfd` 和 `eventfd2`, 二者的区别在于, eventfd 系统调用的 flags 参数为 0.
 
@@ -570,9 +626,9 @@ Poll(查询) eventfd 动作由 `eventfd_poll` 函数提供支持, 该函数中�
 
 从上面的 eventfd 操作方法可以看出有两种通知方案:
 
-1. 进程 poll eventfd 的 POLLIN 事件, 如果在某个时间点, 其它进程或内核向 eventfd 写入一个值, 即可让 poll eventfd 的进程返回.
+1. 进程 poll eventfd 的 **POLLIN** 事件, 如果在某个时间点, **其它**进程或内核向 eventfd **写入**一个值, 即可让 poll eventfd 的进程返回.
 
-2. 进程 poll eventfd 的 POLLOUT 事件, 如果在某个时间点, 其它进程或内核读取 eventfd, 即可让 poll eventfd 的进程返回.
+2. 进程 poll eventfd 的 **POLLOUT** 事件, 如果在某个时间点, **其它**进程或内核**读取** eventfd, 即可让 poll eventfd 的进程返回.
 
 Linux 内核使用第一种通知方案, 即进程 poll eventfd 的 POLLIN 事件, Linux 提供了功能与 `eventfd_write` 类似的 `eventfd_signal` 函数, 用于触发对 poll eventfd 的进程的通知.
 
@@ -586,3 +642,5 @@ source: https://www.cnblogs.com/haiyonghao/p/14440737.html
 IDA 原理: https://biscuitos.github.io/blog/IDA/
 
 eventfd——用法与原理(有 demo): https://blog.csdn.net/huang987246510/article/details/103751172 (none)
+
+内核实现: https://blog.csdn.net/huang987246510/article/details/103751172 (todo)

@@ -4,7 +4,7 @@
 <!-- code_chunk_output -->
 
 - [1. 介绍](#1-介绍)
-- [2. QEMU 注册 irqfd](#2-qemu-注册-irqfd)
+- [2. QEMU 获取 eventfd](#2-qemu-获取-eventfd)
 - [3. 向 kvm 发送注册中断 irqfd 请求](#3-向-kvm-发送注册中断-irqfd-请求)
 - [4. kvm 注册 irqfd](#4-kvm-注册-irqfd)
 - [5. 总结](#5-总结)
@@ -20,11 +20,11 @@ irqfd 机制与 ioeventfd 机制类似, 其基本原理都是基于 eventfd.
 
 ioeventfd 机制为 Guest 提供了向 qemu-kvm 发送通知的快捷通道, 对应地, irqfd 机制提供了 qemu-kvm 向 Guest 发送通知的快捷通道.
 
-irqfd 机制将一个 eventfd 与一个全局中断号联系起来, 当向这个 eventfd 发送信号时, 就会导致对应的中断注入到虚拟机中.
+irqfd 机制将一个 **eventfd** 与**一个全局中断号**联系起来, 当**向这个 eventfd 发送信号**时, 就会导致对应的**中断注入到虚拟机**中.
 
-# 2. QEMU 注册 irqfd
+# 2. QEMU 获取 eventfd
 
-与 ioeventfd 类似, irqfd 在使用前必须先初始化一个 EventNotifier 对象(利用 `event_notifier_init` 函数初始化), 初始化 EventNotifier 对象完成之后获得了一个 eventfd.
+与 ioeventfd 类似, irqfd 在使用前必须先初始化一个 EventNotifier 对象(利用 `event_notifier_init` 函数初始化), 初始化 EventNotifier 对象完成之后获得了一个 **eventfd**.
 
 # 3. 向 kvm 发送注册中断 irqfd 请求
 
