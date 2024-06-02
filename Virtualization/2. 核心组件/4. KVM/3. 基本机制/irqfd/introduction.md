@@ -53,7 +53,7 @@ static int kvm_irqchip_assign_irqfd(KVMState *s, int fd, int rfd, int virq,
 }
 ```
 
-在 `kvm_irqchip_assign_irqfd` 中, 首先构造了一个 `kvm_irqfd` 结构的变量 irqfd, 其中 fd 为之前初始化的 eventfd, gsi 是全局系统中断, flags 中定义了是向 kvm 注册 irqfd(`flags==0`) 还是解除注册 irqfd(`KVM_IRQFD_FLAG_DEASSIGN`, 也就是 `flags==1`). flags 的 bit 1(`KVM_IRQFD_FLAG_RESAMPLE`) 表明该中断是否为电平触发.
+在 `kvm_irqchip_assign_irqfd` 中, 首先构造了一个 `kvm_irqfd` 结构的变量 irqfd, 其中 fd 为之前初始化的 eventfd, gsi 是**全局系统中断**, flags 中定义了是向 kvm 注册 irqfd(`flags==0`) 还是解除注册 irqfd(`KVM_IRQFD_FLAG_DEASSIGN`, 也就是 `flags==1`). flags 的 bit 1(`KVM_IRQFD_FLAG_RESAMPLE`) 表明该中断是否为**电平触发**.
 
 `KVM_IRQFD_FLAG_RESAMPLE` 相关信息
 
