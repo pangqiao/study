@@ -108,11 +108,7 @@ static int kvm_irqchip_assign_irqfd(KVMState *s, int fd, int rfd, int virq,
         r = kvm_irqfd(kvm, &data);
         break;
     }
-```
 
-在 `kvm_irqfd` 中, 首先分辨传入的 `kvm_irqfd` 结构中的 flags 的 `bit 0` 要求的是进行 irqfd 注册还是解除 irqfd 的注册. 如果是前者, 则调用 `kvm_irqfd_assign`.
-
-```cpp
 kvm_irqfd(struct kvm *kvm, struct kvm_irqfd *args)
 {
     // 
@@ -143,7 +139,7 @@ INIT_WORK(&irqfd->shutdown, irqfd_shutdown);
 seqcount_init(&irqfd->irq_entry_sc);
 ```
 
-`kvm_kernel_irqfd` 结构中有 2 个 `work_struct`, inject 和 shutdown, 分别负责触发中断和关闭中断, 这两个 `work_struct` 各自对应的操作函数分别为 `irqfd_inject` 和 `irqfd_shutdown`.
+`kvm_kernel_irqfd` 结构中有 2 个 `work_struct`, inject 和 shutdown, 分别负责**触发中断**和**关闭中断**, 这两个 `work_struct` 各自对应的操作函数分别为 `irqfd_inject` 和 `irqfd_shutdown`.
 
 ```cpp
 /*
