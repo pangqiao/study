@@ -10,3 +10,5 @@ https://wiki.qemu.org/Features/VirtioVsock
 
 vhost前后端(vhost_net/virtio_net)转发流程详解: http://blog.chinaunix.net/uid-28541347-id-5864269.html
 
+KVM VHOST中irqfd的使用: https://www.cnblogs.com/ck1020/p/8310284.html
+
