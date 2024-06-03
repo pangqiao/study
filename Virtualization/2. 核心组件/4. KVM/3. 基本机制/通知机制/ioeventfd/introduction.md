@@ -665,20 +665,27 @@ void memory_region_add_eventfd(MemoryRegion *mr,
 }
 ```
 
-* 函数参数如下:
-  * mr: 指 IO 地址所在的 MemoryRegion
-  * addr: 表示 IO 地址(GPA)
-  * size: 表示 IO 地址的大小
-  * match_data: bool 值, 表示的是 Guest 向 addr 写入的值是否要与参数 data 完全一致才让 KVM 走 ioeventfd 路径, 如果 `match_data` 为 true, 那么需要完全一致才让 KVM 走 ioeventfd 路径, 如果为 false. 则不需要完全一致.
-  * data: 与 `match_data` 共同作用, 用于限制 Guest 向 addr 写入的值
-  * e: 指前面注册的 EventNotifier
-* 4: 封装地址信息
-* 5: 寻找本次要处理的 ioeventfd 应该在 ioeventfd 数组中的什么位置
-* 6: 分配原 ioeventfd 数组大小 +1 的空间, 用于将新的 ioeventfd 插入到 ioeventfd 数组中
-* 7: 将第一步找到的位置之后的 ioeventfd 从 ioeventfd 数组中后移一位
-* 8: 将新的 ioeventfd 插入到 MemoryRegion 的 ioeventfds 数组中
-* 9: 设置 `ioeventfd_update_pending`
-* 9: 检查根 MR 下面的每个子 MR, 搜集所有的 ioeventfd, 统一注册
+函数参数如下:
+* mr: 指 IO 地址所在的 MemoryRegion
+* addr: 表示 IO 地址(GPA)
+* size: 表示 IO 地址的大小
+* match_data: bool 值, 表示的是 Guest 向 addr 写入的值是否要与参数 data 完全一致才让 KVM 走 ioeventfd 路径, 如果 `match_data` 为 true, 那么需要完全一致才让 KVM 走 ioeventfd 路径, 如果为 false. 则不需要完全一致.
+* data: 与 `match_data` 共同作用, 用于限制 Guest 向 addr 写入的值
+* e: 指前面注册的 EventNotifier
+
+4: 封装地址信息
+
+5: 寻找本次要处理的 ioeventfd 应该在 ioeventfd 数组中的什么位置
+
+6: 分配原 ioeventfd 数组大小 +1 的空间, 用于将新的 ioeventfd 插入到 ioeventfd 数组中
+
+7: 将第一步找到的位置之后的 ioeventfd 从 ioeventfd 数组中后移一位
+
+8: 将新的 ioeventfd 插入到 MemoryRegion 的 ioeventfds 数组中
+
+9: 设置 `ioeventfd_update_pending`
+
+9: 检查根 MR 下面的每个子 MR, 搜集所有的 ioeventfd, 统一注册
 
 MemoryRegion 中有很多 ioeventfd, 他们**以地址从小到大的顺序**排列, `ioeventfd_nb` 是 MemoryRegion 中 ioeventfd 的数量, 通过 for 循环找到本次要添加的 ioeventfd 应该放在 ioeventfd 数组中的什么位置, 为 ioeventfd 数组分配 `原大小+sizeof(ioeventfd)` 的空间, 然后将之前找到的 ioeventfd 数组中位置之后的 ioeventfd 向后移动一个位置, 然后将新的 ioeventfd 插入到 ioeventfd 数组中. 最后设置 ioevetfd_update_pending 标志, 调用 `memory_region_transaction_commit` 更新 KVM 中的 ioeventfd 布局.
 
