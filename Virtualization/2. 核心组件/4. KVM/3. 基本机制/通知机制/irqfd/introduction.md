@@ -34,15 +34,15 @@ Qemu 和 KVM 中的流程如下图:
 
 3) `kvm_irqfd_assign`:
 
-* 分配 struct kvm_kernel_irqfd 结构体, 并进行各个字段的初始化;
+* 分配 `struct kvm_kernel_irqfd` 结构体, 并进行各个字段的初始化;
 
-* 初始化工作队列任务, 设置成irqfd_inject, 用于向Guest OS注入虚拟中断;
+* 初始化**工作队列任务**, 设置成 `irqfd_inject`, 用于向 Guest OS 注入虚拟中断;
 
-* 初始化等待队列的唤醒函数, 设置成irqfd_wakeup, 当任务被唤醒时执行, 在该函数中会去调度工作任务irqfd_inject;
+* 初始化**等待队列**的唤醒函数, 设置成 `irqfd_wakeup`, 当**任务被唤醒**时执行, 在该函数中会去**调度工作任务** `irqfd_inject`;
 
-* 初始化 pll_table pt 字段的处理函数, 设置成 irqfd_ptable_queue_proc, 该函数实际是调用 add_wait_queue 将任务添加至 eventfd 的等待队列中, 这个过程是在 vfs_poll 中完成的;
+* 初始化 `struct poll_table pt` 字段的处理函数, 设置成 `irqfd_ptable_queue_proc`, 该函数实际是调用 `add_wait_queue` 将**任务**添加至 `eventfd` 的**等待队列**中, 这个过程是在 `vfs_poll` 中完成的;
 
-4) 当 Qemu 通过 irqfd 机制发送信号时, 将唤醒睡眠在 eventfd 上的任务, 唤醒后执行 irqfd_wakeup 函数, 在该函数中调度任务, 调用 irqfd_inject 来注入中断;
+4) 当 **Qemu** 通过 irqfd 机制**发送信号**时, 将唤醒睡眠在 eventfd 上的任务, 唤醒后执行 `irqfd_wakeup` 函数, 在该函数中调度任务, 调用 `irqfd_inject` 来注入中断;
 
 总体效果如下:
 
@@ -150,9 +150,9 @@ init_waitqueue_func_entry(&irqfd->wait, irqfd_wakeup);
 init_poll_funcptr(&irqfd->pt, irqfd_ptable_queue_proc);
 ```
 
-`kvm_irq_assign` 调用 `init_waitqueue_func_entry` 将 `irqfd_wakeup` 函数注册为 irqfd 中等待队列 entry 激活时的处理函数. 这样任何写入该 irqfd 对应的 eventfd 的行为都将导致触发这个函数.
+调用 `init_waitqueue_func_entry` 将 `irqfd_wakeup` 函数注册为 irqfd 中等待队列 entry 激活时的处理函数. 这样任何写入该 irqfd 对应的 eventfd 的行为都将导致**触发这个函数**.
 
-然后 `kvm_irq_assign` 利用 `init_poll_funcptr` 将 `irqfd_ptable_queue_proc` 函数注册为 irqfd 中的 poll table 的处理函数. `irqfd_ptable_queue_proc` 会将 poll table 中对应的 wait queue entry 加入到 waitqueue 中去.
+利用 `init_poll_funcptr` 将 `irqfd_ptable_queue_proc` 函数注册为 irqfd 中的 poll table 的处理函数. `irqfd_ptable_queue_proc` 会将 poll table 中对应的 wait queue entry 加入到 waitqueue 中去.
 
 `kvm_irq_assign` 接着判断该 eventfd 是否已经被其它中断使用.
 
@@ -167,7 +167,7 @@ list_for_each_entry(tmp, &kvm->irqfds.items, list) {
 }
 ```
 
-`kvm_irq_assign` 以 `irqfd->pt` 为参数, 调用 eventfd 的 poll 函数, 也就是 `eventfd_poll`, 后者会调用 `poll_wait` 函数, 也就是之前为 poll table 注册的 `irqfd_ptable_queue_proc` 函数. `irqfd_ptable_queue_proc` 将 `irqfd->wait` 加入到了 eventfd 的 wqh 等待队列中. 这样, 当有其它进程或者内核对 eventfd 进行 write 时, 就会导致 eventfd 的 wqh 等待队列上的对象函数得到执行, 也就是 `irqfd_wakeup` 函数.
+`kvm_irq_assign` 以 `irqfd->pt` 为参数, 调用 eventfd 的 poll 函数, 也就是 `eventfd_poll`, 后者会调用 `poll_wait` 函数, 也就是之前为 poll table 注册的 `irqfd_ptable_queue_proc` 函数. `irqfd_ptable_queue_proc` 将 `irqfd->wait` 加入到了 eventfd 的 wqh **等待队列**中. 这样, 当有其它进程或者内核对 eventfd 进行 write 时, 就会导致 eventfd 的 wqh 等待队列上的对象函数得到执行, 也就是 `irqfd_wakeup` 函数.
 
 这里只讨论有数据, 即 flgas 中的 `EPOLLIN` 置位时, 会调用 `kvm_arch_set_irq_inatomic` 进行中断注入.
 
