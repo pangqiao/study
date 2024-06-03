@@ -797,7 +797,7 @@ KVM中注册ioeventfd的核心函数为kvm_assign_ioeventfd_idx, 该函数中主
 
 3) 向KVM注册IO总线, 比如KVM_MMIO_BUS, 注册了一段IO地址区域, 当操作这段区域的时候出发对应的操作函数回调;
 
-当Guest OS中进行IO操作时, 触发VM异常退出, KVM进行捕获处理, 最终调用注册的ioevnetfd_write, 在该函数中调用eventfd_signal唤醒阻塞在eventfd上的任务, Qemu和KVM完成了闭环;
+当Guest OS中进行IO操作时, 触发VM异常退出, KVM进行捕获处理, 最终调用注册的ioevnetfd_write, 在该函数中调用 eventfd_signal 唤醒阻塞在eventfd上的任务, Qemu和KVM完成了闭环;
 
 总体效果如下图:
 
