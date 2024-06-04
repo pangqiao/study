@@ -781,6 +781,17 @@ kvm_mem_ioeventfd_add
 
 * kvm_vm_ioctl: 向KVM注册ioeventfd;
 
+
+`Virtualization\2. 核心组件\3. QEMU\3. 基本机制\1. 事件循环机制\2. QEMU中的事件循环机制.md`
+
+qemu_main_loop -> main_loop_wait -> os_host_main_loop_wait ->
+
+* `glib_pollfds_fill()`, 收集所有需要监听的 fd
+
+* `qemu_poll_ns()`, 监听所有文件的事件
+
+* `glib_pollfds_poll()`, 事件的分发处理
+
 Qemu中完成了初始化后, 任务就转移到了KVM中.
 
 # KVM 侧
@@ -815,5 +826,9 @@ KVM中注册ioeventfd的核心函数为kvm_assign_ioeventfd_idx, 该函数中主
 6) VMEXIT 到 KVM
 7) 调用虚拟设备的 write 方法
 8) write 方法中检查本次 OUT 类指令访问的 IO 地址和范围是否符合 ioeventfd 设置的要求
-9) 如果符合则调用 eventfd_signal 触发一次 POLLIN 事件并返回 Guest
+9) 如果符合则调用 eventfd_signal 触发一次 POLLIN 事件并返回 QEMU
 10) QEMU 监测到 ioeventfd 上出现了 POLLIN, 则调用相应的处理函数处理 IO
+
+
+
+
