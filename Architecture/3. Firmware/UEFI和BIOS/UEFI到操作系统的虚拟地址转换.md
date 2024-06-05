@@ -69,11 +69,11 @@ X86 体系架构对虚拟地址的支持有一个发展过程, 最早在 8086 �
 
 这里尤其要注意的是:
 
-1)如果一个新地址指向了结构体, 而结构体内还有指针成员又指向了一个新地址, 那指向结构体的指针和成员指针都要修正;
+1) 如果一个新地址指向了结构体, 而结构体内还有指针成员又指向了一个新地址, 那指向结构体的指针和成员指针都要修正;
 
-2)不要重复修正同一个指针. 比如, 一个动态分配的结构体里包含了指针, 而这个结构体被多个 UEFI Runtime 驱动共享, 那么每个驱动需要修正它指向该结构体的指针, 但必须且只能有一个驱动修正该结构体内部的指针. 为了防止出错, 建议尽量避免这样的 UEFI Runtime 数据共享方式.
+2) 不要重复修正同一个指针. 比如, 一个动态分配的结构体里包含了指针, 而这个结构体被多个 UEFI Runtime 驱动共享, 那么每个驱动需要修正它指向该结构体的指针, 但必须且只能有一个驱动修正该结构体内部的指针. 为了防止出错, 建议尽量避免这样的 UEFI Runtime 数据共享方式.
 
-3)每段被修正的地址都必须具备 Runtime 属性. 这对于使用 EfiRuntimeServicesCode, EfiRuntimeServicesData 类型分配获取的内存是自然成立的. 但对于常数地址, 比如 Memory Mapped IO 地址, 需要采取特殊方法. 这可以先用 gDS->GetMemorySpaceDescriptor (BaseAddress, &MemorySpaceDescriptor); 取得这段地址的属性(Attributes), 然后 Attributes = MemorySpaceDescriptor.Attributes | EFI\_MEMORY\_RUNTIME; 最后用 gDS->SetMemorySpaceAttributes (..);  把 Runtime 属性设置回去. 请注意考察 MemorySpaceDescriptor 的 BaseAddress 和 Length 是否覆盖了所需要的地址范围, 如果不是, 需要对多段地址进行 Runtime 属性设置, 直到所需地址范围被覆盖. 相关函数的详细说明, 请参阅 UEFI Platform Initialization Specification.
+3) 每段被修正的地址都必须具备 Runtime 属性. 这对于使用 EfiRuntimeServicesCode, EfiRuntimeServicesData 类型分配获取的内存是自然成立的. 但对于常数地址, 比如 Memory Mapped IO 地址, 需要采取特殊方法. 这可以先用 gDS->GetMemorySpaceDescriptor (BaseAddress, &MemorySpaceDescriptor); 取得这段地址的属性(Attributes), 然后 Attributes = MemorySpaceDescriptor.Attributes | EFI\_MEMORY\_RUNTIME; 最后用 gDS->SetMemorySpaceAttributes (..);  把 Runtime 属性设置回去. 请注意考察 MemorySpaceDescriptor 的 BaseAddress 和 Length 是否覆盖了所需要的地址范围, 如果不是, 需要对多段地址进行 Runtime 属性设置, 直到所需地址范围被覆盖. 相关函数的详细说明, 请参阅 UEFI Platform Initialization Specification.
 
 地址转换的时间点如下图:
 
