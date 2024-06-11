@@ -109,7 +109,7 @@ static int(*const kvm_vmx_exit_handlers[])(struct kvm_vcpu *vcpu) = {
 在这里, 我们要注意kvm_vmx_exit_handlers[exit_reason](vcpu)的返回值, 比如当实际调用handle_ept_violation()时返回值大于0, 就直接切回客户模式. 但是有时候可能需要Qemu的协助. 在实际调用(r = kvm_x86_ops->handle_exit(vcpu);)时, 返回值大于0, 那么就说明KVM已经处理完成, 可以再次切换进客户模式, 但如果返回值小于等于0, 那就说明需要Qemu的协助, KVM会在run结构体中的exit_reason中记录退出原因, 并进入到Qemu中进行处理. 这个判断过程是在 `__vcpu_run()` 函数中进行的, 实际是一个while循环. 
 
 ```
-static int__vcpu_run(struct kvm_vcpu *vcpu)  
+static int __vcpu_run(struct kvm_vcpu *vcpu)  
 {  
          ......//省略部分代码  
          r = 1;  
@@ -142,7 +142,7 @@ trace_kvm_userspace_exit(vcpu->run->exit_reason, r);
 
 Qemu层这时候读取到ioctl的返回值, 然后继续执行, 就会判断有没有KVM的异常注入, 这里其实我在前一篇文章中简单提及了一下. 
 
-```
+```cpp
 int kvm_cpu_exec(CPUArchState *env)  
 {  
     .......  
