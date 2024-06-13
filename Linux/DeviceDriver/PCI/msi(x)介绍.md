@@ -199,7 +199,7 @@ https://blog.csdn.net/linjiasen/article/details/105858038
 
 ---
 
-PCI Local Bus Specification的Section 6.8.2描述了MSI-X性能和表结构。MSI-X性能结构指向MSI-X Table结构和MSI-X Pending Bit Array (PBA)寄存器。**BIOS** 设置**起始地址偏移**和与指向MSI-X Table和PBA寄存器的起始地址的指针相关联的BAR。
+PCI Local Bus Specification的Section 6.8.2描述了MSI-X性能和表结构. MSI-X性能结构指向MSI-X Table结构和MSI-X Pending Bit Array (PBA)寄存器. **BIOS** 设置**起始地址偏移**和与指向MSI-X Table和PBA寄存器的起始地址的指针相关联的BAR. 
 
 MSI-X中断组件:
 
@@ -207,11 +207,11 @@ MSI-X中断组件:
 
 1) 主机软件按照以下步骤设置Application Layer中的MSI-X中断:
 
-a. 主机软件**读取** 0x050 寄存器上的 Message Control 寄存器以确定 MSI-X Table 大小。表入口(table entry)的数量是`<value read> + 1`。
+a. 主机软件**读取** 0x050 寄存器上的 Message Control 寄存器以确定 MSI-X Table 大小. 表入口(table entry)的数量是`<value read> + 1`. 
 
-最大表格尺寸为2048个入口。每个16字节入口分为4个字段，如下图所示。对于多功能类型(variant)，BAR4访问MSI-X表。对于所有其他类型(variant)，任何BAR都可以访问MSI-X表。 MSI-X表的基地址必须与4 KB边界对齐。
+最大表格尺寸为2048个入口. 每个16字节入口分为4个字段，如下图所示. 对于多功能类型(variant)，BAR4访问MSI-X表. 对于所有其他类型(variant)，任何BAR都可以访问MSI-X表.  MSI-X表的基地址必须与4 KB边界对齐. 
 
-b. 主机**设置 MSI-X 表**。它为每个入口编程 MSI-X 地址，数据和掩码比特，如下图所示。
+b. 主机**设置 MSI-X 表**. 它为每个入口编程 MSI-X 地址，数据和掩码比特，如下图所示. 
 
 ![2024-06-04-12-37-31.png](./images/2024-06-04-12-37-31.png)
 
@@ -223,9 +223,9 @@ nth_address = base address[BAR] + 16<n>
 
 2) 当Application Layer有一个中断，它会驱动一个中断请求到IRQ Source模块.
 
-3) IRQ Source设 置 MSI-X PBA 表中的相应比特。
+3) IRQ Source设 置 MSI-X PBA 表中的相应比特. 
 
-PBA 可以使用 qword 或者 dword 访问。对于 qword 访问，IRQ Source 使用下面的公式计算 `<m^th>` 比特的地址:
+PBA 可以使用 qword 或者 dword 访问. 对于 qword 访问，IRQ Source 使用下面的公式计算 `<m^th>` 比特的地址:
 
 ```
 qword address = <PBA base addr> + 8(floor(<m>/64))
@@ -238,6 +238,6 @@ qword bit = <m> mod 64
 
 a. 如果中断被 MSI-X 表的 Vector_Control 域屏蔽，那么中断保持在未决状态.
 
-b. 如果中断没有被屏蔽，那么 IRQ Processor 发送 Memory Write Request 到 TX 从接口。它使用 MSI-X 表中的地址和数据。如果 Message Upper Address = 0，那么 IRQ Processor 将创建一个 three-dword header。如果 Message Upper Address > 0 ，那么它将创建一个 4-dword header。
+b. 如果中断没有被屏蔽，那么 IRQ Processor 发送 Memory Write Request 到 TX 从接口. 它使用 MSI-X 表中的地址和数据. 如果 Message Upper Address = 0，那么 IRQ Processor 将创建一个 three-dword header. 如果 Message Upper Address > 0 ，那么它将创建一个 4-dword header. 
 
 5) 主机中断服务程序将 TLP 检测为中断并对其服务
