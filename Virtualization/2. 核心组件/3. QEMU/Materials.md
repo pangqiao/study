@@ -54,3 +54,8 @@ qemu-参数解析:
 
 使用 QEMU 监视器管理虚拟机: https://documentation.suse.com/zh-cn/sles/15-SP2/html/SLES-all/cha-qemu-monitor.html
 
+
+
+
+qemu 系统分析之实例: https://david921518.blog.csdn.net/category_12640473_2.html
+
