@@ -9,6 +9,7 @@
   - [2.2. qemu-nbd 方式](#22-qemu-nbd-方式)
 - [3. 开启 root 的 ssh 登录](#3-开启-root-的-ssh-登录)
 - [4. 暂时启动 guest](#4-暂时启动-guest)
+- [获取 ip](#获取-ip)
 - [5. 修改 default.target](#5-修改-defaulttarget)
 - [6. 基本设置](#6-基本设置)
 - [7. 扩大根分区](#7-扩大根分区)
@@ -172,6 +173,28 @@ sudo /usr/local/bin/qemu-system-x86_64 -name ubuntu -accel kvm -cpu host,-xsave,
 如果 host 上支持 virtio, 可以使用下面命令
 
 > /usr/local/bin/qemu-system-x86_64 -name ubuntu-hirsute --enable-kvm -cpu host -smp 4,sockets=1,cores=2,threads=2 -m 3G -device piix3-usb-uhci,id=usb,bus=pci.0,addr=0x1.0x2 -drive file=./debian-10.12.2-20220419-openstack-amd64.qcow2,if=none,id=drive-virtio-disk1,format=qcow2,cache=none -device virtio-blk-pci,scsi=off,bus=pci.0,addr=0x3,drive=drive-virtio-disk1,id=virtio-disk1,bootindex=1 -netdev user,id=hostnet0 -device rtl8139,netdev=hostnet0,id=net0,mac=52:54:00:36:32:aa,bus=pci.0,addr=0x5 -nographic -full-screen
+
+# 获取 ip
+
+新建或者修改 /etc/netplan/XXX.yaml
+
+```
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens5:
+      dhcp4: true
+      dhcp6: true
+```
+
+然后执行
+
+```
+netplan apply
+```
+
+apt install net-tools isc-dhcp-client
 
 
 # 5. 修改 default.target
