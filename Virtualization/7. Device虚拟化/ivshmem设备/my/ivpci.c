@@ -2,6 +2,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/version.h>
+#include <linux/delay.h>
 #include <linux/err.h>
 #include <linux/fs.h>
 #include <linux/mm.h>
@@ -31,6 +32,18 @@
 static int g_max_devices = 2;
 MODULE_PARM_DESC(g_max_devices, "number of devices can be supported");
 module_param(g_max_devices, int, 0400);
+
+static unsigned long g_interrupts= 0;
+MODULE_PARM_DESC(g_interrupts, "number of interrupts");
+module_param(g_interrupts, ulong, 0600);
+
+static unsigned long interrupts_1time = 1;
+MODULE_PARM_DESC(interrupts_1time, "trigger number of interrupts one time");
+module_param(interrupts_1time, ulong, 0600);
+
+static unsigned long itr_delay = 0;
+MODULE_PARM_DESC(itr_delay, "trigger delay(us) of interrupts");
+module_param(itr_delay, ulong, 0600);
 
 struct ivpci_private {
     struct pci_dev      *dev;
@@ -308,7 +321,7 @@ static ssize_t ivpci_read(struct file *filp, char *buffer, size_t len,
 
 static long ivpci_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
-    int ret;
+    int ret, i;
     struct ivpci_private *ivpci_dev;
     u16 ivposition;
     u16 vector;
@@ -330,7 +343,12 @@ static long ivpci_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
         dev_info(&ivpci_dev->dev->dev,
                 PFX "ring doorbell: value: %u(0x%x), vector: %u, peer id: %u\n",
                 value, value, vector, ivposition);
-        writel(value & 0xffffffff, ivpci_dev->regs_addr + DOORBELL_OFF);
+        for (i = 0; i < interrupts_1time; i++) {
+            if (itr_delay)
+                udelay(itr_delay);
+            writel(value & 0xffffffff, ivpci_dev->regs_addr + DOORBELL_OFF);
+            g_interrupts++;
+        }
         break;
 
     case IOCTL_WAIT:
