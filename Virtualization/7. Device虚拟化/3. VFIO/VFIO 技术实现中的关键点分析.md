@@ -401,8 +401,7 @@ static int vfio_msix_setup (VFIOPCIDevice *vdev, int pos, Error **errp)
 
 看代码的时候一直没明白设备中断绑定的 irqfd 是在什么时候注册的, 从代码上看不是中断 enable 时候. 后来结合代码调试才明白, 原来中断 enable 时候将设备的 MSI/MSI-X BAR 空间映射用 MMIO 方式注册给了虚拟机 (参考 msix_init, msi_init 函数实现), 当虚拟机内部第一次访问 MSI-X Table BAR 空间的 MMIO 时会退出到用户态完成 irqfd 的注册, 调用堆栈为:
 
-```
-Copy
+```cpp
 #0  kvm_irqchip_assign_irqfd
 #1   in kvm_irqchip_add_irqfd_notifier_gsi
 #2   in vfio_add_kvm_msi_virq
