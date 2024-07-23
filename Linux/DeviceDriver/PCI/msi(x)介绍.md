@@ -23,7 +23,7 @@ MSI中断本质上是一个memory write, memory write的地址就是设备配置
 
 打个比方, 如果一个PCIe设备需要使用4个中断请求时, 如果使用MSI机制时, Message Data的 `[2:0]` 字段可以为0b000~0b011, 因此可以发送4种中断请求, 但是这4种中断请求的Message Data字段必须连续. 在许多中断控制器中, Message Data字段连续也意味着中断控制器需要为这个PCIe设备分配4个连续的中断向量号.
 
-有时在一个中断控制器中, 虽然具有4个以上的中断向量号, 但是很难保证这些中断向量号是连续的. 因此中断控制器将无法为这些PCIe设备分配足够的中断请求, 此时该设备的“Multiple Message Enable”字段将小于“Multiple Message Capable”. MSI-X为了解决上面的问题才出现的.
+有时在一个中断控制器中, 虽然具有4个以上的中断向量号, 但是很难保证这些中断向量号是连续的. 因此中断控制器将无法为这些PCIe设备分配足够的中断请求, 此时该设备的"Multiple Message Enable"字段将小于"Multiple Message Capable". MSI-X为了解决上面的问题才出现的.
 
 注意: 早期的linux的X86架构下是不支持Multiple Message的. (后面的linux X86代码改正了这个问题)
 
