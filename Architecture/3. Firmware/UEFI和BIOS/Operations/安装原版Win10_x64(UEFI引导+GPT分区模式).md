@@ -14,7 +14,9 @@
 # 1. 工具准备
 
 1. win10 64 位系统镜像文件
+
 2. **8G**的 U 盘一个, 格式化为**FAT32**(**UEFI**已具备**文件系统**的支持, 它能够**直接读取 FAT 分区中的文件**). 然后将 **win10 原版镜像**解压后**复制其中的所有文件到 U 盘根目录**. 确保 EFI 引导文件位于 `/efi/boot/bootx64.efi`. 也可制作 EFI 引导(1.1 内容)
+
 3. 电脑支持 UEFI 启动
 
 ## 1.1. U 盘安装盘制作(可选)
@@ -34,29 +36,32 @@ https://www.baiyunxitong.com/jiaocheng/7081.html
 进入 BIOS 进行如下设置:
 
 1. Secure Boot 设为 Disable [禁用启动安全检查]
+
 2. OS Optimized 设置为 Others 或 Disabled [系统类型设置]
+
 3. CSM(Compatibility Support Module) Support 设置为 Yes 或 Enabled
+
 4. UEFI/Legacy Boot 选项选择成 UEFI only
 
 # 3. 安装 Win10
 
-1. 重启电脑, U 盘引导系统进入 Win10 安装程序
+1) 重启电脑, U 盘引导系统进入 Win10 安装程序
 
 ![config](./images/28.png)
 
-2. 进行设置, 下一步
+2) 进行设置, 下一步
 
 ![config](./images/40.png)
 
-3. 版本选择, 自定义选择, 进入分区选择界面.
+3) 版本选择, 自定义选择, 进入分区选择界面.
 
 ![config](./images/30.png)
 
 ![config](./images/31.png)
 
-4. 如果你的**电脑硬盘已经为 GPT 分区结构**, 那么**直接选择目标分区**, 将其格式化, 然后选中目标分区点下一步即可.
+4) 如果你的**电脑硬盘已经为 GPT 分区结构**, 那么**直接选择目标分区**, 将其格式化, 然后选中目标分区点下一步即可.
 
-5. 如果你的硬盘为**MBR 分区结构**, 会看到只能安装到 GPT 的提示, 如下图, 是因为原来的硬盘是 MBR 的, 而 UEFI 下, 系统只能安装到 GPT 分区的磁盘上.
+5) 如果你的硬盘为**MBR 分区结构**, 会看到只能安装到 GPT 的提示, 如下图, 是因为原来的硬盘是 MBR 的, 而 UEFI 下, 系统只能安装到 GPT 分区的磁盘上.
 
 ![config](./images/39.png)
 
@@ -106,7 +111,7 @@ https://www.baiyunxitong.com/jiaocheng/7081.html
 
 已经转化为 GPT 模式了, 我们再连续输入两次 EXIT 退出
 
-6. 当磁盘为 GPT 分区后, 我们就**可以选中主分区**进行安装
+6) 当磁盘为 GPT 分区后, 我们就**可以选中主分区**进行安装
 
 ![config](./images/36.png)
 
@@ -114,7 +119,7 @@ https://www.baiyunxitong.com/jiaocheng/7081.html
 
 ▲此后, Win10 安装程序要至少重启两次, 耐心等待 30 分钟左右将进入后续设置
 
-6. 接下来就是下一步, 直到完成.
+6) 接下来就是下一步, 直到完成.
 
 # 4. 参考
 
