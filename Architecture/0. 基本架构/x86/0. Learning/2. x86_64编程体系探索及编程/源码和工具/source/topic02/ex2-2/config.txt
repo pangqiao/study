@@ -3,7 +3,7 @@
 #
 # example:
 # 
-#模块名       offset   输出文件名    offset   count(1 count = 512 bytes）
+#模块名       offset   输出文件名    offset   count(1 count = 512 bytes)
 #-------------------------------------------------
 # boot,		0,	demo.img,	0,	1
 # setup,	0,	demo.img,	1,	2
@@ -27,6 +27,6 @@ setup,0,c.img,1,4
 setup,0,demo.img,1,4
 ..\..\lib\lib16,0,demo.img,20,2
 
-#### 注意：请查看自己的 U盘挂接点名字，替换 \\.\g: ####
+#### 注意：请查看自己的 U盘挂接点名字, 替换 \\.\g: ####
 ######## 下面将 c.img 写入 U 盘 ######
 c.img,0,\\.\g:,0,200

@@ -3,7 +3,7 @@
 #
 # example:
 # 
-#模块名       offset   输出文件名    offset   count(1 count = 512 bytes）
+#模块名       offset   输出文件名    offset   count(1 count = 512 bytes)
 #-------------------------------------------------
 # boot,		0,	demo.img,	0,	1
 # setup,	0,	demo.img,	1,	2
@@ -30,5 +30,5 @@ setup,0,demo.img,20,4
 c.img,0,\\.\g:,0,200
 
 ###
-# 注意：当使用 merge 写入U盘不成功时，可以使用 Hex 类编辑软件进行合并
+# 注意：当使用 merge 写入U盘不成功时, 可以使用 Hex 类编辑软件进行合并
 ###
