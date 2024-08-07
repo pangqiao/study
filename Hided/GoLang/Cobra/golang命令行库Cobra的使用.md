@@ -952,7 +952,7 @@ Echo: a
 
 # 10. help命令
 
-当你的**程序有子命令**时, Cobra 会**自动给你程序添加help命令**. 当你运行‘app help’, 会调用help命令. 另外, help同样支持其它输入命令. 例如, 你有一个没有任何其它配置的命令叫‘create’, 当你调用‘app help create’ Corbra 将会起作用. 
+当你的**程序有子命令**时, Cobra 会**自动给你程序添加help命令**. 当你运行'app help', 会调用help命令. 另外, help同样支持其它输入命令. 例如, 你有一个没有任何其它配置的命令叫'create', 当你调用'app help create' Corbra 将会起作用. 
 
 ## 10.1. 例子
 

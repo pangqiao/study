@@ -449,13 +449,13 @@ ps 参数太多, 具体使用方法可以参考 man ps, 常用的方法: ps aux 
 杀掉某一程序的方法:
 
 ```
-ps aux | grep mysqld | grep –v grep | awk ‘{print $2 }’ xargs kill -9
+ps aux | grep mysqld | grep –v grep | awk '{print $2 }' xargs kill -9
 ```
 
 杀掉僵尸进程:
 
 ```
-ps –eal | awk ‘{if ($2 == "Z"){print $4}}’ | xargs kill -9
+ps –eal | awk '{if ($2 == "Z"){print $4}}' | xargs kill -9
 ```
 
 ## 2.11. strace -- 跟踪程序执行过程中系统调用及收到的信号

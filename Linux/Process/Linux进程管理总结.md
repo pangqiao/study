@@ -615,7 +615,7 @@ struct task_struct{
 
 内核 scheduler 在进程 context switching 的时候, 会**根据 tsk\->mm**判断即将调度的进程是**用户进程**还是**内核线程**.
 
-但是虽然**thread thread**不用访问**用户进程地址空间**, 但是**仍然需要 page table**来访问**kernel 自己的空间**. 但是幸运的是, 对于**任何用户进程**来说, 他们的**内核空间都是 100%相同**的, 所以内核可以’borrow'上一个被调用的**用户进程的 mm 中的页表**来访问**内核地址**, 这个 mm 就记录在 active\_mm.
+但是虽然**thread thread**不用访问**用户进程地址空间**, 但是**仍然需要 page table**来访问**kernel 自己的空间**. 但是幸运的是, 对于**任何用户进程**来说, 他们的**内核空间都是 100%相同**的, 所以内核可以'borrow'上一个被调用的**用户进程的 mm 中的页表**来访问**内核地址**, 这个 mm 就记录在 active\_mm.
 
 简而言之就是, 对于 kernel thread,tsk\->mm == NULL 表示自己内核线程的身份, 而 tsk\->active\_mm 是借用上一个用户进程的 mm, 用 mm 的 page table 来访问内核空间. 对于**用户进程**, tsk\->mm == tsk\->active\_mm.
 

@@ -84,7 +84,7 @@ packet then 0 will be returned and so the packet would be rejected.
 
 A just in time (JIT) compiler was introduced into kernel [2] in 2011 to
 speed up BPF bytecode execution. This compiler translates BPF bytecode into
-host system’s assembly code. Such compiler exists for x86_64, SPARC,
+host system's assembly code. Such compiler exists for x86_64, SPARC,
 PowerPC, ARM, ARM64, MIPS and s390 and can be enabled through
 CONFIG_BPF_JIT.
 
@@ -97,7 +97,7 @@ eBPF has both backward as well as forward jump, and so we can have a loop.
 Of Course kernel takes care that loop still terminates properly. It also
 includes global data store which is called maps, and this maps state
 persist between events, therefore eBPF can be also used for aggregating
-statistics of events. Further, an eBPF program can be written in ‘C’ like
+statistics of events. Further, an eBPF program can be written in 'C' like
 functions, which can be compiled using GCC/LLVM compiler. eBPF has been
 designed to be JITed with one to one mapping,  so a very optimized code
 having performance as fast as natively compiled code can be generated.
@@ -153,7 +153,7 @@ One can see `man bpf` for detail about the different possible arguments.
 Here, I am providing summary of those arguments.
 
 	*cmd* can be any of the defined enum bpf_cmd, which tells kernel
-	mainly about management of map area (like it’s creation, updating,
+	mainly about management of map area (like it's creation, updating,
 	deleting or finding an element within it etc), attaching or detaching
 	a program etc.
 
@@ -216,7 +216,7 @@ commands like BPF_MAP_LOOKUP_ELEM, BPF_MAP_UPDATE_ELEM, BPF_MAP_DELETE_ELEM
 or BPF_MAP_GET_NEXT_KEY. These map manipulation command accepts an
 attribute with map_fd, key and value.
 
-Now lets lookup some code which can explain it’s working. See the exmaple
+Now lets lookup some code which can explain it's working. See the exmaple
 code here: https://github.com/pratyushanand/learn-bpf
 
 Above code is a standalone ebpf demo code which does not need any other

@@ -249,13 +249,13 @@ Assembly、C/C\+\+、Python、Web
 
 ## 6.1. Architecture 层级:
 
-An architecture is a hierarchical aggregation of source code units (entities). An architecture can be user created or automatically generated. Architectures need not be complete (that is, an architecture’s flattened expansion need not reference every source entity in the database), nor unique (that is, an architecture’s flattened expansion need not maintain the set property).
+An architecture is a hierarchical aggregation of source code units (entities). An architecture can be user created or automatically generated. Architectures need not be complete (that is, an architecture's flattened expansion need not reference every source entity in the database), nor unique (that is, an architecture's flattened expansion need not maintain the set property).
 
 层级表示代码单元(或者实体)组成的层次结构, 可以由用户手动创建, 也可由本软件自动生成. 一个层级可以不完整(例如一个层级的扁平化扩展有可能不会关联数据库中的所有代码实体), 也可能不唯一(扁平化扩展的层级可能不会处理其预设属性). 
 
 ## 6.2. Database 数据库
 
-The database is where the results of the source code analysis, as well as project settings, are stored. By default, this is a project’s ".udb" file.
+The database is where the results of the source code analysis, as well as project settings, are stored. By default, this is a project's ".udb" file.
 
 代码经分析后产生的中间结果, 以及工程设置保存在数据库, 其缺省扩展名为".udb". 
 
@@ -280,7 +280,7 @@ A particular way that entities relate to one another. The names of relationships
 
 ## 6.6. Script 脚本
 
-Generally a Perl script. These can be run from within Understand’s GUI, or externally via the "uperl" command. The Understand Perl API provides easy and direct access to all information stored in an Understand database.
+Generally a Perl script. These can be run from within Understand's GUI, or externally via the "uperl" command. The Understand Perl API provides easy and direct access to all information stored in an Understand database.
 通常指 perl 脚本, 脚本可以通过 Understand 2.5 的图形用户界面或者外部的脚本命令执行. Understand Perl API 提供了快捷的访问 Understand 数据库所有信息的接口. 
 
 ## 6.7. parts 部件

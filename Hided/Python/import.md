@@ -190,9 +190,9 @@ in a
 
 具体来说就是: 
 
-(1) 初始时, 在a中存在a.test变量, 它指向一个整数对象‘2’
+(1) 初始时, 在a中存在a.test变量, 它指向一个整数对象'2'
 
-(2) 在执行b.py时, from a import * 的执行, 相当于引入了一个新的变量名b.test, b.test = a.test, 这时, b.test和a.test都指向整数对象‘2’
+(2) 在执行b.py时, from a import * 的执行, 相当于引入了一个新的变量名b.test, b.test = a.test, 这时, b.test和a.test都指向整数对象'2'
 
 (3) 之后的赋值操作(test = 3), 使得b.test = 3, 使得b.test指向了整数对象'3', 而a.test仍指向整数对象'2'
 

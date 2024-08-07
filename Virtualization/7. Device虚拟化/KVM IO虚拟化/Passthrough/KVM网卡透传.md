@@ -218,14 +218,14 @@ kvm -name centos7 -smp 4 -m 8192 \
 
 注意最后两个参数:
 
-- ‘-net none’: 告诉 qemu 不用模拟网卡设备
-- ‘-device pci-assign,host=0000:08:00.0’: 直接指定一个 pci 设备, 对应的地址为宿主机上 pci 地址 0000:08:00.0
+- '-net none': 告诉 qemu 不用模拟网卡设备
+- '-device pci-assign,host=0000:08:00.0': 直接指定一个 pci 设备, 对应的地址为宿主机上 pci 地址 0000:08:00.0
 
 执行上面命令, 我这里出现一个错误:
 ```
 kvm: -device pci-assign,host=0000:08:00.0: No IOMMU found. Unable to assign device "(null)"
 kvm: -device pci-assign,host=0000:08:00.0: Device initialization failed.
-kvm: -device pci-assign,host=0000:08:00.0: Device ‘kvm-pci-assign’ could not be initialized
+kvm: -device pci-assign,host=0000:08:00.0: Device 'kvm-pci-assign' could not be initialized
 ```
 
 然后我前面的配置都 ok 啊, 经过搜索, 问题在于最新的内核里, 已建议废除 KVM_ASSIGN 机制, 而只支持 vfio, 我这里查看 CentOS 7 的内核编译选项也果真如此:

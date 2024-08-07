@@ -3,13 +3,13 @@
 
 <!-- code_chunk_output -->
 
-* [0 概述](#0-概述)
-* [1 Region](#1-region)
-* [2 availability zone](#2-availability-zone)
-* [3 Aggregate Hosts](#3-aggregate-hosts)
-* [4 Availability Zones和Host Aggregate的关系图](#4-availability-zones和host-aggregate的关系图)
-* [5 例子](#5-例子)
-* [参考](#参考)
+- [0 概述](#0-概述)
+- [1 Region](#1-region)
+- [2 availability zone](#2-availability-zone)
+- [3 Aggregate Hosts](#3-aggregate-hosts)
+- [4 Availability Zones和Host Aggregate的关系图](#4-availability-zones和host-aggregate的关系图)
+- [5 例子](#5-例子)
+- [参考](#参考)
 
 <!-- /code_chunk_output -->
 
@@ -76,9 +76,9 @@ Host aggregate可以用来进一步细分availability zone.
 
 通过以上分析, 问题就来了: availability zone和host aggregate都能对host machine进行划分, 那么二者的区别是啥?
 
-Availability zones are handy for allowing users to specify a particular group of servers on which they want their host to run, but beyond that they don’t do much more than serve as a bucket. In this example, using an availability zone, our users can specify that a VM should be started up in the Chicago data center.
+Availability zones are handy for allowing users to specify a particular group of servers on which they want their host to run, but beyond that they don't do much more than serve as a bucket. In this example, using an availability zone, our users can specify that a VM should be started up in the Chicago data center.
 
-Host aggregates, on the other hand, serve as an intelligent way for schedulers to know where to place VM’s based on some sort of characteristic. In this example, we might want to enable users to easily boot their most mission-critical VMs on servers that are administered by Joe, rather than leaving them to fate.
+Host aggregates, on the other hand, serve as an intelligent way for schedulers to know where to place VM's based on some sort of characteristic. In this example, we might want to enable users to easily boot their most mission-critical VMs on servers that are administered by Joe, rather than leaving them to fate.
 
 综上所述: az是用户可见的, 用户手动的来指定vm运行在哪些host上; Host aggregate是一种更智能的方式, 是调度器可见的, 影响调度策略的一个表达式. 
 
@@ -96,12 +96,12 @@ Host aggregates can be regarded as a mechanism to further partition an availabil
 
 Availability Zones (AZs)
 
-Availability Zones are the end-user visible logical abstraction for partitioning a cloud without knowing the physical infrastructure. That abstraction doesn’t come up in Nova with an actual database model since the availability zone is actually a specific metadata information attached to an aggregate. Adding that specific metadata to an aggregate makes the aggregate visible from an end-user perspective and consequently allows to schedule upon a specific set of hosts (the ones belonging to the aggregate).
+Availability Zones are the end-user visible logical abstraction for partitioning a cloud without knowing the physical infrastructure. That abstraction doesn't come up in Nova with an actual database model since the availability zone is actually a specific metadata information attached to an aggregate. Adding that specific metadata to an aggregate makes the aggregate visible from an end-user perspective and consequently allows to schedule upon a specific set of hosts (the ones belonging to the aggregate).
 
 That said, there are a few rules to know that diverge from an API perspective between aggregates and availability zones:
 
 - one host can be in multiple aggregates, but it can only be in one availability zone
-- by default a host is part of a default availability zone even if it doesn’t belong to an aggregate (the configuration option is named default_availability_zone)
+- by default a host is part of a default availability zone even if it doesn't belong to an aggregate (the configuration option is named default_availability_zone)
 
 理解: Availability Zones可以理解为将一个aggregate加了一些metadata信息, 使得对用户可见. 他和Aggregate最主要的区别是, 一个节点只能属于一个AZ, 默认一个主机属于一个默认的AZ. 
 

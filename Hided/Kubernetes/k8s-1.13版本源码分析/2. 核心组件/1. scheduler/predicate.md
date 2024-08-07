@@ -273,11 +273,11 @@ var (
 
 |Position                  | Predicate                        | comments (note, justification...)              |
 | ----------------- | ---------------------------- | ------------------|
-| 1 | `CheckNodeConditionPredicate`  | we really don’t want to check predicates against unschedulable nodes. |
+| 1 | `CheckNodeConditionPredicate`  | we really don't want to check predicates against unschedulable nodes. |
 | 2           | `PodFitsHost`            | we check the pod.spec.nodeName. |
 | 3           | `PodFitsHostPorts` | we check ports asked on the spec. |
 | 4 | `PodMatchNodeSelector`            | check node label after narrowing search. |
-| 5           | `PodFitsResources `            | this one comes here since it’s not restrictive enough as we do not try to match values but ranges. |
+| 5           | `PodFitsResources `            | this one comes here since it's not restrictive enough as we do not try to match values but ranges. |
 | 6           | `NoDiskConflict` | Following the resource predicate, we check disk |
 | 7 | `PodToleratesNodeTaints`           | check toleration here, as node might have toleration |
 | 8          | `PodToleratesNodeNoExecuteTaints`            | check toleration here, as node might have toleration |
@@ -286,8 +286,8 @@ var (
 | 11           | `MaxPDVolumeCountPredicate `            | - |
 | 12           | `VolumeNodePredicate ` | - |
 | 13 | `VolumeZonePredicate `            | - |
-| 14           | `CheckNodeMemoryPressurePredicate`            | doesn’t happen often |
-| 15           | `CheckNodeDiskPressurePredicate` | doesn’t happen often |
+| 14           | `CheckNodeMemoryPressurePredicate`            | doesn't happen often |
+| 15           | `CheckNodeDiskPressurePredicate` | doesn't happen often |
 | 16 | `InterPodAffinityMatches`            | Most expensive predicate to compute |
 
 这个表格大家对着字面意思体会一下吧, 基本还是可以联想到意义的. 

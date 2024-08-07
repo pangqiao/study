@@ -13,7 +13,7 @@
 - [Sandy Bridge](#sandy-bridge)
 - [Haswell](#haswell)
 - [Skylake](#skylake)
-- [What’s new!](#whats-new)
+- [What's new!](#whats-new)
 - [参考](#参考)
 
 <!-- /code_chunk_output -->
@@ -242,7 +242,7 @@ Skylake 优化版的下一代是 Kaby Lake 即七代 Core i 系列. 相比 Skyla
 
 Kaby Lake 继续优化到了 Coffee Lake 八代 Core i 系列. 这个系列的 i3 提到了 4 核 i5、i7 都从 6 核开始起步然后继续提升主频各种优化等等.
 
-# What’s new!
+# What's new!
 
 话说 Kaby Lake 和 Coffee Lake 这个时代 Intel 又推出了新的 Core i 系列命名为 Core i9 第一代的桌面版 Core i9 是 Skylake 架构(Skylake-X)第一代笔记本版 i9 是 Coffee Lake 架构.
 

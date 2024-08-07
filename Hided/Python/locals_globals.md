@@ -113,7 +113,7 @@ inner
 来自于python官方文档 [Execution Model](https://docs.python.org/2/reference/executionmodel.html)的解释: 
 
 ```
-When a name is used in a code block, it is resolved using the nearest enclosing scope. The set of all such scopes visible to a code block is called the block’s environment.
+When a name is used in a code block, it is resolved using the nearest enclosing scope. The set of all such scopes visible to a code block is called the block's environment.
 
 If a name is bound in a block, it is a local variable of that block. If a name is bound at the module level, it is a global variable. (The variables of the module code block are local and global.) If a variable is used in a code block but not defined there, it is a free variable.
 ```

@@ -47,7 +47,7 @@ http://blog.csdn.net/gatieme/article/details/52403148
 
 bootloader[boot/bootsect.s]首先将[setup.s]和[内核(包含 boot/compressed/head.s)]加载到内存中, 然后跳转到 setup.s.
 
-接下来 bootloader[boot/setup.s] 建立 system’s physical memory map、将内核转移到物理地址 0x1000[4k]【小内核】或者 0x100000[1M]【大内核】.
+接下来 bootloader[boot/setup.s] 建立 system's physical memory map、将内核转移到物理地址 0x1000[4k]【小内核】或者 0x100000[1M]【大内核】.
 
 ```
 boot/compressed/head.s 位于这个物理地址处.
@@ -385,7 +385,7 @@ __PAGE_OFFSET 是 0xc0000000, page_pde_offset = 3072 = 0xc00, 是页目录中的
 
   jb 10b
       //%eax<%ebp, 则表示被映射的物理页帧不够, 跳回到外循环.
-      //It’s certain that no bootable kernel will be greater than 8MB in size,
+      //It's certain that no bootable kernel will be greater than 8MB in size,
       //所以只建立了物理内存前 8M 的映射:
       //linear address[0,8M]-->physical address[0,8m]
       //and

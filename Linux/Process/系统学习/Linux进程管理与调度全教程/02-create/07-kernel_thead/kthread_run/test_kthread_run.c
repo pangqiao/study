@@ -3,7 +3,7 @@
 
 #include <linux/kthread.h>
 
-#include <linux/delay.h>  // error: implicit declaration of function ‘msleep’
+#include <linux/delay.h>  // error: implicit declaration of function 'msleep'
 
 
 static struct task_struct *ptask;

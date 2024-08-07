@@ -20,7 +20,7 @@ Python常用魔术方法: http://www.pydevops.com/2016/01/25/python-%E5%B8%B8%E7
 object.__reduce__()
 When the Pickler encounters an object of a type it knows nothing about — such as an extension type — it looks in two places for a hint of how to pickle it. One alternative is for the object to implement a __reduce__() method. If provided, at pickling time __reduce__() will be called with no arguments, and it must return either a string or a tuple.
 
-If a string is returned, it names a global variable whose contents are pickled as normal. The string returned by __reduce__() should be the object’s local name relative to its module; the pickle module searches the module namespace to determine the object’s module.
+If a string is returned, it names a global variable whose contents are pickled as normal. The string returned by __reduce__() should be the object's local name relative to its module; the pickle module searches the module namespace to determine the object's module.
 
 When a tuple is returned, it must be between two and five elements long. Optional elements can either be omitted, or None can be provided as their value. The contents of this tuple are pickled as normal and used to reconstruct the object at unpickling time. The semantics of each element are:
 
@@ -32,7 +32,7 @@ A tuple of arguments for the callable object.
 
 Changed in version 2.5: Formerly, this argument could also be None.
 
-Optionally, the object’s state, which will be passed to the object’s __setstate__() method as described in section Pickling and unpickling normal class instances. If the object has no __setstate__() method, then, as above, the value must be a dictionary and it will be added to the object’s __dict__.
+Optionally, the object's state, which will be passed to the object's __setstate__() method as described in section Pickling and unpickling normal class instances. If the object has no __setstate__() method, then, as above, the value must be a dictionary and it will be added to the object's __dict__.
 
 Optionally, an iterator (and not a sequence) yielding successive list items. These list items will be pickled, and appended to the object using either obj.append(item) or obj.extend(list_of_items). This is primarily used for list subclasses, but may be used by other classes as long as they have append() and extend() methods with the appropriate signature. (Whether append() or extend() is used depends on which pickle protocol version is used as well as the number of items to append, so both must be supported.)
 
@@ -291,7 +291,7 @@ init code None
 end
 {'args': [], '--------------errorCode': '123456'}
 ```
-默认情况下, reduce传递的是对象本身, 所以能识别出来‘123456’, 自己定义的话返回self.__class__, 返回的是类. (涉及dumps以及loads的具体实现, 建议看源码)
+默认情况下, reduce传递的是对象本身, 所以能识别出来'123456', 自己定义的话返回self.__class__, 返回的是类. (涉及dumps以及loads的具体实现, 建议看源码)
 
 ```
 def construct_Error(cls, arg, kw):

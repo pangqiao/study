@@ -3,36 +3,36 @@
 
 <!-- code_chunk_output -->
 
-* [1 概述](#1-概述)
-* [2 kolla\-ansible命令](#2-kolla-ansible命令)
-* [2 ansible](#2-ansible)
-	* [2.1 Host Inventory(主机清单)](#21-host-inventory主机清单)
-	* [2.2 Module(模块)](#22-module模块)
-		* [2.2.1 一个例子: ping](#221-一个例子-ping)
-		* [2.2.2 自定义模块](#222-自定义模块)
-		* [2.2.3 action moudle](#223-action-moudle)
-		* [2.2.4 模块学习](#224-模块学习)
-* [3 ansible\-playbook](#3-ansible-playbook)
-* [4 Playbook(剧本)](#4-playbook剧本)
-	* [4.1 一个简单的playbook](#41-一个简单的playbook)
-	* [4.2 playbook中的元素](#42-playbook中的元素)
-		* [4.2.1 hosts and remote\_user](#421-hosts-and-remote_user)
-		* [4.2.2 tasks](#422-tasks)
-		* [4.2.3 vars](#423-vars)
-		* [4.2.4 handlers](#424-handlers)
-	* [4.3 使用role和include更好的组织playbook](#43-使用role和include更好的组织playbook)
-		* [4.3.1 role](#431-role)
-		* [4.3.2 include](#432-include)
-* [5 kolla\-ansible中常见的ansible语法](#5-kolla-ansible中常见的ansible语法)
-	* [5.1 条件语句](#51-条件语句)
-	* [5.2 迭代](#52-迭代)
-	* [5.3 failed\_when](#53-failed_when)
-	* [5.4 changed\_when](#54-changed_when)
-	* [5.5 run\_once](#55-run_once)
-	* [5.6 serial](#56-serial)
-	* [5.7 until](#57-until)
-	* [5.8 wait_for](#58-wait_for)
-* [6 参考](#6-参考)
+- [1 概述](#1-概述)
+- [2 kolla\-ansible命令](#2-kolla-ansible命令)
+- [2 ansible](#2-ansible)
+  - [2.1 Host Inventory(主机清单)](#21-host-inventory主机清单)
+  - [2.2 Module(模块)](#22-module模块)
+    - [2.2.1 一个例子: ping](#221-一个例子-ping)
+    - [2.2.2 自定义模块](#222-自定义模块)
+    - [2.2.3 action moudle](#223-action-moudle)
+    - [2.2.4 模块学习](#224-模块学习)
+- [3 ansible\-playbook](#3-ansible-playbook)
+- [4 Playbook(剧本)](#4-playbook剧本)
+  - [4.1 一个简单的playbook](#41-一个简单的playbook)
+  - [4.2 playbook中的元素](#42-playbook中的元素)
+    - [4.2.1 hosts and remote\_user](#421-hosts-and-remote_user)
+    - [4.2.2 tasks](#422-tasks)
+    - [4.2.3 vars](#423-vars)
+    - [4.2.4 handlers](#424-handlers)
+  - [4.3 使用role和include更好的组织playbook](#43-使用role和include更好的组织playbook)
+    - [4.3.1 role](#431-role)
+    - [4.3.2 include](#432-include)
+- [5 kolla\-ansible中常见的ansible语法](#5-kolla-ansible中常见的ansible语法)
+  - [5.1 条件语句](#51-条件语句)
+  - [5.2 迭代](#52-迭代)
+  - [5.3 failed\_when](#53-failed_when)
+  - [5.4 changed\_when](#54-changed_when)
+  - [5.5 run\_once](#55-run_once)
+  - [5.6 serial](#56-serial)
+  - [5.7 until](#57-until)
+  - [5.8 wait_for](#58-wait_for)
+- [6 参考](#6-参考)
 
 <!-- /code_chunk_output -->
 
@@ -577,7 +577,7 @@ name: gather facts from db servers
 setup:
 delegate_to: "{{item}}"
 delegate_facts: True
-with_items: "{{groups[‘dbservers‘}}"
+with_items: "{{groups['dbservers'}}"
 该例子会收集dbservers的facts并分配给这些机器, 而不会去收集app_servers的facts
 
 ## 5.6 serial

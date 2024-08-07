@@ -111,7 +111,7 @@ Systrace - https://developer.android.com/studio/profile/systrace-commandline.htm
 	   processes and other Android system processes. The tool combines data
 	   from the Android kernel such as the CPU scheduler, disk activity,
 	   and application threads to generate an HTML report that shows an
-	   overall picture of an Android device’s system processes for a given
+	   overall picture of an Android device's system processes for a given
 	   period of time.
 
 	   The Systrace tool is particularly useful in diagnosing display

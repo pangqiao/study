@@ -99,7 +99,7 @@ void foo_update( foo* new_fp )
     foo *old_fp = gbl_foo;  
       
     new_fp->a = 1;  
-    new_fp->b = ‘b’;  
+    new_fp->b = 'b';  
     new_fp->c = 100;  
       
     gbl_foo = new_fp;  

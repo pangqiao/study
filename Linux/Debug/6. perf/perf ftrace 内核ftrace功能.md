@@ -39,7 +39,7 @@ perf ftrace [<options>] -- <command> [<options>]
 
 -a, --all-cpus
     Force system-wide collection. Scripts run without a <command> normally use -a
-    by default, while scripts run with a <command> normally don’t - this option
+    by default, while scripts run with a <command> normally don't - this option
     allows the latter to be run in system-wide mode.
 
 -C, --cpu=

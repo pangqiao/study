@@ -62,7 +62,7 @@ static void ept_set_mmio_spte_mask(void)
 
 (1)set the special mask:  SPTE_SPECIAL_MASK．
 
-(2)reserved physical address bits:  the setting of a bit in the range `51:12` that is beyond the logical processor’s physic
+(2)reserved physical address bits:  the setting of a bit in the range `51:12` that is beyond the logical processor's physic
 
 关于 EPT_MISCONFIG 在 SDM 中有详细说明．
 

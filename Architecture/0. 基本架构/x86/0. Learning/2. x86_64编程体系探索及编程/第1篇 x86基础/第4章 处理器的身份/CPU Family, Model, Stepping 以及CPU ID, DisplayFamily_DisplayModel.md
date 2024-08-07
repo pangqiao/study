@@ -85,4 +85,4 @@ INTEL 从 Coppermine 核心的处理器开始引入 Brand ID 作为 CPU 的辅�
 
 如上的计算机的 CPUID 为 7A 06 01 00 FF FB EB BF.
 
-而它对应的 DisplayFamily\_DisplayModel 为, 06\_17H, 因为十六进制的 17 为 23, 详细内容参见: Intel(R) 64 and IA-32 Architectures Software Developer’s Manual Volume 3 (3A, 3B & 3C): System Programming Guide 中 CHAPTER 35 MODEL-SPECIFIC REGISTERS (MSRS) Table 35-1. CPUID Signature Values of DisplayFamily\_DisplayModel
+而它对应的 DisplayFamily\_DisplayModel 为, 06\_17H, 因为十六进制的 17 为 23, 详细内容参见: Intel(R) 64 and IA-32 Architectures Software Developer's Manual Volume 3 (3A, 3B & 3C): System Programming Guide 中 CHAPTER 35 MODEL-SPECIFIC REGISTERS (MSRS) Table 35-1. CPUID Signature Values of DisplayFamily\_DisplayModel

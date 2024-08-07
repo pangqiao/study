@@ -536,7 +536,7 @@ __attribute__是什么?Linux 内核代码使用了大量的 GNU C 扩展, 以至
 
 
 'section ("section-name")'
-　　Normally, the compiler places the code it generates in the 'text' section.　Sometimes, however, you need additional sections, or you need certain particular functions to appear in special sections.The `section' attribute specifies that a function lives in a particular section.　For example, the declaration:extern void foobar (void) \_\_attribute\_\_ ((section ("bar")));puts the function ‘foobar' in the ‘bar' section.Some file formats do not support arbitrary sections so the ‘section' attribute is not available on all platforms.　If you need to map the entire contents of a module to a particular section, consider using the facilities of the linker instead.
+　　Normally, the compiler places the code it generates in the 'text' section.　Sometimes, however, you need additional sections, or you need certain particular functions to appear in special sections.The `section' attribute specifies that a function lives in a particular section.　For example, the declaration:extern void foobar (void) \_\_attribute\_\_ ((section ("bar")));puts the function 'foobar' in the 'bar' section.Some file formats do not support arbitrary sections so the 'section' attribute is not available on all platforms.　If you need to map the entire contents of a module to a particular section, consider using the facilities of the linker instead.
 
 通常编译器将函数放在.text 节, 变量放在.data 或.bss 节, 使用 section 属性, 可以让编译器将函数或变量放在指定的节中. 那么前面对 __init 的定义便表示将它修饰的代码放在.init.text 节. 连接器可以把相同节的代码或数据安排在一起, 比如 __init 修饰的所有代码都会 被放在.init.text 节里, 初始化结束后就可以释放这部分内存.
 
@@ -642,7 +642,7 @@ usbcore.autosuspend=2
 
 #define debug(format, args...) fprintf (stderr, format, args)
 
-有了名字总是会容易交流一些. 是不是与 pr_info 比较接近了?除了‘##’, 它主要是针对空参数的情况. 既然说是可变参数, 那传递空参数也总是可以的, 空即是多, 多即是空, 股市里的哲理这里同样也是适合的. 如果没有‘##’, 传递空参数的时候, 比如 debug ("A message");展开后, 里面的字符串后面会多个多余的逗号. 这个逗号你应该不会喜欢, 而‘##’则会使预处理器去掉这个多余的逗号.
+有了名字总是会容易交流一些. 是不是与 pr_info 比较接近了?除了'##', 它主要是针对空参数的情况. 既然说是可变参数, 那传递空参数也总是可以的, 空即是多, 多即是空, 股市里的哲理这里同样也是适合的. 如果没有'##', 传递空参数的时候, 比如 debug ("A message");展开后, 里面的字符串后面会多个多余的逗号. 这个逗号你应该不会喜欢, 而'##'则会使预处理器去掉这个多余的逗号.
 
 　　关于 usb_init 函数, 上面的三个问题之外, 余下的代码分别完成 usb 各部分的初始化, 接下来就需要围绕它们分别进行深入分析. 因为这里只是演示如何入手分析, 展示的只是一种态度, 所以具体的深入分析就免了吧.
 

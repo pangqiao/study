@@ -97,8 +97,8 @@ boot/head.s:232: Error: alignment not a power of 2
 
 ```
 -nostdinc -Iinclude -c -o init/main.o init/main.c
-gcc: error: unrecognized command line option ‘-fcombine-regs’
-gcc: error: unrecognized command line option ‘-mstring-insns’
+gcc: error: unrecognized command line option '-fcombine-regs'
+gcc: error: unrecognized command line option '-mstring-insns'
 make: *** [init/main.o] Error 1
 ```
 
@@ -111,14 +111,14 @@ make: *** [init/main.o] Error 1
 - 问题 5
 
 ```
-init/main.c:23:29: error: static declaration of ‘fork’ follows non-static declaration
+init/main.c:23:29: error: static declaration of 'fork' follows non-static declaration
 
  static inline _syscall0(int,fork)
 
-init/main.c:24:29: error: static declaration of ‘pause’ follows non-static declaration
+init/main.c:24:29: error: static declaration of 'pause' follows non-static declaration
  static inline _syscall0(int,pause)
 
-init/main.c:26:29: error: static declaration of ‘sync’ follows non-static declaration
+init/main.c:26:29: error: static declaration of 'sync' follows non-static declaration
  static inline _syscall0(int,sync)
 ```
 

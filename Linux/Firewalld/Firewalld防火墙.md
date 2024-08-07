@@ -809,12 +809,12 @@ firewall-cmd --permanent --zone=public --add-rich-rule="rulefamily="ipv4" source
 禁止远程 IP 访问 ssh
 
 ```
-firewall-cmd--permanent --zone=public --add-rich-rule=’rule family=ipv4 sourceaddress=192.168.0.0/24 service name=sshreject’
+firewall-cmd--permanent --zone=public --add-rich-rule='rule family=ipv4 sourceaddress=192.168.0.0/24 service name=sshreject'
 ```
 7、删除 rich 规则
 
 ```
-firewall-cmd --permanent --zone=public --remove-rich-rule=’rule family=ipv4 sourceaddress=192.168.0.0/24 service name=sshreject’
+firewall-cmd --permanent --zone=public --remove-rich-rule='rule family=ipv4 sourceaddress=192.168.0.0/24 service name=sshreject'
 ```
 8、仅允许部分 IP 访问本机端口配置
 
@@ -904,9 +904,9 @@ Rich 规则语法:
 
 Rich 规则选项:
 ```
---add-rich-rule=’rule’ ##新建 rich 规则
---remove-rich-rule=’rule’ ##删除 rich 规则
---query-rich-rule=’rule’ ##查看单条 rich 规则
+--add-rich-rule='rule' ##新建 rich 规则
+--remove-rich-rule='rule' ##删除 rich 规则
+--query-rich-rule='rule' ##查看单条 rich 规则
 --list-rich-rules ##查看 rich 规则列表
 ```
 
@@ -914,26 +914,26 @@ Rich 规则选项:
 Rich 规则示例:
 ```
 #拒绝从 192.168.0.11 的所有流量
-firewall-cmd --permanent --zone=cla***oom --add-rich-rule=‘rule family=ipv4 source address=192.168.0.11/32 reject‘
+firewall-cmd --permanent --zone=cla***oom --add-rich-rule='rule family=ipv4 source address=192.168.0.11/32 reject'
 ```
 
 ```
 #限制每分钟只有两个连接到 ftp 服务
-firewall-cmd --add-rich-rule=’rule service name=ftp limitvalue=2/m accept’
+firewall-cmd --add-rich-rule='rule service name=ftp limitvalue=2/m accept'
 ```
 
 ```
 #抛弃 esp 协议的所有数据包
-firewall-cmd --permanent --add-rich-rule=‘rule protocol value=esp drop‘
+firewall-cmd --permanent --add-rich-rule='rule protocol value=esp drop'
 ```
 ```
 #接受所有 192.168.1.0/24 子网端口范置 7900-7905 的 TCP 流量
-firewall-cmd --permanent --zone=vnc --add-rich-rule=‘rule family=ipv4 source address=192.168.1.0/24 port port=7900-7905 protocol=tcp accept‘
+firewall-cmd --permanent --zone=vnc --add-rich-rule='rule family=ipv4 source address=192.168.1.0/24 port port=7900-7905 protocol=tcp accept'
 ```
 
 ```
 ##开启 SNAT
-firewall-cmd --permanent --add-rich-rule=‘rule family=ipv4 source address=192.168.0.0/24 masquerade‘
+firewall-cmd --permanent --add-rich-rule='rule family=ipv4 source address=192.168.0.0/24 masquerade'
 ```
 
 ```

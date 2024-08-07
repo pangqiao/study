@@ -42,7 +42,7 @@ QPI 的全称是**快速通道互联**其实 QPI 总线在早期已经用于**�
 
 ![Intel_Nehalem_arch.svg](./images/Intel_Nehalem_arch.svg)
 
-在英特尔 Nehalem 微架构上 QPI 是其中‘uncore’的组成部分.
+在英特尔 Nehalem 微架构上 QPI 是其中'uncore'的组成部分.
 
 # 4 Infinity Fabric
 

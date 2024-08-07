@@ -7,9 +7,9 @@ Python字节与字节数组: https://github.com/rainyear/pytips/blob/master/Tips
 Python中常见的两个错误: 
 
 ```
-UnicodeEncodeError: ‘ascii’ codec can’t encode characters in position 0-1: ordinal not in range(128)
+UnicodeEncodeError: 'ascii' codec can't encode characters in position 0-1: ordinal not in range(128)
 
-UnicodeDecodeError: ‘utf-8’ codec can’t decode bytes in position 0-1: invalid continuation byte
+UnicodeDecodeError: 'utf-8' codec can't decode bytes in position 0-1: invalid continuation byte
 ```
 
 python中的str对象其实就是"8-bit string" , 字节字符串, 本质上类似java中的byte[].    

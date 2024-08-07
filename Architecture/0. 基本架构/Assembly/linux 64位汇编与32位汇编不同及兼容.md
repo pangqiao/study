@@ -138,8 +138,8 @@ int main(){
 
 ```
 [root@tsinghua-pcm C]# gcc test_asm_B.c
-test_asm_B.c: 在函数‘main’中:
-test_asm_B.c:4:2: 警告: 隐式声明与内建函数‘strcpy’不兼容 [默认启用]
+test_asm_B.c: 在函数'main'中:
+test_asm_B.c:4:2: 警告: 隐式声明与内建函数'strcpy'不兼容 [默认启用]
   strcpy(str, "Hello\n");
   ^
 [root@tsinghua-pcm C]# ./a.out
@@ -163,8 +163,8 @@ Hello
 [root@tsinghua-pcm C]# ./a.out
 Hello
 [root@tsinghua-pcm C]# gcc test_asm_B.c -m32
-test_asm_B.c: 在函数‘main’中:
-test_asm_B.c:4:2: 警告: 隐式声明与内建函数‘strcpy’不兼容 [默认启用]
+test_asm_B.c: 在函数'main'中:
+test_asm_B.c:4:2: 警告: 隐式声明与内建函数'strcpy'不兼容 [默认启用]
   strcpy(str, "Hello\n");
   ^
 [root@tsinghua-pcm C]# ./a.out

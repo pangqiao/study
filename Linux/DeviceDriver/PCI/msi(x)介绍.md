@@ -141,7 +141,7 @@ X86下MSI data格式如下
 
 Vector 指定了中断向量号,  Delivery Mode 定义同传统中断, 表示中断类型. Trigger Mode 为触发模式, 0 为边缘触发, 1 为水平触发. Level 指定了水平触发中断时处于的电位(边缘触发无须设置该字段).
 
-上面都是以X86为例, 具体的可以参考《Intel® 64 and IA-32 Architectures Software Developer’s Manual》卷三关于APIC和MSI的部分.
+上面都是以X86为例, 具体的可以参考《Intel® 64 and IA-32 Architectures Software Developer's Manual》卷三关于APIC和MSI的部分.
 
 Vector Control字段存放的是控制字段, 当Mask Bit为1时, PCIe设备不能使用该MSI-X table entry来发送中断消息.
 
