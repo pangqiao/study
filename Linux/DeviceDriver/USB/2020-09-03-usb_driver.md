@@ -359,7 +359,7 @@ drivers/usb/core/hub.c:
     }
 ```
 由1.3节的介绍我们知道这个match函数只对`dev->type==&usb_device_type`或者`&usb_if_device_type`的设备才有可能匹配成功(返回值为1), 也就是只匹配USB设备和接口设备. 在USB系统初始化的时候, 我们注册了两个接口驱动(`usbfs_driver`和`hub_driver`)和一个设备驱动(`usb_generic_driver`), 其中`usbfs_driver`的probe函数直接返回-ENODEV, 因此有用的就是`hub_driver`和`usb_generic_driver`. 
-当传入的是一个USB设备时, 只要驱动是设备驱动就会匹配上, 因此USB设备始终会与`usb_generic_driver`匹配上；而对于接口设备来说, 只要驱动不是设备驱动, 就会调用`usb_match_id`及`usb_match_dynamic_id`来进行匹配id. 查看具体的match函数我们可以知道它是通过接口描述符和驱动的id table进行比较来match的. 
+当传入的是一个USB设备时, 只要驱动是设备驱动就会匹配上, 因此USB设备始终会与`usb_generic_driver`匹配上; 而对于接口设备来说, 只要驱动不是设备驱动, 就会调用`usb_match_id`及`usb_match_dynamic_id`来进行匹配id. 查看具体的match函数我们可以知道它是通过接口描述符和驱动的id table进行比较来match的. 
 ### 2.5.2. usb_generic_driver
 当一个USB设备新添加进系统时, USB子系统会先对其进行读描述符然后设置地址, 然后调用`device_add`将其添加进系统, 此时触发usb_bus的match函数, 判断是一个USB设备, 匹配到`usb_generic_driver`, 调用`usb_probe_device`, 再调用`generic_probe`. USB设备的发现过程在后面会讲, 到`generic_probe`这一步设备已经是被分配好了地址的一个状态, 我们先看此时会发生什么. 
 ```cpp
@@ -1236,7 +1236,7 @@ USB驱动架构如下图所示:
 ![figure3 主机驱动架构](./images/USB_3.png)
 图 3 主机驱动架构
 
-　　　 USB核心(USBD)是整个USB驱动的核心部分, 从上图可知, 一方面USBD对接收到USB主机控制器的数据进行处理, 并传递给上层的设备端驱动软件；同时也接收来自上层的非USB格式数据流, 进行相应的数据处理后传递给USB主机控制器驱动. 
+　　　 USB核心(USBD)是整个USB驱动的核心部分, 从上图可知, 一方面USBD对接收到USB主机控制器的数据进行处理, 并传递给上层的设备端驱动软件; 同时也接收来自上层的非USB格式数据流, 进行相应的数据处理后传递给USB主机控制器驱动. 
 
 ![figure4 主机驱动调度流程](./images/USB_4.png)
 图 4 主机驱动调度流程
