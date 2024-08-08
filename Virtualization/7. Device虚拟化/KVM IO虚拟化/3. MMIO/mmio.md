@@ -25,15 +25,15 @@ IBM PC 架构规定了一些固定的 I/O 端口, ISA 设备通常也有固定�
 
 我们知道 X86 体系结构上对设备进行访问可以通过 PIO 方式和 MMIO(Memory Mapped I/O)两种方式进行,  那么`QEMU-KVM`具体是如何实现设备 MMIO 访问的呢?
 
-MMIO 是直接将设备 I/O 映射到物理地址空间内, 虚拟机物理内存的虚拟化又是通过 EPT 机制来完成的,  那么模拟设备的 MMIO 实现也需要利用 EPT 机制．虚拟机的 EPT 页表是在`EPT_VIOLATION`异常处理的时候建立起来的,  对于模拟设备而言访问 MMIO 肯定要触发`VM_EXIT`然后交给 QEMU/KVM 去处理, 那么怎样去标志 MMIO 访问异常呢? 查看 Intel SDM 知道这是通过利用`EPT_MISCONFIG`来实现的．那么`EPT_VIOLATION`与`EPT_MISCONFIG`的区别是什么?
+MMIO 是直接将设备 I/O 映射到物理地址空间内, 虚拟机物理内存的虚拟化又是通过 EPT 机制来完成的,  那么模拟设备的 MMIO 实现也需要利用 EPT 机制. 虚拟机的 EPT 页表是在`EPT_VIOLATION`异常处理的时候建立起来的,  对于模拟设备而言访问 MMIO 肯定要触发`VM_EXIT`然后交给 QEMU/KVM 去处理, 那么怎样去标志 MMIO 访问异常呢? 查看 Intel SDM 知道这是通过利用`EPT_MISCONFIG`来实现的. 那么`EPT_VIOLATION`与`EPT_MISCONFIG`的区别是什么?
 
 EXIT_REASON_EPT_VIOLATION is similar to a "page not present" pagefault.
 
 EXIT_REASON_EPT_MISCONFIG is similar to a "reserved bit set" pagefault.
 
-EPT_VIOLATION 表示的是对应的物理页不存在, 而 EPT_MISCONFIG 表示 EPT 页表中有非法的域．
+EPT_VIOLATION 表示的是对应的物理页不存在, 而 EPT_MISCONFIG 表示 EPT 页表中有非法的域. 
 
-那么这里有２个问题需要弄清楚．
+那么这里有２个问题需要弄清楚. 
 
 ## KVM 如何标记 EPT 是 MMIO 类型 ?
 
@@ -60,11 +60,11 @@ static void ept_set_mmio_spte_mask(void)
 
 同时还要对 EPT 的一些特殊位进行标记来标志该 spte 表示 MMIO 而不是虚拟机的物理内存, 例如这里
 
-(1)set the special mask:  SPTE_SPECIAL_MASK．
+(1)set the special mask:  SPTE_SPECIAL_MASK. 
 
 (2)reserved physical address bits:  the setting of a bit in the range `51:12` that is beyond the logical processor's physic
 
-关于 EPT_MISCONFIG 在 SDM 中有详细说明．
+关于 EPT_MISCONFIG 在 SDM 中有详细说明. 
 
 ![2020-09-04-16-28-42.png](./images/2020-09-04-16-28-42.png)
 
@@ -136,7 +136,7 @@ ioeventfd_write(struct kvm_vcpu *vcpu, struct kvm_io_device *this, gpa_t addr,
 
 ## QEMU 如何标记设备的 MMIO
 
-这里以 e1000 网卡模拟为例, 设备初始化 MMIO 时候时候注册的 MemoryRegion 为 IO 类型(不是 RAM 类型)．
+这里以 e1000 网卡模拟为例, 设备初始化 MMIO 时候时候注册的 MemoryRegion 为 IO 类型(不是 RAM 类型). 
 
 ```cpp
 static void
@@ -158,7 +158,7 @@ e1000_mmio_setup(E1000State *d)
 }
 ```
 
-对于 MMIO 类型的内存 QEMU 不会调用 kvm_set_user_memory_region 对其进行注册,  那么 KVM 会认为该段内存的 pfn 类型为 KVM_PFN_NOSLOT,  进而调用 set_mmio_spte 来设置该段地址对应到 spte,  而该函数中会判断 pfn 是否为 NOSLOT 标记以确认这段地址空间为 MMIO．
+对于 MMIO 类型的内存 QEMU 不会调用 kvm_set_user_memory_region 对其进行注册,  那么 KVM 会认为该段内存的 pfn 类型为 KVM_PFN_NOSLOT,  进而调用 set_mmio_spte 来设置该段地址对应到 spte,  而该函数中会判断 pfn 是否为 NOSLOT 标记以确认这段地址空间为 MMIO. 
 
 ```cpp
 static bool set_mmio_spte(struct kvm_vcpu *vcpu, u64 *sptep, gfn_t gfn,
@@ -175,7 +175,7 @@ static bool set_mmio_spte(struct kvm_vcpu *vcpu, u64 *sptep, gfn_t gfn,
 
 # 总结
 
-MMIO 是通过设置 spte 的保留位来标志的．
+MMIO 是通过设置 spte 的保留位来标志的. 
 
-* 虚拟机内部第一次访问 MMIO 的 gpa 时, 发生了 EPT_VIOLATION 然后 check gpa 发现对应的 pfn 不存在(QEMU 没有注册), 那么认为这是个 MMIO, 于是 set_mmio_spte 来标志它的 spte 是一个 MMIO．
-*  后面再次访问这个 gpa 时就发生 EPT_MISCONFIG 了, 进而愉快地调用 handle_ept_misconfig -> handle_mmio_page_fault -> x86_emulate_instruction 来处理所有的 MMIO 操作了．
+* 虚拟机内部第一次访问 MMIO 的 gpa 时, 发生了 EPT_VIOLATION 然后 check gpa 发现对应的 pfn 不存在(QEMU 没有注册), 那么认为这是个 MMIO, 于是 set_mmio_spte 来标志它的 spte 是一个 MMIO. 
+*  后面再次访问这个 gpa 时就发生 EPT_MISCONFIG 了, 进而愉快地调用 handle_ept_misconfig -> handle_mmio_page_fault -> x86_emulate_instruction 来处理所有的 MMIO 操作了. 

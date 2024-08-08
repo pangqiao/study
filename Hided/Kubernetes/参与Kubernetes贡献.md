@@ -22,7 +22,7 @@
 - [8. SIGs](#8-sigs)
 - [9. Kubernetes Developer Guide](#9-kubernetes-developer-guide)
   - [9.1. 开发以及贡献代码到Kuberentes project的流程](#91-开发以及贡献代码到kuberentes-project的流程)
-  - [9.2. 建立你的开发环境, coding以及debugging](#92-建立你的开发环境coding以及debugging)
+  - [9.2. 建立你的开发环境, coding以及debugging](#92-建立你的开发环境-coding以及debugging)
 
 <!-- /code_chunk_output -->
 
@@ -171,7 +171,7 @@ kuberntes.io　－－教程
 
 kubeweekly －－－案例分享 
 
-design-proposal 设计方案说明(https://github.com/kubernetes/community/blob/master/contributors/design-proposals/), 同样可以用来学习插件的开发． 
+design-proposal 设计方案说明(https://github.com/kubernetes/community/blob/master/contributors/design-proposals/), 同样可以用来学习插件的开发.  
 
 kubernets项目更好的参与 https://github.com/kubernetes/community/tree/master/contributors/devel
 

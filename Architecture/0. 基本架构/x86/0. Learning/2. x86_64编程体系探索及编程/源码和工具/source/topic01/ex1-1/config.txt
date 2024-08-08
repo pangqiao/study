@@ -9,16 +9,16 @@
 # setup,	0,	demo.img,	1,	2
 # init,		0,	demo.img,	3,	5
 #
-# 意思是：
+# 意思是: 
 # boot  模块从 block 0 开始写入 demo.img 写入位置为 block 0, 写入 1 个 block
 # setup 模块从 block 0 开始写入 demo.img 写入位置为 block 1, 写入 2 个 blocks
 # init  模块从 block 0 开始写入 demo.img 写入位置为 block 3, 写入 5 个 blocks
 
 
-# 下面是使用到的配置实例：
+# 下面是使用到的配置实例: 
 
 ###
-# 注意：当使用 merge 写入U盘不成功时, 可以使用 Hex 类编辑软件进行合并
+# 注意: 当使用 merge 写入U盘不成功时, 可以使用 Hex 类编辑软件进行合并
 ###
 
 
@@ -30,6 +30,6 @@ uboot,0,c.img,63,1
 boot,0,demo.img,0,1		
 
 
-#### 注意：请查看自己的 U盘挂接点名字, 替换 \\.\g: ####
+#### 注意: 请查看自己的 U盘挂接点名字, 替换 \\.\g: ####
 ######## 下面将 c.img 写入 U 盘 ######
 c.img,0,\\.\g:,0,200
