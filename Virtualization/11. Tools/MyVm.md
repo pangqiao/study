@@ -201,7 +201,7 @@ apt install net-tools isc-dhcp-client
 
 systemctl set-default multi-user
 
-Created symlink /etc/systemd/system/default.target → /lib/systemd/system/multi-user.target
+Created symlink /etc/systemd/system/default.target  ->  /lib/systemd/system/multi-user.target
 
 # 6. 基本设置
 

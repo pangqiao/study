@@ -69,7 +69,7 @@ preferences-->General-->Workspace 去掉勾选 Build Automatically.
 
 ### 1.3.1 创建项目
 
-New → "Makefile Project with Existing Code", 这里代码目录选择上面说的与调试内核代码一致的目录, Toolchain 选为 None.
+New  ->  "Makefile Project with Existing Code", 这里代码目录选择上面说的与调试内核代码一致的目录, Toolchain 选为 None.
 
 ![](./images/2019-05-31-14-06-14.png)
 
@@ -79,7 +79,7 @@ New → "Makefile Project with Existing Code", 这里代码目录选择上面说
 
 ### 1.3.2 配置 debug 选项
 
-配置 debug 选项, "Run" → "Debug Configurations", 选择"C\/C\+\+ Remote Application(属于 CDT 插件)"
+配置 debug 选项, "Run"  ->  "Debug Configurations", 选择"C\/C\+\+ Remote Application(属于 CDT 插件)"
 
 Eclipse 的 C/C++插件 CDT 已经很好的支持 gdb 在远程调试了. 调试一个应用程序时, CDT 有三种运行方式:
 
@@ -97,7 +97,7 @@ Eclipse 的 C/C++插件 CDT 已经很好的支持 gdb 在远程调试了. 调试
 
 接下来配置 CDT 的 Debug 选项, 步骤如下:
 
-1. 选中项目→菜单栏 "Run"→Debug Configurations...
+1. 选中项目 -> 菜单栏 "Run" -> Debug Configurations...
 
 2. 双击 C/C++ Remote Application 新建一个配置, Eclipse 会根据当前选择的项目初始化大部分配置, Project 选择我们的 linux\-debug 项目, application 填上面的带有调试信息的 vmlinux, 选中 Disable auto build
 

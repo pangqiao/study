@@ -37,11 +37,11 @@ Tboot 目前也是由 Intel 的开源软件工程师发起的一个开源的项�
 
 并非 Intel 平台的任何一个机器都支持 TXT, 在 Intel 中, 有 vPro 标识的桌面级硬件平台一般都支持 TXT, 另外也有部分服务器平台支持 TXT 技术. 因为 Intel TXT 技术依赖于 Intel VT 和 VT-d 技术, 所以在 BIOS 中不仅需要打开 TXT 技术的支持, 还需要打开 Intel VT 和 VT-d 的支持. 在 BIOS 中设置如下项目(不同 BIOS 在选项命令和设置位置上有些差别).
 
-打开 TXT 技术的支持, BIOS 选项位于: Advanced→Processor Configuration→Intel(R)TXT 或 Intel(R)Trusted Excution Technology, 需要将其设置为"[Enabled]"状态.
+打开 TXT 技术的支持, BIOS 选项位于: Advanced -> Processor Configuration -> Intel(R)TXT 或 Intel(R)Trusted Excution Technology, 需要将其设置为"[Enabled]"状态.
 
-打开 Intel VT 和 VT-d 技术的支持, BIOS 选项位于: Advanced→Processor Configuration→Intel(R)Virtualization Technology 和 Intel(R)VT-for Direct I/O, 将这两者都设置为"[Enabled]"状态.
+打开 Intel VT 和 VT-d 技术的支持, BIOS 选项位于: Advanced -> Processor Configuration -> Intel(R)Virtualization Technology 和 Intel(R)VT-for Direct I/O, 将这两者都设置为"[Enabled]"状态.
 
-可信平台模块(TPM)需要在主板上由一个 TPM 模块芯片支持, 打开 TPM 支持的 BIOS 选项位于: Security→TPM Administrative Control. 有几个选项, 分别是: No Operation、Turn ON、Turn OFF、Clear Ownership, 应该选择"Turn ON"(打开). 重启系统后, 可以看到 BIOS 设置中的: Security→TPM State 的值为"Enabled＆Activated". 当然, 如果 TPM 状态一开始就是"Enabled＆Activated", 那么说明 TPM 处于打开状态, 不需要重复打开了.
+可信平台模块(TPM)需要在主板上由一个 TPM 模块芯片支持, 打开 TPM 支持的 BIOS 选项位于: Security -> TPM Administrative Control. 有几个选项, 分别是: No Operation、Turn ON、Turn OFF、Clear Ownership, 应该选择"Turn ON"(打开). 重启系统后, 可以看到 BIOS 设置中的: Security -> TPM State 的值为"Enabled＆Activated". 当然, 如果 TPM 状态一开始就是"Enabled＆Activated", 那么说明 TPM 处于打开状态, 不需要重复打开了.
 
 (2)编译支持 Tboot 的 Linux 内核
 

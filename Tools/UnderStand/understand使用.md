@@ -43,19 +43,19 @@
 
 1. 设置字体和颜色风格
 
-修改默认字体: Preference → Editor → Default style 
+修改默认字体: Preference  ->  Editor  ->  Default style 
 
 >"SourceCodePro Nerd Font Mono" 13
 
-修改颜色: Preference → Editor → Styles
+修改颜色: Preference  ->  Editor  ->  Styles
 
 >Predefined 选为"onyx"
 
-Preference → General → Application Font
+Preference  ->  General  ->  Application Font
 
 >"SourceCodePro Nerd Font Mono" 12
 
-Preference → User Interface → Command Window Font
+Preference  ->  User Interface  ->  Command Window Font
 
 >"SourceCodePro Nerd Font Mono" 10
 
@@ -63,7 +63,7 @@ Preference → User Interface → Command Window Font
 
 # 2. 导入项目
 
-1. new → project, 输入项目名称(linux\-latest), understand 的项目数据库(之前的目录)
+1. new  ->  project, 输入项目名称(linux\-latest), understand 的项目数据库(之前的目录)
 
 ![](./images/2019-05-31-09-50-12.png)
 
