@@ -7,68 +7,68 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN                                ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN                                ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #DB handler
+;; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ #AC handler
+;; è®¾ç½® #AC handler
         mov esi, AC_HANDLER_VECTOR
         mov edi, AC_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ #UD handler
+;; è®¾ç½® #UD handler
         mov esi, UD_HANDLER_VECTOR
         mov edi, UD_handler
         call set_interrupt_handler
                 
-;; ÉèÖÃ #NM handler
+;; è®¾ç½® #NM handler
         mov esi, NM_HANDLER_VECTOR
         mov edi, NM_handler
         call set_interrupt_handler
         
-;; ÉèÖÃ #TS handler
+;; è®¾ç½® #TS handler
         mov esi, TS_HANDLER_VECTOR
         mov edi, TS_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ TSS µÄ ESP0        
+;; è®¾ç½® TSS çš„ ESP0        
         mov esi, tss32_sel
         call get_tss_base
         mov DWORD [eax + 4], KERNEL_ESP
         
-;; ¹Ø±ÕËùÓĞ 8259ÖĞ¶Ï
+;; å…³é—­æ‰€æœ‰ 8259ä¸­æ–­
         call disable_8259
 
 ;======================================================
 
-;; ÉèÖÃÏµÍ³·şÎñÀı³ÌÈë¿Ú
+;; è®¾ç½®ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å…¥å£
         mov esi, SYSTEM_SERVICE_VECTOR
         mov edi, system_service
         call set_user_interrupt_handler
 
         
-; ×ªµ½ long Ä£¿é
+; è½¬åˆ° long æ¨¡å—
         ;jmp LONG_SEG
         
                                         
-; ½øÈë ring 3 ´úÂë
+; è¿›å…¥ ring 3 ä»£ç 
         push DWORD user_data32_sel | 0x3
         push esp
         push DWORD user_code32_sel | 0x3        
@@ -76,7 +76,7 @@ entry:
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ç”¨æˆ·ä»£ç 
 
 user_entry:
         mov ax, user_data32_sel
@@ -84,8 +84,8 @@ user_entry:
         mov es, ax
 
         mov esi, msg1
-        mov eax, SYS_PUTS        ; ÏµÍ³·şÎñÀı³ÌºÅ
-        int 0x40                 ; µ÷ÓÃÏµÍ³·şÎñ
+        mov eax, SYS_PUTS        ; ç³»ç»ŸæœåŠ¡ä¾‹ç¨‹å·
+        int 0x40                 ; è°ƒç”¨ç³»ç»ŸæœåŠ¡
 
         jmp $
 
@@ -99,11 +99,11 @@ msg1    db '---> now, call system service routine with int 0x40',10, 0
         
 ;
 
-;******** include ÖĞ¶Ï handler ´úÂë ********
+;******** include ä¸­æ–­ handler ä»£ç  ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include æ¨¡å— ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -114,10 +114,10 @@ msg1    db '---> now, call system service routine with int 0x40',10, 0
 %include "..\lib\pic8259A.asm"
 
 
-;;************* º¯Êıµ¼Èë±í  *****************
+;;************* å‡½æ•°å¯¼å…¥è¡¨  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓĞÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; è¿™ä¸ª lib32 åº“å¯¼å…¥è¡¨æ”¾åœ¨ common\ ç›®å½•ä¸‹ï¼Œ
+; ä¾›æ‰€æœ‰å®éªŒçš„ protected.asm æ¨¡å—ä½¿ç”¨
 
 %include "..\common\lib32_import_table.imt"
 

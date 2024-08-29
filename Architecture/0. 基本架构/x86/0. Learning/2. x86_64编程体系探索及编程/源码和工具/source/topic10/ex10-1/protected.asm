@@ -7,48 +7,48 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN                                ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN                                ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #DB handler
+;; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ #AC handler
+;; è®¾ç½® #AC handler
         mov esi, AC_HANDLER_VECTOR
         mov edi, AC_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ #UD handler
+;; è®¾ç½® #UD handler
         mov esi, UD_HANDLER_VECTOR
         mov edi, UD_handler
         call set_interrupt_handler
                 
-;; ÉèÖÃ #NM handler
+;; è®¾ç½® #NM handler
         mov esi, NM_HANDLER_VECTOR
         mov edi, NM_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ TSS µÄ ESP0        
+;; è®¾ç½® TSS çš„ ESP0        
         mov esi, tss32_sel
         call get_tss_base
         mov DWORD [eax + 4], KERNEL_ESP 
         
-;; ¹Ø±ÕËùÓĞ 8259ÖĞ¶Ï
+;; å…³é—­æ‰€æœ‰ 8259ä¸­æ–­
         call disable_8259
         
 ;====================================================        
@@ -60,10 +60,10 @@ entry:
 
 
 
-;; ÉèÖÃĞÂ TSS ÇøÓò
+;; è®¾ç½®æ–° TSS åŒºåŸŸ
         mov esi, tss_sel
         call get_tss_base
-        mov DWORD [eax + 32], tss_task_handler          ; ÉèÖÃ EIP ÖµÎª tss_task_handler
+        mov DWORD [eax + 32], tss_task_handler          ; è®¾ç½® EIP å€¼ä¸º tss_task_handler
         mov DWORD [eax + 36], 0                         ; eflags = 0
         mov DWORD [eax + 56], KERNEL_ESP                ; esp
         mov WORD [eax + 76], KERNEL_CS                  ; cs
@@ -71,25 +71,25 @@ entry:
         mov WORD [eax + 84], KERNEL_SS                  ; ds
         mov WORD [eax + 72], KERNEL_SS                  ; es
         
-;; ÏÂÃæ½« TSS selector µÄ DPL ÉèÎª 3 ¼¶
+;; ä¸‹é¢å°† TSS selector çš„ DPL è®¾ä¸º 3 çº§
         mov esi, tss_sel
         call read_gdt_descriptor
         or edx, 0x6000                                  ; TSS desciptor DPL = 3
         mov esi, tss_sel
         call write_gdt_descriptor
 
-; ×ªµ½ long Ä£¿é
+; è½¬åˆ° long æ¨¡å—
         ;jmp LONG_SEG
         
         mov esi, msg2
         call puts
         mov eax, CLIB32_GET_CPL
-        call clib32_service_enter                       ; µ÷ÓÃ clib32 ¿âµÄ get_cpl() º¯Êı
+        call clib32_service_enter                       ; è°ƒç”¨ clib32 åº“çš„ get_cpl() å‡½æ•°
         mov esi, eax
         call print_byte_value
         call println
                                         
-; ½øÈë ring 3 ´úÂë
+; è¿›å…¥ ring 3 ä»£ç 
         push DWORD user_data32_sel | 0x3
         push esp
         push DWORD user_code32_sel | 0x3        
@@ -97,34 +97,34 @@ entry:
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ç”¨æˆ·ä»£ç 
 
 user_entry:
         mov ax, user_data32_sel
         mov ds, ax
         mov es, ax
         
-; »ñµÃ CPL Öµ        
+; è·å¾— CPL å€¼        
         mov esi, msg2
         call puts
         mov eax, CLIB32_GET_CPL
-        call clib32_service_enter                ; µ÷ÓÃ clib32 ¿âµÄ get_cpl() º¯Êı
+        call clib32_service_enter                ; è°ƒç”¨ clib32 åº“çš„ get_cpl() å‡½æ•°
         mov esi, eax
         call print_byte_value
         call println
                 
 
-; Ê¹ÓÃ TSS ½øĞĞÈÎÎñÇĞ»»µ½ 0 ¼¶
+; ä½¿ç”¨ TSS è¿›è¡Œä»»åŠ¡åˆ‡æ¢åˆ° 0 çº§
         call tss_sel:0        
         
         mov esi, msg1
         call puts        
         
-; »ñµÃ CPL Öµ        
+; è·å¾— CPL å€¼        
         mov esi, msg2
         call puts
         mov eax, CLIB32_GET_CPL
-        call clib32_service_enter               ; µ÷ÓÃ clib32 ¿âµÄ get_cpl() º¯Êı
+        call clib32_service_enter               ; è°ƒç”¨ clib32 åº“çš„ get_cpl() å‡½æ•°
         mov esi, eax
         call print_byte_value
         call println
@@ -144,8 +144,8 @@ callgate_pointer:       dd        call_gate_handler
 
 ;-----------------------------------------
 ; tss_task_handler()
-; ÃèÊö£º
-;       Õâ¸öÊÇÊ¹ÓÃ TSS ½øĞĞÈÎÎñÇĞ»»Ê±µÄÊ¾Àı
+; æè¿°ï¼š
+;       è¿™ä¸ªæ˜¯ä½¿ç”¨ TSS è¿›è¡Œä»»åŠ¡åˆ‡æ¢æ—¶çš„ç¤ºä¾‹
 ;-----------------------------------------
 tss_task_handler:
         jmp do_tss_task
@@ -155,17 +155,17 @@ do_tss_task:
         mov esi, tmsg1
         call puts
 
-; »ñµÃ CPL Öµ        
+; è·å¾— CPL å€¼        
         mov esi, tmsg2
         call puts
         mov eax, CLIB32_GET_CPL
-        call clib32_service_enter               ; µ÷ÓÃ clib32 ¿âµÄ get_cpl() º¯Êı
+        call clib32_service_enter               ; è°ƒç”¨ clib32 åº“çš„ get_cpl() å‡½æ•°
         mov esi, eax
         call print_byte_value
         call println
                 
-        clts                                   ; Çå CR0.TS ±êÖ¾Î»
-; Ê¹ÓÃ iret Ö¸ÁîÇĞ»»»ØÔ­ task
+        clts                                   ; æ¸… CR0.TS æ ‡å¿—ä½
+; ä½¿ç”¨ iret æŒ‡ä»¤åˆ‡æ¢å›åŸ task
         iret   
 
 
@@ -199,11 +199,11 @@ do_callgate:
 
 
 
-;******** include ÖĞ¶Ï handler ´úÂë ********
+;******** include ä¸­æ–­ handler ä»£ç  ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include æ¨¡å— ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -214,10 +214,10 @@ do_callgate:
 %include "..\lib\pic8259A.asm"
 
 
-;;************* º¯Êıµ¼Èë±í  *****************
+;;************* å‡½æ•°å¯¼å…¥è¡¨  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓĞÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; è¿™ä¸ª lib32 åº“å¯¼å…¥è¡¨æ”¾åœ¨ common\ ç›®å½•ä¸‹ï¼Œ
+; ä¾›æ‰€æœ‰å®éªŒçš„ protected.asm æ¨¡å—ä½¿ç”¨
 
 %include "..\common\lib32_import_table.imt"
 

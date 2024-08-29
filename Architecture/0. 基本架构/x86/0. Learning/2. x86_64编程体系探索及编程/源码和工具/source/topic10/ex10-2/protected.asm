@@ -7,53 +7,53 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ÕâÊÇ protected Ä£¿é
+; è¿™æ˜¯ protected æ¨¡å—
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected Ä£¿é³¤¶È
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected æ¨¡å—é•¿åº¦
 
 entry:
         
-;; ÉèÖÃ #GP handler
+;; è®¾ç½® #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler        
 
-;; ÉèÖÃ #DB handler
+;; è®¾ç½® #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ #AC handler
+;; è®¾ç½® #AC handler
         mov esi, AC_HANDLER_VECTOR
         mov edi, AC_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ #UD handler
+;; è®¾ç½® #UD handler
         mov esi, UD_HANDLER_VECTOR
         mov edi, UD_handler
         call set_interrupt_handler
                 
-;; ÉèÖÃ #NM handler
+;; è®¾ç½® #NM handler
         mov esi, NM_HANDLER_VECTOR
         mov edi, NM_handler
         call set_interrupt_handler
         
-;; ÉèÖÃ #TS handler
+;; è®¾ç½® #TS handler
         mov esi, TS_HANDLER_VECTOR
         mov edi, TS_handler
         call set_interrupt_handler
 
-;; ÉèÖÃ TSS µÄ ESP0        
+;; è®¾ç½® TSS çš„ ESP0        
         mov esi, tss32_sel
         call get_tss_base
         mov DWORD [eax + 4], KERNEL_ESP
         
-;; ¹Ø±ÕËùÓĞ 8259ÖĞ¶Ï
+;; å…³é—­æ‰€æœ‰ 8259ä¸­æ–­
         call disable_8259
         
 ;=======================================================        
@@ -65,10 +65,10 @@ entry:
 
 
 
-;; ÉèÖÃĞÂ TSS ÇøÓò
+;; è®¾ç½®æ–° TSS åŒºåŸŸ
         mov esi, tss_sel
         call get_tss_base
-        mov DWORD [eax + 32], tss_task_handler                  ; ÉèÖÃ EIP ÖµÎª tss_task_handler
+        mov DWORD [eax + 32], tss_task_handler                  ; è®¾ç½® EIP å€¼ä¸º tss_task_handler
         mov DWORD [eax + 36], 0                                 ; eflags = 2H
         mov DWORD [eax + 56], USER_ESP                          ; esp
         mov WORD [eax + 76], USER_CS|3                          ; cs
@@ -85,13 +85,13 @@ entry:
         call println        
         
 
-; ´Ó 0 ¼¶ÇĞ»»µ½ 3 ¼¶        
+; ä» 0 çº§åˆ‡æ¢åˆ° 3 çº§        
         call tss_sel:0
 
         mov esi, msg1
         call puts        
         
-; »ñµÃ CPL Öµ        
+; è·å¾— CPL å€¼        
         mov esi, msg2
         call puts
         mov eax, CLIB32_GET_CPL
@@ -101,10 +101,10 @@ entry:
         call println
         
         jmp $
-; ×ªµ½ long Ä£¿é
+; è½¬åˆ° long æ¨¡å—
         ;jmp LONG_SEG
                                         
-; ½øÈë ring 3 ´úÂë
+; è¿›å…¥ ring 3 ä»£ç 
         push DWORD user_data32_sel | 0x3
         push esp
         push DWORD user_code32_sel | 0x3        
@@ -112,14 +112,14 @@ entry:
         retf
 
         
-;; ÓÃ»§´úÂë
+;; ç”¨æˆ·ä»£ç 
 
 user_entry:
         mov ax, user_data32_sel
         mov ds, ax
         mov es, ax
 
-; »ñµÃ CPL Öµ        
+; è·å¾— CPL å€¼        
 ;        mov esi, msg2
 ;        call puts
 ;        call get_cpl
@@ -127,13 +127,13 @@ user_entry:
 ;        call print_byte_value
 ;        call println
                 
-; Ê¹ÓÃ TSS ½øĞĞÈÎÎñÇĞ»»        
+; ä½¿ç”¨ TSS è¿›è¡Œä»»åŠ¡åˆ‡æ¢        
         call tss_sel:0        
         
         mov esi, msg1
         call puts        
         
-; »ñµÃ CPL Öµ        
+; è·å¾— CPL å€¼        
         mov esi, msg2
         call puts
         mov eax, CLIB32_GET_CPL
@@ -165,7 +165,7 @@ do_tss_task:
         mov esi, tmsg1
         call puts
 
-; »ñµÃ CPL Öµ        
+; è·å¾— CPL å€¼        
         mov esi, tmsg2
         call puts
         mov eax, CLIB32_GET_CPL
@@ -174,8 +174,8 @@ do_tss_task:
         call print_byte_value
         call println
                 
-        ;clts                                                ; Çå CR0.TS ±êÖ¾Î»
-; Ê¹ÓÃ iret Ö¸ÁîÇĞ»»»ØÔ­ task
+        ;clts                                                ; æ¸… CR0.TS æ ‡å¿—ä½
+; ä½¿ç”¨ iret æŒ‡ä»¤åˆ‡æ¢å›åŸ task
         iret
 
 
@@ -205,11 +205,11 @@ do_callgate:
 
 
 
-;******** include ÖĞ¶Ï handler ´úÂë ********
+;******** include ä¸­æ–­ handler ä»£ç  ********
 %include "..\common\handler32.asm"
 
 
-;********* include Ä£¿é ********************
+;********* include æ¨¡å— ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -221,10 +221,10 @@ do_callgate:
 
 
 
-;;************* º¯Êıµ¼Èë±í  *****************
+;;************* å‡½æ•°å¯¼å…¥è¡¨  *****************
 
-; Õâ¸ö lib32 ¿âµ¼Èë±í·ÅÔÚ common\ Ä¿Â¼ÏÂ£¬
-; ¹©ËùÓĞÊµÑéµÄ protected.asm Ä£¿éÊ¹ÓÃ
+; è¿™ä¸ª lib32 åº“å¯¼å…¥è¡¨æ”¾åœ¨ common\ ç›®å½•ä¸‹ï¼Œ
+; ä¾›æ‰€æœ‰å®éªŒçš„ protected.asm æ¨¡å—ä½¿ç”¨
 
 %include "..\common\lib32_import_table.imt"
 
