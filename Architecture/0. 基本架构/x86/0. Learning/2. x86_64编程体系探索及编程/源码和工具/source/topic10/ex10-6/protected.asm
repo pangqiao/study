@@ -1,5 +1,5 @@
 ; protected.asm
-; Copyright (c) 2009-2012 mik 
+; Copyright (c) 2009-2012 mik
 ; All rights reserved.
 
 
@@ -9,18 +9,18 @@
 ; 这是 protected 模块
 
         bits 32
-        
+
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
 protected_length        dw        PROTECTED_END - PROTECTED_BEGIN         ; protected 模块长度
 
 entry:
-        
+
 ;; 设置 #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
-        call set_interrupt_handler        
+        call set_interrupt_handler
 
 ;; 设置 #DB handler
         mov esi, DB_HANDLER_VECTOR
@@ -36,33 +36,33 @@ entry:
         mov esi, UD_HANDLER_VECTOR
         mov edi, UD_handler
         call set_interrupt_handler
-                
+
 ;; 设置 #NM handler
         mov esi, NM_HANDLER_VECTOR
         mov edi, NM_handler
         call set_interrupt_handler
-        
+
 ;; 设置 #TS handler
         mov esi, TS_HANDLER_VECTOR
         mov edi, TS_handler
         call set_interrupt_handler
 
-;; 设置 TSS 的 ESP0        
+;; 设置 TSS 的 ESP0
         mov esi, tss32_sel
         call get_tss_base
         mov DWORD [eax + 4], KERNEL_ESP
 
-; 允许执行 SSE 指令	
+; 允许执行 SSE 指令
 	mov eax, cr4
 	bts eax, 9				; CR4.OSFXSR = 1
 	mov cr4, eax
 
 ;设置 CR4.PAE
 	call pae_enable
-	
+
 ; 开启 XD 功能
 	call execution_disable_enable
-        
+
 ;; 关闭所有 8259中断
         call disable_8259
 
@@ -74,19 +74,19 @@ entry:
         mov edi, system_service
         call set_user_interrupt_handler
 
-        
+
 ; 转到 long 模块
         jmp LONG_SEG
-        
-                                        
+
+
 ; 进入 ring 3 代码
         push DWORD user_data32_sel | 0x3
         push esp
-        push DWORD user_code32_sel | 0x3        
+        push DWORD user_code32_sel | 0x3
         push DWORD user_entry
         retf
 
-        
+
 ;; 用户代码
 
 user_entry:
@@ -125,7 +125,7 @@ msg1    db '---> now, call system service routine with int 0x40',10, 0
 
 ;;************* 函数导入表  *****************
 
-; 这个 lib32 库导入表放在 common\ 目录下，
+; 这个 lib32 库导入表放在 common\ 目录下,
 ; 供所有实验的 protected.asm 模块使用
 
 %include "..\common\lib32_import_table.imt"
