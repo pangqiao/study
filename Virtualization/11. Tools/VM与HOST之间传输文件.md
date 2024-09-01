@@ -10,7 +10,7 @@
   - [2.3. 启动虚拟机](#23-启动虚拟机)
   - [2.4. Guest 上 mount 共享文件夹](#24-guest-上-mount-共享文件夹)
 - [3. qemu-nbd 方式](#3-qemu-nbd-方式)
-- [4.](#4)
+- [4. 虚拟机硬盘](#4-虚拟机硬盘)
 - [5. virt 工具](#5-virt-工具)
 - [6. 参考](#6-参考)
 
@@ -96,7 +96,7 @@ mount -t 9p -o trans=virtio test_mount /root/shared/ -oversion=9p2000.L,posixacl
 
 查看\<qemu-nbd 方式挂载镜像>
 
-# 4.
+# 4. 虚拟机硬盘
 
 使用 dd 创建一个文件, 作为虚拟机和宿主机之间传输桥梁
 
