@@ -135,7 +135,7 @@ DebugFS, 顾名思义, 是一种用于内核调试的虚拟文件系统, 内核�
 
 `bus_register->BLOCKING_INIT_NOTIFIER_HEAD(&priv->bus_notifier)`, 已经初始化了`usb_bus_type->p->bus_notifier`通过`blocking_notifier_chain_register`函数注册到通知链表. 
 
-那什么时候usb总线收到通知呢？
+那什么时候usb总线收到通知呢?
 
 - 当总线发现新的设备调用`device_add->blocking_notifier_call_chain(&dev->bus->p->bus_notifier, BUS_NOTIFY_ADD_DEVICE, dev)`
 
@@ -881,7 +881,7 @@ drivers/usb/core/hub.c:
     	return retval;
     }
 ```
-这个函数首先读取了root hub的设备描述符, 这个描述符定义在drivers/usb/core/hcd.c里, 该文件还包含root hub的其他几种描述符. 既然root hub是一个虚拟设备, 那么它的描述符是怎么读的呢？其实读取root hub的上层函数和其余设备一样, 只是到了`usb_hcd_submit_urb()`这一步之后, 里面有一个判断: 
+这个函数首先读取了root hub的设备描述符, 这个描述符定义在drivers/usb/core/hcd.c里, 该文件还包含root hub的其他几种描述符. 既然root hub是一个虚拟设备, 那么它的描述符是怎么读的呢?其实读取root hub的上层函数和其余设备一样, 只是到了`usb_hcd_submit_urb()`这一步之后, 里面有一个判断: 
 ```cpp
     	if (is_root_hub(urb->dev)) {
     		status = rh_urb_enqueue(hcd, urb);
@@ -955,7 +955,7 @@ drivers/usb/core/hub.c:
 到这一步, root hub的设备描述符已经得到了, 但是还有设置描述符, `usb_enumerate_device`会先读取完整的设置描述符(包括接口描述符和端点描述符), 然后会继续读字符串描述符. 读完之后放在`struct usb_device`的对应地方. 然后直接调用`device_add`将设备添加进系统. 
 根据之前的分析, 当`device_add`被调用的时候, 系统会调用bus的match函数, 由于我们之前将root hub的type赋值为`usb_device_type`, 因此match的时候就会和`usb_generic_driver`匹配上, 然后去调用`generic_probe`, 由`usb_choose_configuration`和`usb_set_configuration`完成后续设置. 
 从root hub的设置描述符中我们可以知道root hub只有一个interface和一个endpoint, 因此在`usb_set_configuration`里这个interface会匹配到`hub_driver`并执行`hub_probe`. 
-`hub_probe`里有两个需要注意的地方, 一个是`INIT_WORK(&hub->events, hub_event)`, 一个是`hub_configure(hub, endpoint)`. 首先, `INIT_WORK`把`hub->events`初始化成`hub_event`, 我们再去看一下`hub_event`这个函数, 发现是用来处理port/hub status change的一个函数, 那么这个函数什么时候会被调到呢？答案在`hub_configure`这个函数里. 
+`hub_probe`里有两个需要注意的地方, 一个是`INIT_WORK(&hub->events, hub_event)`, 一个是`hub_configure(hub, endpoint)`. 首先, `INIT_WORK`把`hub->events`初始化成`hub_event`, 我们再去看一下`hub_event`这个函数, 发现是用来处理port/hub status change的一个函数, 那么这个函数什么时候会被调到呢?答案在`hub_configure`这个函数里. 
 ### 2.7.3. hub_configure
 ```cpp
     static int hub_configure(struct usb_hub *hub,

@@ -13,9 +13,9 @@ MSI中断本质上是一个memory write, memory write的地址就是设备配置
 
 # 为何要引入MSI-X
 
-前面讲了MSI中断的机制, 其实MSI-X Capability中断机制与MSI Capability的中断机制类似. 既然机制类似, 为啥还要需要引入MSI-X呢？
+前面讲了MSI中断的机制, 其实MSI-X Capability中断机制与MSI Capability的中断机制类似. 既然机制类似, 为啥还要需要引入MSI-X呢?
 
-回答这个问题前, 我们先看看MSI有哪些限制？
+回答这个问题前, 我们先看看MSI有哪些限制?
 
 (1) MSI相关的寄存器都是在配置空间中, 从Message Control寄存器multiple message Capble字段可以看出MSI最多支持32个中断向量, 且必须是2^N, 也就是说如果一个function需要3个中断向量, 必须申请4个才可以满足.
 
@@ -157,7 +157,7 @@ pci_enable_msix_range->__pci_enable_msix_range->__pci_enable_msix-> msix_capabil
 
 ![2024-06-04-11-20-25.png](./images/2024-06-04-11-20-25.png)
 
-# 什么时候umask的vector中断呢？
+# 什么时候umask的vector中断呢?
 
 以网卡为例, 在request_irq的时候才把MSI-X的使用的vector给unmask的.
 
