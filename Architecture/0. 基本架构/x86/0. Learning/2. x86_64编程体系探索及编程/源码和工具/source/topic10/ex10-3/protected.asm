@@ -77,7 +77,7 @@ entry:
         mov WORD [eax + 72], KERNEL_SS                        ; es
 
 
-;; 设置嵌套环境1: 在当前的 TSS 段里写入 Link 域（目标任务的TSS selector）
+;; 设置嵌套环境1: 在当前的 TSS 段里写入 Link 域 (目标任务的TSS selector) 
         call get_tr_base
         mov WORD [eax], tss_sel                               ; 设当前的 TSS.link
 
