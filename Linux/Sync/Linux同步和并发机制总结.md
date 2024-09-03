@@ -92,7 +92,7 @@ struct semaphore{
 获得锁:
 
 - down(struct semaphore \*sem): 失败进入**不可中断的睡眠**状态
-- down\_interruptible(struct semaphore \*sem): **失败**则进入**可中断的睡眠**状态. ①关闭**本地中断(防止中断来导致死锁**); ②count 大于 0, 当前进程获得 semaphore, count 减 1, 退出; ③count 小于等于 0, 将**当前进程加入 wait\_list 链表**, 循环: 设置**进程 TASKINTERRUPTIBLE**, 调用**schedule\_timeout()让出 CPU<即睡眠**>, 判断被调度到的原因(**能走到这儿说明又被调度**到了), 如果 waiter.up 为 true, 说明**被 up 操作唤醒**, 获得信号量,退出; ④打开本地中断
+- down\_interruptible(struct semaphore \*sem): **失败**则进入**可中断的睡眠**状态. 1)关闭**本地中断(防止中断来导致死锁**); 2)count 大于 0, 当前进程获得 semaphore, count 减 1, 退出; 3)count 小于等于 0, 将**当前进程加入 wait\_list 链表**, 循环: 设置**进程 TASKINTERRUPTIBLE**, 调用**schedule\_timeout()让出 CPU<即睡眠**>, 判断被调度到的原因(**能走到这儿说明又被调度**到了), 如果 waiter.up 为 true, 说明**被 up 操作唤醒**, 获得信号量,退出; 4)打开本地中断
 - 等等
 
 释放锁:
@@ -171,7 +171,7 @@ struct mutex {
 
 - mutex\-\>count 减 1 等于 0, 说明没人持有锁, 直接申请成功, 设置 owner 为当前进程, 退出
 - 申请 OSQ 锁, 减少 CPU cache line bouncing, 会将所有等待 Mutex 的参与者放入 OSQ 锁队列, 只有第一个等待者才参与自旋等待
-- while 循环自旋等待锁持有者释放, 这中间①锁持有者变化 ②锁持有进程被调度出去, 即睡眠(task\-\>on\_cpu=0), ③调度器需要调度其他进程(need\_resched())都会**退出循环**, 但**不是锁持有者释放了锁(lock\-\>owner 不是 NULL**); 如果是锁持有者释放了锁(lock\-\>owner 是 NULL), 当前进程获取锁, 设置 count 为 0, 释放 OSQ 锁, 申请成功, 退出.
+- while 循环自旋等待锁持有者释放, 这中间1)锁持有者变化 2)锁持有进程被调度出去, 即睡眠(task\-\>on\_cpu=0), 3)调度器需要调度其他进程(need\_resched())都会**退出循环**, 但**不是锁持有者释放了锁(lock\-\>owner 不是 NULL**); 如果是锁持有者释放了锁(lock\-\>owner 是 NULL), 当前进程获取锁, 设置 count 为 0, 释放 OSQ 锁, 申请成功, 退出.
 - 上面自旋等待获取锁失败, 再尝试一次申请, 不成功的话只能走睡眠唤醒的慢车道.
 - 将当前进程的 waiter 进入 mutex 等待队列 wait\_list
 - 循环: 获取锁, 失败则让出 CPU, 进入睡眠态, 成功则退出循环, 收到异常信号也会退出循环

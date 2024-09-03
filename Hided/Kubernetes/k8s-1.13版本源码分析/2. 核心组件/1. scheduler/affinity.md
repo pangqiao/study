@@ -349,14 +349,14 @@ func MatchNodeSelectorTerms( nodeSelectorTerms []v1.NodeSelectorTerm,
 		if len(req.MatchExpressions) == 0 && len(req.MatchFields) == 0 {
 			continue
 		}
-    // MatchExpressions条件表达式匹配                                             ① 
+    // MatchExpressions条件表达式匹配                                             1) 
 		if len(req.MatchExpressions) != 0 {
 			labelSelector, err := NodeSelectorRequirementsAsSelector(req.MatchExpressions)
 			if err != nil || !labelSelector.Matches(nodeLabels) {
 				continue
 			}
 		}
-    // MatchFields条件表达式匹配                                                   ②
+    // MatchFields条件表达式匹配                                                   2)
 		if len(req.MatchFields) != 0 {
 			fieldSelector, err := NodeSelectorRequirementsAsFieldSelector(req.MatchFields)
 			if err != nil || !fieldSelector.Matches(nodeFields) {
@@ -370,7 +370,7 @@ func MatchNodeSelectorTerms( nodeSelectorTerms []v1.NodeSelectorTerm,
 
 ```
 
-①  *NodeSelectorRequirementAsSelector()*
+1)  *NodeSelectorRequirementAsSelector()*
 是对"requiredDuringSchedulingIgnoredDuringExecution.matchExpressions"所配置的表达式进行Selector表达式进行格式化加工, 返回一个labels.Selector实例化对象. [*本文开头1.2章节有分析*]
 
 !FILENAME   pkg/apis/core/v1/helper/helpers.go:222
@@ -410,7 +410,7 @@ func NodeSelectorRequirementsAsSelector(nsm []v1.NodeSelectorRequirement) (label
 }
 ```
 
- ② *NodeSelectorRequirementAs`Field`Selector()*
+ 2) *NodeSelectorRequirementAs`Field`Selector()*
 是对"requiredDuringSchedulingIgnoredDuringExecution.matchFields"所配置的表达式进行Selector表达式进行格式化加工, 返回一个Fields.Selector实例化对象.
 
 !FILENAME  pkg/apis/core/v1/helper/helpers.go:256
@@ -757,7 +757,7 @@ func (c *PodAffinityChecker) InterPodAffinityMatches(pod *v1.Pod, meta algorithm
 	if node == nil {
 		return false, nil, fmt.Errorf("node not found")
 	}     
-                                          //①
+                                          //1)
 	if failedPredicates, error := c.satisfiesExistingPodsAntiAffinity(pod, meta, nodeInfo); failedPredicates != nil {
 		failedPredicates := append([]algorithm.PredicateFailureReason{ErrPodAffinityNotMatch}, failedPredicates)
 		return false, failedPredicates, error
@@ -768,7 +768,7 @@ func (c *PodAffinityChecker) InterPodAffinityMatches(pod *v1.Pod, meta algorithm
 	if affinity == nil || (affinity.PodAffinity == nil && affinity.PodAntiAffinity == nil) {
 		return true, nil, nil
 	}   
-                                         //② 
+                                         //2) 
 	if failedPredicates, error := c.satisfiesPodsAffinityAntiAffinity(pod, meta, nodeInfo, affinity); failedPredicates != nil {
 		failedPredicates := append([]algorithm.PredicateFailureReason{ErrPodAffinityNotMatch}, failedPredicates)
 		return false, failedPredicates, error
@@ -778,7 +778,7 @@ func (c *PodAffinityChecker) InterPodAffinityMatches(pod *v1.Pod, meta algorithm
 }
 ```
 
-① satisfiesExistingPodsAntiAffinity()
+1) satisfiesExistingPodsAntiAffinity()
 检测当pod被调度到目标node上是否触犯了其它pods所定义的反亲和配置.
 *即: 当调度一个pod到目标Node上, 而某个或某些Pod定义了反亲和配置与被*
         *调度的Pod相匹配(触犯), 那么就不应该将此Node加入到可选的潜在调度Nodes列表内.*
@@ -880,7 +880,7 @@ func getMatchingAntiAffinityTopologyPairsOfPod(newPod *v1.Pod, existingPod *v1.P
 }
 ```
 
-②  satisfiesPodsAffinityAntiAffinity() 
+2)  satisfiesPodsAffinityAntiAffinity() 
 满足Pods亲和与反亲和配置.
 我们先看一下代码结构, 我将共分为两个部分if{}部分,else{}部分,依赖于是否指定了预处理的预选metadata.
 
@@ -1003,15 +1003,15 @@ func targetPodMatchesAffinityOfPod(pod, targetPod *v1.Pod) bool {
 	if affinity == nil || affinity.PodAffinity == nil {
 		return false
 	}
-	affinityProperties, err := getAffinityTermProperties(pod, GetPodAffinityTerms(affinity.PodAffinity))   // ① 
+	affinityProperties, err := getAffinityTermProperties(pod, GetPodAffinityTerms(affinity.PodAffinity))   // 1) 
 	if err != nil {
 		klog.Errorf("error in getting affinity properties of Pod %v", pod.Name)
 		return false
-	}                                          // ② 
+	}                                          // 2) 
 	return podMatchesAllAffinityTermProperties(targetPod, affinityProperties)
 }
 
-// ① 获取affinityTerms所定义所有的namespaces 和 selector 列表, 
+// 1) 获取affinityTerms所定义所有的namespaces 和 selector 列表, 
 //    返回affinityTermProperites数组. 数组的每项定义{namesapces,selector}.
 func getAffinityTermProperties(pod *v1.Pod, terms []v1.PodAffinityTerm) (properties []*affinityTermProperties, err error) {
 	if terms == nil {
@@ -1041,7 +1041,7 @@ func GetNamespacesFromPodAffinityTerm(pod *v1.Pod, podAffinityTerm *v1.PodAffini
 	return names
 }
 
-// ② 遍历properties所有定义的namespaces 和 selector 列表, 调用PodMatchesTermsNamespaceAndSelector()进行一一匹配.
+// 2) 遍历properties所有定义的namespaces 和 selector 列表, 调用PodMatchesTermsNamespaceAndSelector()进行一一匹配.
 func podMatchesAllAffinityTermProperties(pod *v1.Pod, properties []*affinityTermProperties) bool {
 	if len(properties) == 0 {
 		return false
@@ -1333,15 +1333,15 @@ func (ipa *InterPodAffinity) CalculateInterPodAffinityPriority(pod *v1.Pod, node
 
 	pm := newPodAffinityPriorityMap(nodes)
   
-  // processPod()主要处理pod亲和和反亲和weight累计的逻辑代码.                      ②
+  // processPod()主要处理pod亲和和反亲和weight累计的逻辑代码.                      2)
   // 调用了Terms处理方法: processTerms()
 	processPod := func(existingPod *v1.Pod) error {     
 		...
-       // 亲和性检测逻辑代码                                                    ① 
+       // 亲和性检测逻辑代码                                                    1) 
        pm.processTerms(terms, pod, existingPod, existingPodNode, 1)
     ...
 	}
-  //ProcessNode()通过一个判断是否存在亲和性配置选择调用processPod()                ③
+  //ProcessNode()通过一个判断是否存在亲和性配置选择调用processPod()                3)
 	processNode := func(i int) {  
 		    ...
 					if err := processPod(existingPod); err != nil {
@@ -1364,7 +1364,7 @@ func (ipa *InterPodAffinity) CalculateInterPodAffinityPriority(pod *v1.Pod, node
 	result := make(schedulerapi.HostPriorityList, 0, len(nodes))
 	for _, node := range nodes {
 		fScore := float64(0)
-		if (maxCount - minCount) > 0 {           //reduce计算fScore分             ④ 
+		if (maxCount - minCount) > 0 {           //reduce计算fScore分             4) 
 			fScore = float64(schedulerapi.MaxPriority) * ((pm.counts[node.Name] - minCount) / (maxCount - minCount))
 		}
 		result = append(result, schedulerapi.HostPriority{
@@ -1377,7 +1377,7 @@ func (ipa *InterPodAffinity) CalculateInterPodAffinityPriority(pod *v1.Pod, node
 }
 ```
 
-① **ProcessTerms()**
+1) **ProcessTerms()**
 给定Pod和此Pod的定义的亲和性配置(podAffinityTerm)、被测目标pod、运行被测目标pod的Node信息, 对所有潜在可被调度的Nodes列表进行一一检测,并对根据检测结果为node进行weight累计.  
 流程如下:  
 
@@ -1466,7 +1466,7 @@ func PodMatchesTermsNamespaceAndSelector(pod *v1.Pod, namespaces sets.String, se
 }
 ```
 
-② **processPod() ** 处理亲和和反亲和逻辑层, 调用processTerms()进行检测与统计权重值. 
+2) **processPod() ** 处理亲和和反亲和逻辑层, 调用processTerms()进行检测与统计权重值. 
 
 !FILENAME  pkg/scheduler/algorithm/priorities/interpod_affinity.go:136
 
@@ -1513,7 +1513,7 @@ func PodMatchesTermsNamespaceAndSelector(pod *v1.Pod, namespaces sets.String, se
 	}
 ```
 
-③ **processNode ** 如果"被调度pod"未定义亲和配置, 则检测潜在Nodes的亲和性定义.
+3) **processNode ** 如果"被调度pod"未定义亲和配置, 则检测潜在Nodes的亲和性定义.
 
 !FILENAME  pkg/scheduler/algorithm/priorities/interpod_affinity.go:193
 
@@ -1539,7 +1539,7 @@ func PodMatchesTermsNamespaceAndSelector(pod *v1.Pod, namespaces sets.String, se
 	}
 ```
 
-④ 最后的得分fscore计算公式: 
+4) 最后的得分fscore计算公式: 
 
 ```go
 // 10 * (node权重累计值 - 最小权重得分值) / (最大权重得分值 - 最小权重得分值)
@@ -1644,14 +1644,14 @@ func (s *ServiceAffinity) checkServiceAffinity(pod *v1.Pod, meta algorithm.Predi
 		s.serviceAffinityMetadataProducer(pm)
 		pods, services = pm.serviceAffinityMatchingPodList, pm.serviceAffinityMatchingPodServices
 	}
-	// 筛选掉存在于Node(nodeinfo)上pods, 且与之进行podKey比对不相等的pods.           ①
+	// 筛选掉存在于Node(nodeinfo)上pods, 且与之进行podKey比对不相等的pods.           1)
 	filteredPods := nodeInfo.FilterOutPods(pods)
 	node := nodeInfo.Node()
 	if node == nil {
 		return false, nil, fmt.Errorf("node not found")
 	}
 	// affinityLabes交集 ==(A ∩ B) 
-  // A: 被调度pod的NodeSelector定义  B: 定义的亲和性Labels                           ②
+  // A: 被调度pod的NodeSelector定义  B: 定义的亲和性Labels                           2)
 	affinityLabels := FindLabelsInSet(s.labels, labels.Set(pod.Spec.NodeSelector))
 	// Step 1: If we don't have all constraints, introspect nodes to find the missing constraints.
 	if len(s.labels) > len(affinityLabels) {
@@ -1665,13 +1665,13 @@ func (s *ServiceAffinity) checkServiceAffinity(pod *v1.Pod, meta algorithm.Predi
 				}
 				// 输入: 交集Labels、服务亲和Labels、被选出的亲和Node Lables
 				// affinityLabels = affinityLabels + 交集(B ∩ C)
-				// B: 服务亲和Labels  C:被选出的亲和Node的Lables                           ③
+				// B: 服务亲和Labels  C:被选出的亲和Node的Lables                           3)
 				AddUnsetLabelsToMap(affinityLabels, s.labels, labels.Set(nodeWithAffinityLabels.Labels))
 			}
 		}
 	}
 
-	// 进行一次最终的匹配(affinityLabels 与 被检测亲和的node.Labels )               ④
+	// 进行一次最终的匹配(affinityLabels 与 被检测亲和的node.Labels )               4)
 	if CreateSelectorFromLabels(affinityLabels).Matches(labels.Set(node.Labels)) {
 		return true, nil, nil
 	}
@@ -1679,7 +1679,7 @@ func (s *ServiceAffinity) checkServiceAffinity(pod *v1.Pod, meta algorithm.Predi
 }
 ```
 
-① *FilterOutPods()* 
+1) *FilterOutPods()* 
 筛选掉存在于Node(nodeinfo)上pods, 且与之进行podKey比对不相等的pods
 filteredPods = 未在Node上的pods + 在node上但podKey相同的pods
 
@@ -1715,7 +1715,7 @@ func (n *NodeInfo) FilterOutPods(pods []*v1.Pod) []*v1.Pod {
 }
 ```
 
-② *FindLabelsInSet() * 
+2) *FindLabelsInSet() * 
 参数一:  (B)定义的亲和性Labels配置
 参数二:  (A)被调度pod的定义NodeSelector配置Selector
 检测存在的于NodeSelector的亲和性Labels配置, 则取两者的交集部分. (A ∩ B) 
@@ -1734,7 +1734,7 @@ func FindLabelsInSet(labelsToKeep []string, selector labels.Set) map[string]stri
 }
 ```
 
-③ *AddUnsetLabelsToMap()*
+3) *AddUnsetLabelsToMap()*
 参数一:  (N)在FindLabelsInSet()计算出来的交集Labels 
 参数二:  (B)定义的亲和性Labels配置
 参数三:  (C)"被选出的亲和Node"上的Lables
@@ -1759,7 +1759,7 @@ func AddUnsetLabelsToMap(aL map[string]string, labelsToAdd []string, labelSet la
 }
 ```
 
-④ *CreateSelectorFromLabels().Match()*  返回labels.Selector对象
+4) *CreateSelectorFromLabels().Match()*  返回labels.Selector对象
 
 !FILENAME  pkg/scheduler/algorithm/predicates/utils.go:62
 

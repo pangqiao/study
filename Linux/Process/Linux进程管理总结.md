@@ -1067,11 +1067,11 @@ task\_struct 结构信息
 
 可以看到, **多个 task\_struct**指向**一个 PID**, 同时 PID 的 hash 数组里安装不同的类型对 task 进行散列, 并且**一个 PID**会属于多个命名空间.
 
-- 进程的结构体是 task\_struct, **一个进程对应一个 task\_struct 结构体(一对一**). **一个进程**会有**PIDTYPE\_MAX 个(3 个)pid\_link 结构体(一对多**), 这**三个结构体中的 pid**分别指向 ①该进程对应的**进程本身(PIDTYPE\_PID**)的真实的 pid 结构体; ②该进程的**进程组(PIDTYPE\_PGID)的组长本身**的 pid 结构体; ③该进程的**会话组(PIDTYPE\_SID)的组长**本身的 pid 结构体. 所以**一个真实的进程只会有一个自身真实的 pid 结构体**; **thread\_group**指向的是该线程所在**线程组的链表头**; thread\_node 是**线程组中的结点**.
+- 进程的结构体是 task\_struct, **一个进程对应一个 task\_struct 结构体(一对一**). **一个进程**会有**PIDTYPE\_MAX 个(3 个)pid\_link 结构体(一对多**), 这**三个结构体中的 pid**分别指向 1)该进程对应的**进程本身(PIDTYPE\_PID**)的真实的 pid 结构体; 2)该进程的**进程组(PIDTYPE\_PGID)的组长本身**的 pid 结构体; 3)该进程的**会话组(PIDTYPE\_SID)的组长**本身的 pid 结构体. 所以**一个真实的进程只会有一个自身真实的 pid 结构体**; **thread\_group**指向的是该线程所在**线程组的链表头**; thread\_node 是**线程组中的结点**.
 
 - 这三个 pid\_link 结构体里面有个**哈希节点 node**, 因为进程组、会话组等的存在, 这个**node 用来链接同一个组的进程 task\_struct**, 指向的是**task\_struct**中的 pid\_link 的 node
 
-- pid 结构体(不是一个 ID 号)代表**一个真实的进程(某个组的组长的 pid 也是这个结构体, 因为组长也是真实的进程, 也就有相应的真实的 pid 结构体, 而组长身份是通过 task\_struct 引的**), 所以里面会有 ①**该进程真实所处命名空间的 level**; ②**PIDTYPE\_MAX 个(3 个)散列表头**, tasks[PIDTYPE\_PID]指向自身进程(因为 PIDTYPE\_PID 是 PID 类型), 如果该进程是进程组组长, 那么 tasks[PIDTYPE\_PGID]就是这个散列表的表头, 指向下一个进程的相应组变量 pids[PIDTYPE\_PGID]的 node, 如果该进程是会话组组长, 那么 tasks[PIDTYPE\_SID]就是这个散列表的表头, 指向下一个进程的相应组变量 pids[PIDTYPE\_SID]的 node; ③由于一个进程可能会呈现在多个 pid 命名空间, 所以有该进程在其他命名空间中的信息结构体 upid 的数组, 每个数组项代表一个
+- pid 结构体(不是一个 ID 号)代表**一个真实的进程(某个组的组长的 pid 也是这个结构体, 因为组长也是真实的进程, 也就有相应的真实的 pid 结构体, 而组长身份是通过 task\_struct 引的**), 所以里面会有 1)**该进程真实所处命名空间的 level**; 2)**PIDTYPE\_MAX 个(3 个)散列表头**, tasks[PIDTYPE\_PID]指向自身进程(因为 PIDTYPE\_PID 是 PID 类型), 如果该进程是进程组组长, 那么 tasks[PIDTYPE\_PGID]就是这个散列表的表头, 指向下一个进程的相应组变量 pids[PIDTYPE\_PGID]的 node, 如果该进程是会话组组长, 那么 tasks[PIDTYPE\_SID]就是这个散列表的表头, 指向下一个进程的相应组变量 pids[PIDTYPE\_SID]的 node; 3)由于一个进程可能会呈现在多个 pid 命名空间, 所以有该进程在其他命名空间中的信息结构体 upid 的数组, 每个数组项代表一个
 
 - 结构体 upid 的数组 number[1], **数组项个数取决于该进程 pid 的 level 值**, **每个数组项代表一个命名空间**, 这个就是用来一个 PID 可以属于不同的命名空间, nr 值表示该进程在该命名空间的 pid 值, ns 指向该信息所在的命名空间, pid\_chain 属于哈希表的节点. 系统有一个**pid\_hash**[], 通过**pid**在**某个命名空间的 nr 值**哈希到某个表项, 如果**多个 nr 值**哈希到**同一个表项**, 将其**加入链表**, 这个节点就是**upid 的 pid\_chain**
 

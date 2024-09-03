@@ -27,7 +27,7 @@ https://blog.csdn.net/ace_an/article/details/53813242
 
     - list\_for\_each
     - list\_for\_each\_entry
-    - list\_for\_each\_entry\_reverse 反向遍历链表, 有二原因: ①当反向遍历性能好时; ②当遍历顺序很重要时;
+    - list\_for\_each\_entry\_reverse 反向遍历链表, 有二原因: 1)当反向遍历性能好时; 2)当遍历顺序很重要时;
     - list\_for\_each\_entry\_safe 该函数允许在遍历链表循环体中删除元素, 普通遍历函数不允许这样做
     - list\_for\_each\_entry\_safe\_reverse
 
