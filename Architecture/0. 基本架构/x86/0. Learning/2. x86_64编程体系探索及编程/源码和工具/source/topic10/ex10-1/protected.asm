@@ -144,7 +144,7 @@ callgate_pointer:       dd        call_gate_handler
 
 ;-----------------------------------------
 ; tss_task_handler()
-; 描述：
+; 描述: 
 ;       这个是使用 TSS 进行任务切换时的示例
 ;-----------------------------------------
 tss_task_handler:

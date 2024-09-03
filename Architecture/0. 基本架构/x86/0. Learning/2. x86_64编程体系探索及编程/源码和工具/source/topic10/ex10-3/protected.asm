@@ -144,7 +144,7 @@ do_tss_task:
 
         clts                                            ; 清 CR0.TS 标志位
 
-;;; 再伪造一个嵌套环境：从0级返回到3级, tss32_sel 是原 TSS selector
+;;; 再伪造一个嵌套环境: 从0级返回到3级, tss32_sel 是原 TSS selector
 
         call get_tr_base
         mov WORD [eax], tss32_sel                        ; 写入原 TSS selector
