@@ -1,46 +1,45 @@
-
 <!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
-- [Linux 整体机制](#linux-整体机制)
-  - [中断初始化](#中断初始化)
-    - [中断处理接口 interrupt 数组](#中断处理接口-interrupt-数组)
-  - [硬件中断号和软件中断号映射](#硬件中断号和软件中断号映射)
-  - [注册中断](#注册中断)
-  - [底层中断处理](#底层中断处理)
-  - [高层中断处理](#高层中断处理)
-  - [中断线程执行过程](#中断线程执行过程)
-- [软中断和 tasklet](#软中断和-tasklet)
-  - [SoftIRQ 软中断](#softirq-软中断)
-  - [2.2 tasklet](#22-tasklet)
-  - [2.3 local_bh_disable/local_bh_enable 下半部临界区](#23-local_bh_disablelocal_bh_enable-下半部临界区)
-  - [2.4 中断上下文](#24-中断上下文)
-- [3 workqueue](#3-workqueue)
-  - [3.1 背景和原理](#31-背景和原理)
-  - [3.2 数据结构](#32-数据结构)
+- [1. Linux 整体机制](#1-linux-整体机制)
+  - [1.1. 中断初始化](#11-中断初始化)
+    - [1.1.1. 中断处理接口 interrupt 数组](#111-中断处理接口-interrupt-数组)
+  - [1.2. 硬件中断号和软件中断号映射](#12-硬件中断号和软件中断号映射)
+  - [1.3. 注册中断](#13-注册中断)
+  - [1.4. 底层中断处理](#14-底层中断处理)
+  - [1.5. 高层中断处理](#15-高层中断处理)
+  - [1.6. 中断线程执行过程](#16-中断线程执行过程)
+- [2. 软中断和 tasklet](#2-软中断和-tasklet)
+  - [2.1. SoftIRQ 软中断](#21-softirq-软中断)
+  - [2.2. tasklet](#22-tasklet)
+  - [2.3. local_bh_disable/local_bh_enable 下半部临界区](#23-local_bh_disablelocal_bh_enable-下半部临界区)
+  - [2.4. 中断上下文](#24-中断上下文)
+- [3. workqueue](#3-workqueue)
+  - [3.1. 背景和原理](#31-背景和原理)
+  - [3.2. 数据结构](#32-数据结构)
 
 <!-- /code_chunk_output -->
 
-# Linux 整体机制
+# 1. Linux 整体机制
 
 中断在那个 CPU 上执行, 取决于在**那个 CPU 上申请了 vector**并**配置了对应的中断控制器(比如 local APIC**). 如果想要**改变一个中断的执行 CPU**, 必须**重新申请 vector 并配置中断控制器**. 一般通过**echo xxx > /proc/irq/xxx/affinity**来完成调整, 同时 irq\_balance 一类软件可以用于完成中断的均衡.
 
 当外设触发一次中断后, 一个大概的处理过程是:
 
-1、具体 CPU architecture 相关的模块会进行现场保护
+1. 具体 CPU architecture 相关的模块会进行现场保护
 
-2、通过 IDT 中的中断描述符, 调用 common_interrupt;
+2. 通过 IDT 中的中断描述符, 调用 common_interrupt;
 
-3、通过 common\_interrupt, 调用 do\_IRQ, 完成 vector 到 irq\_desc 的转换(根据硬件的信息获取 HW interrupt ID, 并且通过 irq domain 模块翻译成 IRQ number), 进入 Generic interrupt layer(调用处理函数`generic_handle_irq_desc`);
+3. 通过 common\_interrupt, 调用 do\_IRQ, 完成 vector 到 irq\_desc 的转换(根据硬件的信息获取 HW interrupt ID, 并且通过 irq domain 模块翻译成 IRQ number), 进入 Generic interrupt layer(调用处理函数`generic_handle_irq_desc`);
 
-4、调用在**中断初始化的时候**, 按照**中断特性**(level 触发, edge 触发等、simple 等)初始化的 irq\_desc:: handle\_irq, 执行不同的通用处理接口, 比如 handle\_simple\_irq; 调用该 IRQ number 对应的 high level irq event handler, 在这个 high level 的 handler 中, 会通过和 interupt controller 交互, 进行中断处理的 flow control(处理中断的嵌套、抢占等), 当然最终会遍历该中断描述符的 IRQ action list, 调用外设的 specific handler 来处理该中断
+4. 调用在**中断初始化的时候**, 按照**中断特性**(level 触发, edge 触发等. simple 等)初始化的 irq\_desc:: handle\_irq, 执行不同的通用处理接口, 比如 handle\_simple\_irq; 调用该 IRQ number 对应的 high level irq event handler, 在这个 high level 的 handler 中, 会通过和 interupt controller 交互, 进行中断处理的 flow control(处理中断的嵌套. 抢占等), 当然最终会遍历该中断描述符的 IRQ action list, 调用外设的 specific handler 来处理该中断
 
-5、这些通用处理接口会调用中断初始化的时候注册的外部中断处理函数; 完成 EOI 等硬件相关操作; 并完成中断处理的相关控制.
+5. 这些通用处理接口会调用中断初始化的时候注册的外部中断处理函数; 完成 EOI 等硬件相关操作; 并完成中断处理的相关控制.
 
-6、具体 CPU architecture 相关的模块会进行现场恢复.
+6. 具体 CPU architecture 相关的模块会进行现场恢复.
 
-## 中断初始化
+## 1.1. 中断初始化
 
 对 X86 CPU, Linux 内核使用全局 idt\_table 来表达当前的 IDT, 该变量定义在 traps.c
 
@@ -51,17 +50,17 @@ gate_desc idt_table[NR_VECTORS] __page_aligned_bss;
 
 对中断相关的初始化, 内核主要有以下工作:
 
-1、 设置 used\_vectors, 确保外设不能分配到 X86 保留使用的 vector(**预留的 vector 范围为[0,31**], 另外还有其他通过 apic\_intr_init 等接口预留的系统使用的 vector);
+1. 设置 used\_vectors, 确保外设不能分配到 X86 保留使用的 vector(**预留的 vector 范围为[0,31**], 另外还有其他通过 apic\_intr_init 等接口预留的系统使用的 vector);
 
-2、 设置 X86CPU 保留使用的 vector 对应的 IDT entry;这些 entry 使用特定的中断处理接口;
+2. 设置 X86CPU 保留使用的 vector 对应的 IDT entry;这些 entry 使用特定的中断处理接口;
 
-3、 设置外设 (包括 ISA 中断)使用的中断处理接口, 这些中断处理接口都一样.
+3. 设置外设 (包括 ISA 中断)使用的中断处理接口, 这些中断处理接口都一样.
 
-4、 设置 ISA IRQ 使用的 irq_desc;
+4. 设置 ISA IRQ 使用的 irq_desc;
 
-5、 把 IDT 的首地址加载到 CPU 的 IDTR(Interrupt Descriptor Table Register);
+5. 把 IDT 的首地址加载到 CPU 的 IDTR(Interrupt Descriptor Table Register);
 
-6、 初始化中断控制器(下一章描述)
+6. 初始化中断控制器(下一章描述)
 
 以上工作主要在以下函数中完成:
 
@@ -84,13 +83,13 @@ start_kernel
 
 这个过程会完成每个中断 vector 对应的 idt entry 的初始化, 系统把这些中断 vector 分成以下几种:
 
-1、**X86 保留 vector**, 这些**vector 包括[0,0x1f**]和**APIC 等系统部件占用的 vector**,对这些 vector, 会**记录在 bitmap used\_vectors 中**, 确保**不会被外设分配使用**; 同时这些 vector 都使用**各自的中断处理接口(！！！**), 其中断处理过程相对简单(没有 generic interrupt layer 的参与, CPU 直接调用到各自的 ISR).
+1. **X86 保留 vector**, 这些**vector 包括[0,0x1f**]和**APIC 等系统部件占用的 vector**,对这些 vector, 会**记录在 bitmap used\_vectors 中**, 确保**不会被外设分配使用**; 同时这些 vector 都使用**各自的中断处理接口(!!!**), 其中断处理过程相对简单(没有 generic interrupt layer 的参与, CPU 直接调用到各自的 ISR).
 
-2、**ISA irqs**, 对这些中断, 在初始化过程中已经完成了**irq\_desc**、**vector\_irq**、以及**IDT 中对应 entry 的分配和设置**, 同时可以发现**ISA 中断**, 在初始化的时候都被设置为**运行在 0 号 CPU**.  0x30\-0x3f 是 ISA 的
+2. **ISA irqs**, 对这些中断, 在初始化过程中已经完成了**irq\_desc**. **vector\_irq**. 以及**IDT 中对应 entry 的分配和设置**, 同时可以发现**ISA 中断**, 在初始化的时候都被设置为**运行在 0 号 CPU**.  0x30\-0x3f 是 ISA 的
 
-3、**其它外设的中断**, 对这些中断, 在初始化过程中**仅设置了对应的 IDT**, 和**ISA 中断一样**, 其**中断处理接口都来自 interrupt 数组**.
+3. **其它外设的中断**, 对这些中断, 在初始化过程中**仅设置了对应的 IDT**, 和**ISA 中断一样**, 其**中断处理接口都来自 interrupt 数组**.
 
-### 中断处理接口 interrupt 数组
+### 1.1.1. 中断处理接口 interrupt 数组
 
 interrupt 数组是内核中外设中断对应的 IDT entry, 其在`arch/x86/entry/entry_64.S`中定义, 定义如下:
 
@@ -126,7 +125,7 @@ X86 CPU 在准备好了中断执行环境后, 会调用**中断描述符定义�
 
 对于**用户自定义中断**, 中断处理入口都是(对系统预留的, 就直接执行定义的接口了)`common_interrupt`
 
-## 硬件中断号和软件中断号映射
+## 1.2. 硬件中断号和软件中断号映射
 
 Linux 维护了一个位图 `allocated_irqs` 用来管理软中断号,
 
@@ -171,7 +170,7 @@ struct irq_domain {
 
 系统初始化解析设备信息, 得到外设硬件中断号和触发类型, 通过全局 allocated\_irqs 位图分配一个空闲比特位(外设和中断控制器的 request line 有且仅有一条)从而获得一个 IRQ 号, 分配一个中断描述符 irq\_desc, 配置 CONFIG\_SPARE\_IRQ 使用 R 树存储, 否则是全局数组, 将硬件中断号设置到中断描述符, 从而建立硬件中断号和软件中断号的映射关系.
 
-## 注册中断
+## 1.3. 注册中断
 
 request\_irq()和线程化注册函数 request\_threaded\_irq()
 
@@ -207,15 +206,15 @@ int request_threaded_irq(unsigned int irq, irq_handler_t handler,
 
 (7) 有 thread\_fn, 则唤醒创建的内核线程, 该线程会很快睡眠, 详见下面线程执行
 
-## 底层中断处理
+## 1.4. 底层中断处理
 
 具体看体系结构
 
-## 高层中断处理
+## 1.5. 高层中断处理
 
 common\_interrupt 在 entry\_64.S 中定义, 其中关键步骤为: 调用**do\_IRQ**, 完成后会根据**环境**判断**是否需要执行调度**, 最后执行**iretq 指令**完成中断处理, iret 指令的重要功能就是**恢复中断函数前的 EFLAGS(执行中断入口前被入栈保存, 并清零 IF 位关中断**), 并恢复执行被中断的程序(这里不一定会恢复到之前的执行环境, 可能执行软中断处理, 或者执行调度).
 
-do_IRQ 的基本处理过程如下, 其负责中断执行环境建立、vector 到 irq 的转换等, 调用内核代码继续处理
+do_IRQ 的基本处理过程如下, 其负责中断执行环境建立. vector 到 irq 的转换等, 调用内核代码继续处理
 
 (1) irq\_enter(): 增加当前进程 thread\_info 的 preempt\_count 中的 HARDIRQ 域值, 表明进入硬件中断上下文
 
@@ -227,21 +226,21 @@ do_IRQ 的基本处理过程如下, 其负责中断执行环境建立、vector �
 
 (5) irq\_exit(): 减少当前进程 thread\_info 的 preempt\_count 中的 HARDIRQ 域值, 退出硬件中断上下文; 如果不在中断上下文, 并且本地 CPU 的\_\_softirq\_pending 有 pending 等待的软中断则处理, 详细见软中断
 
-## 中断线程执行过程
+## 1.6. 中断线程执行过程
 
 (1) 如果 aciton 的 flags 没设置为 IRQTF\_RUNTHREAD, 设置线程为 TASK\_INTERRUPTIBLE, 调用 schedule(), 换出 CPU, 进入睡眠等待
 
 (2) 设置线程为 TASK\_RUNNING, 执行 action\-\>thread\_fn
 
-# 软中断和 tasklet
+# 2. 软中断和 tasklet
 
 中断线程化属于下半部范畴, 这个机制合并前, 已经有了下半部机制, 例如**软中断**, **tasklet**和**工作队列**.
 
-## SoftIRQ 软中断
+## 2.1. SoftIRQ 软中断
 
 对时间要求最严格和最重要的下半部, 目前驱动只有块设备和网络子系统在使用.
 
-**软中断**是 Linux 内核中最常见的一种**下半部机制**, 适合系统对**性能和实时响应要求很高**的场合, 例如**网络子系统**、**块设备**、**高精度定时器**、**RCU**等.
+**软中断**是 Linux 内核中最常见的一种**下半部机制**, 适合系统对**性能和实时响应要求很高**的场合, 例如**网络子系统**. **块设备**. **高精度定时器**. **RCU**等.
 
 - **软中断**类型是**静态定义**的, Linux 内核**不希望**驱动开发者**新增软中断类型**.
 
@@ -253,7 +252,7 @@ do_IRQ 的基本处理过程如下, 其负责中断执行环境建立、vector �
 
 - 软中断的**回调函数不能睡眠**.
 
-- 软中断的**执行时间点**是在**中断返回前**, 即**退出硬中断上下文**时, 首先检查**是否有 pending 的软中断**, 然后才检查**是否需要抢占当前进程**. 因此, **软中断上下文总是抢占进程上下文(！！！**).
+- 软中断的**执行时间点**是在**中断返回前**, 即**退出硬中断上下文**时, 首先检查**是否有 pending 的软中断**, 然后才检查**是否需要抢占当前进程**. 因此, **软中断上下文总是抢占进程上下文(!!!**).
 
 10 种静态定义的软中断类型, 通过枚举实现, 索引号越小, 软中断优先级越高
 
@@ -297,13 +296,13 @@ EXPORT_SYMBOL(irq_stat);
 
 `__do_softirq()`:
 
-获取本地 CPU 的软中断状态 irq\_stat, 增加当前进程 struct thread\_info 中的 preempt\_count 成员里的 SOFTIRQ 域的值**SOFTIRQ\_OFFSET(！！！加的值是 2 的 8 次方, preempt\_count[8:15]表示软中断, 刚好将 bit[8]设为 1**), 表明在软中断上下文; 清除本地 CPU 的所有软中断状态, 因为会一次全部处理; 循环处理软中断, 从索引小的开始, 调用 action()函数指针; 如果又有新软中断, 软中断处理时间没超过 2 毫秒并且没有进程要求调度, 则再处理一次软中断, 否则唤醒 ksoftirqd 处理 ;退出软中断上下文
+获取本地 CPU 的软中断状态 irq\_stat, 增加当前进程 struct thread\_info 中的 preempt\_count 成员里的 SOFTIRQ 域的值**SOFTIRQ\_OFFSET(!!!加的值是 2 的 8 次方, preempt\_count[8:15]表示软中断, 刚好将 bit[8]设为 1**), 表明在软中断上下文; 清除本地 CPU 的所有软中断状态, 因为会一次全部处理; 循环处理软中断, 从索引小的开始, 调用 action()函数指针; 如果又有新软中断, 软中断处理时间没超过 2 毫秒并且没有进程要求调度, 则再处理一次软中断, 否则唤醒 ksoftirqd 处理 ;退出软中断上下文
 
 中断退出**不能**处于**硬件中断上下文**和**软中断上下文**. 硬中断处理过程一般是关中断的, 中断退出也就退出了硬件中断上下文, 这里肯定会满足; 另一个场景, 本次**中断点**发生在**软中断过程中**, 那中断退出会返回到软中断上下文, 这时候不允许重新调度软中断. 因为软中断在一个 CPU 上总是串行执行.
 
 (2) ksoftirqd(两个来源\<irq\_exit()\>和主动): 和上面动作类似
 
-## 2.2 tasklet
+## 2.2. tasklet
 
 **tasklet**是基于**软中断**的一种下半部机制, 所以还是运行在软中断上下文.
 
@@ -343,7 +342,7 @@ enum
 };
 ```
 
-每个 CPU(实际上是每个 logical processor, 即每个 cpu thread)维护两个 tasklet 链表, 一个用于普通优先级的 tasklet\_vec, 另一个用于高优先级的 tasklet\_hi\_vec, 它们都是 Per-CPU 变量(！！！). 链表中每个 tasklet\_struct 代表一个 tasklet.
+每个 CPU(实际上是每个 logical processor, 即每个 cpu thread)维护两个 tasklet 链表, 一个用于普通优先级的 tasklet\_vec, 另一个用于高优先级的 tasklet\_hi\_vec, 它们都是 Per-CPU 变量(!!!). 链表中每个 tasklet\_struct 代表一个 tasklet.
 
 ```cpp
 [kernel/softirq.c]
@@ -358,7 +357,7 @@ static DEFINE_PER_CPU(struct tasklet_head, tasklet_hi_vec);
 
 其中, tasklet\_vec 使用软中断中的 TASKLET\_SOFTIRQ 类型, 它的优先级是 6; 而 tasklet\_hi\_vec 使用的软中断中的 HI\_SOFTIRQ, 优先级是 0, 是所有软中断中优先级最高的.
 
-系统初始化会初始化这两个链表(softirq\_init()), 会注册 TASKLET\_SOFTIRQ 和 HI\_SOFTIRQ 这两个软中断(！！！), 回调函数分别是**tasklet\_action**和**tasklet\_hi\_action**(网络驱动用的多).
+系统初始化会初始化这两个链表(softirq\_init()), 会注册 TASKLET\_SOFTIRQ 和 HI\_SOFTIRQ 这两个软中断(!!!), 回调函数分别是**tasklet\_action**和**tasklet\_hi\_action**(网络驱动用的多).
 
 ```cpp
 [start_kernel()->softirq_init()]
@@ -403,15 +402,15 @@ tasklet 的执行: 基于软中断机制, 当循环到 TASKLET\_SOFTIRQ 类型�
 - 没有运行, 也没有禁止, 清除 TASKLET\_STATE\_SCHED, 执行回调函数
 - 已经在运行或被禁止, 将该 tasklet 重新添加当当前 CPU 的待处理 tasklet 链表, 然后触发 TASKLET\_SOFTIRQ 序号(6)的软中断, 等下次软中断再执行
 
-**软中断上下文优先级高于进程上下文**, 因此**软中断包括 tasklet 总是抢占进程(！！！**)的运行. 当**进程 A 在运行时发生中断**, 在**中断返回**时**先判断本地 CPU 上有没有 pending 的软中断**, 如果有, 那么首先**执行软中断包括 tasklet**, 然后**检查是否有高优先级任务需要抢占中断点的进程**, 即进程 A. 如果在执行软中断和 tasklet 过程时间很长, 那么高优先级任务就长时间得不到运行, 势必会影响系统的实时性, 这也是 RT Linux 社区里有专家一直**要求用 workqueue 机制来替代 tasklet 机制**的原因.
+**软中断上下文优先级高于进程上下文**, 因此**软中断包括 tasklet 总是抢占进程(!!!**)的运行. 当**进程 A 在运行时发生中断**, 在**中断返回**时**先判断本地 CPU 上有没有 pending 的软中断**, 如果有, 那么首先**执行软中断包括 tasklet**, 然后**检查是否有高优先级任务需要抢占中断点的进程**, 即进程 A. 如果在执行软中断和 tasklet 过程时间很长, 那么高优先级任务就长时间得不到运行, 势必会影响系统的实时性, 这也是 RT Linux 社区里有专家一直**要求用 workqueue 机制来替代 tasklet 机制**的原因.
 
 ![config](./images/6.png)
 
 目前 Linux 内核中有大量的驱动程序使用 tasklet 机制来实现下半部操作, 任何一个 tasklet 回调函数执行时间过长, 都会影响系统实时性, 可以预见在不久的将来**tasklet 机制**有可能会被 Linux 内核社区**舍弃**.
 
-## 2.3 local_bh_disable/local_bh_enable 下半部临界区
+## 2.3. local_bh_disable/local_bh_enable 下半部临界区
 
-内核中提供的关闭软中断的锁机制, 它们组成的临界区**禁止本地 CPU**在**中断返回前(！！！**)夕**执行软中断**, 这个临界区简称 BH 临界区(bottom half critical region).
+内核中提供的关闭软中断的锁机制, 它们组成的临界区**禁止本地 CPU**在**中断返回前(!!!**)夕**执行软中断**, 这个临界区简称 BH 临界区(bottom half critical region).
 
 local\_bh\_disable: **关闭软中断**. 将当前进程 preempt\_count 加上 SOFTIRQ\_DISABLE\_OFFSET(该值为 512, 2 的 9 次方, 参考 preempt\_count 结构, bit[8:15]表示软中断, 该域还表示软中断嵌套深度, 所以 9 次方, bit[9]是 1, 在软中断这里是 2, 两层嵌套), 表明进入了**软中断上下文**, 这样中断返回前 irq\_exit()不能调用执行 pending 状态的软中断
 
@@ -419,7 +418,7 @@ local\_bh\_enable: 打开软中断. preempt\_count 先减去(SOFTIRQ\_DISABLE\_O
 
 在**进程上下文调用建立临界区**, 此时来了**外部中断**后, 当*中断返回*时, 发现处于**软中断上下文**, 那么就**不执行, 延迟**了.
 
-## 2.4 中断上下文
+## 2.4. 中断上下文
 
 **中断上下文**包括**硬中断上下文**(hardirq context)和**软中断上下文**(softirq context).
 
@@ -427,15 +426,15 @@ local\_bh\_enable: 打开软中断. preempt\_count 先减去(SOFTIRQ\_DISABLE\_O
 - **软中断上下文**包括**三部分**
     - 一是在**下半部执行的软中断处理包括 tasklet**, 调用过程是**irq\_exit()\->invoke\_softirq**();
     - 二是**ksoftirqd 内核线程执行的软中断**, 例如系统使能了**强制中断线程化**force\_irqthreads (见 invoke\_softirq()函数), 还有一种情况是**软中断执行时间太长**, 在\_do\_softirq()中**唤醒 ksoftirqd 内核线程**;
-    - 三是**进程上下文(！！！**)中调用**local\_bh\_enable**()时也会去**执行软中断处理**, 调用过程是**local\_bh\_enable()-〉do\_softirq**().
+    - 三是**进程上下文(!!!**)中调用**local\_bh\_enable**()时也会去**执行软中断处理**, 调用过程是**local\_bh\_enable()-〉do\_softirq**().
 
-软中断上下文中前者**调用在中断下半部**中, 属于传统意义上的**中断上下文**, 而**后两者(！！！)调用在进程上下文中**, 但是 Linux 内核统一把它们归纳到软中断上下文范畴里.
+软中断上下文中前者**调用在中断下半部**中, 属于传统意义上的**中断上下文**, 而**后两者(!!!)调用在进程上下文中**, 但是 Linux 内核统一把它们归纳到软中断上下文范畴里.
 
 preempt\_count 成员在第 3.1 节中(进程管理)介绍过, 如图 5.6 所示.
 
 ![config](./images/1.png)
 
-**中断上下文(！！！**)包括**硬件中断处理过程**、**关 BH 临界区**、**软中断处理过程(！！！**)和**NMI 中断**处理过程. 在内核代码中经常需要判断当前状态是否处于进程上下文中, 也就是希望确保当前不在任何中断上下文中, 这种情况很常见, 因为代码需要做一些睡眠之类的事情. **in\_interrupt**()宏返回 false,则此时内核处于**进程上下文**中, 否则处于**中断上下文**中.
+**中断上下文(!!!**)包括**硬件中断处理过程**. **关 BH 临界区**. **软中断处理过程(!!!**)和**NMI 中断**处理过程. 在内核代码中经常需要判断当前状态是否处于进程上下文中, 也就是希望确保当前不在任何中断上下文中, 这种情况很常见, 因为代码需要做一些睡眠之类的事情. **in\_interrupt**()宏返回 false,则此时内核处于**进程上下文**中, 否则处于**中断上下文**中.
 
 Linux 内核中有几个宏来描述和判断这些情况:
 
@@ -454,13 +453,13 @@ Linux 内核中有几个宏来描述和判断这些情况:
 ```
 
 - in\_irq()判断当前是否在**硬件中断上下文**中;
-- in\_softirq()判断当前是否在**软中断上下文**中或者**处于关 BH 的临界区(！！！**)里;
-- in\_serving\_softirq()判断当前是否正在**软中断处理(！！！**)中, 包括前文提到的**三种情况**.
-- in\_interrupt()则包括所有的**硬件中断上下文**、**软中断上下文**和**关 BH 临界区**.
+- in\_softirq()判断当前是否在**软中断上下文**中或者**处于关 BH 的临界区(!!!**)里;
+- in\_serving\_softirq()判断当前是否正在**软中断处理(!!!**)中, 包括前文提到的**三种情况**.
+- in\_interrupt()则包括所有的**硬件中断上下文**. **软中断上下文**和**关 BH 临界区**.
 
-# 3 workqueue
+# 3. workqueue
 
-## 3.1 背景和原理
+## 3.1. 背景和原理
 
 工作队列的基本原理是把 work(需要推迟执行的函数)交由一个**内核线程**来执行, 它总是在**进程上下文**中执行. 工作队列的优点是利用进程上下文来执行中断下半部操作, 因此工作队列允许**重新调度**和**睡眠**, 是**异步执行的进程上下文**, 另外它还能解决**软中断**和**tasklet**执行**时间过长**导致系统**实时性下降**等问题.
 
@@ -468,7 +467,7 @@ Linux 内核中有几个宏来描述和判断这些情况:
 
 concurrency\-managed workqueues(CMWQ): BOUND 类型(Per\-CPU, 每个 CPU 一个)和 UNBOUND 类型, **每种**都有**两个工作线程池(worker\-pool**): 普通优先级的工作(work)使用和高优先级的工作(work)使用. 工作线程池(worker\-pool)中线程数量是动态管理的. 工作线程睡眠时, 检查是否需要唤醒更多工作线程, 有需要则唤醒同一个工作线程池中 idle 状态的工作线程.
 
-## 3.2 数据结构
+## 3.2. 数据结构
 
 工作任务 struct work\_struct
 
@@ -599,7 +598,7 @@ struct workqueue_struct {
 
 关系图:
 
-**一个 work 挂入 workqueue**中, 最终还要**通过 worker\-pool**中的**工作线程来处理其回调函数**, worker-pool 是**系统共享的(！！！**), 因此**workqueue**需要查找到一个**合适的 worker\-pool**, 然后从 worker\-pool 中分派一个**合适的工作线程**, pool\_workqueue 数据结构在其中起到**桥梁**作用. 这有些类似 IT 类公司的人力资源池的概念, 具体关系如图 5.7 所示.
+**一个 work 挂入 workqueue**中, 最终还要**通过 worker\-pool**中的**工作线程来处理其回调函数**, worker-pool 是**系统共享的(!!!**), 因此**workqueue**需要查找到一个**合适的 worker\-pool**, 然后从 worker\-pool 中分派一个**合适的工作线程**, pool\_workqueue 数据结构在其中起到**桥梁**作用. 这有些类似 IT 类公司的人力资源池的概念, 具体关系如图 5.7 所示.
 
 ![config](./images/2.png)
 
@@ -706,7 +705,7 @@ CMWQ 机制会动态地调整一个线程池中工作线程的执行情况, 不�
 - **调度一个 work**: **schedule\_work**().
 - **取消一个 work**: **cancel\_work\_sync**()
 
-此外, 有的驱动程序还**自己创建一个 workqueue**, 特别是**网络子系统**、**块设备子系统**等.
+此外, 有的驱动程序还**自己创建一个 workqueue**, 特别是**网络子系统**. **块设备子系统**等.
 
 - 使用**alloc\_workqueue**()创建**新的 workqueue**.
 - 使用**INIT\_WORK**()宏声明一个**work**和**该 work 的回调函数**.
@@ -720,12 +719,12 @@ Linux 内核还提供一个**workqueue 机制**和**timer 机制**结合的**延
 如图 5.8 所示是**BOUND 类型 workqueue 机制**的架构图, 对于**BOUND 类型的 workqueue**归纳如下.
 
 - **每个**新建的 workqueue, 都有一个 struct **workqueue\_struct**数据结构来描述.
-- 对于**每个新建的(！！！)workqueue**, **每个 CPU**有**一个 pool\_workqueue(！！！**)数据结构来**连接 workqueue**和**worker\_pool**.
+- 对于**每个新建的(!!!)workqueue**, **每个 CPU**有**一个 pool\_workqueue(!!!**)数据结构来**连接 workqueue**和**worker\_pool**.
 - **每个 CPU 只有两个 worker\_pool**数据结构来描述**工作池**, 一个用于**普通优先级工作线程**, 另一个用于**高优先级工作线程**.
 - **worker\_pool**中可以有**多个工作线程**, 动态管理工作线程.
-- **worker\_pool**和**workqueue**是**1:N(！！！**)的关系, 即**一个 worker\_pool**可以对应**多个 workqueue**.
+- **worker\_pool**和**workqueue**是**1:N(!!!**)的关系, 即**一个 worker\_pool**可以对应**多个 workqueue**.
 - pool\_workqueue 是 worker\_pool 和 workqueue 之间的桥梁枢纽.
-- **worker\_pool(！！！**)和**worker 工作线程(！！！**)也是**1:N(！！！**)的关系.
+- **worker\_pool(!!!**)和**worker 工作线程(!!!**)也是**1:N(!!!**)的关系.
 
 ![config](./images/5.png)
 
