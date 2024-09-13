@@ -28,7 +28,7 @@ http://www.broadview.com.cn/book/1129
 
 9. 实验4-2: 获得 basic 和 extended 功能号.
 
-10. 实验4-3: 分别使用 0Dh 和 0Eh，以及 80000008h 和 80000009h 来运行获得信息.
+10. 实验4-3: 分别使用 0Dh 和 0Eh, 以及 80000008h 和 80000009h 来运行获得信息.
 
 11. 实验4-4: 获得处理器的 DisplayFamily 与 DisplayModel.
 
@@ -48,13 +48,13 @@ http://www.broadview.com.cn/book/1129
 
 19. 实验5-5: 测试 sti 指令.
 
-20. 实验6-1: 测试在 TS=1，EM=1 时，对执行 X87FPU 和 MMX/SSE 指令的影响.
+20. 实验6-1: 测试在 TS=1, EM=1 时, 对执行 X87FPU 和 MMX/SSE 指令的影响.
 
-21. 实验6-2: 测试在 CD=0，NW=1.
+21. 实验6-2: 测试在 CD=0, NW=1.
 
 22. 实验6-3: 测试 CR4.TSD 对 RDTSC 和 RDTSCP 指令的影响.
 
-23. 实验6-4: 检查处理器对扩展功能的支持，以及 CR0 和 CR4 当前的设置.
+23. 实验6-4: 检查处理器对扩展功能的支持, 以及 CR0 和 CR4 当前的设置.
 
 24. 实验6-5: 测试 long-mode 支持度.
 
@@ -70,13 +70,13 @@ http://www.broadview.com.cn/book/1129
 
 30. 实验8-2: 在实模式下使用 4G 的空间
 
-31. 实验9-1: 在打开 D_OPEN 和关闭 O_OPEN 两种情况下进行对 SMRAM 区域的探测，以及测试 SMI handler.
+31. 实验9-1: 在打开 D_OPEN 和关闭 O_OPEN 两种情况下进行对 SMRAM 区域的探测, 以及测试 SMI handler.
 
-32. 实验10-1: 使用 call 指令进行任务切换，并使用 iret 指令切换回来.
+32. 实验10-1: 使用 call 指令进行任务切换, 并使用 iret 指令切换回来.
 
-33. 实验10-2: 使用 TSS 从 0 级切换到 3 级，再切换回 0 级.
+33. 实验10-2: 使用 TSS 从 0 级切换到 3 级, 再切换回 0 级.
 
-34. 实验10-3: 伪造一个任务嵌套环境，使用 iret 指令发起任务切换.
+34. 实验10-3: 伪造一个任务嵌套环境, 使用 iret 指令发起任务切换.
 
 35. 实验10-4: 使用 Task-gate 进行任务切换.
 
@@ -84,7 +84,7 @@ http://www.broadview.com.cn/book/1129
 
 37. 实验10-6: 在 Interrupt handler 里使用 IST 指针.
 
-38. 实验10-7: 测试 INTO、INT3，以及 BOUND 指令.
+38. 实验10-7: 测试 INTO、INT3, 以及 BOUND 指令.
 
 39. 实验10-8: 从 64 位里返回到 compatibility 模式.
 
