@@ -38,9 +38,9 @@ http://www.broadview.com.cn/book/1129
 
 14. 实验4-7: 使用 CPUID.EAX=04H/ECX=n 来查看 cache 及 TLB 信息.
 
-15. 实验5-1: 尝试改变 IOPL 和 IF 标志位（p88 页）
+15. 实验5-1: 尝试改变 IOPL 和 IF 标志位(p88 页)
 
-16. 实验5-2: 利用 IO Bitmap 的设置来决定 IO 空间访问权（p89 页）
+16. 实验5-2: 利用 IO Bitmap 的设置来决定 IO 空间访问权(p89 页)
 
 17. 实验5-3: 实现一个 single-debug 例子.
 
@@ -246,6 +246,6 @@ http://www.broadview.com.cn/book/1129
 
 117. 实验21-2: 使用 string 处理指令解决寻找首个不同字符位置.
 
-118. 实验21-3: 测试使用 sse4 版本的 strlen（​）函数.
+118. 实验21-3: 测试使用 sse4 版本的 strlen(​)函数.
 
 
