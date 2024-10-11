@@ -284,7 +284,7 @@ EXPORT_SYMBOL(irq_stat);
 #endif
 ```
 
-每个 CPU 有一个执行软中断的守护进程`ksoftirqd`(Per\-CPU 变量)
+每个 CPU 有一个执行软中断的守护进程 `ksoftirqd`(Per\-CPU 变量)
 
 注册软中断: 在全局的软中断描述符数组中, 指定相应软中断的 action. open\_softirq()
 
