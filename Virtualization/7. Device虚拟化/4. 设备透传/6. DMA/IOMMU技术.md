@@ -5,7 +5,7 @@
 
 - [1 概述](#1-概述)
 - [2 dma 地址空间映射](#2-dma-地址空间映射)
-- [3 中断重映射(可选)](#3-中断重映射可选)
+- [3 中断重映射](#3-中断重映射)
 - [4 iommu cache 、intremap cache 和设备 tlb](#4-iommu-cache--intremap-cache-和设备-tlb)
 
 <!-- /code_chunk_output -->
@@ -38,7 +38,7 @@ Iommu 的主要功能为设备 dma 时刻能够访问机器的物理内存区, �
 
 注意: 这里的 iommu 只管设备发起的 dma 的映射, 而软件发起的 mmio, 设备的 pci configuration 接入不受其管制！
 
-# 3 中断重映射(可选)
+# 3 中断重映射
 
 在虚拟化透传设备使用中, 或者主机侧用户态驱动框架中还有一个问题就是 msi 中断的安全保护. msi 的特点就是只要发起特定的 pci write 消息, 机器(在 x86 上是 LAPIC)就能够将此 pci write 消息翻译为一次中断信号. 在 msi 中断信息里, 含有中断源信息, 中断 vector 信息以及中断发往哪里, 中断模式等等信息.
 
