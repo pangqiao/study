@@ -6,119 +6,119 @@
 %include "..\inc\support.inc"
 %include "..\inc\protected.inc"
 
-; ���� protected ģ��
+; ???? protected ???
 
         bits 32
         
         org PROTECTED_SEG - 2
 
 PROTECTED_BEGIN:
-protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected ģ�鳤��
+protected_length        dw        PROTECTED_END - PROTECTED_BEGIN       ; protected ??�A??
 
 entry:
         
-;; �ر�8259
+;; ???8259
         call disable_8259
         
-;; ���� #PF handler
+;; ???? #PF handler
         mov esi, PF_HANDLER_VECTOR
         mov edi, PF_handler
         call set_interrupt_handler        
 
-;; ���� #GP handler
+;; ???? #GP handler
         mov esi, GP_HANDLER_VECTOR
         mov edi, GP_handler
         call set_interrupt_handler
 
-; ���� #DB handler
+; ???? #DB handler
         mov esi, DB_HANDLER_VECTOR
         mov edi, DB_handler
         call set_interrupt_handler
 
 
-;; ���� sysenter/sysexit ʹ�û���
+;; ???? sysenter/sysexit ??????
         call set_sysenter
 
-;; ���� system_service handler
+;; ???? system_service handler
         mov esi, SYSTEM_SERVICE_VECTOR
         mov edi, system_service
         call set_user_interrupt_handler 
 
-; ����ִ�� SSE ָ��        
+; ??????? SSE ???        
         mov eax, cr4
         bts eax, 9                                ; CR4.OSFXSR = 1
         mov cr4, eax
         
         
-;���� CR4.PAE
+;???? CR4.PAE
         call pae_enable
         
-; ���� XD ����
+; ???? XD ????
         call execution_disable_enable
                 
-; ��ʼ�� paging ����
+; ????? paging ????
         call init_pae_paging
         
-;���� PDPT ����ַ        
+;???? PDPT ?????        
         mov eax, PDPT_BASE
         mov cr3, eax
                                 
-; �򿪡�paging
+; ???paging
         mov eax, cr0
         bts eax, 31
         mov cr0, eax               
                   
-;========= ��ʼ��������� =================
+;========= ???????????? =================
 
-        mov DWORD [PT1_BASE + 0 * 8 + 4], 0             ; �� 400000h ���ÿ�ִ��
+        mov DWORD [PT1_BASE + 0 * 8 + 4], 0             ; ?? 400000h ????????
 
-; ʵ�� 14-4���������� jmp ָ���֧��¼
+; ??? 14-4?????????? jmp ????????
 
-; 1)���Ʋ��Ժ��� func() �� 0x400000 ��ַ��
+; 1)?????????? func() ?? 0x400000 ?????
         mov esi, func
         mov edi, 0x400000
         mov ecx, func_end - func
         rep movsb
 
 
-; 2) ���� LBR
+; 2) ???? LBR
         mov ecx, IA32_DEBUGCTL
         rdmsr
-        bts eax, LBR_BIT                        ; �� LBR λ
+        bts eax, LBR_BIT                        ; ?? LBR ��
         wrmsr
 
-; 3) ���ù�������
+; 3) ???��???????
 
-; ����һ�������е�jmp����������λ��
+; ????????????��?jmp??????????��??
 ;        mov ecx, MSR_LBR_SELECT
 ;        xor edx, edx
-;        mov eax, 0x1c4                        ; �������� jmp ָ��
+;        mov eax, 0x1c4                        ; ???????? jmp ???
 ;        wrmsr
 
-; ���Զ��������е�jmp����������λ������ FAR_BRANCH)
+; ????????????��?jmp??????????��?????? FAR_BRANCH)
         mov ecx, MSR_LBR_SELECT
         xor edx, edx
-        mov eax, 0xc4                        ; �������� jmp ָ��(���� FAR_BRANCH)
+        mov eax, 0xc4                        ; ???????? jmp ???(???? FAR_BRANCH)
         wrmsr
         
         
-; 4) ���Ժ���
+; 4) ???????
 
-; ����һ��ʹ�� near indirect call��
+; ?????????? near indirect call??
 ;        mov eax, 0x400000
-;        call eax                                        ; ʹ�� near indirect call
+;        call eax                                        ; ??? near indirect call
 
-; ���Զ���ʹ�� far call��
+; ?????????? far call??
         call DWORD KERNEL_CS:0x400000
 
-; 5) �� LBR 
+; 5) ?? LBR 
         mov ecx, IA32_DEBUGCTL
         rdmsr
-        btr eax, LBR_BIT                        ; �� LBR λ
+        btr eax, LBR_BIT                        ; ?? LBR ��
         wrmsr
 
 
-; 6) ��� LBR stack ��Ϣ
+; 6) ??? LBR stack ???
         call dump_lbr_stack
         call println
 
@@ -127,11 +127,11 @@ entry:
 
 
         
-; ת�� long ģ��
+; ??? long ???
         ;jmp LONG_SEG
                                 
                                 
-; ���� ring 3 ����
+; ???? ring 3 ????
         push DWORD user_data32_sel | 0x3
         push DWORD USER_ESP
         push DWORD user_code32_sel | 0x3        
@@ -139,7 +139,7 @@ entry:
         retf
 
         
-;; �û�����
+;; ???????
 
 user_entry:
         mov ax, user_data32_sel
@@ -153,7 +153,7 @@ user_start:
 
 
 
-;; ���Ժ���
+;; ???????
 func:
         mov eax, func_next-func+0x400000
         jmp eax                                        ; near indirect jmp
@@ -162,8 +162,8 @@ func_next:
 get_eip:
         pop eax        
         mov eax, 0
-        mov esi, msg1                                   ; ���ַ���
-        int 0x40                                        ; ʹ�� int ������ system service
+        mov esi, msg1                                   ; ???????
+        int 0x40                                        ; ??? int ?????? system service
         ret
 func_end:        
 
@@ -176,11 +176,11 @@ msg1        db 10, 0
 
 
         
-;******** include �ж� handler ���� ********
+;******** include ?��? handler ???? ********
 %include "..\common\handler32.asm"
 
 
-;********* include ģ�� ********************
+;********* include ??? ********************
 %include "..\lib\creg.asm"
 %include "..\lib\cpuid.asm"
 %include "..\lib\msr.asm"
@@ -192,10 +192,10 @@ msg1        db 10, 0
 %include "..\lib\pic8259A.asm"
 
 
-;;************* ���������  *****************
+;;************* ?????????  *****************
 
-; ��� lib32 �⵼������� common\ Ŀ¼�£�
-; ������ʵ��� protected.asm ģ��ʹ��
+; ??? lib32 ????????? common\ ?????
+; ?????????? protected.asm ??????
 
 %include "..\common\lib32_import_table.imt"
 
