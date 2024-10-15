@@ -221,6 +221,6 @@ allowed to turn off all CPUs, and if an IRQ controller does not support
 IRQ affinity then the value will not change from the default of all cpus.
 ```
 
-通过查看/proc/interrupts, 如果发现**某个 core busying handle 某个中断**, 那可以改变这个中断变量的 affinity, 让其他 core 分担中断的压力.
+通过查看 `/proc/interrupts`, 如果发现**某个 core busying handle 某个中断**, 那可以改变这个中断变量的 affinity, 让其他 core 分担中断的压力.
 
 不过, SMP IRQ affinity 需要 kernel 和 APIC 的合作, 所以如果可能太老, 不一定能够 work. 这种情况下, 请询问是否可以升级 kernel.
