@@ -46,7 +46,7 @@ GSI 是 ACPI (Advanced Configuration and Power Interface, 高级配置和电源�
 
 * 而 **15 号以下**的 IRQ 号与 ISA 设备高度耦合, **只有**当相应的 **ISA 设备**按照对应的 **IRQ** 号连接到 **IOAPIC 0 的 1~15 引脚**时, IRQ 才和 GSI 相等, 这种情况称为一致性映射. 而若 IRQ 与 GSI 引脚不一一对应, **ACPI** 将会维护一个 **ISO** (Interrupt Source Override, 中断源覆盖) 结构描述 **IRQ 与 GSI** 的**映射**.
 
-如 PIT (Programmable Interrupt Timer, 可编程中断时钟) 接 **PIC** 的 **IR0** 引脚, 因此其 IRQ 为 0; 但当接 **IOAPIC** 时, 它通常接在 **2 号中断引脚**, 所以其 GSI 为 2. 而在 QEMU/KVM 中, **GSI** 和 **IRQ** 完全等价, 但是不符合前述基础 GSI + Pin 的映射关系.
+如 PIT (Programmable Interrupt Timer, 可编程中断时钟) 接 **PIC** 的 **IR0** 引脚, 因此其 IRQ 为 0; 但当接 **IOAPIC** 时, 它通常接在 **2 号中断引脚**, 所以其 GSI 为 2. 而在 QEMU/KVM 中, **GSI** 和 **IRQ** 完全等价, 不符合前述基础 GSI + Pin 的映射关系.
 
 ![2024-10-14-15-07-30.png](./images/2024-10-14-15-07-30.png)
 
